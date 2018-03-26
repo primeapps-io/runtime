@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2005
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{A02346A3-1F14-479C-8684-A3581C1A0047}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.Console", "PrimeApps.Console\PrimeApps.Console.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.Model", "PrimeApps.Model\PrimeApps.Model.csproj", "{618C5D45-32AD-4F59-8D8E-D3258CE09033}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{783021F3-EB68-41A8-98CE-6AF8436D7523}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A02346A3-1F14-479C-8684-A3581C1A0047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A02346A3-1F14-479C-8684-A3581C1A0047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A02346A3-1F14-479C-8684-A3581C1A0047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A02346A3-1F14-479C-8684-A3581C1A0047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E73A5813-A39C-4739-9BED-2EF9AC96EE87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E73A5813-A39C-4739-9BED-2EF9AC96EE87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E73A5813-A39C-4739-9BED-2EF9AC96EE87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E73A5813-A39C-4739-9BED-2EF9AC96EE87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Release|Any CPU.Build.0 = Release|Any CPU
+		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {285F2C32-2C88-4B20-892E-FAA507D6DB0A}
+	EndGlobalSection
+EndGlobal
