@@ -177,23 +177,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\prosp\\.nuget\\packages\\": {},
+    "C:\\Users\\TanerÖzel\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\prosp\\source\\repos\\PrimeApps\\PrimeApps.Model\\PrimeApps.Model.csproj",
+      "projectUniqueName": "C:\\Works\\PrimeApps\\PrimeApps.Model\\PrimeApps.Model.csproj",
       "projectName": "PrimeApps.Model",
-      "projectPath": "C:\\Users\\prosp\\source\\repos\\PrimeApps\\PrimeApps.Model\\PrimeApps.Model.csproj",
-      "packagesPath": "C:\\Users\\prosp\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\prosp\\source\\repos\\PrimeApps\\PrimeApps.Model\\obj\\",
+      "projectPath": "C:\\Works\\PrimeApps\\PrimeApps.Model\\PrimeApps.Model.csproj",
+      "packagesPath": "C:\\Users\\TanerÖzel\\.nuget\\packages\\",
+      "outputPath": "C:\\Works\\PrimeApps\\PrimeApps.Model\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\prosp\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\TanerÖzel\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
