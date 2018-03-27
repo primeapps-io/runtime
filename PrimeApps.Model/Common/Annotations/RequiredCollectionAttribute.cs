@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace PrimeApps.Model.Common.Annotations
