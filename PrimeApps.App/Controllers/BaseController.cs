@@ -1,17 +1,20 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Web.Http;
+
 using System.Security.Claims;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Controllers
 {
-    [Authorize, RequireHttps, NoCache]
-    public class BaseController : ApiController
+    [Authorize, Microsoft.AspNetCore.Mvc.RequireHttps, ResponseCache(CacheProfileName = "Nocache")] 
+
+    public class BaseController : Controller
     {
         private UserItem _appUser;
         private string _clientId;

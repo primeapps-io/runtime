@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using NHibernate;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;

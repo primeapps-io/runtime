@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Elmah;
 using Hangfire;
-using NHibernate.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Entities.Platform.Identity;
