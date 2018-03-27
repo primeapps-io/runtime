@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Application
         //[Index]
         public SettingType Type { get; set; }
 
-        [Column("user_id"), ForeignKey("User"), Index("settings_IX_user_id")]
+        [Column("user_id"), ForeignKey("User")/*, Index("settings_IX_user_id")*/]
         public int? UserId { get; set; }
 
         [Column("key"), Required]

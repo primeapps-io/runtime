@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Entities.Application
 
     public class Reminder : BaseEntity
     {
-        [Column("reminder_scope"), Required, Index, MaxLength(70)]
+        [Column("reminder_scope"), Required,/* Index,*/ MaxLength(70)]
         public string ReminderScope { get; set; }
 
         [Column("module_id"), ForeignKey("Module")]

@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Application
     [Table("modules")]
     public class Module : BaseEntity
     {
-        [Column("name"), MaxLength(50), Required, Index(IsUnique = true)]
+        [Column("name"), MaxLength(50), Required] //, Index(IsUnique = true)
         public string Name { get; set; }
 
         [Column("system_type"), Required]

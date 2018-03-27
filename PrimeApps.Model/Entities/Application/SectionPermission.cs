@@ -15,10 +15,10 @@ namespace PrimeApps.Model.Entities.Application
     public class SectionPermission : BaseEntity
     {
         [JsonIgnore]
-        [Column("section_id"), ForeignKey("Section"), Index("section_permissions_IX_section_id_profile_id", 1, IsUnique = true)]
+        [Column("section_id"), ForeignKey("Section"), /*Index("section_permissions_IX_section_id_profile_id", 1, IsUnique = true)*/]
         public int SectionId { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile"), Required, Index("section_permissions_IX_section_id_profile_id", 2, IsUnique = true)]
+        [Column("profile_id"), ForeignKey("Profile"), Required, /*Index("section_permissions_IX_section_id_profile_id", 2, IsUnique = true)*/]
         public int ProfileId { get; set; }
 
         [Column("type"), Required]

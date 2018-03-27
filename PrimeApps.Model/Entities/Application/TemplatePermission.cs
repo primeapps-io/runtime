@@ -9,10 +9,10 @@ namespace PrimeApps.Model.Entities.Application
     public class TemplatePermission : BaseEntity
     {
         [JsonIgnore]
-        [Column("template_id"), ForeignKey("Template"), Index("template_permissions_IX_template_id_profile_id", 1, IsUnique = true)]
+        [Column("template_id"), ForeignKey("Template"),/* Index("template_permissions_IX_template_id_profile_id", 1, IsUnique = true)*/]
         public int TemplateId { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile"), Required, Index("template_permissions_IX_template_id_profile_id", 2, IsUnique = true)]
+        [Column("profile_id"), ForeignKey("Profile"), Required, /*Index("template_permissions_IX_template_id_profile_id", 2, IsUnique = true)*/]
         public int ProfileId { get; set; }
 
         [Column("type"), Required]

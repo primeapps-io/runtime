@@ -7,10 +7,10 @@ namespace PrimeApps.Model.Entities.Application
     [Table("view_states")]
     public class ViewState : BaseEntity
     {
-        [Column("module_id"), ForeignKey("Module"), Index("view_states_IX_module_id_user_id", 1, IsUnique = true)]
+        [Column("module_id"), ForeignKey("Module"), /*Index("view_states_IX_module_id_user_id", 1, IsUnique = true)*/]
         public int ModuleId { get; set; }
 
-        [Column("user_id"), ForeignKey("User"), Index("view_states_IX_module_id_user_id", 2, IsUnique = true)]
+        [Column("user_id"), ForeignKey("User"),/* Index("view_states_IX_module_id_user_id", 2, IsUnique = true)*/]
         public int UserId { get; set; }
 
         [Column("active_view"), Required]

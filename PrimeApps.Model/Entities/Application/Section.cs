@@ -10,10 +10,10 @@ namespace PrimeApps.Model.Entities.Application
     public class Section : BaseEntity
     {
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), Index("sections_IX_module_id_name", 1, IsUnique = true)]
+        [Column("module_id"), ForeignKey("Module"), /*Index("sections_IX_module_id_name", 1, IsUnique = true)*/]
         public int ModuleId { get; set; }
 
-        [Column("name"), MaxLength(50), Required, Index("sections_IX_module_id_name", 2, IsUnique = true)]
+        [Column("name"), MaxLength(50), Required, /*Index("sections_IX_module_id_name", 2, IsUnique = true)*/]
         public string Name { get; set; }
 
         [Column("system_type"), Required]
