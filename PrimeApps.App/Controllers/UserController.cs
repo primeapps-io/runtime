@@ -1,28 +1,18 @@
-using NHibernate;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Hosting;
-using System.Web.Http;
-using Hangfire;
 using Microsoft.ApplicationInsights.AspNetCore;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.ActiveDirectory.GraphClient;
-using Microsoft.Azure.ActiveDirectory.GraphClient.Extensions;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json.Linq;
-using NHibernate.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Providers;
@@ -41,7 +31,7 @@ using PrimeApps.Model.Entities.Platform.Identity;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/User"), Authorize]
+    [Route("api/User"), Authorize]
     public class UserController : BaseController
     {
         private IUserRepository _userRepository;

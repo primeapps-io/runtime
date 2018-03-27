@@ -129,7 +129,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromUri]int id, [FromBody]ReportBindingModel report)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]ReportBindingModel report)
         {
             ReportHelper.Validate(report, ModelState);
 
@@ -179,7 +179,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var reportEntity = await _reportRepository.GetById(id);
 
@@ -216,7 +216,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_category/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateCategory([FromUri]int id, [FromBody]ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> UpdateCategory([FromRoute]int id, [FromBody]ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -233,7 +233,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_category/{id:int}"), HttpDelete]
-        public async Task<IActionResult> DeleteCategory([FromUri]int id)
+        public async Task<IActionResult> DeleteCategory([FromRoute]int id)
         {
             var reportCategoryEntity = await _reportRepository.GetCategoryById(id);
 
