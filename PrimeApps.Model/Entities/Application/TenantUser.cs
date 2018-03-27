@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("id"), Key, Required]
         public int Id { get; set; }
 
-        [Column("email"), Required, MaxLength(200), Index]
+        [Column("email"), Required, MaxLength(200)]//, Index]
         public string Email { get; set; }
 
         [Column("first_name"), Required, MaxLength(200)]
@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("last_name"), Required, MaxLength(200)]
         public string LastName { get; set; }
 
-        [Column("full_name"), Required, MaxLength(400), Index]
+        [Column("full_name"), Required, MaxLength(400)]//, Index]
         public string FullName { get; set; }
 
         [Column("is_active")]

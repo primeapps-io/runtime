@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("owner")]
         public int? Owner { get; set; }
 
-        [Column("reminder_type"), Required, MaxLength(20), Index]
+        [Column("reminder_type"), Required, MaxLength(20)]//, Index]
         public string ReminderType { get; set; }
 
         [Column("reminder_start"), Required]

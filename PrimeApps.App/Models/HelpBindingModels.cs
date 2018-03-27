@@ -6,7 +6,7 @@ namespace PrimeApps.App.Models
 {
     public class HelpBindingModel
     {
-        [Required, StringLength(4000)]
+        [Required]
         public string Template { get; set; }
 
         public int? ModuleId { get; set; }

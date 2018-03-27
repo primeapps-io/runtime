@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Entities.Application
     [Table("views")]
     public class View : BaseEntity
     {
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("system_type"), Required]
@@ -23,7 +23,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("active")]
         public bool Active { get; set; }
 
-        [Column("sharing_type"), Index]
+        [Column("sharing_type")]//, Index]
         public ViewSharingType SharingType { get; set; }
         
         [Column("filter_logic"), MaxLength(50)]

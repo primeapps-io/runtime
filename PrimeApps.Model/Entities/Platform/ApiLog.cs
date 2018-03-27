@@ -11,15 +11,15 @@ namespace PrimeApps.Model.Entities.Platform
         public long Id { get; set; }
         // The user that made the request.
         [Column("user")]
-        [Index]
+        //[Index]
         public string User { get; set; }
         [Column("tenant_id")]
-        [Index]
+        //[Index]
         // Tenant id of the user that made the request
         public int TenantId { get; set; }
         // Id of the user that made the request.
         [Column("user_id")]
-        [Index]
+        //[Index]
         public int UserId { get; set; }
         // The machine that made the request.
         [Column("machine")]
@@ -41,7 +41,7 @@ namespace PrimeApps.Model.Entities.Platform
         public string RequestMethod { get; set; }
         // The request route template.
         [Column("request_route")]
-        [Index]
+        //[Index]
         public string RequestRoute { get; set; }
         // The request headers.
         [Column("request_headers")]

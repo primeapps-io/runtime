@@ -9,10 +9,10 @@ namespace PrimeApps.Model.Entities.Platform.Identity
         [Column("id"), Key]
         public string Id { get; set; }
 
-        [Column("secret"), Required, Index]
+        [Column("secret"), Required]//]//, Index]
         public string Secret { get; set; }
 
-        [Column("name"), Required, MaxLength(100), Index]
+        [Column("name"), Required, MaxLength(100)]//]//, Index]
         public string Name { get; set; }
 
         [Column("application_type")]

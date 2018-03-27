@@ -5,7 +5,7 @@ namespace PrimeApps.Model.Entities.Application
     [Table("conversion_mappings")]
     public class ConversionMapping : BaseEntity
     {
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("mapping_module_id"), ForeignKey("MappingModule")]

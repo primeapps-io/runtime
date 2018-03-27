@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.IO;
 
-namespace PrimeApps.CLI.Base
+namespace PrimeApps.CLI.Helpers
 {
-    public class Multitenancy
+    public class DatabaseHelper
     {
         public class Database
         {

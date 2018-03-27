@@ -870,11 +870,11 @@ angular.module('ofisim')
                     }
 
                     //lookup field filters (from field_filters table)
-                    if(field.filters.length > 0){
+                    if (field.filters.length > 0) {
                         var no = findRequest.filters.length;
-                        for(var z=0; z<field.filters.length; z++){
+                        for (var z = 0; z < field.filters.length; z++) {
                             var filter = field.filters[z];
-                            no ++;
+                            no++;
                             findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: filter.value, no: no });
                         }
                     }

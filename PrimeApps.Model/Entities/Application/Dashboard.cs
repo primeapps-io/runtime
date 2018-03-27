@@ -13,16 +13,16 @@ namespace PrimeApps.Model.Entities.Application
         [Column("description"), MaxLength(250)]
         public string Description { get; set; }
 
-        [Column("user_id"), ForeignKey("User"), Index]
+        [Column("user_id"), ForeignKey("User")]//, Index]
         public int? UserId { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile"), Index]
+        [Column("profile_id"), ForeignKey("Profile")]//, Index]
         public int? ProfileId { get; set; }
 
         [Column("is_active")]
         public bool IsActive { get; set; }
 
-        [Column("sharing_type"), Index]
+        [Column("sharing_type")]//, Index]
         public DashboardSharingType SharingType { get; set; }
 
         public virtual TenantUser User { get; set; }

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 
 namespace PrimeApps.Model.Entities.Platform.Identity
 {
-    public class ApplicationUserClaim : IdentityUserClaim<int> { }
+    public class ApplicationRoleClaim : IdentityUserClaim<int> { }
 
 }

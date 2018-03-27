@@ -20,13 +20,13 @@ namespace PrimeApps.Model.Entities.Application
         [Column("sql_function")]
         public string SqlFunction { get; set; }
 
-        [Column("module_id"), Required, ForeignKey("Module"), Index]
+        [Column("module_id"), Required, ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
-        [Column("user_id"), ForeignKey("User"), Index]
+        [Column("user_id"), ForeignKey("User")]//, Index]
         public int? UserId { get; set; }
 
-        [Column("category_id"), ForeignKey("Category"), Index]
+        [Column("category_id"), ForeignKey("Category")]//, Index]
         public int? CategoryId { get; set; }
 
         [Column("group_field")]
@@ -38,7 +38,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("sort_direction")]
         public SortDirection SortDirection { get; set; }
 
-        [Column("sharing_type"), Index]
+        [Column("sharing_type")]//, Index]
         public ReportSharingType SharingType { get; set; }
 
         [Column("filter_logic"), MaxLength(50)]

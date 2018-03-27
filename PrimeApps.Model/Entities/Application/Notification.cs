@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Entities.Application
     {
 
         [Column("type"), Required]
-        [Index]
+        //[Index]
         public NotificationType NotificationType { get; set; }
 
         [Column("module_id"), ForeignKey("Module")]

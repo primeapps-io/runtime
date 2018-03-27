@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace PrimeApps.Model.Entities.Platform.Identity
 {
