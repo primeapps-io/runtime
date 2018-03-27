@@ -25,7 +25,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpPost]
-        public async Task<Role> Find([FromUri]int id)
+        public async Task<Role> Find([FromRoute]int id)
         {
             return await _roleRepository.GetByIdAsync(id);
         }
@@ -68,7 +68,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete"), HttpDelete]
-        public async Task Delete([FromUri]int id, [FromUri]int transferRoleId)
+        public async Task Delete([FromRoute]int id, [FromRoute]int transferRoleId)
         {
             bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
 
@@ -80,7 +80,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_user_role"), HttpPut]
-        public async Task UpdateUserRole([FromUri]int userId, [FromUri]int roleId)
+        public async Task UpdateUserRole([FromRoute]int userId, [FromRoute]int roleId)
         {
             bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
 

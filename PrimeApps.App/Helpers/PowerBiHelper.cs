@@ -10,6 +10,8 @@ using System.Linq;
 using PrimeApps.App.Models.ViewModel.Analytics;
 using System.Net;
 using Hangfire;
+using Microsoft.CodeAnalysis;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Entities.Application;
 using Report = Microsoft.PowerBI.Api.V1.Models.Report;
 using PrimeApps.Model.Helpers;
@@ -22,7 +24,7 @@ namespace PrimeApps.App.Helpers
     public class PowerBiHelper
     {
         private static string _powerBiApiEndpoint = "https://api.powerbi.com";
-        private static string _workspaceCollection = ConfigurationManager.AppSettings["PowerbiWorkspaceCollection"];
+        private static string _workspaceCollection = ConfigurationManager<>.AppSettings["PowerbiWorkspaceCollection"];
         private static string _accessKey = ConfigurationManager.AppSettings["PowerbiAccessKey"];
         private static string _powerBiEmbedUrl = "https://embedded.powerbi.com/appTokenReportEmbed?reportId={0}";
 

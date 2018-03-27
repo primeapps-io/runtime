@@ -61,7 +61,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromUri]int id, [FromBody]TemplateBindingModel template)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]TemplateBindingModel template)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var templateEntity = await _templateRepostory.GetById(id);
 
