@@ -1,0 +1,123 @@
+.dashboard-wrapper {
+    margin-top: 80px;
+    padding-bottom: 30px;
+}
+
+.dashboard {
+    background-color: transparent;
+
+    .page-loading {
+        padding-top: 20px;
+        text-align: center;
+
+        i {
+            font-size: 28px;
+        }
+    }
+}
+
+.dashlet-chart {
+    position: relative;
+
+    .trasparant-text {
+        position: absolute;
+        width: 100%;
+        height: 17px;
+      z-index: 4;
+        top: 12px;
+
+        span {
+            cursor: pointer;
+            opacity: 0;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard {
+        margin-top: 50px;
+        background-color: transparent;
+    }
+}
+
+//Modern Browsers Only!
+.fullScreenChart {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+    z-index: 1050;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    animation: SHW 1s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes SHW {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.summary-count-value {
+    font-weight: bold;
+    font-size: 33px;
+    line-height: 40px;
+    //margin-left:25px;
+    color: #fff;
+    padding: 30px;
+
+    i {
+        font-size: 44px;
+        font-size: 2vw;
+        color: #fff;
+        float: right;
+    }
+}
+
+.summary-count-text {
+    font-weight: lighter;
+    font-size: 24px;
+    font-size: 1vw;
+    margin-left: 25px;
+    color: #fff;
+    font-weight: 500;
+}
+
+//TODO: Delete after dashboard module finished
+.dashboard-old {
+    .subpanel-heading {
+        text-align: left;
+    }
+
+    .subpanel-body {
+        padding: 0 !important;
+        min-height: 210px;
+
+        a {
+            color: #337ab7 !important;
+        }
+
+        .table {
+            border: none !important;
+
+            th {
+                padding-left: 10px !important;
+                background-color: #fff;
+                text-align: left;
+            }
+
+            td {
+                padding-left: 10px !important;
+            }
+        }
+    }
+}

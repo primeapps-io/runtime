@@ -1,0 +1,46 @@
+.settings {
+  .img-rounded {
+    max-width: 140px;
+  }
+
+  .delete-account {
+    padding: 0 20px 20px 0;
+
+    .delete-account-message {
+      margin-bottom: 0;
+      padding-top: 15px;
+      display: block;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .btn {
+      margin-top: 20px;
+    }
+
+    .popover {
+      .popover-content {
+        width: 260px;
+
+        input {
+          width: 225px;
+        }
+      }
+    }
+  }
+
+  .cropArea {
+    overflow: hidden;
+    width: 250px;
+    height: 250px;
+  }
+}
+
+.organization {
+  .logo-img {
+    max-width: 250px;
+    max-height: 50px;
+    display: block;
+    margin-bottom: 20px;
+  }
+}

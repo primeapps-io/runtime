@@ -1,0 +1,14 @@
+<div class="aside" tabindex="-1" style="overflow: auto;" role="dialog">
+    <div class="aside-dialog">
+        <div class="aside-content">
+            <div class="aside-body" style="height: 100%;">
+                <div style="height:65px;border-bottom: 1px solid lightgrey" ng-show="modalButtonShow">
+                    <a href ng-click="showHelpModal()" class="pull-left" style="padding-top: 22px;padding-left: 45px;color: gray;text-decoration: none;">Tanıtım Penceresini Görüntüle</a>
+                    <i class="fa fa-external-link pull-right" style="font-size: 25px;padding-top: 20px;padding-right: 50px;color:gray;"></i>
+                </div>
+                <div ng-bind-html="helpTemplateSideModal"></div>
+                <!--<iframe src="{{getHelpUrl() | trustUrl}}" frameborder="0"></iframe>-->
+            </div>
+        </div>
+    </div>
+</div>

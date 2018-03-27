@@ -1,0 +1,19 @@
+<div class="ng-cloak ng-table-pager clearfix">
+    <div ng-if="params.settings().counts.length" class="pull-right">
+        <span class="table-total pull-left">{{('Common.TotalRecord' | translate) + ': ' + params.total()}}</span>
+        <div class="ng-table-counts btn-group pull-right">
+            <button ng-repeat="count in params.settings().counts" type="button" ng-class="{'active':params.count()==count}" ng-click="params.reloading = true; params.count(count); params.reload();" class="btn btn-default"><span ng-bind="count"></span></button>
+        </div>
+    </div>
+    <ul class="pagination ng-table-pagination">
+        <li ng-class="{'disabled': !page.active && !page.current, 'active': page.current}" ng-if="page.current || page.type === 'prev' || page.type === 'next'" ng-repeat="page in pages" ng-switch="page.type">
+            <a href ng-if="page.type === 'prev'"
+               ng-click="params.page(page.number); params.pagination = true; (!page.active && !page.current) ? '' : params.reload();">&laquo;</a>
+            <a href ng-if="page.type === 'first' || page.type === 'page' || page.type === 'last'" style="background-color: #fbfbfb;">
+                <span ng-bind-html="'Common.Paging' | translate:{from:(((page.number - 1) * params.count()) + 1), to:((page.number * 1 * params.count()) > params.total() ? params.total() : (page.number * 1 * params.count()))}"></span>
+            </a>
+            <a href ng-if="page.type === 'next'"
+               ng-click="params.page(page.number); params.pagination = true; (!page.active && !page.current) ? '' : params.reload();">&raquo;</a>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,20 @@
+.self {
+  padding-top: 0;
+
+  .info {
+    .fa-info-circle,
+    .fa-exclamation-circle {
+      float: left;
+      color: #e3b760;
+    }
+
+    p {
+      padding-left: 40px;
+    }
+  }
+
+  .ng-toast.ng-toast--top,
+  .ng-toast.ng-toast--top .ng-toast__list {
+    top: 10px;
+  }
+}

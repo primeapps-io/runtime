@@ -1,0 +1,65 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#/app/setup/help">{{'Setup.HelpGuide.ModalView' | translate}}</a></li>
+        <li><a href="#/app/setup/helpsides">{{'Setup.HelpGuide.HelpScreen' | translate}}</a></li>
+    </ul>
+</div>
+<div class="panel panel-default setup-panel">
+    <div class="panel-body">
+        <form name="HelpPage" class="form-horizontal form-custom" autocomplete="off" novalidate>
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div ng-show="!loading">
+                <div class="subpanel clearfix" style="height: 680px;">
+                    <h5 class="subpanel-heading ">{{'Setup.HelpGuide.ModalView' | translate}}</h5>
+                    <div class="subpanel-body">
+                        <div class="row">
+                            <div class="col-md-12" style="top: 20px;">
+                                <div class="row">
+                                    <div class="clearfix row template-footer" style="margin-left: 20px;">
+                                        <div class="col-sm-4">
+                                            <p><label class="radio-inline"><input type="radio" name="locale" value="modules" ng-model="selectHelp">{{'Setup.HelpGuide.SelectModule' | translate}}</label></p>
+                                            <p><label class="radio-inline"><input type="radio" name="locale" value="settings" ng-model="selectHelp">{{'Setup.HelpGuide.Other' | translate}}</label></p>
+                                        </div>
+                                        <div class="col-sm-8" ng-show="selectHelp == 'modules'">
+                                            <select class="form-control pull-left"
+                                                    ng-change="setContent()"
+                                                    ng-model="modulePicklist"
+                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-8" style="margin-top: 37px;" ng-show="selectHelp == 'settings'">
+                                            <select class="form-control pull-left"
+                                                    ng-model="routeModules"
+                                                    ng-change="setContentSettingsModul()"
+                                                    ng-options="item.name for item in routeModule">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-left: 10px;margin-right: 10px;margin-top: 25px">
+                                    <div class="row" ng-class="{'has-error': HelpPage.$submitted && tinymceModel.$invalid}">
+                                        <textarea name="tinymceModel" ui-tinymce="tinymceOptions" ng-required="true" ng-model="tinymceModel"></textarea>
+                                        <div class="hidden" plupload="imgUpload">
+                                            <input id="uploadImage" type="file" add-file="add-file" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row template-footer">
+                                    <div class="col-sm-12 text-right" style="top: 20px;" ng-show="selectHelp == 'modules' || selectHelp == 'settings'">
+                                        <button type="button" class="btn btn-custom" name="helpDraft" ng-disabled="(!modulePicklist || !tinymceModel) && (!routeModules || !tinymceModel) " ng-click="helpModalDraftSave()">{{'Setup.HelpGuide.SaveAsDraft' | translate}}</button>
+                                        <button type="button" class="btn btn-danger" ng-show="helpTemplates" action="templateDelete()" confirm-click placement="top" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}">{{'Template.TemplateDelete' | translate}}</button>
+                                        <button type="submit" class="btn btn-w-md btn-primary" name="helpPublish" ng-disabled="(!modulePicklist || !tinymceModel) && (!routeModules || !tinymceModel)" ng-click="helpModalSave()">{{'Setup.HelpGuide.Publish' | translate}}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

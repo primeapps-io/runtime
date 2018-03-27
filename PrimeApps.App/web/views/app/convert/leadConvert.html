@@ -1,0 +1,165 @@
+<div class="page" ng-show="user.profile.LeadConvert">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h4 class="pull-left">{{'Convert.Title' | translate:{type:module['label_' + language + '_singular']} }}</h4>
+        </div>
+        <div class="panel-body">
+            <div class="subpanel">
+                <div class="subpanel-body">
+                    <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-show="!loading" id="ConvertAccountPanel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table" style="border: none;">
+                                    <tr ng-show="accountModule.display">
+                                        <th style="border-color: #f7f7f7 !important;border: none;">{{accountModule['label_' + language + '_singular']}}:</th>
+                                        <td style=" border: none;">
+                                            <span ng-hide="converted">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}</span>
+                                            <a href="#/app/crm/module/accounts?id={{ converted.account_id }}" ng-show="converted" id="ConvertAccountLink">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="contactModule.display">
+                                        <th style="border: none;width: 100px;">{{contactModule['label_' + language + '_singular']}}:</th>
+                                        <td style="border: none;">
+                                            <span ng-hide="converted">{{lead.full_name || lead[leadModulePrimaryField.name]}}</span>
+                                            <a href="#/app/crm/module/contacts?id={{ converted.contact_id }}" ng-show="converted" id="ConvertContactLink">{{lead.full_name || lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="converted && opportunityModule.display && createOpportunity">
+                                        <th style="border-color: #f7f7f7 !important; border: none;">{{opportunityModule['label_' + language + '_singular']}}:</th>
+                                        <td style="border: none;">
+                                            <a href="#/app/crm/module/opportunities?id={{ converted.opportunity_id }}" id="ConvertOpportunityLink">{{opportunity.name}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="!converted && !convertDisable && hasPermission('opportunities', operations.write) && opportunityModule.display">
+                                        <th style="border: none;" colspan="2">
+                                            <label>
+                                                <input type="checkbox" ng-model="createOpportunity">
+                                                {{('Convert.Lead.AddOpportunity' | translate)}}
+                                            </label>
+                                        </th>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <form name="opportunityForm" class="form-horizontal form-custom" ng-disabled="convertDisable" ng-submit="convert()" novalidate autocomplete="off" ng-show="createOpportunity && !converted">
+                                <div class="col-md-6" id="checked">
+                                    <table class="table" style="border:none;">
+                                        <div class="form-group" ng-class="{'has-error': opportunityForm.$submitted && opportunityForm.opportunityName.$invalid}">
+                                            <label for="opportunityName" class="col-sm-6 control-label required-field">* {{'Convert.Lead.OpportunityName' | translate}}:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text"
+                                                       id="opportunityName"
+                                                       name="opportunityName"
+                                                       class="form-control ng-animate-disabled"
+                                                       tabindex="1"
+                                                       placeholder="{{nameField.placeholder}}"
+                                                       ng-model="opportunity.name"
+                                                       ng-required="{{nameField.validation.required}}"
+                                                       ng-minlength="nameField.validation.min_length || 0"
+                                                       maxlength="{{nameField.validation.max_length || 50}}"
+                                                       pattern="{{nameField.validation.pattern}}"
+                                                       ui-mask="{{nameField.validation.mask}}" />
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="amount" class="col-sm-6 control-label">{{'Convert.Lead.Amount' | translate}}:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text"
+                                                       id="amount"
+                                                       name="amount"
+                                                       class="form-control ng-animate-disabled"
+                                                       tabindex="2"
+                                                       placeholder="{{amountField.placeholder}}"
+                                                       ng-model="opportunity.amount"
+                                                       ng-required="amountField.validation.required"
+                                                       ng-readonly="amountField.validation.readonly"
+                                                       maxlength="{{amountField.validation.max_length || 21}}"
+                                                       min-value="amountField.validation.min || 0"
+                                                       max-value="amountField.validation.max || Number.MAX_VALUE"
+                                                       places="amountField.decimal_places || 2"
+                                                       rounding="amountField.rounding"
+                                                       currency-symbol="amountField.currency_symbol"
+                                                       number-currency/>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group" ng-class="{'has-error': opportunityForm.$submitted && opportunityForm.closingDate.$invalid}">
+                                            <label for="closingDate" class="col-sm-6 control-label required-field">* {{'Convert.Lead.ClosingDate' | translate}}:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text"
+                                                       id="closingDate"
+                                                       name="closingDate"
+                                                       class="form-control ng-animate-disabled"
+                                                       tabindex="3"
+                                                       ng-model="opportunity.closing_date"
+                                                       ng-change="opportunityForm.closingDate.$setValidity('date', true);"
+                                                       ng-required="{{closingDateField.validation.required}}"
+                                                       data-autoclose="1"
+                                                       data-date-type="iso"
+                                                       data-min-date="{{(closingDateField.validation.min ? (closingDateField.validation.min === 'today' ? currentDayMin : closingDateField.validation.min) : undefined)}}"
+                                                       data-max-date="{{(closingDateField.validation.max ? (closingDateField.validation.max === 'today' ? currentDayMax : closingDateField.validation.max) : undefined)}}"
+                                                       data-icon-left="fa fa-chevron-left"
+                                                       data-icon-right="fa fa-chevron-right"
+                                                       bs-datepicker>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="stage" class="col-sm-6 control-label">{{ 'Convert.Lead.Stage' | translate }}:</label>
+                                            <div class="col-sm-6">
+                                                <select class="form-control ng-animate-disabled"
+                                                        id="stage"
+                                                        name="stage"
+                                                        tabindex="4"
+                                                        ng-model="opportunity.stage"
+                                                        ng-required="{{stageField.validation.required}}"
+                                                        ng-options="o.id as o.label[language] for o in stageList | filter:{inactive:'!true', hidden:'!true'}">
+                                                    <option value="">{{'Common.Select' | translate}}</option>
+                                            </div>
+                                        </div>
+                                    </table>
+                                </div>
+
+                                <div class="form-group" ng-show="opportunityForm.$submitted && opportunityForm.$invalid">
+                                    <div class="col-sm-offset-2 col-sm-8">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="opportunityForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                            <p ng-if="opportunityForm.$error.min">{{'Module.MinError' | translate}}</p>
+                                            <p ng-if="opportunityForm.$error.max">{{'Module.MaxError' | translate}}</p>
+                                            <p ng-if="opportunityForm.$error.minlength">{{'Module.MinLengthError' | translate}}</p>
+                                            <p ng-if="opportunityForm.$error.pattern">{{'Module.PatternError' | translate}}</p>
+                                            <p ng-if="opportunityForm.$error.date && opportunityForm.$error.parse">{{'Module.DateError' | translate}}</p>
+                                            <p ng-if="opportunityForm.$error.unique">{{'Module.UniqueError ' | translate}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-left: 10px">
+                                    <div class="col-md-6">
+                                        <button type="submit" tabindex="5" class="btn btn-primary btn-w-lg" ladda="converting">
+                                            {{'Common.Convert' | translate}} <i class="fa fa-check-circle pull-left"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+
+                        <div class="row" style="margin-top: 20px;" ng-show="!createOpportunity">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary btn-w-lg" ng-click="convert()" id="ConvertSubmit" ladda="converting" ng-disabled="convertDisable">
+                                    {{'Common.Convert' | translate}} <i class="fa fa-check-circle pull-left"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

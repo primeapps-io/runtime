@@ -1,0 +1,75 @@
+<div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="SingleSMSController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form name="smsModalForm" class="form-horizontal form-custom" ng-submit="submitSMS()" autocomplete="off" novalidate>
+                <div class="modal-header">
+                    <h4 class="modal-title">{{'SMS.Title' | translate}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-show="!loadingModal">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label>{{'SMS.To' | translate}}</label>
+                            </div>
+                            <div class="col-sm-9">
+                                <span>{{primaryField.valueFormatted}}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label>{{'SMS.Message' | translate}} *</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-9" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.txtSMS.$invalid}">
+                                <textarea class="form-control" name="txtSMS" ng-model="txtSMS" ng-required="true" ng-keypress="filterKey($event)" ng-change="calculateSMS(txtSMS)" auto-grow rows="6"></textarea>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-inline" style="margin-bottom:10px;">
+                                    <div class="form-group">
+                                        <label class="bold">{{'SMS.CustomField' | translate}}</label>
+                                    </div>
+                                    <div class="form-group">
+                                        <select name="customField" class="form-control" ng-options="field.label for field in $parent.$parent.allFields | filter:{data_type:'!checkbox'} | filter:{data_type:'!text_multi'} track by field.name" ng-model="customField">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                        <button type="button" class="btn btn-xs btn-default" ng-click="addCustomField($event,customField)" style="padding: 4px 5px;">{{'Common.Add' | translate}}</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <label class="bold">{{'SMS.PhoneField' | translate}} *</label>
+                                    </div>
+                                    <div class="form-group" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.phoneField.$invalid}">
+                                        <select name="phoneField" class="form-control" ng-required="true" ng-options="field.label for field in allFields
+                                        | filter:{data_type:'text_single'}
+                                         track by field.name" ng-model="phoneField">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 form-inline">
+                                <label>{{'SMS.EstimatedSMSCount' | translate}}: </label> <span>{{totalSMS}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="smsModalForm.$submitted && smsModalForm.$invalid">
+                            <div class="col-sm-offset-2 col-sm-8">
+                                <div class="callout callout-danger">
+                                    <p ng-if="smsModalForm.$error.required || smsModalForm.$error['autocomplete-required']">{{'Module.RequiredError' | translate}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-disabled="submittingModal" ng-click="$hide()">{{'Common.Cancel' | translate}}</button>
+                    <button type="submit" class="btn btn-w-md btn-primary" ladda="submittingModal"><i class="fa fa-check-circle pull-left"></i> {{'SMS.Send' | translate}}</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

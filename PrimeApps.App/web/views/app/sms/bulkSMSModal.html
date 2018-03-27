@@ -1,0 +1,189 @@
+<div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="BulkSMSController">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:500px;margin:auto;">
+            <div ng-show="formType === 'sms'">
+                <form name="smsModalForm" class="form-horizontal form-custom" ng-submit="submitSMS()" autocomplete="off" novalidate>
+                    <div class="modal-header clearfix">
+                        <h4 class="modal-title pull-left">{{'SMS.Title' | translate}}</h4>
+                        <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
+                    </div>
+                    <div class="modal-body" style="height:100%">
+                        <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                        <div ng-show="!loadingModal">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label>{{'SMS.To' | translate}}</label>
+                                </div>
+                                <div class="col-sm-9">
+                                    <tags-input ng-if="!isAllSelected" placeholder=" " ng-model="selectedRecords" display-property="displayName" key-property="id" addFromAutocompleteOnly="true" ng-required="true" ng-disabled="true"></tags-input>
+                                    <span ng-if="isAllSelected" class="all-selected">{{tableParams.total()}} {{'Common.Record' | translate}}</span>
+                                </div>
+                            </div>
+                            <div class="row templa-space" ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.senderAlias.$invalid}">
+                                <label class="col-sm-3 control-label" style="text-align:left">{{'Common.SmsTemplate' | translate}} </label>
+                                <div class="col-md-9" ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.senderAlias.$invalid}">
+                                    <select class="form-control ng-animate-disabled sender-alias" name="template" ng-model="template" ng-change="setContent(template)"
+                                            ng-options="temp.id as temp.name for temp in templates">
+                                        <option value="">{{'Common.Select' | translate}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.phoneField.$invalid}">
+                                <label class="col-sm-3 control-label" style="text-align:left">SMS Alanı</label>
+                                <div class="col-md-9" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.phoneField.$invalid}">
+                                    <select class="form-control ng-animate-disabled sender-alias" name="phoneFields" ng-model="phoneField"
+                                            ng-options="field.label + ' ' + field.labelExt for field in moduleFields">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group templa-space" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.label.$invalid}" style="margin-top: 20px;">
+                                <div class="col-sm-9">
+                                    <label> <label style="color: #990000">*</label> {{'SMS.Message' | translate}}</label>
+                                    <textarea class="sms-textarea"
+                                              ng-change="calculateSMS(tinymceModel)"
+                                              mentio-id="'tinyMceTextArea'"
+                                              mentio name="tinymceModel"
+                                              mentio-typed-text="typedTerm"
+                                              mentio-require-leading-space="true"
+                                              ng-required="true"
+                                              ng-model="tinymceModel"
+                                    ></textarea>
+                                    <mentio-menu class="mention-scrollbar" style="height:120px" id="style-1" id="hastmenu" mentio-for="'tinyMceTextArea'" mentio-trigger-char="'#'" mentio-items="tags" mentio-template-url="tag-mentions.tpl" mentio-search="searchTags(term)" mentio-select="getTagTextRaw(item)"></mentio-menu>
+                                </div>
+                            </div>
+                            <!--ment.io modal script-->
+                            <script type="text/ng-template" id="tag-mentions.tpl">
+                                <ul class="ment-tags">
+                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                        class="list-group-item clearfix"
+                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                        {{tag.label}}
+                                    </li>
+                                </ul>
+                            </script>
+                            <div class="form-group" ng-show="smsModalForm.$submitted && smsModalForm.$invalid">
+                                <div class="col-sm-offset-2 col-sm-8">
+                                    <div class="callout callout-danger">
+                                        <p ng-if="smsModalForm.$error.required || smsModalForm.$error['autocomplete-required']">{{'Module.RequiredError' | translate}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 sms-footer">
+                                <p class="pull-left">{{'Common.ParameterMessage' | translate}}</p>
+                                <div class="col-sm-4 form-inline pull-right">
+                                    <label>{{'SMS.EstimatedSMSCount' | translate}}: </label> <span>{{totalSMS}}</span>
+                                </div>
+                                <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="!phoneField" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'SMS.Send' | translate}}</button>
+                                <button type="button" class="btn btn-custom" ng-show="!template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.NewTemplate' | translate}}</button>
+                                <button type="button" class="btn btn-custom" ng-show="template" ng-click="formType = 'template';setTemplate()" ng-disabled="saving">{{'Template.EditTemplate' | translate}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div ng-show="formType === 'template'">
+                <form name="smsModalForm2" class="form-horizontal form-custom" ng-submit="templateSave()" autocomplete="off" novalidate>
+                    <div class="modal-header clearfix">
+                        <h4 class="modal-title pull-left" ng-show="!template">{{'Template.Title' | translate}}</h4>
+                        <h4 class="modal-title pull-left" ng-show="template">{{'Template.EditTemplate' | translate}}</h4>
+                        <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
+                    </div>
+                    <div class="modal-body" style="height:100%">
+                        <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                        <div ng-show="!loadingModal">
+                            <div class="row templa-space" ng-class="{'has-error': smsModalForm2.$submitted && smsModalForm2.templateName.$invalid}">
+                                <label class="col-sm-2 control-label" style="text-align:left;" ng-class="{'has-error': smsModalForm2.$submitted && smsModalForm2.templateName.$invalid}">{{'Template.SmsTemplate' | translate}}</label>
+                                <div class="col-md-10" ng-class="{'has-error': emailModalFormTemplateEdit.$submitted && emailModalFormTemplateEdit.templateName.$invalid}">
+                                    <input class="form-control template-name" name="templateName" type="text" ng-model="smstemplate.template_name" ng-required="true" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-2 control-label">{{'Template.Sharing' | translate}}</label>
+                                <div class="col-sm-10 sms-sharing">
+                                    <label>
+                                        <input type="radio" ng-model="smstemplate.sharing_type" value="me">
+                                        {{'View.ShareMe' | translate}}
+                                    </label><br />
+                                    <label ng-if="user.profile.HasAdminRights">
+                                        <input type="radio" ng-model="smstemplate.sharing_type" value="everybody">
+                                        {{'View.ShareEveryone' | translate}}
+                                    </label><br ng-if="user.profile.HasAdminRights" />
+                                    <label>
+                                        <input type="radio" ng-model="smstemplate.sharing_type" value="custom">
+                                        {{'View.ShareCustom' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div ng-if="smstemplate.sharing_type === 'custom'">
+                                    <label class="col-sm-2 control-label">{{'Template.SharedUsers' | translate}}</label>
+                                    <div class="col-sm-10">
+                                        <tags-input name="shares"
+                                                    class="shared-users-input shared-users"
+                                                    ng-model="smstemplate.shares"
+                                                    display-property="full_name"
+                                                    key-property="id"
+                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                    replace-spaces-with-dashes="false"
+                                                    add-from-autocomplete-only="true">
+                                            <auto-complete source="lookupUser($query)"
+                                                           min-length="0"
+                                                           load-on-focus="true"
+                                                           load-on-empty="true"
+                                                           max-results-to-show="9999"></auto-complete>
+                                        </tags-input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-class="{'has-error': smsModalForm.$submitted && smsModalForm.label.$invalid}">
+                                <div class="col-sm-9">
+                                    <label> <label style="color: #990000">*</label> {{'SMS.Message' | translate}}</label>
+                                    <textarea class="sms-textarea"
+                                              ng-change="calculateSMS(tinymceModel)"
+                                              mentio-id="'tinyMceTextArea2'"
+                                              mentio name="tinymceModel"
+                                              mentio-typed-text="typedTerm"
+                                              mentio-require-leading-space="true"
+                                              ng-required="true"
+                                              ng-model="smstemplate.tinymce_content"
+                                              mentio-iframe-element="iframeElement['tinymceTemplateEdit']"
+                                    ></textarea>
+                                    <mentio-menu class="mention-scrollbar" style="height:120px" id="style-2" id="hastmenu2" mentio-for="'tinyMceTextArea2'" mentio-trigger-char="'#'" mentio-items="tags" mentio-template-url="/tag-mentions.tpl" mentio-search="searchTags(term)" mentio-select="getTagTextRaw(item)"></mentio-menu>
+                                </div>
+                            </div>
+                            <!--ment.io modal script-->
+                            <script type="text/ng-template" id="/tag-mentions.tpl">
+                                <ul class="ment-tags">
+                                    <li class="item" mentio-menu-item="tag" ng-repeat="tag in items"
+                                        class="list-group-item clearfix"
+                                        ng-class="{'item':!field.seperator,'seperator':tag.seperator, 'seperator-main':tag.name === 'seperator-main'}">
+                                        {{tag.label}}
+                                    </li>
+                                </ul>
+                            </script>
+                            <div class="form-group" ng-show="smsModalForm2.$submitted && smsModalForm2.$invalid">
+                                <div class="col-sm-offset-2 col-sm-8">
+                                    <div class="callout callout-danger">
+                                        <p ng-if="smsModalForm2.$error.required || smsModalForm2.$error['autocomplete-required']">{{'Module.RequiredError' | translate}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix row sms-template-footer">
+                                <p class="pull-left" style="margin-left: 30px">{{'Common.ParameterMessage' | translate}}</p>
+                                <div class="col-sm-4 form-inline pull-right">
+                                    <label>{{'SMS.EstimatedSMSCount' | translate}}: </label> <span>{{totalSMS}}</span>
+                                </div>
+                            </div>
+                                <div class="col-sm-8 clearfix pull-right">
+                                    <button type="submit" class="btn btn-w-md btn-primary pull-right" ng-show="!template" ladda="submittingModal">{{'Template.TemplateSave' | translate}}</button>
+                                    <button type="submit" class="btn btn-w-md btn-primary pull-right" ng-show="template" ladda="submittingModal">{{'Template.UpdateTemplate' | translate}}</button>
+                                    <button type="button" class="btn btn-danger pull-right" style="margin-right:5px" ng-show="template" action="templateDelete();formType = 'sms';" confirm-click placement="top" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ladda="emailUpdating">{{'Template.TemplateDelete' | translate}}</button>
+                                    <button type="button" class="btn btn-custom pull-right" style="margin-right:5px" ng-click="formType = 'sms';backTemplate()" ng-click="formType = 'template'" ng-disabled="saving">{{'Template.Back' | translate}}</button>
+                                </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/help">{{'Setup.HelpGuide.ModalView' | translate}}</a></li>
+        <li class="active"><a href="#/app/setup/helpside">{{'Setup.HelpGuide.HelpScreen' | translate}}</a></li>
+    </ul>
+</div>
+<div class="panel panel-default setup-panel">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-show="!loading">
+            <div class="subpanel clearfix" style="height: 100%">
+                <h5 class="subpanel-heading ">{{'Setup.HelpGuide.HelpScreen' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="row">
+                        <div class="col-md-12" style="top: 20px;">
+                            <div class="row">
+                                <div class="row template-footer" style="margin-left: 60px;">
+                                    <div>
+                                        <div class="row form-group">
+                                            <label class="col-sm-4 control-label">{{'Setup.HelpGuide.HelpScreenName' | translate}}</label>
+                                            <div class="col-sm-8">
+                                                <input name="helpName" class="form-control" required ng-model="helpName" />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row form-group" style="margin-top: 30px;">
+                                        <label class="col-sm-4 control-label">{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</label>
+                                        <div class="col-sm-8">
+                                            <label class="radio-inline">
+                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="any">
+                                                {{'Setup.HelpGuide.Independent' | translate}}
+                                            </label>
+                                            <label class="radio-inline" style="padding-right: 1px;">
+                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="module">
+                                                {{'Setup.HelpGuide.Module' | translate}}
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="other">
+                                                {{'Setup.HelpGuide.Other' | translate}}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group" style="margin-top: 30px;" ng-show="selectHelpRelation==='module'">
+                                        <label class="col-sm-4 control-label"></label>
+                                        <div class="col-sm-8">
+                                            <label class="radio-inline" style="padding-right:27px;margin-left: 1px; ">
+                                                <input name="help" type="radio" ng-model="selectHelp" value="list">
+                                                {{'Setup.HelpGuide.List' | translate}}
+                                            </label>
+                                            <label class="radio-inline" style="padding-right:4px ">
+                                                <input name="help" type="radio" ng-model="selectHelp" value="detail">
+                                                {{'Setup.HelpGuide.Detail' | translate}}
+                                            </label>
+                                            <label class="radio-inline">
+                                                <input name="help" type="radio" ng-model="selectHelp" value="form">
+                                                {{'Setup.HelpGuide.Form' | translate}}
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group" style="margin-top: 30px;">
+                                        <label class="col-sm-4 control-label"></label>
+                                        <div class="col-sm-8" ng-show="selectHelp==='list' && selectHelpRelation!= 'other' && selectHelpRelation!= 'any'">
+                                            <select class="form-control pull-left"
+                                                    ng-model="modulePicklist"
+                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-8" ng-show="selectHelp==='detail' && selectHelpRelation!= 'other' && selectHelpRelation!= 'any'">
+                                            <select class="form-control"
+                                                    ng-model="moduleDetail"
+                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-8" ng-show="selectHelp==='form' && selectHelpRelation!= 'other' && selectHelpRelation!= 'any'">
+                                            <select class="form-control"
+                                                    ng-model="moduleForm"
+                                                    ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-8" ng-show="selectHelpRelation==='other'">
+                                            <select class="form-control pull-left"
+                                                    ng-model="routeModules"
+                                                    ng-options="item.name for item in routeModuleSide">
+                                                <option value="">{{'Common.Select' | translate}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-left: 0px;margin-right: 1px;margin-top: 25px">
+                                <textarea name="tinymceModel" ui-tinymce="tinymceOptionsSide" ng-required="true" ng-model="tinymceModel"></textarea>
+                                <div class="hidden" plupload="imgUpload">
+                                    <input id="uploadImage" type="file" add-file="add-file" />
+                                </div>
+                            </div>
+                            <div class="row template-footer" style="padding-bottom:50px">
+
+                                <div class="col-sm-12 text-right" style="top: 20px;">
+                                    <a href="#/app/setup/helpsides" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
+                                    <button type="button" class="btn btn-custom" name="help" ng-disabled="!helpName && !tinyMceOptions" ng-click="helpSideDraftSave()">{{'Setup.HelpGuide.SaveAsDraft' | translate}}</button>
+                                    <button type="submit" class="btn btn-w-md btn-primary" name="help" ng-disabled="!helpName && !tinyMceOptions" ng-click="helpSideSave()">{{'Setup.HelpGuide.Publish' | translate}}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

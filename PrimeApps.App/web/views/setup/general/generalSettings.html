@@ -1,0 +1,38 @@
+﻿<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#/app/setup/general">{{'Setup.Nav.Tabs.General' | translate}}</a></li>
+        <li><a href="#/app/setup/messaging">{{'Setup.Nav.Tabs.Messaging' | translate}}</a></li>
+        <li><a href="#/app/setup/outlook">Outlook</a></li>
+        <li ng-show="phoneSettings.sipLicenseCount"><a href="#/app/setup/phone">{{'Setup.Nav.Tabs.Phone' | translate}}</a></li>
+        <li ng-if="hasAdminRight"><a href="#/app/setup/office">{{'Setup.Nav.Tabs.Office' | translate}}</a></li>
+    </ul>
+</div>
+<div class="tab-content">
+    <div class="panel panel-default setup-panel settings">
+        <div class="panel-body">
+            <div class="subpanel">
+                <h5 class="subpanel-heading">{{'Setup.Nav.Tabs.General' | translate}}</h5>
+                <div class="subpanel-body">
+                    <form class="form-horizontal" ng-submit="saveDetailViewType()" novalidate>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">{{'Setup.GeneralSettings.DetailViewType' |translate}}</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline">
+                                    <input type="radio" name="detailViewType" value="tab" ng-model="detailViewType"><span>{{'Setup.GeneralSettings.TabbedView' | translate }}</span>
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="detailViewType" value="flat" ng-model="detailViewType"><span>{{'Setup.GeneralSettings.FlatView' | translate }}</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-3 col-sm-9">
+                                <button type="submit" class="btn btn-primary btn-w-lg" ladda="savingDetailViewType"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

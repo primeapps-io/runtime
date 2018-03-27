@@ -1,0 +1,11 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <h3 class="popover-title">{{'Common.Search' | translate}}</h3>
+    <div class="popover-content">
+        <ul class="list-unstyled">
+            <li>
+                <input class="form-control" type="text" ng-model="$parent.searchKey" ng-model-options="{debounce: {'default': 250, 'blur': 0} }" ng-change="searchDocuments($parent.searchKey)" placeholder="{{'Common.Find' | translate}}">
+            </li>
+        </ul>
+    </div>
+</div>

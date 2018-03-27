@@ -1,0 +1,14 @@
+<div class="modal-dialog" style="position: absolute; top: 100px !important; left: 50%; margin-left: -350px;">
+    <div class="modal-content" style="border: none;width:750px; height: 100%">
+        <div class="modal-header clearfix" style="background: none;height:0px;border: none">
+            <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
+        </div>
+        <div class="modal-body">
+            <div ng-bind-html="helpTemplate"></div>
+            <div style="padding-top: 30px;padding-left: 20px;">
+                <input type="checkbox" ng-model="showModalCheck" ng-click="showModal()"><label style="margin-left: 5px;font-size: 13px;color: gray;">{{'Setup.HelpGuide.DontShowAgain' | translate}}</label>
+            </div>
+        </div>
+    </div>
+</div>
+

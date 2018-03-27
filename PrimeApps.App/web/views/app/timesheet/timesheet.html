@@ -1,0 +1,81 @@
+<div class="page calendar">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h4 class="pull-left">{{'Timesheet.Timesheet' | translate}}</h4>
+            <div ng-if="!loading" class="pull-right calendar-filter">
+                <span style="font-size: 12px;" ng-if="submitting">Please wait this might take some time...</span>
+                <h4 ng-if="currentTimesheet.owner === user.ID" style="display: inline-block;">
+                    <span class="label label-info" ng-if="currentTimesheet.statusValue.indexOf('waiting') > -1">WAITING FOR APPROVAL</span>
+                    <span class="label label-danger" ng-if="currentTimesheet.statusValue.indexOf('rejected') > -1">REJECTED</span>
+                    <span class="label label-success" ng-if="currentTimesheet.statusValue === 'approved_second'">APPROVED</span>
+                </h4>
+                <button class="btn btn-sm btn-primary" type="button" ng-click="showModuleFrameModal()" ng-if="currentTimesheet.owner === user.ID">Report</button>
+                <button ng-click="submitApproval(null, false, null)" class="btn btn-sm btn-primary ng-animate-disabled"
+                        ng-show="currentTimesheet.statusValue === 'draft' && timesheetItems.length > 0"
+                        ng-if="currentTimesheet.owner === user.ID"
+                        ladda="submitting">Submit For Approval
+                </button>
+                <button ng-click="submitApproval(null, true, null)" class="btn btn-sm btn-primary ng-animate-disabled"
+                        ng-show="currentTimesheet.statusValue.indexOf('rejected') > -1"
+                        ng-if="currentTimesheet.owner === user.ID" ladda="submitting">Resubmit For Approval
+                </button>
+                <button ng-click="openRejectApprovalModal()" class="btn btn-sm btn-danger ng-animate-disabled" ng-show="currentTimesheet.statusValue.indexOf('waiting') > -1" ng-if="currentTimesheet.owner != user.ID && !approved && !rejected && !loadingCalendar && !alreadyProcessed" ladda="rejecting" ng-disabled="approving">Reject</button>
+                <button ng-click="approveApproval()" class="btn btn-sm btn-success ng-animate-disabled" ng-show="currentTimesheet.statusValue.indexOf('waiting') > -1" ng-if="currentTimesheet.owner != user.ID && !approved && !rejected && !loadingCalendar && !alreadyProcessed" ladda="approving" ng-disabled="rejecting">Approve</button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="subpanel" ng-show="!loading">
+                <div class="subpanel-body">
+                    <div class="row calendar-header">
+                        <div class="col-md-4" ng-show="calendarView=='month'">
+                            <div class="btn-group">
+                                <button ng-click="previousMonth()"
+                                        ng-hide="calendarChosenMonth==calendarCurrentMonth-1 || month"
+                                        class="btn btn-sm btn-custom"
+                                        mwl-date-modifier
+                                        date="calendarDay"
+                                        decrement="calendarView">
+                                    <i class="fa fa-chevron-left"></i>
+                                </button>
+                                <div class="btn btn-sm btn-custom">
+                                    {{calendarTitle}}
+                                </div>
+                                <button ng-click="nextMonth()"
+                                        ng-hide="calendarChosenMonth==calendarCurrentMonth || month"
+                                        class="btn btn-sm btn-custom"
+                                        mwl-date-modifier
+                                        date="calendarDay"
+                                        increment="calendarView">
+                                    <i class="fa fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h4 style="margin: 0; text-align: center;">{{timesheetTitle}}</h4>
+                        </div>
+                        <div class="col-md-4 pull-right">
+                            <div class="btn-group pull-right" ng-model="calendarView" bs-radio-group>
+                                <label class="btn btn-sm btn-custom"><input type="radio" class="btn btn-custom" value="month"> {{'Calendar.Month' | translate}}</label>
+                                <label class="btn btn-sm btn-custom"><input type="radio" class="btn btn-custom" value="day">{{'Calendar.Day' | translate}}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-if="!loading">
+                        <mwl-calendar
+                                events="$parent.events"
+                                view="$parent.calendarView"
+                                view-title="$parent.calendarTitle"
+                                view-date="$parent.calendarDay"
+                                on-event-click="eventClicked(calendarEvent)"
+                                cell-modifier="groupEvents(calendarCell)"
+                                custom-template-urls="{calendarMonthCell:'web/views/app/calendar/templates/calendarMonthCell.html', calendarSlideBox:'web/views/app/calendar/templates/calendarSlideBox.html', calendarYearView:'web/views/app/calendar/templates/calendarYearView.html', calendarDayView: 'views/app/crm/timesheet/templates/calendarDayView.html', calendarWeekView: 'web/views/app/calendar/templates/calendarWeekView.html'}"
+                                template-scope="$parent">
+                        </mwl-calendar>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

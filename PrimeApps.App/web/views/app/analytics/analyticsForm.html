@@ -1,0 +1,89 @@
+<div class="page analytics analytics-form">
+    <div class="panel-body">
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Report.NewReport' | translate}}</h5>
+            <div class="subpanel-body">
+                <form name="analyticsForm" ng-submit="save()" class="form-horizontal" novalidate>
+                    <div class="form-group" ng-class="{'has-error': analyticsForm.$submitted && analyticsForm.reportLabel.$invalid}">
+                        <label class="col-sm-3 control-label">{{'Setup.Report.ReportName' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="reportLabel" class="form-control" ng-minlength="2" maxlength="50" required ng-model="reportModel.label" ng-disabled="saving" />
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': analyticsForm.$submitted && ((!id && !uploader.queue.length) || (id && reportFileCleared && !uploader.queue.length))}">
+                        <label class="col-sm-3 control-label">{{'Setup.Report.ReportFile' | translate}}</label>
+                        <div class="col-sm-9">
+                            <span class="file-input btn btn-custom btn-sm btn-file" ng-disabled="uploader.queue.length || (id && !reportFileCleared) || saving">
+                                {{'Setup.Report.ChooseFiles' | translate}} <input type="file" name="reportFile" nv-file-select uploader="uploader">
+                            </span>
+                            <span ng-show="uploader.queue.length">{{uploader.queue[0].file.name}}</span>
+                            <a href="{{reportModel.pbix_url}}" target="_blank" ng-show="!uploader.queue.length && id">{{reportFileName}}</a>
+                            <button class="btn btn-default clear-button" ng-show="uploader.queue.length || (!reportFileCleared && id)" ng-disabled="saving" ng-click="clearReportFile()"><i class="fa fa-times-circle"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{'Common.Icon' | translate}}</label>
+                        <div class="col-sm-9">
+                            <button type="button" class="btn btn-default" style="border: none;"
+                                    data-placeholder="{{'Setup.Report.Select' | translate}}"
+                                    ng-model="reportModel.menu_icon" data-html="1" data-toggle="true"
+                                    bs-options="icon.value as icon.label for icon in icons" ng-disabled="saving"
+                                    bs-select><span class="caret"></span></button>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': analyticsForm.$submitted && analyticsForm.$error.minTags}">
+                        <label class="col-sm-3 control-label">{{'Setup.Report.ShareInformation' | translate}}</label>
+                        <div class="col-sm-9">
+                            <div class="sharing">
+                                <label>
+                                    <input type="radio" ng-model="reportModel.sharing_type" value="everybody" ng-disabled="saving">
+                                    {{'Setup.Report.ShareEveryone' | translate}}
+                                </label><br />
+                                <label>
+                                    <input type="radio" ng-model="reportModel.sharing_type" value="custom" ng-disabled="saving">
+                                    {{'Setup.Report.ShareCustom' | translate}}
+                                </label>
+                            </div>
+                            <div class="shared-users" ng-if="reportModel.sharing_type === 'custom'">
+                                <span class="shared-users-label">{{'Setup.Report.SharedUsers' | translate}}:</span>
+                                <tags-input name="shares"
+                                            class="shared-users-input"
+                                            ng-model="reportModel.shares"
+                                            ng-disabled="saving"
+                                            min-tags="{{reportModel.sharing_type === 'custom' ? 1 : 0}}"
+                                            display-property="full_name"
+                                            key-property="id"
+                                            placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                            replace-spaces-with-dashes="false"
+                                            add-from-autocomplete-only="true">
+                                    <auto-complete source="lookupUser($query)"
+                                                   min-length="0"
+                                                   load-on-focus="true"
+                                                   load-on-empty="true"
+                                                   max-results-to-show="9999"></auto-complete>
+                                </tags-input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="analyticsForm.$submitted && (analyticsForm.$invalid || ((!id && !uploader.queue.length) || (id && reportFileCleared && !uploader.queue.length)))">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="callout callout-danger">
+                                <p ng-if="analyticsForm.$error.required || analyticsForm.$error.minTags || !uploader.queue.length">{{'Module.RequiredError' | translate}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <span class="long-message" ng-if="saving && (!id ? true : reportFileCleared)">{{'Setup.Report.LongMessage' | translate}}</span>
+                            <button type="button" class="btn btn-custom" ng-click="cancel()" ng-disabled="saving">{{'Common.Cancel' | translate}}</button>
+                            <span title="{{!workgroup.hasAnalytics ? ('Analytics.DemoDisabled' | translate) : ''}}">
+                                <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving" ng-disabled="!workgroup.hasAnalytics"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

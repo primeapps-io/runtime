@@ -1,0 +1,108 @@
+<help-page ng-if="!loading" route="currentPath"></help-page>
+<div class="page calendar">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h4 class="pull-left">{{'Timetracker.Timetracker'|translate}} <span ng-show="showFullName">( {{owner.FullName}} )</span></h4>
+            <div ng-show="hasAdminRights" class="btn-group pull-right">
+                <a ng-click="settingsModal()" style="cursor: pointer"><i class="fa fa-cog fa-2x" aria-hidden="true" style="color:#d6d9de"></i></a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="subpanel" ng-show="!loading">
+                <div class="subpanel-body">
+                    <div class="row calendar-header">
+                        <div class="col-md-4">
+                            <div class="btn-group">
+                                <a ng-hide="loggedInUser != owner.Id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week - 1, days, 'previous')"
+                                   class="btn btn-sm btn-custom"
+                                   ng-disabled="week == 1">
+                                    <i class="fa fa-chevron-left"></i>
+                                </a>
+                                <div class="btn btn-sm btn-custom">
+                                    {{week}}. {{'Timetracker.Week'|translate}}
+                                </div>
+                                <a ng-hide="loggedInUser != owner.Id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week + 1, days, 'next')"
+                                   class="btn btn-sm btn-custom"
+                                   ng-disabled="week == weekLength">
+                                    <i class="fa fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <h4 style="margin: 0; text-align: center; color:#635fb3; font-weight: 700">{{currentMonth | uppercase}} {{year}} - {{week}}. {{'Timetracker.Week'|translate}}</h4>
+                        </div>
+                        <div class="col-md-4 pull-right" ng-show="!loadingForm">
+                            <div class="btn-group pull-right">
+                                <button style="margin-left: 15px" ng-click="sendToProcessApproval()" ng-show="hasManuelProcess && !currentTimetracker.process_id && currentTimetracker.owner == currentUser.id" class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">{{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}</button>
+                                <button style="margin-left: 15px" ng-click="approveProcess()" ng-show="isApprovalRecord && currentTimetracker.process_status == 1" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>
+                                <button style="margin-left: 15px" ng-click="openRejectApprovalModal()" ng-show="isApprovalRecord && currentTimetracker.process_status == 1" ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled" ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>
+                                <button style="margin-left: 15px" ng-click="reApproveProcess()" ng-show="currentTimetracker.process_status == 3 && currentTimetracker.updated_by === currentUser.id" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="reapproving">{{'Setup.Workflow.ApprovelProcess.Resubmit' | translate}}</button>
+                                <h4 style="display: inline-block; margin-left: 15px">
+                                    <span class="label label-info" ng-if="waitingForApproval && !isApproved && currentTimetracker.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}</span>
+                                    <span class="label label-danger" ng-if="currentTimetracker.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
+                                    <span class="label label-success" ng-if="isApproved && currentTimetracker.process_status == 2">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div ng-if="loadingForm" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-if="!loadingForm">
+                        <div class="subpanel ng-scope" ng-repeat="day in days">
+                            <div class="btn-group">
+                                <div class="btn btn-sm btn-custom" style="width: 150px; background-color:inherit !important; border-top: none; border-left : none">
+                                    <span style="color:#635fb3; font-weight: bold !important; text-transform: uppercase; float: left">{{day.date}}</span>
+                                </div>
+                                <a ng-hide="(day.dayOrder === 0 && !settings.includeWeekend) || (day.dayOrder === 6 && !settings.includeWeekend) || (currentTimetracker.process_id && currentTimetracker.process_status != 3) || freeze || (settings.includeHoliday && day.holiday) || day.notDayOfCurrentMonth" ng-click="openCreateModal(day)" style="border-top: none"
+                                   class="btn btn-sm btn-custom">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                            <div ng-hide="(day.dayOrder === 0 && !settings.includeWeekend) || (day.dayOrder === 6 && !settings.includeWeekend)" class="btn btn-sm btn-custom  pull-right" style="width: 300px; background-color:inherit !important; border-top: none; border-right : none">
+                                    <span ng-if="day.totalHour < settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
+                                        <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour}} {{'Timetracker.LessHour'|translate}} )
+                                    </span>
+                                <span ng-if="day.totalHour > settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
+                                        <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour | makePositive}} {{'Timetracker.MoreHour'|translate}} )
+                                    </span>
+                                <span ng-if="day.totalHour == settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
+                                        <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{'Timetracker.DayCompleted'|translate}} )
+                                    </span>
+                            </div>
+                            <div class="subpanel-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <span ng-if="day.timetracker_items.length < 1">{{day.description}}</span>
+                                        <table style="border:none !important;" class="table" ng-if="day.timetracker_items.length > 0">
+                                            <thead>
+                                                <tr>
+                                                    <th ng-repeat="label in labels">{{label.label_tr}}</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="item in day.timetracker_items" ng-if="day.dayOrder != 0 && day.dayOrder != 6">
+                                                    <td ng-repeat="label in labels" ng-if="item[label.name] || item[label.name] === null">{{item[label.name]}}</td>
+                                                    <td class="text-right">
+                                                        <span style="display:block; width: 40px"></span>
+                                                        <span class="action-buttons" ng-hide="(currentTimetracker.process_id && currentTimetracker.process_status != 3) || freeze">
+                                    <a ng-click="openEditModal(day, item)" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
+                                    <i class="action-icon flaticon-bin9" confirm-click action="delete(day, item.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove)"></i>
+                                </span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-show="totalWeekHour != null" class="btn btn-sm btn-custom" style="background-color:inherit !important;">
+                            <span style="color:black; font-weight: bold !important; text-transform: uppercase; float: left">( {{'Timetracker.WeeklyHour' | translate}} : {{totalWeekHour}} / {{settings.weekHour}} )</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
