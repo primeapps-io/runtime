@@ -2,6 +2,7 @@
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -66,30 +67,39 @@ namespace PrimeApps.Model.Context
 
         public override int SaveChanges()
         {
-            try
-            {
-                SetDefaultValues();
-                return base.SaveChanges();
-            }
-            catch (DbEntityValidationException ex)
-            {
-                string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage));
-                throw new DbEntityValidationException(errorMessages);
-            }
-        }
 
-        public override Task<int> SaveChangesAsync()
+            var validationErrors = ChangeTracker
+       .Entries<IValidatableObject>()
+       .SelectMany(e => e.Entity.Validate(null))
+       .Where(r => r != ValidationResult.Success);
+
+            if (validationErrors.Any())
+            {
+                // Possibly throw an exception here
+                string errorMessages = string.Join("; ", validationErrors.Select(x => x.ErrorMessage));
+                throw new Exception(errorMessages);
+
+            }
+
+            return base.SaveChanges();
+        }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            try
+            var validationErrors = ChangeTracker
+        .Entries<IValidatableObject>()
+        .SelectMany(e => e.Entity.Validate(null))
+        .Where(r => r != ValidationResult.Success);
+
+            if (validationErrors.Any())
             {
-                SetDefaultValues();
-                return base.SaveChangesAsync();
+                // Possibly throw an exception here
+                string errorMessages = string.Join("; ", validationErrors.Select(x => x.ErrorMessage));
+                throw new Exception(errorMessages);
             }
-            catch (DbEntityValidationException ex)
-            {
-                string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage));
-                throw new DbEntityValidationException(errorMessages);
-            }
+
+            SetDefaultValues();
+            return base.SaveChangesAsync();
+
         }
 
         public int GetCurrentUserId()
@@ -132,7 +142,7 @@ namespace PrimeApps.Model.Context
             }
         }
 
-        private void CreateCustomModelMapping(DbModelBuilder modelBuilder)
+        private void CreateCustomModelMapping(ModelBuilder modelBuilder)
         {
             //Many to many relationship users <-> user_groups
             modelBuilder.Entity<TenantUser>()
