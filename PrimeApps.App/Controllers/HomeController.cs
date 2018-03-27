@@ -1,6 +1,7 @@
-﻿using System.Configuration;
-using System.Threading.Tasks;
-using System.Web.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.App.Helpers;
 
 namespace PrimeApps.App.Controllers
@@ -27,7 +28,7 @@ namespace PrimeApps.App.Controllers
             var lang = Request.Cookies["_lang"];
             var language = lang != null ? lang.Value : "tr";
 
-            var useCdn = bool.Parse(ConfigurationManager.AppSettings["UseCdn"]);
+            var useCdn = bool.Parse(ConfigurationManager<>.AppSettings["UseCdn"]);
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language);
 
             if (useCdn)

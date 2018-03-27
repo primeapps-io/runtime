@@ -1,25 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Results;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
-using System.Web;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Instance;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/Instance")]
+    [Route("api/Instance")]
     public class InstanceController : BaseController
     {
         private IUserRepository _userRepository;
@@ -42,7 +35,7 @@ namespace PrimeApps.App.Controllers
         [Route("Edit")]
         [ResponseType(typeof(void))]
         [HttpPost]
-        public async Task<IHttpActionResult> Edit(TenantDTO tenantDto)
+        public async Task<IActionResult> Edit(TenantDTO tenantDto)
         {
             //check if the tenant id is valid, within the current session's context.
             var tenantToUpdate = await _tenantRepository.GetAsync(tenantDto.TenantId);
@@ -94,7 +87,7 @@ namespace PrimeApps.App.Controllers
         [Route("GetWorkgroup")]
         [ResponseType(typeof(WorkgroupsResult))]
         [HttpPost]
-        public async Task<IHttpActionResult> GetWorkgroup()
+        public async Task<IActionResult> GetWorkgroup()
         {
             var result = new WorkgroupsResult();
             var defaultInstance = await Cache.Tenant.Get(AppUser.TenantId);
@@ -113,7 +106,7 @@ namespace PrimeApps.App.Controllers
         [Route("Dismiss")]
         [ResponseType(typeof(void))]
         [HttpPost]
-        public async Task<IHttpActionResult> Dismiss(DismissDTO relation)
+        public async Task<IActionResult> Dismiss(DismissDTO relation)
         {
             TenantUser user = await _userRepository.GetByEmail(relation.EMail);
 
@@ -138,7 +131,7 @@ namespace PrimeApps.App.Controllers
         [Route("UploadLogo")]
         [ResponseType(typeof(string))]
         [HttpPost]
-        public async Task<IHttpActionResult> UploadLogo()
+        public async Task<IActionResult> UploadLogo()
         {
             // try to parse stream.
             Stream requestStream = await Request.Content.ReadAsStreamAsync();
@@ -198,7 +191,7 @@ namespace PrimeApps.App.Controllers
         [Route("SaveLogo")]
         [ResponseType(typeof(void))]
         [HttpPost]
-        public async Task<IHttpActionResult> SaveLogo(JObject logo)
+        public async Task<IActionResult> SaveLogo(JObject logo)
         {
             var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
             var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);

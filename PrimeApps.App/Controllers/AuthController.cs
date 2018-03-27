@@ -4,12 +4,9 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -19,7 +16,7 @@ using PrimeApps.Model.Repositories;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("auth"), Authorize]
+    [Route("auth"), Authorize]
     public class AuthController : Controller
     {
         private ApplicationSignInManager _signInManager;

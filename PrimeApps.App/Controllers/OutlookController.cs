@@ -2,12 +2,9 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Hosting;
-using System.Web.Http.ModelBinding;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
@@ -23,7 +20,7 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/outlook"), Authorize, SnakeCase]
+    [Route("api/outlook"), Authorize, SnakeCase]
     public class OutlookController : BaseController
     {
         private ISettingRepository _settingRepository;
@@ -46,7 +43,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_settings"), HttpGet]
-        public async Task<IHttpActionResult> GetSettings()
+        public async Task<IActionResult> GetSettings()
         {
             List<Setting> outlookSettings = null;
             var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
@@ -65,7 +62,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("save_settings"), HttpPost]
-        public async Task<IHttpActionResult> SaveSettings(OutlookBindingModel outlookSetting)
+        public async Task<IActionResult> SaveSettings(OutlookBindingModel outlookSetting)
         {
             var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
             var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
@@ -138,7 +135,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_mail_module"), HttpPost]
-        public async Task<IHttpActionResult> CreateMailModule()
+        public async Task<IActionResult> CreateMailModule()
         {
             var moduleJson = @"{
                                 'display': false,
@@ -414,7 +411,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(JObject mail)
+        public async Task<IActionResult> Create(JObject mail)
         {
             var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
             var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");

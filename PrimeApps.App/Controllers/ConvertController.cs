@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Common.Note;
@@ -17,7 +18,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/convert"), Authorize, SnakeCase]
+    [Route("api/convert"), Authorize, SnakeCase]
     public class ConvertController : BaseController
     {
         private IModuleRepository _moduleRepository;
@@ -40,7 +41,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_mapping"), HttpPost]
-        public async Task<IHttpActionResult> CreateLeadConversionMapping(ConversionMapping conversionMapping)
+        public async Task<IActionResult> CreateLeadConversionMapping(ConversionMapping conversionMapping)
         {
             if (ModelState.IsValid)
             {
@@ -56,7 +57,7 @@ namespace PrimeApps.App.Controllers
 
         }
         [Route("delete_mapping"), HttpPost]
-        public async Task<IHttpActionResult> Delete(ConversionMapping conversionMapping)
+        public async Task<IActionResult> Delete(ConversionMapping conversionMapping)
         {
 
             var mappedObject = await _conversionMappingRepository.GetByFields(conversionMapping);
@@ -68,13 +69,13 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("get_mappings/{moduleId:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetModuleMappings(int moduleId)
+        public async Task<IActionResult> GetModuleMappings(int moduleId)
         {
             var results = await _conversionMappingRepository.GetAll(moduleId);
             return Ok(results);
         }
         [Route("delete_fields_mappings"), HttpPost]
-        public async Task<IHttpActionResult> DeleteFieldsMappings(List<int> fieldsId)
+        public async Task<IActionResult> DeleteFieldsMappings(List<int> fieldsId)
         {
             foreach (var field in fieldsId)
             {
@@ -88,7 +89,7 @@ namespace PrimeApps.App.Controllers
         }
         [Route("convert_lead")]
         [HttpPost]
-        public async Task<IHttpActionResult> ConvertLead(JObject request)
+        public async Task<IActionResult> ConvertLead(JObject request)
         {
             var leadModule = await _moduleRepository.GetByName("leads");
             var accountModule = await _moduleRepository.GetByName("accounts");

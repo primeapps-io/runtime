@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -130,9 +131,9 @@ namespace PrimeApps.Model.Helpers
             return MultiResultToJObject(reader, rootName).ToString();
         }
 
-        public static JArray SqlQueryDynamic(this Database database, string sql)
+        public static JArray SqlQueryDynamic(this DatabaseFacade database, string sql)
         {
-            using (var command = (NpgsqlCommand)database.Connection.CreateCommand())
+            using (var command = (NpgsqlCommand)database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = sql;
 
@@ -148,9 +149,9 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static JArray FunctionQueryDynamic(this Database database, string functionName, List<NpgsqlParameter> parameters = null)
+        public static JArray FunctionQueryDynamic(this DatabaseFacade database, string functionName, List<NpgsqlParameter> parameters = null)
         {
-            using (var command = (NpgsqlCommand)database.Connection.CreateCommand())
+            using (var command = (NpgsqlCommand)database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = functionName;
                 command.CommandType = CommandType.StoredProcedure;

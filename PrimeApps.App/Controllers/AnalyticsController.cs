@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Hangfire;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -14,7 +14,7 @@ using PrimeApps.Model.Common.Warehouse;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/analytics"), Authorize, SnakeCase]
+    [Route("api/analytics"), Authorize, SnakeCase]
     public class AnalyticsController : BaseController
     {
         private Warehouse _warehouseHelper;
@@ -30,7 +30,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_warehouse"), HttpPost]
-        public async Task<IHttpActionResult> CreateWarehouse(WarehouseCreateRequest request)
+        public async Task<IActionResult> CreateWarehouse(WarehouseCreateRequest request)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -65,7 +65,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_warehouse_info"), HttpGet]
-        public async Task<IHttpActionResult> GetWarehouseInfo()
+        public async Task<IActionResult> GetWarehouseInfo()
         {
             var warehouseInfo = await AnalyticsHelper.GetWarehouse(AppUser.TenantId);
 
@@ -76,7 +76,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("change_warehouse_password"), HttpPut]
-        public async Task<IHttpActionResult> ChangeWarehousePassword(WarehousePasswordRequest request)
+        public async Task<IActionResult> ChangeWarehousePassword(WarehousePasswordRequest request)
         {
             var isPasswordComplex = await Utils.IsComplexPassword(request.DatabasePassword);
 
@@ -108,7 +108,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var analytics = await _analyticRepository.GetAll();
 
@@ -125,7 +125,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("save_pbix"), HttpPost]
-        public async Task<IHttpActionResult> SavePbix()
+        public async Task<IActionResult> SavePbix()
         {
             var stream = await Request.Content.ReadAsStreamAsync();
             DocumentUploadResult result;
@@ -143,7 +143,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(AnalyticBindingModel analytic)
+        public async Task<IActionResult> Create(AnalyticBindingModel analytic)
         {
             var analyticEntity = await AnalyticsHelper.CreateEntity(analytic, _userRepository);
             var result = await _analyticRepository.Create(analyticEntity);
@@ -181,7 +181,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]AnalyticBindingModel analytic)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]AnalyticBindingModel analytic)
         {
             var analyticEntity = await _analyticRepository.GetById(id);
 
@@ -228,7 +228,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var analyticEntity = await _analyticRepository.GetById(id);
 

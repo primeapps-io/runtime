@@ -1,14 +1,12 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using PrimeApps.App.Models;
 using System;
-using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
-using PrimeApps.App.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Context;
@@ -16,7 +14,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("active_directory"), Authorize]
+    [Route("active_directory"), Authorize]
     public class ActiveDirectoryController : Controller
     {
         private IPlatformUserRepository _platformUserRepository;
@@ -51,7 +49,7 @@ namespace PrimeApps.App.Controllers
 
             var authorizationRequest = string.Format(
                 "https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id={0}&resource={1}&redirect_uri={2}&state={3}",
-                Uri.EscapeDataString(ConfigurationManager.AppSettings["ida:ClientID"]),
+                Uri.EscapeDataString(ConfigurationManager<>.AppSettings["ida:ClientID"]),
                 Uri.EscapeDataString("https://graph.windows.net"),
                 Uri.EscapeDataString(Request.Url.GetLeftPart(UriPartial.Authority) + "/ActiveDirectory/ProcessCode"),
                 Uri.EscapeDataString(adTenant.Issuer)

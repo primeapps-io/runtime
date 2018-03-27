@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using System.Web.Http;
-using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.ActionFilters;
@@ -19,7 +19,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/data"), Authorize, SnakeCase]
+    [Route("api/data"), Authorize, SnakeCase]
     public class DataController : BaseController
     {
         private IAuditLogRepository _auditLogRepository;
@@ -40,7 +40,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IHttpActionResult> Import([FromUri]string module, [FromBody]JArray records)
+        public async Task<IActionResult> Import([FromRoute]string module, [FromBody]JArray records)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
 
@@ -95,7 +95,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import_save_excel"), HttpPost]
-        public async Task<IHttpActionResult> ImportSaveExcel([FromUri]int importId)
+        public async Task<IActionResult> ImportSaveExcel([FromRoute]int importId)
         {
             var import = await _importRepository.GetById(importId);
 
@@ -124,7 +124,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import_revert/{importId:int}"), HttpDelete]
-        public async Task<IHttpActionResult> RevertImport([FromUri]int importId)
+        public async Task<IActionResult> RevertImport([FromRoute]int importId)
         {
             var import = await _importRepository.GetById(importId);
 
@@ -141,7 +141,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("remove_sample_data"), HttpDelete]
-        public async Task<IHttpActionResult> RemoveSampleData()
+        public async Task<IActionResult> RemoveSampleData()
         {
             var result = await _recordRepository.DeleteSampleData((List<Module>) await _moduleRepository.GetAll());
 

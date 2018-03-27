@@ -7,7 +7,6 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-using PdfSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -18,14 +17,13 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Aspose.Words;
-using Aspose.Words.MailMerging;
-using TheArtOfDev.HtmlRenderer.PdfSharp;
 using Document = PrimeApps.Model.Entities.Application.Document;
 using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using PrimeApps.App.ActionFilters;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
@@ -33,7 +31,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/Document"), Authorize]
+    [Route("api/Document"), Authorize]
     public class DocumentController : BaseController
     {
         private IDocumentRepository _documentRepository;
@@ -61,7 +59,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileContents">The file contents.</param>
         /// <returns>System.String.</returns>
         [Route("Upload"), HttpPost]
-        public async Task<IHttpActionResult> Upload()
+        public async Task<IActionResult> Upload()
         {
             var requestStream = await Request.Content.ReadAsStreamAsync();
             DocumentUploadResult result;
@@ -80,12 +78,12 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("upload_attachment"), HttpPost]
-        public async Task<IHttpActionResult> UploadAttachment()
+        public async Task<IActionResult> UploadAttachment()
         {
             Stream requestStream = await Request.Content.ReadAsStreamAsync();
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = ConfigurationManager<>.AppSettings.Get("BlobUrl");
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -267,7 +265,7 @@ namespace PrimeApps.App.Controllers
             return NotFound();
         }
         [Route("remove_document"), HttpPost]
-        public async Task<IHttpActionResult> RemoveModuleDocument([FromBody]JObject data)
+        public async Task<IActionResult> RemoveModuleDocument([FromBody]JObject data)
         {
             string tenantId,
                 module,
@@ -312,7 +310,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("upload_large"), HttpPost]
-        public async Task<IHttpActionResult> UploadLarge()
+        public async Task<IActionResult> UploadLarge()
         {
             var requestStream = await Request.Content.ReadAsStreamAsync();
             var parser = new HttpMultipartParser(requestStream, "file");
@@ -356,7 +354,7 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IHttpActionResult> Create(DocumentDTO document)
+        public async Task<IActionResult> Create(DocumentDTO document)
         {
             //validate instance id for the request.
 
@@ -400,7 +398,7 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IHttpActionResult> ImageCreate([FromBody]JObject data)
+        public async Task<IActionResult> ImageCreate([FromBody]JObject data)
         {
 
             string UniqueFileName, MimeType, TenantId;
@@ -428,7 +426,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="InstanceID">The instance identifier.</param>
         /// <returns>IList{DTO.DocumentResult}.</returns>
         [Route("GetEntityDocuments"), HttpPost]
-        public async Task<IHttpActionResult> GetEntityDocuments(DocumentRequest req)
+        public async Task<IActionResult> GetEntityDocuments(DocumentRequest req)
         {
             //validate instance id for the request.
             bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, req.TenantId, AppUser.Id);
@@ -458,7 +456,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="TenantId">The instance identifier.</param>
         /// <returns>DocumentExplorerResult.</returns>
         [Route("GetDocuments"), HttpPost]
-        public async Task<IHttpActionResult> GetDocuments(DocumentRequest req)
+        public async Task<IActionResult> GetDocuments(DocumentRequest req)
         {
             //validate the instance id by the session instances.
             bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, req.TenantId, AppUser.Id);
@@ -488,7 +486,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("GetDocument"), HttpPost]
-        public async Task<IHttpActionResult> GetDocumentById([FromBody] int fileID)
+        public async Task<IActionResult> GetDocumentById([FromBody] int fileID)
         {
 
             bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, AppUser.TenantId, AppUser.Id);
@@ -514,7 +512,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("Download"), HttpGet]
-        public async Task<IHttpActionResult> Download([FromUri] int fileID)
+        public async Task<IActionResult> Download([FromRoute] int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -569,7 +567,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("download_module_document"), HttpGet]
-        public async Task<IHttpActionResult> DownloadModuleDocument([FromUri] string module, [FromUri] string fileName, [FromUri] string fileNameExt, [FromUri] string fieldName, [FromUri] string recordId)
+        public async Task<IActionResult> DownloadModuleDocument([FromRoute] string module, [FromRoute] string fileName, [FromRoute] string fileNameExt, [FromRoute] string fieldName, [FromRoute] string recordId)
         {
 
             var publicName = "";
@@ -627,7 +625,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="DocID">The document identifier.</param>
         [Route("Remove"), HttpPost]
-        public async Task<IHttpActionResult> Remove(DocumentDTO doc)
+        public async Task<IActionResult> Remove(DocumentDTO doc)
         {
 
             bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Remove, null, EntityType.Document, doc.TenantId, AppUser.Id);
@@ -656,7 +654,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         [Route("Modify"), HttpPost]
-        public async Task<IHttpActionResult> Modify(DocumentDTO document)
+        public async Task<IActionResult> Modify(DocumentDTO document)
         {
             bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Modify, null, EntityType.Document, document.TenantId, AppUser.Id);
 
@@ -687,7 +685,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="request">The request</param>
         [Route("HtmltoPdf"), HttpPost]
-        public IHttpActionResult HtmlToPdf(JObject request)
+        public IActionResult HtmlToPdf(JObject request)
         {
             if (string.IsNullOrWhiteSpace(request["html"]?.ToString()))
                 return BadRequest("Html string is required.");
@@ -713,7 +711,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export"), HttpGet]
-        public async Task<IHttpActionResult> Export([FromUri]string module, [FromUri]int id, [FromUri]int templateId, [FromUri]string format, [FromUri]string locale, [FromUri]int timezoneOffset = 180, [FromUri] bool save = false)
+        public async Task<IActionResult> Export([FromRoute]string module, [FromRoute]int id, [FromRoute]int templateId, [FromRoute]string format, [FromRoute]string locale, [FromRoute]int timezoneOffset = 180, [FromRoute] bool save = false)
         {
             JObject record;
             var relatedModuleRecords = new Dictionary<string, JArray>();
@@ -860,7 +858,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download_template"), HttpGet]
-        public async Task<IHttpActionResult> DownloadTemplate([FromUri]int templateId)
+        public async Task<IActionResult> DownloadTemplate([FromRoute]int templateId)
         {
             //get the document record from database
             var template = await _templateRepository.GetById(templateId);
@@ -908,7 +906,7 @@ namespace PrimeApps.App.Controllers
             }
         }
         [Route("document_search"), HttpPost]
-        public async Task<IHttpActionResult> SearchDocument(DocumentFilterRequest filterRequest)
+        public async Task<IActionResult> SearchDocument(DocumentFilterRequest filterRequest)
         {
             if (filterRequest != null && filterRequest.Filters.Count > 0)
             {

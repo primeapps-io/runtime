@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Application;

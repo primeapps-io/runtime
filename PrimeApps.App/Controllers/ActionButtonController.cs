@@ -4,11 +4,12 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/action_button"), Authorize, SnakeCase]
+    [Route("api/action_button"), Authorize, SnakeCase]
 
     public class ActionButtonController : BaseController
     {
@@ -19,7 +20,7 @@ namespace PrimeApps.App.Controllers
             _actionButtonRepository = actionButtonRepository;
         }
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetActionButtons(int id)
+        public async Task<IActionResult> GetActionButtons(int id)
         {
             var buttons = await _actionButtonRepository.GetByModuleId(id);
 
@@ -30,7 +31,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(ActionButtonBindingModel actionbutton)
+        public async Task<IActionResult> Create(ActionButtonBindingModel actionbutton)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -47,7 +48,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]ActionButtonBindingModel actionbutton)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]ActionButtonBindingModel actionbutton)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -65,7 +66,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var actionButtonEntity = await _actionButtonRepository.GetByIdBasic(id);
 
