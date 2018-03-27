@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
-using System.Data.Entity;
 using System.Linq;
 using PrimeApps.Model.Entities.Platform;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.Model.Repositories
 {

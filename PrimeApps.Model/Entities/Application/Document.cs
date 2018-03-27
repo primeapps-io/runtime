@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Application
         /// <summary>
         /// Which module is associated with this document.
         /// </summary>
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         /// <summary>

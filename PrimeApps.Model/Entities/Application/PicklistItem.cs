@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Entities.Application
     public class PicklistItem : BaseEntity
     {
         [JsonIgnore]
-        [Column("picklist_id"), ForeignKey("Picklist"), Index]
+        [Column("picklist_id"), ForeignKey("Picklist")]//, Index]
         public int PicklistId { get; set; }
 
         [Column("label_en"), MaxLength(100), Required]

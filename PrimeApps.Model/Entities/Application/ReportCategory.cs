@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("order")]
         public int Order { get; set; }
 
-        [Column("user_id"), ForeignKey("User"), Index]
+        [Column("user_id"), ForeignKey("User")]//, Index]
 
         public int? UserId { get; set; }
 

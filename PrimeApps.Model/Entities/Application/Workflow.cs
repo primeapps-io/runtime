@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Application
     [Table("workflows")]
     public class Workflow : BaseEntity
     {
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("name"), MaxLength(200), Required]
@@ -21,7 +21,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("process_filter"), Required]
         public WorkflowProcessFilter ProcessFilter { get; set; }
 
-        [Column("active"), Index]
+        [Column("active")]//, Index]
         public bool Active { get; set; }
 
         [Column("operations"), MaxLength(50), Required]

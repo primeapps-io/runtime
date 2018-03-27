@@ -11,10 +11,10 @@ namespace PrimeApps.Model.Entities.Application
     public class Field : BaseEntity
     {
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), Index("fields_IX_module_id_name", 1, IsUnique = true)]
+        [Column("module_id"), ForeignKey("Module"), /*Index("fields_IX_module_id_name", 1, IsUnique = true)*/]
         public int ModuleId { get; set; }
 
-        [Column("name"), Required, MaxLength(50), Index("fields_IX_module_id_name", 2, IsUnique = true)]
+        [Column("name"), Required, MaxLength(50), /*Index("fields_IX_module_id_name", 2, IsUnique = true)*/]
         public string Name { get; set; }
 
         [Column("system_type"), Required]

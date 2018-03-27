@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Application
             _profileList = new List<string>();
         }
 
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("profiles")]

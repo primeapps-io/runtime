@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Entities.Application
     public class Import : BaseEntity
     {
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("total_count"), Required]

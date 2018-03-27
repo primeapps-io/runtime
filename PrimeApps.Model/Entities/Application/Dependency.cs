@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Entities.Application
     public class Dependency : BaseEntity
     {
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("dependency_type"), Required]

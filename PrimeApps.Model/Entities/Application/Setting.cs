@@ -13,14 +13,14 @@ namespace PrimeApps.Model.Entities.Application
     public class Setting : BaseEntity
     {
         [Column("type"), Required]
-        [Index]
+        //[Index]
         public SettingType Type { get; set; }
 
         [Column("user_id"), ForeignKey("User"), Index("settings_IX_user_id")]
         public int? UserId { get; set; }
 
         [Column("key"), Required]
-        [Index]
+        //[Index]
         public string Key { get; set; }
 
         [Column("value"), Required]

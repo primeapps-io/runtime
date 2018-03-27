@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Entities.Application
     public class Calculation : BaseEntity
     {
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("result_field"), MaxLength(50), Required]

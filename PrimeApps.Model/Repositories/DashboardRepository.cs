@@ -2,7 +2,7 @@
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Entities.Application;

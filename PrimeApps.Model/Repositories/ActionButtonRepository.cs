@@ -2,10 +2,10 @@
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.ActionButton;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.Model.Repositories
 {

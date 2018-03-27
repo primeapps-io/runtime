@@ -4,7 +4,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using PrimeApps.Model.Helpers;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NpgsqlTypes;
 using System.Threading.Tasks;

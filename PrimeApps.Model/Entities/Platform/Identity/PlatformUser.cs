@@ -15,97 +15,97 @@ namespace PrimeApps.Model.Entities.Platform.Identity
         [Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public override int Id { get; set; }
 
-        [Column("app_id"), ForeignKey("App"), Required]//, Index]
+        [Column("app_id"), ForeignKey("App"), Required]//]//, Index]
         public int AppId { get; set; }
 
-        [Column("tenant_id"), ForeignKey("Tenant")]//, Index]
+        [Column("tenant_id"), ForeignKey("Tenant")]//]//, Index]
         public int? TenantId { get; set; }
 
         /// <summary>
         /// Email address
         /// </summary>
-        [Column("email"), Required]//, Index]
+        [Column("email"), Required]//]//, Index]
         public override string Email { get; set; }
 
-        [Column("first_name"), Required]//, Index]
+        [Column("first_name"), Required]//]//, Index]
         public string FirstName { get; set; }
 
-        [Column("last_name"), Required]//, Index]
+        [Column("last_name"), Required]//]//, Index]
         public string LastName { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("email_confirmed")]//, Index]
+        [Column("email_confirmed")]//]//, Index]
         public override bool EmailConfirmed { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("password_hash")]//, Index]
+        [Column("password_hash")]//]//, Index]
         public override string PasswordHash { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("security_stamp")]//, Index]
+        [Column("security_stamp")]//]//, Index]
         public override string SecurityStamp { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("phone_number")]//, Index]
+        [Column("phone_number")]//]//, Index]
         public override string PhoneNumber { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("phone_number_confirmed")]//, Index]
+        [Column("phone_number_confirmed")]//]//, Index]
         public override bool PhoneNumberConfirmed { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("two_factor_enabled")]//, Index]
+        [Column("two_factor_enabled")]//]//, Index]
         public override bool TwoFactorEnabled { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("lockout_end_date_utc")]//, Index]
+        [Column("lockout_end_date_utc")]//]//, Index]
         public override DateTimeOffset? LockoutEnd { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("lockout_enabled")]//, Index]
+        [Column("lockout_enabled")]//]//, Index]
         public override bool LockoutEnabled { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("access_failed_count")]//, Index]
+        [Column("access_failed_count")]//]//, Index]
         public override int AccessFailedCount { get; set; }
 
         /// <summary>
         /// Asp.Net Identity Field
         /// </summary>
-        [Column("user_name")]//, Index]
+        [Column("user_name")]//]//, Index]
         public override string UserName { get; set; }
 
         [Column("culture")]
         public string Culture { get; set; }
 
-        [Column("currency")]//, Index]
+        [Column("currency")]//]//, Index]
         public string Currency { get; set; }
         
-        [Column("created_at")]//, Index]
+        [Column("created_at")]//]//, Index]
         public DateTime CreatedAt { get; set; }
 
-        [Column("active_directory_tenant_id")]//, Index]
+        [Column("active_directory_tenant_id")]//]//, Index]
         public int ActiveDirectoryTenantId { get; set; }
 
-        [Column("active_directory_email")]//, Index]
+        [Column("active_directory_email")]//]//, Index]
         public string ActiveDirectoryEmail { get; set; }
 
         public virtual App App { get; set; }

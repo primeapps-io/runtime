@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Context;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Common.Role;

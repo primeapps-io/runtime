@@ -9,10 +9,10 @@ namespace PrimeApps.Model.Entities.Application
     public class ActionButtonPermission : BaseEntity
     {
         [JsonIgnore]
-        [Column("action_button_id"), ForeignKey("ActionButton"), Index("action_button_permissions_IX_action_button_id_profile_id", 1, IsUnique = true)]
+        [Column("action_button_id"), ForeignKey("ActionButton"), /*Index("action_button_permissions_IX_action_button_id_profile_id", 1, IsUnique = true)*/]
         public int ActionButtonId { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile"), Required, Index("action_button_permissions_IX_action_button_id_profile_id", 2, IsUnique = true)]
+        [Column("profile_id"), ForeignKey("Profile"), Required, /*Index("action_button_permissions_IX_action_button_id_profile_id", 2, IsUnique = true)*/]
         public int ProfileId { get; set; }
 
         [Column("type"), Required]

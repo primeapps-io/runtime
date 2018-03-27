@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Entities.Platform.Identity
         [Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Column("unique_id")]//, Index]
+        [Column("unique_id")]//]//, Index]
         public string UniqueId { get; set; }
 
         [Column("cache_bits")]
