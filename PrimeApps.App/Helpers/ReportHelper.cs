@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Report;
@@ -118,6 +119,7 @@ namespace PrimeApps.App.Helpers
             return reportViewModel;
         }
 
+    
         public static List<ReportViewModel> MapToViewModel(ICollection<Report> reports)
         {
             return reports.Select(MapToViewModel).ToList();

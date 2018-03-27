@@ -1,18 +1,20 @@
-using System.Data.Entity;
+
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Context;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/exchange_rates"), Authorize, SnakeCase]
+    [Route("api/exchange_rates"), Authorize, SnakeCase]
     public class ExchangeRateController : BaseController
     {
         [Route("get_daily_rates"), HttpGet]
-        public async Task<IHttpActionResult> GetDailyRates(int? year = null, int? month = null, int? day = null)
+        public async Task<IActionResult> GetDailyRates(int? year = null, int? month = null, int? day = null)
         {
             ExchangeRate dailyRates;
 

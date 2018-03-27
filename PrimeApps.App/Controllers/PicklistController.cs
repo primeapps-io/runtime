@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -9,7 +10,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/picklist"), Authorize, SnakeCase]
+    [Route("api/picklist"), Authorize, SnakeCase]
     public class PicklistController : BaseController
     {
         private IPicklistRepository _picklistRepository;
@@ -20,7 +21,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var picklistEntity = await _picklistRepository.GetById(id);
 
@@ -33,7 +34,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var picklistEntities = await _picklistRepository.GetAll();
 
@@ -41,7 +42,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpPost]
-        public async Task<IHttpActionResult> Find(List<int> ids)
+        public async Task<IActionResult> Find(List<int> ids)
         {
             var picklistEntities = await _picklistRepository.Find(ids);
             var picklistsViewModel = PicklistHelper.MapToViewModel(picklistEntities);
@@ -50,7 +51,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(PicklistBindingModel picklist)
+        public async Task<IActionResult> Create(PicklistBindingModel picklist)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -66,7 +67,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]PicklistBindingModel picklist)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]PicklistBindingModel picklist)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -83,7 +84,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var picklistEntity = await _picklistRepository.GetById(id);
 

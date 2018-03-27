@@ -2,18 +2,16 @@
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
-using System.Data.Entity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/process"), Authorize, SnakeCase]
+    [Route("api/process"), Authorize, SnakeCase]
     public class ProcessController : BaseController
     {
         private IProcessRepository _processRepository;
@@ -30,7 +28,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var processEntity = await _processRepository.GetAllById(id);
 
@@ -43,7 +41,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var processEntities = await _processRepository.GetAllBasic();
 
@@ -51,7 +49,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(ProcessBindingModel process)
+        public async Task<IActionResult> Create(ProcessBindingModel process)
         {
             if (process.Approvers == null)
                 ModelState.AddModelError("request._actions", "At least one action required.");
@@ -90,7 +88,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<dynamic> Update([FromUri]int id, [FromBody]ProcessBindingModel process)
+        public async Task<dynamic> Update([FromRoute]int id, [FromBody]ProcessBindingModel process)
         {
             var processEntity = await _processRepository.GetById(id);
 
@@ -108,7 +106,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var processEntity = await _processRepository.GetById(id);
 

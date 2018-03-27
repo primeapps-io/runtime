@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Repositories;
@@ -11,7 +11,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 namespace PrimeApps.App.Controllers
 {
     [AllowAnonymous]
-    [RoutePrefix("api/Public")]
+    [Route("api/Public")]
     public class PublicController : BaseController
     {
         private IPlatformUserRepository _platformUserRepository;
@@ -28,7 +28,7 @@ namespace PrimeApps.App.Controllers
         [Route("DetectCulture")]
         [ResponseType(typeof(string))]
         [HttpPost]
-        public IHttpActionResult DetectCulture()
+        public IActionResult DetectCulture()
         {
             return Ok(Thread.CurrentThread.CurrentCulture.Name);
         }
@@ -42,7 +42,7 @@ namespace PrimeApps.App.Controllers
         [Route("IsUniqueEmail")]
         [ResponseType(typeof(bool))]
         [HttpGet]
-        public IHttpActionResult IsUniqueEmail(string email)
+        public IActionResult IsUniqueEmail(string email)
         {
             //check it in the entity layer and return the result.
             var result = _platformUserRepository.IsEmailAvailable(email);
@@ -51,7 +51,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("GetCustomInfo")]
         [HttpGet]
-        public async Task<IHttpActionResult> GetCustomInfo(string customDomain)
+        public async Task<IActionResult> GetCustomInfo(string customDomain)
         {
             var cacheClient = Redis.Client();
             var customInfo = await cacheClient.GetAsync<CustomInfoDTO>($"custom_info_{customDomain.Replace(".", "")}");

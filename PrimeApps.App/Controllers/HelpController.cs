@@ -1,21 +1,18 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.Model.Entities;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
-using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/help"), Authorize, SnakeCase]
+    [Route("api/help"), Authorize, SnakeCase]
     public class HelpController : BaseController
     {
         private IHelpRepository _helpRepository;
@@ -36,7 +33,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var helpEntity = await _helpRepository.GetById(id);
 
@@ -44,13 +41,13 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<ICollection<Help>> GetAll([FromUri]ModalType modalType = ModalType.NotSet)
+        public async Task<ICollection<Help>> GetAll([FromRoute]ModalType modalType = ModalType.NotSet)
         {
             return await _helpRepository.GetAll(modalType);
         }
 
         [Route("get_by_type"), HttpGet]
-        public async Task<Help> GetByType([FromUri]ModalType templateType, [FromUri]int? moduleId = null, [FromUri]string route = "")
+        public async Task<Help> GetByType([FromRoute]ModalType templateType, [FromRoute]int? moduleId = null, [FromRoute]string route = "")
         {
             var templates = await _helpRepository.GetByType(templateType, moduleId, route);
 
@@ -58,7 +55,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_module_type"), HttpGet]
-        public async Task<Help> GetModuleType([FromUri]ModalType templateType, [FromUri]ModuleType moduleType,[FromUri]int? moduleId = null)
+        public async Task<Help> GetModuleType([FromRoute]ModalType templateType, [FromRoute]ModuleType moduleType,[FromRoute]int? moduleId = null)
         {
             var templates = await _helpRepository.GetModuleType(templateType, moduleType , moduleId);
 
@@ -66,7 +63,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_first_screen"), HttpGet]
-        public async Task<Help> GetFistScreen([FromUri]ModalType templateType, [FromUri]bool? firstscreen = false)
+        public async Task<Help> GetFistScreen([FromRoute]ModalType templateType, [FromRoute]bool? firstscreen = false)
         {
             var templates = await _helpRepository.GetFistScreen(templateType, firstscreen);
 
@@ -74,7 +71,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_custom_help"), HttpGet]
-        public async Task<ICollection<Help>> GetCustomHelp([FromUri]ModalType templateType, [FromUri]bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp([FromRoute]ModalType templateType, [FromRoute]bool? customhelp = false)
         {
             var templates = await _helpRepository.GetCustomHelp(templateType, customhelp);
 
@@ -82,7 +79,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(HelpBindingModel help)
+        public async Task<IActionResult> Create(HelpBindingModel help)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,7 +95,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]HelpBindingModel help)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]HelpBindingModel help)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -115,7 +112,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var helpEntity = await _helpRepository.GetByIdBasic(id);
 

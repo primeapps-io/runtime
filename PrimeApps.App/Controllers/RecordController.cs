@@ -20,7 +20,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/record"), Authorize, SnakeCase]
+    [Route("api/record"), Authorize, SnakeCase]
     public class RecordController : BaseController
     {
         private IRecordRepository _recordRepository;
@@ -37,7 +37,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(string module, int id, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
+        public async Task<IActionResult> Get(string module, int id, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
         {
             JObject record;
             var moduleEntity = await _moduleRepository.GetByNameBasic(module);
@@ -111,7 +111,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IHttpActionResult> Find([FromUri]string module, [FromBody]FindRequest request, [FromUri]string locale = "", bool? normalize = false, [FromUri]int? timezoneOffset = 180)
+        public async Task<IActionResult> Find([FromRoute]string module, [FromBody]FindRequest request, [FromRoute]string locale = "", bool? normalize = false, [FromRoute]int? timezoneOffset = 180)
         {
             if (request == null)
                 request = new FindRequest();
@@ -229,7 +229,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IHttpActionResult> Create([FromUri]string module, [FromBody]JObject record, [FromUri]string locale = "", bool? normalize = false, [FromUri]int timezoneOffset = 180)
+        public async Task<IActionResult> Create([FromRoute]string module, [FromBody]JObject record, [FromRoute]string locale = "", bool? normalize = false, [FromRoute]int timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -333,7 +333,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]string module, [FromBody]JObject record, [FromUri]bool runWorkflows = true, [FromUri]string locale = "", bool? normalize = false, [FromUri]int timezoneOffset = 180)
+        public async Task<IActionResult> Update([FromRoute]string module, [FromBody]JObject record, [FromRoute]bool runWorkflows = true, [FromRoute]string locale = "", bool? normalize = false, [FromRoute]int timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -411,7 +411,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]string module, [FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]string module, [FromRoute]int id)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
             var record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
@@ -435,7 +435,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IHttpActionResult> CreateBulk([FromUri]string module, [FromBody]JArray records)
+        public async Task<IActionResult> CreateBulk([FromRoute]string module, [FromBody]JArray records)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -492,7 +492,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteBulk([FromUri]string module, [FromBody]int[] ids)
+        public async Task<IActionResult> DeleteBulk([FromRoute]string module, [FromBody]int[] ids)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
 
@@ -520,7 +520,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("update_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateBulk([FromUri]string module, [FromBody]JObject request)
+        public async Task<IActionResult> UpdateBulk([FromRoute]string module, [FromBody]JObject request)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
             var ids = (JArray)request["ids"];
@@ -581,7 +581,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("add_relations/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{relatedModule:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IHttpActionResult> AddRelations([FromUri]string module, [FromUri]string relatedModule, [FromBody]JArray records)
+        public async Task<IActionResult> AddRelations([FromRoute]string module, [FromRoute]string relatedModule, [FromBody]JArray records)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -630,7 +630,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_relation/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{relatedModule:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteRelation([FromUri]string module, [FromUri]string relatedModule, [FromBody]JObject record)
+        public async Task<IActionResult> DeleteRelation([FromRoute]string module, [FromRoute]string relatedModule, [FromBody]JObject record)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -673,7 +673,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("lookup_user"), HttpPost]
-        public IHttpActionResult LookupUser(LookupUserRequest request)
+        public IActionResult LookupUser(LookupUserRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -684,7 +684,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all_by_id/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IHttpActionResult> GetAllById([FromUri]string module, [FromBody]int[] recordIds, [FromUri]string locale = "", bool? normalize = false, [FromUri]int? timezoneOffset = 180)
+        public async Task<IActionResult> GetAllById([FromRoute]string module, [FromBody]int[] recordIds, [FromRoute]string locale = "", bool? normalize = false, [FromRoute]int? timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

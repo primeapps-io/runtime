@@ -1,16 +1,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Entities.Application;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/role"), Authorize, SnakeCase]
+    [Route("api/role"), Authorize, SnakeCase]
     public class RoleController : BaseController
     {
         private IRoleRepository _roleRepository;

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -9,7 +10,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/template"), Authorize, SnakeCase]
+    [Route("api/template"), Authorize, SnakeCase]
     public class TemplateController : BaseController
     {
         private readonly ITemplateRepostory _templateRepostory;
@@ -22,7 +23,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var template = await _templateRepostory.GetById(id);
 
@@ -33,7 +34,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll(TemplateType type = TemplateType.NotSet, string moduleName = "")
+        public async Task<IActionResult> GetAll(TemplateType type = TemplateType.NotSet, string moduleName = "")
         {
             var templates = await _templateRepostory.GetAll(type, moduleName);
 
@@ -41,7 +42,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(TemplateBindingModel template)
+        public async Task<IActionResult> Create(TemplateBindingModel template)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -60,7 +61,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]TemplateBindingModel template)
+        public async Task<IActionResult> Update([FromUri]int id, [FromBody]TemplateBindingModel template)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -80,7 +81,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromUri]int id)
         {
             var templateEntity = await _templateRepostory.GetById(id);
 

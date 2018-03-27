@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Enums;
@@ -8,10 +7,12 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
 using System;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/dashboard"), Authorize, SnakeCase]
+    [Route("api/dashboard"), Authorize, SnakeCase]
     public class DashboardController : BaseController
     {
         private IDashletRepository _dashletRepository;
@@ -28,7 +29,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_dashlets"), HttpGet]
-        public async Task<IHttpActionResult> GetDashlets([FromUri]int dashboard, [FromUri]string locale = "", [FromUri]int? timezoneOffset = 180)
+        public async Task<IActionResult> GetDashlets([FromRoute]int dashboard, [FromRoute]string locale = "", [FromRoute]int? timezoneOffset = 180)
         {
             var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, locale, timezoneOffset.Value);
             return Ok(dashlets);
@@ -50,14 +51,14 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var dashboard = await _dashboardRepository.GetAllBasic(AppUser);
             return Ok(dashboard);
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(DashboardBindingModel dashboard)
+        public async Task<IActionResult> Create(DashboardBindingModel dashboard)
         {
             var dashboardEntity = await DashboardHelper.CreateEntity(dashboard, AppUser);
             var create = await _dashboardRepository.Create(dashboardEntity);
@@ -65,7 +66,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_dashlet"), HttpPost]
-        public async Task<IHttpActionResult> DashletCreate(DashletBindingModel dashlet)
+        public async Task<IActionResult> DashletCreate(DashletBindingModel dashlet)
         {
 
             var dashletEntity = await DashboardHelper.CreateEntityDashlet(dashlet, _dashboardRepository, _reportRepository);
@@ -74,7 +75,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_charts"), HttpGet]
-        public async Task<IHttpActionResult> GetCharts()
+        public async Task<IActionResult> GetCharts()
         {
             var chartEntity = await _dashboardRepository.GetAllChart();
 
@@ -88,7 +89,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_widgets"), HttpGet]
-        public async Task<IHttpActionResult> GetWidgets()
+        public async Task<IActionResult> GetWidgets()
         {
             var widgetEntity = await _dashboardRepository.GetAllWidget();
 
@@ -102,7 +103,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_dashlet/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteDashlet([FromUri]int id)
+        public async Task<IActionResult> DeleteDashlet([FromRoute]int id)
         {
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 
@@ -115,7 +116,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("change_order_dashlet"), HttpPut]
-        public async Task<IHttpActionResult> UpdateDashlet([FromBody] JArray data)
+        public async Task<IActionResult> UpdateDashlet([FromBody] JArray data)
         {
             int counter = 0;
             foreach (JObject dashlet in data)
@@ -133,7 +134,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_dashlet/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateDashlet([FromUri]int id, [FromBody]DashletBindingModel dashlet)
+        public async Task<IActionResult> UpdateDashlet([FromRoute]int id, [FromBody]DashletBindingModel dashlet)
         {
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 

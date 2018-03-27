@@ -1,20 +1,18 @@
 ﻿using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/process_request"), Authorize, SnakeCase]
+    [Route("api/process_request"), Authorize, SnakeCase]
     public class ProcessRequestController : BaseController
     {
         private IProcessRequestRepository _processRequestRepository;
@@ -32,7 +30,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_requests/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetAll([FromUri]int id)
+        public async Task<IActionResult> GetAll([FromRoute]int id)
         {
             var processRequestEntities = await _processRequestRepository.GetByProcessId(id);
 
@@ -40,7 +38,7 @@ namespace PrimeApps.App.Controllers
         }
 
 	    [Route("approve_multiple_request"), HttpPut]
-	    public async Task<IHttpActionResult> ApproveMultipleRequest(int[] RecordIds)
+	    public async Task<IActionResult> ApproveMultipleRequest(int[] RecordIds)
 	    {
 		    if (!ModelState.IsValid)
 			    return BadRequest(ModelState);
@@ -61,7 +59,7 @@ namespace PrimeApps.App.Controllers
 	    }
 
 		[Route("approve"), HttpPut]
-        public async Task<IHttpActionResult> ApproveRequest(ProcessRequestModel request)
+        public async Task<IActionResult> ApproveRequest(ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -80,7 +78,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("reject"), HttpPut]
-        public async Task<IHttpActionResult> RejectRequest(ProcessRequestRejectModel request)
+        public async Task<IActionResult> RejectRequest(ProcessRequestRejectModel request)
         {
 
             var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
@@ -97,7 +95,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete"), HttpPut]
-        public async Task<IHttpActionResult> DeleteRequest(ProcessRequestDeleteModel request)
+        public async Task<IActionResult> DeleteRequest(ProcessRequestDeleteModel request)
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
@@ -107,7 +105,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval"), HttpPut]
-        public async Task<IHttpActionResult> ReApprovalRequest(ProcessRequestModel request)
+        public async Task<IActionResult> ReApprovalRequest(ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -126,7 +124,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval_manuel"), HttpPost]
-        public async Task<IHttpActionResult> ManuelApprovalRequest(ProcessRequestManuelModel request)
+        public async Task<IActionResult> ManuelApprovalRequest(ProcessRequestManuelModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

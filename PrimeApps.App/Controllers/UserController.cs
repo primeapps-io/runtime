@@ -12,10 +12,15 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Web.Http;
 using Hangfire;
+using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.ActiveDirectory.GraphClient;
 using Microsoft.Azure.ActiveDirectory.GraphClient.Extensions;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json.Linq;
 using NHibernate.Linq;
 using PrimeApps.App.Helpers;
@@ -70,7 +75,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileName">File name of the avatar</param>
         /// <returns>Stream.</returns>
         [Route("Avatar"), HttpPost]
-        public IHttpActionResult Avatar(string fileName)
+        public IActionResult Avatar(string fileName)
         {
             //get uploaded file from storage
             var file = Storage.GetBlob("user-images", fileName);
@@ -97,7 +102,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="user">The user.</param>
         [Route("Edit"), HttpPost]
-        public async Task<IHttpActionResult> Edit(UserDTO user)
+        public async Task<IActionResult> Edit(UserDTO user)
         {
             //get user to start modification.
             PlatformUser userToEdit = await _platformUserRepository.Get(AppUser.Id);
@@ -166,7 +171,7 @@ namespace PrimeApps.App.Controllers
                 //};
                 //session.Save(req);
 
-                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "api-test" : "api";
+                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "api-test" : "api";
 
                 //compose a new email to the new email address of the user.
                 Dictionary<string, string> emailData = new Dictionary<string, string>();
@@ -191,7 +196,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="culture">The culture.</param>
         [Route("ChangeCulture"), HttpPost]
-        public async Task<IHttpActionResult> ChangeCulture([FromBody]string culture)
+        public async Task<IActionResult> ChangeCulture([FromBody]string culture)
         {
             /// if it's an unknown or an unsupported culture do nothing.
             if (!Helpers.Constants.CULTURES.Contains(culture)) { return NotFound(); }
@@ -215,7 +220,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="currency"></param>
         /// <returns></returns>
         [Route("ChangeCurrency"), HttpPost]
-        public async Task<IHttpActionResult> ChangeCurrency([FromBody]string currency)
+        public async Task<IActionResult> ChangeCurrency([FromBody]string currency)
         {
             /// if it's an unknown or an unsupported currency do nothing.
             if (!Helpers.Constants.CURRENCIES.Contains(currency)) { return NotFound(); }
@@ -239,7 +244,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns>Account.</returns>
         [Route("MyAccount"), HttpPost]
-        public async Task<IHttpActionResult> MyAccount()
+        public async Task<IActionResult> MyAccount()
         {
             AccountInfo acc = new AccountInfo();
             List<UserAppInfo> apps = null;
@@ -303,7 +308,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("ActiveDirectoryInfo"), HttpGet]
-        public async Task<IHttpActionResult> GetAdInfo()
+        public async Task<IActionResult> GetAdInfo()
         {
             PlatformUser accountOwner = await _platformUserRepository.GetUserByAutoId(AppUser.TenantId);
 
@@ -331,7 +336,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileContents">The file contents.</param>
         /// <returns>System.String.</returns>
         [Route("UploadAvatar"), HttpPost]
-        public async Task<IHttpActionResult> UploadAvatar()
+        public async Task<IActionResult> UploadAvatar()
         {
             // try to parse stream.
             Stream requestStream = await Request.Content.ReadAsStreamAsync();
@@ -395,7 +400,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("add_user"), HttpPost]
-        public async Task<IHttpActionResult> AddUser(AddUserBindingModel request)
+        public async Task<IActionResult> AddUser(AddUserBindingModel request)
         {
             var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email);
 
@@ -544,7 +549,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_user"), HttpGet]
-        public async Task<IHttpActionResult> GetUser(string email)
+        public async Task<IActionResult> GetUser(string email)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -576,7 +581,7 @@ namespace PrimeApps.App.Controllers
             return Ok(userModel);
         }
 
-        public async Task<IHttpActionResult> GetOfficeUsers()
+        public async Task<IActionResult> GetOfficeUsers()
         {
             var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
             var appKey = ConfigurationManager.AppSettings["ida:Password"];
@@ -627,7 +632,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("UpdateActiveDirectoryEmail"), HttpGet]
-        public async Task<IHttpActionResult> UpdateActiveDirectoryEmail(int userId, string email)
+        public async Task<IActionResult> UpdateActiveDirectoryEmail(int userId, string email)
         {
             var resultControl = await _platformUserRepository.IsActiveDirectoryEmailAvailable(email);
 
