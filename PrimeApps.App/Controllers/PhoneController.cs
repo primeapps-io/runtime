@@ -1,22 +1,19 @@
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
-using PrimeApps.App.Results;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Phone;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/phone")]
+    [Route("api/phone")]
     [Authorize]
     public class PhoneController : BaseController
     {
@@ -27,7 +24,7 @@ namespace PrimeApps.App.Controllers
             _settingRepository = settingRepository;
         }
         [Route("save_provider"), HttpPost]
-        public async Task<IHttpActionResult> SaveProvider(SipProvider sipProvider)
+        public async Task<IActionResult> SaveProvider(SipProvider sipProvider)
         {
             //Delete provider if exists
             await _settingRepository.DeleteAsync(Model.Enums.SettingType.Phone, "provider");
@@ -65,19 +62,19 @@ namespace PrimeApps.App.Controllers
 
         }
         [Route("delete_all_settings"), HttpPost]
-        public async Task<IHttpActionResult> DeleteAllSettings()
+        public async Task<IActionResult> DeleteAllSettings()
         {
             await _settingRepository.DeleteAsync(Model.Enums.SettingType.Phone);
             return Ok();
         }
         [Route("delete_sip_account/{userId:int}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteSipAccount([FromUri]int userId)
+        public async Task<IActionResult> DeleteSipAccount([FromRoute]int userId)
         {
             await _settingRepository.DeleteAsync(Model.Enums.SettingType.Phone, userId);
             return Ok();
         }
         [Route("save_sip_account"), HttpPost]
-        public async Task<IHttpActionResult> SaveSipAccount(NewSipAccount sipAccount)
+        public async Task<IActionResult> SaveSipAccount(NewSipAccount sipAccount)
         {
             await _settingRepository.DeleteAsync(SettingType.Phone, sipAccount.UserId);
             List<Setting> settings = new List<Setting>();
@@ -177,7 +174,7 @@ namespace PrimeApps.App.Controllers
 
         }
         [Route("get_config")]
-        public async Task<IHttpActionResult> GetConfigAndAccounts()
+        public async Task<IActionResult> GetConfigAndAccounts()
         {
             var config = new JObject();
             var phoneSettings = _settingRepository.Get(SettingType.Phone);
@@ -228,7 +225,7 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("get_sip_password")]
-        public async Task<IHttpActionResult> GetSipPassword()
+        public async Task<IActionResult> GetSipPassword()
         {
             var userId = AppUser.Id;
             var userSettings = await _settingRepository.GetAsync(Model.Enums.SettingType.Phone, userId);

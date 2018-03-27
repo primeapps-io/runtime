@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/office")]
+    [Route("api/office")]
     public class OfficeController : BaseController
     {
     }

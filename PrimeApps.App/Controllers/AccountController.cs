@@ -5,23 +5,22 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.OAuth;
 using System.Threading;
 using System.Globalization;
 using System.Net;
 using System.Linq;
-using System.Configuration;
 using System.Text.RegularExpressions;
-using System.Web.Hosting;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Providers;
-using PrimeApps.App.Results;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -30,10 +29,11 @@ using Npgsql;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers.QueryTranslation;
+using ChallengeResult = PrimeApps.App.Results.ChallengeResult;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/account")]
+    [Route("api/account")]
     public class AccountController : BaseController
     {
         private const string LocalLoginProvider = "Local";
@@ -98,7 +98,7 @@ namespace PrimeApps.App.Controllers
 
         // POST account/logout
         [Route("logout")]
-        public IHttpActionResult Logout()
+        public IActionResult Logout()
         {
             Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
             return Ok();
@@ -146,7 +146,7 @@ namespace PrimeApps.App.Controllers
 
         // POST account/change_password
         [Route("change_password")]
-        public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
+        public async Task<IActionResult> ChangePassword(ChangePasswordBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -183,7 +183,7 @@ namespace PrimeApps.App.Controllers
 
         // POST account/set_password
         [Route("set_password")]
-        public async Task<IHttpActionResult> SetPassword(SetPasswordBindingModel model)
+        public async Task<IActionResult> SetPassword(SetPasswordBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -202,7 +202,7 @@ namespace PrimeApps.App.Controllers
 
         // POST account/add_external
         [Route("add_external")]
-        public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
+        public async Task<IActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -239,7 +239,7 @@ namespace PrimeApps.App.Controllers
 
         // POST account/remove_login
         [Route("remove_login")]
-        public async Task<IHttpActionResult> RemoveLogin(RemoveLoginBindingModel model)
+        public async Task<IActionResult> RemoveLogin(RemoveLoginBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -270,7 +270,7 @@ namespace PrimeApps.App.Controllers
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
         [Route("external", Name = "ExternalLogin")]
-        public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
+        public async Task<IActionResult> GetExternalLogin(string provider, string error = null)
         {
             if (error != null)
             {
@@ -364,7 +364,7 @@ namespace PrimeApps.App.Controllers
         // POST account/register
         [AllowAnonymous]
         [Route("register")]
-        public async Task<IHttpActionResult> Register(RegisterBindingModel model)
+        public async Task<IActionResult> Register(RegisterBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -435,7 +435,7 @@ namespace PrimeApps.App.Controllers
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("register_external")]
-        public async Task<IHttpActionResult> RegisterExternal(RegisterExternalBindingModel model)
+        public async Task<IActionResult> RegisterExternal(RegisterExternalBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -471,7 +471,7 @@ namespace PrimeApps.App.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("activate")]
-        public async Task<IHttpActionResult> Activate(string userId = "", string token = "", string culture = "", bool officeSignIn = false)
+        public async Task<IActionResult> Activate(string userId = "", string token = "", string culture = "", bool officeSignIn = false)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
             {
@@ -583,7 +583,7 @@ namespace PrimeApps.App.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("resend_activation")]
-        public async Task<IHttpActionResult> ResendActivationMail(string email = "", string culture = "")
+        public async Task<IActionResult> ResendActivationMail(string email = "", string culture = "")
         {
             if (string.IsNullOrWhiteSpace(email))
             {
@@ -620,7 +620,7 @@ namespace PrimeApps.App.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("forgot_password")]
-        public async Task<IHttpActionResult> ForgotPassword(string email = "", string culture = "")
+        public async Task<IActionResult> ForgotPassword(string email = "", string culture = "")
         {
 
             if (string.IsNullOrWhiteSpace(email))
@@ -659,7 +659,7 @@ namespace PrimeApps.App.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("reset_password")]
-        public async Task<IHttpActionResult> ResetPassword(ResetPasswordBindingModel model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -680,7 +680,7 @@ namespace PrimeApps.App.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("register_client")]
-        public async Task<IHttpActionResult> RegisterClient(ClientBindingModel model)
+        public async Task<IActionResult> RegisterClient(ClientBindingModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -719,7 +719,7 @@ namespace PrimeApps.App.Controllers
 
         // POST account/change_email
         [Route("change_email")]
-        public async Task<IHttpActionResult> ChangeEmail(ChangeEmailBindingModel model)
+        public async Task<IActionResult> ChangeEmail(ChangeEmailBindingModel model)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -779,7 +779,7 @@ namespace PrimeApps.App.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("change_tenant")]
-        public IHttpActionResult ChangeTenant(int userId, int tenantId, int appId, string email)
+        public IActionResult ChangeTenant(int userId, int tenantId, int appId, string email)
         {
             UserApp userApp = null;
 
@@ -953,7 +953,7 @@ namespace PrimeApps.App.Controllers
                         break;
                 }
 
-                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                 domain = string.Format(domain, subdomain);
             }
             else
@@ -995,14 +995,14 @@ namespace PrimeApps.App.Controllers
             {
                 url = !isFreeLicense ? "https://console.primeapps.io/#/auth/activation?token={0}&uid={1}&app={2}" : "https://console.primeapps.io/#/auth/activation?token={0}&uid={1}&app={2}&free=true";
                 emailData.Add("Url", string.Format(url, HttpUtility.UrlEncode(token), userId, appId));
-                notification = new Email(typeof(Resources.Email.PrimeAppsConfirm), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
+                notification = new Email(typeof(Microsoft.AspNetCore.Authentication.Resources.Email.PrimeAppsConfirm), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
                 from = "notifications@primeapps.io";
                 fromName = "PrimeApps";
             }
             else
             {
                 emailData.Add("Url", string.Format(url, HttpUtility.UrlEncode(token), userId, appId));
-                notification = new Email(typeof(Resources.Email.SubscriptionConfirm), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
+                notification = new Email(typeof(Microsoft.AspNetCore.Authentication.Resources.Email.SubscriptionConfirm), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
             }
 
             notification.AddRecipient(email);
@@ -1062,7 +1062,7 @@ namespace PrimeApps.App.Controllers
             emailData.Add("PasswordResetUrl", string.Format(url, subdomain, HttpUtility.UrlEncode(token), userId));
             emailData.Add("FullName", fullName);
 
-            var notification = new Email(typeof(Resources.Email.PasswordReset), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
+            var notification = new Email(typeof(Microsoft.AspNetCore.Authentication.Resources.Email.PasswordReset), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
             notification.AddRecipient(email);
             notification.AddToQueue();
         }
