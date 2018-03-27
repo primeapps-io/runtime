@@ -208,3 +208,11 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 *.db
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history
