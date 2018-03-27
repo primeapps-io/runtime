@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Entities.Platform.Identity;
 using System;
@@ -9,7 +9,6 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 
 namespace PrimeApps.App.Providers
 {

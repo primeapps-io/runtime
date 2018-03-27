@@ -1,16 +1,16 @@
 using System.Threading.Tasks;
-using System.Web.Hosting;
-using System.Web.Http;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Net;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/workflow"), Authorize, SnakeCase]
+    [Route("api/workflow"), Authorize, SnakeCase]
     public class WorkflowController : BaseController
     {
         private IWorkflowRepository _workflowRepository;
@@ -25,7 +25,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
 
@@ -48,7 +48,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var worflowEntities = await _workflowRepository.GetAllBasic();
 
@@ -56,7 +56,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(WorkflowBindingModel workflow)
+        public async Task<IActionResult> Create(WorkflowBindingModel workflow)
         {
             if (workflow.Actions == null || (workflow.Actions.SendNotification == null && workflow.Actions.CreateTask == null && workflow.Actions.FieldUpdate == null && workflow.Actions.WebHook == null))
                 ModelState.AddModelError("request._actions", "At least one action required.");
