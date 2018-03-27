@@ -1,0 +1,152 @@
+﻿@{
+    var app = "primeapps";
+    if (ViewBag.AppInfo != null)
+    {
+        app = ViewBag.AppInfo["app"].Value;
+    }
+    var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
+    var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+    var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+    var versionStatic = ((AssemblyVersionStaticAttribute)ViewContext.Controller.GetType().Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";
+    var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
+    var customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
+    var favicon = ViewBag.AppInfo["favicon"].Value;
+}
+
+<!DOCTYPE html>
+<html lang="{{language}}" ng-app="ofisim">
+<head>
+    <title>@ViewBag.AppInfo["title"].Value</title>
+    <link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
+    @Styles.Render("~/bundles-css/vendor")
+    @Styles.Render("~/bundles-css/app")
+    @RenderSection("styles", required: false)
+</head>
+<body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
+    @RenderBody()
+    <script>
+    var version = '@ViewContext.Controller.GetType().Assembly.GetName().Version';
+    var cdnUrl = '@ViewBag.CdnUrlDynamic';
+    var isCustomDomain = '@customDomain' === 'True';
+    var customLanguage = '@customLanguage';
+    var theme = window.localStorage.getItem('theme');
+    var host = window.location.hostname;
+
+    var getParameterByName = function (name) {
+        var url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+        var results = regex.exec(url);
+
+        if (!results)
+            return null;
+
+        if (!results[2])
+            return '';
+
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        };
+
+    if (theme) {
+        document.body.className = theme;
+    }
+    else {
+        if (host.indexOf('localhost') < 0) {
+            if (host.indexOf('primeapps.io') > -1) {
+                document.body.className = 'primeapps';
+                window.localStorage.setItem('theme', 'primeapps');
+            } else if (host.indexOf('kobi.ofisim.com') > -1 || host.indexOf('kobi-test.ofisim.com') > -1) {
+                document.body.className = 'ofisim-kobi';
+                window.localStorage.setItem('theme', 'ofisim-kobi');
+            } else if (host.indexOf('asistan.ofisim.com') > -1 || host.indexOf('asistan-test.ofisim.com') > -1) {
+                document.body.className = 'ofisim-asistan';
+                window.localStorage.setItem('theme', 'ofisim-asistan');
+            } else if (host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1) {
+                document.body.className = 'ofisim-ik';
+                window.localStorage.setItem('theme', 'ofisim-ik');
+            } else if (host.indexOf('cagri.ofisim.com') > -1 || host.indexOf('cagri-test.ofisim.com') > -1) {
+                document.body.className = 'ofisim-cagri';
+                window.localStorage.setItem('theme', 'ofisim-cagri');
+            } else {
+                document.body.className = 'ofisim-crm';
+                window.localStorage.setItem('theme', 'ofisim-crm');
+            }
+        } else {
+            var appId = getParameterByName('app');
+
+            if (appId === '1') {
+                document.body.className = 'ofisim-crm';
+                window.localStorage.setItem('theme', 'ofisim-crm');
+            } else if (appId === '2') {
+                document.body.className = 'ofisim-kobi';
+                window.localStorage.setItem('theme', 'ofisim-kobi');
+            } else if (appId === '3') {
+                document.body.className = 'ofisim-asistan';
+                window.localStorage.setItem('theme', 'ofisim-asistan');
+            } else if (appId === '4') {
+                document.body.className = 'ofisim-ik';
+                window.localStorage.setItem('theme', 'ofisim-ik');
+            } else if (appId === '5') {
+                document.body.className = 'ofisim-cagri';
+                window.localStorage.setItem('theme', 'ofisim-cagri');
+            } else {
+                document.body.className = 'primeapps';
+                window.localStorage.setItem('theme', 'primeapps');
+            }
+        }
+    }
+
+    var loaderDiv = document.getElementById('loader');
+        loaderDiv.style.display = 'block';
+    </script>
+
+    @if (!customDomain && !ViewContext.RequestContext.HttpContext.Request.IsLocal)
+    {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
+        <script>
+        //Google Analytics
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('js', new Date());
+
+        gtag('config', '@googleCode');
+
+        //Tawk.to
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function() {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/59888248dbb01a218b4db261/default';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+        </script>
+    }
+    @Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.min.js")
+    @Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.charts.min.js")
+    @Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js")
+    @Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js")
+    @Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js")
+    @Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js")
+    @Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js")
+    @Scripts.Render("~/scripts/vendor/tinymce/tinymce.min.js")
+    @Scripts.Render("~/scripts/vendor/sip.min.js")
+    @Scripts.Render("~/scripts/vendor/xlsx.core.min.js")
+    @Scripts.Render("~/bundles-js/vendor")
+    @Scripts.Render("~/bundles-js/app")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

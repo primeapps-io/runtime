@@ -1,0 +1,64 @@
+﻿@{
+
+    ViewBag.Title = "Verify";
+    Layout = "~/ViewsMvc/Shared/_LayoutAuth.cshtml";
+
+    var app = "crm";
+    var color = "#135dea";
+    var email = "";
+    var resend = false;
+    var error = "";
+    var logo = ViewBag.AppInfo["logo"].Value;
+    if (ViewBag.AppInfo != null)
+    {
+        app = ViewBag.AppInfo["app"].Value;
+        color = ViewBag.AppInfo["color"].Value;
+        email = ViewBag.Email;
+        resend = ViewBag.Resend;
+        error = ViewBag.Error;
+        ViewBag.Title = ViewBag.AppInfo["title"].Value;
+    }
+    var lang = ViewBag.Lang == "tr" ? "en" : "tr";
+}
+
+<div class="col-md-4 login-sec">
+    <img class="logo-img" style="padding-bottom: 0;" src="@Url.Content(logo)"/>
+    <form class="login-form">
+        <div class="form-check text-center">
+            @if (!string.IsNullOrEmpty(error))
+            {
+                switch (error)
+                {
+                    case "alreadyActivated":
+                        <div class="error">@PrimeApps.App.Resources.Auth.Resource.VerifyAlreadyActivated</div>
+                        break;
+                    case "userNotFound":
+                        <div class="error">@PrimeApps.App.Resources.Auth.Resource.VerifyUserNotFound</div>
+                        break;
+                    case "emailRequired":
+                        <div class="error">@PrimeApps.App.Resources.Auth.Resource.VerifyEmailRequired</div>
+                        break;
+                    default:
+                        <div class="error">@PrimeApps.App.Resources.Auth.Resource.Error</div>
+                        break;
+                }
+            }
+            else
+            {
+                <i class="fa fa-4x fa-check-circle" style="color: @color"></i><br/>
+                <span class="free-info">
+                    @MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.VerifyMail)
+                    @if (!resend)
+                {
+                    @PrimeApps.App.Resources.Auth.Resource.ResendMail
+                    <a href="@Url.Action("Verify", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Email = email, Resend = true})">@PrimeApps.App.Resources.Auth.Resource.ResendMailLink</a>
+                    }
+                    else
+                    {
+                        @PrimeApps.App.Resources.Auth.Resource.ResendMailSuccess
+            }
+                </span>
+            }
+        </div>
+    </form>
+</div>

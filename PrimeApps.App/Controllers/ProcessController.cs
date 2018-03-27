@@ -1,0 +1,124 @@
+﻿using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Helpers;
+using PrimeApps.App.Models;
+using PrimeApps.Model.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
+using System.Data.Entity;
+
+namespace PrimeApps.App.Controllers
+{
+    [RoutePrefix("api/process"), Authorize, SnakeCase]
+    public class ProcessController : BaseController
+    {
+        private IProcessRepository _processRepository;
+        private IModuleRepository _moduleRepository;
+        private IViewRepository _viewRepository;
+        private IPicklistRepository _picklistRepository;
+
+        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository)
+        {
+            _processRepository = processRepository;
+            _viewRepository = viewRepository;
+            _moduleRepository = moduleRepository;
+            _picklistRepository = picklistRepository;
+        }
+
+        [Route("get/{id:int}"), HttpGet]
+        public async Task<IHttpActionResult> Get(int id)
+        {
+            var processEntity = await _processRepository.GetAllById(id);
+
+            if (processEntity == null)
+                return NotFound();
+
+            processEntity.Approvers = await _processRepository.GetUsers(processEntity);
+
+            return Ok(processEntity);
+        }
+
+        [Route("get_all"), HttpGet]
+        public async Task<IHttpActionResult> GetAll()
+        {
+            var processEntities = await _processRepository.GetAllBasic();
+
+            return Ok(processEntities);
+        }
+
+        [Route("create"), HttpPost]
+        public async Task<IHttpActionResult> Create(ProcessBindingModel process)
+        {
+            if (process.Approvers == null)
+                ModelState.AddModelError("request._actions", "At least one action required.");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var processEntity = await ProcessHelper.CreateEntity(process, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            var result = await _processRepository.Create(processEntity);
+
+            if (result < 1)
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+            //create approvel process views
+            var module = await _moduleRepository.GetById(process.ModuleId);
+
+            var hasProcessView = _viewRepository.DbContext.ViewFilters
+                .Include(x => x.View)
+                .Any(x => x.Field.Contains("process.process_requests.process_status") && !x.Deleted && x.View.ModuleId == module.Id);
+
+            if (!hasProcessView)
+            {
+                var pendingViewMyRecordsEntity = ViewHelper.CreateViewPendingProcessRecords(module);
+                var approvedViewMyRecordsEntity = ViewHelper.CreateViewApprovedProcessRecords(module);
+                var rejectedViewMyRecordsEntity = ViewHelper.CreateViewRejectedProcessRecords(module);
+                var pendingFromMeViewMyRecordsEntity = ViewHelper.CreateViewPendingFromMeProcessRecords(module, processEntity);
+
+                await _viewRepository.Create(pendingViewMyRecordsEntity);
+                await _viewRepository.Create(approvedViewMyRecordsEntity);
+                await _viewRepository.Create(rejectedViewMyRecordsEntity);
+                await _viewRepository.Create(pendingFromMeViewMyRecordsEntity);
+            }
+
+            var uri = Request.RequestUri;
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
+        }
+
+        [Route("update/{id:int}"), HttpPut]
+        public async Task<dynamic> Update([FromUri]int id, [FromBody]ProcessBindingModel process)
+        {
+            var processEntity = await _processRepository.GetById(id);
+
+            if (processEntity == null)
+                return NotFound();
+
+            var currentFilterIds = processEntity.Filters.Select(x => x.Id).ToList();
+            var currentApproverIds = processEntity.Approvers.Select(x => x.Id).ToList();
+            await ProcessHelper.UpdateEntity(process, processEntity, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            await _processRepository.Update(processEntity, currentFilterIds, currentApproverIds);
+
+            await _processRepository.DeleteLogs(id);
+
+            return Ok(processEntity);
+        }
+
+        [Route("delete/{id:int}"), HttpDelete]
+        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        {
+            var processEntity = await _processRepository.GetById(id);
+
+            if (processEntity == null)
+                return NotFound();
+
+            await _processRepository.DeleteSoft(processEntity);
+            await _processRepository.DeleteLogs(id);
+
+            return Ok();
+        }
+    }
+}

@@ -1,0 +1,292 @@
+﻿﻿@using PrimeApps.App.Models
+@model PrimeApps.App.Models.RegisterBindingModel
+@{
+
+    ViewBag.Title = "Register";
+    Layout = "~/ViewsMvc/Shared/_LayoutAuth.cshtml";
+
+    var app = "crm";
+    var logo = ViewBag.AppInfo["logo"].Value;
+    string customLanguage = null;
+
+    if (ViewBag.AppInfo != null)
+    {
+        app = ViewBag.AppInfo["app"].Value;
+        ViewBag.Title = ViewBag.AppInfo["title"].Value;
+        customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
+    }
+    var otherLang = ViewBag.Lang == "tr" ? "en" : "tr";
+    var error = ViewBag.Error;
+    var officeSignIn = ViewBag.OfficeSignIn;
+}
+
+<div class="col-md-4 login-sec">
+    <img class="logo-img" src="@Url.Content(logo)" />
+    <span class="free-info-header">
+        @MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.Free)
+    </span>
+    @using (Html.BeginForm("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, OfficeSignIn = officeSignIn, AppId = ViewBag.AppId }, FormMethod.Post, new { @class = "login-form", role = "form", id = "register-form", autocomplete = "off", novalidate = "novalidate" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            <div class="input-group input-group-first">
+                <span class="input-group-addon">
+                    <span class="flaticon-profile7"></span>
+                </span>
+                <!--<label for="exampleInputEmail1" class="text-uppercase">Ad</label>-->
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control input-group-firstname", @placeholder = Html.Raw(@PrimeApps.App.Resources.Auth.Resource.Name) })
+                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @placeholder = Html.Raw(@PrimeApps.App.Resources.Auth.Resource.Surname) })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <span class="flaticon-email26"></span>
+                </span>
+                <!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+                @(ViewBag.ReadOnly != null
+                            ? Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email, @readonly = "readonly" })
+                            : Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email }))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="input-group">
+                <span class="input-group-addon">
+                    <span class="flaticon-technology"></span>
+                </span>
+                <!--<label for="exampleInputEmail1" class="text-uppercase">Telefon</label>-->
+                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Phone })
+            </div>
+        </div>
+        if (!officeSignIn)
+        {
+            <div class="form-group">
+                <div class="input-group">
+                    <span class="input-group-addon">
+                        <span class="flaticon-padlock50"></span>
+                    </span>
+                    <!--<label for="exampleInputEmail1" class="text-uppercase">Şifre</label>-->
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Password })
+                </div>
+            </div>
+        }
+        if (error != null)
+        {
+            <div class="server-error error">@PrimeApps.App.Resources.Auth.Resource.UserExist</div>
+        }
+        <div class="error-all"></div>
+        <div class="error-email"></div>
+        <div class="error-phone"></div>
+        <div class="error-pass"></div>
+        <div class="error-fullname"></div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right">@PrimeApps.App.Resources.Auth.Resource.CreateAccount</button>
+            @if (!officeSignIn)
+            {
+                <hr />
+                <button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@PrimeApps.App.Resources.Auth.Resource.RegisterWithOffice</button>
+            }
+            <div class="language">
+                @if (otherLang == "tr" && string.IsNullOrEmpty(customLanguage))
+                {
+                    <a href="@Url.Action("Register", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.TR</a> <span>|</span>
+                }
+                else if (string.IsNullOrEmpty(customLanguage))
+                {
+                    <a href="@Url.Action("Register", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.EN</a> <span>|</span>
+                }
+                <a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl})" class="">@PrimeApps.App.Resources.Auth.Resource.LoginForm</a>
+            </div>
+        </div>
+    }
+    <div class="form-group">
+
+        <hr style="margin-top: 0;" />
+        <p class="free-info">
+            @MvcHtmlString.Create(string.Format(@PrimeApps.App.Resources.Auth.Resource.CreateInfo, "<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">" + @PrimeApps.App.Resources.Auth.Resource.Terms + "</a>", "<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">" + @PrimeApps.App.Resources.Auth.Resource.Policy + "</a>"))
+        </p>
+    </div>
+</div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var postTry = false;
+            if ("@ViewBag.Lang" === "tr") {
+                $("#Phone").mask("(999) 999-9999");
+            }
+
+            $("#FirstName,#LastName, #Phone, #Email, #Password").keyup(function() {
+                $(".server-error").text("");
+                $(".server-error").removeClass("error");
+                if (postTry) {
+                    if (fieldsHasValue()) {
+                        $(".error-all").removeClass("error");
+                        $(".error-all").text("");
+                        emailValidator();
+                        passwordValidator();
+                        phoneValidator();
+                        fullNameValidator();
+                    } else {
+                        removeFieldErrors();
+                        $(".error-all").addClass("error");
+                        $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.RegisterFieldsRequired)");
+                    }
+                }
+            });
+
+            $(".btn-login").click(function(e) {
+                postTry = true;
+                var l = Ladda.create(this);
+                l.start();
+                if (fieldsHasValue()) {
+                    $(".error-all").removeClass("error");
+                    $(".error-all").text("");
+
+                    var isEmailValid = emailValidator();
+                    var isPasswordValid = passwordValidator();
+                    var isPhoneValid = phoneValidator();
+                    var isFullNameValid = fullNameValidator();
+
+                    if (!isEmailValid || !isPasswordValid || !isPhoneValid || !isFullNameValid) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        l.stop();
+                    } else {
+                        $("#register-form").submit();
+                    }
+                } else {
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.RegisterFieldsRequired)");
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                    l.stop();
+                }
+            });
+
+            function fieldsHasValue() {
+                var emailValue = $("#Email").val();
+                var passwordValue = $("#Password").val();
+                var firstNameValue = $("#FirstName").val();
+                var lastNameValue = $("#LastName").val();
+                var phoneValue = $("#Phone").val();
+
+                if (emailValue === "" || passwordValue === "" || firstNameValue === "" || lastNameValue === "" || phoneValue === "") {
+                    return false;
+                }
+                return true;
+            }
+
+            function fullNameValidator () {
+                var isValid = true;
+                var firstNameValue = $("#FirstName").val();
+                var lastNameValue = $("#LastName").val();
+
+                if (firstNameValue === "" || lastNameValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.RegisterFieldsRequired)");
+                    isValid = false;
+                } else if (firstNameValue.length < 2 || lastNameValue.length < 2) {
+                    $(".error-fullname").addClass("error");
+                    $(".error-fullname").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.NameMinimum)");
+                    isValid = false;
+                } else {
+                    $(".error-fullname").removeClass("error");
+                    $(".error-fullname").text("");
+                }
+                return isValid;
+            }
+
+            function phoneValidator() {
+                var isValid = true;
+                var phoneValue = $("#Phone").val().replace("(", "").replace(")", "").replace(/\_/g, "").replace("-", "").replace(/\ /g,"");
+
+                if (phoneValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.RegisterFieldsRequired)");
+                    isValid = false;
+                } else if ("@ViewBag.Lang" === "tr" && (phoneValue[0] !== "5" || phoneValue.length < 10)) {
+                    isValid = false;
+                    $(".error-phone").addClass("error");
+                    $(".error-phone").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.InvalidPhone)");
+                } else {
+                    $(".error-phone").removeClass("error");
+                    $(".error-phone").text("");
+                }
+                return isValid;
+            }
+
+            function emailValidator() {
+                var isValid = true;
+                var fieldValue = $("#Email").val().toLowerCase().replace(/\ /g, "");
+                var result = /^[a-z0-9._%+-]+@@[a-z0-9.-]+$/.test(fieldValue);
+                if (fieldValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.RegisterFieldsRequired)");
+                    isValid = false;
+                } else if (!result) {
+                    $(".error-email").addClass("error");
+                    $(".error-email").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.InvalidEmail)");
+                    isValid = false;
+                } else {
+                    $(".error-email").removeClass("error");
+                    $(".error-email").text("");
+                }
+                return isValid;
+            }
+
+            function passwordValidator() {
+                var isValid = true;
+                var fieldValue = $("#Password").val();
+
+                if (fieldValue === undefined) {
+                    return isValid;
+                }
+
+                if (fieldValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.RegisterFieldsRequired)");
+                    isValid = false;
+                } else if (fieldValue.length < 6) {
+                    $(".error-pass").addClass("error");
+                    $(".error-pass").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordMinimum)");
+                    isValid = false;
+                } else {
+                    $(".error-pass").removeClass("error");
+                    $(".error-pass").text("");
+                }
+                return isValid;
+            }
+
+            function removeFieldErrors() {
+                $(".error-pass").removeClass("error");
+                $(".error-pass").text("");
+                $(".error-email").removeClass("error");
+                $(".error-email").text("");
+                $(".error-firstname").removeClass("error");
+                $(".error-firstname").text("");
+                $(".error-lastname").removeClass("error");
+                $(".error-lastname").text("");
+                $(".error-phone").removeClass("error");
+                $(".error-phone").text("");
+                $(".error-fullname").removeClass("error");
+                $(".error-fullname").text("");
+                $(".error").text("");
+            }
+
+            $("input").focus(function(e) {
+                $(e.target).closest(".input-group").addClass("input-focus");
+            });
+
+            $("input").blur(function(e) {
+                $(e.target).closest(".input-group").removeClass("input-focus");
+            });
+        });
+    </script>
+}

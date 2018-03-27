@@ -1,0 +1,126 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Http;
+using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.App.ActionFilters;
+using PrimeApps.Model.Entities.Application;
+using System.Linq;
+using PrimeApps.Model.Common.Role;
+using PrimeApps.Model.Helpers;
+
+namespace PrimeApps.App.Controllers
+{
+    [RoutePrefix("api/role"), Authorize, SnakeCase]
+    public class RoleController : BaseController
+    {
+        private IRoleRepository _roleRepository;
+        private IUserRepository _userRepository;
+        private Warehouse _warehouse;
+        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, Warehouse warehouse)
+        {
+            _roleRepository = roleRepository;
+            _userRepository = userRespository;
+            _warehouse = warehouse;
+        }
+
+        [Route("find"), HttpPost]
+        public async Task<Role> Find([FromUri]int id)
+        {
+            return await _roleRepository.GetByIdAsync(id);
+        }
+
+        [Route("find_all"), HttpPost]
+        public async Task<IEnumerable<RoleDTO>> FindAll()
+        {
+            IEnumerable<RoleDTO> roles = await _roleRepository.GetAllAsync();
+            
+            return roles;
+        }
+
+        [Route("create"), HttpPost]
+        public async Task Create(RoleDTO role)
+        {
+            await _roleRepository.CreateAsync(new Role()
+            {
+                LabelEn = role.LabelEn,
+                LabelTr = role.LabelTr,
+                DescriptionEn = role.DescriptionEn,
+                DescriptionTr = role.DescriptionTr,
+                Master = role.Master,
+                OwnersList = role.Owners,
+                ReportsToId = role.ReportsTo,
+                ShareData = role.ShareData
+            });
+        }
+
+        [Route("update"), HttpPut]
+        public async Task Update([FromBody]RoleDTO role)
+        {
+            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
+
+            if (!hasAdministrativeRights) return;
+
+            Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
+            if (roleToUpdate == null) return;
+
+            await _roleRepository.UpdateAsync(roleToUpdate, role);
+        }
+
+        [Route("delete"), HttpDelete]
+        public async Task Delete([FromUri]int id, [FromUri]int transferRoleId)
+        {
+            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
+
+            if (!hasAdministrativeRights) return;
+
+            await _roleRepository.RemoveAsync(id, transferRoleId);
+
+            await Cache.Tenant.UpdateRoles(AppUser.TenantId);
+        }
+
+        [Route("update_user_role"), HttpPut]
+        public async Task UpdateUserRole([FromUri]int userId, [FromUri]int roleId)
+        {
+            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
+
+            if (!hasAdministrativeRights) return;
+
+            var user = await _userRepository.GetById(userId);
+
+            if (user.RoleId.HasValue)
+            {
+                await _roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
+            }
+
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+            await _roleRepository.AddUserAsync(user.Id, roleId);
+
+            await Cache.Tenant.UpdateRoles(AppUser.TenantId);
+        }
+
+        [Route("update_user_role_bulk"), HttpPut]
+        public async Task UpdateUserRoleBulk()
+        {
+            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
+
+            if (!hasAdministrativeRights) return;
+
+            var users = await _userRepository.GetAllAsync();
+
+            foreach (var user in users)
+            {
+                if (user.RoleId.HasValue)
+                {
+                    await _roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
+                }
+
+                _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+                await _roleRepository.AddUserAsync(user.Id, user.RoleId.Value);
+
+                await Cache.Tenant.UpdateRoles(AppUser.TenantId);
+            }
+        }
+    }
+}

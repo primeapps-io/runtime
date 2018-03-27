@@ -1,0 +1,56 @@
+﻿@using System.Globalization
+@using System.Threading
+@{
+
+    ViewBag.Title = "Error";
+    var language = Request.Cookies["_lang"];
+    var lang = language != null ? language.Value : "tr";
+    var a = 
+    Thread.CurrentThread.CurrentUICulture = lang == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Error</title>
+</head>
+<style>
+    #fof{display:block; width:100%; padding:150px 0; line-height:1.6em; text-align:center;}
+    #fof .hgroup h1, #fof .hgroup h2 {
+        margin: 0;
+        padding: 0;
+        text-transform: uppercase;
+        font-family: sans-serif;
+    }
+    #fof h1 {
+        font-size: 25px;
+        font-family: sans-serif;
+    }
+    #fof p {
+        display: block;
+        margin: 15px 0 0 0;
+        padding: 0;
+        font-size: 16px;
+        font-family: sans-serif;
+    }
+    #fof p:first-child{margin-top:0;}
+</style>
+<body>
+<div class="wrapper row2">
+    <div id="container" class="clear">
+       
+        <div id="fof" class="clear">
+           
+            <div class="hgroup">
+                <img src="~/images/404image.png"/>
+            </div>
+            
+            <h1>@PrimeApps.App.Resources.Auth.Resource.NotFoundTitle</h1>
+            <p>@PrimeApps.App.Resources.Auth.Resource.NotFoundContent</p>
+            <p><a href="/">@PrimeApps.App.Resources.Auth.Resource.Home</a></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
