@@ -2,6 +2,9 @@
 using System.Web;
 using System.Web.Http.Filters;
 using Elmah;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
+using ExceptionFilterAttribute = System.Web.Http.Filters.ExceptionFilterAttribute;
 
 namespace PrimeApps.App.ActionFilters
 {

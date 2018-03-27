@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 using Elmah;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.ActionFilters
 {
