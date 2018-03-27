@@ -10,10 +10,10 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("id")]
         public Guid Id { get; set; }
 
-        [Column("tenant_id"), Index]
+        [Column("tenant_id")]//, Index]
         public int TenantId { get; set; }
 
-        [Column("database_name"), Index]
+        [Column("database_name")]//, Index]
         public string DatabaseName { get; set; }
 
         [Column("database_user")]
@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("powerbi_workspace_id")]
         public string PowerbiWorkspaceId { get; set; }
 
-        [Column("completed"), Index]
+        [Column("completed")]//, Index]
         public bool Completed { get; set; }
 
         internal static void SetCompleted(PlatformWarehouse warehouseEntity, string userEmail)
