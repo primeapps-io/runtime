@@ -12,6 +12,9 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Authentication;
+using AuthenticationTicket = Microsoft.Owin.Security.AuthenticationTicket;
+using TicketDataFormat = Microsoft.Owin.Security.DataHandler.TicketDataFormat;
 
 namespace PrimeApps.App.Handlers
 {

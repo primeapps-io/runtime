@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
+using ActionFilterAttribute = System.Web.Http.Filters.ActionFilterAttribute;
 
 namespace PrimeApps.App.ActionFilters
 {
