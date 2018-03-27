@@ -31,18 +31,18 @@
                                            ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination" />
 
                                     <textarea name="{{field.name}}"
-                                          class="form-control ng-animate-disabled"
-                                          tabindex="{{field.order}}"
-                                          placeholder="{{field.placeholder}}"
-                                          ng-model="recordModal[field.name]"
-                                          ng-change="fieldValueChange(field);"
-                                          ng-required="{{field.validation.required}}"
-                                          ng-minlength="field.validation.min_length || 0"
-                                          maxlength="{{field.validation.max_length || 500}}"
-                                          ng-readonly="field.validation.readonly"
-                                          pattern="{{field.validation.pattern}}"
-                                          auto-grow
-                                          ng-if="field.data_type === 'text_multi'"></textarea>
+                                              class="form-control ng-animate-disabled"
+                                              tabindex="{{field.order}}"
+                                              placeholder="{{field.placeholder}}"
+                                              ng-model="recordModal[field.name]"
+                                              ng-change="fieldValueChange(field);"
+                                              ng-required="{{field.validation.required}}"
+                                              ng-minlength="field.validation.min_length || 0"
+                                              maxlength="{{field.validation.max_length || 500}}"
+                                              ng-readonly="field.validation.readonly"
+                                              pattern="{{field.validation.pattern}}"
+                                              auto-grow
+                                              ng-if="field.data_type === 'text_multi'"></textarea>
 
                                     <input type="text"
                                            name="{{field.name}}"
@@ -207,6 +207,20 @@
                                            ng-value="recordModal[field.combination.field_1] && recordModal[field.combination.field_2] ? recordModal[field.combination.field_1] + ' ' + recordModal[field.combination.field_2] : null"
                                            ng-readonly="true"
                                            ng-if="field.data_type === 'text_single' && field.combination" />
+
+                                    <input type="text"
+                                           name="{{field.name}}"
+                                           class="form-control ng-animate-disabled"
+                                           style="{{field.style.input}}"
+                                           tabindex="{{field.order}}"
+                                           placeholder="{{field.placeholder}}"
+                                           ng-model="recordModal[field.name]"
+                                           ng-required="{{field.validation.required}}"
+                                           ng-readonly="field.validation.readonly || (id && !field.editable)"
+                                           ng-minlength="field.validation.min_length || 0"
+                                           maxlength="{{field.validation.max_length || 400}}"
+                                           pattern="{{field.validation.pattern}}"
+                                           ng-if="field.data_type === 'url' " />
 
                                     <tags-input name="{{field.name}}"
                                                 tabindex="{{field.order}}"
