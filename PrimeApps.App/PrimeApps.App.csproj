@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup>
