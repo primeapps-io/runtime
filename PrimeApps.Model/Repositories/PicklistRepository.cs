@@ -4,7 +4,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 namespace PrimeApps.Model.Repositories
 {
     public class PicklistRepository : RepositoryBaseTenant, IPicklistRepository
