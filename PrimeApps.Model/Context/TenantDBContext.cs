@@ -132,7 +132,7 @@ namespace PrimeApps.Model.Context
             }
         }
 
-        private void CreateCustomModelMapping(DbModelBuilder modelBuilder)
+        private void CreateCustomModelMapping(ModelBuilder modelBuilder)
         {
             //Many to many relationship users <-> user_groups
             modelBuilder.Entity<TenantUser>()
