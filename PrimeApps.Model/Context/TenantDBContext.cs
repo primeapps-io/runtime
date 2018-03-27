@@ -1,12 +1,11 @@
 ﻿using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using System;
-using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.Model.Context
 {
@@ -24,35 +23,15 @@ namespace PrimeApps.Model.Context
         /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
         /// Instead use <see cref="PlatformDBContext"/> 
         /// </summary>
-        public TenantDBContext() : base("PostgreSqlConnection")
+        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options)
         {
-            Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
+            /*Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
             Configuration.LazyLoadingEnabled = false;
-            Configuration.ProxyCreationEnabled = false;
+            Configuration.ProxyCreationEnabled = false;*/
         }
+		
 
-        /// <summary>
-        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
-        /// Instead use <see cref="PlatformDBContext"/> 
-        /// </summary>
-        /// <param name="tenantId"></param>
-        public TenantDBContext(int tenantId) : this()
-        {
-            _tenantId = tenantId;
-            base.Database.Connection.ConnectionString = Postgres.GetConnectionString(tenantId);
-        }
-
-        /// <summary>
-        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
-        /// Instead use <see cref="PlatformDBContext"/> 
-        /// </summary>
-        /// <param name="databaseName"></param>
-        public TenantDBContext(string databaseName) : this()
-        {
-            base.Database.Connection.ConnectionString = Postgres.GetConnectionString(databaseName);
-        }
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateCustomModelMapping(modelBuilder);
 
@@ -69,25 +48,28 @@ namespace PrimeApps.Model.Context
                 SetDefaultValues();
                 return base.SaveChanges();
             }
-            catch (DbEntityValidationException ex)
+            catch (Exception ex/*DbEntityValidationException ex*/)
             {
-                string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage));
-                throw new DbEntityValidationException(errorMessages);
-            }
+				//string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage));
+				//throw new DbEntityValidationException(errorMessages);
+				throw new Exception(ex.Message);
+
+			}
         }
 
-        public override Task<int> SaveChangesAsync()
+        public Task<int> SaveChangesAsync()
         {
             try
             {
                 SetDefaultValues();
                 return base.SaveChangesAsync();
             }
-            catch (DbEntityValidationException ex)
-            {
-                string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage));
-                throw new DbEntityValidationException(errorMessages);
-            }
+            catch (Exception ex/*DbEntityValidationException ex*/)
+			{
+                //string errorMessages = string.Join("; ", ex.EntityValidationErrors.SelectMany(x => x.ValidationErrors).Select(x => x.ErrorMessage));
+                //throw new DbEntityValidationException(errorMessages);
+				throw new Exception(ex.Message);
+			}
         }
 
         public int GetCurrentUserId()
@@ -130,7 +112,7 @@ namespace PrimeApps.Model.Context
             }
         }
 
-        private void CreateCustomModelMapping(DbModelBuilder modelBuilder)
+        private void CreateCustomModelMapping(ModelBuilder modelBuilder)
         {
             //Many to many relationship users <-> user_groups
             modelBuilder.Entity<TenantUser>()

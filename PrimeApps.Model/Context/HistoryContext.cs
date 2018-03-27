@@ -1,22 +1,35 @@
-﻿using System.Data.Common;
-using System.Data.Entity;
-using System.Data.Entity.Migrations.History;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 
 
 namespace PrimeApps.Model.Context
 {
-    public class PostgreHistoryContext : HistoryContext
+    public class PostgreHistoryContext : NpgsqlHistoryRepository
+	{
+		public PostgreHistoryContext(
+		IDatabaseCreator databaseCreator, IRawSqlCommandBuilder rawSqlCommandBuilder,
+		NpgsqlRelationalConnection connection, IDbContextOptions options,
+        IMigrationsModelDiffer modelDiffer,
+        IMigrationsSqlGenerator migrationsSqlGenerator,
+		IRelationalAnnotationProvider annotations,
+		ISqlGenerationHelper sqlGenerationHelper)
+        : base(databaseCreator, rawSqlCommandBuilder, connection, options,
+            modelDiffer, migrationsSqlGenerator, annotations, sqlGenerationHelper)
     {
-        public PostgreHistoryContext(DbConnection dbConnection, string defaultSchema) : base(dbConnection, "public") { }
+    }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<HistoryRow>().ToTable(tableName: "_migration_history", schemaName: "public");
-            modelBuilder.Entity<HistoryRow>().Property(p => p.MigrationId).HasColumnName("migration_id");
-            modelBuilder.Entity<HistoryRow>().Property(p => p.ContextKey).HasColumnName("context_key");
-            modelBuilder.Entity<HistoryRow>().Property(p => p.Model).HasColumnName("model");
-            modelBuilder.Entity<HistoryRow>().Property(p => p.ProductVersion).HasColumnName("product_version");
-        }
+		protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
+		{
+			base.ConfigureTable(history);
+			history.ToTable("_migration_history", "public");
+			history.Property(h => h.MigrationId).HasColumnName("migration_id");
+			history.Property(h => h.ProductVersion).HasColumnName("product_version");
+		}
     }
 }
