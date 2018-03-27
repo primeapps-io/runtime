@@ -3,9 +3,8 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Hosting;
-using System.Web.Http;
-using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -14,7 +13,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/platform"), Authorize, SnakeCase]
+    [Route("api/platform"), Authorize, SnakeCase]
     public class PlatformController : BaseController
     {
         private IPlatformRepository _platformRepository;
@@ -39,7 +38,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("app_get_by_id/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetApp(int id)
+        public async Task<IActionResult> GetApp(int id)
         {
             var userId = AppUser.Id;
 
@@ -62,7 +61,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("app_get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAllApp()
+        public async Task<IActionResult> GetAllApp()
         {
             var userId = AppUser.Id;
 
@@ -85,7 +84,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("app_create"), HttpPost]
-        public async Task<IHttpActionResult> CreateApp(AppBindingModel app)
+        public async Task<IActionResult> CreateApp(AppBindingModel app)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -120,7 +119,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("app_update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateApp([FromUri]int id, [FromBody]AppBindingModel app)
+        public async Task<IActionResult> UpdateApp([FromRoute]int id, [FromBody]AppBindingModel app)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -146,7 +145,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("app_delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteApp([FromUri]int id)
+        public async Task<IActionResult> DeleteApp([FromRoute]int id)
         {
             var userId = AppUser.Id;
 
@@ -168,7 +167,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("app_logo_upload"), HttpPost]
-        public async Task<IHttpActionResult> UploadLogo()
+        public async Task<IActionResult> UploadLogo()
         {
             var requestStream = await Request.Content.ReadAsStreamAsync();
             var parser = new HttpMultipartParser(requestStream, "file");
@@ -214,7 +213,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("office_app_create"), HttpGet]
-        public async Task<IHttpActionResult> CreateOfficeApp(int appId)
+        public async Task<IActionResult> CreateOfficeApp(int appId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
@@ -10,7 +11,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/settings"), Authorize, SnakeCase]
+    [Route("api/settings"), Authorize, SnakeCase]
     public class SettingController : BaseController
     {
         private ISettingRepository _settingRepository;
@@ -23,7 +24,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var settingEntity = await _settingRepository.GetById(id);
 
@@ -34,7 +35,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_key/{settingType}/{key}"), HttpGet]
-        public async Task<IHttpActionResult> GetByKey(SettingType settingType, string key, [FromUri]int? userId = 0)
+        public async Task<IActionResult> GetByKey(SettingType settingType, string key, [FromUri]int? userId = 0)
         {
             if (settingType == SettingType.Email || settingType == SettingType.SMS || settingType == SettingType.Phone)
                 userId = AppUser.Id;
@@ -60,7 +61,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(SettingBindingModel setting)
+        public async Task<IActionResult> Create(SettingBindingModel setting)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -93,7 +94,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]SettingBindingModel setting)
+        public async Task<IActionResult> Update([FromUri]int id, [FromBody]SettingBindingModel setting)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -122,7 +123,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromUri]int id)
         {
             var settingEntity = await _settingRepository.GetById(id);
 

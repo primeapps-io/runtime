@@ -75,7 +75,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<dynamic> Update([FromUri]int id, [FromBody]WorkflowBindingModel workflow)
+        public async Task<dynamic>  Update([FromUri]int id, [FromBody]WorkflowBindingModel workflow)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
 
@@ -92,7 +92,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromUri]int id)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
 

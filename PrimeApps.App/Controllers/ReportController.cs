@@ -12,7 +12,7 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/report"), Authorize, SnakeCase]
+    [Route("api/report"), Authorize, SnakeCase]
     public class ReportController : BaseController
     {
         private IReportRepository _reportRepository;
@@ -31,7 +31,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var report = _reportRepository.GetAllBasic();
 
@@ -39,14 +39,14 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_report/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetReport(int Id)
+        public async Task<IActionResult> GetReport(int Id)
         {
             var report = await _reportRepository.GetById(Id);
 
             return Ok(report);
         }
         [Route("get_chart/{report:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetChart(int report)
+        public async Task<IActionResult> GetChart(int report)
         {
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
@@ -75,7 +75,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_widget/{report:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetWidget(int report)
+        public async Task<IActionResult> GetWidget(int report)
         {
             var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser);
             var widget = await _reportRepository.GetWidgetByReportId(report);
@@ -87,7 +87,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(ReportBindingModel report)
+        public async Task<IActionResult> Create(ReportBindingModel report)
         {
             ReportHelper.Validate(report, ModelState);
 
@@ -129,7 +129,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]ReportBindingModel report)
+        public async Task<IActionResult> Update([FromUri]int id, [FromBody]ReportBindingModel report)
         {
             ReportHelper.Validate(report, ModelState);
 
@@ -179,7 +179,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromUri]int id)
         {
             var reportEntity = await _reportRepository.GetById(id);
 
@@ -192,7 +192,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_categories"), HttpGet]
-        public IHttpActionResult GetCategories()
+        public IActionResult GetCategories()
         {
             var reportCategories = _reportRepository.GetCategories(AppUser.Id);
 
@@ -200,7 +200,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_category"), HttpPost]
-        public async Task<IHttpActionResult> CreateCategory(ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> CreateCategory(ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -216,7 +216,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_category/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateCategory([FromUri]int id, [FromBody]ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> UpdateCategory([FromUri]int id, [FromBody]ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -233,7 +233,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_category/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteCategory([FromUri]int id)
+        public async Task<IActionResult> DeleteCategory([FromUri]int id)
         {
             var reportCategoryEntity = await _reportRepository.GetCategoryById(id);
 

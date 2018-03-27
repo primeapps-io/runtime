@@ -1,21 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
-using PrimeApps.App.ActionFilters;
+﻿using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.Model.Entities;
-using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/user_custom_shares"), Authorize, SnakeCase]
+    [Route("api/user_custom_shares"), Authorize, SnakeCase]
     public class UserCustomShareController : BaseController
     {
         private IUserCustomShareRepository _userOwnerRepository;
@@ -26,7 +20,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var userOwnerEntities = await _userOwnerRepository.GetAllBasic();
 
@@ -34,7 +28,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_userid/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetByUserId(int id)
+        public async Task<IActionResult> GetByUserId(int id)
         {
             var userOwnerEntity = await _userOwnerRepository.GetByUserId(id);
 
@@ -45,7 +39,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var userOwnerEntity = await _userOwnerRepository.GetById(id);
 
@@ -56,7 +50,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(UserCustomShareBindingModels userOwner)
+        public async Task<IActionResult> Create(UserCustomShareBindingModels userOwner)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -72,7 +66,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]UserCustomShareBindingModels userOwner)
+        public async Task<IActionResult> Update([FromUri]int id, [FromBody]UserCustomShareBindingModels userOwner)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -89,7 +83,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromUri]int id)
         {
             var userOwnerEntity = await _userOwnerRepository.GetByIdBasic(id);
 

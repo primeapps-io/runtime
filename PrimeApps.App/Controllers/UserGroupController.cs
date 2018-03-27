@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -23,7 +24,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var userGroupEntity = await _userGroupRepository.GetById(id);
 
@@ -40,7 +41,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(UserGroupBindingModel userGroup)
+        public async Task<IActionResult> Create(UserGroupBindingModel userGroup)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -63,7 +64,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]UserGroupBindingModel userGroup)
+        public async Task<IActionResult> Update([FromUri]int id, [FromBody]UserGroupBindingModel userGroup)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -85,7 +86,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromUri]int id)
         {
             var userGroupEntity = await _userGroupRepository.GetById(id);
 

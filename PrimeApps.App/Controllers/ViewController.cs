@@ -1,7 +1,8 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -22,7 +23,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -35,7 +36,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all/{moduleId:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetAll(int moduleId)
+        public async Task<IActionResult> GetAll(int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");
@@ -47,7 +48,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IHttpActionResult> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             var viewEntities = await _viewRepository.GetAll();
             var viewsViewModel = ViewHelper.MapToViewModel(viewEntities);
@@ -56,7 +57,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(ViewBindingModel view)
+        public async Task<IActionResult> Create(ViewBindingModel view)
         {
             if (!RecordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
                 ModelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
@@ -75,7 +76,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]ViewBindingModel view)
+        public async Task<IActionResult> Update([FromUri]int id, [FromBody]ViewBindingModel view)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -115,7 +116,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_view_state/{moduleId:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetViewState(int moduleId)
+        public async Task<IActionResult> GetViewState(int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");
@@ -126,7 +127,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("set_view_state"), HttpPut]
-        public async Task<IHttpActionResult> SetViewState(ViewStateBindingModel viewState)
+        public async Task<IActionResult> SetViewState(ViewStateBindingModel viewState)
         {
             var viewStateEntity = await _viewRepository.GetViewState(viewState.ModuleId, AppUser.Id);
 
