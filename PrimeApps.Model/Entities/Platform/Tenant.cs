@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("id"), DatabaseGenerated(DatabaseGeneratedOption.None), Key, Required]
         public int Id { get; set; }
 
-        [Column("guid_id"), Index]
+        [Column("guid_id")]//, Index]
         public Guid GuidId { get; set; }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Entities.Platform
         /// <summary>
         /// Language
         /// </summary>
-        [Column("language"), Index]
+        [Column("language")]//, Index]
         public string Language { get; set; }
 
         /// <summary>
@@ -45,25 +45,25 @@ namespace PrimeApps.Model.Entities.Platform
         /// <summary>
         /// Has Sample Data
         /// </summary>
-        [Column("has_sample_data"), Index]
+        [Column("has_sample_data")]//, Index]
         public bool? HasSampleData { get; set; }
 
         /// <summary>
         /// Has Business Intelligence
         /// </summary>
-        [Column("has_analytics"), Index]
+        [Column("has_analytics")]//, Index]
         public bool? HasAnalytics { get; set; }
 
         /// <summary>
         /// Has Ofisim Phone
         /// </summary>
-        [Column("has_phone"), Index]
+        [Column("has_phone")]//, Index]
         public bool? HasPhone { get; set; }
 
         /// <summary>
         /// Custom Domain
         /// </summary>
-        [Column("custom_domain"), Index]
+        [Column("custom_domain")]//, Index]
         public string CustomDomain { get; set; }
 
         /// <summary>
@@ -75,13 +75,13 @@ namespace PrimeApps.Model.Entities.Platform
         /// <summary>
         /// Mail Sender Email
         /// </summary>
-        [Column("mail_sender_email"), Index]
+        [Column("mail_sender_email")]//, Index]
         public string MailSenderEmail { get; set; }
 
         /// <summary>
         /// Custom Title
         /// </summary>
-        [Column("custom_title"), Index]
+        [Column("custom_title")]//, Index]
         public string CustomTitle { get; set; }
 
         /// <summary>
@@ -108,34 +108,34 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("custom_image")]
         public string CustomImage { get; set; }
 
-        [Column("user_license_count"), Index]
+        [Column("user_license_count")]//, Index]
         public int UserLicenseCount { get; set; }
 
-        [Column("module_license_count"), Index]
+        [Column("module_license_count")]//, Index]
         public int ModuleLicenseCount { get; set; }
 
-        [Column("has_analytics_license"), Index]
+        [Column("has_analytics_license")]//, Index]
         public bool HasAnalyticsLicense { get; set; }
 
-        [Column("is_paid_customer"), Index]
+        [Column("is_paid_customer")]//, Index]
         public bool IsPaidCustomer { get; set; }
 
-        [Column("is_deactivated"), Index]
+        [Column("is_deactivated")]//, Index]
         public bool IsDeactivated { get; set; }
 
-        [Column("is_suspended"), Index]
+        [Column("is_suspended")]//, Index]
         public bool IsSuspended { get; set; }
 
-        [Column("deactivated_at"), Index]
+        [Column("deactivated_at")]//, Index]
         public DateTime? DeactivatedAt { get; set; }
 
-        [Column("suspended_at"), Index]
+        [Column("suspended_at")]//, Index]
         public DateTime? SuspendedAt { get; set; }
 
         /// <summary>
         /// Owner of the instance.
         /// </summary>
-        [Column("owner"), ForeignKey("Owner"), Index]
+        [Column("owner"), ForeignKey("Owner")]//, Index]
         public int OwnerId { get; set; }
 
         public virtual PlatformUser Owner { get; set; }

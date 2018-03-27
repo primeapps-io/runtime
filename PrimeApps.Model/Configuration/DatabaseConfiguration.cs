@@ -1,7 +1,5 @@
 ﻿using PrimeApps.Model.Context;
 using System;
-using System.Data.Entity;
-using System.Data.Entity.SqlServer;
 
 namespace PrimeApps.Model.Configuration
 {
