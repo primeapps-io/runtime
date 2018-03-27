@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Data.Entity;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PrimeApps.App.Cache;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Results;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("attach"), Authorize]
+    [Route("attach"), Authorize]
     public class AttachController : Controller
     {
         [Route("download"), HttpGet]

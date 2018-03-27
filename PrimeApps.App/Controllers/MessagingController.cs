@@ -8,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/messaging")]
+    [Route("api/messaging")]
     [Authorize]
     public class MessagingController : BaseController
     {
@@ -32,7 +33,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [Route("send_sms")]
-        public async Task<IHttpActionResult> SendSMS(SMSRequest request)
+        public async Task<IActionResult> SendSMS(SMSRequest request)
         {
             var randomRevNumber = Helpers.Utils.CreateRandomString(20);
 
@@ -87,7 +88,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [Route("send_email")]
-        public async Task<IHttpActionResult> SendEMail(EMailRequest request)
+        public async Task<IActionResult> SendEMail(EMailRequest request)
         {
             var randomRevNumber = Helpers.Utils.CreateRandomString(20);
 
@@ -145,7 +146,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("send_external_email")]
-        public async Task<IHttpActionResult> SendExternalEmail(ExternalEmail emailRequest)
+        public async Task<IActionResult> SendExternalEmail(ExternalEmail emailRequest)
         {
             if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
             {
@@ -170,7 +171,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="newSettings"></param>
         /// <returns></returns>
         [Route("update_sms_settings")]
-        public async Task<IHttpActionResult> UpdateSMSSettings(JObject newSettings)
+        public async Task<IActionResult> UpdateSMSSettings(JObject newSettings)
         {
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
@@ -201,7 +202,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="newSettings"></param>
         /// <returns></returns>
         [Route("update_email_settings")]
-        public async Task<IHttpActionResult> UpdateEMailSettings(JObject newSettings)
+        public async Task<IActionResult> UpdateEMailSettings(JObject newSettings)
         {
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
@@ -232,7 +233,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="newSettings"></param>
         /// <returns></returns>
         [Route("update_personal_email_settings")]
-        public async Task<IHttpActionResult> UpdatePersonalEMailSettings(JObject newSettings)
+        public async Task<IActionResult> UpdatePersonalEMailSettings(JObject newSettings)
         {
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
@@ -266,7 +267,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("remove_email_settings")]
-        public async Task<IHttpActionResult> RemoveEMailSettings()
+        public async Task<IActionResult> RemoveEMailSettings()
         {
             var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.Email);
             if (result)
@@ -281,7 +282,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("remove_personal_email_settings")]
-        public async Task<IHttpActionResult> RemovePersonalEMailSettings()
+        public async Task<IActionResult> RemovePersonalEMailSettings()
         {
             var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.Email, AppUser.Id);
             if (result)
@@ -296,7 +297,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("remove_sms_settings")]
-        public async Task<IHttpActionResult> RemoveSMSSettings()
+        public async Task<IActionResult> RemoveSMSSettings()
         {
             var result = await _settingRepository.DeleteAsync(Model.Enums.SettingType.SMS);
             if (result)

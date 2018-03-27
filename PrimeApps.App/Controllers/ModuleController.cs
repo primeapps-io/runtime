@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
@@ -16,7 +17,7 @@ using ModuleHelper = PrimeApps.App.Helpers.ModuleHelper;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/module"), Authorize, SnakeCase]
+    [Route("api/module"), Authorize, SnakeCase]
     public class ModuleController : BaseController
     {
         private IModuleRepository _moduleRepository;
@@ -35,7 +36,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_id/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var module = await _moduleRepository.GetById(id);
 
@@ -46,7 +47,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_name/{name:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpGet]
-        public async Task<IHttpActionResult> GetByName(string name)
+        public async Task<IActionResult> GetByName(string name)
         {
             var module = await _moduleRepository.GetByName(name);
 
@@ -69,7 +70,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IHttpActionResult> Create(ModuleBindingModel module)
+        public async Task<IActionResult> Create(ModuleBindingModel module)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -159,7 +160,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> Update([FromUri]int id, [FromBody]ModuleBindingModel module)
+        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]ModuleBindingModel module)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -227,7 +228,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> Delete([FromUri]int id)
+        public async Task<IActionResult> Delete([FromRoute]int id)
         {
             var moduleEntity = await _moduleRepository.GetById(id);
 
@@ -243,7 +244,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_relation/{moduleId:int}"), HttpPost]
-        public async Task<IHttpActionResult> CreateRelation([FromUri]int moduleId, [FromBody]RelationBindingModel relation)
+        public async Task<IActionResult> CreateRelation([FromRoute]int moduleId, [FromBody]RelationBindingModel relation)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -288,7 +289,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateRelation([FromUri]int moduleId, [FromUri]int id, [FromBody]RelationBindingModel relation)
+        public async Task<IActionResult> UpdateRelation([FromRoute]int moduleId, [FromRoute]int id, [FromBody]RelationBindingModel relation)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -310,7 +311,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_relation/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteRelation([FromUri]int id)
+        public async Task<IActionResult> DeleteRelation([FromRoute]int id)
         {
             var relationEntity = await _moduleRepository.GetRelation(id);
 
@@ -323,7 +324,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_dependency/{moduleId:int}"), HttpPost]
-        public async Task<IHttpActionResult> CreateDependency([FromUri]int moduleId, [FromBody]DependencyBindingModel dependency)
+        public async Task<IActionResult> CreateDependency([FromRoute]int moduleId, [FromBody]DependencyBindingModel dependency)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -344,7 +345,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateDependency([FromUri]int moduleId, [FromUri]int id, [FromBody]DependencyBindingModel dependency)
+        public async Task<IActionResult> UpdateDependency([FromRoute]int moduleId, [FromRoute]int id, [FromBody]DependencyBindingModel dependency)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -366,7 +367,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_field/{id:int}"), HttpPut]
-        public async Task<IHttpActionResult> UpdateField([FromUri]int id, [FromBody]FieldBindingModel field)
+        public async Task<IActionResult> UpdateField([FromRoute]int id, [FromBody]FieldBindingModel field)
         {
             var fieldEntity = await _moduleRepository.GetField(id);
 
@@ -380,7 +381,7 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("delete_dependency/{id:int}"), HttpDelete]
-        public async Task<IHttpActionResult> DeleteDependency([FromUri]int id)
+        public async Task<IActionResult> DeleteDependency([FromRoute]int id)
         {
             var dependencyEntity = await _moduleRepository.GetDependency(id);
 
@@ -393,7 +394,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_module_settings"), HttpGet]
-        public async Task<IHttpActionResult> GetModuleSettings()
+        public async Task<IActionResult> GetModuleSettings()
         {
             var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
 

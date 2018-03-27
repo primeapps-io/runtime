@@ -4,12 +4,12 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.User;
 
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/License")]
+    [Route("api/License")]
     public class LicenseController : BaseController
     {
         private ISettingRepository _settingRepository;
@@ -31,7 +31,7 @@ namespace PrimeApps.App.Controllers
         //[Route("GetAll")]
         //[ResponseType(typeof(LicenseUpgradeResult))]
         //[HttpPost]
-        //public IHttpActionResult GetAll()
+        //public IActionResult GetAll()
         //{
         //    IList<LicenseDTO> paidLicenses = new List<LicenseDTO>();
         //    LicenseUpgradeResult result = null;
@@ -53,7 +53,7 @@ namespace PrimeApps.App.Controllers
         //[Route("Upgrade")]
         //[ResponseType(typeof(void))]
         //[HttpPost]
-        //public async Task<IHttpActionResult> Upgrade(UpgradeRequest request)
+        //public async Task<IActionResult> Upgrade(UpgradeRequest request)
         //{
         //    crmUser user = null;
         //    int currentWorkgroupCount = 0;
@@ -185,7 +185,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("GetUserLicenseStatus")]
         [HttpPost]
-        public async Task<IHttpActionResult> GetUserLicenseStatus()
+        public async Task<IActionResult> GetUserLicenseStatus()
         {
             UserLicenseDTO userLicense = new UserLicenseDTO();
 
@@ -199,7 +199,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("SetUserLicenseCount")]
         [HttpGet]
-        public async Task<IHttpActionResult> SetUserLicenseCount(int tenantId, int count)
+        public async Task<IActionResult> SetUserLicenseCount(int tenantId, int count)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -214,7 +214,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("SetModuleLicenseCount")]
         [HttpGet]
-        public async Task<IHttpActionResult> SetModuleLicenseCount(int tenantId, int count)
+        public async Task<IActionResult> SetModuleLicenseCount(int tenantId, int count)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -229,7 +229,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("SetSoftPhoneLicenseCount")]
         [HttpGet]
-        public async Task<IHttpActionResult> SetSoftPhoneLicenseCount(int tenantId, int count)
+        public async Task<IActionResult> SetSoftPhoneLicenseCount(int tenantId, int count)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -254,7 +254,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("SetUserAnalyticsLicense")]
         [HttpGet]
-        public async Task<IHttpActionResult> SetUserAnalyticsLicense(string email, bool active)
+        public async Task<IActionResult> SetUserAnalyticsLicense(string email, bool active)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -276,7 +276,7 @@ namespace PrimeApps.App.Controllers
         /// <returns></returns>
         [Route("SetPaidCustomer")]
         [HttpGet]
-        public async Task<IHttpActionResult> SetPaidCustomer(int tenantId)
+        public async Task<IActionResult> SetPaidCustomer(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -299,7 +299,7 @@ namespace PrimeApps.App.Controllers
         /// <returns></returns>
         [Route("DeactivateAccount")]
         [HttpGet]
-        public async Task<IHttpActionResult> DeactivateAccount(int tenantId)
+        public async Task<IActionResult> DeactivateAccount(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -339,7 +339,7 @@ namespace PrimeApps.App.Controllers
         /// <returns></returns>
         [Route("ActivateAccount")]
         [HttpGet]
-        public async Task<IHttpActionResult> ActivateAccount(int tenantId)
+        public async Task<IActionResult> ActivateAccount(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
@@ -378,7 +378,7 @@ namespace PrimeApps.App.Controllers
         /// <returns></returns>
         [Route("SuspendAccount")]
         [HttpGet]
-        public async Task<IHttpActionResult> SuspendAccount(int tenantId)
+        public async Task<IActionResult> SuspendAccount(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Forbidden);
