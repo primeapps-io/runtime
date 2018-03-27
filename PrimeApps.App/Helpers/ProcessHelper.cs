@@ -15,8 +15,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.ApplicationInsights.AspNetCore;
-using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 
@@ -313,7 +311,7 @@ namespace PrimeApps.App.Helpers
                                         break;
                                 }
 
-                                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                                 domain = string.Format(domain, subdomain);
 
                                 //domain = "http://localhost:5554/";

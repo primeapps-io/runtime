@@ -200,29 +200,29 @@
                                            ng-change="fieldValueChange(field);"
                                            ng-if="field.data_type === 'checkbox'">
 
-                                <input type="text"
-                                       name="{{field.name}}"
-                                       class="form-control ng-animate-disabled"
-                                       tabindex="{{field.order}}"
-                                       ng-value="recordModal[field.combination.field_1] && recordModal[field.combination.field_2] ? recordModal[field.combination.field_1] + ' ' + recordModal[field.combination.field_2] : null"
-                                       ng-readonly="true"
-                                       ng-if="field.data_type === 'text_single' && field.combination" />
-                                
-                                <input type="text"
-                                       name="{{field.name}}"
-                                       class="form-control ng-animate-disabled"
-                                       style="{{field.style.input}}"
-                                       tabindex="{{field.order}}"
-                                       placeholder="{{field.placeholder}}"
-                                       ng-model="recordModal[field.name]"
-                                       ng-required="{{field.validation.required}}"
-                                       ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                       ng-minlength="field.validation.min_length || 0"
-                                       maxlength="{{field.validation.max_length || 400}}"
-                                       pattern="{{field.validation.pattern}}"
-                                       ng-if="field.data_type === 'url' " />
+                                    <input type="text"
+                                           name="{{field.name}}"
+                                           class="form-control ng-animate-disabled"
+                                           tabindex="{{field.order}}"
+                                           ng-value="recordModal[field.combination.field_1] && recordModal[field.combination.field_2] ? recordModal[field.combination.field_1] + ' ' + recordModal[field.combination.field_2] : null"
+                                           ng-readonly="true"
+                                           ng-if="field.data_type === 'text_single' && field.combination" />
 
-                                <tags-input name="{{field.name}}"
+                                    <input type="text"
+                                           name="{{field.name}}"
+                                           class="form-control ng-animate-disabled"
+                                           style="{{field.style.input}}"
+                                           tabindex="{{field.order}}"
+                                           placeholder="{{field.placeholder}}"
+                                           ng-model="recordModal[field.name]"
+                                           ng-required="{{field.validation.required}}"
+                                           ng-readonly="field.validation.readonly || (id && !field.editable)"
+                                           ng-minlength="field.validation.min_length || 0"
+                                           maxlength="{{field.validation.max_length || 400}}"
+                                           pattern="{{field.validation.pattern}}"
+                                           ng-if="field.data_type === 'url' " />
+
+                                    <tags-input name="{{field.name}}"
                                                 tabindex="{{field.order}}"
                                                 ng-model="recordModal[field.name]"
                                                 display-property="labelStr"
