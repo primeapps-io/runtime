@@ -14,25 +14,25 @@ namespace PrimeApps.Model.Entities.Application
     {
 
         [JsonIgnore]
-        [Column("process_id"), ForeignKey("Process"), Index]
+        [Column("process_id"), ForeignKey("Process")]//, Index]
         public int ProcessId { get; set; }
 
-        [Column("module"), Index]
+        [Column("module")]//, Index]
         public string Module { get; set; }
 
-        [Column("record_id"), Index]
+        [Column("record_id")]//, Index]
         public int RecordId { get; set; }
 
-        [Column("process_status"), Index]
+        [Column("process_status")]//, Index]
         public ProcessStatus Status { get; set; }
 
-        [Column("operation_type"), Index]
+        [Column("operation_type")]//, Index]
         public OperationType OperationType { get; set; }
 
-        [Column("process_status_order"), Index]
+        [Column("process_status_order")]//, Index]
         public int ProcessStatusOrder { get; set; }
 
-        [Column("active"), Index]
+        [Column("active")]//, Index]
         public bool Active { get; set; }
 
         public virtual Process Process { get; set; }

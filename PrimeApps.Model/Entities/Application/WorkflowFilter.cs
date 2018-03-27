@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Application
     public class WorkflowFilter : BaseEntity
     {
         [JsonIgnore]
-        [Column("workflow_id"), ForeignKey("Workflow"), Index]
+        [Column("workflow_id"), ForeignKey("Workflow")]//, Index]
         public int WorkflowId { get; set; }
 
         [Column("field"), MaxLength(120), Required]

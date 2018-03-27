@@ -23,7 +23,7 @@ namespace PrimeApps.Model.Entities.Application
 		[Column("place")]
 		public ComponentPlace Place { get; set; }
 
-		[Column("module_id"), ForeignKey("Module"), Index]
+		[Column("module_id"), ForeignKey("Module")]//, Index]
 		public int ModuleId { get; set; }
 
 		[Column("order")]

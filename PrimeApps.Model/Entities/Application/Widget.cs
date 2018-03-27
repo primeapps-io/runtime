@@ -23,10 +23,10 @@ namespace PrimeApps.Model.Entities.Application
         [Column("icon"), MaxLength(30)]
         public string Icon { get; set; }
 
-        [Column("report_id"), ForeignKey("Report"), Index]
+        [Column("report_id"), ForeignKey("Report")]//, Index]
         public int? ReportId { get; set; }
 
-        [Column("view_id"), ForeignKey("View"), Index]
+        [Column("view_id"), ForeignKey("View")]//, Index]
         public int? ViewId { get; set; }
 
         public virtual Report Report { get; set; }

@@ -10,10 +10,10 @@ namespace PrimeApps.Model.Entities.Platform.Identity
         [Column("id"), Key]
         public string Id { get; set; }
 
-        [Column("subject"), Required, MaxLength(50)]//, Index]
+        [Column("subject"), Required, MaxLength(50)]//]//, Index]
         public string Subject { get; set; }
 
-        [Column("client_id"), Required, MaxLength(50)]//, Index]
+        [Column("client_id"), Required, MaxLength(50)]//]//, Index]
         public string ClientId { get; set; }
 
         [Column("issued_utc")]

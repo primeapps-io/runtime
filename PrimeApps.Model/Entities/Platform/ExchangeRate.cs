@@ -17,16 +17,16 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("eur"), Required]
         public decimal Eur { get; set; }
 
-        [Column("date"), Required, Index]
+        [Column("date"), Required]//, Index]
         public DateTime Date { get; set; }
 
-        [Column("year"), Required, Index]
+        [Column("year"), Required]//, Index]
         public int Year { get; set; }
 
-        [Column("month"), Required, Index]
+        [Column("month"), Required]//, Index]
         public int Month { get; set; }
 
-        [Column("day"), Required, Index]
+        [Column("day"), Required]//, Index]
         public int Day { get; set; }
     }
 }

@@ -11,13 +11,13 @@ namespace PrimeApps.Model.Entities.Application
     [Table("process_logs")]
     public class ProcessLog : BaseEntity
     {
-        [Column("process_id"), ForeignKey("Process"), Index]
+        [Column("process_id"), ForeignKey("Process")]//, Index]
         public int ProcessId { get; set; }
 
-        [Column("module_id"), Required, Index]
+        [Column("module_id"), Required]//, Index]
         public int ModuleId { get; set; }
 
-        [Column("record_id"), Required, Index]
+        [Column("record_id"), Required]//, Index]
         public int RecordId { get; set; }
 
         public virtual Process Process { get; set; }

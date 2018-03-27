@@ -17,7 +17,7 @@ namespace PrimeApps.Model.Entities.Application
             _profileList = new List<string>();
         }
 
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
         [Column("user_id")]
@@ -38,7 +38,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("approver_field")]
         public string ApproverField { get; set; }
 
-        [Column("active"), Index]
+        [Column("active")]//, Index]
         public bool Active { get; set; }
 
         [Column("operations"), MaxLength(50), Required]
