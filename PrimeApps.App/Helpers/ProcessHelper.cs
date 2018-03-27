@@ -396,7 +396,7 @@ namespace PrimeApps.App.Helpers
                                 try
                                 {
                                     var resultRequestLog = await processRepository.CreateRequest(processRequest);
-
+                                    
                                     if (resultRequestLog < 1)
                                         ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString())));
 

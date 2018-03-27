@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http.ModelBinding;
 using PrimeApps.App.Models;
-using PrimeApps.App.Models.ViewModel.Crm;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Report;
 using PrimeApps.Model.Entities.Application;
