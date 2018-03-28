@@ -31,11 +31,11 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Fields)
                 .Include(x => x.Filters)
                 .Include(x => x.Shares)
-                .ThenInclude(x=>x.)
+                .ThenInclude(x=>x.User)
                 .Where(x => x.ModuleId == moduleId && !x.Deleted)
                 .Where(x => x.SharingType == ViewSharingType.Everybody
                 || x.CreatedBy.Id == CurrentUser.UserId
-                || x.Shares.Any(j => j.Id == CurrentUser.UserId))
+                || x.Shares.Any(j => j.UserId == CurrentUser.UserId))
                 .ToListAsync();
 
             return views;
@@ -56,10 +56,11 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Fields)
                 .Include(x => x.Filters)
                 .Include(x => x.Shares)
+                .ThenInclude(x=>x.User)
                 .Where(x => !x.Deleted)
                 .Where(x => x.SharingType == ViewSharingType.Everybody
                             || x.CreatedBy.Id == CurrentUser.UserId
-                            || x.Shares.Any(j => j.Id == CurrentUser.UserId))
+                            || x.Shares.Any(j => j.UserId == CurrentUser.UserId))
                 .ToListAsync();
 
             return views;
@@ -143,7 +144,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteViewShare(View view, TenantUser user)
+        public async Task<int> DeleteViewShare(ViewShares view, TenantUser user)
         {
             user.SharedViews.Remove(view);
 
