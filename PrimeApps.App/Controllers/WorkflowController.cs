@@ -39,7 +39,7 @@ namespace PrimeApps.App.Controllers
             if (workflowEntity.SendNotification != null && workflowEntity.SendNotification.CCArray != null && workflowEntity.SendNotification.CCArray.Length > 0)
                 workflowEntity.SendNotification.CCList = await _workflowRepository.GetCC(workflowEntity);
 
-            if (workflowEntity.SendNotification != null && workflowEntity.SendNotification.BccArray !=null && workflowEntity.SendNotification.BccArray.Length > 0)
+            if (workflowEntity.SendNotification != null && workflowEntity.SendNotification.BccArray != null && workflowEntity.SendNotification.BccArray.Length > 0)
                 workflowEntity.SendNotification.BccList = await _workflowRepository.GetBcc(workflowEntity);
 
             if (workflowEntity.CreateTask != null && workflowEntity.CreateTask.Owner > -1)
@@ -72,12 +72,14 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);
+
+            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + workflowEntity.Id, workflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<dynamic>  Update([FromRoute]int id, [FromBody]WorkflowBindingModel workflow)
+        public async Task<dynamic> Update([FromRoute]int id, [FromBody]WorkflowBindingModel workflow)
         {
             var workflowEntity = await _workflowRepository.GetById(id);
 

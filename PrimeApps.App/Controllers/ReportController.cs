@@ -100,7 +100,7 @@ namespace PrimeApps.App.Controllers
 
             if (resultReport < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             if (report.ReportType == ReportType.Summary)
@@ -129,8 +129,9 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/report/get/" + reportEntity.Id, reportEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/report/get/" + reportEntity.Id, reportEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/report/get/" + reportEntity.Id, reportEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -217,8 +218,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/get_categories", reportCategoryEntity);
         }
 
         [Route("update_category/{id:int}"), HttpPut]

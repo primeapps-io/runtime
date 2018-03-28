@@ -56,9 +56,9 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_module_type"), HttpGet]
-        public async Task<Help> GetModuleType([FromRoute]ModalType templateType, [FromRoute]ModuleType moduleType,[FromRoute]int? moduleId = null)
+        public async Task<Help> GetModuleType([FromRoute]ModalType templateType, [FromRoute]ModuleType moduleType, [FromRoute]int? moduleId = null)
         {
-            var templates = await _helpRepository.GetModuleType(templateType, moduleType , moduleId);
+            var templates = await _helpRepository.GetModuleType(templateType, moduleType, moduleId);
 
             return templates;
         }
@@ -92,8 +92,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/help/get/" + helpEntity.Id, helpEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

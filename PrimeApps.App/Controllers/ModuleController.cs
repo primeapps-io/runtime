@@ -160,8 +160,9 @@ namespace PrimeApps.App.Controllers
 
             ModuleHelper.AfterCreate(AppUser, moduleEntity);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -293,8 +294,9 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
@@ -351,8 +353,9 @@ namespace PrimeApps.App.Controllers
 
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
@@ -384,7 +387,7 @@ namespace PrimeApps.App.Controllers
 
             if (fieldEntity == null)
                 return NotFound();
-  
+
             fieldEntity.InlineEdit = field.InlineEdit;
 
             await _moduleRepository.UpdateField(fieldEntity);

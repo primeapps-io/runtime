@@ -91,8 +91,9 @@ namespace PrimeApps.App.Controllers
 
             settingEntity.Id = result;
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/setting/get/" + settingEntity.Id, settingEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/setting/get/" + settingEntity.Id, settingEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/setting/get/" + settingEntity.Id, settingEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

@@ -63,8 +63,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + userOwnerEntity.Id, userOwnerEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + userOwnerEntity.Id, userOwnerEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/user_custom_shares/get/" + userOwnerEntity.Id, userOwnerEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

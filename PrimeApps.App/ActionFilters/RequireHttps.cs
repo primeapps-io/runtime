@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.Net.Http;
 using Microsoft.IdentityModel.Protocols;
-using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+
 namespace PrimeApps.App.ActionFilters
 {
     public class RequireHttpsAttribute : AuthorizationFilterAttribute
@@ -23,7 +23,7 @@ namespace PrimeApps.App.ActionFilters
 
         protected virtual void HandleNonHttpsRequest(HttpActionContext actionContext)
         {
-            actionContext.Response = new HttpResponseMessage(System.Net.HttpStatusCode.Status403Forbidden);
+            actionContext.Response = new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden);
             actionContext.Response.ReasonPhrase = "SSL Required";
         }
     }

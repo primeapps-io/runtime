@@ -329,8 +329,9 @@ namespace PrimeApps.App.Controllers
                     record = Model.Helpers.RecordHelper.NormalizeRecordValues(record);
             }
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + record["id"], record);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + record["id"], record);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/record/get/" + module + "/?id=" + record["id"], record);
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
@@ -490,8 +491,9 @@ namespace PrimeApps.App.Controllers
 
             }
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/record/find/" + module, records);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/record/find/" + module, records);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/record/find/" + module, records);
         }
 
         [Route("delete_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]
@@ -566,10 +568,11 @@ namespace PrimeApps.App.Controllers
                         return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest.ToString());
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+
+                        return Content(HttpStatusCode.Status400BadRequest.ToString());
 
                     throw;
                 }

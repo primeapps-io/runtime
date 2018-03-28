@@ -61,8 +61,9 @@ namespace PrimeApps.App.Controllers
 
             userGroupEntity = await _userGroupRepository.GetById(userGroupEntity.Id);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

@@ -73,8 +73,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + viewEntity.Id, viewEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -142,8 +143,9 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                var uri = Request.RequestUri;
-                return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
+                //var uri = Request.RequestUri;
+                //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
+                return Created(Request.Scheme + "://" + Request.Host + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
             }
 
             ViewHelper.UpdateEntityViewState(viewState, viewStateEntity);

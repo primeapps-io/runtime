@@ -115,8 +115,9 @@ namespace PrimeApps.App.Controllers
 
             await PlatformHelper.AppAfterCreate(appUser, appEntity, userManager, _userRepository, _profileRepository, _roleRepository, _recordRepository, _platformUserRepository, _tenantRepository, _warehouse);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/app/get_app/" + appEntity.Id, appEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/app/get_app/" + appEntity.Id, appEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/app/get_app/" + appEntity.Id, appEntity);
         }
 
         [Route("app_update/{id:int}"), HttpPut]

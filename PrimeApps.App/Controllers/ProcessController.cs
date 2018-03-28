@@ -85,8 +85,9 @@ namespace PrimeApps.App.Controllers
                 await _viewRepository.Create(pendingFromMeViewMyRecordsEntity);
             }
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + processEntity.Id, processEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
