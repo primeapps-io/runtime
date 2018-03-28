@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Repositories
             var newDocument = DbContext.Documents.Add(document);
             if (await DbContext.SaveChangesAsync() > 0)
             {
-                return newDocument;
+                return newDocument.Entity;
             }
             return null;
         }
@@ -54,7 +54,7 @@ namespace PrimeApps.Model.Repositories
             {
                 var deletedRecord = DbContext.Documents.Remove(dataDoc);
                 await DbContext.SaveChangesAsync();
-                return deletedRecord;
+                return deletedRecord.Entity;
             }
 
         }

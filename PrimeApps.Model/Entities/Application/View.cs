@@ -31,10 +31,10 @@ namespace PrimeApps.Model.Entities.Application
 
         public virtual Module Module { get; set; }
 
-        public virtual ICollection<ViewField> Fields { get; set; }
-
-        public virtual ICollection<ViewFilter> Filters { get; set; }
-        
-        public List<ViewShares> Shares { get; set; }
+        public ICollection<ViewField> Fields { get; set; }
+               
+        public ICollection<ViewFilter> Filters { get; set; }
+               
+        public ICollection<ViewShares> Shares { get; set; }
     }
 }
