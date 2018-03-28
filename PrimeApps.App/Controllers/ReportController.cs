@@ -5,6 +5,7 @@ using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -129,9 +130,9 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/report/get/" + reportEntity.Id, reportEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/report/get/" + reportEntity.Id, reportEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/report/get/" + reportEntity.Id, reportEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/report/get/" + reportEntity.Id, reportEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -218,9 +219,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/get_categories", reportCategoryEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/get_categories", reportCategoryEntity);
         }
 
         [Route("update_category/{id:int}"), HttpPut]

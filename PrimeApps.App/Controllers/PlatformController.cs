@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
@@ -115,9 +116,9 @@ namespace PrimeApps.App.Controllers
 
             await PlatformHelper.AppAfterCreate(appUser, appEntity, userManager, _userRepository, _profileRepository, _roleRepository, _recordRepository, _platformUserRepository, _tenantRepository, _warehouse);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/app/get_app/" + appEntity.Id, appEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/app/get_app/" + appEntity.Id, appEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/app/get_app/" + appEntity.Id, appEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/app/get_app/" + appEntity.Id, appEntity);
         }
 
         [Route("app_update/{id:int}"), HttpPut]
@@ -236,8 +237,8 @@ namespace PrimeApps.App.Controllers
 
             await PlatformHelper.AddApp(appUser, appId, userManager, _tenantRepository, _platformUserRepository, _userRepository, _profileRepository, _roleRepository, _recordRepository, _warehouse);
 
-            var uri = Request.RequestUri;
-            return Ok();
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Ok();
         }
     }
 }

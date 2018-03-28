@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
@@ -92,9 +93,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/help/get/" + helpEntity.Id, helpEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/help/get/" + helpEntity.Id, helpEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

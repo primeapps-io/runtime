@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -85,9 +86,9 @@ namespace PrimeApps.App.Controllers
                 await _viewRepository.Create(pendingFromMeViewMyRecordsEntity);
             }
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + processEntity.Id, processEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + processEntity.Id, processEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + processEntity.Id, processEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

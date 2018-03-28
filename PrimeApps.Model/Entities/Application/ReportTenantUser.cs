@@ -9,12 +9,13 @@ namespace PrimeApps.Model.Entities.Application
 	[Table("report_shares")]
 	public class ReportTenantUser
     {
-	    [Column("report_id"), Key, Required]
+	    [Column("user_id"), ForeignKey("User")]
+	    public int UserId { get; set; }
+	    public TenantUser TenantUser { get; set; }
+
+		[Column("report_id"), ForeignKey("Report")]
 		public int ReportId { get; set; }
 	    public Report Report { get; set; }
 
-		[Column("user_id"), Key, Required]
-		public int TenantUserId { get; set; }
-	    public TenantUser TenantUser { get; set; }
 	}
 }

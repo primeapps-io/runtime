@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -329,9 +330,9 @@ namespace PrimeApps.App.Controllers
                     record = Model.Helpers.RecordHelper.NormalizeRecordValues(record);
             }
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + record["id"], record);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/record/get/" + module + "/?id=" + record["id"], record);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + record["id"], record);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/record/get/" + module + "/?id=" + record["id"], record);
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
@@ -491,9 +492,9 @@ namespace PrimeApps.App.Controllers
 
             }
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/record/find/" + module, records);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/record/find/" + module, records);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/record/find/" + module, records);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/record/find/" + module, records);
         }
 
         [Route("delete_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]

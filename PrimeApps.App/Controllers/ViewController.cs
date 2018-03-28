@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
@@ -73,9 +74,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + viewEntity.Id, viewEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + viewEntity.Id, viewEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -143,9 +144,9 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                //var uri = Request.RequestUri;
-                //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
-                return Created(Request.Scheme + "://" + Request.Host + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
+                var uri = new Uri(Request.GetDisplayUrl());
+				return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
+                //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
             }
 
             ViewHelper.UpdateEntityViewState(viewState, viewStateEntity);

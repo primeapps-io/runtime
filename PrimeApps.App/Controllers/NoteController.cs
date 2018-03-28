@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.ActionFilters;
@@ -192,9 +193,9 @@ namespace PrimeApps.App.Controllers
             noteEntity = await _noteRepository.GetById(noteEntity.Id);
             noteEntity.CreatedBy.Picture = Storage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + workflowEntity.Id, workflowEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + workflowEntity.Id, workflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

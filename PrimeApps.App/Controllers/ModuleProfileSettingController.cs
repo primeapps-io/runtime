@@ -6,6 +6,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
@@ -41,9 +42,9 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/user_custom_shares/get/" + moduleProfileSettingEntity.Id, moduleProfileSettingEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace PrimeApps.Model.Entities.Application
 {
-    public class TemplateTenantUser
+	[Table("template_shares")]
+	public class TemplateTenantUser
     {
-	    public int TemplateId { get; set; }
+	    [Column("user_id"), ForeignKey("User")]
+	    public int UserId { get; set; }
+	    public TenantUser TenantUser { get; set; }
+
+		[Column("template_id"), ForeignKey("Template")]
+		public int TemplateId { get; set; }
 	    public Template Template { get; set; }
 
-	    public int TenantUserId { get; set; }
-	    public TenantUser TenantUser { get; set; }
 	}
 }

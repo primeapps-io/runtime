@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
@@ -160,9 +161,9 @@ namespace PrimeApps.App.Controllers
 
             ModuleHelper.AfterCreate(AppUser, moduleEntity);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -295,9 +296,9 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
@@ -354,9 +355,9 @@ namespace PrimeApps.App.Controllers
 
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
