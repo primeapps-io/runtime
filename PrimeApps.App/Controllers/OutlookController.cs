@@ -419,7 +419,7 @@ namespace PrimeApps.App.Controllers
             var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
 
             if (outlookModuleSetting == null || outlookEmailFieldSetting == null)
-                return Content(HttpStatusCode.Status400BadRequest, new { code = "settings_not_found", message = "Outlook settings not found!" });
+                return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "settings_not_found", message = "Outlook settings not found!" });
 
             var findRequest = new FindRequest
             {
@@ -435,10 +435,10 @@ namespace PrimeApps.App.Controllers
             var records = _recordRepository.Find(outlookModuleSetting.Value, findRequest);
 
             if (records.IsNullOrEmpty())
-                return Content(HttpStatusCode.Status400BadRequest, new { code = "record_not_found", message = "Record not found!" });
+                return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "record_not_found", message = "Record not found!" });
 
             if (records.Count > 1)
-                return Content(HttpStatusCode.Status400BadRequest, new { code = "too_many_records", message = "Too many records!" });
+                return StatusCode(HttpStatusCode.Status400BadRequest, new { code = "too_many_records", message = "Too many records!" });
 
             var module = await _moduleRepository.GetByName(outlookModuleSetting.Value);
             mail["owner"] = AppUser.Id;
