@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -75,7 +76,8 @@ namespace PrimeApps.App.Controllers
                 var result = await _settingRepository.Create(outlookModuleSetting);
 
                 if (result < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
             }
             else
             {
@@ -94,7 +96,8 @@ namespace PrimeApps.App.Controllers
                 var result = await _settingRepository.Create(outlookEmailFieldSetting);
 
                 if (result < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
             }
             else
             {
@@ -126,7 +129,8 @@ namespace PrimeApps.App.Controllers
                 var resultCreate = await _moduleRepository.CreateRelation(relation);
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.InternalServerError);
             }
 
             return Ok();

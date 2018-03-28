@@ -286,7 +286,8 @@ namespace PrimeApps.App.Controllers
                 acc.apps = apps;
                 
                 if (acc.user.deactivated)
-                    throw new HttpResponseException(HttpStatusCode.Status409Conflict);
+                    throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status409Conflict);
 
                 return Ok(acc);
             }

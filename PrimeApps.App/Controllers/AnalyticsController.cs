@@ -149,7 +149,8 @@ namespace PrimeApps.App.Controllers
             var result = await _analyticRepository.Create(analyticEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var powerBiReportName = analyticEntity.Id.ToString();
             var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId);

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using PrimeApps.App.ActionFilters;
@@ -98,7 +99,9 @@ namespace PrimeApps.App.Controllers
             var resultReport = await _reportRepository.Create(reportEntity);
 
             if (resultReport < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             if (report.ReportType == ReportType.Summary)
             {
@@ -108,7 +111,8 @@ namespace PrimeApps.App.Controllers
                 if (resultChart < 1)
                 {
                     await _reportRepository.DeleteHard(reportEntity);
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
 
@@ -120,7 +124,8 @@ namespace PrimeApps.App.Controllers
                 if (resultWidget < 1)
                 {
                     await _reportRepository.DeleteHard(reportEntity);
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
 
@@ -209,7 +214,8 @@ namespace PrimeApps.App.Controllers
             var result = await _reportRepository.CreateCategory(reportCategoryEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = Request.RequestUri;
             return Created(uri.Scheme + "://" + uri.Authority + "/api/get_categories", reportCategoryEntity);

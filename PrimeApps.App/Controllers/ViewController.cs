@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -69,7 +70,8 @@ namespace PrimeApps.App.Controllers
             var result = await _viewRepository.Create(viewEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = Request.RequestUri;
             return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
@@ -137,7 +139,8 @@ namespace PrimeApps.App.Controllers
                 var resultCreate = await _viewRepository.CreateViewState(viewStateCreateEntity);
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 var uri = Request.RequestUri;
                 return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);

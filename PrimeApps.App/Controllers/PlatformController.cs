@@ -93,7 +93,8 @@ namespace PrimeApps.App.Controllers
             var result = await _platformRepository.AppCreate(appEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var userId = AppUser.Id;
 

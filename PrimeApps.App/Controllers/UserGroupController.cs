@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -55,7 +56,8 @@ namespace PrimeApps.App.Controllers
             var result = await _userGroupRepository.Create(userGroupEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             userGroupEntity = await _userGroupRepository.GetById(userGroupEntity.Id);
 

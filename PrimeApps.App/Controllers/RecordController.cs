@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -271,7 +272,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             //Check number auto fields and combinations and update record with combined values
             var numberAutoFields = moduleEntity.Fields.Where(x => x.DataType == DataType.NumberAuto).ToList();
@@ -390,7 +392,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
 
@@ -479,7 +482,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 //After create
                 RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
@@ -571,7 +575,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultUpdate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
             }
@@ -623,7 +628,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultAddRelations < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             return Ok(resultAddRelations);
         }
@@ -658,7 +664,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultDeleteRelation < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             return Ok(resultDeleteRelation);
         }

@@ -1,4 +1,5 @@
-﻿using PrimeApps.App.ActionFilters;
+﻿using System;
+using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -61,7 +62,8 @@ namespace PrimeApps.App.Controllers
             var result = await _processRepository.Create(processEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             //create approvel process views
             var module = await _moduleRepository.GetById(process.ModuleId);
