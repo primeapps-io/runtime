@@ -98,7 +98,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var analytic = await _analyticRepository.GetById(id);
 
@@ -117,7 +117,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_reports"), HttpGet]
-        public async Task<IHttpActionResult> GetReports()
+        public async Task<IActionResult> GetReports()
         {
             var analytics = await _analyticRepository.GetReports();
             var reports = await PowerBiHelper.GetReports(AppUser.TenantId, analytics);
