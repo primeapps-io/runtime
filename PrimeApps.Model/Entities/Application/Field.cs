@@ -142,6 +142,7 @@ namespace PrimeApps.Model.Entities.Application
 
         [Column("show_as_dropdown")]
         public bool ShowAsDropdown { get; set; }
+
         public virtual FieldValidation Validation { get; set; }
 
         public virtual FieldCombination Combination { get; set; }

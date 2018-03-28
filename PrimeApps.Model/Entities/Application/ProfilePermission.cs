@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("remove")]
         public bool Remove { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile")]
+        [Column("profile_id"), ForeignKey("Profile"), Required]
         public int ProfileId { get; set; }
 
         [Column("module_id"), ForeignKey("Module")]

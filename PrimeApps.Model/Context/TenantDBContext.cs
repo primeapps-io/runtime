@@ -154,12 +154,13 @@ namespace PrimeApps.Model.Context
                     cs.MapRightKey("group_id");
                     cs.ToTable("users_user_groups");
                 });
-
+            
             //Cascade delete for FieldValidation
             modelBuilder.Entity<Field>()
-                .HasOptional(x => x.Validation)
-                .WithRequired(x => x.Field)
-                .WillCascadeOnDelete(true);
+                .HasOne(x=>x.Validation)
+                .WithOne()
+                .HasForeignKey(typeof(FieldValidation),"Validation")
+                .OnDelete(DeleteBehavior.Cascade);
 
             //Cascade delete for FieldCombination
             modelBuilder.Entity<Field>()
@@ -201,7 +202,6 @@ namespace PrimeApps.Model.Context
 
             //Cascade delete profile permissions.
             modelBuilder.Entity<ProfilePermission>()
-                .HasRequired(x => x.Profile)
                 .WithMany(x => x.Permissions)
                 .WillCascadeOnDelete(true);
 
