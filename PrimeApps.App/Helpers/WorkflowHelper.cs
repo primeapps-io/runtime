@@ -16,6 +16,8 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Configuration;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform.Identity;
 
@@ -318,7 +320,7 @@ namespace PrimeApps.App.Helpers
                                                     break;
                                             }
 
-                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                            var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
 
                                             domain = string.Format(domain, subdomain);
 

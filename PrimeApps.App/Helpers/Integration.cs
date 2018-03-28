@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Http.ModelBinding;
 using Elmah;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
@@ -24,7 +26,7 @@ namespace PrimeApps.App.Helpers
             {
                 warehouse.DatabaseName = "Ofisim";
                 var appUser = GetAppUser();
-                var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
+                var integrationUserId = int.Parse(ConfigurationManager<>.AppSettings.Get("OfisimIntegrationUserId"));
 
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
