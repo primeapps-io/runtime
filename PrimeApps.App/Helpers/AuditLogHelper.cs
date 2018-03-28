@@ -9,6 +9,7 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using ElmahCore;
 
 namespace PrimeApps.App.Helpers
 {
@@ -59,7 +60,7 @@ namespace PrimeApps.App.Helpers
                         var result = await auditLogRepository.Create(auditLog);
 
                         if (result < 1)
-                            ErrorLog.GetDefault(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
+                            ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
                     }
                 }
             }
