@@ -1,7 +1,6 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,7 @@ using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers.QueryTranslation;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/convert"), Authorize, SnakeCase]
@@ -163,19 +162,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
             }
@@ -203,19 +202,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
             }
@@ -249,19 +248,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
             }
@@ -285,19 +284,19 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
 
@@ -425,19 +424,19 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
 
@@ -485,19 +484,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreateProduct < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
             }
@@ -523,19 +522,19 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
 
@@ -598,19 +597,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
             }
@@ -637,19 +636,19 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
 

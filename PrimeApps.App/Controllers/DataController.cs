@@ -16,6 +16,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Helpers.QueryTranslation;
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Controllers
 {
@@ -56,7 +57,7 @@ namespace PrimeApps.App.Controllers
             var result = await _importRepository.Create(importEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             foreach (JObject record in records)
             {
@@ -77,19 +78,19 @@ namespace PrimeApps.App.Controllers
                 await _importRepository.DeleteHard(importEntity);
 
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             return Ok(importEntity);
         }

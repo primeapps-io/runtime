@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Results
 {
-    public class ForbiddenResult : IHttpActionResult
+    public class ForbiddenResult : IActionResult
     {
             private readonly HttpRequestMessage _request;
             private readonly string _reason;

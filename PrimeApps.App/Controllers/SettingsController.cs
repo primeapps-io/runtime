@@ -8,7 +8,7 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/settings"), Authorize, SnakeCase]
@@ -85,7 +85,7 @@ namespace PrimeApps.App.Controllers
             var result = await _settingRepository.Create(settingEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             settingEntity.Id = result;
 

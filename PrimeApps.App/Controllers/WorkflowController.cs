@@ -7,7 +7,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/workflow"), Authorize, SnakeCase]
@@ -68,7 +68,7 @@ namespace PrimeApps.App.Controllers
             var result = await _workflowRepository.Create(workflowEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = Request.RequestUri;
             return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);

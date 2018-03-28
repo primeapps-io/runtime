@@ -6,7 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.User;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/License")]
@@ -202,7 +202,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SetUserLicenseCount(int tenantId, int count)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
             var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
             subscriberTenant.UserLicenseCount = count;
             await _tenantRepository.UpdateAsync(subscriberTenant);
@@ -217,7 +217,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SetModuleLicenseCount(int tenantId, int count)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
             subscriberTenant.ModuleLicenseCount = count;
@@ -232,7 +232,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SetSoftPhoneLicenseCount(int tenantId, int count)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             _settingRepository.TenantId = tenantId;
 
@@ -247,7 +247,7 @@ namespace PrimeApps.App.Controllers
             var result = await _settingRepository.Create(setting);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             return Ok();
         }
@@ -257,7 +257,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SetUserAnalyticsLicense(string email, bool active)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var subscriberUser = await _platformUserRepository.Get(email);
             var subscriberTenant = await _tenantRepository.GetAsync(subscriberUser.TenantId.Value);
@@ -279,7 +279,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SetPaidCustomer(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var tenant = await _tenantRepository.GetAsync(tenantId);
 
@@ -302,7 +302,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> DeactivateAccount(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var users = await _platformUserRepository.GetAllByTenant(tenantId);
             var tenant = await _tenantRepository.GetAsync(tenantId);
@@ -342,7 +342,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> ActivateAccount(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var users = await _platformUserRepository.GetAllByTenant(tenantId);
             var tenant = await _tenantRepository.GetAsync(tenantId);
@@ -381,7 +381,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SuspendAccount(int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var tenant = await _tenantRepository.GetAsync(tenantId);
 

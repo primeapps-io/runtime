@@ -9,7 +9,7 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/help"), Authorize, SnakeCase]
@@ -88,7 +88,7 @@ namespace PrimeApps.App.Controllers
             var result = await _helpRepository.Create(helpEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = Request.RequestUri;
             return Created(uri.Scheme + "://" + uri.Authority + "/api/help/get/" + helpEntity.Id, helpEntity);

@@ -7,7 +7,7 @@ using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/picklist"), Authorize, SnakeCase]
@@ -60,7 +60,7 @@ namespace PrimeApps.App.Controllers
             var result = await _picklistRepository.Create(picklistEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = Request.RequestUri;
             return Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);

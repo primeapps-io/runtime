@@ -184,7 +184,7 @@ namespace PrimeApps.App.Controllers
                 var licenseCount = phoneSettings.FirstOrDefault(x => x.Key == "sip_license_count");
 
                 if (licenseCount == null)
-                    return StatusCode(HttpStatusCode.Forbidden);
+                    return StatusCode(HttpStatusCode.Status403Forbidden);
 
                 var provider = phoneSettings.FirstOrDefault(r => r.Key == "provider");
                 var companyKey = phoneSettings.FirstOrDefault(r => r.Key == "sip_company_key");

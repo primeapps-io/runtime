@@ -7,7 +7,7 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/template"), Authorize, SnakeCase]
@@ -51,7 +51,7 @@ namespace PrimeApps.App.Controllers
             var result = await _templateRepostory.Create(templateEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             if (template.Chunks > 0)
                 Storage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks);

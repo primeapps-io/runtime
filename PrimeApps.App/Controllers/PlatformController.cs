@@ -10,7 +10,7 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/platform"), Authorize, SnakeCase]
@@ -93,7 +93,7 @@ namespace PrimeApps.App.Controllers
             var result = await _platformRepository.AppCreate(appEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var userId = AppUser.Id;
 
@@ -222,7 +222,7 @@ namespace PrimeApps.App.Controllers
             var result = await _platformRepository.AppCreate(appEntity);*/
 
             /*if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             appEntity = await _platformRepository.AppGetById(appEntity.Id);
 

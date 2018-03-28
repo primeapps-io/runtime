@@ -8,10 +8,10 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [RoutePrefix("api/user_group"), Authorize, SnakeCase]
+    [Route("api/user_group"), Authorize, SnakeCase]
     public class UserGroupController : BaseController
     {
         private IUserGroupRepository _userGroupRepository;
@@ -55,7 +55,7 @@ namespace PrimeApps.App.Controllers
             var result = await _userGroupRepository.Create(userGroupEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             userGroupEntity = await _userGroupRepository.GetById(userGroupEntity.Id);
 
