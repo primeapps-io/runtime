@@ -91,8 +91,8 @@ namespace PrimeApps.App.Jobs
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
-                                            continue;
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //continue;
                                         }
                                     }
 
@@ -139,8 +139,8 @@ namespace PrimeApps.App.Jobs
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
-                                            continue;
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //continue;
                                         }
                                     }
                                 }
