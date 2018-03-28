@@ -4,7 +4,6 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using PrimeApps.Model.Common.Profile;
 
 namespace PrimeApps.App.Controllers
@@ -32,7 +31,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request);
             }
 
             await _profileRepository.CreateAsync(NewProfile);
@@ -55,7 +54,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request);
             }
             await _profileRepository.UpdateAsync(UpdatedProfile);
             await Cache.Tenant.UpdateProfiles(AppUser.TenantId);
@@ -75,7 +74,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new  ForbiddenResult(Request);
             }
 
             await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
@@ -109,7 +108,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request);
             }
 
 

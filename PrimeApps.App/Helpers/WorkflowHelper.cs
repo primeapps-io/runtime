@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using System.Web.Http.ModelBinding;
-using Elmah;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -18,6 +16,8 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Configuration;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform.Identity;
 
@@ -320,7 +320,7 @@ namespace PrimeApps.App.Helpers
                                                     break;
                                             }
 
-                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                            var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
 
                                             domain = string.Format(domain, subdomain);
 
@@ -397,7 +397,7 @@ namespace PrimeApps.App.Helpers
 
                                         if (resultBefore < 0 && !modelState.IsValid)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
+                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
                                             return;
                                         }
 
@@ -407,7 +407,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultCreate < 1)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
                                                 return;
                                             }
 
@@ -415,7 +415,7 @@ namespace PrimeApps.App.Helpers
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             return;
                                         }
                                     }
@@ -510,7 +510,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (fieldUpdateModule == null)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name)));
                                                 return;
                                             }
 
@@ -518,7 +518,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (currentRecordFieldUpdate == null)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value)));
                                                 return;
                                             }
 
@@ -542,7 +542,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultBefore < 0 && !modelState.IsValid)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString())));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString())));
                                                 return;
                                             }
 
@@ -555,7 +555,7 @@ namespace PrimeApps.App.Helpers
 
                                                 if (resultUpdate < 1)
                                                 {
-                                                    ErrorLog.GetDefault(null).Log(new Error(new Exception("Record cannot be updated! Object: " + recordFieldUpdate)));
+                                                    //ErrorLog.GetDefault(null).Log(new Error(new Exception("Record cannot be updated! Object: " + recordFieldUpdate)));
                                                     return;
                                                 }
 
@@ -565,7 +565,7 @@ namespace PrimeApps.App.Helpers
                                             }
                                             catch (Exception ex)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             }
 
                                             RecordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
@@ -673,7 +673,7 @@ namespace PrimeApps.App.Helpers
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                         }
                                     }
 
@@ -688,12 +688,12 @@ namespace PrimeApps.App.Helpers
                                     {
                                         var resultCreateLog = await workflowRepository.CreateLog(workflowLog);
 
-                                        if (resultCreateLog < 1)
-                                            ErrorLog.GetDefault(null).Log(new Error(new Exception("WorkflowLog cannot be created! Object: " + workflowLog.ToJsonString())));
+                                        //if (resultCreateLog < 1)
+                                        //    ErrorLog.GetDefault(null).Log(new Error(new Exception("WorkflowLog cannot be created! Object: " + workflowLog.ToJsonString())));
                                     }
                                     catch (Exception ex)
                                     {
-                                        ErrorLog.GetDefault(null).Log(new Error(ex));
+                                        //ErrorLog.GetDefault(null).Log(new Error(ex));
                                     }
                                 }
                             }

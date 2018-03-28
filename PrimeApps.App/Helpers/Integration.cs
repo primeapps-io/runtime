@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Http.ModelBinding;
 using Elmah;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
@@ -24,7 +26,7 @@ namespace PrimeApps.App.Helpers
             {
                 warehouse.DatabaseName = "Ofisim";
                 var appUser = GetAppUser();
-                var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
+                var integrationUserId = int.Parse(ConfigurationManager<>.AppSettings.Get("OfisimIntegrationUserId"));
 
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
@@ -55,8 +57,8 @@ namespace PrimeApps.App.Helpers
 
                                 if (resultBeforeAccount < 0 && !modelStateAccount.IsValid)
                                 {
-                                    var error = new Error(new Exception("Ofisim subscriber insert failed. Account create-before has error! Email: " + model.Email + " ModelState: " + modelStateAccount.ToJsonString()), HttpContext.Current);
-                                    ErrorLog.GetDefault(null).Log(error);
+                                    //var error = new Error(new Exception("Ofisim subscriber insert failed. Account create-before has error! Email: " + model.Email + " ModelState: " + modelStateAccount.ToJsonString()), HttpContext.Current);
+                                    //ErrorLog.GetDefault(null).Log(error);
                                     return;
                                 }
 
@@ -66,8 +68,8 @@ namespace PrimeApps.App.Helpers
 
                                     if (resultCreate < 1)
                                     {
-                                        var error = new Error(new Exception("Ofisim subscriber insert failed. Account create has error! Email: " + model.Email), HttpContext.Current);
-                                        ErrorLog.GetDefault(null).Log(error);
+                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. Account create has error! Email: " + model.Email), HttpContext.Current);
+                                        //ErrorLog.GetDefault(null).Log(error);
                                         return;
                                     }
 
@@ -75,7 +77,7 @@ namespace PrimeApps.App.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
                                     return;
                                 }
                             }
@@ -96,14 +98,14 @@ namespace PrimeApps.App.Helpers
 
                                     if (resultUpdate < 1)
                                     {
-                                        var error = new Error(new Exception("Ofisim subscriber insert failed. AccountCurrent update has error! Email: " + model.Email), HttpContext.Current);
-                                        ErrorLog.GetDefault(null).Log(error);
+                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. AccountCurrent update has error! Email: " + model.Email), HttpContext.Current);
+                                        //ErrorLog.GetDefault(null).Log(error);
                                         return;
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
 
                                 RecordHelper.AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse);
@@ -120,8 +122,8 @@ namespace PrimeApps.App.Helpers
 
                                 if (resultBeforeContact < 0 && !modelStateContact.IsValid)
                                 {
-                                    var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create-before has error! Email: " + model.Email + " ModelState: " + modelStateContact.ToJsonString()), HttpContext.Current);
-                                    ErrorLog.GetDefault(null).Log(error);
+                                    //var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create-before has error! Email: " + model.Email + " ModelState: " + modelStateContact.ToJsonString()), HttpContext.Current);
+                                    //ErrorLog.GetDefault(null).Log(error);
                                     return;
                                 }
 
@@ -131,8 +133,8 @@ namespace PrimeApps.App.Helpers
 
                                     if (resultCreate < 1)
                                     {
-                                        var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create has error! Email: " + model.Email), HttpContext.Current);
-                                        ErrorLog.GetDefault(null).Log(error);
+                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create has error! Email: " + model.Email), HttpContext.Current);
+                                        //ErrorLog.GetDefault(null).Log(error);
                                         return;
                                     }
 
@@ -140,7 +142,7 @@ namespace PrimeApps.App.Helpers
                                 }
                                 catch (Exception ex)
                                 {
-                                    ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
                                     return;
                                 }
                             }
@@ -163,14 +165,14 @@ namespace PrimeApps.App.Helpers
 
                                     if (resultUpdate < 1)
                                     {
-                                        var error = new Error(new Exception("Ofisim subscriber insert failed. ContactCurrent update has error! Email: " + model.Email), HttpContext.Current);
-                                        ErrorLog.GetDefault(null).Log(error);
+                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. ContactCurrent update has error! Email: " + model.Email), HttpContext.Current);
+                                        //ErrorLog.GetDefault(null).Log(error);
                                         return;
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
 
                                 RecordHelper.AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse);
@@ -181,7 +183,7 @@ namespace PrimeApps.App.Helpers
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
             }
         }
 
@@ -344,15 +346,15 @@ namespace PrimeApps.App.Helpers
 
                             if (contacts.Count < 1)
                             {
-                                var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
-                                ErrorLog.GetDefault(null).Log(error);
+                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
+                                //ErrorLog.GetDefault(null).Log(error);
                                 return;
                             }
 
                             if (contacts.Count > 1)
                             {
-                                var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
-                                ErrorLog.GetDefault(null).Log(error);
+                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
+                                //ErrorLog.GetDefault(null).Log(error);
                                 return;
                             }
 
@@ -368,14 +370,14 @@ namespace PrimeApps.App.Helpers
 
                                 if (resultUpdate < 1)
                                 {
-                                    var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
-                                    ErrorLog.GetDefault(null).Log(error);
+                                    //var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
+                                    //ErrorLog.GetDefault(null).Log(error);
                                     return;
                                 }
                             }
                             catch (Exception ex)
                             {
-                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 return;
                             }
 
@@ -392,15 +394,15 @@ namespace PrimeApps.App.Helpers
 
                             if (accounts.Count < 1)
                             {
-                                var error = new Error(new Exception("Ofisim subscriber update failed (account). Contact not found! Email: " + userEmail), HttpContext.Current);
-                                ErrorLog.GetDefault(null).Log(error);
+                                //var error = new Error(new Exception("Ofisim subscriber update failed (account). Contact not found! Email: " + userEmail), HttpContext.Current);
+                                //ErrorLog.GetDefault(null).Log(error);
                                 return;
                             }
 
                             if (accounts.Count > 1)
                             {
-                                var error = new Error(new Exception("Ofisim subscriber update failed (account). Too many contacts found! Email: " + userEmail), HttpContext.Current);
-                                ErrorLog.GetDefault(null).Log(error);
+                                //var error = new Error(new Exception("Ofisim subscriber update failed (account). Too many contacts found! Email: " + userEmail), HttpContext.Current);
+                                //ErrorLog.GetDefault(null).Log(error);
                                 return;
                             }
 
@@ -417,14 +419,14 @@ namespace PrimeApps.App.Helpers
 
                                 if (resultUpdate < 1)
                                 {
-                                    var error = new Error(new Exception("Ofisim subscriber update failed. Account update has error! Email: " + userEmail), HttpContext.Current);
-                                    ErrorLog.GetDefault(null).Log(error);
+                                    //var error = new Error(new Exception("Ofisim subscriber update failed. Account update has error! Email: " + userEmail), HttpContext.Current);
+                                    //ErrorLog.GetDefault(null).Log(error);
                                     return;
                                 }
                             }
                             catch (Exception ex)
                             {
-                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 return;
                             }
 
@@ -435,7 +437,7 @@ namespace PrimeApps.App.Helpers
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
             }
         }
 
@@ -464,15 +466,15 @@ namespace PrimeApps.App.Helpers
 
                             if (contacts.Count < 1)
                             {
-                                var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
-                                ErrorLog.GetDefault(null).Log(error);
+                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
+                                //ErrorLog.GetDefault(null).Log(error);
                                 return;
                             }
 
                             if (contacts.Count > 1)
                             {
-                                var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
-                                ErrorLog.GetDefault(null).Log(error);
+                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
+                                //ErrorLog.GetDefault(null).Log(error);
                                 return;
                             }
 
@@ -488,14 +490,14 @@ namespace PrimeApps.App.Helpers
 
                                 if (resultUpdate < 1)
                                 {
-                                    var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
-                                    ErrorLog.GetDefault(null).Log(error);
+                                    //var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
+                                    //ErrorLog.GetDefault(null).Log(error);
                                     return;
                                 }
                             }
                             catch (Exception ex)
                             {
-                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 return;
                             }
 
@@ -506,7 +508,7 @@ namespace PrimeApps.App.Helpers
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
             }
         }
 

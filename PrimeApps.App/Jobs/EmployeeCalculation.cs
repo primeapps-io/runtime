@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
-using System.Data.Entity.Core;
 using System.Linq;
 using System.Threading.Tasks;
-using Elmah;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
@@ -93,8 +91,8 @@ namespace PrimeApps.App.Jobs
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
-                                            continue;
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //continue;
                                         }
                                     }
 
@@ -141,8 +139,8 @@ namespace PrimeApps.App.Jobs
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
-                                            continue;
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //continue;
                                         }
                                     }
                                 }

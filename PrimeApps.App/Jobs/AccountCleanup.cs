@@ -49,9 +49,9 @@ namespace PrimeApps.App.Jobs
                         catch (Exception ex)
                         {
                             // the query will fail in any unexpected case rather then non-existing database, and it will be logged here with the details. 
-                            Error err = new Error(ex);
-                            err.Detail = $"Expired tenant {tenantId} could not be removed by Account Cleanup Job";
-                            ErrorLog.GetDefault(null).Log(err);
+                            //Error err = new Error(ex);
+                            //err.Detail = $"Expired tenant {tenantId} could not be removed by Account Cleanup Job";
+                            //ErrorLog.GetDefault(null).Log(err);
                         }
                     }
                 }

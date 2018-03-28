@@ -163,13 +163,13 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -205,13 +205,13 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -252,13 +252,13 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -289,13 +289,13 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -430,13 +430,13 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -491,13 +491,13 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -530,13 +530,13 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -606,13 +606,13 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
@@ -646,13 +646,13 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }

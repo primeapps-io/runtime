@@ -1,5 +1,4 @@
-﻿using Elmah;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories;
@@ -29,7 +28,7 @@ namespace PrimeApps.App.Helpers
 
                     if (result < 1)
                     {
-                        ErrorLog.GetDefault(null).Log(new Error(new Exception("ChangeLog cannot be created! Object: " + changeLog.ToJsonString())));
+                        //ErrorLog.GetDefault(null).Log(new Error(new Exception("ChangeLog cannot be created! Object: " + changeLog.ToJsonString())));
                     }
                 }
             }

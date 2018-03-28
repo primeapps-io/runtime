@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.ModelBinding;
-using Elmah;
-using ElmahCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Cache;
@@ -466,7 +463,7 @@ namespace PrimeApps.App.Helpers
                                             var transactionBeforeCreate = await RecordHelper.BeforeCreateUpdate(stockModule, stock, modelStateTransaction, appUser.TenantLanguage, moduleRepository, picklistRepository);
                                             if (transactionBeforeCreate < 0 && !modelStateTransaction.IsValid)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Stock transaction can not be created")));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Stock transaction can not be created")));
                                                 return;
                                             }
 
@@ -553,12 +550,12 @@ namespace PrimeApps.App.Helpers
 
                                             var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
 
-                                            if (resultUpdate < 1)
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
+                                            //if (resultUpdate < 1)
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                         }
                                         break;
                                     case "project_indicators":
@@ -595,7 +592,7 @@ namespace PrimeApps.App.Helpers
 
                                         if (resultBeforeProjectScope < 0 && !modelState.IsValid)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectScope cannot be updated! Object: " + projectScopeUpdateRecord + " ModelState: " + modelState.ToJsonString())));
+                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectScope cannot be updated! Object: " + projectScopeUpdateRecord + " ModelState: " + modelState.ToJsonString())));
                                             return;
                                         }
 
@@ -605,7 +602,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultUpdateProjectScope < 1)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectScope cannot be updated! Object: " + projectScopeUpdateRecord)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectScope cannot be updated! Object: " + projectScopeUpdateRecord)));
                                                 return;
                                             }
 
@@ -613,7 +610,7 @@ namespace PrimeApps.App.Helpers
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             return;
                                         }
 
@@ -646,7 +643,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultBeforeProjectIndicator < 0 && !modelState.IsValid)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectIndicator cannot be updated! Object: " + projectScopeUpdateRecord + " ModelState: " + modelState.ToJsonString())));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectIndicator cannot be updated! Object: " + projectScopeUpdateRecord + " ModelState: " + modelState.ToJsonString())));
                                                 return;
                                             }
 
@@ -656,12 +653,12 @@ namespace PrimeApps.App.Helpers
 
                                                 if (resultUpdateProjectIndicator < 1)
                                                 {
-                                                    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectIndicator cannot be updated! Object: " + projectScopeUpdateRecord)));
+                                                    //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectIndicator cannot be updated! Object: " + projectScopeUpdateRecord)));
                                                 }
                                             }
                                             catch (Exception ex)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             }
                                         }
 
@@ -691,7 +688,7 @@ namespace PrimeApps.App.Helpers
 
                                         if (resultBeforeProject < 0 && !modelStateScope.IsValid)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(new Exception("Project cannot be updated! Object: " + projectUpdateRecord + " ModelState: " + modelStateScope.ToJsonString())));
+                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Project cannot be updated! Object: " + projectUpdateRecord + " ModelState: " + modelStateScope.ToJsonString())));
                                             return;
                                         }
 
@@ -701,12 +698,12 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultUpdateProject < 1)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Project cannot be updated! Object: " + projectUpdateRecord)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Project cannot be updated! Object: " + projectUpdateRecord)));
                                             }
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                         }
                                         break;
                                     case "expenses":
@@ -757,7 +754,7 @@ namespace PrimeApps.App.Helpers
 
                                         if (resultBeforeExpenseSheet < 0 && !modelStateExpenseSheet.IsValid)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(new Exception("ExpenseSheet cannot be updated! Object: " + expenseSheetUpdateRecord + " ModelState: " + modelStateExpenseSheet.ToJsonString())));
+                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("ExpenseSheet cannot be updated! Object: " + expenseSheetUpdateRecord + " ModelState: " + modelStateExpenseSheet.ToJsonString())));
                                             return;
                                         }
 
@@ -767,12 +764,12 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultUpdateExpenseSheet < 1)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("ExpenseSheet cannot be updated! Object: " + expenseSheetUpdateRecord)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("ExpenseSheet cannot be updated! Object: " + expenseSheetUpdateRecord)));
                                             }
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                         }
                                         break;
                                     case "projects":
@@ -872,7 +869,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultBefore < 0 && !modelStateTimesheet.IsValid)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate + " ModelState: " + modelStateTimesheet.ToJsonString())));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate + " ModelState: " + modelStateTimesheet.ToJsonString())));
                                                 return;
                                             }
 
@@ -882,13 +879,13 @@ namespace PrimeApps.App.Helpers
 
                                                 if (resultUpdate < 1)
                                                 {
-                                                    ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate)));
+                                                    //ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate)));
                                                     return;
                                                 }
                                             }
                                             catch (Exception ex)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                                                 return;
                                             }
 
@@ -991,7 +988,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultBefore < 0 && !modelStateRehber.IsValid)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be created or updated! Object: " + recordRehber + " ModelState: " + modelStateRehber.ToJsonString())));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be created or updated! Object: " + recordRehber + " ModelState: " + modelStateRehber.ToJsonString())));
                                                 return;
                                             }
 
@@ -999,46 +996,46 @@ namespace PrimeApps.App.Helpers
                                             {
                                                 recordRehber["calisan_id"] = record["id"];
 
-                                                try
-                                                {
-                                                    var resultCreate = await recordRepository.Create(recordRehber, rehberModule);
+                                                //try
+                                                //{
+                                                //    var resultCreate = await recordRepository.Create(recordRehber, rehberModule);
 
-                                                    if (resultCreate < 1)
-                                                        ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be created! Object: " + recordRehber)));
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    ErrorLog.GetDefault(null).Log(new Error(ex));
-                                                }
+                                                //    //if (resultCreate < 1)
+                                                //    //    ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be created! Object: " + recordRehber)));
+                                                //}
+                                                //catch (Exception ex)
+                                                //{
+                                                //    //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                //}
                                             }
                                             else //update
                                             {
-                                                try
-                                                {
-                                                    var resultUpdate = await recordRepository.Update(recordRehber, rehberModule);
+                                                //try
+                                                //{
+                                                //    var resultUpdate = await recordRepository.Update(recordRehber, rehberModule);
 
-                                                    if (resultUpdate < 1)
-                                                        ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be updated! Object: " + recordRehber)));
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    ErrorLog.GetDefault(null).Log(new Error(ex));
-                                                }
+                                                //    //if (resultUpdate < 1)
+                                                //    //    ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be updated! Object: " + recordRehber)));
+                                                //}
+                                                //catch (Exception ex)
+                                                //{
+                                                //    //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                //}
                                             }
                                         }
                                         else//delete
                                         {
-                                            try
-                                            {
-                                                var resultDelete = await recordRepository.Delete(recordRehber, rehberModule);
+                                            //try
+                                            //{
+                                            //    var resultDelete = await recordRepository.Delete(recordRehber, rehberModule);
 
-                                                if (resultDelete < 1)
-                                                    ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be deleted! Object: " + recordRehber)));
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                ErrorLog.GetDefault(null).Log(new Error(ex));
-                                            }
+                                            //    if (resultDelete < 1)
+                                            //        ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be deleted! Object: " + recordRehber)));
+                                            //}
+                                            //catch (Exception ex)
+                                            //{
+                                            //    ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //}
                                         }
                                         break;
                                     case "izinler":
@@ -1102,12 +1099,12 @@ namespace PrimeApps.App.Helpers
 
                                             var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
 
-                                            if (resultUpdate < 1)
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("toplam_tutar cannot be updated! Object: " + recordUpdate)));
+                                            //if (resultUpdate < 1)
+                                            //    ErrorLog.GetDefault(null).Log(new Error(new Exception("toplam_tutar cannot be updated! Object: " + recordUpdate)));
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                         }
                                         break;
                                 }
@@ -1118,7 +1115,7 @@ namespace PrimeApps.App.Helpers
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
             }
         }
 
@@ -1294,13 +1291,13 @@ namespace PrimeApps.App.Helpers
 
                 if (resultUpdate < 1)
                 {
-                    ErrorLog.GetDefault(null).Log(new Error(new Exception("Account (IK) cannot be updated! Object: " + accountRecordUpdate)));
+                    //ErrorLog.GetDefault(null).Log(new Error(new Exception("Account (IK) cannot be updated! Object: " + accountRecordUpdate)));
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
                 return false;
             }
             return true;
@@ -1334,14 +1331,14 @@ namespace PrimeApps.App.Helpers
 
                 if (resultUpdate < 1)
                 {
-                    ErrorLog.GetDefault(null).Log(new Error(new Exception("Account (IK) cannot be updated! Object: " + accountRecordUpdate)));
+                    //ErrorLog.GetDefault(null).Log(new Error(new Exception("Account (IK) cannot be updated! Object: " + accountRecordUpdate)));
                     return false;
                 }
                 return true;
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
                 return false;
             }
         }
@@ -1430,13 +1427,13 @@ namespace PrimeApps.App.Helpers
 
                 if (resultUpdate < 1)
                 {
-                    ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate)));
+                    //ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate)));
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
                 return false;
             }
 
@@ -1446,7 +1443,7 @@ namespace PrimeApps.App.Helpers
 
             if (expertRecords.IsNullOrEmpty() || expertRecords.Count < 1)
             {
-                ErrorLog.GetDefault(null).Log(new Error(new Exception("Expert not found! FindRequest: " + findRequestExpert.ToJsonString())));
+                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Expert not found! FindRequest: " + findRequestExpert.ToJsonString())));
                 return false;
             }
 
@@ -1479,13 +1476,13 @@ namespace PrimeApps.App.Helpers
 
                     if (resultUpdate < 1)
                     {
-                        ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectTeam cannot be updated! Object: " + projectTeamRecordUpdate)));
+                        //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectTeam cannot be updated! Object: " + projectTeamRecordUpdate)));
                         return false;
                     }
                 }
                 catch (Exception ex)
                 {
-                    ErrorLog.GetDefault(null).Log(new Error(ex));
+                    //ErrorLog.GetDefault(null).Log(new Error(ex));
                     return false;
                 }
             }

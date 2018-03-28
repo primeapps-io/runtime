@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using Newtonsoft.Json.Linq;
-using NHibernate;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;

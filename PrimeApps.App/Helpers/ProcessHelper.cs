@@ -395,15 +395,15 @@ namespace PrimeApps.App.Helpers
                                 {
                                     var resultRequestLog = await processRepository.CreateRequest(processRequest);
                                     
-                                    if (resultRequestLog < 1)
-                                        ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString())));
+                                    //if (resultRequestLog < 1)
+                                    //    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString())));
 
                                     var newRecord = recordRepository.GetById(module, (int)record["id"], false);
                                     await WorkflowHelper.Run(operationType, newRecord, module, appUser, warehouse);
                                 }
                                 catch (Exception ex)
                                 {
-                                    ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
                             }
 
@@ -418,12 +418,12 @@ namespace PrimeApps.App.Helpers
                             {
                                 var resultCreateLog = await processRepository.CreateLog(processLog);
 
-                                if (resultCreateLog < 1)
-                                    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessLog cannot be created! Object: " + processLog.ToJsonString())));
+                                //if (resultCreateLog < 1)
+                                //    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessLog cannot be created! Object: " + processLog.ToJsonString())));
                             }
                             catch (Exception ex)
                             {
-                                ErrorLog.GetDefault(null).Log(new Error(ex));
+                                //ErrorLog.GetDefault(null).Log(new Error(ex));
                             }
                         }
                     }
