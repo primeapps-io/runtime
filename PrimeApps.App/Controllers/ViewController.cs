@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
+using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
@@ -94,9 +95,9 @@ namespace PrimeApps.App.Controllers
             {
                 var currentShares = viewEntity.Shares.ToList();
 
-                foreach (var sharedUser in currentShares)
+                foreach (ViewShares share in currentShares)
                 {
-                    await _viewRepository.DeleteViewShare(viewEntity, sharedUser);
+                    await _viewRepository.DeleteViewShare(share, share.User);
                 }
             }
 

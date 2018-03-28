@@ -159,9 +159,9 @@ namespace PrimeApps.App.Controllers
             {
                 var currentShares = reportEntity.Shares.ToList();
 
-                foreach (var sharedUser in currentShares)
+                foreach (var share in currentShares)
                 {
-                    await _reportRepository.DeleteReportShare(reportEntity, sharedUser);
+                    await _reportRepository.DeleteReportShare(share, share.TenantUser);
                 }
             }
 

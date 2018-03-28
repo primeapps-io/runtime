@@ -13,6 +13,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Update(Analytic analytic);
         Task<int> DeleteSoft(Analytic analytic);
         Task<int> DeleteHard(Analytic analytic);
-        Task<int> DeleteAnalyticShare(Analytic analytic, TenantUser user);
+        Task<int> DeleteAnalyticShare(AnalyticTenantUser analytic, TenantUser user);
     }
 }

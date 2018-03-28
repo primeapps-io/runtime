@@ -219,9 +219,9 @@ namespace PrimeApps.App.Controllers
             {
                 var currentShares = analyticEntity.Shares.ToList();
 
-                foreach (var sharedUser in currentShares)
+                foreach (var shared in currentShares)
                 {
-                    await _analyticRepository.DeleteAnalyticShare(analyticEntity, sharedUser);
+                    await _analyticRepository.DeleteAnalyticShare(shared, shared.TenantUser);
                 }
             }
 

@@ -19,6 +19,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ViewState> GetViewState(int moduleId, int userId);
         Task<int> CreateViewState(ViewState viewState);
         Task<int> UpdateViewState(ViewState viewState);
-        Task<int> DeleteViewShare(View view, TenantUser user);
+        Task<int> DeleteViewShare(ViewShares view, TenantUser user);
     }
 }

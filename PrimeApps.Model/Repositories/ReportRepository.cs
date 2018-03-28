@@ -258,7 +258,7 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Filters)
                 .Include(x => x.Aggregations)
                 .Include(x => x.Shares).ThenInclude(y => y.TenantUser)
-				.FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return report;
         }
@@ -310,7 +310,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteReportShare(Report report, TenantUser user)
+        public async Task<int> DeleteReportShare(ReportTenantUser report, TenantUser user)
         {
             user.SharedReports.Remove(report);
 
@@ -432,7 +432,7 @@ namespace PrimeApps.Model.Repositories
 
         private IQueryable<Report> GetReportQuery(bool includeModule = false)
         {
-            var reports = DbContext.Reports
+            IQueryable<Report> reports = DbContext.Reports
                 .Include(x => x.Fields)
                 .Include(x => x.Filters)
                 .Include(x => x.Aggregations);
@@ -444,10 +444,13 @@ namespace PrimeApps.Model.Repositories
                     .Include(x => x.Module.Fields);
             }
 
-            reports = reports.Where(x => !x.Deleted)
+            reports = reports
+                .Include(x => x.Shares)
+                .ThenInclude(x => x.TenantUser)
+                .Where(x => !x.Deleted)
                       .Where(x => x.SharingType == ReportSharingType.Everybody
                 || x.CreatedBy.Id == CurrentUser.UserId
-                || x.Shares.Any(j => j.Id == CurrentUser.UserId));
+                || x.Shares.Any(j => j.UserId == CurrentUser.UserId));
 
             return reports;
         }
