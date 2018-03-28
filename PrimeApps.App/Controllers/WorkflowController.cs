@@ -6,6 +6,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Net;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -70,12 +71,10 @@ namespace PrimeApps.App.Controllers
 
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);
-
-            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + workflowEntity.Id, workflowEntity);
+			var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme+ "://" + uri.Authority + "/api/view/get/" + workflowEntity.Id, workflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

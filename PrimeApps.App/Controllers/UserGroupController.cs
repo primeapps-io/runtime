@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
@@ -61,9 +62,9 @@ namespace PrimeApps.App.Controllers
 
             userGroupEntity = await _userGroupRepository.GetById(userGroupEntity.Id);
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/user_group/get/" + userGroupEntity.Id, userGroupEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

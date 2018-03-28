@@ -271,7 +271,7 @@ namespace PrimeApps.Model.Context
                 .ToTable("analytic_shares"));*/
 
             modelBuilder.Entity<AnalyticTenantUser>()
-                .HasKey(t => new { t.TenantUserId, t.AnaltyicId });
+                .HasKey(t => new { t.UserId, t.AnaltyicId });
 
             modelBuilder.Entity<AnalyticTenantUser>()
                 .HasOne(pt => pt.Analytic)
@@ -281,7 +281,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AnalyticTenantUser>()
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.SharedAnalytics)
-                .HasForeignKey(pt => pt.TenantUserId);
+                .HasForeignKey(pt => pt.UserId);
 
 
             //Junction table for template-user shares
@@ -293,7 +293,7 @@ namespace PrimeApps.Model.Context
                 .ToTable("template_shares"));*/
 
             modelBuilder.Entity<TemplateTenantUser>()
-                .HasKey(t => new { t.TenantUserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
+                .HasKey(t => new { t.UserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
 
             modelBuilder.Entity<TemplateTenantUser>()
                 .HasOne(pt => pt.Template)
@@ -303,7 +303,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TemplateTenantUser>()
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.SharedTemplates)
-                .HasForeignKey(pt => pt.TenantUserId);
+                .HasForeignKey(pt => pt.UserId);
 
 
 
@@ -317,7 +317,7 @@ namespace PrimeApps.Model.Context
 
 
             modelBuilder.Entity<NoteTenantUser>()
-                .HasKey(t => new { t.TenantUserId, t.NoteId });
+                .HasKey(t => new { t.UserId, t.NoteId });
 
             modelBuilder.Entity<NoteTenantUser>()
                 .HasOne(pt => pt.Note)
@@ -327,7 +327,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<NoteTenantUser>()
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.LikedNotes)
-                .HasForeignKey(pt => pt.TenantUserId);
+                .HasForeignKey(pt => pt.UserId);
 
 
             //Junction table for report-user shares
@@ -339,7 +339,7 @@ namespace PrimeApps.Model.Context
             //                 .ToTable("report_shares"));
 
             modelBuilder.Entity<ReportTenantUser>()
-                .HasKey(t => new { t.TenantUserId, t.ReportId });
+                .HasKey(t => new { t.UserId, t.ReportId });
 
             modelBuilder.Entity<ReportTenantUser>()
                 .HasOne(pt => pt.Report)
@@ -349,7 +349,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ReportTenantUser>()
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.SharedReports)
-                .HasForeignKey(pt => pt.TenantUserId);
+                .HasForeignKey(pt => pt.UserId);
         }
 
         public DbSet<TenantUser> Users { get; set; }

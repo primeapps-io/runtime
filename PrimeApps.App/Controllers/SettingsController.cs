@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
@@ -91,9 +92,9 @@ namespace PrimeApps.App.Controllers
 
             settingEntity.Id = result;
 
-            //var uri = Request.RequestUri;
-            //return Created(uri.Scheme + "://" + uri.Authority + "/api/setting/get/" + settingEntity.Id, settingEntity);
-            return Created(Request.Scheme + "://" + Request.Host + "/api/setting/get/" + settingEntity.Id, settingEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+			return Created(uri.Scheme + "://" + uri.Authority + "/api/setting/get/" + settingEntity.Id, settingEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/setting/get/" + settingEntity.Id, settingEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

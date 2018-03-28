@@ -26,8 +26,8 @@ namespace PrimeApps.Model.Repositories
         {
 
             var templates = DbContext.Templates
-                .Include(x => x.Shares)
-                .Include(x => x.Permissions)
+                .Include(x => x.Shares).ThenInclude(x => x.TenantUser)
+				.Include(x => x.Permissions)
                 .Where(x => x.Deleted == false);
 
             if (templateType != TemplateType.NotSet)

@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<Analytic> GetById(int id)
         {
             var analytic = await DbContext.Analytics
-                .Include(x => x.Shares)
+                .Include(x => x.Shares).ThenInclude(y => y.TenantUser)
                 .Include(x => x.CreatedBy)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<Analytic>> GetAll()
         {
             var analytics = await DbContext.Analytics
-                .Include(x => x.Shares)
+                .Include(x => x.Shares).ThenInclude(y => y.TenantUser)
                 .Include(x => x.CreatedBy)
                 .Where(x => !x.Deleted)
                 .OrderBy(x => x.CreatedAt)

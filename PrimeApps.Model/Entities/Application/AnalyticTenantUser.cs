@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace PrimeApps.Model.Entities.Application
 {
-    public class AnalyticTenantUser
+	[Table("analytic_shares")]
+	public class AnalyticTenantUser
     {
-	    public int AnaltyicId { get; set; }
-	    public Analytic Analytic { get; set; }
-
-	    public int TenantUserId { get; set; }
+	    [Column("user_id"), ForeignKey("User")]
+		public int UserId { get; set; }
 	    public TenantUser TenantUser { get; set; }
+
+	    [Column("analytic_id"), ForeignKey("Analytic")]
+		public int AnaltyicId { get; set; }
+	    public Analytic Analytic { get; set; }
 	}
 }

@@ -257,8 +257,8 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Fields)
                 .Include(x => x.Filters)
                 .Include(x => x.Aggregations)
-                .Include(x => x.Shares)
-                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+                .Include(x => x.Shares).ThenInclude(y => y.TenantUser)
+				.FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return report;
         }
