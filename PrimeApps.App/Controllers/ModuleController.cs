@@ -282,7 +282,8 @@ namespace PrimeApps.App.Controllers
                     if (resultCreateJunctionTable != -1)
                     {
                         await _moduleRepository.DeleteRelationHard(relationEntity);
-                        throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+
+                        throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
                         //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                     }
@@ -349,7 +350,7 @@ namespace PrimeApps.App.Controllers
             var resultCreate = await _moduleRepository.CreateDependency(dependencyEntity);
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
