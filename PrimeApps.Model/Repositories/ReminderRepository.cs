@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Repositories
         {
             var result = DbContext.Reminders.Add(reminder);
             await DbContext.SaveChangesAsync();
-            return result;
+            return result.Entity;
         }
         public async Task<Reminder> Update(Reminder reminder)
         {

@@ -167,7 +167,7 @@ namespace PrimeApps.App.Controllers
             registerBindingModel.CampaignCode = campaignCode;
             registerBindingModel.Email = registerBindingModel.Email.Replace(@" ", "");
             registerBindingModel.OfficeSignIn = officeSignIn;
-            registerBindingModel.AppID = appId != null ? Convert.ToInt32(appId) : GetAppId(Request.Url.Host);
+            registerBindingModel.AppID = appId != null ? Convert.ToInt32(appId) : GetAppId(Request.Host.ToString());
             if (officeSignIn)
                 registerBindingModel.Password = Utils.GenerateRandomUnique(8);
 

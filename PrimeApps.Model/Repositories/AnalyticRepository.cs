@@ -73,7 +73,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteAnalyticShare(AnalyticTenantUser analytic, TenantUser user)
+        public async Task<int> DeleteAnalyticShare(AnalyticShares analytic, TenantUser user)
         {
             user.SharedAnalytics.Remove(analytic);
 

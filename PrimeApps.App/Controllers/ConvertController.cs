@@ -556,7 +556,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("convert_candidate")]
         [HttpPost]
-        public async Task<IHttpActionResult> ConvertPersonal(JObject request)
+        public async Task<IActionResult> ConvertPersonal(JObject request)
         {
             var candidateModule = await _moduleRepository.GetByName("adaylar");
             var employeeModule = await _moduleRepository.GetByName("calisanlar");

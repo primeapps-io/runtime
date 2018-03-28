@@ -32,7 +32,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("sharing_type")]//, Index]
         public TemplateSharingType SharingType { get; set; }
 
-        public List<TemplateTenantUser> Shares { get; set; }
+        public List<TemplateShares> Shares { get; set; }
 
         public virtual ICollection<TemplatePermission> Permissions { get; set; }
     }

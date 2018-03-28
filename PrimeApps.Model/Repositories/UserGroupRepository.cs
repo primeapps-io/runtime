@@ -16,6 +16,7 @@ namespace PrimeApps.Model.Repositories
         {
             var userGroup = await DbContext.UserGroups
                 .Include(x => x.Users)
+				.ThenInclude(x => x.User)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return userGroup;
@@ -25,6 +26,7 @@ namespace PrimeApps.Model.Repositories
         {
             var userGroup = await DbContext.UserGroups
                 .Include(x => x.Users)
+				.ThenInclude(x => x.User)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Name == name);
 
             return userGroup;
@@ -34,6 +36,7 @@ namespace PrimeApps.Model.Repositories
         {
             var userGroups = DbContext.UserGroups
                 .Include(x => x.Users)
+				.ThenInclude(x => x.User)
                 .Where(x => !x.Deleted)
                 .OrderBy(x => x.CreatedAt);
 

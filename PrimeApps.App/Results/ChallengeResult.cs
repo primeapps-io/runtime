@@ -9,7 +9,7 @@ using System.Web.Http;
 
 namespace PrimeApps.App.Results
 {
-    public class ChallengeResult : IHttpActionResult
+    public class ChallengeResult : IActionResult
     {
         public ChallengeResult(string loginProvider, ApiController controller)
         {

@@ -145,7 +145,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("upload_document_file"), HttpPost]
-        public async Task<IHttpActionResult> UploadDocumentFile()
+        public async Task<IActionResult> UploadDocumentFile()
         {
             Stream requestStream = await Request.Content.ReadAsStreamAsync();
 

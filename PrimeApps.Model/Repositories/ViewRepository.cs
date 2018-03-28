@@ -20,6 +20,7 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Fields)
                 .Include(x => x.Filters)
                 .Include(x => x.Shares)
+				.ThenInclude(x => x.User)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return view;
