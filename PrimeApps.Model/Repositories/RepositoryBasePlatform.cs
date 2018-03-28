@@ -35,8 +35,9 @@ namespace PrimeApps.Model.Repositories
         {
             get
             {
-                DbContext.Configuration.LazyLoadingEnabled = true;
-                DbContext.Configuration.ProxyCreationEnabled = true;
+                // TODO: Find another way to configure those.
+                //DbContext.Configuration.LazyLoadingEnabled = true;
+                //DbContext.Configuration.ProxyCreationEnabled = true;
 
                 return DbContext;
             }

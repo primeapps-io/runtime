@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace PrimeApps.Model.Entities.Application
 {
@@ -68,10 +69,10 @@ namespace PrimeApps.Model.Entities.Application
 
         public Role Role { get; set; }
 
-        public virtual ICollection<TenantUserGroup> Groups { get; set; }
+        public virtual ICollection<UsersUserGroup> Groups { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<View> SharedViews { get; set; }
+    [JsonIgnore]
+        public virtual ICollection<ViewShares> SharedViews { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<AnalyticTenantUser> SharedAnalytics { get; set; }

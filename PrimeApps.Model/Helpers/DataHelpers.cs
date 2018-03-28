@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using System.Collections.Generic;
 
@@ -10,11 +11,11 @@ namespace PrimeApps.Model.Helpers
         {
             var table = new List<Dictionary<string, object>>();
             var list = new JArray();
-            if (ctx.Database.Connection.State != System.Data.ConnectionState.Open)
+            if (ctx.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
             {
-                ctx.Database.Connection.Open();
+                ctx.Database.GetDbConnection().Open();
             }
-            using (var cmd = ctx.Database.Connection.CreateCommand())
+            using (var cmd = ctx.Database.GetDbConnection().CreateCommand())
             {
                 cmd.CommandText = sqlSelect;
                 if (sqlParameters != null && sqlParameters.Length > 0)
@@ -50,11 +51,11 @@ namespace PrimeApps.Model.Helpers
         {
             var table = new List<Dictionary<string, object>>();
 
-            if (ctx.Database.Connection.State != System.Data.ConnectionState.Open)
+            if (ctx.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
             {
-                ctx.Database.Connection.Open();
+                ctx.Database.GetDbConnection().Open();
             }
-            using (var cmd = ctx.Database.Connection.CreateCommand())
+            using (var cmd = ctx.Database.GetDbConnection().CreateCommand())
             {
                 cmd.CommandText = sqlSelect;
                 if (sqlParameters != null && sqlParameters.Length > 0)

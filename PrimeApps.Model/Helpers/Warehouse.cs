@@ -13,9 +13,9 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-using Database = Microsoft.SqlServer.Management.Smo.Database;
-using DataType = Microsoft.SqlServer.Management.Smo.DataType;
-using View = Microsoft.SqlServer.Management.Smo.View;
+//using Database = Microsoft.SqlServer.Management.Smo.Database;
+//using DataType = Microsoft.SqlServer.Management.Smo.DataType;
+//using View = Microsoft.SqlServer.Management.Smo.View;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -75,355 +75,355 @@ namespace PrimeApps.Model.Helpers
         public void CreateSchema(Model.Entities.Platform.PlatformWarehouse warehouseEntity, ICollection<Module> modules, string tenantLanguage)
         {
             //Connect sql database using SMO
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
-            var serverConnection = new ServerConnection(connection);
-            var server = new Server(serverConnection);
-            var database = server.Databases[warehouseEntity.DatabaseName];
-            var existingTables = database.Tables.Cast<Table>().ToList();
+            //var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            //var serverConnection = new ServerConnection(connection);
+            //var server = new Server(serverConnection);
+            //var database = server.Databases[warehouseEntity.DatabaseName];
+            //var existingTables = database.Tables.Cast<Table>().ToList();
 
-            //First delete all existing tables
-            foreach (var tbl in existingTables)
-            {
-                var table = database.Tables[tbl.Name];
-                table.Refresh();
-                table.Drop();
-            }
+            ////First delete all existing tables
+            //foreach (var tbl in existingTables)
+            //{
+            //    var table = database.Tables[tbl.Name];
+            //    table.Refresh();
+            //    table.Drop();
+            //}
 
-            //Create dynamic tables
-            foreach (var module in modules)
-            {
-                CreateTables(database, module, tenantLanguage);
-            }
+            ////Create dynamic tables
+            //foreach (var module in modules)
+            //{
+            //    CreateTables(database, module, tenantLanguage);
+            //}
 
-            //Create roles table
-            CreateRolesTable(database);
+            ////Create roles table
+            //CreateRolesTable(database);
 
-            //Create users table
-            CreateUsersTable(database);
+            ////Create users table
+            //CreateUsersTable(database);
         }
 
-        public void CreateTables(Database database, Module module, string tenantLanguage)
-        {
-            var table = new Table(database, module.Name + "_d");
+        //public void CreateTables(Database database, Module module, string tenantLanguage)
+        //{
+        //    //var table = new Table(database, module.Name + "_d");
 
-            //Create identity column
-            var idColumn = new Column(table, "id", DataType.Int);
-            idColumn.Nullable = false;
-            table.Columns.Add(idColumn);
+        //    ////Create identity column
+        //    //var idColumn = new Column(table, "id", DataType.Int);
+        //    //idColumn.Nullable = false;
+        //    //table.Columns.Add(idColumn);
 
-            //Create all columns of module
-            var fields = module.Fields.OrderBy(x => x.Order);
+        //    ////Create all columns of module
+        //    //var fields = module.Fields.OrderBy(x => x.Order);
 
-            foreach (var field in fields)
-            {
-                if (ModuleHelper.SystemFieldsExtended.Contains(field.Name))
-                    continue;
+        //    //foreach (var field in fields)
+        //    //{
+        //    //    if (ModuleHelper.SystemFieldsExtended.Contains(field.Name))
+        //    //        continue;
 
-                CreateColumn(database, table, module, field);
-            }
+        //    //    CreateColumn(database, table, module, field);
+        //    //}
 
-            //Opportunities module specific fields
-            if (module.Name == "opportunities")
-            {
-                //Create forecast columns
-                var forecastTypeColumn = new Column(table, "forecast_type", DataType.NVarChar(101));
-                forecastTypeColumn.Nullable = true;
-                table.Columns.Add(forecastTypeColumn);
+        //    ////Opportunities module specific fields
+        //    //if (module.Name == "opportunities")
+        //    //{
+        //    //    //Create forecast columns
+        //    //    var forecastTypeColumn = new Column(table, "forecast_type", DataType.NVarChar(101));
+        //    //    forecastTypeColumn.Nullable = true;
+        //    //    table.Columns.Add(forecastTypeColumn);
 
-                var forecastCategoryColumn = new Column(table, "forecast_category", DataType.NVarChar(101));
-                forecastCategoryColumn.Nullable = true;
-                table.Columns.Add(forecastCategoryColumn);
+        //    //    var forecastCategoryColumn = new Column(table, "forecast_category", DataType.NVarChar(101));
+        //    //    forecastCategoryColumn.Nullable = true;
+        //    //    table.Columns.Add(forecastCategoryColumn);
 
-                var forecastYearColumn = new Column(table, "forecast_year", DataType.Int);
-                forecastYearColumn.Nullable = true;
-                table.Columns.Add(forecastYearColumn);
+        //    //    var forecastYearColumn = new Column(table, "forecast_year", DataType.Int);
+        //    //    forecastYearColumn.Nullable = true;
+        //    //    table.Columns.Add(forecastYearColumn);
 
-                var forecastMonthColumn = new Column(table, "forecast_month", DataType.Int);
-                forecastMonthColumn.Nullable = true;
-                table.Columns.Add(forecastMonthColumn);
+        //    //    var forecastMonthColumn = new Column(table, "forecast_month", DataType.Int);
+        //    //    forecastMonthColumn.Nullable = true;
+        //    //    table.Columns.Add(forecastMonthColumn);
 
-                var forecastQuarterColumn = new Column(table, "forecast_quarter", DataType.Int);
-                forecastQuarterColumn.Nullable = true;
-                table.Columns.Add(forecastQuarterColumn);
+        //    //    var forecastQuarterColumn = new Column(table, "forecast_quarter", DataType.Int);
+        //    //    forecastQuarterColumn.Nullable = true;
+        //    //    table.Columns.Add(forecastQuarterColumn);
 
-                //Create nonclustered index for forecast fields
-                var forecastTypeIx = new Index(table, "IX_" + table.Name + "_forecast_type");
-                table.Indexes.Add(forecastTypeIx);
-                forecastTypeIx.IndexedColumns.Add(new IndexedColumn(forecastTypeIx, "forecast_type", true));
-                forecastTypeIx.IsClustered = false;
-                forecastTypeIx.IsUnique = false;
-                forecastTypeIx.IndexKeyType = IndexKeyType.None;
+        //    //    //Create nonclustered index for forecast fields
+        //    //    var forecastTypeIx = new Index(table, "IX_" + table.Name + "_forecast_type");
+        //    //    table.Indexes.Add(forecastTypeIx);
+        //    //    forecastTypeIx.IndexedColumns.Add(new IndexedColumn(forecastTypeIx, "forecast_type", true));
+        //    //    forecastTypeIx.IsClustered = false;
+        //    //    forecastTypeIx.IsUnique = false;
+        //    //    forecastTypeIx.IndexKeyType = IndexKeyType.None;
 
-                var forecastCategoryIx = new Index(table, "IX_" + table.Name + "_forecast_category");
-                table.Indexes.Add(forecastCategoryIx);
-                forecastCategoryIx.IndexedColumns.Add(new IndexedColumn(forecastCategoryIx, "forecast_category", true));
-                forecastCategoryIx.IsClustered = false;
-                forecastCategoryIx.IsUnique = false;
-                forecastCategoryIx.IndexKeyType = IndexKeyType.None;
+        //    //    var forecastCategoryIx = new Index(table, "IX_" + table.Name + "_forecast_category");
+        //    //    table.Indexes.Add(forecastCategoryIx);
+        //    //    forecastCategoryIx.IndexedColumns.Add(new IndexedColumn(forecastCategoryIx, "forecast_category", true));
+        //    //    forecastCategoryIx.IsClustered = false;
+        //    //    forecastCategoryIx.IsUnique = false;
+        //    //    forecastCategoryIx.IndexKeyType = IndexKeyType.None;
 
-                var forecastYearIx = new Index(table, "IX_" + table.Name + "_forecast_year");
-                table.Indexes.Add(forecastYearIx);
-                forecastYearIx.IndexedColumns.Add(new IndexedColumn(forecastYearIx, "forecast_year", true));
-                forecastYearIx.IsClustered = false;
-                forecastYearIx.IsUnique = false;
-                forecastYearIx.IndexKeyType = IndexKeyType.None;
+        //    //    var forecastYearIx = new Index(table, "IX_" + table.Name + "_forecast_year");
+        //    //    table.Indexes.Add(forecastYearIx);
+        //    //    forecastYearIx.IndexedColumns.Add(new IndexedColumn(forecastYearIx, "forecast_year", true));
+        //    //    forecastYearIx.IsClustered = false;
+        //    //    forecastYearIx.IsUnique = false;
+        //    //    forecastYearIx.IndexKeyType = IndexKeyType.None;
 
-                var forecastMonthIx = new Index(table, "IX_" + table.Name + "_forecast_month");
-                table.Indexes.Add(forecastMonthIx);
-                forecastMonthIx.IndexedColumns.Add(new IndexedColumn(forecastMonthIx, "forecast_month", true));
-                forecastMonthIx.IsClustered = false;
-                forecastMonthIx.IsUnique = false;
-                forecastMonthIx.IndexKeyType = IndexKeyType.None;
+        //    //    var forecastMonthIx = new Index(table, "IX_" + table.Name + "_forecast_month");
+        //    //    table.Indexes.Add(forecastMonthIx);
+        //    //    forecastMonthIx.IndexedColumns.Add(new IndexedColumn(forecastMonthIx, "forecast_month", true));
+        //    //    forecastMonthIx.IsClustered = false;
+        //    //    forecastMonthIx.IsUnique = false;
+        //    //    forecastMonthIx.IndexKeyType = IndexKeyType.None;
 
-                var forecastQuarterIx = new Index(table, "IX_" + table.Name + "_forecast_quarter");
-                table.Indexes.Add(forecastQuarterIx);
-                forecastQuarterIx.IndexedColumns.Add(new IndexedColumn(forecastQuarterIx, "forecast_quarter", true));
-                forecastQuarterIx.IsClustered = false;
-                forecastQuarterIx.IsUnique = false;
-                forecastQuarterIx.IndexKeyType = IndexKeyType.None;
-            }
+        //    //    var forecastQuarterIx = new Index(table, "IX_" + table.Name + "_forecast_quarter");
+        //    //    table.Indexes.Add(forecastQuarterIx);
+        //    //    forecastQuarterIx.IndexedColumns.Add(new IndexedColumn(forecastQuarterIx, "forecast_quarter", true));
+        //    //    forecastQuarterIx.IsClustered = false;
+        //    //    forecastQuarterIx.IsUnique = false;
+        //    //    forecastQuarterIx.IndexKeyType = IndexKeyType.None;
+        //    //}
 
-            //Activities module specific fields
-            if (module.Name == "activities")
-            {
-                //Create activity_type_system column
-                var activityTypeColumn = new Column(table, "activity_type_system", DataType.VarChar(10));
-                activityTypeColumn.Nullable = true;
-                table.Columns.Add(activityTypeColumn);
+        //    ////Activities module specific fields
+        //    //if (module.Name == "activities")
+        //    //{
+        //    //    //Create activity_type_system column
+        //    //    var activityTypeColumn = new Column(table, "activity_type_system", DataType.VarChar(10));
+        //    //    activityTypeColumn.Nullable = true;
+        //    //    table.Columns.Add(activityTypeColumn);
 
-                //Create nonclustered index for activity_type_system field
-                var activityTypeIx = new Index(table, "IX_" + table.Name + "_activity_type_system");
-                table.Indexes.Add(activityTypeIx);
-                activityTypeIx.IndexedColumns.Add(new IndexedColumn(activityTypeIx, "activity_type_system", true));
-                activityTypeIx.IsClustered = false;
-                activityTypeIx.IsUnique = false;
-                activityTypeIx.IndexKeyType = IndexKeyType.None;
-            }
+        //    //    //Create nonclustered index for activity_type_system field
+        //    //    var activityTypeIx = new Index(table, "IX_" + table.Name + "_activity_type_system");
+        //    //    table.Indexes.Add(activityTypeIx);
+        //    //    activityTypeIx.IndexedColumns.Add(new IndexedColumn(activityTypeIx, "activity_type_system", true));
+        //    //    activityTypeIx.IsClustered = false;
+        //    //    activityTypeIx.IsUnique = false;
+        //    //    activityTypeIx.IndexKeyType = IndexKeyType.None;
+        //    //}
 
-            //CurrentAccounts module specific fields
-            if (module.Name == "current_accounts")
-            {
-                //Create transaction_type_system column
-                var transactionTypeColumn = new Column(table, "transaction_type_system", DataType.VarChar(30));
-                transactionTypeColumn.Nullable = true;
-                table.Columns.Add(transactionTypeColumn);
+        //    ////CurrentAccounts module specific fields
+        //    //if (module.Name == "current_accounts")
+        //    //{
+        //    //    //Create transaction_type_system column
+        //    //    var transactionTypeColumn = new Column(table, "transaction_type_system", DataType.VarChar(30));
+        //    //    transactionTypeColumn.Nullable = true;
+        //    //    table.Columns.Add(transactionTypeColumn);
 
-                //Create nonclustered index for transaction_type_system field
-                var transactionTypeIx = new Index(table, "IX_" + table.Name + "_transaction_type_system");
-                table.Indexes.Add(transactionTypeIx);
-                transactionTypeIx.IndexedColumns.Add(new IndexedColumn(transactionTypeIx, "transaction_type_system", true));
-                transactionTypeIx.IsClustered = false;
-                transactionTypeIx.IsUnique = false;
-                transactionTypeIx.IndexKeyType = IndexKeyType.None;
-            }
+        //    //    //Create nonclustered index for transaction_type_system field
+        //    //    var transactionTypeIx = new Index(table, "IX_" + table.Name + "_transaction_type_system");
+        //    //    table.Indexes.Add(transactionTypeIx);
+        //    //    transactionTypeIx.IndexedColumns.Add(new IndexedColumn(transactionTypeIx, "transaction_type_system", true));
+        //    //    transactionTypeIx.IsClustered = false;
+        //    //    transactionTypeIx.IsUnique = false;
+        //    //    transactionTypeIx.IndexKeyType = IndexKeyType.None;
+        //    //}
 
-            //Create system fields
-            var sharedUsersColumn = new Column(table, "shared_users", DataType.VarChar(2000));
-            sharedUsersColumn.Nullable = true;
-            table.Columns.Add(sharedUsersColumn);
+        //    ////Create system fields
+        //    //var sharedUsersColumn = new Column(table, "shared_users", DataType.VarChar(2000));
+        //    //sharedUsersColumn.Nullable = true;
+        //    //table.Columns.Add(sharedUsersColumn);
 
-            var sharedUserGroupsColumn = new Column(table, "shared_user_groups", DataType.VarChar(2000));
-            sharedUserGroupsColumn.Nullable = true;
-            table.Columns.Add(sharedUserGroupsColumn);
+        //    //var sharedUserGroupsColumn = new Column(table, "shared_user_groups", DataType.VarChar(2000));
+        //    //sharedUserGroupsColumn.Nullable = true;
+        //    //table.Columns.Add(sharedUserGroupsColumn);
 
-            var isConvertedColumn = new Column(table, "is_converted", DataType.Bit);
-            isConvertedColumn.Nullable = false;
-            table.Columns.Add(isConvertedColumn);
+        //    //var isConvertedColumn = new Column(table, "is_converted", DataType.Bit);
+        //    //isConvertedColumn.Nullable = false;
+        //    //table.Columns.Add(isConvertedColumn);
 
-            var masterIdColumn = new Column(table, "master_id", DataType.Int);
-            masterIdColumn.Nullable = true;
-            table.Columns.Add(masterIdColumn);
+        //    //var masterIdColumn = new Column(table, "master_id", DataType.Int);
+        //    //masterIdColumn.Nullable = true;
+        //    //table.Columns.Add(masterIdColumn);
 
-            var importIdColumn = new Column(table, "import_id", DataType.Int);
-            importIdColumn.Nullable = true;
-            table.Columns.Add(importIdColumn);
+        //    //var importIdColumn = new Column(table, "import_id", DataType.Int);
+        //    //importIdColumn.Nullable = true;
+        //    //table.Columns.Add(importIdColumn);
 
-            var createdByColumn = new Column(table, "created_by", DataType.Int);
-            createdByColumn.Nullable = false;
-            table.Columns.Add(createdByColumn);
+        //    //var createdByColumn = new Column(table, "created_by", DataType.Int);
+        //    //createdByColumn.Nullable = false;
+        //    //table.Columns.Add(createdByColumn);
 
-            var updatedByColumn = new Column(table, "updated_by", DataType.Int);
-            updatedByColumn.Nullable = true;
-            table.Columns.Add(updatedByColumn);
+        //    //var updatedByColumn = new Column(table, "updated_by", DataType.Int);
+        //    //updatedByColumn.Nullable = true;
+        //    //table.Columns.Add(updatedByColumn);
 
-            var createdAtColumn = new Column(table, "created_at", DataType.DateTime);
-            createdAtColumn.Nullable = false;
-            table.Columns.Add(createdAtColumn);
+        //    //var createdAtColumn = new Column(table, "created_at", DataType.DateTime);
+        //    //createdAtColumn.Nullable = false;
+        //    //table.Columns.Add(createdAtColumn);
 
-            var updatedAtColumn = new Column(table, "updated_at", DataType.DateTime);
-            updatedAtColumn.Nullable = true;
-            table.Columns.Add(updatedAtColumn);
+        //    //var updatedAtColumn = new Column(table, "updated_at", DataType.DateTime);
+        //    //updatedAtColumn.Nullable = true;
+        //    //table.Columns.Add(updatedAtColumn);
 
-            var deletedColumn = new Column(table, "deleted", DataType.Bit);
-            deletedColumn.Nullable = false;
-            table.Columns.Add(deletedColumn);
+        //    //var deletedColumn = new Column(table, "deleted", DataType.Bit);
+        //    //deletedColumn.Nullable = false;
+        //    //table.Columns.Add(deletedColumn);
 
-            //Create nonclustered index for system fields
-            var sharedUsersIx = new Index(table, "IX_" + table.Name + "_shared_users");
-            table.Indexes.Add(sharedUsersIx);
-            sharedUsersIx.IndexedColumns.Add(new IndexedColumn(sharedUsersIx, "shared_users", true));
-            sharedUsersIx.IsClustered = false;
-            sharedUsersIx.IsUnique = false;
-            sharedUsersIx.IndexKeyType = IndexKeyType.None;
+        //    ////Create nonclustered index for system fields
+        //    //var sharedUsersIx = new Index(table, "IX_" + table.Name + "_shared_users");
+        //    //table.Indexes.Add(sharedUsersIx);
+        //    //sharedUsersIx.IndexedColumns.Add(new IndexedColumn(sharedUsersIx, "shared_users", true));
+        //    //sharedUsersIx.IsClustered = false;
+        //    //sharedUsersIx.IsUnique = false;
+        //    //sharedUsersIx.IndexKeyType = IndexKeyType.None;
 
-            var sharedUserGroupsIx = new Index(table, "IX_" + table.Name + "_shared_user_groups");
-            table.Indexes.Add(sharedUserGroupsIx);
-            sharedUserGroupsIx.IndexedColumns.Add(new IndexedColumn(sharedUserGroupsIx, "shared_user_groups", true));
-            sharedUserGroupsIx.IsClustered = false;
-            sharedUserGroupsIx.IsUnique = false;
-            sharedUserGroupsIx.IndexKeyType = IndexKeyType.None;
+        //    //var sharedUserGroupsIx = new Index(table, "IX_" + table.Name + "_shared_user_groups");
+        //    //table.Indexes.Add(sharedUserGroupsIx);
+        //    //sharedUserGroupsIx.IndexedColumns.Add(new IndexedColumn(sharedUserGroupsIx, "shared_user_groups", true));
+        //    //sharedUserGroupsIx.IsClustered = false;
+        //    //sharedUserGroupsIx.IsUnique = false;
+        //    //sharedUserGroupsIx.IndexKeyType = IndexKeyType.None;
 
-            var isConvertedIx = new Index(table, "IX_" + table.Name + "_is_converted");
-            table.Indexes.Add(isConvertedIx);
-            isConvertedIx.IndexedColumns.Add(new IndexedColumn(isConvertedIx, "is_converted", true));
-            isConvertedIx.IsClustered = false;
-            isConvertedIx.IsUnique = false;
-            isConvertedIx.IndexKeyType = IndexKeyType.None;
+        //    //var isConvertedIx = new Index(table, "IX_" + table.Name + "_is_converted");
+        //    //table.Indexes.Add(isConvertedIx);
+        //    //isConvertedIx.IndexedColumns.Add(new IndexedColumn(isConvertedIx, "is_converted", true));
+        //    //isConvertedIx.IsClustered = false;
+        //    //isConvertedIx.IsUnique = false;
+        //    //isConvertedIx.IndexKeyType = IndexKeyType.None;
 
-            var masterIdIx = new Index(table, "IX_" + table.Name + "_master_id");
-            table.Indexes.Add(masterIdIx);
-            masterIdIx.IndexedColumns.Add(new IndexedColumn(masterIdIx, "master_id", true));
-            masterIdIx.IsClustered = false;
-            masterIdIx.IsUnique = false;
-            masterIdIx.IndexKeyType = IndexKeyType.None;
+        //    //var masterIdIx = new Index(table, "IX_" + table.Name + "_master_id");
+        //    //table.Indexes.Add(masterIdIx);
+        //    //masterIdIx.IndexedColumns.Add(new IndexedColumn(masterIdIx, "master_id", true));
+        //    //masterIdIx.IsClustered = false;
+        //    //masterIdIx.IsUnique = false;
+        //    //masterIdIx.IndexKeyType = IndexKeyType.None;
 
-            var importIdIx = new Index(table, "IX_" + table.Name + "_import_id");
-            table.Indexes.Add(importIdIx);
-            importIdIx.IndexedColumns.Add(new IndexedColumn(importIdIx, "import_id", true));
-            importIdIx.IsClustered = false;
-            importIdIx.IsUnique = false;
-            importIdIx.IndexKeyType = IndexKeyType.None;
+        //    //var importIdIx = new Index(table, "IX_" + table.Name + "_import_id");
+        //    //table.Indexes.Add(importIdIx);
+        //    //importIdIx.IndexedColumns.Add(new IndexedColumn(importIdIx, "import_id", true));
+        //    //importIdIx.IsClustered = false;
+        //    //importIdIx.IsUnique = false;
+        //    //importIdIx.IndexKeyType = IndexKeyType.None;
 
-            var createdByIx = new Index(table, "IX_" + table.Name + "_created_by");
-            table.Indexes.Add(createdByIx);
-            createdByIx.IndexedColumns.Add(new IndexedColumn(createdByIx, "created_by", true));
-            createdByIx.IsClustered = false;
-            createdByIx.IsUnique = false;
-            createdByIx.IndexKeyType = IndexKeyType.None;
+        //    //var createdByIx = new Index(table, "IX_" + table.Name + "_created_by");
+        //    //table.Indexes.Add(createdByIx);
+        //    //createdByIx.IndexedColumns.Add(new IndexedColumn(createdByIx, "created_by", true));
+        //    //createdByIx.IsClustered = false;
+        //    //createdByIx.IsUnique = false;
+        //    //createdByIx.IndexKeyType = IndexKeyType.None;
 
-            var updatedByIx = new Index(table, "IX_" + table.Name + "_updated_by");
-            table.Indexes.Add(updatedByIx);
-            updatedByIx.IndexedColumns.Add(new IndexedColumn(updatedByIx, "updated_by", true));
-            updatedByIx.IsClustered = false;
-            updatedByIx.IsUnique = false;
-            updatedByIx.IndexKeyType = IndexKeyType.None;
+        //    //var updatedByIx = new Index(table, "IX_" + table.Name + "_updated_by");
+        //    //table.Indexes.Add(updatedByIx);
+        //    //updatedByIx.IndexedColumns.Add(new IndexedColumn(updatedByIx, "updated_by", true));
+        //    //updatedByIx.IsClustered = false;
+        //    //updatedByIx.IsUnique = false;
+        //    //updatedByIx.IndexKeyType = IndexKeyType.None;
 
-            var createdAtIx = new Index(table, "IX_" + table.Name + "_created_at");
-            table.Indexes.Add(createdAtIx);
-            createdAtIx.IndexedColumns.Add(new IndexedColumn(createdAtIx, "created_at", true));
-            createdAtIx.IsClustered = false;
-            createdAtIx.IsUnique = false;
-            createdAtIx.IndexKeyType = IndexKeyType.None;
+        //    //var createdAtIx = new Index(table, "IX_" + table.Name + "_created_at");
+        //    //table.Indexes.Add(createdAtIx);
+        //    //createdAtIx.IndexedColumns.Add(new IndexedColumn(createdAtIx, "created_at", true));
+        //    //createdAtIx.IsClustered = false;
+        //    //createdAtIx.IsUnique = false;
+        //    //createdAtIx.IndexKeyType = IndexKeyType.None;
 
-            var updatedAtIx = new Index(table, "IX_" + table.Name + "_updated_at");
-            table.Indexes.Add(updatedAtIx);
-            updatedAtIx.IndexedColumns.Add(new IndexedColumn(updatedAtIx, "updated_at", true));
-            updatedAtIx.IsClustered = false;
-            updatedAtIx.IsUnique = false;
-            updatedAtIx.IndexKeyType = IndexKeyType.None;
+        //    //var updatedAtIx = new Index(table, "IX_" + table.Name + "_updated_at");
+        //    //table.Indexes.Add(updatedAtIx);
+        //    //updatedAtIx.IndexedColumns.Add(new IndexedColumn(updatedAtIx, "updated_at", true));
+        //    //updatedAtIx.IsClustered = false;
+        //    //updatedAtIx.IsUnique = false;
+        //    //updatedAtIx.IndexKeyType = IndexKeyType.None;
 
-            var deletedIx = new Index(table, "IX_" + table.Name + "_deleted");
-            table.Indexes.Add(deletedIx);
-            deletedIx.IndexedColumns.Add(new IndexedColumn(deletedIx, "deleted", true));
-            deletedIx.IsClustered = false;
-            deletedIx.IsUnique = false;
-            deletedIx.IndexKeyType = IndexKeyType.None;
+        //    //var deletedIx = new Index(table, "IX_" + table.Name + "_deleted");
+        //    //table.Indexes.Add(deletedIx);
+        //    //deletedIx.IndexedColumns.Add(new IndexedColumn(deletedIx, "deleted", true));
+        //    //deletedIx.IsClustered = false;
+        //    //deletedIx.IsUnique = false;
+        //    //deletedIx.IndexKeyType = IndexKeyType.None;
 
-            //Crete primary key index for the table
-            var pk = new Index(table, "PK_" + table.Name);
-            table.Indexes.Add(pk);
-            pk.IndexedColumns.Add(new IndexedColumn(pk, idColumn.Name));
-            pk.IsClustered = true;
-            pk.IsUnique = true;
-            pk.IndexKeyType = IndexKeyType.DriPrimaryKey;
+        //    ////Crete primary key index for the table
+        //    //var pk = new Index(table, "PK_" + table.Name);
+        //    //table.Indexes.Add(pk);
+        //    //pk.IndexedColumns.Add(new IndexedColumn(pk, idColumn.Name));
+        //    //pk.IsClustered = true;
+        //    //pk.IsUnique = true;
+        //    //pk.IndexKeyType = IndexKeyType.DriPrimaryKey;
 
-            table.Create();
+        //    //table.Create();
 
-            if (module.Relations != null && module.Relations.Count > 0)
-            {
-                var junctionTableNames = new List<string>();
-                var relations = module.Relations.OrderBy(x => x.Id).ToList();
+        //    //if (module.Relations != null && module.Relations.Count > 0)
+        //    //{
+        //    //    var junctionTableNames = new List<string>();
+        //    //    var relations = module.Relations.OrderBy(x => x.Id).ToList();
 
-                foreach (var relation in relations)
-                {
-                    if (relation.RelationType == RelationType.ManyToMany)
-                    {
-                        CreateJunctionTable(database, module, relation, junctionTableNames);
-                    }
-                }
-            }
+        //    //    foreach (var relation in relations)
+        //    //    {
+        //    //        if (relation.RelationType == RelationType.ManyToMany)
+        //    //        {
+        //    //            CreateJunctionTable(database, module, relation, junctionTableNames);
+        //    //        }
+        //    //    }
+        //    //}
 
-            CreateView(database, module, tenantLanguage);
-        }
+        //    //CreateView(database, module, tenantLanguage);
+        //}
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void CreateTable(string warehouseDatabaseName, string moduleName, CurrentUser currentUser, string tenantLanguage)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
-            var serverConnection = new ServerConnection(connection);
-            var server = new Server(serverConnection);
-            var database = server.Databases[warehouseDatabaseName];
-            var existingTable = database.Tables[moduleName + "_d"];
+            //var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            //var serverConnection = new ServerConnection(connection);
+            //var server = new Server(serverConnection);
+            //var database = server.Databases[warehouseDatabaseName];
+            //var existingTable = database.Tables[moduleName + "_d"];
 
-            if (existingTable != null)
-            {
-                existingTable.Refresh();
-                existingTable.Drop();
-            }
+            //if (existingTable != null)
+            //{
+            //    existingTable.Refresh();
+            //    existingTable.Drop();
+            //}
 
-            var module = GetModule(moduleName, currentUser.TenantId);
-            CreateTables(database, module, tenantLanguage);
+            //var module = GetModule(moduleName, currentUser.TenantId);
+            //CreateTables(database, module, tenantLanguage);
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void CreateColumns(string warehouseDatabaseName, string moduleName, List<int> fieldIds, CurrentUser currentUser, string tenantLanguage)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
-            var serverConnection = new ServerConnection(connection);
-            var server = new Server(serverConnection);
-            var database = server.Databases[warehouseDatabaseName];
-            var table = database.Tables[moduleName + "_d"];
-            var module = GetModule(moduleName, currentUser.TenantId);
+            //var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            //var serverConnection = new ServerConnection(connection);
+            //var server = new Server(serverConnection);
+            //var database = server.Databases[warehouseDatabaseName];
+            //var table = database.Tables[moduleName + "_d"];
+            //var module = GetModule(moduleName, currentUser.TenantId);
 
-            foreach (var fieldId in fieldIds)
-            {
-                var field = module.Fields.Single(x => x.Id == fieldId);
-                CreateColumn(database, table, module, field);
-            }
+            //foreach (var fieldId in fieldIds)
+            //{
+            //    var field = module.Fields.Single(x => x.Id == fieldId);
+            //    CreateColumn(database, table, module, field);
+            //}
 
-            table.Alter();
-            AlterView(database, module, tenantLanguage, true);
+            //table.Alter();
+            //AlterView(database, module, tenantLanguage, true);
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void CreateJunctionTable(string warehouseDatabaseName, string moduleName, int relationId, CurrentUser currentUser)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
-            var serverConnection = new ServerConnection(connection);
-            var server = new Server(serverConnection);
-            var database = server.Databases[warehouseDatabaseName];
-            var module = GetModule(moduleName, currentUser.TenantId);
-            var relation = module.Relations.Single(x => x.Id == relationId);
-            var junctionTableNames = new List<string>();
-            var relations = module.Relations.OrderBy(x => x.Id).ToList();
+            //var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            //var serverConnection = new ServerConnection(connection);
+            //var server = new Server(serverConnection);
+            //var database = server.Databases[warehouseDatabaseName];
+            //var module = GetModule(moduleName, currentUser.TenantId);
+            //var relation = module.Relations.Single(x => x.Id == relationId);
+            //var junctionTableNames = new List<string>();
+            //var relations = module.Relations.OrderBy(x => x.Id).ToList();
 
-            foreach (var currentRelation in relations)
-            {
-                if (currentRelation.Id == relationId)
-                    continue;
+            //foreach (var currentRelation in relations)
+            //{
+            //    if (currentRelation.Id == relationId)
+            //        continue;
 
-                if (currentRelation.RelationType == RelationType.ManyToMany)
-                {
-                    var junctionTableName = module.Name + "_" + currentRelation.RelatedModule;
+            //    if (currentRelation.RelationType == RelationType.ManyToMany)
+            //    {
+            //        var junctionTableName = module.Name + "_" + currentRelation.RelatedModule;
 
-                    if (junctionTableNames.Contains(junctionTableName))
-                        junctionTableName = junctionTableName + "_" + currentRelation.Id;
+            //        if (junctionTableNames.Contains(junctionTableName))
+            //            junctionTableName = junctionTableName + "_" + currentRelation.Id;
 
-                    junctionTableNames.Add(junctionTableName);
-                }
-            }
+            //        junctionTableNames.Add(junctionTableName);
+            //    }
+            //}
 
-            CreateJunctionTable(database, module, relation, junctionTableNames);
+            //CreateJunctionTable(database, module, relation, junctionTableNames);
         }
 
         public void SyncData(ICollection<Module> modules, string databaseName, int tenantId, string tenantLanguage)
@@ -992,233 +992,233 @@ namespace PrimeApps.Model.Helpers
             _analyticRepository.DbContext.Database.ExecuteSqlCommand(sql);
         }
 
-        private void CreateColumn(Database database, Table table, Module module, Field field)
-        {
-            var column = new Column(table, field.Name, GetDataType(field));
-            column.Nullable = true;
-            table.Columns.Add(column);
+        //private void CreateColumn(Database database, Table table, Module module, Field field)
+        //{
+        //    var column = new Column(table, field.Name, GetDataType(field));
+        //    column.Nullable = true;
+        //    table.Columns.Add(column);
 
-            //Create nonclustered index for proper fields
-            if (field.DataType != Enums.DataType.TextMulti)
-            {
-                var ix = new Index(table, "IX_" + table.Name + "_" + field.Name);
-                table.Indexes.Add(ix);
-                ix.IndexedColumns.Add(new IndexedColumn(ix, field.Name, true));
-                ix.IsClustered = false;
-                ix.IsUnique = false;
-                ix.IndexKeyType = IndexKeyType.None;
-            }
+        //    //Create nonclustered index for proper fields
+        //    if (field.DataType != Enums.DataType.TextMulti)
+        //    {
+        //        var ix = new Index(table, "IX_" + table.Name + "_" + field.Name);
+        //        table.Indexes.Add(ix);
+        //        ix.IndexedColumns.Add(new IndexedColumn(ix, field.Name, true));
+        //        ix.IsClustered = false;
+        //        ix.IsUnique = false;
+        //        ix.IndexKeyType = IndexKeyType.None;
+        //    }
 
-            //Create multiselect tables
-            if (field.DataType == Enums.DataType.Multiselect)
-            {
-                var multiselectTable = new Table(database, module.Name + "_" + field.Name + "_d");
+        //    //Create multiselect tables
+        //    if (field.DataType == Enums.DataType.Multiselect)
+        //    {
+        //        var multiselectTable = new Table(database, module.Name + "_" + field.Name + "_d");
 
-                //Create multiselect table columns
-                var multiselectIdColumn = new Column(multiselectTable, module.Name + "_id", DataType.Int);
-                multiselectIdColumn.Nullable = false;
-                multiselectTable.Columns.Add(multiselectIdColumn);
+        //        //Create multiselect table columns
+        //        var multiselectIdColumn = new Column(multiselectTable, module.Name + "_id", DataType.Int);
+        //        multiselectIdColumn.Nullable = false;
+        //        multiselectTable.Columns.Add(multiselectIdColumn);
 
-                var multiselectValueColumn = new Column(multiselectTable, "value", DataType.NVarChar(200));
-                multiselectValueColumn.Nullable = true;
-                multiselectTable.Columns.Add(multiselectValueColumn);
+        //        var multiselectValueColumn = new Column(multiselectTable, "value", DataType.NVarChar(200));
+        //        multiselectValueColumn.Nullable = true;
+        //        multiselectTable.Columns.Add(multiselectValueColumn);
 
-                //Create nonclustered index for multiselect table fields
-                var multiselectIdIndex = new Index(multiselectTable, "IX_" + multiselectTable.Name + "_id");
-                multiselectTable.Indexes.Add(multiselectIdIndex);
-                multiselectIdIndex.IndexedColumns.Add(new IndexedColumn(multiselectIdIndex, module.Name + "_id", true));
-                multiselectIdIndex.IsClustered = false;
-                multiselectIdIndex.IsUnique = false;
-                multiselectIdIndex.IndexKeyType = IndexKeyType.None;
+        //        //Create nonclustered index for multiselect table fields
+        //        var multiselectIdIndex = new Index(multiselectTable, "IX_" + multiselectTable.Name + "_id");
+        //        multiselectTable.Indexes.Add(multiselectIdIndex);
+        //        multiselectIdIndex.IndexedColumns.Add(new IndexedColumn(multiselectIdIndex, module.Name + "_id", true));
+        //        multiselectIdIndex.IsClustered = false;
+        //        multiselectIdIndex.IsUnique = false;
+        //        multiselectIdIndex.IndexKeyType = IndexKeyType.None;
 
-                var multiselectValueIndex = new Index(multiselectTable, "IX_" + multiselectTable.Name + "_value");
-                multiselectTable.Indexes.Add(multiselectValueIndex);
-                multiselectValueIndex.IndexedColumns.Add(new IndexedColumn(multiselectValueIndex, "value", true));
-                multiselectValueIndex.IsClustered = false;
-                multiselectValueIndex.IsUnique = false;
-                multiselectValueIndex.IndexKeyType = IndexKeyType.None;
+        //        var multiselectValueIndex = new Index(multiselectTable, "IX_" + multiselectTable.Name + "_value");
+        //        multiselectTable.Indexes.Add(multiselectValueIndex);
+        //        multiselectValueIndex.IndexedColumns.Add(new IndexedColumn(multiselectValueIndex, "value", true));
+        //        multiselectValueIndex.IsClustered = false;
+        //        multiselectValueIndex.IsUnique = false;
+        //        multiselectValueIndex.IndexKeyType = IndexKeyType.None;
 
-                multiselectTable.Create();
-            }
-        }
+        //        multiselectTable.Create();
+        //    }
+        //}
 
-        private void CreateJunctionTable(Database database, Module module, Relation relation, List<string> junctionTableNames)
-        {
-            var relationFieldName1 = module.Name;
-            var relationFieldName2 = relation.RelatedModule;
+        //private void CreateJunctionTable(Database database, Module module, Relation relation, List<string> junctionTableNames)
+        //{
+        //    var relationFieldName1 = module.Name;
+        //    var relationFieldName2 = relation.RelatedModule;
 
-            if (relationFieldName1 == relationFieldName2)
-            {
-                relationFieldName1 = relationFieldName1 + "1";
-                relationFieldName2 = relationFieldName2 + "2";
-            }
+        //    if (relationFieldName1 == relationFieldName2)
+        //    {
+        //        relationFieldName1 = relationFieldName1 + "1";
+        //        relationFieldName2 = relationFieldName2 + "2";
+        //    }
 
-            var junctionTableName = module.Name + "_" + relation.RelatedModule;
+        //    var junctionTableName = module.Name + "_" + relation.RelatedModule;
 
-            if (junctionTableNames.Contains(junctionTableName))
-                junctionTableName = junctionTableName + "_" + relation.Id;
-            else
-                junctionTableNames.Add(junctionTableName);
+        //    if (junctionTableNames.Contains(junctionTableName))
+        //        junctionTableName = junctionTableName + "_" + relation.Id;
+        //    else
+        //        junctionTableNames.Add(junctionTableName);
 
-            var junctionTable = new Table(database, junctionTableName + "_d");
+        //    var junctionTable = new Table(database, junctionTableName + "_d");
 
-            //Create junction table columns
-            var firstColumn = new Column(junctionTable, relationFieldName1 + "_id", DataType.Int);
-            firstColumn.Nullable = false;
-            junctionTable.Columns.Add(firstColumn);
+        //    //Create junction table columns
+        //    var firstColumn = new Column(junctionTable, relationFieldName1 + "_id", DataType.Int);
+        //    firstColumn.Nullable = false;
+        //    junctionTable.Columns.Add(firstColumn);
 
-            var secondColumn = new Column(junctionTable, relationFieldName2 + "_id", DataType.Int);
-            secondColumn.Nullable = false;
-            junctionTable.Columns.Add(secondColumn);
+        //    var secondColumn = new Column(junctionTable, relationFieldName2 + "_id", DataType.Int);
+        //    secondColumn.Nullable = false;
+        //    junctionTable.Columns.Add(secondColumn);
 
-            //Create nonclustered index for junction table fields
-            var firstColumnIndex = new Index(junctionTable, "IX_" + junctionTable.Name + "_" + relationFieldName1 + "_id");
-            junctionTable.Indexes.Add(firstColumnIndex);
-            firstColumnIndex.IndexedColumns.Add(new IndexedColumn(firstColumnIndex, relationFieldName1 + "_id", true));
-            firstColumnIndex.IsClustered = false;
-            firstColumnIndex.IsUnique = false;
-            firstColumnIndex.IndexKeyType = IndexKeyType.None;
+        //    //Create nonclustered index for junction table fields
+        //    var firstColumnIndex = new Index(junctionTable, "IX_" + junctionTable.Name + "_" + relationFieldName1 + "_id");
+        //    junctionTable.Indexes.Add(firstColumnIndex);
+        //    firstColumnIndex.IndexedColumns.Add(new IndexedColumn(firstColumnIndex, relationFieldName1 + "_id", true));
+        //    firstColumnIndex.IsClustered = false;
+        //    firstColumnIndex.IsUnique = false;
+        //    firstColumnIndex.IndexKeyType = IndexKeyType.None;
 
-            var secondColumnIndex = new Index(junctionTable, "IX_" + junctionTable.Name + "_" + relationFieldName2 + "_id");
-            junctionTable.Indexes.Add(secondColumnIndex);
-            secondColumnIndex.IndexedColumns.Add(new IndexedColumn(secondColumnIndex, relationFieldName2 + "_id", true));
-            secondColumnIndex.IsClustered = false;
-            secondColumnIndex.IsUnique = false;
-            secondColumnIndex.IndexKeyType = IndexKeyType.None;
+        //    var secondColumnIndex = new Index(junctionTable, "IX_" + junctionTable.Name + "_" + relationFieldName2 + "_id");
+        //    junctionTable.Indexes.Add(secondColumnIndex);
+        //    secondColumnIndex.IndexedColumns.Add(new IndexedColumn(secondColumnIndex, relationFieldName2 + "_id", true));
+        //    secondColumnIndex.IsClustered = false;
+        //    secondColumnIndex.IsUnique = false;
+        //    secondColumnIndex.IndexKeyType = IndexKeyType.None;
 
-            junctionTable.Create();
-        }
+        //    junctionTable.Create();
+        //}
 
-        private void CreateRolesTable(Database database)
-        {
-            var tableRoles = new Table(database, "roles");
+        //private void CreateRolesTable(Database database)
+        //{
+        //    var tableRoles = new Table(database, "roles");
 
-            var columnId = new Column(tableRoles, "id", DataType.Int);
-            columnId.Nullable = false;
-            tableRoles.Columns.Add(columnId);
+        //    var columnId = new Column(tableRoles, "id", DataType.Int);
+        //    columnId.Nullable = false;
+        //    tableRoles.Columns.Add(columnId);
 
-            var columnLabel = new Column(tableRoles, "label", DataType.NVarChar(200));
-            columnLabel.Nullable = false;
-            tableRoles.Columns.Add(columnLabel);
+        //    var columnLabel = new Column(tableRoles, "label", DataType.NVarChar(200));
+        //    columnLabel.Nullable = false;
+        //    tableRoles.Columns.Add(columnLabel);
 
-            var columnOwners = new Column(tableRoles, "owners", DataType.VarChar(2000));
-            columnOwners.Nullable = false;
-            tableRoles.Columns.Add(columnOwners);
+        //    var columnOwners = new Column(tableRoles, "owners", DataType.VarChar(2000));
+        //    columnOwners.Nullable = false;
+        //    tableRoles.Columns.Add(columnOwners);
 
-            var columnDeleted = new Column(tableRoles, "deleted", DataType.Bit);
-            columnDeleted.Nullable = false;
-            tableRoles.Columns.Add(columnDeleted);
+        //    var columnDeleted = new Column(tableRoles, "deleted", DataType.Bit);
+        //    columnDeleted.Nullable = false;
+        //    tableRoles.Columns.Add(columnDeleted);
 
-            //Primary key index for user table
-            var pkRole = new Index(tableRoles, "PK_roles");
-            tableRoles.Indexes.Add(pkRole);
-            pkRole.IndexedColumns.Add(new IndexedColumn(pkRole, columnId.Name));
-            pkRole.IsClustered = true;
-            pkRole.IsUnique = true;
-            pkRole.IndexKeyType = IndexKeyType.DriPrimaryKey;
+        //    //Primary key index for user table
+        //    var pkRole = new Index(tableRoles, "PK_roles");
+        //    tableRoles.Indexes.Add(pkRole);
+        //    pkRole.IndexedColumns.Add(new IndexedColumn(pkRole, columnId.Name));
+        //    pkRole.IsClustered = true;
+        //    pkRole.IsUnique = true;
+        //    pkRole.IndexKeyType = IndexKeyType.DriPrimaryKey;
 
-            tableRoles.Create();
-        }
+        //    tableRoles.Create();
+        //}
 
-        private void CreateUsersTable(Database database)
-        {
-            var tableUsers = new Table(database, "users");
+        //private void CreateUsersTable(Database database)
+        //{
+        //    var tableUsers = new Table(database, "users");
 
-            var columnId = new Column(tableUsers, "id", DataType.Int);
-            columnId.Nullable = false;
-            tableUsers.Columns.Add(columnId);
+        //    var columnId = new Column(tableUsers, "id", DataType.Int);
+        //    columnId.Nullable = false;
+        //    tableUsers.Columns.Add(columnId);
 
-            var columnEmail = new Column(tableUsers, "email", DataType.NVarChar(200));
-            columnEmail.Nullable = false;
-            tableUsers.Columns.Add(columnEmail);
+        //    var columnEmail = new Column(tableUsers, "email", DataType.NVarChar(200));
+        //    columnEmail.Nullable = false;
+        //    tableUsers.Columns.Add(columnEmail);
 
-            var columnFirstName = new Column(tableUsers, "first_name", DataType.NVarChar(40));
-            columnFirstName.Nullable = false;
-            tableUsers.Columns.Add(columnFirstName);
+        //    var columnFirstName = new Column(tableUsers, "first_name", DataType.NVarChar(40));
+        //    columnFirstName.Nullable = false;
+        //    tableUsers.Columns.Add(columnFirstName);
 
-            var columnLastName = new Column(tableUsers, "last_name", DataType.NVarChar(40));
-            columnLastName.Nullable = false;
-            tableUsers.Columns.Add(columnLastName);
+        //    var columnLastName = new Column(tableUsers, "last_name", DataType.NVarChar(40));
+        //    columnLastName.Nullable = false;
+        //    tableUsers.Columns.Add(columnLastName);
 
-            var columnFullName = new Column(tableUsers, "full_name", DataType.NVarChar(80));
-            columnFullName.Nullable = false;
-            tableUsers.Columns.Add(columnFullName);
+        //    var columnFullName = new Column(tableUsers, "full_name", DataType.NVarChar(80));
+        //    columnFullName.Nullable = false;
+        //    tableUsers.Columns.Add(columnFullName);
 
-            var columnProfile = new Column(tableUsers, "profile", DataType.NVarChar(200));
-            columnProfile.Nullable = true;
-            tableUsers.Columns.Add(columnProfile);
+        //    var columnProfile = new Column(tableUsers, "profile", DataType.NVarChar(200));
+        //    columnProfile.Nullable = true;
+        //    tableUsers.Columns.Add(columnProfile);
 
-            var columnRole = new Column(tableUsers, "role", DataType.NVarChar(200));
-            columnRole.Nullable = true;
-            tableUsers.Columns.Add(columnRole);
+        //    var columnRole = new Column(tableUsers, "role", DataType.NVarChar(200));
+        //    columnRole.Nullable = true;
+        //    tableUsers.Columns.Add(columnRole);
 
-            var columnRoleId = new Column(tableUsers, "role_id", DataType.Int);
-            columnRoleId.Nullable = true;
-            tableUsers.Columns.Add(columnRoleId);
+        //    var columnRoleId = new Column(tableUsers, "role_id", DataType.Int);
+        //    columnRoleId.Nullable = true;
+        //    tableUsers.Columns.Add(columnRoleId);
 
-            var columnProfilePicture = new Column(tableUsers, "picture", DataType.VarChar(400));
-            columnProfilePicture.Nullable = true;
-            tableUsers.Columns.Add(columnProfilePicture);
+        //    var columnProfilePicture = new Column(tableUsers, "picture", DataType.VarChar(400));
+        //    columnProfilePicture.Nullable = true;
+        //    tableUsers.Columns.Add(columnProfilePicture);
 
-            var columnCreatedBy = new Column(tableUsers, "created_by", DataType.VarChar(100));
-            columnCreatedBy.Nullable = false;
-            tableUsers.Columns.Add(columnCreatedBy);
+        //    var columnCreatedBy = new Column(tableUsers, "created_by", DataType.VarChar(100));
+        //    columnCreatedBy.Nullable = false;
+        //    tableUsers.Columns.Add(columnCreatedBy);
 
-            var columnCreatedAt = new Column(tableUsers, "created_at", DataType.DateTime);
-            columnCreatedAt.Nullable = false;
-            tableUsers.Columns.Add(columnCreatedAt);
+        //    var columnCreatedAt = new Column(tableUsers, "created_at", DataType.DateTime);
+        //    columnCreatedAt.Nullable = false;
+        //    tableUsers.Columns.Add(columnCreatedAt);
 
-            var columnIsActive = new Column(tableUsers, "is_active", DataType.Bit);
-            columnIsActive.Nullable = false;
-            tableUsers.Columns.Add(columnIsActive);
+        //    var columnIsActive = new Column(tableUsers, "is_active", DataType.Bit);
+        //    columnIsActive.Nullable = false;
+        //    tableUsers.Columns.Add(columnIsActive);
 
-            var columnIsSubscriber = new Column(tableUsers, "is_subscriber", DataType.Bit);
-            columnIsSubscriber.Nullable = false;
-            tableUsers.Columns.Add(columnIsSubscriber);
+        //    var columnIsSubscriber = new Column(tableUsers, "is_subscriber", DataType.Bit);
+        //    columnIsSubscriber.Nullable = false;
+        //    tableUsers.Columns.Add(columnIsSubscriber);
 
-            var columnDeleted = new Column(tableUsers, "deleted", DataType.Bit);
-            columnDeleted.Nullable = false;
-            tableUsers.Columns.Add(columnDeleted);
+        //    var columnDeleted = new Column(tableUsers, "deleted", DataType.Bit);
+        //    columnDeleted.Nullable = false;
+        //    tableUsers.Columns.Add(columnDeleted);
 
-            //Primary key index for user table
-            var pkUser = new Index(tableUsers, "PK_users");
-            tableUsers.Indexes.Add(pkUser);
-            pkUser.IndexedColumns.Add(new IndexedColumn(pkUser, columnId.Name));
-            pkUser.IsClustered = true;
-            pkUser.IsUnique = true;
-            pkUser.IndexKeyType = IndexKeyType.DriPrimaryKey;
+        //    //Primary key index for user table
+        //    var pkUser = new Index(tableUsers, "PK_users");
+        //    tableUsers.Indexes.Add(pkUser);
+        //    pkUser.IndexedColumns.Add(new IndexedColumn(pkUser, columnId.Name));
+        //    pkUser.IsClustered = true;
+        //    pkUser.IsUnique = true;
+        //    pkUser.IndexKeyType = IndexKeyType.DriPrimaryKey;
 
-            tableUsers.Create();
-        }
+        //    tableUsers.Create();
+        //}
 
-        private void CreateView(Database database, Module module, string tenantLanguage)
-        {
-            var viewName = module.Name;
-            var view = new View(database, viewName, "dbo");
-            var columnsView = GetViewColumns(module, tenantLanguage);
+        //private void CreateView(Database database, Module module, string tenantLanguage)
+        //{
+        //    var viewName = module.Name;
+        //    var view = new View(database, viewName, "dbo");
+        //    var columnsView = GetViewColumns(module, tenantLanguage);
 
-            view.TextHeader = $"CREATE VIEW [dbo].[{viewName}] AS";
-            view.TextBody = $"SELECT \n{string.Join(",\n", columnsView)} \nFROM [dbo].[{module.Name + "_d"}] \nWHERE deleted = 0";
-            view.Create();
-        }
+        //    view.TextHeader = $"CREATE VIEW [dbo].[{viewName}] AS";
+        //    view.TextBody = $"SELECT \n{string.Join(",\n", columnsView)} \nFROM [dbo].[{module.Name + "_d"}] \nWHERE deleted = 0";
+        //    view.Create();
+        //}
 
-        private void AlterView(Database database, Module module, string tenantLanguage, bool createIfNotExist = false)
-        {
-            var viewName = module.Name;
-            var view = database.Views[viewName];
+        //private void AlterView(Database database, Module module, string tenantLanguage, bool createIfNotExist = false)
+        //{
+        //    var viewName = module.Name;
+        //    var view = database.Views[viewName];
 
-            if (createIfNotExist && view == null)
-            {
-                CreateView(database, module, tenantLanguage);
-                return;
-            }
+        //    if (createIfNotExist && view == null)
+        //    {
+        //        CreateView(database, module, tenantLanguage);
+        //        return;
+        //    }
 
-            var columnsView = GetViewColumns(module, tenantLanguage);
+        //    var columnsView = GetViewColumns(module, tenantLanguage);
 
-            view.TextHeader = $"ALTER VIEW [dbo].[{viewName}] AS";
-            view.TextBody = $"SELECT \n{string.Join(",\n", columnsView)} \nFROM [dbo].[{module.Name + "_d"}] \nWHERE deleted = 0";
-            view.Alter();
-        }
+        //    view.TextHeader = $"ALTER VIEW [dbo].[{viewName}] AS";
+        //    view.TextBody = $"SELECT \n{string.Join(",\n", columnsView)} \nFROM [dbo].[{module.Name + "_d"}] \nWHERE deleted = 0";
+        //    view.Alter();
+        //}
 
         private List<string> GetViewColumns(Module module, string tenantLanguage)
         {
@@ -1540,42 +1540,42 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        private DataType GetDataType(Field field)
-        {
-            switch (field.DataType)
-            {
-                case Enums.DataType.TextSingle:
-                    return DataType.NVarChar(400);
-                case Enums.DataType.Email:
-                    return DataType.NVarChar(100);
-                case Enums.DataType.TextMulti:
-                    if (field.MultilineType == MultilineType.Large)
-                        return DataType.NVarCharMax;
+        //private DataType GetDataType(Field field)
+        //{
+        //    switch (field.DataType)
+        //    {
+        //        case Enums.DataType.TextSingle:
+        //            return DataType.NVarChar(400);
+        //        case Enums.DataType.Email:
+        //            return DataType.NVarChar(100);
+        //        case Enums.DataType.TextMulti:
+        //            if (field.MultilineType == MultilineType.Large)
+        //                return DataType.NVarCharMax;
 
-                    return DataType.NVarChar(2000);
-                case Enums.DataType.Number:
-                case Enums.DataType.NumberDecimal:
-                    return DataType.Float;
-                case Enums.DataType.NumberAuto:
-                    return DataType.Int;
-                case Enums.DataType.Currency:
-                    return DataType.Money;
-                case Enums.DataType.Date:
-                case Enums.DataType.DateTime:
-                case Enums.DataType.Time:
-                    return DataType.DateTime;
-                case Enums.DataType.Picklist:
-                    return DataType.NVarChar(101);
-                case Enums.DataType.Multiselect:
-                    return DataType.NVarChar(4000);
-                case Enums.DataType.Lookup:
-                    return DataType.Int;
-                case Enums.DataType.Checkbox:
-                    return DataType.Bit;
-                default:
-                    return DataType.NVarChar(200);
-            }
-        }
+        //            return DataType.NVarChar(2000);
+        //        case Enums.DataType.Number:
+        //        case Enums.DataType.NumberDecimal:
+        //            return DataType.Float;
+        //        case Enums.DataType.NumberAuto:
+        //            return DataType.Int;
+        //        case Enums.DataType.Currency:
+        //            return DataType.Money;
+        //        case Enums.DataType.Date:
+        //        case Enums.DataType.DateTime:
+        //        case Enums.DataType.Time:
+        //            return DataType.DateTime;
+        //        case Enums.DataType.Picklist:
+        //            return DataType.NVarChar(101);
+        //        case Enums.DataType.Multiselect:
+        //            return DataType.NVarChar(4000);
+        //        case Enums.DataType.Lookup:
+        //            return DataType.Int;
+        //        case Enums.DataType.Checkbox:
+        //            return DataType.Bit;
+        //        default:
+        //            return DataType.NVarChar(200);
+        //    }
+        //}
 
         private Role GetRole(int roleId, int tenantId)
         {

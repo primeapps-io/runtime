@@ -14,6 +14,7 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -110,7 +111,7 @@ namespace PrimeApps.Model.Repositories
         {
             int result;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.Connection.CreateCommand())
+            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var columns = new List<string>();
                 var values = new List<string>();
@@ -163,7 +164,7 @@ namespace PrimeApps.Model.Repositories
         {
             int result;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.Connection.CreateCommand())
+            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var sets = new List<string>();
                 var currentUserId = DbContext.GetCurrentUserId();
@@ -217,7 +218,7 @@ namespace PrimeApps.Model.Repositories
         {
             int result = 0;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.Connection.CreateCommand())
+            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var columns = new List<string>();
                 var values = new List<string>();
@@ -280,7 +281,7 @@ namespace PrimeApps.Model.Repositories
         {
             int result = 0;
 
-            using (var command = (NpgsqlCommand)DbContext.Database.Connection.CreateCommand())
+            using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
             {
                 var columnName1 = moduleName + "_id";
                 var columnName2 = relatedModuleName + "_id";

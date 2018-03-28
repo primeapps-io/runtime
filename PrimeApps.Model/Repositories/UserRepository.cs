@@ -104,7 +104,7 @@ namespace PrimeApps.Model.Repositories
                                    Report = user.Profile.Report,
                                    Dashboard = user.Profile.Dashboard,
                                    Home = user.Profile.Home,
-								   CollectiveAnnualLeave = user.Profile.CollectiveAnnualLeave,
+                                   CollectiveAnnualLeave = user.Profile.CollectiveAnnualLeave,
                                    StartPage = user.Profile.StartPage,
                                    Permissions = user.Profile.Permissions.Select(pm => new ProfilePermissionDTO()
                                    {

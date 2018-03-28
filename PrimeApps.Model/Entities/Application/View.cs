@@ -35,6 +35,6 @@ namespace PrimeApps.Model.Entities.Application
 
         public virtual ICollection<ViewFilter> Filters { get; set; }
         
-        public List<TenantUser> Shares { get; set; }
+        public List<ViewShares> Shares { get; set; }
     }
 }

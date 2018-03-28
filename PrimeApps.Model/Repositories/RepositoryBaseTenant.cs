@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Exceptions;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -48,15 +49,15 @@ namespace PrimeApps.Model.Repositories
         {
             get
             {
-                if (_dbContext.Database.Connection.State != System.Data.ConnectionState.Open)
+                if (_dbContext.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
                 {
                     if (_tenantId.HasValue)
                     {
-                        _dbContext.Database.Connection.ConnectionString = Postgres.GetConnectionString(_tenantId.Value);
+                        _dbContext.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(_tenantId.Value);
                     }
                     else if (CurrentUser.TenantId != -1)
                     {
-                        _dbContext.Database.Connection.ConnectionString = Postgres.GetConnectionString(CurrentUser.TenantId);
+                        _dbContext.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(CurrentUser.TenantId);
                     }
                     else
                     {
@@ -71,8 +72,9 @@ namespace PrimeApps.Model.Repositories
         {
             get
             {
-                DbContext.Configuration.LazyLoadingEnabled = true;
-                DbContext.Configuration.ProxyCreationEnabled = true;
+                //TODO: Find out another method to configure this settings.
+                //DbContext.Configuration.LazyLoadingEnabled = true;
+                //DbContext.Configuration.ProxyCreationEnabled = true;
 
                 return DbContext;
             }

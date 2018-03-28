@@ -145,34 +145,24 @@ namespace PrimeApps.Model.Context
         private void CreateCustomModelMapping(ModelBuilder modelBuilder)
         {
             //Many to many relationship users <-> user_groups
-            modelBuilder.Entity<TenantUser>()
-                .HasMany(s => s.Groups)
-                .WithMany(c => c.Users)
-                .Map(cs =>
-                {
-                    cs.MapLeftKey("user_id");
-                    cs.MapRightKey("group_id");
-                    cs.ToTable("users_user_groups");
-                });
+            modelBuilder.Entity<UsersUserGroup>()
+                .HasKey(ug => new { ug.UserId, ug.UserGroupId });
 
-            modelBuilder.Entity<TenantUserGroup>()
-    .HasKey(ug => new { ug.UserId, ug.UserGroupId });
+            modelBuilder.Entity<UsersUserGroup>()
+                .HasOne(ug => ug.User)
+                .WithMany(u => u.Groups)
+                .HasForeignKey(bc => bc.UserId);
 
-            modelBuilder.Entity<TenantUserGroup>()
-    .HasOne(ug => ug.User)
-    .WithMany(u => u.Groups)
-    .HasForeignKey(bc => bc.UserId);
-
-            modelBuilder.Entity<TenantUserGroup>()
+            modelBuilder.Entity<UsersUserGroup>()
                 .HasOne(ug => ug.UserGroup)
                 .WithMany(g => g.Users)
                 .HasForeignKey(bc => bc.UserGroupId);
 
             //Cascade delete for FieldValidation
             modelBuilder.Entity<Field>()
-                .HasOne(x=>x.Validation)
+                .HasOne(x => x.Validation)
                 .WithOne()
-                .HasForeignKey(typeof(FieldValidation),"Validation")
+                .HasForeignKey(typeof(FieldValidation), "Validation")
                 .OnDelete(DeleteBehavior.Cascade);
 
             //Cascade delete for FieldCombination
@@ -181,19 +171,25 @@ namespace PrimeApps.Model.Context
                 .WithRequired(x => x.Field)
                 .WillCascadeOnDelete(true);*/
 
-	        modelBuilder.Entity<Field>()
-		        .HasOne(x => x.Combination)
-		        .WithOne()
-		        .HasForeignKey(typeof(FieldCombination), "Combination")
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Field>()
+                .HasOne(x => x.Combination)
+                .WithOne()
+                .HasForeignKey(typeof(FieldCombination), "Combination")
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Junction table for view-user shares
-			modelBuilder.Entity<View>()
-                .HasMany(x => x.Shares)
-                .WithMany(x => x.SharedViews)
-                .Map(x => x.MapLeftKey("view_id")
-                .MapRightKey("user_id")
-                .ToTable("view_shares"));
+            //Junction table for view-user shares
+            modelBuilder.Entity<ViewShares>()
+                .HasKey(vs => new { vs.UserId, vs.ViewId });
+
+            modelBuilder.Entity<ViewShares>()
+                .HasOne(vs => vs.User)
+                .WithMany(u => u.SharedViews)
+                .HasForeignKey(vs => vs.UserId);
+
+            modelBuilder.Entity<ViewShares>()
+                .HasOne(vs => vs.View)
+                .WithMany(g => g.Shares)
+                .HasForeignKey(vs => vs.ViewId);
 
             //Cascade delete for WorkflowNotification
             /*modelBuilder.Entity<Workflow>()
@@ -201,118 +197,118 @@ namespace PrimeApps.Model.Context
                 .WithRequired(x => x.Workflow)
                 .WillCascadeOnDelete(true);*/
 
-	        modelBuilder.Entity<Workflow>()
-		        .HasOne(x => x.SendNotification)
-		        .WithOne()
-		        .HasForeignKey(typeof(WorkflowNotification), "SendNotification")
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Workflow>()
+                .HasOne(x => x.SendNotification)
+                .WithOne()
+                .HasForeignKey(typeof(WorkflowNotification), "SendNotification")
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Cascade delete for WorkflowTask
-			/*modelBuilder.Entity<Workflow>()
+            //Cascade delete for WorkflowTask
+            /*modelBuilder.Entity<Workflow>()
                 .HasOptional(x => x.CreateTask)
                 .WithRequired(x => x.Workflow)
                 .WillCascadeOnDelete(true);*/
 
-	        modelBuilder.Entity<Workflow>()
-		        .HasOne(x => x.CreateTask)
-		        .WithOne()
-		        .HasForeignKey(typeof(WorkflowTask), "CreateTask")
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Workflow>()
+                .HasOne(x => x.CreateTask)
+                .WithOne()
+                .HasForeignKey(typeof(WorkflowTask), "CreateTask")
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Cascade delete for WorkflowUpdate
-			/*modelBuilder.Entity<Workflow>()
+            //Cascade delete for WorkflowUpdate
+            /*modelBuilder.Entity<Workflow>()
                 .HasOptional(x => x.FieldUpdate)
                 .WithRequired(x => x.Workflow)
                 .WillCascadeOnDelete(true);*/
 
-	        modelBuilder.Entity<Workflow>()
-		        .HasOne(x => x.FieldUpdate)
-		        .WithOne()
-		        .HasForeignKey(typeof(WorkflowUpdate), "FieldUpdate")
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Workflow>()
+                .HasOne(x => x.FieldUpdate)
+                .WithOne()
+                .HasForeignKey(typeof(WorkflowUpdate), "FieldUpdate")
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Cascade delete for WorkflowWebHook
-			/*modelBuilder.Entity<Workflow>()
+            //Cascade delete for WorkflowWebHook
+            /*modelBuilder.Entity<Workflow>()
                 .HasOptional(x => x.WebHook)
                 .WithRequired(x => x.Workflow)
                 .WillCascadeOnDelete(true);*/
 
-	        modelBuilder.Entity<Workflow>()
-		        .HasOne(x => x.WebHook)
-		        .WithOne()
-		        .HasForeignKey(typeof(WorkflowWebhook), "WebHook")
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Workflow>()
+                .HasOne(x => x.WebHook)
+                .WithOne()
+                .HasForeignKey(typeof(WorkflowWebhook), "WebHook")
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Cascade delete profile permissions.
-			/*modelBuilder.Entity<ProfilePermission>()
+            //Cascade delete profile permissions.
+            /*modelBuilder.Entity<ProfilePermission>()
                 .WithMany(x => x.Permissions)
 				.OnDelete(DeleteBehavior.Cascade);*/
 
-	        modelBuilder.Entity<ProfilePermission>()
-		        .HasOne(x => x.Profile)
-		        .WithMany(x => x.Permissions)
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ProfilePermission>()
+                .HasOne(x => x.Profile)
+                .WithMany(x => x.Permissions)
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Note self referecing
-			/*modelBuilder.Entity<Note>()
+            //Note self referecing
+            /*modelBuilder.Entity<Note>()
                 .HasOptional(x => x.Parent)
                 .WithMany(x => x.Notes)
                 .HasForeignKey(x => x.NoteId)
                 .WillCascadeOnDelete(true);*/
 
-	        modelBuilder.Entity<Note>()
-		        .HasOne(x => x.Parent)
-				.WithMany()
-		        .HasForeignKey(x => x.NoteId)
-		        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Note>()
+                .HasOne(x => x.Parent)
+                .WithMany()
+                .HasForeignKey(x => x.NoteId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-			//Junction table for analytic-user shares
-			/*modelBuilder.Entity<Analytic>()
+            //Junction table for analytic-user shares
+            /*modelBuilder.Entity<Analytic>()
                 .HasMany(x => x.Shares)
                 .WithMany(x => x.SharedAnalytics)
                 .Map(x => x.MapLeftKey("analytic_id")
                 .MapRightKey("user_id")
                 .ToTable("analytic_shares"));*/
 
-			modelBuilder.Entity<AnalyticTenantUser>()
-		        .HasKey(t => new { t.AnaltyicId, t.TenantUserId });
+            modelBuilder.Entity<AnalyticTenantUser>()
+                .HasKey(t => new { t.TenantUserId, t.AnaltyicId });
 
-			modelBuilder.Entity<AnalyticTenantUser>()
-		        .HasOne(pt => pt.Analytic)
-		        .WithMany(p => p.Shares)
-		        .HasForeignKey(pt => pt.AnaltyicId);
+            modelBuilder.Entity<AnalyticTenantUser>()
+                .HasOne(pt => pt.Analytic)
+                .WithMany(p => p.Shares)
+                .HasForeignKey(pt => pt.AnaltyicId);
 
-	        modelBuilder.Entity<AnalyticTenantUser>()
-		        .HasOne(pt => pt.TenantUser)
-		        .WithMany(t => t.SharedAnalytics)
-		        .HasForeignKey(pt => pt.TenantUserId);
-			
+            modelBuilder.Entity<AnalyticTenantUser>()
+                .HasOne(pt => pt.TenantUser)
+                .WithMany(t => t.SharedAnalytics)
+                .HasForeignKey(pt => pt.TenantUserId);
 
-			//Junction table for template-user shares
-			/*modelBuilder.Entity<Template>()
+
+            //Junction table for template-user shares
+            /*modelBuilder.Entity<Template>()
                 .HasMany(x => x.Shares)
                 .WithMany(x => x.SharedTemplates)
                 .Map(x => x.MapLeftKey("template_id")
                 .MapRightKey("user_id")
                 .ToTable("template_shares"));*/
 
-	        modelBuilder.Entity<TemplateTenantUser>()
-		        .HasKey(t => new { t.TemplateId, t.TenantUserId });
+            modelBuilder.Entity<TemplateTenantUser>()
+                .HasKey(t => new { t.TenantUserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
 
-	        modelBuilder.Entity<TemplateTenantUser>()
-		        .HasOne(pt => pt.Template)
-		        .WithMany(p => p.Shares)
-		        .HasForeignKey(pt => pt.TemplateId);
+            modelBuilder.Entity<TemplateTenantUser>()
+                .HasOne(pt => pt.Template)
+                .WithMany(p => p.Shares)
+                .HasForeignKey(pt => pt.TemplateId);
 
-	        modelBuilder.Entity<TemplateTenantUser>()
-		        .HasOne(pt => pt.TenantUser)
-		        .WithMany(t => t.SharedTemplates)
-		        .HasForeignKey(pt => pt.TenantUserId);
+            modelBuilder.Entity<TemplateTenantUser>()
+                .HasOne(pt => pt.TenantUser)
+                .WithMany(t => t.SharedTemplates)
+                .HasForeignKey(pt => pt.TenantUserId);
 
 
 
-			//Junction table for liked note shares
-			/*modelBuilder.Entity<Note>()
+            //Junction table for liked note shares
+            /*modelBuilder.Entity<Note>()
                 .HasMany(x => x.Likes)
                 .WithMany(x => x.LikedNotes)
                 .Map(x => x.MapLeftKey("note_id")
@@ -320,41 +316,41 @@ namespace PrimeApps.Model.Context
                 .ToTable("note_likes"));*/
 
 
-	        modelBuilder.Entity<NoteTenantUser>()
-		        .HasKey(t => new { t.NoteId, t.TenantUserId });
+            modelBuilder.Entity<NoteTenantUser>()
+                .HasKey(t => new { t.TenantUserId, t.NoteId });
 
-	        modelBuilder.Entity<NoteTenantUser>()
-		        .HasOne(pt => pt.Note)
-		        .WithMany(p => p.Likes)
-		        .HasForeignKey(pt => pt.NoteId);
+            modelBuilder.Entity<NoteTenantUser>()
+                .HasOne(pt => pt.Note)
+                .WithMany(p => p.Likes)
+                .HasForeignKey(pt => pt.NoteId);
 
-	        modelBuilder.Entity<NoteTenantUser>()
-		        .HasOne(pt => pt.TenantUser)
-		        .WithMany(t => t.LikedNotes)
-		        .HasForeignKey(pt => pt.TenantUserId);
+            modelBuilder.Entity<NoteTenantUser>()
+                .HasOne(pt => pt.TenantUser)
+                .WithMany(t => t.LikedNotes)
+                .HasForeignKey(pt => pt.TenantUserId);
 
 
-			//Junction table for report-user shares
-			modelBuilder.Entity<Report>()
-                .HasMany(x => x.Shares)
-                .WithMany(x => x.SharedReports)
-                .Map(x => x.MapLeftKey("report_id")
-                    .MapRightKey("user_id")
-                    .ToTable("report_shares"));
+            //Junction table for report-user shares
+            //modelBuilder.Entity<Report>()
+            //             .HasMany(x => x.Shares)
+            //             .WithMany(x => x.SharedReports)
+            //             .Map(x => x.MapLeftKey("report_id")
+            //                 .MapRightKey("user_id")
+            //                 .ToTable("report_shares"));
 
-	        modelBuilder.Entity<ReportTenantUser>()
-		        .HasKey(t => new { t.ReportId, t.TenantUserId });
+            modelBuilder.Entity<ReportTenantUser>()
+                .HasKey(t => new { t.TenantUserId, t.ReportId });
 
-	        modelBuilder.Entity<ReportTenantUser>()
-		        .HasOne(pt => pt.Report)
-		        .WithMany(p => p.Shares)
-		        .HasForeignKey(pt => pt.ReportId);
+            modelBuilder.Entity<ReportTenantUser>()
+                .HasOne(pt => pt.Report)
+                .WithMany(p => p.Shares)
+                .HasForeignKey(pt => pt.ReportId);
 
-	        modelBuilder.Entity<ReportTenantUser>()
-		        .HasOne(pt => pt.TenantUser)
-		        .WithMany(t => t.SharedReports)
-		        .HasForeignKey(pt => pt.TenantUserId);
-		}
+            modelBuilder.Entity<ReportTenantUser>()
+                .HasOne(pt => pt.TenantUser)
+                .WithMany(t => t.SharedReports)
+                .HasForeignKey(pt => pt.TenantUserId);
+        }
 
         public DbSet<TenantUser> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
@@ -415,5 +411,7 @@ namespace PrimeApps.Model.Context
         public DbSet<Dashboard> Dashboards { get; set; }
         public DbSet<Help> Helps { get; set; }
         public DbSet<FieldFilter> FieldFilters { get; set; }
+        public DbSet<ViewShares> ViewShares { get; set; }
+        public DbSet<UsersUserGroup> UsersUserGroups { get; set; }
     }
 }
