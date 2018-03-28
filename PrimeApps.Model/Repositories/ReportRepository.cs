@@ -310,7 +310,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteReportShare(ReportTenantUser report, TenantUser user)
+        public async Task<int> DeleteReportShare(ReportShares report, TenantUser user)
         {
             user.SharedReports.Remove(report);
 

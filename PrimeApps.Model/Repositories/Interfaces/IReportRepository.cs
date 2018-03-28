@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Update(Report report, List<int> currentFieldIds, List<int> currentFilterIds, List<int> currentAggregationIds);
         Task<int> DeleteSoft(Report report);
         Task<int> DeleteHard(Report report);
-        Task<int> DeleteReportShare(ReportTenantUser report, TenantUser user);
+        Task<int> DeleteReportShare(ReportShares report, TenantUser user);
         Task<ReportCategory> GetCategoryById(int id);
         ICollection<ReportCategory> GetCategories(int userId);
         Task<int> CreateCategory(ReportCategory reportCategory);
