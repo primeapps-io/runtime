@@ -56,6 +56,6 @@ namespace PrimeApps.Model.Entities.Application
 
         public virtual ICollection<ReportAggregation> Aggregations { get; set; }
 
-        public List<ReportTenantUser> Shares { get; set; }
+        public List<ReportShares> Shares { get; set; }
     }
 }

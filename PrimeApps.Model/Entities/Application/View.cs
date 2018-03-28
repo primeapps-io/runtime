@@ -32,9 +32,9 @@ namespace PrimeApps.Model.Entities.Application
         public virtual Module Module { get; set; }
 
         public ICollection<ViewField> Fields { get; set; }
-               
+
         public ICollection<ViewFilter> Filters { get; set; }
-               
+
         public ICollection<ViewShares> Shares { get; set; }
     }
 }

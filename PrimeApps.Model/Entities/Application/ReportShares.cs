@@ -7,15 +7,15 @@ using System.Text;
 namespace PrimeApps.Model.Entities.Application
 {
 	[Table("report_shares")]
-	public class ReportTenantUser
+	public class ReportShares
     {
 	    [Column("user_id"), ForeignKey("User")]
 	    public int UserId { get; set; }
-	    public TenantUser TenantUser { get; set; }
+	    public virtual TenantUser TenantUser { get; set; }
 
 		[Column("report_id"), ForeignKey("Report")]
 		public int ReportId { get; set; }
-	    public Report Report { get; set; }
+	    public virtual Report Report { get; set; }
 
 	}
 }

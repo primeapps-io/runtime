@@ -74,6 +74,7 @@ namespace PrimeApps.Model.Repositories
                            .Include(x => x.Profile)
                            .Include(x => x.Role)
                            .Include(x => x.Groups)
+						   .ThenInclude(x => x.User)
                            .Select(user => new UserInfo()
                            {
                                picture = user.Picture,

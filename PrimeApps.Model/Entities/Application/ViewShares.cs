@@ -10,10 +10,10 @@ namespace PrimeApps.Model.Entities.Application
     {
         [Column("user_id"), ForeignKey("User")]
         public int UserId { get; set; }
-        public TenantUser User { get; set; }
+        public virtual TenantUser User { get; set; }
 
         [Column("view_id"), ForeignKey("View")]
         public int ViewId { get; set; }
-        public View View { get; set; }
+        public virtual View View { get; set; }
     }
 }

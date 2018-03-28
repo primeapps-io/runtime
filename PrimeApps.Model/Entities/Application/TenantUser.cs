@@ -71,19 +71,19 @@ namespace PrimeApps.Model.Entities.Application
 
         public virtual ICollection<UsersUserGroup> Groups { get; set; }
 
-    [JsonIgnore]
+		[JsonIgnore]
         public virtual ICollection<ViewShares> SharedViews { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<AnalyticTenantUser> SharedAnalytics { get; set; }
+        public virtual ICollection<AnalyticShares> SharedAnalytics { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<TemplateTenantUser> SharedTemplates { get; set; }
+        public virtual ICollection<TemplateShares> SharedTemplates { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<NoteTenantUser> LikedNotes { get; set; }
+        public virtual ICollection<NoteLikes> LikedNotes { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<ReportTenantUser> SharedReports { get; set; }
+        public virtual ICollection<ReportShares> SharedReports { get; set; }
     }
 }

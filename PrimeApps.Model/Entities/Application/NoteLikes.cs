@@ -6,14 +6,14 @@ using System.Text;
 namespace PrimeApps.Model.Entities.Application
 {
 	[Table("note_likes")]
-	public class NoteTenantUser
+	public class NoteLikes
 	{
 		[Column("user_id"), ForeignKey("User")]
 		public int UserId { get; set; }
-		public TenantUser TenantUser { get; set; }
+		public virtual TenantUser TenantUser { get; set; }
 
 		[Column("note_id"), ForeignKey("Note")]
 		public int NoteId { get; set; }
-	    public Note Note { get; set; }
+	    public virtual Note Note { get; set; }
 	}
 }
