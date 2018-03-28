@@ -40,7 +40,7 @@ namespace PrimeApps.Model.Repositories
             var analytics = await DbContext.Analytics
                 .Where(x => !x.Deleted)
                 .Where(x => x.SharingType == AnalyticSharingType.Everybody
-                || x.Shares.Any(j => j.Id == CurrentUser.UserId))
+                || x.Shares.Any(j => j.UserId == CurrentUser.UserId))
                 .OrderBy(x => x.CreatedAt)
                 .ToListAsync();
 
