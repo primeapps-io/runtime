@@ -12,6 +12,6 @@ namespace PrimeApps.Model.Entities.Application
         [Column("description")]
         public string Description { get; set; }
         
-        public virtual ICollection<TenantUser> Users { get; set; }
+        public virtual ICollection<TenantUserGroup> Users { get; set; }
     }
 }

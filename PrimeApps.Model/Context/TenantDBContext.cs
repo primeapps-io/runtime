@@ -154,7 +154,20 @@ namespace PrimeApps.Model.Context
                     cs.MapRightKey("group_id");
                     cs.ToTable("users_user_groups");
                 });
-            
+
+            modelBuilder.Entity<TenantUserGroup>()
+    .HasKey(ug => new { ug.UserId, ug.UserGroupId });
+
+            modelBuilder.Entity<TenantUserGroup>()
+    .HasOne(ug => ug.User)
+    .WithMany(u => u.Groups)
+    .HasForeignKey(bc => bc.UserId);
+
+            modelBuilder.Entity<TenantUserGroup>()
+                .HasOne(ug => ug.UserGroup)
+                .WithMany(g => g.Users)
+                .HasForeignKey(bc => bc.UserGroupId);
+
             //Cascade delete for FieldValidation
             modelBuilder.Entity<Field>()
                 .HasOne(x=>x.Validation)
@@ -202,8 +215,9 @@ namespace PrimeApps.Model.Context
 
             //Cascade delete profile permissions.
             modelBuilder.Entity<ProfilePermission>()
+                .HasOne(x => x.Profile)
                 .WithMany(x => x.Permissions)
-                .WillCascadeOnDelete(true);
+                .WillCascadeOn(true);
 
             //Note self referecing
             modelBuilder.Entity<Note>()

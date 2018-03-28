@@ -122,7 +122,7 @@ namespace PrimeApps.Model.Repositories
                                    RoleId = user.Role.Id,
                                    UserId = user.Id
                                },
-                               groups = user.Groups.Select(x => x.Id).ToList()
+                               groups = user.Groups.Select(x => x.UserGroupId).ToList()
                            }).SingleOrDefaultAsync();
 
             //return account object.
