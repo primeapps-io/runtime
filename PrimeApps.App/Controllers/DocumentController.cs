@@ -26,6 +26,7 @@ using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers.QueryTranslation;
+using Aspose.Words;
 
 namespace PrimeApps.App.Controllers
 {
@@ -281,7 +282,7 @@ namespace PrimeApps.App.Controllers
             if (int.Parse(tenantId) != AppUser.TenantId || !isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             string moduleDashesName = module.Replace("_", "-");
@@ -361,7 +362,7 @@ namespace PrimeApps.App.Controllers
             if (document.TenantId != AppUser.TenantId || !isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -492,7 +493,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             //get the document record from database
@@ -631,7 +632,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
 
@@ -659,7 +660,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
@@ -829,7 +830,7 @@ namespace PrimeApps.App.Controllers
 
             doc.Save(outputStream, saveOptions);
             outputStream.Position = 0;
-            var mimeType = MimeMapping.GetMimeMapping(fileName);
+            var mimeType = MimeUtility.GetMimeMapping(fileName);
             if (save)
             {
 
@@ -867,7 +868,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             if (template != null)
@@ -877,7 +878,7 @@ namespace PrimeApps.App.Controllers
                 try
                 {
                     //try to get the attributes of blob.
-                    blob.FetchAttributes();
+                    await blob.FetchAttributesAsync();
                 }
                 catch (Exception)
                 {
