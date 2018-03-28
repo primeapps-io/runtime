@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace PrimeApps.App.Results
 {
-    public class MethodNotAllowedResult : IHttpActionResult
+    public class MethodNotAllowedResult : IActionResult
     {
             private readonly HttpRequestMessage _request;
             private readonly string _reason;

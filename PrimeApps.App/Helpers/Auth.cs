@@ -14,6 +14,7 @@ using PrimeApps.Model.Entities.Platform.Identity;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using System.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Protocols;
 
 namespace PrimeApps.App.Helpers
@@ -128,7 +129,7 @@ namespace PrimeApps.App.Helpers
         }
 
         public static string AppInfo = "";
-        public static async Task<JObject> GetApplicationInfo(HttpRequestBase request, string language)
+        public static async Task<JObject> GetApplicationInfo(HttpRequest request, string language)
         {
             var url = request.Url.Host;
             var json = "";

@@ -675,7 +675,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_lookup_ids"), HttpPost]
-        public IHttpActionResult GetLookupIds(JArray lookupRequest)
+        public IActionResult GetLookupIds(JArray lookupRequest)
         {
             var lookups = _recordRepository.GetLookupIds(lookupRequest);
 
