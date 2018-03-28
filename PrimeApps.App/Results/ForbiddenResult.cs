@@ -21,10 +21,10 @@ namespace PrimeApps.App.Results
             _request = request;
             _reason = "Forbidden";
         }
-        
+
         public Task ExecuteResultAsync(ActionContext context)
         {
-            var response = _request.CreateResponse(HttpStatusCode.Forbidden, _reason);
+            var response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
             return Task.FromResult(response);
         }
     }

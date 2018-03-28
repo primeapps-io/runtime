@@ -14,6 +14,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational.Design" Version="1.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.1" />
     <PackageReference Include="Microsoft.NETCore.Portable.Compatibility" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore" Version="2.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
