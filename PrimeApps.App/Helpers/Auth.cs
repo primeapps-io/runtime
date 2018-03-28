@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using System.Configuration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.IdentityModel.Protocols;
 
 namespace PrimeApps.App.Helpers
@@ -131,7 +132,8 @@ namespace PrimeApps.App.Helpers
         public static string AppInfo = "";
         public static async Task<JObject> GetApplicationInfo(HttpRequest request, string language)
         {
-            var url = request.Url.Host;
+            var uri = new Uri(request.GetDisplayUrl());
+            var url = uri.Host;
             var json = "";
             Thread.CurrentThread.CurrentUICulture = language == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
 
@@ -144,8 +146,8 @@ namespace PrimeApps.App.Helpers
                 cdnUrlStatic = ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic;
             }
 
-            var index = request.Url.OriginalString.IndexOf(request.Url.PathAndQuery);
-            var apiUrl = request.Url.PathAndQuery != "/" ? request.Url.OriginalString.Remove(index) + "/api/Public/GetCustomInfo?customDomain=" + request.Url.Authority : request.Url.OriginalString.Remove(request.Url.OriginalString.Length - 1) + "/api/Public/GetCustomInfo?customDomain=" + request.Url.Authority;
+            var index = uri.OriginalString.IndexOf(uri.PathAndQuery);
+            var apiUrl = uri.PathAndQuery != "/" ? uri.OriginalString.Remove(index) + "/api/Public/GetCustomInfo?customDomain=" + uri.Authority : uri.OriginalString.Remove(uri.OriginalString.Length - 1) + "/api/Public/GetCustomInfo?customDomain=" + uri.Authority;
 
             using (var client = new HttpClient())
             {
