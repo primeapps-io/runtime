@@ -59,14 +59,14 @@ namespace PrimeApps.App.Helpers
                     {
                         var result = await auditLogRepository.Create(auditLog);
 
-                        if (result < 1)
-                            ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
+                        //if (result < 1)
+                            //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
                     }
                 }
             }
             catch (Exception ex)
             {
-                ErrorLog.GetDefault(null).Log(new Error(ex));
+                //ErrorLog.GetDefault(null).Log(new Error(ex));
             }
         }
     }

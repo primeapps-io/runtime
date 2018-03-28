@@ -1,5 +1,4 @@
-﻿using Elmah;
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace PrimeApps.App.Helpers
@@ -13,14 +12,14 @@ namespace PrimeApps.App.Helpers
         /// <param name="details"></param>
         public static void LogError(Exception ex, string details = "")
         {
-            ErrorLog errorLog = ErrorLog.GetDefault(null);
-            Error err = new Error(ex);
-            err.Message = string.Format("{0} {1}", details, err.Message);
-            errorLog.Log(err);
+            //ErrorLog errorLog = ErrorLog.GetDefault(null);
+            //Error err = new Error(ex);
+            //err.Message = string.Format("{0} {1}", details, err.Message);
+            //errorLog.Log(err);
 
-            #if (DEBUG)
-            throw ex;
-            #endif
+            //#if (DEBUG)
+            //throw ex;
+            //#endif
         }
     }
 }

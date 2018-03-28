@@ -1,6 +1,5 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
-using System.Data.Entity;
 using System.Linq;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Context;

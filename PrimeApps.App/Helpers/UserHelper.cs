@@ -259,8 +259,8 @@ namespace PrimeApps.App.Helpers
                 successList
             };
 
-            if (errorList.Count > 0)
-                ErrorLog.GetDefault(null).Log(new Error(new Exception(errorList.ToJsonString())));
+            //if (errorList.Count > 0)
+                //ErrorLog.GetDefault(null).Log(new Error(new Exception(errorList.ToJsonString())));
         }
     }
 }
