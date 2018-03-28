@@ -22,7 +22,9 @@ using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using PrimeApps.App.ActionFilters;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
 using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Note;
@@ -283,7 +285,7 @@ namespace PrimeApps.App.Controllers
             if (int.Parse(tenantId) != AppUser.TenantId || !isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             string moduleDashesName = module.Replace("_", "-");
@@ -363,7 +365,7 @@ namespace PrimeApps.App.Controllers
             if (document.TenantId != AppUser.TenantId || !isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -433,7 +435,7 @@ namespace PrimeApps.App.Controllers
             if (AppUser.TenantId != req.TenantId || !isOperationAllowed)
             {
                 //if the requested instance does not belong to the current session, than return Forbidden status message
-                return new ForbiddenResult(Request);
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             //Get last 5 entity documents and return it to the client.
@@ -464,7 +466,7 @@ namespace PrimeApps.App.Controllers
             if (req.TenantId != AppUser.TenantId || !isOperationAllowed)
             {
                 //if the requested instance does not belong to the current session, than return Forbidden status message
-                return new ForbiddenResult(Request);
+                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             //var docresult = crmDocuments.GetDocuments(req.InstanceID, req.EntityID);
@@ -494,7 +496,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             //get the document record from database
@@ -524,7 +526,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
             */
 
@@ -578,7 +580,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
             */
 
@@ -633,7 +635,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
 
@@ -661,7 +663,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
@@ -869,7 +871,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request);
+                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
             }
 
             if (template != null)

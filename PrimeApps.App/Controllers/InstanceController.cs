@@ -133,6 +133,7 @@ namespace PrimeApps.App.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadLogo()
         {
+
             // try to parse stream.
             Stream requestStream = await Request.Content.ReadAsStreamAsync();
             HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");

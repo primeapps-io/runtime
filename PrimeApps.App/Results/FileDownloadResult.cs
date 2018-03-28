@@ -10,15 +10,15 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Results
 {
     /// <summary>
     /// Helps downloading big files stored in Azure Blob Storage by streaming them chunkedly.
     /// </summary>
-    public class FileDownloadResult : IHttpActionResult
+    public class FileDownloadResult : IActionResult
     {
 
         /// <summary>
@@ -51,7 +51,8 @@ namespace PrimeApps.App.Results
                 }
             });
 
-            Blob.FetchAttributes();
+            await Blob.FetchAttributesAsync();
+
             response.StatusCode = HttpStatusCode.OK;
             response.Content.Headers.ContentType = new MediaTypeHeaderValue(Blob.Properties.ContentType);
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") {
