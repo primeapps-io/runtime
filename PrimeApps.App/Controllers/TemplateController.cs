@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -51,13 +52,15 @@ namespace PrimeApps.App.Controllers
             var result = await _templateRepostory.Create(templateEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             if (template.Chunks > 0)
                 Storage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/template/get/" + templateEntity.Id, templateEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

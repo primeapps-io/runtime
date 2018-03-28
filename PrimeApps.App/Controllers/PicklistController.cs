@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -60,10 +61,12 @@ namespace PrimeApps.App.Controllers
             var result = await _picklistRepository.Create(picklistEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

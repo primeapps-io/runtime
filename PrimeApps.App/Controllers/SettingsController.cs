@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -85,12 +86,14 @@ namespace PrimeApps.App.Controllers
             var result = await _settingRepository.Create(settingEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             settingEntity.Id = result;
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/setting/get/" + settingEntity.Id, settingEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/setting/get/" + settingEntity.Id, settingEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/setting/get/" + settingEntity.Id, settingEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

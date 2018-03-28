@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
@@ -149,7 +150,8 @@ namespace PrimeApps.App.Controllers
             var result = await _analyticRepository.Create(analyticEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var powerBiReportName = analyticEntity.Id.ToString();
             var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId);
@@ -176,8 +178,9 @@ namespace PrimeApps.App.Controllers
             await _analyticRepository.Update(analyticEntity);
             BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId));
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/analytics/get_reports", analyticEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/analytics/get_reports", analyticEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/analytics/get_reports", analyticEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

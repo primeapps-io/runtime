@@ -40,7 +40,7 @@ namespace PrimeApps.App.Controllers
                     try
                     {
                         //try to get the attributes of blob.
-                        blob.FetchAttributes();
+                        await blob.FetchAttributesAsync();
                     }
                     catch (Exception)
                     {

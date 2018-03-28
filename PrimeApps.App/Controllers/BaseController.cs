@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -65,7 +66,8 @@ namespace PrimeApps.App.Controllers
                 if (userId != 0)
                     result = AsyncHelpers.RunSync(() => Cache.User.Get(userId));
                 else
-                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
+                    throw new ApplicationException(HttpStatusCode.Unauthorized.ToString());
+                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
                 // check token's tenant_id equals user's tenant_id
                 var principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
@@ -74,15 +76,21 @@ namespace PrimeApps.App.Controllers
                 int tokenTenantId;
 
                 if (string.IsNullOrWhiteSpace(tenantId) || !int.TryParse(tenantId, out tokenTenantId))
-                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
+                    throw new ApplicationException(HttpStatusCode.Unauthorized.ToString());
+
+                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
                 if (result.TenantId != tokenTenantId)
-                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
+                    throw new ApplicationException(HttpStatusCode.Unauthorized.ToString());
+
+                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
 
                 var tenant = AsyncHelpers.RunSync(() => Cache.Tenant.Get(result.TenantId));
 
                 if ((tenant.IsDeactivated || tenant.IsSuspended) && result.TenantId == result.Id)
-                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.PaymentRequired));
+                    throw new ApplicationException(HttpStatusCode.PaymentRequired.ToString());
+
+                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.PaymentRequired));
             }
 
             return result;

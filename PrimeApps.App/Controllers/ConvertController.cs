@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Linq;
@@ -174,7 +175,9 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
             }
@@ -214,7 +217,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
             }
@@ -260,7 +264,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
             }
@@ -296,7 +301,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
 
@@ -436,7 +442,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
 
@@ -496,7 +503,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultCreateProduct < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
             }
@@ -534,7 +542,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
 
@@ -609,7 +618,8 @@ namespace PrimeApps.App.Controllers
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
             }
@@ -648,7 +658,8 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
 

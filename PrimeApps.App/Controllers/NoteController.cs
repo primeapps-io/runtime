@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -54,7 +55,7 @@ namespace PrimeApps.App.Controllers
                         likedUser.Picture = Storage.GetAvatarUrl(likedUser.Picture);
                 }
             }
-            
+
 
             return Ok(noteEntity);
         }
@@ -70,7 +71,7 @@ namespace PrimeApps.App.Controllers
                 if (note.CreatedBy.Picture != null && !note.CreatedBy.Picture.StartsWith("http://"))
                     note.CreatedBy.Picture = Storage.GetAvatarUrl(note.CreatedBy.Picture);
 
-                if(note.Likes.Count > 0)
+                if (note.Likes.Count > 0)
                 {
                     foreach (var likedUser in note.Likes)
                     {
@@ -143,9 +144,9 @@ namespace PrimeApps.App.Controllers
                             hasPermission = true;
                     }
                 }
-                
 
-                if(!hasPermission)
+
+                if (!hasPermission)
                     continue;
 
                 if (record.IsNullOrEmpty())
@@ -185,13 +186,15 @@ namespace PrimeApps.App.Controllers
             var result = await _noteRepository.Create(noteEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             noteEntity = await _noteRepository.GetById(noteEntity.Id);
             noteEntity.CreatedBy.Picture = Storage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + workflowEntity.Id, workflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

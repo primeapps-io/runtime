@@ -1,4 +1,5 @@
-﻿using PrimeApps.App.ActionFilters;
+﻿using System;
+using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -59,10 +60,12 @@ namespace PrimeApps.App.Controllers
             var result = await _userOwnerRepository.Create(userOwnerEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + userOwnerEntity.Id, userOwnerEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/user_custom_shares/get/" + userOwnerEntity.Id, userOwnerEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/user_custom_shares/get/" + userOwnerEntity.Id, userOwnerEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

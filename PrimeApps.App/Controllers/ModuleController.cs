@@ -80,7 +80,8 @@ namespace PrimeApps.App.Controllers
             var resultCreate = await _moduleRepository.Create(moduleEntity);
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             //Create default views
             try
@@ -93,7 +94,8 @@ namespace PrimeApps.App.Controllers
                 if (resultCreateViewAllRecords < 1)
                 {
                     await _moduleRepository.DeleteHard(moduleEntity);
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
 
                 var resultCreateViewMyRecords = await _viewRepository.Create(defaultViewMyRecordsEntity);
@@ -101,7 +103,8 @@ namespace PrimeApps.App.Controllers
                 if (resultCreateViewMyRecords < 1)
                 {
                     await _moduleRepository.DeleteHard(moduleEntity);
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
             catch (Exception)
@@ -121,7 +124,8 @@ namespace PrimeApps.App.Controllers
                 if (resultCreateTable != -1)
                 {
                     await _moduleRepository.DeleteHard(moduleEntity);
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
             catch (Exception)
@@ -139,7 +143,8 @@ namespace PrimeApps.App.Controllers
                 {
                     await _moduleRepository.DeleteTable(moduleEntity);
                     await _moduleRepository.DeleteHard(moduleEntity);
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
 
             }
@@ -155,8 +160,9 @@ namespace PrimeApps.App.Controllers
 
             ModuleHelper.AfterCreate(AppUser, moduleEntity);
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]
@@ -191,7 +197,8 @@ namespace PrimeApps.App.Controllers
                     var entityRevert = ModuleHelper.RevertEntity(moduleChanges, moduleEntity);
                     await _moduleRepository.Update(entityRevert);
 
-                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
             }
             catch (Exception ex)
@@ -259,7 +266,8 @@ namespace PrimeApps.App.Controllers
             var resultCreate = await _moduleRepository.CreateRelation(relationEntity);
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -274,7 +282,10 @@ namespace PrimeApps.App.Controllers
                     if (resultCreateJunctionTable != -1)
                     {
                         await _moduleRepository.DeleteRelationHard(relationEntity);
-                        throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+
+                        throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+                        //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                     }
                 }
                 catch (Exception)
@@ -284,8 +295,9 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
@@ -338,10 +350,13 @@ namespace PrimeApps.App.Controllers
             var resultCreate = await _moduleRepository.CreateDependency(dependencyEntity);
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+
+            //var uri = Request.RequestUri;
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
         [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
@@ -373,7 +388,7 @@ namespace PrimeApps.App.Controllers
 
             if (fieldEntity == null)
                 return NotFound();
-  
+
             fieldEntity.InlineEdit = field.InlineEdit;
 
             await _moduleRepository.UpdateField(fieldEntity);
