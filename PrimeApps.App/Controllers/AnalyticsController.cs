@@ -11,7 +11,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.Jobs;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Warehouse;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/analytics"), Authorize, SnakeCase]
@@ -33,7 +33,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> CreateWarehouse(WarehouseCreateRequest request)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var isPasswordComplex = await Utils.IsComplexPassword(request.DatabasePassword);
 
@@ -149,7 +149,7 @@ namespace PrimeApps.App.Controllers
             var result = await _analyticRepository.Create(analyticEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var powerBiReportName = analyticEntity.Id.ToString();
             var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId);

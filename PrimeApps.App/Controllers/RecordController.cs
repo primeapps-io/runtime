@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +16,7 @@ using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Helpers.QueryTranslation;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/record"), Authorize, SnakeCase]
@@ -217,10 +216,10 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 if (ex.SqlState == PostgreSqlStateCodes.InvalidInput)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
@@ -263,16 +262,16 @@ namespace PrimeApps.App.Controllers
                     return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultCreate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             //Check number auto fields and combinations and update record with combined values
             var numberAutoFields = moduleEntity.Fields.Where(x => x.DataType == DataType.NumberAuto).ToList();
@@ -358,7 +357,7 @@ namespace PrimeApps.App.Controllers
             var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, true, currentRecord, AppUser);
 
             //if ((bool)record["freeze"])
-            //    return StatusCode(HttpStatusCode.Forbidden);
+            //    return StatusCode(HttpStatusCode.Status403Forbidden);
 
             if (resultBefore < 0 && !ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -382,16 +381,16 @@ namespace PrimeApps.App.Controllers
                     return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             RecordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
 
@@ -422,7 +421,7 @@ namespace PrimeApps.App.Controllers
             var resultBefore = await RecordHelper.BeforeDelete(moduleEntity, record, AppUser);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -471,16 +470,16 @@ namespace PrimeApps.App.Controllers
                         return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 //After create
                 RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
@@ -507,7 +506,7 @@ namespace PrimeApps.App.Controllers
 
 
                 if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
-                    return StatusCode(HttpStatusCode.Forbidden);
+                    return StatusCode(HttpStatusCode.Status403Forbidden);
 
                 //Set warehouse database name
                 _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -563,16 +562,16 @@ namespace PrimeApps.App.Controllers
                         return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultUpdate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 RecordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
             }
@@ -615,16 +614,16 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultAddRelations < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             return Ok(resultAddRelations);
         }
@@ -653,13 +652,13 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultDeleteRelation < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             return Ok(resultDeleteRelation);
         }
@@ -721,10 +720,10 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 if (ex.SqlState == PostgreSqlStateCodes.InvalidInput)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return Content(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }

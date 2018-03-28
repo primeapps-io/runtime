@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Configuration;
 using System.Net.Http;
-using System.Web.Http.Controllers;
-using System.Web.Http.Filters;
-
+using Microsoft.IdentityModel.Protocols;
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.ActionFilters
 {
     public class RequireHttpsAttribute : AuthorizationFilterAttribute
     {
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            var allowInsecureHttp = bool.Parse(ConfigurationManager.AppSettings["AllowInsecureHttp"]);
+            var allowInsecureHttp = bool.Parse(ConfigurationManager<>.AppSettings["AllowInsecureHttp"]);
 
             if (actionContext.Request.RequestUri.Scheme != Uri.UriSchemeHttps && !allowInsecureHttp)
             {
@@ -24,7 +23,7 @@ namespace PrimeApps.App.ActionFilters
 
         protected virtual void HandleNonHttpsRequest(HttpActionContext actionContext)
         {
-            actionContext.Response = new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden);
+            actionContext.Response = new HttpResponseMessage(System.Net.HttpStatusCode.Status403Forbidden);
             actionContext.Response.ReasonPhrase = "SSL Required";
         }
     }

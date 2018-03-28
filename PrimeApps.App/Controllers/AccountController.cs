@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -30,6 +29,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using ChallengeResult = PrimeApps.App.Results.ChallengeResult;
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Controllers
 {
@@ -828,7 +828,7 @@ namespace PrimeApps.App.Controllers
             get { return Request.GetOwinContext().Authentication; }
         }
 
-        private IHttpActionResult GetErrorResult(IdentityResult result)
+        private IActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
             {

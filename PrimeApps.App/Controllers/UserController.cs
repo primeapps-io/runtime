@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,13 +21,12 @@ using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Common.UserApps;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Entities.Application;
-using PrimeApps.Model.Enums;
+ 
 using PrimeApps.Model.Helpers;
 using User = PrimeApps.Model.Entities.Application.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
 using PrimeApps.Model.Entities.Platform.Identity;
-
+using HttpStatusCode =Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/User"), Authorize]
@@ -288,7 +286,7 @@ namespace PrimeApps.App.Controllers
                 acc.apps = apps;
                 
                 if (acc.user.deactivated)
-                    throw new HttpResponseException(HttpStatusCode.PaymentRequired);
+                    throw new HttpResponseException(HttpStatusCode.Status409Conflict);
 
                 return Ok(acc);
             }
@@ -395,7 +393,7 @@ namespace PrimeApps.App.Controllers
             var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email);
 
             if (resultControl == false)
-                return StatusCode(HttpStatusCode.Conflict);
+                return StatusCode(HttpStatusCode.Status409Conflict);
 
             //Set warehouse database name
             //_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -413,7 +411,7 @@ namespace PrimeApps.App.Controllers
             if (request.TenantId.HasValue)
             {
                 if (!AppUser.Email.EndsWith("@ofisim.com"))
-                    return StatusCode(HttpStatusCode.Forbidden);
+                    return StatusCode(HttpStatusCode.Status403Forbidden);
 
                 var subscriberUser = await _platformUserRepository.GetUserByAutoId(request.TenantId.Value);
                 tenantId = subscriberUser.TenantId.Value;
@@ -440,21 +438,21 @@ namespace PrimeApps.App.Controllers
 		        if (!isOperationAllowed)
 		        {
 			        //if current user is not the admin of the instance then reject that request and send a forbidden http request.
-			        return StatusCode(HttpStatusCode.Forbidden);
+			        return StatusCode(HttpStatusCode.Status403Forbidden);
 		        }
 
 			}
 
-			//if (!crmLicenseUsage.HasUserCapacity(tenantId))
-   //         {
-   //             //if capacity is exceeded, return payment required status code and cancel process.
-   //             return StatusCode(HttpStatusCode.PaymentRequired);
-   //         }
+            //if (!crmLicenseUsage.HasUserCapacity(tenantId))
+            //         {
+            //             //if capacity is exceeded, return payment required status code and cancel process.
+            //             return StatusCode(HttpStatusCode.PaymentRequired);
+            //         }
 
             //var hasAccount = crmPendingShareRequests.Invite(request.Email, instanceId, adminUserGlobalId, request.ProfileId, request.RoleId, createdBy);
 
             //if (hasAccount)
-            //    return StatusCode(HttpStatusCode.Conflict);
+            //    return StatusCode(HttpStatusCode.Status409Conflict);
 
             //Register
             var randomPassword = Utils.GenerateRandomUnique(8);
@@ -542,7 +540,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetUser(string email)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var userEntity = await _platformUserRepository.Get(email);
 
@@ -627,13 +625,13 @@ namespace PrimeApps.App.Controllers
             var resultControl = await _platformUserRepository.IsActiveDirectoryEmailAvailable(email);
 
             if (resultControl == false)
-                return StatusCode(HttpStatusCode.Conflict);
+                return StatusCode(HttpStatusCode.Status409Conflict);
 
             var userEmailCheck = await _platformUserRepository.Get(email);
 
             if (userEmailCheck != null && userEmailCheck.Id != userId)
             {
-                return StatusCode(HttpStatusCode.Conflict);
+                return StatusCode(HttpStatusCode.Status409Conflict);
             }
 
             var user = await _platformUserRepository.Get(userId);

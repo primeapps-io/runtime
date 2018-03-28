@@ -74,15 +74,15 @@ namespace PrimeApps.Model.Entities.Application
         public virtual ICollection<View> SharedViews { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Analytic> SharedAnalytics { get; set; }
+        public virtual ICollection<AnalyticTenantUser> SharedAnalytics { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Template> SharedTemplates { get; set; }
+        public virtual ICollection<TemplateTenantUser> SharedTemplates { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Note> LikedNotes { get; set; }
+        public virtual ICollection<NoteTenantUser> LikedNotes { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<Report> SharedReports { get; set; }
+        public virtual ICollection<ReportTenantUser> SharedReports { get; set; }
     }
 }

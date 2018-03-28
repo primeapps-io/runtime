@@ -23,6 +23,6 @@ namespace PrimeApps.Model.Entities.Application
         [Column("menu_icon"), MaxLength(100)]
         public string MenuIcon { get; set; }
 
-        public List<TenantUser> Shares { get; set; }
+        public List<AnalyticTenantUser> Shares { get; set; }
     }
 }

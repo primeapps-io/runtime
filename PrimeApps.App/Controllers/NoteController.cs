@@ -12,7 +12,7 @@ using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/note"), Authorize, SnakeCase]
@@ -185,7 +185,7 @@ namespace PrimeApps.App.Controllers
             var result = await _noteRepository.Create(noteEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             noteEntity = await _noteRepository.GetById(noteEntity.Id);
             noteEntity.CreatedBy.Picture = Storage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
