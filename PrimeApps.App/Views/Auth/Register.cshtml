@@ -1,4 +1,5 @@
 ﻿﻿@using PrimeApps.App.Models
+@using Microsoft.AspNetCore.Html
 @model PrimeApps.App.Models.RegisterBindingModel
 @{
 
@@ -23,89 +24,89 @@
 <div class="col-md-4 login-sec">
     <img class="logo-img" src="@Url.Content(logo)" />
     <span class="free-info-header">
-        @MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.Free)
-    </span>
-    @using (Html.BeginForm("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, OfficeSignIn = officeSignIn, AppId = ViewBag.AppId }, FormMethod.Post, new { @class = "login-form", role = "form", id = "register-form", autocomplete = "off", novalidate = "novalidate" }))
-    {
-        @Html.AntiForgeryToken()
-        <div class="form-group">
-            <div class="input-group input-group-first">
-                <span class="input-group-addon">
-                    <span class="flaticon-profile7"></span>
-                </span>
-                <!--<label for="exampleInputEmail1" class="text-uppercase">Ad</label>-->
-                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control input-group-firstname", @placeholder = Html.Raw(@PrimeApps.App.Resources.Auth.Resource.Name) })
-                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @placeholder = Html.Raw(@PrimeApps.App.Resources.Auth.Resource.Surname) })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <span class="flaticon-email26"></span>
-                </span>
-                <!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-                @(ViewBag.ReadOnly != null
-                            ? Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email, @readonly = "readonly" })
-                            : Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email }))
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <span class="flaticon-technology"></span>
-                </span>
-                <!--<label for="exampleInputEmail1" class="text-uppercase">Telefon</label>-->
-                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Phone })
-            </div>
-        </div>
-        if (!officeSignIn)
-        {
-            <div class="form-group">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <span class="flaticon-padlock50"></span>
-                    </span>
-                    <!--<label for="exampleInputEmail1" class="text-uppercase">Şifre</label>-->
-                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Password })
-                </div>
-            </div>
-        }
-        if (error != null)
-        {
-            <div class="server-error error">@PrimeApps.App.Resources.Auth.Resource.UserExist</div>
-        }
-        <div class="error-all"></div>
-        <div class="error-email"></div>
-        <div class="error-phone"></div>
-        <div class="error-pass"></div>
-        <div class="error-fullname"></div>
-        <div class="form-check">
-            <button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right">@PrimeApps.App.Resources.Auth.Resource.CreateAccount</button>
-            @if (!officeSignIn)
-            {
-                <hr />
-                <button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@PrimeApps.App.Resources.Auth.Resource.RegisterWithOffice</button>
-            }
-            <div class="language">
-                @if (otherLang == "tr" && string.IsNullOrEmpty(customLanguage))
-                {
-                    <a href="@Url.Action("Register", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.TR</a> <span>|</span>
-                }
-                else if (string.IsNullOrEmpty(customLanguage))
-                {
-                    <a href="@Url.Action("Register", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.EN</a> <span>|</span>
-                }
-                <a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl})" class="">@PrimeApps.App.Resources.Auth.Resource.LoginForm</a>
-            </div>
-        </div>
-    }
-    <div class="form-group">
+        @new HtmlString($"{PrimeApps.App.Resources.Auth.Resource.Free}")
+	</span>
+	@using (Html.BeginForm("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, OfficeSignIn = officeSignIn, AppId = ViewBag.AppId }, FormMethod.Post, new { @class = "login-form", role = "form", id = "register-form", autocomplete = "off", novalidate = "novalidate" }))
+	{
+		@Html.AntiForgeryToken()
+		<div class="form-group">
+			<div class="input-group input-group-first">
+				<span class="input-group-addon">
+					<span class="flaticon-profile7"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">Ad</label>-->
+				@Html.TextBoxFor(m => m.FirstName, new { @class = "form-control input-group-firstname", @placeholder = Html.Raw(@PrimeApps.App.Resources.Auth.Resource.Name) })
+				@Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @placeholder = Html.Raw(@PrimeApps.App.Resources.Auth.Resource.Surname) })
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">
+					<span class="flaticon-email26"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+				@(ViewBag.ReadOnly != null
+									? Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email, @readonly = "readonly" })
+									: Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email }))
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">
+					<span class="flaticon-technology"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">Telefon</label>-->
+				@Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Phone })
+			</div>
+		</div>
+		if (!officeSignIn)
+		{
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<span class="flaticon-padlock50"></span>
+					</span>
+					<!--<label for="exampleInputEmail1" class="text-uppercase">Şifre</label>-->
+					@Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Password })
+				</div>
+			</div>
+		}
+		if (error != null)
+		{
+			<div class="server-error error">@PrimeApps.App.Resources.Auth.Resource.UserExist</div>
+		}
+		<div class="error-all"></div>
+		<div class="error-email"></div>
+		<div class="error-phone"></div>
+		<div class="error-pass"></div>
+		<div class="error-fullname"></div>
+		<div class="form-check">
+			<button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right">@PrimeApps.App.Resources.Auth.Resource.CreateAccount</button>
+			@if (!officeSignIn)
+			{
+				<hr />
+				<button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@PrimeApps.App.Resources.Auth.Resource.RegisterWithOffice</button>
+			}
+			<div class="language">
+				@if (otherLang == "tr" && string.IsNullOrEmpty(customLanguage))
+				{
+					<a href="@Url.Action("Register", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.TR</a> <span>|</span>
+				}
+				else if (string.IsNullOrEmpty(customLanguage))
+				{
+					<a href="@Url.Action("Register", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.EN</a> <span>|</span>
+				}
+				<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl})" class="">@PrimeApps.App.Resources.Auth.Resource.LoginForm</a>
+			</div>
+		</div>
+	}
+	<div class="form-group">
 
-        <hr style="margin-top: 0;" />
-        <p class="free-info">
-            @MvcHtmlString.Create(string.Format(@PrimeApps.App.Resources.Auth.Resource.CreateInfo, "<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">" + @PrimeApps.App.Resources.Auth.Resource.Terms + "</a>", "<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">" + @PrimeApps.App.Resources.Auth.Resource.Policy + "</a>"))
-        </p>
-    </div>
+		<hr style="margin-top: 0;" />
+		<p class="free-info">
+			@Html.Raw(string.Format(@PrimeApps.App.Resources.Auth.Resource.CreateInfo, "<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">" + @PrimeApps.App.Resources.Auth.Resource.Terms + "</a>", "<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">" + @PrimeApps.App.Resources.Auth.Resource.Policy + "</a>"))
+		</p>
+	</div>
 </div>
 
 

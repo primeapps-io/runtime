@@ -1,15 +1,19 @@
-﻿@{
-    Layout = null;
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+	Layout = null;
+
 }
 
 <!DOCTYPE html>
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title></title>
-    <style>
-        @Styles.Render("~/styles/auth")
+	<meta name="viewport" content="width=device-width" />
+	<title></title>
+	<link rel="stylesheet" href="~/styles/auth.css" />
+	<style>
+        @*Styles.Render("~/styles/auth")*@
          body {
              background-image: url(/images/background_lines_2.png);
              background-size: inherit;
@@ -31,38 +35,39 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row" style="text-align: center;">
-            <!--<div class="col-sm-6 col-sm-offset-3">
-                <img src="/images/officeconnection.png" />
-                <h2 style="color:#0fad00; font-family: monospace;">Bağlantı Başarılı</h2>
-                <p style="font-size:20px;color:#5C5C5C;">Pencereyi kapatıp sisteme office 365 e-postanız ile giriş yapabilirsiniz.</p>
-                <p style="font-size: 15px; color: #ce0405;">Uyarı: Özellikleri kullanabilmek için office 365 e-postanız ile giriş yapılması zorunludur.</p>
-                <br><br>
-                <button type="button" class="close-button" onclick="window.open('', '_self', ''); window.close();">Kapat</button>
-            </div>-->
-        
-        </div>
-    </div>
-    @Scripts.Render("~/bundles-js/auth")
-    <script type="text/javascript">
+	<div class="container">
+		<div class="row" style="text-align: center;">
+			<!--<div class="col-sm-6 col-sm-offset-3">
+				<img src="/images/officeconnection.png" />
+				<h2 style="color:#0fad00; font-family: monospace;">Bağlantı Başarılı</h2>
+				<p style="font-size:20px;color:#5C5C5C;">Pencereyi kapatıp sisteme office 365 e-postanız ile giriş yapabilirsiniz.</p>
+				<p style="font-size: 15px; color: #ce0405;">Uyarı: Özellikleri kullanabilmek için office 365 e-postanız ile giriş yapılması zorunludur.</p>
+				<br><br>
+				<button type="button" class="close-button" onclick="window.open('', '_self', ''); window.close();">Kapat</button>
+			</div>-->
+
+		</div>
+	</div>
+	@*Scripts.Render("~/bundles-js/auth")*@
+	<script src="~/bundles-js/auth.js"></script>
+	<script type="text/javascript">
         $(document).ready(function () {
             var error = "@ViewBag.Error";
             if (error === "userExist") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.ProcessCodeErrorTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.ProcessCodeErrorMessage)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeErrorTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeErrorMessage)",
                     icon: "error",
-                    button: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.Ok)",
+                    button: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Ok)",
                 }).then(function() {
                     window.open('', '_self', ''); window.close();
                 });
             } else if (error === "emailNotMatch") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.EmailNotMatchTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.EmailNotMatchContent)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.EmailNotMatchTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.EmailNotMatchContent)",
                     icon: "error",
-                    button: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.Ok)",
+                    button: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Ok)",
                 }).then(function() {
                     window.open('', '_self', ''); window.close();
                 });
@@ -70,15 +75,15 @@
                 window.open('', '_self', ''); window.close();
             } else {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.ProcessCodeTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.ProcessCodeMessage)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeMessage)",
                     icon: "success",
-                    button: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.Ok)",
+                    button: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Ok)",
                 }).then(function() {
                     window.open('', '_self', ''); window.close();
                 });
             }
         });
-    </script>
+	</script>
 </body>
 </html>

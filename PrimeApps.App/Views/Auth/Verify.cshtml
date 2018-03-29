@@ -47,7 +47,7 @@
             {
                 <i class="fa fa-4x fa-check-circle" style="color: @color"></i><br/>
                 <span class="free-info">
-                    @MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.VerifyMail)
+                    @Html.Raw(PrimeApps.App.Resources.Auth.Resource.VerifyMail)
                     @if (!resend)
                 {
                     @PrimeApps.App.Resources.Auth.Resource.ResendMail

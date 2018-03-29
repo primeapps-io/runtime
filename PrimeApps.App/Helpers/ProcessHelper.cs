@@ -902,7 +902,7 @@ namespace PrimeApps.App.Helpers
 
                             if (request.OperationType == OperationType.insert)
                             {
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessrejectNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(typeof(Resources.Email.ApprovalProcessRejectNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }

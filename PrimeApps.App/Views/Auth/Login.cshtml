@@ -25,7 +25,7 @@
     @if (!customDomain)
     {
         <span class="free-info-header">
-            @MvcHtmlString.Create(string.Format(@PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfo, "<a href=" + @Url.Action("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }) + ">" + @PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfoLink + "</a>"))
+            @Html.Raw(string.Format(@PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfo, "<a href=" + @Url.Action("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }) + ">" + @PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfoLink + "</a>"))
         </span>
     }
 
@@ -93,29 +93,29 @@
 
             if ("@ViewBag.Success" === "accountActivated") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.JoinSuccessTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.JoinSuccessMessage)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.JoinSuccessTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.JoinSuccessMessage)",
                     icon: "success",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             } else if ("@ViewBag.Success" === "passwordChanged") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessMessage)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessMessage)",
                     icon: "success",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             } else if ("@ViewBag.Error" === "notActive") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
                     icon: "error",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             } else if ("@ViewBag.Error" === "isNotValidApp") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppContent)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppContent)",
                     icon: "error",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
