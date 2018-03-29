@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.App.Models;
 using PrimeApps.App.Models.ViewModel.Analytics;
@@ -73,14 +74,14 @@ namespace PrimeApps.App.Helpers
         {
             if (analyticModel.Shares != null && analyticModel.Shares.Count > 0)
             {
-                analytic.Shares = new List<TenantUser>();
+                analytic.Shares = new List<AnalyticShares>();
 
                 foreach (var userId in analyticModel.Shares)
                 {
                     var sharedUser = await userRepository.GetById(userId);
 
                     if (sharedUser != null)
-                        analytic.Shares.Add(sharedUser);
+                        analytic.Shares.Add(sharedUser.SharedAnalytics.FirstOrDefault(x => x.UserId == userId && x.AnaltyicId == analytic.Id));
                 }
             }
         }
