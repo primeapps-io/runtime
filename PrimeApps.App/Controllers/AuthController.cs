@@ -225,7 +225,7 @@ namespace PrimeApps.App.Controllers
             var lang = GetLanguage();
             ViewBag.Lang = lang;
             ViewBag.Error = error;
-            ViewBag.Token = WebUtility.HtmlEncode(token);
+            ViewBag.Token = WebUtility.UrlEncode(token);
             ViewBag.Uid = uid;
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);

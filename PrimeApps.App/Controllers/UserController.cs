@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.IdentityModel.Protocols;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Providers;
@@ -328,8 +329,9 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadAvatar()
         {
             // try to parse stream.
-            Stream requestStream = await Request.Content.ReadAsStreamAsync();
-            HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
+	        Stream requestStream = await Request.ReadAsStreamAsync();
+
+			HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
 
             if (parser.Success)
             {

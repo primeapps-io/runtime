@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -129,7 +130,7 @@ namespace PrimeApps.App.Controllers
         [Route("save_pbix"), HttpPost]
         public async Task<IActionResult> SavePbix()
         {
-            var stream = await Request.Content.ReadAsStreamAsync();
+            var stream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
             var isUploaded = DocumentHelper.Upload(stream, out result);
 
