@@ -1,7 +1,5 @@
 ﻿using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
-
-
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
