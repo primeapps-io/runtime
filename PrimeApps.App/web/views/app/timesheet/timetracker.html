@@ -59,15 +59,15 @@
                                 </a>
                             </div>
                             <div ng-hide="(day.dayOrder === 0 && !settings.includeWeekend) || (day.dayOrder === 6 && !settings.includeWeekend)" class="btn btn-sm btn-custom  pull-right" style="width: 300px; background-color:inherit !important; border-top: none; border-right : none">
-                                    <span ng-if="day.totalHour < settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
-                                        <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour}} {{'Timetracker.LessHour'|translate}} )
-                                    </span>
+                                <span ng-if="day.totalHour < settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
+                                    <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour}} {{'Timetracker.LessHour'|translate}} )
+                                </span>
                                 <span ng-if="day.totalHour > settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
-                                        <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour | makePositive}} {{'Timetracker.MoreHour'|translate}} )
-                                    </span>
+                                    <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour | makePositive}} {{'Timetracker.MoreHour'|translate}} )
+                                </span>
                                 <span ng-if="day.totalHour == settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
-                                        <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{'Timetracker.DayCompleted'|translate}} )
-                                    </span>
+                                    <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{'Timetracker.DayCompleted'|translate}} )
+                                </span>
                             </div>
                             <div class="subpanel-body">
                                 <div class="row">
@@ -86,9 +86,9 @@
                                                     <td class="text-right">
                                                         <span style="display:block; width: 40px"></span>
                                                         <span class="action-buttons" ng-hide="(currentTimetracker.process_id && currentTimetracker.process_status != 3) || freeze">
-                                    <a ng-click="openEditModal(day, item)" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
-                                    <i class="action-icon flaticon-bin9" confirm-click action="delete(day, item.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove)"></i>
-                                </span>
+                                                            <a ng-click="openEditModal(day, item)" class="action-icon" title="{{'Common.Edit' | translate}}"><i class="flaticon-pencil124"></i></a>
+                                                            <i class="action-icon flaticon-bin9" confirm-click action="delete(day, item.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}"></i>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                             </tbody>
