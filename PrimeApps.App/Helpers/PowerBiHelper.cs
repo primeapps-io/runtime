@@ -12,6 +12,8 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
+using Microsoft.PowerBI.Api.V1;
+using Microsoft.PowerBI.Api.V1.Models;
 
 namespace PrimeApps.App.Helpers
 {
@@ -22,7 +24,7 @@ namespace PrimeApps.App.Helpers
         private static string _accessKey = ConfigurationManager.AppSettings["PowerbiAccessKey"];
         private static string _powerBiEmbedUrl = "https://embedded.powerbi.com/appTokenReportEmbed?reportId={0}";
 
-        public static async Task<Workspace> CreateWorkspace()
+        public static async Task<Microsoft.PowerBI.Api.V1.Models.Workspace> CreateWorkspace()
         {
             using (var client = CreateClient())
             {
@@ -30,7 +32,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task<Report> GetReportByName(int tenantId, string name)
+        public static async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(int tenantId, string name)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (PlatformDBContext dbContext = new PlatformDBContext())
@@ -43,7 +45,7 @@ namespace PrimeApps.App.Helpers
 
             using (var client = CreateClient())
             {
-                var reportsResponse = await client.Reports.(_workspaceCollection, warehouse.PowerbiWorkspaceId);
+                var reportsResponse = await client.Reports.GetReportsAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId);
                 var report = reportsResponse.Value.SingleOrDefault(x => x.Name == name);
 
                 return report;
@@ -89,7 +91,7 @@ namespace PrimeApps.App.Helpers
             return reports;
         }
 
-        public static async Task<Import> ImportPbix(string pbixUrl, string reportName, int tenantId)
+        public static async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, int tenantId)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (PlatformDBContext dbContext = new PlatformDBContext())
