@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using System;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
@@ -50,7 +51,7 @@ namespace PrimeApps.App.Controllers
 
             var authorizationRequest = string.Format(
                 "https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id={0}&resource={1}&redirect_uri={2}&state={3}",
-                Uri.EscapeDataString(ConfigurationManager<>.AppSettings["ida:ClientID"]),
+                Uri.EscapeDataString(ConfigurationManager.AppSettings["ida:ClientID"]),
                 Uri.EscapeDataString("https://graph.windows.net"),
                 Uri.EscapeDataString(new Uri(Request.GetDisplayUrl()).GetLeftPart(UriPartial.Authority) + "/ActiveDirectory/ProcessCode"),
                 Uri.EscapeDataString(adTenant.Issuer)

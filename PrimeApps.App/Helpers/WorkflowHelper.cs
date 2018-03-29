@@ -321,7 +321,7 @@ namespace PrimeApps.App.Helpers
                                                     break;
                                             }
 
-                                            var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
 
                                             domain = string.Format(domain, subdomain);
 

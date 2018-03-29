@@ -1,6 +1,7 @@
 ﻿using Hangfire.Common;
 using Hangfire.States;
 using System;
+using System.Configuration;
 using Microsoft.IdentityModel.Protocols;
 
 namespace PrimeApps.App.Jobs.QueueAttributes
@@ -11,7 +12,7 @@ namespace PrimeApps.App.Jobs.QueueAttributes
 
         public CommonQueueAttribute()
         {
-            Queue = ConfigurationManager<>.AppSettings["HangfireCommonQueue"];
+            Queue = ConfigurationManager.AppSettings["HangfireCommonQueue"];
         }
         public void OnStateElection(ElectStateContext context)
         {

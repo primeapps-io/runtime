@@ -22,7 +22,7 @@ namespace PrimeApps.App.Providers
                 throw new ArgumentNullException("data");
             }
 
-            string audienceId = ConfigurationManager<>.AppSettings["as:AudienceId"];
+            string audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
 
             string symmetricKeyAsBase64 = ConfigurationManager.AppSettings["as:AudienceSecret"];
 

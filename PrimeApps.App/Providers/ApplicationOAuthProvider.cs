@@ -51,7 +51,7 @@ namespace PrimeApps.App.Providers
                 return;
             }
 
-            if (context.ClientId == "00000000000000000000000000000002" && user.TenantId != int.Parse(ConfigurationManager<>.AppSettings["PrimeAppsTenantId"]))
+            if (context.ClientId == "00000000000000000000000000000002" && user.TenantId != int.Parse(ConfigurationManager.AppSettings["PrimeAppsTenantId"]))
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;

@@ -137,7 +137,7 @@ namespace PrimeApps.App.Helpers
             var json = "";
             Thread.CurrentThread.CurrentUICulture = language == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
 
-            var useCdn = bool.Parse(ConfigurationManager<>.AppSettings["UseCdn"]);
+            var useCdn = bool.Parse(ConfigurationManager.AppSettings["UseCdn"]);
             var cdnUrlStatic = "";
 
             if (useCdn)

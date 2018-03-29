@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -160,7 +161,7 @@ namespace PrimeApps.App.Controllers
                 //};
                 //session.Save(req);
 
-                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "api-test" : "api";
+                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "api-test" : "api";
 
                 //compose a new email to the new email address of the user.
                 Dictionary<string, string> emailData = new Dictionary<string, string>();
