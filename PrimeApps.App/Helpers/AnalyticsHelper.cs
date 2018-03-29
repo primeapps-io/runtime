@@ -61,7 +61,7 @@ namespace PrimeApps.App.Helpers
 
             var warehouseInfo = new WarehouseInfo
             {
-                Server = ConfigurationManager.AppSettings["WarehouseServer"],
+                Server = Configuration,
                 Database = warehouse.DatabaseName,
                 Username = warehouse.DatabaseUser
             };

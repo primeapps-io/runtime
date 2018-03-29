@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -11,7 +10,7 @@ namespace PrimeApps.App.Results
 {
     public class ChallengeResult : IActionResult
     {
-        public ChallengeResult(string loginProvider, ApiController controller)
+        public ChallengeResult(string loginProvider, Controller controller)
         {
             LoginProvider = loginProvider;
             Request = controller.Request;
@@ -22,11 +21,17 @@ namespace PrimeApps.App.Results
 
         public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
+            
             Request.GetOwinContext().Authentication.Challenge(LoginProvider);
 
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
             response.RequestMessage = Request;
             return Task.FromResult(response);
+        }
+
+        public Task ExecuteResultAsync(ActionContext context)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
