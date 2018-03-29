@@ -6,7 +6,6 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -18,6 +17,7 @@ using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Jobs.Messaging.EMail
 {

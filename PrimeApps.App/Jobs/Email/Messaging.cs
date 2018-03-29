@@ -1,5 +1,4 @@
-﻿using NHibernate;
-using PrimeApps.App.Jobs.Messaging.SMS;
+﻿using PrimeApps.App.Jobs.Messaging.SMS;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Entities.Platform.Identity;
