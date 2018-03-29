@@ -35,18 +35,19 @@ namespace PrimeApps.App.Helpers
 
         public static async Task<Note> UpdateLikedNote(Note note, int userId, IUserRepository userRepository)
         {
+            note.Likes = new List<NoteLikes>();
             var likedUser = await userRepository.GetById(userId);
             int x = 0;
             foreach (var user in note.Likes)
             {
-                if (user.Id == userId)
+                if (user.UserId == userId)
                     x++;
             }
 
             if(x>0)
-                note.Likes.Remove(likedUser);
+                note.Likes.Remove(likedUser.LikedNotes.FirstOrDefault(z=>z.UserId == userId && z.NoteId == note.Id));
             else
-                note.Likes.Add(likedUser);
+                note.Likes.Add(likedUser.LikedNotes.FirstOrDefault(z => z.UserId == userId && z.NoteId == note.Id));
 
             return note;
         }
@@ -55,14 +56,14 @@ namespace PrimeApps.App.Helpers
         {
             if (noteModel.Likes != null && noteModel.Likes.Count > 0)
             {
-                note.Likes = new List<TenantUser>();
+                note.Likes = new List<NoteLikes>();
 
                 foreach (var userId in noteModel.Likes)
                 {
                     var likedUser = await userRepository.GetById(userId);
 
                     if (likedUser != null)
-                        note.Likes.Add(likedUser);
+                        note.Likes.Add(likedUser.LikedNotes.FirstOrDefault(x => x.UserId == userId && x.NoteId == note.Id));
                 }
             }
         }

@@ -112,7 +112,7 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var user in report.Shares)
                 {
-                    reportViewModel.Shares.Add(new UserBasicViewModel { Id = user.Id, FullName = user.FullName });
+                    reportViewModel.Shares.Add(new UserBasicViewModel { Id = user.UserId, FullName = user.TenantUser.FullName });
                 }
             }
 
