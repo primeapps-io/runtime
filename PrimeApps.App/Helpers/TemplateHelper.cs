@@ -97,14 +97,14 @@ namespace PrimeApps.App.Helpers
         {
             if (templateModel.Shares != null && templateModel.Shares.Count > 0)
             {
-                template.Shares = new List<TenantUser>();
+                template.Shares = new List<TemplateShares>();
 
                 foreach (var userId in templateModel.Shares)
                 {
                     var sharedUser = await userRepository.GetById(userId);
 
                     if (sharedUser != null)
-                        template.Shares.Add(sharedUser);
+                        template.Shares.Add(sharedUser.SharedTemplates.FirstOrDefault(x => x.UserId == userId && x.TemplateId == template.Id));
                 }
             }
         }

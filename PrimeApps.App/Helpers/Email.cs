@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web.Hosting;
 using Hangfire;
 using PrimeApps.App.Jobs.Messaging;
 using System.Threading;
