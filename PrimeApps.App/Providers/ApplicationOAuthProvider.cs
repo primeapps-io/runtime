@@ -11,6 +11,8 @@ using System.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Protocols;
 
 namespace PrimeApps.App.Providers
 {
@@ -49,7 +51,7 @@ namespace PrimeApps.App.Providers
                 return;
             }
 
-            if (context.ClientId == "00000000000000000000000000000002" && user.TenantId != int.Parse(ConfigurationManager.AppSettings["PrimeAppsTenantId"]))
+            if (context.ClientId == "00000000000000000000000000000002" && user.TenantId != int.Parse(ConfigurationManager<>.AppSettings["PrimeAppsTenantId"]))
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;
