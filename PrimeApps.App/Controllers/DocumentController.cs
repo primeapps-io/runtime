@@ -27,6 +27,8 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using Aspose.Words;
 using MimeMapping;
 using Aspose.Words.MailMerging;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.RetryPolicies;
 
 namespace PrimeApps.App.Controllers
 {
@@ -59,7 +61,8 @@ namespace PrimeApps.App.Controllers
         /// <returns>System.String.</returns>
         [Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
-        {;
+        {
+            ;
             DocumentUploadResult result;
             var isUploaded = DocumentHelper.Upload(Request.Body, out result);
 
@@ -542,11 +545,27 @@ namespace PrimeApps.App.Controllers
                 publicName = doc.Name;
 
 
-                return new FileDownloadResult()
-                {
-                    Blob = blob,
-                    PublicName = doc.Name
-                };
+                //return new FileDownloadResult()
+                //{
+                //    Blob = blob,
+                //    PublicName = doc.Name
+                //};
+
+                //try
+                //{
+                //await Blob.DownloadToStreamAsync(outputStream, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions()
+                //{
+                //    ServerTimeout = TimeSpan.FromDays(1),
+                //    RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3)
+                //}, null);
+                //}
+                //finally
+                //{
+                //    outputStream.Close();
+                //}
+
+
+                return await Storage.DownloadToFileStreamResult(blob, publicName);
             }
             else
             {
@@ -601,11 +620,8 @@ namespace PrimeApps.App.Controllers
                 }
                 publicName = docName;
 
-                return new FileDownloadResult()
-                {
-                    Blob = blob,
-                    PublicName = docName
-                };
+                return await Storage.DownloadToFileStreamResult(blob, publicName);
+
             }
             else
             {
@@ -858,11 +874,8 @@ namespace PrimeApps.App.Controllers
                 string[] splittedFileName = template.Content.Split('.');
                 string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
 
-                return new FileDownloadResult()
-                {
-                    Blob = blob,
-                    PublicName = $"{template.Name}.{extension}"
-                };
+                return await Storage.DownloadToFileStreamResult(blob, $"{template.Name}.{extension}");
+
             }
             else
             {
