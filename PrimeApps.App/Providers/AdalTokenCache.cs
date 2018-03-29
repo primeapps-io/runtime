@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Providers
 {

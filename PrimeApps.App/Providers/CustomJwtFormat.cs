@@ -3,6 +3,9 @@ using Microsoft.Owin.Security.DataHandler.Encoder;
 using System;
 using System.Configuration;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols;
 using Thinktecture.IdentityModel.Tokens;
 
 namespace PrimeApps.App.Providers
@@ -23,7 +26,7 @@ namespace PrimeApps.App.Providers
                 throw new ArgumentNullException("data");
             }
 
-            string audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
+            string audienceId = ConfigurationManager<>.AppSettings["as:AudienceId"];
 
             string symmetricKeyAsBase64 = ConfigurationManager.AppSettings["as:AudienceSecret"];
 
