@@ -444,14 +444,14 @@ namespace PrimeApps.App.Helpers
 
             if (viewModel.Shares != null && viewModel.Shares.Count > 0)
             {
-                view.Shares = new List<TenantUser>();
+                view.Shares = new List<ViewShares>();
 
                 foreach (var userId in viewModel.Shares)
                 {
                     var sharedUser = await userRepository.GetById(userId);
 
                     if (sharedUser != null)
-                        view.Shares.Add(sharedUser);
+                        view.Shares.Add(sharedUser.SharedViews.FirstOrDefault(x => x.UserId == userId && x.ViewId == view.Id));
                 }
             }
         }
