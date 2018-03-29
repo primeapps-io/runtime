@@ -9,7 +9,6 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -21,12 +20,13 @@ using Document = PrimeApps.Model.Entities.Application.Document;
 using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using Aspose.Words;
+using MimeMapping;
+using Aspose.Words.MailMerging;
 
 namespace PrimeApps.App.Controllers
 {
@@ -59,10 +59,9 @@ namespace PrimeApps.App.Controllers
         /// <returns>System.String.</returns>
         [Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
-        {
-            var requestStream = await Request.Content.ReadAsStreamAsync();
+        {;
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(requestStream, out result);
+            var isUploaded = DocumentHelper.Upload(Request.Body, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
@@ -79,10 +78,9 @@ namespace PrimeApps.App.Controllers
         [Route("upload_attachment"), HttpPost]
         public async Task<IActionResult> UploadAttachment()
         {
-            Stream requestStream = await Request.Content.ReadAsStreamAsync();
             //Parse stream and get file properties.
-            HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
-            String blobUrl = ConfigurationManager<>.AppSettings.Get("BlobUrl");
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -148,10 +146,8 @@ namespace PrimeApps.App.Controllers
         [Route("upload_document_file"), HttpPost]
         public async Task<IActionResult> UploadDocumentFile()
         {
-            Stream requestStream = await Request.Content.ReadAsStreamAsync();
-
             //Parse stream and get file properties.
-            HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
             String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -282,7 +278,7 @@ namespace PrimeApps.App.Controllers
             if (int.Parse(tenantId) != AppUser.TenantId || !isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
             string moduleDashesName = module.Replace("_", "-");
@@ -311,8 +307,7 @@ namespace PrimeApps.App.Controllers
         [Route("upload_large"), HttpPost]
         public async Task<IActionResult> UploadLarge()
         {
-            var requestStream = await Request.Content.ReadAsStreamAsync();
-            var parser = new HttpMultipartParser(requestStream, "file");
+            var parser = new HttpMultipartParser(Request.Body, "file");
 
             //if it is successfully parsed continue.
             if (parser.Success)
@@ -362,7 +357,7 @@ namespace PrimeApps.App.Controllers
             if (document.TenantId != AppUser.TenantId || !isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
             //get entity name if this document is uploading to a specific entity.
             string uniqueStandardizedName = document.FileName.Replace(" ", "-");
@@ -432,7 +427,7 @@ namespace PrimeApps.App.Controllers
             if (AppUser.TenantId != req.TenantId || !isOperationAllowed)
             {
                 //if the requested instance does not belong to the current session, than return Forbidden status message
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
             //Get last 5 entity documents and return it to the client.
@@ -463,7 +458,7 @@ namespace PrimeApps.App.Controllers
             if (req.TenantId != AppUser.TenantId || !isOperationAllowed)
             {
                 //if the requested instance does not belong to the current session, than return Forbidden status message
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
             //var docresult = crmDocuments.GetDocuments(req.InstanceID, req.EntityID);
@@ -493,7 +488,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
             //get the document record from database
@@ -534,7 +529,7 @@ namespace PrimeApps.App.Controllers
                 try
                 {
                     //try to get the attributes of blob.
-                    blob.FetchAttributes();
+                    await blob.FetchAttributesAsync();
                 }
                 catch (Exception)
                 {
@@ -597,7 +592,7 @@ namespace PrimeApps.App.Controllers
                 try
                 {
                     //try to get the attributes of blob.
-                    blob.FetchAttributes();
+                    await blob.FetchAttributesAsync();
                 }
                 catch (Exception)
                 {
@@ -632,7 +627,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
 
@@ -660,7 +655,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
@@ -679,35 +674,6 @@ namespace PrimeApps.App.Controllers
 
         }
 
-        /// <summary>
-        /// Convert html string to blob pdf
-        /// </summary>
-        /// <param name="request">The request</param>
-        [Route("HtmltoPdf"), HttpPost]
-        public IActionResult HtmlToPdf(JObject request)
-        {
-            if (string.IsNullOrWhiteSpace(request["html"]?.ToString()))
-                return BadRequest("Html string is required.");
-
-            // json-html fix
-            var htmlString = request["html"].ToString();
-            var htmlObj = JObject.Parse("{\"html\": " + htmlString + "}");
-            var html = (string)htmlObj["html"];
-
-            // generate pdf
-            var pdfDocument = PdfGenerator.GeneratePdf(html, PageSize.A4);
-            byte[] pdf;
-
-            // save pdf binary
-            using (var stream = new MemoryStream())
-            {
-                stream.Position = 0;
-                pdfDocument.Save(stream, false);
-                pdf = stream.ReadToEnd();
-            }
-
-            return Ok(pdf);
-        }
 
         [Route("export"), HttpGet]
         public async Task<IActionResult> Export([FromRoute]string module, [FromRoute]int id, [FromRoute]int templateId, [FromRoute]string format, [FromRoute]string locale, [FromRoute]int timezoneOffset = 180, [FromRoute] bool save = false)
@@ -733,7 +699,7 @@ namespace PrimeApps.App.Controllers
             try
             {
                 //try to get the attributes of blob.
-                templateBlob.FetchAttributes();
+                await templateBlob.FetchAttributesAsync();
             }
             catch (Exception)
             {
@@ -868,7 +834,7 @@ namespace PrimeApps.App.Controllers
             if (!isOperationAllowed)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
+                return Forbid();
             }
 
             if (template != null)
