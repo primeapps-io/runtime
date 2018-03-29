@@ -26,7 +26,8 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns>System.String.</returns>
         [Route("DetectCulture")]
-        [ResponseType(typeof(string))]
+        [ProducesResponseType(typeof(string), 200)]
+        //[ResponseType(typeof(string))]
         [HttpPost]
         public IActionResult DetectCulture()
         {
@@ -40,7 +41,8 @@ namespace PrimeApps.App.Controllers
         /// <param name="email">The email.</param>
         /// <returns><c>true</c> if the email is unique otherwise, <c>false</c>.</returns>
         [Route("IsUniqueEmail")]
-        [ResponseType(typeof(bool))]
+        [ProducesResponseType(typeof(bool), 200)]
+        //[ResponseType(typeof(bool))]
         [HttpGet]
         public IActionResult IsUniqueEmail(string email)
         {

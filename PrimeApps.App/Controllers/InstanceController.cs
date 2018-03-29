@@ -33,7 +33,8 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="tenantDto">The instance.</param>
         [Route("Edit")]
-        [ResponseType(typeof(void))]
+        [ProducesResponseType(typeof(void), 200)]
+        //[ResponseType(typeof(void))]
         [HttpPost]
         public async Task<IActionResult> Edit(TenantDTO tenantDto)
         {
@@ -44,7 +45,8 @@ namespace PrimeApps.App.Controllers
             if (tenantToUpdate.OwnerId != AppUser.Id && !isOperationAllowed)
             {
                 //it is an unauthorized request, block it by sending forbidden status code.
-                return new ForbiddenResult(Request);
+                return Forbid();
+                //return new ForbiddenResult(Request);
             }
 
             //if it is valid, then update the changed fields.
@@ -85,7 +87,8 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns>WorkgroupsResult.</returns>
         [Route("GetWorkgroup")]
-        [ResponseType(typeof(WorkgroupsResult))]
+        [ProducesResponseType(typeof(WorkgroupsResult), 200)]
+        //[ResponseType(typeof(WorkgroupsResult))]
         [HttpPost]
         public async Task<IActionResult> GetWorkgroup()
         {
@@ -104,7 +107,8 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="relation">relation object</param>
         [Route("Dismiss")]
-        [ResponseType(typeof(void))]
+        [ProducesResponseType(typeof(void), 200)]
+        //[ResponseType(typeof(void))]
         [HttpPost]
         public async Task<IActionResult> Dismiss(DismissDTO relation)
         {
@@ -129,7 +133,8 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileContents">The file contents.</param>
         /// <returns>System.String.</returns>
         [Route("UploadLogo")]
-        [ResponseType(typeof(string))]
+        [ProducesResponseType(typeof(string), 200)]
+        //[ResponseType(typeof(string))]
         [HttpPost]
         public async Task<IActionResult> UploadLogo()
         {
@@ -190,7 +195,8 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("SaveLogo")]
-        [ResponseType(typeof(void))]
+        [ProducesResponseType(typeof(void), 200)]
+        //[ResponseType(typeof(void))]
         [HttpPost]
         public async Task<IActionResult> SaveLogo(JObject logo)
         {
@@ -199,7 +205,8 @@ namespace PrimeApps.App.Controllers
 
             if (instanceToUpdate.OwnerId != AppUser.TenantId && !isOperationAllowed)
             {
-                return new ForbiddenResult(Request);
+                return Forbid();
+                //return new ForbiddenResult(Request);
             }
 
             instanceToUpdate.Logo = (string)logo["url"];
