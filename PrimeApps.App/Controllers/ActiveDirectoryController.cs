@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
@@ -51,7 +52,7 @@ namespace PrimeApps.App.Controllers
                 "https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id={0}&resource={1}&redirect_uri={2}&state={3}",
                 Uri.EscapeDataString(ConfigurationManager<>.AppSettings["ida:ClientID"]),
                 Uri.EscapeDataString("https://graph.windows.net"),
-                Uri.EscapeDataString(Request.Url.GetLeftPart(UriPartial.Authority) + "/ActiveDirectory/ProcessCode"),
+                Uri.EscapeDataString(new Uri(Request.GetDisplayUrl()).GetLeftPart(UriPartial.Authority) + "/ActiveDirectory/ProcessCode"),
                 Uri.EscapeDataString(adTenant.Issuer)
             );
 
@@ -88,7 +89,7 @@ namespace PrimeApps.App.Controllers
 
                 var credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientID"], ConfigurationManager.AppSettings["ida:Password"]);
                 var authContext = new AuthenticationContext("https://login.microsoftonline.com/common/");
-                var result = await authContext.AcquireTokenByAuthorizationCodeAsync(code, new Uri(Request.Url.GetLeftPart(UriPartial.Path)), credential);
+                var result = await authContext.AcquireTokenByAuthorizationCodeAsync(code, new Uri(new Uri(Request.GetDisplayUrl()).GetLeftPart(UriPartial.Path)), credential);
 
                 var isEmailAvailable = await _platformUserRepository.IsEmailAvailable(result.UserInfo.DisplayableId);
                 var crmUserInfo = await _platformUserRepository.Get(userId);
@@ -110,7 +111,7 @@ namespace PrimeApps.App.Controllers
                 foreach (var adTenantOld in adTenantsOld)
                     dbContext.ActiveDirectoryTenants.Remove(adTenantOld);
 
-                if (!crmUserInfo.ActiveDirectoryEmail.IsNullOrWhiteSpace() && crmUserInfo.ActiveDirectoryEmail != result.UserInfo.DisplayableId)
+                if (!string.IsNullOrWhiteSpace(crmUserInfo.ActiveDirectoryEmail) && crmUserInfo.ActiveDirectoryEmail != result.UserInfo.DisplayableId)
                 {
                     ViewBag.Error = "emailNotMatch";
                     return View();
