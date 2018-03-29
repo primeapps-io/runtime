@@ -1,13 +1,9 @@
 ﻿using Hangfire;
-using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;

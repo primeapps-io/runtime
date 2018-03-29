@@ -1,7 +1,6 @@
 ﻿using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
-using System.Data.Entity.Core;
 using System.Threading.Tasks;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;

@@ -1,7 +1,5 @@
 ﻿using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
-
-
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
@@ -13,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.IdentityModel.Protocols;
 
 namespace PrimeApps.App.Jobs
 {
@@ -55,7 +54,7 @@ namespace PrimeApps.App.Jobs
                         break;
                 }
 
-                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                 domain = string.Format(domain, subdomain);
 
                 //domain = "http://localhost:5554/";

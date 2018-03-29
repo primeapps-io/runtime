@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
-using System.Data.Entity.Core;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Npgsql;

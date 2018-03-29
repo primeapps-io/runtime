@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using DataAnnotationsExtensions;
+//using DataAnnotationsExtensions;
 
 namespace PrimeApps.App.Models
 {
@@ -21,7 +21,8 @@ namespace PrimeApps.App.Models
         /// Email address
         /// </summary>
         [DataMember]
-        [Email(ErrorMessage = "invalid")]
+        //[Email(ErrorMessage = "invalid")]
+        [EmailAddress(ErrorMessage = "invalid")]
         [StringLength(50, ErrorMessage = "LengthExceed")]
         public string email { get; set; }
 

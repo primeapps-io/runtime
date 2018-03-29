@@ -4,6 +4,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
 namespace PrimeApps.App.Results
 {
     public class ChallengeResult : IActionResult
@@ -15,7 +18,7 @@ namespace PrimeApps.App.Results
         }
 
         public string LoginProvider { get; set; }
-        public HttpRequestMessage Request { get; set; }
+        public HttpRequest Request { get; set; }
 
         public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
