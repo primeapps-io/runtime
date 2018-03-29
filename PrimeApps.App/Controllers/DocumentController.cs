@@ -59,7 +59,8 @@ namespace PrimeApps.App.Controllers
         /// <returns>System.String.</returns>
         [Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
-        {;
+        {
+            ;
             DocumentUploadResult result;
             var isUploaded = DocumentHelper.Upload(Request.Body, out result);
 
