@@ -1,6 +1,4 @@
-﻿using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.DataHandler;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
@@ -11,7 +9,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace PrimeApps.App.Handlers
 {

@@ -1,5 +1,4 @@
-﻿using Elmah;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -14,7 +13,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 

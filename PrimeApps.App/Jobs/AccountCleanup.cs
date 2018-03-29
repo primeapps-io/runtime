@@ -1,5 +1,4 @@
-﻿using Elmah;
-using Hangfire;
+﻿using Hangfire;
 using Npgsql;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;

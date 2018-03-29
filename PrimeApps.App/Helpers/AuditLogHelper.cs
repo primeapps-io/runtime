@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using Elmah;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
-using ElmahCore;
 
 namespace PrimeApps.App.Helpers
 {

@@ -3,13 +3,11 @@ using System.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Platform;
-using System.Data.Entity.Migrations;
 using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Helpers

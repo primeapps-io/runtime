@@ -2,20 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using Microsoft.PowerBI.Api.V1;
-using Microsoft.PowerBI.Api.V1.Models;
-using Microsoft.PowerBI.Security;
 using Microsoft.Rest;
 using System.Linq;
 using PrimeApps.App.Models.ViewModel.Analytics;
 using System.Net;
 using Hangfire;
 using Microsoft.CodeAnalysis;
-using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Entities.Application;
-using Report = Microsoft.PowerBI.Api.V1.Models.Report;
 using PrimeApps.Model.Helpers;
-using Import = Microsoft.PowerBI.Api.V1.Models.Import;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 
@@ -49,7 +43,7 @@ namespace PrimeApps.App.Helpers
 
             using (var client = CreateClient())
             {
-                var reportsResponse = await client.Reports.GetReportsAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId);
+                var reportsResponse = await client.Reports.(_workspaceCollection, warehouse.PowerbiWorkspaceId);
                 var report = reportsResponse.Value.SingleOrDefault(x => x.Name == name);
 
                 return report;

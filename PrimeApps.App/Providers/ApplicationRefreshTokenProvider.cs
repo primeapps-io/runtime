@@ -1,6 +1,4 @@
-﻿using Microsoft.Owin.Security.Infrastructure;
-using PrimeApps.App.Helpers;
-using PrimeApps.App.Models;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.Model.Entities.Platform.Identity;
 using System;
 using System.Threading.Tasks;

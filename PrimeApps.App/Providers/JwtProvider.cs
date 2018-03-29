@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Identity;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Entities.Platform.Identity;
 using System;
 using System.Collections.Generic;
