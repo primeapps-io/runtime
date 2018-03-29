@@ -2,7 +2,6 @@
 using PrimeApps.Model.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.IO;
 
 namespace PrimeApps.CLI.Base
