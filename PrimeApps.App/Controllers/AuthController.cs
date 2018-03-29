@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -59,7 +62,7 @@ namespace PrimeApps.App.Controllers
         [Route("login"), HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginBindingModel model, string returnUrl)
         {
-            var url = Request.Url.Host;
+            var url = new Uri(Request.GetDisplayUrl()).Host;
             var lang = GetLanguage();
             ViewBag.Lang = lang;
             ViewBag.ReturnUrl = returnUrl;
@@ -182,8 +185,8 @@ namespace PrimeApps.App.Controllers
                 ViewBag.Lang = ViewBag.AppInfo["language"].Value;
             }
 
-            var index = Request.Url.OriginalString.IndexOf(Request.Url.PathAndQuery);
-            var apiUrl = Request.Url.OriginalString.Remove(index) + "/api/account/register";
+            var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
+            var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/register";
 
             using (var client = new HttpClient())
             {
@@ -192,8 +195,10 @@ namespace PrimeApps.App.Controllers
                 client.DefaultRequestHeaders.Accept.Add(
                     new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-
-                var response = await client.PostAsJsonAsync(apiUrl, registerBindingModel);
+	            var dataAsString = JsonConvert.SerializeObject(registerBindingModel);
+	            var content = new StringContent(dataAsString);
+				var response = await client.PostAsync(apiUrl, content);
+				//var response = await client.PostAsJsonAsync(apiUrl, registerBindingModel); 
                 if (response.IsSuccessStatusCode)
                 {
                     if (!officeSignIn)
@@ -220,7 +225,7 @@ namespace PrimeApps.App.Controllers
             var lang = GetLanguage();
             ViewBag.Lang = lang;
             ViewBag.Error = error;
-            ViewBag.Token = Url.Encode(token);
+            ViewBag.Token = WebUtility.HtmlEncode(token);
             ViewBag.Uid = uid;
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
@@ -232,14 +237,14 @@ namespace PrimeApps.App.Controllers
         {
             var lang = GetLanguage();
             resetPasswordBindingModel.UserId = uid;
-            resetPasswordBindingModel.Token = Server.UrlDecode(token);
+            resetPasswordBindingModel.Token = WebUtility.UrlDecode(token);
 
             ViewBag.Lang = lang;
             ViewBag.ReturnUrl = "/";
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
-            var index = Request.Url.OriginalString.IndexOf(Request.Url.PathAndQuery);
-            var apiUrl = Request.Url.OriginalString.Remove(index) + "/api/account/reset_password";
+            var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
+            var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/reset_password";
 
             using (HttpClient client = new HttpClient())
             {
@@ -247,8 +252,11 @@ namespace PrimeApps.App.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
+	            var dataAsString = JsonConvert.SerializeObject(resetPasswordBindingModel);
+	            var contentResetPasswordBindingModel = new StringContent(dataAsString);
+	            var response = await client.PostAsync(apiUrl, contentResetPasswordBindingModel);
 
-                var response = await client.PostAsJsonAsync(apiUrl, resetPasswordBindingModel);
+				//var response = await client.PostAsJsonAsync(apiUrl, resetPasswordBindingModel);
                 var res = "";
 
                 if (response.IsSuccessStatusCode)
@@ -304,8 +312,8 @@ namespace PrimeApps.App.Controllers
             ViewBag.ReturnUrl = "/";
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
-            var index = Request.Url.OriginalString.IndexOf(Request.Url.PathAndQuery);
-            var apiUrl = Request.Url.OriginalString.Remove(index) + "/api/account/forgot_password?email=" + email.Replace(@" ", "") + "&culture=" + culture;
+            var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
+            var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/forgot_password?email=" + email.Replace(@" ", "") + "&culture=" + culture;
 
 
             using (var client = new HttpClient())
@@ -349,8 +357,8 @@ namespace PrimeApps.App.Controllers
             var lang = GetLanguage();
             var culture = lang == "tr" ? "tr-TR" : "en-US";
 
-            var index = Request.Url.OriginalString.IndexOf(Request.Url.PathAndQuery);
-            var apiUrl = Request.Url.OriginalString.Remove(index) + "/api/account/activate?userId=" + uid + "&token=" + Url.Encode(token) + "&culture=" + culture + "&officeSignIn=" + officeSignIn;
+            var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
+            var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/activate?userId=" + uid + "&token=" + WebUtility.UrlEncode(token) + "&culture=" + culture + "&officeSignIn=" + officeSignIn;
             ViewBag.Lang = lang;
             ViewBag.ReturnUrl = "/";
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
@@ -420,8 +428,8 @@ namespace PrimeApps.App.Controllers
             if (!resend) return View();
 
             var culture = lang == "tr" ? "tr-TR" : "en-US";
-            var index = Request.Url.OriginalString.IndexOf(Request.Url.PathAndQuery);
-            var apiUrl = Request.Url.OriginalString.Remove(index) + "/api/account/resend_activation?email=" + email + "&culture=" + culture;
+            var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
+            var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/resend_activation?email=" + email + "&culture=" + culture;
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(apiUrl);

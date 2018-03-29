@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform.Identity;
+using Newtonsoft.Json;
 
 namespace PrimeApps.App.Helpers
 {
@@ -646,7 +647,12 @@ namespace PrimeApps.App.Helpers
                                                         {
                                                             //fire and forget
                                                             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                                                            await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
+
+	                                                        var dataAsString = JsonConvert.SerializeObject(jsonData);
+	                                                        var contentResetPasswordBindingModel = new StringContent(dataAsString);
+	                                                        await client.PostAsync(webHook.CallbackUrl, contentResetPasswordBindingModel);
+
+															//await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
                                                         }
                                                         else
                                                         {
