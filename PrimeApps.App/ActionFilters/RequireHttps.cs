@@ -9,7 +9,7 @@ namespace PrimeApps.App.ActionFilters
     {
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            var allowInsecureHttp = bool.Parse(ConfigurationManager<>.AppSettings["AllowInsecureHttp"]);
+            var allowInsecureHttp = bool.Parse(ConfigurationManager.AppSettings["AllowInsecureHttp"]);
 
             if (actionContext.Request.RequestUri.Scheme != Uri.UriSchemeHttps && !allowInsecureHttp)
             {

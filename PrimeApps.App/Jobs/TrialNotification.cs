@@ -54,7 +54,7 @@ namespace PrimeApps.App.Jobs
                         break;
                 }
 
-                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                 domain = string.Format(domain, subdomain);
 
                 //domain = "http://localhost:5554/";

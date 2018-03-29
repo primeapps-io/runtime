@@ -24,7 +24,7 @@ namespace PrimeApps.App.Helpers
     public class PowerBiHelper
     {
         private static string _powerBiApiEndpoint = "https://api.powerbi.com";
-        private static string _workspaceCollection = ConfigurationManager<>.AppSettings["PowerbiWorkspaceCollection"];
+        private static string _workspaceCollection = ConfigurationManager.AppSettings["PowerbiWorkspaceCollection"];
         private static string _accessKey = ConfigurationManager.AppSettings["PowerbiAccessKey"];
         private static string _powerBiEmbedUrl = "https://embedded.powerbi.com/appTokenReportEmbed?reportId={0}";
 
