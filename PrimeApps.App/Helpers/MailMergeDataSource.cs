@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using Aspose.Words;
 using Aspose.Words.Tables;
+using SkiaSharp;
 
 namespace PrimeApps.App.Helpers
 {
@@ -316,7 +317,7 @@ namespace PrimeApps.App.Helpers
                 var wc = new WebClient();
                 var bytes = wc.DownloadData(url);
                 var ms = new MemoryStream(bytes);
-                var img = System.Drawing.Image.FromStream(ms);
+                var img = SKBitmap.Decode(ms);
                 
                 var builder = new DocumentBuilder(args.Document);
                 builder.MoveToMergeField(args.DocumentFieldName);
