@@ -1,4 +1,6 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System;
@@ -7,6 +9,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+
 namespace PrimeApps.App.Helpers
 {
     /// <summary>
@@ -43,7 +47,7 @@ namespace PrimeApps.App.Helpers
             fileContent.Seek(0, SeekOrigin.Begin);
 
             //put block to the blob storage.
-            tempBlob.PutBlock(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3) });
+            tempBlob.PutBlockAsync(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3) }, new OperationContext());
         }
 
         /// <summary>
@@ -71,7 +75,7 @@ namespace PrimeApps.App.Helpers
             var tempBlob = tempBlobContainer.GetBlockBlobReference(tempName);
 
             //commit id's for the temporary blob
-            tempBlob.PutBlockList(blockList);
+            tempBlob.PutBlockListAsync(blockList);
 
             //create a new blob with real file name
             var newBlob = blobContainer.GetBlockBlobReference(newName);
@@ -95,16 +99,16 @@ namespace PrimeApps.App.Helpers
                 newBlob.Metadata.Add("viewfilename", relatedMetadataViewFileName);
             }
             //copy data from temprorary blob to  blob
-            newBlob.StartCopy(tempBlob);
+            newBlob.StartCopyAsync(tempBlob);
 
             //set content type
             newBlob.Properties.ContentType = contentType;
 
             //apply properties
-            newBlob.SetProperties();
+            newBlob.SetPropertiesAsync();
 
             //delete temprorary blob
-            tempBlob.Delete();
+            tempBlob.DeleteAsync();
 
             return newBlob;
         }
@@ -139,7 +143,7 @@ namespace PrimeApps.App.Helpers
             CloudBlockBlob blob = blobContainer.GetBlockBlobReference(fileName);
 
             //delete the blob.
-            blob.DeleteIfExists();
+            blob.DeleteIfExistsAsync();
         }
 
         /// <summary>
@@ -160,7 +164,7 @@ namespace PrimeApps.App.Helpers
             // create blob container
             blobClient = cloudStorageAccount.CreateCloudBlobClient();
             blobContainer = blobClient.GetContainerReference(containerName);
-            blobContainer.CreateIfNotExists(accessType);
+            blobContainer.CreateIfNotExistsAsync();
 
 
             return blobContainer;
@@ -186,7 +190,7 @@ namespace PrimeApps.App.Helpers
 
             CloudBlockBlob sourceBlob = sourceContainer.GetBlockBlobReference(fileName);
             CloudBlockBlob targetBlob = targetContainer.GetBlockBlobReference(newFileName);
-            var copyToken = targetBlob.StartCopy(sourceBlob.Uri);
+            var copyToken = targetBlob.StartCopyAsync(sourceBlob.Uri);
 
             fileName = newFileName;
             return targetBlob.CopyState.Status;
@@ -214,6 +218,27 @@ namespace PrimeApps.App.Helpers
             var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
 
             return $"{blobUrl}/app-logo/{logo}";
+        }
+
+
+        public static async Task<FileStreamResult> DownloadToFileStreamResult(CloudBlockBlob blob, string fileName)
+        {
+            Stream outputStream = null;
+
+            await blob.DownloadToStreamAsync(outputStream, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions()
+            {
+                ServerTimeout = TimeSpan.FromDays(1),
+                RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3)
+            }, null);
+
+            await blob.FetchAttributesAsync();
+            FileStreamResult result = new FileStreamResult(outputStream, blob.Properties.ContentType)
+            {
+                FileDownloadName = fileName,
+                LastModified = blob.Properties.LastModified,
+                EntityTag = new EntityTagHeaderValue(blob.Properties.ETag)
+            };
+            return result;
         }
 
     }

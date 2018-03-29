@@ -19,14 +19,14 @@ namespace PrimeApps.App
 
 	    public Startup(IHostingEnvironment env)
 	    {
-		    var dom = new ConfigurationBuilder()
+		    var builder = new ConfigurationBuilder()
 			    .SetBasePath(env.ContentRootPath)
 				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
 				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
 				.AddEnvironmentVariables()
 			    .Build();
 
-		    Configuration = dom;
+		    Configuration = builder;
 			HostingEnvironment = env;
 	    }
 
