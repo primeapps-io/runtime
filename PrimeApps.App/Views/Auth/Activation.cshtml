@@ -3,7 +3,7 @@
 @{
 
     ViewBag.Title = "Activation";
-    Layout = "~/ViewsMvc/Shared/_LayoutAuth.cshtml";
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
 
     var app = "crm";
     var logo = ViewBag.AppInfo["logo"].Value;
@@ -38,10 +38,10 @@
         $(document).ready(function () {
             if ("@ViewBag.Error" === "anErrorOccured") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.Error)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Error)",
                     text: "",
                     icon: "error",
-                    button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
+                    button: "@PrimeApps.App.Resources.Auth.Resource.Ok"
                 });
             }
 
