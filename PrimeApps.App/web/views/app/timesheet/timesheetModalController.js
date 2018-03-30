@@ -20,6 +20,21 @@ angular.module('ofisim')
 
             $scope.moduleModal = $filter('filter')($rootScope.modules, { name: lookupType }, true)[0];
 
+            $scope.dropdownFields = $filter('filter')($scope.moduleModal.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
+            $scope.dropdownFieldDatas = {};
+            for(var i = 0; i < $scope.dropdownFields.length; i++) {
+                $scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
+            }
+
+            $scope.setDropdownData = function(field){
+                $scope.currentLookupFieldModal = field;
+                $scope.lookupModal()
+                    .then(function(response){
+                        $scope.dropdownFieldDatas[field.name] = response;
+                    });
+
+            };
+
             $scope.timesheetArr = [];
             var timesheetFields = ['entry_type', 'charge_type', 'selected_project', 'selected_company', 'place_of_performance', 'comment2', 'please_specify', 'please_specify_country', 'per_diem'];
             angular.forEach(timesheetFields, function (field) {

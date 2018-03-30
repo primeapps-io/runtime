@@ -59,13 +59,15 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Help>> GetAll(ModalType modalType = ModalType.NotSet)
         {
-            var help = DbContext.Helps
+            var helps = DbContext.Helps
                 .Where(x => !x.Deleted);
 
             if (modalType != ModalType.NotSet)
-                help = help.Where(x => x.ModalType == modalType);
+                helps = helps.Where(x => x.ModalType == modalType);
 
-            return await help.ToListAsync();
+            helps = helps.OrderBy(x => x.CreatedAt);
+
+            return await helps.ToListAsync();
         }
 
         public async Task<Help> GetByType(ModalType templateType, int? moduleId = null, string route = "")

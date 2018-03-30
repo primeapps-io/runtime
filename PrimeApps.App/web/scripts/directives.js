@@ -474,7 +474,7 @@ angular.module('ofisim')
                         $scope.previousReturnTab = $scope.$parent.previousReturnTab;
                         $scope.isAdmin = $rootScope.user.profile.HasAdminRights;
 
-                        var counts = [5, 10, 20];
+                        var counts = [10, 25, 50, 100];
                         var displayFields = $scope.relatedModule.display_fields;
 
                         var parent = $scope.parentType + (!$scope.isSelectable ? $scope.parentId : '');

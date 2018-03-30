@@ -17,8 +17,8 @@
                                 <div class="row">
                                     <div class="clearfix row template-footer" style="margin-left: 20px;">
                                         <div class="col-sm-4">
-                                            <p><label class="radio-inline"><input type="radio" name="locale" value="modules" ng-model="selectHelp">{{'Setup.HelpGuide.SelectModule' | translate}}</label></p>
-                                            <p><label class="radio-inline"><input type="radio" name="locale" value="settings" ng-model="selectHelp">{{'Setup.HelpGuide.Other' | translate}}</label></p>
+                                            <p><label class="radio-inline"><input type="radio" name="locale" value="modules" ng-model="selectHelp" ng-change="radioButtonTemplateClear()">{{'Setup.HelpGuide.SelectModule' | translate}}</label></p>
+                                            <p><label class="radio-inline"><input type="radio" name="locale" value="settings" ng-model="selectHelp" ng-change="radioButtonTemplateClear()">{{'Setup.HelpGuide.Other' | translate}}</label></p>
                                         </div>
                                         <div class="col-sm-8" ng-show="selectHelp == 'modules'">
                                             <select class="form-control pull-left"
