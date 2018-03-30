@@ -389,7 +389,7 @@ namespace PrimeApps.App.Helpers
                                             task["description"] = workflow.CreateTask.Description;
 
                                         if (workflow.CreateTask.Owner == 0)
-                                            task["owner"] = (int)record["owner"];
+                                            task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
 
                                         task["created_by"] = workflow.CreatedById;
 
@@ -648,11 +648,11 @@ namespace PrimeApps.App.Helpers
                                                             //fire and forget
                                                             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-	                                                        var dataAsString = JsonConvert.SerializeObject(jsonData);
-	                                                        var contentResetPasswordBindingModel = new StringContent(dataAsString);
-	                                                        await client.PostAsync(webHook.CallbackUrl, contentResetPasswordBindingModel);
+                                                            var dataAsString = JsonConvert.SerializeObject(jsonData);
+                                                            var contentResetPasswordBindingModel = new StringContent(dataAsString);
+                                                            await client.PostAsync(webHook.CallbackUrl, contentResetPasswordBindingModel);
 
-															//await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
+                                                            //await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
                                                         }
                                                         else
                                                         {
@@ -756,24 +756,27 @@ namespace PrimeApps.App.Helpers
                     var field = module.Fields.Single(x => x.Name == filterModel.Field);
                     var value = filterModel.Value.ToString();
 
-                    if (field.DataType == DataType.Picklist)
+                    if (filterModel.Operator != Operator.Empty && filterModel.Operator != Operator.NotEmpty)
                     {
-                        var picklistItem = picklistItems.Single(x => x.Id == int.Parse(filterModel.Value.ToString()));
-                        value = tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn;
-                    }
-                    else if (field.DataType == DataType.Multiselect)
-                    {
-                        var picklistLabels = new List<string>();
-
-                        var values = filterModel.Value.ToString().Split(',');
-
-                        foreach (var val in values)
+                        if (field.DataType == DataType.Picklist)
                         {
-                            var picklistItem = picklistItems.Single(x => x.Id == int.Parse(val));
-                            picklistLabels.Add(tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn);
+                            var picklistItem = picklistItems.Single(x => x.Id == int.Parse(filterModel.Value.ToString()));
+                            value = tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn;
                         }
+                        else if (field.DataType == DataType.Multiselect)
+                        {
+                            var picklistLabels = new List<string>();
 
-                        value = string.Join("|", picklistLabels);
+                            var values = filterModel.Value.ToString().Split(',');
+
+                            foreach (var val in values)
+                            {
+                                var picklistItem = picklistItems.Single(x => x.Id == int.Parse(val));
+                                picklistLabels.Add(tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn);
+                            }
+
+                            value = string.Join("|", picklistLabels);
+                        }
                     }
 
                     var filter = new WorkflowFilter
@@ -858,19 +861,22 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var filterModel in workflowModel.Filters)
                 {
-                    var field = module.Fields.Single(x => x.Name == filterModel.Field);
-
-                    if (field.DataType == DataType.Picklist)
+                    if (filterModel.Operator != Operator.Empty && filterModel.Operator != Operator.NotEmpty)
                     {
-                        picklistItemIds.Add(int.Parse(filterModel.Value.ToString()));
-                    }
-                    else if (field.DataType == DataType.Multiselect)
-                    {
-                        var values = filterModel.Value.ToString().Split(',');
+                        var field = module.Fields.Single(x => x.Name == filterModel.Field);
 
-                        foreach (var value in values)
+                        if (field.DataType == DataType.Picklist)
                         {
-                            picklistItemIds.Add(int.Parse(value));
+                            picklistItemIds.Add(int.Parse(filterModel.Value.ToString()));
+                        }
+                        else if (field.DataType == DataType.Multiselect)
+                        {
+                            var values = filterModel.Value.ToString().Split(',');
+
+                            foreach (var value in values)
+                            {
+                                picklistItemIds.Add(int.Parse(value));
+                            }
                         }
                     }
                 }
@@ -885,24 +891,27 @@ namespace PrimeApps.App.Helpers
                     var field = module.Fields.Single(x => x.Name == filterModel.Field);
                     var value = filterModel.Value.ToString();
 
-                    if (field.DataType == DataType.Picklist)
+                    if (filterModel.Operator != Operator.Empty && filterModel.Operator != Operator.NotEmpty)
                     {
-                        var picklistItem = picklistItems.Single(x => x.Id == int.Parse(filterModel.Value.ToString()));
-                        value = tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn;
-                    }
-                    else if (field.DataType == DataType.Multiselect)
-                    {
-                        var picklistLabels = new List<string>();
-
-                        var values = filterModel.Value.ToString().Split(',');
-
-                        foreach (var val in values)
+                        if (field.DataType == DataType.Picklist)
                         {
-                            var picklistItem = picklistItems.Single(x => x.Id == int.Parse(val));
-                            picklistLabels.Add(tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn);
+                            var picklistItem = picklistItems.Single(x => x.Id == int.Parse(filterModel.Value.ToString()));
+                            value = tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn;
                         }
+                        else if (field.DataType == DataType.Multiselect)
+                        {
+                            var picklistLabels = new List<string>();
 
-                        value = string.Join("|", picklistLabels);
+                            var values = filterModel.Value.ToString().Split(',');
+
+                            foreach (var val in values)
+                            {
+                                var picklistItem = picklistItems.Single(x => x.Id == int.Parse(val));
+                                picklistLabels.Add(tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn);
+                            }
+
+                            value = string.Join("|", picklistLabels);
+                        }
                     }
 
                     var filter = new WorkflowFilter
