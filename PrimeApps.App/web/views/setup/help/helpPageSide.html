@@ -1,7 +1,7 @@
 <div class="sub-menu">
     <ul class="nav nav-tabs">
         <li><a href="#/app/setup/help">{{'Setup.HelpGuide.ModalView' | translate}}</a></li>
-        <li class="active"><a href="#/app/setup/helpside">{{'Setup.HelpGuide.HelpScreen' | translate}}</a></li>
+        <li class="active"><a href="#/app/setup/helpsides">{{'Setup.HelpGuide.HelpScreen' | translate}}</a></li>
     </ul>
 </div>
 <div class="panel panel-default setup-panel">
@@ -28,15 +28,15 @@
                                         <label class="col-sm-4 control-label">{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</label>
                                         <div class="col-sm-8">
                                             <label class="radio-inline">
-                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="any">
+                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="any" ng-disabled="editDisable">
                                                 {{'Setup.HelpGuide.Independent' | translate}}
                                             </label>
                                             <label class="radio-inline" style="padding-right: 1px;">
-                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="module">
+                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="module" ng-disabled="editDisable">
                                                 {{'Setup.HelpGuide.Module' | translate}}
                                             </label>
                                             <label class="radio-inline">
-                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="other">
+                                                <input name="helpside" type="radio" ng-model="selectHelpRelation" value="other" ng-disabled="editDisable">
                                                 {{'Setup.HelpGuide.Other' | translate}}
                                             </label>
                                         </div>
@@ -45,15 +45,15 @@
                                         <label class="col-sm-4 control-label"></label>
                                         <div class="col-sm-8">
                                             <label class="radio-inline" style="padding-right:27px;margin-left: 1px; ">
-                                                <input name="help" type="radio" ng-model="selectHelp" value="list">
+                                                <input name="help" type="radio" ng-model="selectHelp" value="list" ng-disabled="editDisable">
                                                 {{'Setup.HelpGuide.List' | translate}}
                                             </label>
                                             <label class="radio-inline" style="padding-right:4px ">
-                                                <input name="help" type="radio" ng-model="selectHelp" value="detail">
+                                                <input name="help" type="radio" ng-model="selectHelp" value="detail" ng-disabled="editDisable">
                                                 {{'Setup.HelpGuide.Detail' | translate}}
                                             </label>
                                             <label class="radio-inline">
-                                                <input name="help" type="radio" ng-model="selectHelp" value="form">
+                                                <input name="help" type="radio" ng-model="selectHelp" value="form" ng-disabled="editDisable">
                                                 {{'Setup.HelpGuide.Form' | translate}}
                                             </label>
                                         </div>
@@ -64,6 +64,7 @@
                                         <div class="col-sm-8" ng-show="selectHelp==='list' && selectHelpRelation!= 'other' && selectHelpRelation!= 'any'">
                                             <select class="form-control pull-left"
                                                     ng-model="modulePicklist"
+                                                    ng-disabled="editDisable"
                                                     ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
@@ -71,6 +72,7 @@
                                         <div class="col-sm-8" ng-show="selectHelp==='detail' && selectHelpRelation!= 'other' && selectHelpRelation!= 'any'">
                                             <select class="form-control"
                                                     ng-model="moduleDetail"
+                                                    ng-disabled="editDisable"
                                                     ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
@@ -78,6 +80,7 @@
                                         <div class="col-sm-8" ng-show="selectHelp==='form' && selectHelpRelation!= 'other' && selectHelpRelation!= 'any'">
                                             <select class="form-control"
                                                     ng-model="moduleForm"
+                                                    ng-disabled="editDisable"
                                                     ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
@@ -85,6 +88,7 @@
                                         <div class="col-sm-8" ng-show="selectHelpRelation==='other'">
                                             <select class="form-control pull-left"
                                                     ng-model="routeModules"
+                                                    ng-disabled="editDisable"
                                                     ng-options="item.name for item in routeModuleSide">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>

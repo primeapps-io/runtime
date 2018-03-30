@@ -6,7 +6,7 @@
         <div class="modal-body">
             <div ng-bind-html="helpTemplate"></div>
             <div style="padding-top: 30px;padding-left: 20px;">
-                <input type="checkbox" ng-model="showModalCheck" ng-click="showModal()"><label style="margin-left: 5px;font-size: 13px;color: gray;">{{'Setup.HelpGuide.DontShowAgain' | translate}}</label>
+                <input type="checkbox" ng-model="showModalCheck" ng-click="showModal()" ng-show="!dontShowAgain"><label style="margin-left: 5px;font-size: 13px;color: gray;" ng-show="!dontShowAgain">{{'Setup.HelpGuide.DontShowAgain' | translate}}</label>
             </div>
         </div>
     </div>
