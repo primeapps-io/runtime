@@ -566,7 +566,7 @@ namespace PrimeApps.App.Controllers
                 //}
 
 
-                return await Storage.DownloadToFileStreamResult(blob, publicName);
+                return await Storage.DownloadToFileStreamResultAsync(blob, publicName);
             }
             else
             {
@@ -621,7 +621,7 @@ namespace PrimeApps.App.Controllers
                 }
                 publicName = docName;
 
-                return await Storage.DownloadToFileStreamResult(blob, publicName);
+                return await Storage.DownloadToFileStreamResultAsync(blob, publicName);
 
             }
             else
@@ -875,7 +875,7 @@ namespace PrimeApps.App.Controllers
                 string[] splittedFileName = template.Content.Split('.');
                 string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
 
-                return await Storage.DownloadToFileStreamResult(blob, $"{template.Name}.{extension}");
+                return await Storage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
 
             }
             else
