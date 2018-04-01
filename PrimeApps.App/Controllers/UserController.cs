@@ -23,12 +23,12 @@ using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Common.UserApps;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories.Interfaces;
- 
+
 using PrimeApps.Model.Helpers;
 using User = PrimeApps.Model.Entities.Application.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
 using PrimeApps.Model.Entities.Platform.Identity;
-using HttpStatusCode =Microsoft.AspNetCore.Http.StatusCodes;
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/User"), Authorize]
@@ -65,20 +65,17 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileName">File name of the avatar</param>
         /// <returns>Stream.</returns>
         [Route("Avatar"), HttpPost]
-        public IActionResult Avatar(string fileName)
+        public async Task<IActionResult> Avatar(string fileName)
         {
             //get uploaded file from storage
             var file = Storage.GetBlob("user-images", fileName);
             try
             {
                 //if the file exists, fetchattributes method will fetch the attributes, otherwise it'll throw an exception/
-                file.FetchAttributes();
+                await file.FetchAttributesAsync();
 
-                return new FileDownloadResult()
-                {
-                    Blob = file,
-                    PublicName = fileName
-                };
+                return await Storage.DownloadToFileStreamResult(file, fileName);
+
             }
             catch (Exception)
             {
@@ -134,7 +131,7 @@ namespace PrimeApps.App.Controllers
             tenantUserToEdit.FirstName = user.firstName;
             tenantUserToEdit.LastName = user.lastName;
             tenantUserToEdit.FullName = user.firstName + " " + user.lastName;
-            
+
             if (user.email != userToEdit.Email && user.email != "")
             {
                 //if email has changed, we need a special procedure here.
@@ -286,7 +283,7 @@ namespace PrimeApps.App.Controllers
                 acc.user.tenantId = AppUser.TenantId;
                 acc.user.appId = AppUser.AppId;
                 acc.apps = apps;
-                
+
                 if (acc.user.deactivated)
                     throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status409Conflict);
@@ -330,9 +327,9 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> UploadAvatar()
         {
             // try to parse stream.
-	        Stream requestStream = await Request.ReadAsStreamAsync();
+            Stream requestStream = await Request.ReadAsStreamAsync();
 
-			HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
+            HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
 
             if (parser.Success)
             {
@@ -434,18 +431,18 @@ namespace PrimeApps.App.Controllers
             }
 
 
-	        if (!request.notCheckIsAdmin)
-	        {
-		        //get the instance that invitation request will be created on.
-		        var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(tenantId, adminUserLocalId);
+            if (!request.notCheckIsAdmin)
+            {
+                //get the instance that invitation request will be created on.
+                var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(tenantId, adminUserLocalId);
 
-		        if (!isOperationAllowed)
-		        {
-			        //if current user is not the admin of the instance then reject that request and send a forbidden http request.
-			        return StatusCode(HttpStatusCode.Status403Forbidden);
-		        }
+                if (!isOperationAllowed)
+                {
+                    //if current user is not the admin of the instance then reject that request and send a forbidden http request.
+                    return StatusCode(HttpStatusCode.Status403Forbidden);
+                }
 
-			}
+            }
 
             //if (!crmLicenseUsage.HasUserCapacity(tenantId))
             //         {

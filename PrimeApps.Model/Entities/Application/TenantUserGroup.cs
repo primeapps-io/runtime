@@ -6,7 +6,7 @@ using System.Text;
 namespace PrimeApps.Model.Entities.Application
 {
     [Table("users_user_groups")]
-    public class UsersUserGroup
+    public class TenantUserGroup
     {
         [Column("user_id"), ForeignKey("User")]
         public int UserId { get; set; }

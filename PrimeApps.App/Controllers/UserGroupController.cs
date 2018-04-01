@@ -54,11 +54,11 @@ namespace PrimeApps.App.Controllers
             if (users.Count < userGroup.UserIds.Count)
                 return BadRequest("User not found.");
 
-            var userUserGroup = new List<UsersUserGroup>();
+            var userUserGroup = new List<TenantUserGroup>();
             foreach (var user in users)
             {
                 if (user != null)
-                    userUserGroup.Add(new UsersUserGroup{ UserId = user.Id });
+                    userUserGroup.Add(new TenantUserGroup{ UserId = user.Id });
             }
 
             var userGroupEntity = UserGroupHelper.CreateEntity(userGroup, userUserGroup);
@@ -91,11 +91,11 @@ namespace PrimeApps.App.Controllers
             if (users.Count < userGroup.UserIds.Count)
                 return BadRequest("User not found.");
 
-            var userUserGroup = new List<UsersUserGroup>();
+            var userUserGroup = new List<TenantUserGroup>();
             foreach (var user in users)
             {
                 if (user != null)
-                    userUserGroup.Add(new UsersUserGroup { UserId = user.Id });
+                    userUserGroup.Add(new TenantUserGroup { UserId = user.Id });
             }
 
             UserGroupHelper.UpdateEntity(userGroup, userGroupEntity, userUserGroup);
