@@ -52,8 +52,8 @@ namespace PrimeApps.App.Controllers
             {
                 foreach (var likedUser in noteEntity.Likes)
                 {
-                    if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
-                        likedUser.Picture = Storage.GetAvatarUrl(likedUser.Picture);
+                    if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
+	                    likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
                 }
             }
 
@@ -76,8 +76,8 @@ namespace PrimeApps.App.Controllers
                 {
                     foreach (var likedUser in note.Likes)
                     {
-                        if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
-                            likedUser.Picture = Storage.GetAvatarUrl(likedUser.Picture);
+                        if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
+	                        likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
                     }
                 }
 
@@ -92,8 +92,8 @@ namespace PrimeApps.App.Controllers
                         {
                             foreach (var subLikedUser in note.Likes)
                             {
-                                if (subLikedUser.Picture != null && !subLikedUser.Picture.StartsWith("http://"))
-                                    subLikedUser.Picture = Storage.GetAvatarUrl(subLikedUser.Picture);
+                                if (subLikedUser.TenantUser.Picture != null && !subLikedUser.TenantUser.Picture.StartsWith("http://"))
+	                                subLikedUser.TenantUser.Picture = Storage.GetAvatarUrl(subLikedUser.TenantUser.Picture);
                             }
                         }
                     }

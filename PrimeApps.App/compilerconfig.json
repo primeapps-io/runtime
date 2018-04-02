@@ -1,7 +1,7 @@
 [
   {
-    "outputFile": "styles/app.css",
-    "inputFile": "scss/app.scss",
+    "outputFile": "web/styles/app.css",
+    "inputFile": "web/scss/app.scss",
     "minify": {
       "enabled": false
     },
@@ -11,8 +11,8 @@
     }
   },
   {
-    "outputFile": "styles/ui.css",
-    "inputFile": "scss/ui.scss",
+    "outputFile": "web/styles/ui.css",
+    "inputFile": "web/scss/ui.scss",
     "minify": {
       "enabled": false
     },

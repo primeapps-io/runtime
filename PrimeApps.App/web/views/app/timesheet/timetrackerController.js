@@ -76,7 +76,7 @@ var app = angular.module('ofisim', []);
                     var day = {
                         'dayOrder' : dayOfWeek,
                         'date' : moment(weekObj).isoWeekday(firstDay + i).format('DD MMMM dddd'),
-                        'date_formatted' : fullDate.hour(3).toISOString(),
+                        'date_formatted': moment(date).format('YYYY-MM-DD'),
                         'full_date' : fullDate,
                         'week' : week,
                         'timetracker_items' : [],
@@ -323,7 +323,7 @@ var app = angular.module('ofisim', []);
                                         dayItem.description = 'Resmi tatil günü.'
                                     }
                                 }
-                                if(dayItem.date_formatted === moment(timetrackerItem.tarih).toISOString()){
+                                if (dayItem.date_formatted === moment.utc(timetrackerItem.tarih).format('YYYY-MM-DD')) {
                                     days[j].timetracker_items.push(timetrackerItem);
                                     dayItem.totalHour += timetrackerItem.saat;
                                     totalWeekHour += timetrackerItem.saat;
@@ -354,7 +354,7 @@ var app = angular.module('ofisim', []);
             $scope.openCreateModal = function (dayObj) {
                 $scope.currentLookupField = { lookup_type: 'timetracker_items' };
                 $scope.dayObj = dayObj;
-                $scope.calendarDate = dayObj.full_date;
+                $scope.calendarDate = dayObj.date_formatted;
                 $scope.editModuleLoading = false;
                 $scope.requestType = 'create';
                 $scope.getTimetrackerItems = $scope.getTimeTrackerCalendar;
@@ -375,7 +375,7 @@ var app = angular.module('ofisim', []);
             $scope.openEditModal = function (dayObj, item) {
                 $scope.currentLookupField = { lookup_type: 'timetracker_items' };
                 $scope.dayObj = dayObj;
-                $scope.calendarDate = dayObj.full_date;
+                $scope.calendarDate = dayObj.date_formatted;
                 $scope.editModuleLoading = true;
                 $scope.requestType = 'edit';
                 $scope.getTimetrackerItems = $scope.getTimeTrackerCalendar;

@@ -3,9 +3,8 @@
 @{
 
     ViewBag.Title = "Error";
-    var language = Request.Cookies["_lang"];
-    var lang = language != null ? language.Value : "tr";
-    var a = 
+    var language = ViewContext.HttpContext.Request.Cookies["_lang"];
+    var lang = language == "tr" ? language : "en";
     Thread.CurrentThread.CurrentUICulture = lang == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
 }
 

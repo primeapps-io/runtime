@@ -18,6 +18,11 @@ namespace PrimeApps.Model.Context
         public PlatformDBContext() : base()
         {
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=platform;User Id=postgres;Password=VerySecurePwd;");
+        }
+
         public PlatformDBContext(DbContextOptions options) : base(options)
         {
         }

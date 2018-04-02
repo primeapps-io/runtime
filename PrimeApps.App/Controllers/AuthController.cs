@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
@@ -66,7 +67,6 @@ namespace PrimeApps.App.Controllers
             var lang = GetLanguage();
             ViewBag.Lang = lang;
             ViewBag.ReturnUrl = returnUrl;
-
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
             model.Email = model.Email.Replace(@" ", "");
 
@@ -505,7 +505,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Redirect(returnUrl);
             }
-
+			
             return RedirectToAction("Index", "Home");
         }
 

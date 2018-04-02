@@ -44,7 +44,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("trigger")]
         public ActionTrigger Trigger { get; set; }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         public virtual Module Module { get; set; }

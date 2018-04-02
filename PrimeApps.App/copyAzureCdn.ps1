@@ -13,7 +13,7 @@ $versionDynamic = $env:AssemblyInfo_AssemblyVersion
 $versionStatic = $env:AssemblyInfo_AssemblyVersionStatic
 
 # get views files
-$viewsFolder = "$($rootFolder)\OfisimCRM.App\views"
+$viewsFolder = "$($rootFolder)\PrimeApps.App\web\views"
 $filesViews = Get-ChildItem $viewsFolder -Recurse -File
 
 Write-Host "Found $($filesViews.Count) view files."
@@ -44,12 +44,12 @@ foreach ($file in $filesViews)
     # set Properties
     $Properties = @{"ContentType" = $ContentType; "CacheControl" = "public, max-age=31536000"}
 
-	Write-Host "Uploaded to " $file.FullName.Replace("$($viewsFolder)\", $versionDynamic + "\views\")
+	Write-Host "Uploaded to " $file.FullName.Replace("$($viewsFolder)\", $versionDynamic + "\web\views\")
 
     # upload blob
     Set-AzureStorageBlobContent `
         -File $file.FullName `
-        -Blob $file.FullName.Replace("$($viewsFolder)\", $versionDynamic + "\views\") `
+        -Blob $file.FullName.Replace("$($viewsFolder)\", $versionDynamic + "\web\views\") `
         -Context $context `
         -Container $StorageContainerName `
         -Properties $Properties `
@@ -57,7 +57,7 @@ foreach ($file in $filesViews)
 }
 
 # get dist files
-$distFolder = "$($rootFolder)\OfisimCRM.App\dist"
+$distFolder = "$($rootFolder)\PrimeApps.App\web\dist"
 $filesDist = Get-ChildItem $distFolder -Recurse -File
 
 Write-Host "Found $($filesDist.Count) dist files."
@@ -88,27 +88,27 @@ foreach ($file in $filesDist)
     # set Properties
     $Properties = @{"ContentType" = $ContentType; "CacheControl" = "public, max-age=31536000"}
 
-	$blobName = $file.FullName.Replace("$($distFolder)\", "")
+	$blobName = $file.FullName.Replace("$($distFolder)\web", "")
 
 	switch ($blobName)
     {
         "app.js" {
-            $blobName = $versionDynamic + "\bundles-js\app.js"
+            $blobName = $versionDynamic + "\web\bundles-js\app.js"
         }
         "auth.js" {
-            $blobName = $versionStatic + "\bundles-js\auth.js"
+            $blobName = $versionStatic + "\web\bundles-js\auth.js"
         }
         "vendor.js" {
-            $blobName = $versionStatic + "\bundles-js\vendor.js"
+            $blobName = $versionStatic + "\web\bundles-js\vendor.js"
         }
 		"app.css" {
-            $blobName = $versionDynamic + "\bundles-css\app.css"
+            $blobName = $versionDynamic + "\web\bundles-css\app.css"
         }
         "auth.css" {
-            $blobName = $versionStatic + "\bundles-css\auth.css"
+            $blobName = $versionStatic + "\web\bundles-css\auth.css"
         }
         "vendor.css" {
-            $blobName = $versionStatic + "\bundles-css\vendor.css"
+            $blobName = $versionStatic + "\web\bundles-css\vendor.css"
         }
     }
 
@@ -125,7 +125,7 @@ foreach ($file in $filesDist)
 }
 
 # get locale files
-$localesFolder = "$($rootFolder)\OfisimCRM.App\locales"
+$localesFolder = "$($rootFolder)\PrimeApps.App\web\locales"
 $filesLocales = Get-ChildItem $localesFolder -Recurse -File
 
 Write-Host "Found $($filesLocales.Count) locale files."
@@ -137,12 +137,12 @@ foreach ($file in $filesLocales)
     # set Properties
     $Properties = @{"ContentType" = "application/json"; "CacheControl" = "public, max-age=31536000"}
 
-	Write-Host "Uploaded to " $file.FullName.Replace("$($localesFolder)\", $versionDynamic + "\locales\")
+	Write-Host "Uploaded to " $file.FullName.Replace("$($localesFolder)\", $versionDynamic + "\web\locales\")
 
     # upload blob
     Set-AzureStorageBlobContent `
         -File $file.FullName `
-        -Blob $file.FullName.Replace("$($localesFolder)\", $versionDynamic + "\locales\") `
+        -Blob $file.FullName.Replace("$($localesFolder)\", $versionDynamic + "\web\locales\") `
         -Context $context `
         -Container $StorageContainerName `
         -Properties $Properties `
@@ -151,7 +151,7 @@ foreach ($file in $filesLocales)
 
 
 # get image files
-$imagesFolder = "$($rootFolder)\OfisimCRM.App\images"
+$imagesFolder = "$($rootFolder)\PrimeApps.App\web\images"
 $filesImages= Get-ChildItem $imagesFolder -Recurse -File
 
 Write-Host "Found $($filesImages.Count) view files."
@@ -179,12 +179,12 @@ foreach ($file in $filesImages)
     # set Properties
     $Properties = @{"ContentType" = $ContentType; "CacheControl" = "public, max-age=31536000"}
 
-	Write-Host "Uploaded to " $file.FullName.Replace("$($imagesFolder)\", $versionStatic + "\images\")
+	Write-Host "Uploaded to " $file.FullName.Replace("$($imagesFolder)\", $versionStatic + "\web\images\")
 
     # upload blob
     Set-AzureStorageBlobContent `
         -File $file.FullName `
-        -Blob $file.FullName.Replace("$($imagesFolder)\", $versionStatic + "\images\") `
+        -Blob $file.FullName.Replace("$($imagesFolder)\", $versionStatic + "\web\images\") `
         -Context $context `
         -Container $StorageContainerName `
         -Properties $Properties `
