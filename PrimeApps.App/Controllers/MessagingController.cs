@@ -158,7 +158,7 @@ namespace PrimeApps.App.Controllers
 
                     var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
                     externalEmail.AddRecipient(emailRecipient);
-                    externalEmail.AddToQueue();
+                    externalEmail.AddToQueue(appUser: AppUser);
                 }
 
                 return Ok(emailRequest.ToAddresses.Count());
