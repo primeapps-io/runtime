@@ -111,18 +111,19 @@ namespace PrimeApps.App.Helpers
                             foreach (var filter in filters)
                             {
                                 var filterField = module.Fields.FirstOrDefault(x => x.Name == filter.Field);
+                                var filterFieldStr = filter.Field;
 
-                                if (filterField.DataType == DataType.Lookup && filterField.LookupType != "users")
-                                    filter.Field = filter.Field + ".id";
+                                if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id"))
+                                    filterFieldStr = filter.Field + ".id";
 
-                                if (filterField == null || record[filter.Field] == null)
+                                if (filterField == null || record[filterFieldStr] == null)
                                 {
                                     mismatchedCount++;
                                     continue;
                                 }
 
                                 var filterOperator = filter.Operator;
-                                var fieldValueString = record[filter.Field].ToString();
+                                var fieldValueString = record[filterFieldStr].ToString();
                                 var filterValueString = filter.Value;
                                 double fieldValueNumber;
                                 double filterValueNumber;
