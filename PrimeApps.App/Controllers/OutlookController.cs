@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.ActionFilters;
@@ -399,9 +400,9 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
-            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse)
+			var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse)
             {
-                Request = new HttpRequestMessage(HttpMethod.Post, Request.RequestUri.AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))
+                Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))
             };
 
             moduleController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
@@ -448,10 +449,11 @@ namespace PrimeApps.App.Controllers
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _warehouse)
             {
-                Request = new HttpRequestMessage(HttpMethod.Post, Request.RequestUri.AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))
-            };
+                Request = new HttpRequestMessage(HttpMethod.Post,
+	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))
+			};
 
-            recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
+			recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
             recordController.Configuration.Formatters.Clear();
             recordController.Configuration.Formatters.Add(new JsonMediaTypeFormatter { SerializerSettings = serializerSettings });
             recordController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());

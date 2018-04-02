@@ -74,7 +74,7 @@ namespace PrimeApps.App.Controllers
                 //if the file exists, fetchattributes method will fetch the attributes, otherwise it'll throw an exception/
                 await file.FetchAttributesAsync();
 
-                return await Storage.DownloadToFileStreamResult(file, fileName);
+                return await Storage.DownloadToFileStreamResultAsync(file, fileName);
 
             }
             catch (Exception)

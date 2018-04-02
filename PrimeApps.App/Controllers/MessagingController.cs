@@ -77,8 +77,9 @@ namespace PrimeApps.App.Controllers
             }
             else
             {
-                return InternalServerError();
-            }
+	            return StatusCode(500);
+				//return InternalServerError();
+			}
             return Ok();
         }
 
@@ -137,8 +138,9 @@ namespace PrimeApps.App.Controllers
             }
             else
             {
-                return InternalServerError();
-            }
+	            return StatusCode(500);
+				//return InternalServerError();
+			}
             return Ok();
         }
         /// <summary>

@@ -3,31 +3,34 @@
 @model PrimeApps.App.Models.RegisterBindingModel
 @{
 
-    ViewBag.Title = "Register";
-    Layout = "~/ViewsMvc/Shared/_LayoutAuth.cshtml";
+	ViewBag.Title = "Register";
+	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
 
-    var app = "crm";
-    var logo = ViewBag.AppInfo["logo"].Value;
-    string customLanguage = null;
+	var app = "crm";
+	var logo = ViewBag.AppInfo["logo"].Value;
+	string customLanguage = null;
 
-    if (ViewBag.AppInfo != null)
-    {
-        app = ViewBag.AppInfo["app"].Value;
-        ViewBag.Title = ViewBag.AppInfo["title"].Value;
-        customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
-    }
-    var otherLang = ViewBag.Lang == "tr" ? "en" : "tr";
-    var error = ViewBag.Error;
-    var officeSignIn = ViewBag.OfficeSignIn;
+	if (ViewBag.AppInfo != null)
+	{
+		app = ViewBag.AppInfo["app"].Value;
+		ViewBag.Title = ViewBag.AppInfo["title"].Value;
+		customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
+	}
+	var otherLang = ViewBag.Lang == "tr" ? "en" : "tr";
+	var error = ViewBag.Error;
+	var officeSignIn = ViewBag.OfficeSignIn;
 }
 
 <div class="col-md-4 login-sec">
-    <img class="logo-img" src="@Url.Content(logo)" />
-    <span class="free-info-header">
-        @new HtmlString($"{PrimeApps.App.Resources.Auth.Resource.Free}")
+	<img class="logo-img" src="@Url.Content(logo)" />
+	<span class="free-info-header">
+		@new HtmlString($"{PrimeApps.App.Resources.Auth.Resource.Free}")
 	</span>
-	@using (Html.BeginForm("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, OfficeSignIn = officeSignIn, AppId = ViewBag.AppId }, FormMethod.Post, new { @class = "login-form", role = "form", id = "register-form", autocomplete = "off", novalidate = "novalidate" }))
-	{
+	@*using (Html.BeginForm("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, OfficeSignIn = officeSignIn, AppId = ViewBag.AppId }, FormMethod.Post, new { @class = "login-form", role = "form", id = "register-form", autocomplete = "off", novalidate = "novalidate" }))
+		{
+
+		}*@
+	<form asp-controller="Auth" asp-action="Register" asp-route-returnUrl="@ViewBag.ReturnUrl" asp-route-officeSignIn="@officeSignIn" asp-route-appId="@ViewBag.AppId" method="post" class="login-form" role="form" id="register-form" autocomplete="off" novalidate="novalidate">
 		@Html.AntiForgeryToken()
 		<div class="form-group">
 			<div class="input-group input-group-first">
@@ -59,7 +62,7 @@
 				@Html.TextBoxFor(m => m.Phone, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Phone })
 			</div>
 		</div>
-		if (!officeSignIn)
+		@if (!officeSignIn)
 		{
 			<div class="form-group">
 				<div class="input-group">
@@ -71,7 +74,7 @@
 				</div>
 			</div>
 		}
-		if (error != null)
+		@if (error != null)
 		{
 			<div class="server-error error">@PrimeApps.App.Resources.Auth.Resource.UserExist</div>
 		}
@@ -99,7 +102,8 @@
 				<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl})" class="">@PrimeApps.App.Resources.Auth.Resource.LoginForm</a>
 			</div>
 		</div>
-	}
+	</form>
+
 	<div class="form-group">
 
 		<hr style="margin-top: 0;" />
@@ -111,7 +115,7 @@
 
 
 @section scripts {
-    <script type="text/javascript">
+	<script type="text/javascript">
         $(document).ready(function() {
             var postTry = false;
             if ("@ViewBag.Lang" === "tr") {
@@ -289,5 +293,5 @@
                 $(e.target).closest(".input-group").removeClass("input-focus");
             });
         });
-    </script>
+	</script>
 }

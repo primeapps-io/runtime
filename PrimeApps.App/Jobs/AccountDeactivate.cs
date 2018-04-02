@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using System;
+using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Platform.Identity;
 using System.Collections.Generic;
+using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Jobs
 {
@@ -39,12 +42,13 @@ namespace PrimeApps.App.Jobs
                                     user.IsActive = false;
                                     databaseContext.SaveChanges();
                                 }
-                                catch (EntityException ex)
+                                //TODO: ex.InnerException.InnerException olabilir
+								catch (DataException ex)
                                 {
                                     if (ex.InnerException is PostgresException)
                                     {
                                         var innerEx = (PostgresException)ex.InnerException;
-
+										
                                         if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
                                             continue;
                                     }

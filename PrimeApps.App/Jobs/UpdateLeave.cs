@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
@@ -152,12 +153,12 @@ namespace PrimeApps.App.Jobs
                             }
                         }
                     }
-                    catch (EntityException ex)
+                    //TODO: ex.InnerException.InnerException olabilir
+					catch (DataException ex)
                     {
                         if (ex.InnerException is PostgresException)
                         {
                             var innerEx = (PostgresException)ex.InnerException;
-
                             if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
                                 continue;
                         }

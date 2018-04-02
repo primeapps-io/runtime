@@ -1,4 +1,5 @@
-﻿@{
+﻿@using PrimeApps.App.Extensions
+@{
     var app = "primeapps";
     var desc = "PrimeApps";
     var color = "#555198";
@@ -11,7 +12,7 @@
     var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
     var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
     var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-    var versionStatic = ((AssemblyVersionStaticAttribute)ViewContext.Controller.GetType().Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+    var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
     var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";
     var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
     var customImage = ViewBag.AppInfo["customImage"] != null ? ViewBag.AppInfo["customImage"].Value.ToString() : "";
@@ -27,8 +28,9 @@
     <title>@ViewBag.AppInfo["title"].Value</title>
     <link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    @Styles.Render("~/bundles-css/auth")
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<link rel="stylesheet" href="~/web/bundle-css/auth.css" inline />
+    @*Styles.Render("~/bundles-css/auth")*@
     <style>
         .login-block{
             float:left;
@@ -276,10 +278,10 @@
     <script>
         window.localStorage.setItem("locale_key", "@ViewBag.Lang");
         window.localStorage.setItem("NG_TRANSLATE_LANG_KEY", "@ViewBag.Lang");
-        var version = '@ViewContext.Controller.GetType().Assembly.GetName().Version';
+        var version = '@typeof(ControllerContext).Assembly.GetName().Version';
         window.localStorage.removeItem('access_token');
     </script>
-    @if (!customDomain && !ViewContext.RequestContext.HttpContext.Request.IsLocal)
+    @if (!customDomain && !ViewContext.HttpContext.Request.IsLocal())
     {
         <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
         <script>
@@ -307,7 +309,8 @@
             })();
         </script>
     }
-    @Scripts.Render("~/bundles-js/auth")
+	<script src="~/web/bundles-js/auth.js" inline></script>
+    @*Scripts.Render("~/bundles-js/auth")*@
     @if (enableBundle)
     {
         @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\" async></script>", "~/bundles-js/vendor")

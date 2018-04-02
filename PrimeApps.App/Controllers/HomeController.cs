@@ -27,7 +27,7 @@ namespace PrimeApps.App.Controllers
         private async Task SetValues()
         {
             var lang = Request.Cookies["_lang"];
-            var language = lang != null ? lang.Value : "tr";
+            var language = lang ?? "tr";
 
             var useCdn = bool.Parse(ConfigurationManager.AppSettings["UseCdn"]);
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language);
