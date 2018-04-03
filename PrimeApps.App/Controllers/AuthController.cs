@@ -98,6 +98,11 @@ namespace PrimeApps.App.Controllers
                             result = await SignInManager.PasswordSignInAsync(app.Email, model.Password, model.RememberMe, shouldLockout: false);
                         }
 
+                        else if (user.AppID != appId)
+                        {
+                            result = SignInStatus.LockedOut;
+                        }
+
                     }
                 }
             }
@@ -106,8 +111,9 @@ namespace PrimeApps.App.Controllers
             {
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
-                //case SignInStatus.LockedOut:
-                //    return View("Lockout");
+                case SignInStatus.LockedOut:
+                    ViewBag.Error = "isNotValidApp";
+                    return View(model);
                 //case SignInStatus.RequiresVerification:
                 //    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 //case SignInStatus.Failure:

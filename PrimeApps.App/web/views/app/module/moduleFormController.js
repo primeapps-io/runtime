@@ -1069,8 +1069,34 @@ angular.module('ofisim')
                         if ($scope.module.display_calendar || $scope.module.name === 'activities')
                             $cache.remove('calendar_events');
 
-                        if ($scope.saveAndNew)
-                            $scope.submitting = false;
+                        if ($scope.saveAndNew) {
+                            if ($scope.type === 'quotes') {
+                                ModuleService.getDailyRates()
+                                    .then(function(response) {
+                                        if (!response.data)
+                                            return;
+
+                                        var dailyRates = response.data;
+                                        $scope.exchangeRatesDate =
+                                            $filter('date')(dailyRates.date, 'dd MMMM yyyy') + ' 15:30';
+
+                                        $scope.record.exchange_rate_try_usd = dailyRates.usd;
+                                        $scope.record.exchange_rate_try_eur = dailyRates.eur;
+                                        $scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
+                                        $scope.record.exchange_rate_usd_eur = (1 / dailyRates.eur) * dailyRates.usd;
+                                        $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
+                                        $scope.record.exchange_rate_eur_usd = (1 / dailyRates.usd) * dailyRates.eur;
+                                    });
+                            }
+                            if ($scope.type == 'activities') {
+                                $scope.submitting = false;
+                                $scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
+                                $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
+                            } else if ($scope.type == 'current_accounts') {
+                                $scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
+                                $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
+                            }
+                        }
                         else {
                             if ($scope.module.name === 'stock_transactions') {
                                 setTimeout(function () {
