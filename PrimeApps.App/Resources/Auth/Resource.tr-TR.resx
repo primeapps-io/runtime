@@ -289,7 +289,7 @@
     <value>Türkçe</value>
   </data>
   <data name="UserExist" xml:space="preserve">
-    <value>Bu e-posta adresi sistemde kayıtlıdır.</value>
+    <value>{0} uygulamasına kayıtlı hesabınızla kayıt olmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla kayıt olmayı deneyin.</value>
   </data>
   <data name="VerifyAlreadyActivated" xml:space="preserve">
     <value>Hesap daha önce aktif edilmiştir.</value>
@@ -331,7 +331,7 @@
     <value>BİR ŞEYLER TERS GİTMİŞ GİBİ GÖRÜNÜYOR</value>
   </data>
   <data name="IsNotValidAppContent" xml:space="preserve">
-    <value>Mevcut hesabınızla farklı bir uygulamaya giriş yapmaya çalıştınız.</value>
+    <value>{0} uygulamasına kayıtlı hesabınızla giriş yapmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla giriş yapmayı deneyin.</value>
   </data>
   <data name="IsNotValidAppTitle" xml:space="preserve">
     <value>Uygulama bilgileri eşleşmiyor.</value>

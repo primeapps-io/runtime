@@ -119,8 +119,8 @@
             } else if ("@ViewBag.Error" === "isNotValidApp") {
                 swal({
                     title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppContent)",
-                    icon: "error",
+                    text: "@MvcHtmlString.Create(string.Format(OfisimCRM.App.Resources.Auth.Resource.IsNotValidAppContent, ViewData["appName"]))",
+                                        icon: "error",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             }

@@ -100,6 +100,11 @@ namespace PrimeApps.App.Controllers
 
                         else if (user.AppID != appId)
                         {
+                            if (user.AppID == 1)
+                                ViewData["appName"] = "CRM";
+                            else
+                                ViewData["appName"] = "İK";
+
                             result = SignInStatus.LockedOut;
                         }
 
@@ -219,7 +224,26 @@ namespace PrimeApps.App.Controllers
                     return RedirectToAction("Activation", "Auth",
                         new { Token = token, Uid = guid, OfficeSignIn = true });
                 }
-                ViewBag.Error = "User exist";
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var user = crmUser.GetByEmail(registerBindingModel.Email);
+
+                    if (user != null)
+                    {
+                        if (user.AppID == 1)
+                            ViewData["appName"] = "CRM";
+                        else
+                            ViewData["appName"] = "İK";
+
+                        ViewBag.Error = "User exist";
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("Unexcepted error");
+                }
+
                 registerBindingModel.Phone = phone;
             }
             return View(registerBindingModel);

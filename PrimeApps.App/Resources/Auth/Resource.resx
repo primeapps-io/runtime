@@ -289,7 +289,7 @@
     <value>Türkçe</value>
   </data>
   <data name="UserExist" xml:space="preserve">
-    <value>This e-mail has already been registered.</value>
+    <value>You’ve tried to sign up with your {0} application account. Please try another e-mail address to sign up.</value>
   </data>
   <data name="VerifyAlreadyActivated" xml:space="preserve">
     <value>Account already activated.</value>
@@ -331,7 +331,7 @@
     <value>SOMETHING JUST WENT WRONG</value>
   </data>
   <data name="IsNotValidAppContent" xml:space="preserve">
-    <value>You tried to log in with your existing account to a different application.</value>
+    <value>You’ve tried to sign in with your {0} application account. Please try another e-mail address to sign in.</value>
   </data>
   <data name="IsNotValidAppTitle" xml:space="preserve">
     <value>The information does not match the application.</value>

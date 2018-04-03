@@ -76,7 +76,7 @@
 		}
 		@if (error != null)
 		{
-			<div class="server-error error">@PrimeApps.App.Resources.Auth.Resource.UserExist</div>
+		    <div class="server-error error">@MvcHtmlString.Create(string.Format(OfisimCRM.App.Resources.Auth.Resource.UserExist, ViewData["appName"]))</div>
 		}
 		<div class="error-all"></div>
 		<div class="error-email"></div>
