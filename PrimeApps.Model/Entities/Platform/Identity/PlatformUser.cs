@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Entities.Platform.Identity
         [Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public override int Id { get; set; }
 
-        [Column("app_id"), ForeignKey("App"), Required]//]//, Index]
+        [Column("app_id"), ForeignKey("App"), Required]//]//, Index] 
         public int AppId { get; set; }
 
         [Column("tenant_id"), ForeignKey("Tenant")]//]//, Index]

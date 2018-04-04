@@ -409,8 +409,9 @@ namespace PrimeApps.App.Controllers
 
             var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
 
+            //TODO: HOSTINGENVIRONMENT.QUEUE...
             //Insert user to Ofisim CRM account
-            HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
+            //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
 
             //if (!isFreeLicense)
             //    HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
@@ -552,8 +553,8 @@ namespace PrimeApps.App.Controllers
 
                     if (officeSignIn)
                         user.ActiveDirectoryEmail = user.Email;
-
-                    HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
+                    //TODO: HOSTINGENVIRONMENT.QUEUE...
+                    //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
 
                     user.TenantId = user.Id;
                     tenant.HasAnalyticsLicense = true;
@@ -563,7 +564,8 @@ namespace PrimeApps.App.Controllers
                     await Cache.ApplicationUser.Add(user.Email, user.Id);
                     await Cache.User.Get(user.Id);
 
-                    HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
+                    //TODO: HOSTINGENVIRONMENT.QUEUE...
+                    //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
                 }
                 catch (Exception ex)
                 {
@@ -723,7 +725,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> ChangeEmail(ChangeEmailBindingModel model)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
-                return StatusCode(HttpStatusCode.Forbidden);
+                return StatusCode(HttpStatusCode.Status403Forbidden);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

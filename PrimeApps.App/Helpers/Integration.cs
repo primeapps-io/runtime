@@ -209,7 +209,7 @@ namespace PrimeApps.App.Helpers
 
             //            int? accountId = null;
 
-            //            //TODO: Pending Share Request
+            //            //TODO: Pending Share Request, INTEGRATION
             //                var shareRequests = session.QueryOver<crmPendingShareRequests>().Fetch(x => x.Instance).Eager.Where(x => x.Email == model.Email).List<crmPendingShareRequests>();
             //            var shareRequest = shareRequests.FirstOrDefault();
 

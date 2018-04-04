@@ -154,7 +154,6 @@ namespace PrimeApps.App.Helpers
 
             }
 
-            //TODO: crmInsanse'dan gelenle replace et
             if (AppUser != null)
             {
                 using (PlatformDBContext pdbCtx = new PlatformDBContext())
