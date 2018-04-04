@@ -89,7 +89,7 @@ namespace PrimeApps.App
                         NoStore = true,
                     });
             });*/
-	        services.AddMvc();
+	        services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 	        BundleConfig.RegisterBundle(services);
         }
 
@@ -110,6 +110,8 @@ namespace PrimeApps.App
 			{
 				//app.UseExceptionHandler("/Home/Error");
 			}
+			/// Must always stay before static files middleware.
+			app.UseHttpsRedirection();
 
 			/*
 			 * In ASP.NET, static files are stored in various directories and referenced in the views.
@@ -131,6 +133,9 @@ namespace PrimeApps.App
             {
                 await context.Response.WriteAsync("Hello World!");
             });*/
+
+			/// This must always come after exception handler middleware.
+			app.UseHsts();
 
         }
     }
