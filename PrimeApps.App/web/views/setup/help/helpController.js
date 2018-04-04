@@ -2,8 +2,8 @@
 
 angular.module('ofisim')
 
-    .controller('HelpController', ['$rootScope', '$scope', 'HelpService', 'ngToast', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache',
-        function ($rootScope, $scope, HelpService, ngToast, $filter, $window, $modal, config, $localStorage, $location, $cache) {
+    .controller('HelpController', ['$rootScope', '$scope', 'HelpService', 'ngToast', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state',
+        function ($rootScope, $scope, HelpService, ngToast, $filter, $window, $modal, config, $localStorage, $location, $cache, $state) {
             $scope.moduleFilter = $filter('filter')($rootScope.modules, { deleted: false });
             $scope.selectHelp = 'modules';
             $scope.selectHelpRelation = 'any';
@@ -360,6 +360,7 @@ angular.module('ofisim')
             }
 
             if ($scope.id) {
+                $scope.editDisable = true;
                 HelpService.getById($scope.id)
                     .then(function (response) {
                         $scope.helpTemplatesSide = response.data;
@@ -406,6 +407,10 @@ angular.module('ofisim')
                     });
 
             }
+
+            $scope.radioButtonTemplateClear = function () {
+                $scope.tinymceModel = null;
+            };
 
             $scope.setContent = function () {
                 if ($scope.modulePicklist) {
@@ -499,6 +504,7 @@ angular.module('ofisim')
                     help.id = $scope.helpTemplates.id;
                     HelpService.update(help);
                     $cache.removeAll();
+                    $state.go('app.setup.helpsides');
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
                 else {
@@ -669,6 +675,7 @@ angular.module('ofisim')
                                     $scope.helpTemplates = response.data;
                                     createHelpList();
                                     // $state.reload();
+                                    $state.go('app.setup.helpsides');
                                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
                                 });
                         });
@@ -776,6 +783,7 @@ angular.module('ofisim')
                     }
                     HelpService.update(help);
                     $cache.removeAll();
+                    $state.go('app.setup.helpsides');
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateDraftUpdate'), className: 'success' });
                 }
                 else {
@@ -785,6 +793,7 @@ angular.module('ofisim')
                                 $scope.helpTemplates = response.data;
                                 // createHelpList();
                                 // $state.reload();
+                                $state.go('app.setup.helpsides');
                                 ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateDraftSave'), className: 'success' });
                             });
 

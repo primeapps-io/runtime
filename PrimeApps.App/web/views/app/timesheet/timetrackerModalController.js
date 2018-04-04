@@ -107,8 +107,7 @@ angular.module('ofisim')
             }
 
             if ($scope.$parent.$parent.$parent.calendarDate) {
-                var startDate = angular.copy($scope.$parent.$parent.$parent.calendarDate);
-                $scope.recordModal['tarih'] = startDate.hour(8).toDate();
+                $scope.recordModal['tarih'] = $scope.$parent.$parent.$parent.calendarDate;
             }
 
             ModuleService.getPicklists($scope.moduleModal)

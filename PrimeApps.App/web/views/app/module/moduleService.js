@@ -875,7 +875,30 @@ angular.module('ofisim')
                         for (var z = 0; z < field.filters.length; z++) {
                             var filter = field.filters[z];
                             no++;
-                            findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: filter.value, no: no });
+                            var filterMatch = filter.value.match(/^\W+(.+)]/i);
+                            if (filterMatch != null && field.lookup_type != 'users') {
+                                var recordMatch = filterMatch[1].split('.');
+                                var findRecordValue;
+
+                                if (recordMatch.length === 1 && record[recordMatch[0]])
+                                    findRecordValue = record[recordMatch[0]];
+
+                                if (recordMatch.length === 2 && record[recordMatch[0]])
+                                    findRecordValue = record[recordMatch[0]][recordMatch[1]];
+
+                                if (recordMatch.length === 3 && record[recordMatch[0]])
+                                    findRecordValue = record[recordMatch[0]][recordMatch[1]][recordMatch[2]];
+
+                                if (findRecordValue != null) {
+                                    findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: findRecordValue, no: no });
+                                    findRequest.fields.push(filter.filter_field);
+                                }
+
+                            } else {
+                                findRequest.filters.push({ field: filter.filter_field, operator: filter.operator, value: filter.value, no: no });
+                                findRequest.fields.push(filter.filter_field);
+                            }
+
                         }
                     }
 

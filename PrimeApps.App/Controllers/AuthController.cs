@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
@@ -66,7 +67,6 @@ namespace PrimeApps.App.Controllers
             var lang = GetLanguage();
             ViewBag.Lang = lang;
             ViewBag.ReturnUrl = returnUrl;
-
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
             model.Email = model.Email.Replace(@" ", "");
 
@@ -98,6 +98,16 @@ namespace PrimeApps.App.Controllers
                             result = await SignInManager.PasswordSignInAsync(app.Email, model.Password, model.RememberMe, shouldLockout: false);
                         }
 
+                        else if (user.AppID != appId)
+                        {
+                            if (user.AppID == 1)
+                                ViewData["appName"] = "CRM";
+                            else
+                                ViewData["appName"] = "İK";
+
+                            result = SignInStatus.LockedOut;
+                        }
+
                     }
                 }
             }
@@ -106,8 +116,9 @@ namespace PrimeApps.App.Controllers
             {
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
-                //case SignInStatus.LockedOut:
-                //    return View("Lockout");
+                case SignInStatus.LockedOut:
+                    ViewBag.Error = "isNotValidApp";
+                    return View(model);
                 //case SignInStatus.RequiresVerification:
                 //    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 //case SignInStatus.Failure:
@@ -213,7 +224,26 @@ namespace PrimeApps.App.Controllers
                     return RedirectToAction("Activation", "Auth",
                         new { Token = token, Uid = guid, OfficeSignIn = true });
                 }
-                ViewBag.Error = "User exist";
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    var user = crmUser.GetByEmail(registerBindingModel.Email);
+
+                    if (user != null)
+                    {
+                        if (user.AppID == 1)
+                            ViewData["appName"] = "CRM";
+                        else
+                            ViewData["appName"] = "İK";
+
+                        ViewBag.Error = "User exist";
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("Unexcepted error");
+                }
+
                 registerBindingModel.Phone = phone;
             }
             return View(registerBindingModel);
@@ -505,7 +535,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Redirect(returnUrl);
             }
-
+			
             return RedirectToAction("Index", "Home");
         }
 

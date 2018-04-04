@@ -69,7 +69,7 @@ namespace PrimeApps.Model.Entities.Application
 
         public Role Role { get; set; }
 
-        public virtual ICollection<UsersUserGroup> Groups { get; set; }
+        public virtual ICollection<TenantUserGroup> Groups { get; set; }
 
 		[JsonIgnore]
         public virtual ICollection<ViewShares> SharedViews { get; set; }

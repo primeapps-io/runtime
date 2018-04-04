@@ -221,7 +221,7 @@ namespace PrimeApps.App.Helpers
         }
 
 
-        public static async Task<FileStreamResult> DownloadToFileStreamResult(CloudBlockBlob blob, string fileName)
+        public static async Task<FileStreamResult> DownloadToFileStreamResultAsync(CloudBlockBlob blob, string fileName)
         {
             Stream outputStream = null;
 

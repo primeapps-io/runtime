@@ -5,13 +5,18 @@
             <form name="moduleModalForm" class="form-horizontal form-custom" ng-submit="submitModal(recordModal)"
                   autocomplete="off" novalidate>
                 <div class="modal-header">
-                    <h4 class="modal-title" ng-if="headerTitleCase=='create'">{{'Module.New' | translate:{title:
+                    <h4 class="modal-title" ng-if="headerTitleCase=='create'">
+                        {{
+'Module.New' | translate:{title:
                         moduleModal['label_' + language +
-                        '_singular']} }}</h4>
+                        '_singular']}
+                        }}
+                    </h4>
                     <h4 class="modal-title" ng-if="headerTitleCase=='edit'">{{editChargeType}}</h4>
                 </div>
                 <div class="modal-body">
-                    <div ng-show="editModuleLoading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i>
+                    <div ng-show="editModuleLoading" class="page-loading">
+                        <i class="fa fa-sm fa-spinner fa-pulse"></i>
                     </div>
                     <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                     <div ng-show="!loadingModal && !editModuleLoading">
@@ -27,9 +32,12 @@
                                  ng-repeat="field in timesheetArr | filter:{display_form:true, deleted: false}:true | orderBy:'order'"
                                  ng-if="!field.hidden && field.data_type != 'number_auto' && (field.show_only_edit ? id : true) && hasFieldFullPermission(field)">
                                 <label for="name={{field.name}}" class="control-label col-sm-4"
-                                       ng-class="{'required-field':field.validation.required}"><span
-                                        ng-if="field.validation.required">*</span> {{field['label_' +
-                                    language]}}:</label>
+                                       ng-class="{'required-field':field.validation.required}">
+                                    <span ng-if="field.validation.required">*</span> {{
+field['label_' +
+                                    language]
+                                    }}:
+                                </label>
                                 <div class="col-sm-8"
                                      ng-class="{'checkbox':field.data_type === 'checkbox', 'multiselect-container':field.data_type === 'multiselect'}">
 
@@ -44,7 +52,7 @@
                                            ng-minlength="field.validation.min_length || 0"
                                            maxlength="{{field.validation.max_length || 400}}"
                                            pattern="{{field.validation.pattern}}"
-                                           ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination"/>
+                                           ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination" />
 
                                     <textarea name="{{field.name}}"
                                               class="form-control ng-animate-disabled"
@@ -74,7 +82,7 @@
                                            min="field.validation.min"
                                            max="field.validation.max"
                                            numeric
-                                           ng-if="field.data_type === 'number'"/>
+                                           ng-if="field.data_type === 'number'" />
 
                                     <input type="text"
                                            name="{{field.name}}"
@@ -91,7 +99,7 @@
                                            places="field.decimal_places || 2"
                                            rounding="field.rounding"
                                            number-decimal
-                                           ng-if="field.data_type === 'number_decimal'"/>
+                                           ng-if="field.data_type === 'number_decimal'" />
 
                                     <input type="text"
                                            name="{{field.name}}"
@@ -109,7 +117,7 @@
                                            rounding="field.rounding"
                                            currency-symbol="field.currency_symbol"
                                            number-currency
-                                           ng-if="field.data_type === 'currency'"/>
+                                           ng-if="field.data_type === 'currency'" />
 
                                     <input type="email"
                                            name="{{field.name}}"
@@ -121,7 +129,7 @@
                                            ng-required="{{field.validation.required}}"
                                            ng-minlength="field.validation.min_length || 0"
                                            maxlength="{{field.validation.max_length || 100}}"
-                                           ng-if="field.data_type === 'email'"/>
+                                           ng-if="field.data_type === 'email'" />
 
                                     <input type="text"
                                            name="{{field.name}}"
@@ -218,7 +226,7 @@
                                            tabindex="{{field.order}}"
                                            ng-value="recordModal[field.combination.field_1] && recordModal[field.combination.field_2] ? recordModal[field.combination.field_1] + ' ' + recordModal[field.combination.field_2] : null"
                                            ng-readonly="true"
-                                           ng-if="field.data_type === 'text_single' && field.combination"/>
+                                           ng-if="field.data_type === 'text_single' && field.combination" />
 
                                     <tags-input name="{{field.name}}"
                                                 tabindex="{{field.order}}"
@@ -236,6 +244,13 @@
                                                        max-results-to-show="9999"></auto-complete>
                                     </tags-input>
 
+                                    <ui-select name="{{field.name}}" ng-change="fieldValueChange(field, recordModal[field.name]);" ng-required="{{field.validation.required}}" ng-click="setDropdownData(field)" ng-model="recordModal[field.name]" ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
+                                        <ui-select-match placeholder="{{('Common.Select' | translate)}}">{{$select.selected.primary_value}}</ui-select-match>
+                                        <ui-select-choices repeat="user in dropdownFieldDatas[field.name] | filter:{primary_value: $select.search} | orderBy:'primary_value'">
+                                            <div ng-bind-html="user.primary_value | highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+
                                     <!--Create new input here. angucomplete-alt must be at the bottom of the form-->
 
                                     <angucomplete-alt input-name="{{field.name}}"
@@ -251,13 +266,13 @@
                                                       title-field="primary_value"
                                                       minlength="2"
                                                       disable-input="$parent.$parent.$parent.requestType == 'edit' && field.name === 'selected_project' && $parent.$parent.$parent.currentTimesheet.statusValue.indexOf('rejected') > -1"
-                                                      template-url="web/views/common/angucomplete.html"
+                                                      template-url="views/app/common/angucomplete.html"
                                                       focus-in="setCurrentLookupFieldModal(field)"
                                                       text-searching="{{'Common.Searching' | translate}}"
                                                       text-no-results="{{'Common.NoResults' | translate}}"
                                                       use-original-object="true"
                                                       value-changed="fieldValueChange(field, recordModal[field.name]);"
-                                                      ng-if="field.data_type === 'lookup'"/>
+                                                      ng-if="field.data_type === 'lookup' && !field.show_as_dropdown" />
                                     <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
                                 </div>
                             </div>
@@ -265,18 +280,23 @@
                                 <div class="col-sm-offset-2 col-sm-8">
                                     <div class="callout callout-danger">
                                         <p ng-if="moduleModalForm.$error.required || moduleModalForm.$error['autocomplete-required']">
-                                            {{'Module.RequiredError' | translate}}</p>
+                                            {{'Module.RequiredError' | translate}}
+                                        </p>
                                         <p ng-if="moduleModalForm.$error['autocomplete-required']">
-                                            {{'Module.RequiredAutoCompleteError' | translate}}</p>
+                                            {{'Module.RequiredAutoCompleteError' | translate}}
+                                        </p>
                                         <p ng-if="moduleModalForm.$error.email">{{'Module.EmailError'|translate}}</p>
                                         <p ng-if="moduleModalForm.$error.min">{{'Module.MinError'|translate}}</p>
                                         <p ng-if="moduleModalForm.$error.max">{{'Module.MaxError'|translate}}</p>
                                         <p ng-if="moduleModalForm.$error.minlength">
-                                            {{'Module.MinLengthError'|translate}}</p>
+                                            {{'Module.MinLengthError'|translate}}
+                                        </p>
                                         <p ng-if="moduleModalForm.$error.pattern">
-                                            {{'Module.PatternError'|translate}}</p>
+                                            {{'Module.PatternError'|translate}}
+                                        </p>
                                         <p ng-if="moduleModalForm.$error.date && moduleModalForm.$error.parse">
-                                            {{'Module.DateError'|translate}}</p>
+                                            {{'Module.DateError'|translate}}
+                                        </p>
                                         <p ng-if="moduleModalForm.$error.unique">{{'Module.UniqueError'|translate}}</p>
                                     </div>
                                 </div>

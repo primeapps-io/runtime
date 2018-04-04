@@ -54,6 +54,10 @@ namespace PrimeApps.Model.Context
         {
             base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(databaseName);
         }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=primeapps;User Id=postgres;Password=VerySecurePwd;");
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -145,15 +149,15 @@ namespace PrimeApps.Model.Context
         private void CreateCustomModelMapping(ModelBuilder modelBuilder)
         {
             //Many to many relationship users <-> user_groups
-            modelBuilder.Entity<UsersUserGroup>()
+            modelBuilder.Entity<TenantUserGroup>()
                 .HasKey(ug => new { ug.UserId, ug.UserGroupId });
 
-            modelBuilder.Entity<UsersUserGroup>()
+            modelBuilder.Entity<TenantUserGroup>()
                 .HasOne(ug => ug.User)
                 .WithMany(u => u.Groups)
                 .HasForeignKey(bc => bc.UserId);
 
-            modelBuilder.Entity<UsersUserGroup>()
+            modelBuilder.Entity<TenantUserGroup>()
                 .HasOne(ug => ug.UserGroup)
                 .WithMany(g => g.Users)
                 .HasForeignKey(bc => bc.UserGroupId);
@@ -239,6 +243,15 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(typeof(WorkflowWebhook), "WebHook")
                 .OnDelete(DeleteBehavior.Cascade);
 
+            //Temporary relation fix.
+            modelBuilder.Entity<Profile>()
+            .HasMany(x => x.Users)
+            .WithOne(x => x.Profile);
+
+            modelBuilder.Entity<Role>()
+            .HasMany(x => x.Users)
+            .WithOne(x => x.Role);
+
             //Cascade delete profile permissions.
             /*modelBuilder.Entity<ProfilePermission>()
                 .WithMany(x => x.Permissions)
@@ -304,7 +317,7 @@ namespace PrimeApps.Model.Context
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.SharedTemplates)
                 .HasForeignKey(pt => pt.UserId);
-			
+
 
             //Junction table for liked note shares
             /*modelBuilder.Entity<Note>()
@@ -333,7 +346,7 @@ namespace PrimeApps.Model.Context
             //modelBuilder.Entity<Report>()
             //             .HasMany(x => x.Shares)
             //             .WithMany(x => x.SharedReports)
-            //             .Map(x => x.MapLeftKey("report_id")
+            //             .Map(x => x.MapLeftKey("reporProfilet_id")
             //                 .MapRightKey("user_id")
             //                 .ToTable("report_shares"));
 
@@ -351,6 +364,51 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey(pt => pt.UserId);
         }
 
+        public void BuildIndexes(ModelBuilder modelBuilder)
+        {
+            //ActionButton
+            modelBuilder.Entity<ActionButton>().HasIndex(x => x.ModuleId);
+
+            //ActionButtonPermission
+            modelBuilder.Entity<ActionButtonPermission>()
+            .HasIndex(x => new { x.ActionButtonId, x.ProfileId })
+            .IsUnique().HasName("action_button_permissions_IX_action_button_id_profile_id");
+
+            //Analytics
+            modelBuilder.Entity<Analytic>()
+            .HasIndex(x => x.PowerBiReportId);
+
+            modelBuilder.Entity<Analytic>()
+            .HasIndex(x => x.SharingType);
+
+
+            //AuditLog
+            modelBuilder.Entity<AuditLog>()
+            .HasIndex(x => x.ModuleId);
+
+            //BaseEntity
+            modelBuilder.Entity<BaseEntity>()
+            .HasIndex(x => x.CreatedAt);
+
+            modelBuilder.Entity<BaseEntity>()
+            .HasIndex(x => x.CreatedBy);
+
+            modelBuilder.Entity<BaseEntity>()
+            .HasIndex(x => x.UpdatedAt);
+
+            modelBuilder.Entity<BaseEntity>()
+            .HasIndex(x => x.UpdatedBy);
+
+            modelBuilder.Entity<BaseEntity>()
+            .HasIndex(x => x.Deleted);
+
+            //Calculation
+            modelBuilder.Entity<Calculation>()
+            .HasIndex(x => x.ModuleId);
+
+
+
+        }
         public DbSet<TenantUser> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Profile> Profiles { get; set; }
@@ -411,6 +469,6 @@ namespace PrimeApps.Model.Context
         public DbSet<Help> Helps { get; set; }
         public DbSet<FieldFilter> FieldFilters { get; set; }
         public DbSet<ViewShares> ViewShares { get; set; }
-        public DbSet<UsersUserGroup> UsersUserGroups { get; set; }
+        public DbSet<TenantUserGroup> UsersUserGroups { get; set; }
     }
 }

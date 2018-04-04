@@ -1,0 +1,24 @@
+[
+  {
+    "outputFile": "web/styles/app.css",
+    "inputFile": "web/scss/app.scss",
+    "minify": {
+      "enabled": false
+    },
+    "sourceMap": false,
+    "options": {
+      "sourceMap": false
+    }
+  },
+  {
+    "outputFile": "web/styles/ui.css",
+    "inputFile": "web/scss/ui.scss",
+    "minify": {
+      "enabled": false
+    },
+    "sourceMap": false,
+    "options": {
+      "sourceMap": false
+    }
+  }
+]

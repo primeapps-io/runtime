@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Helpers;
@@ -172,7 +173,7 @@ namespace PrimeApps.App.Controllers
         [Route("app_logo_upload"), HttpPost]
         public async Task<IActionResult> UploadLogo()
         {
-            var requestStream = await Request.Content.ReadAsStreamAsync();
+            var requestStream = await Request.ReadAsStreamAsync();
             var parser = new HttpMultipartParser(requestStream, "file");
 
             if (parser.Success)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.AuditLog;
 using PrimeApps.Model.Common.Document;
@@ -106,7 +107,7 @@ namespace PrimeApps.App.Controllers
             if (import == null)
                 return NotFound();
 
-            var stream = await Request.Content.ReadAsStreamAsync();
+            var stream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
             var isUploaded = DocumentHelper.Upload(stream, out result);
 

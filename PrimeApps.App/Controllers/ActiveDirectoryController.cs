@@ -66,7 +66,7 @@ namespace PrimeApps.App.Controllers
         public async Task<ActionResult> ProcessCode(string code, string error, string error_description, string resource, string state)
         {
             var langCookie = Request.Cookies["_lang"];
-            var language = langCookie != null ? langCookie.Value : "tr";
+            var language = langCookie != null ? langCookie : "tr";
             Thread.CurrentThread.CurrentUICulture = language == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
             using (var dbContext = new PlatformDBContext())
             {

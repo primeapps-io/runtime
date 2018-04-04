@@ -53,16 +53,16 @@ namespace PrimeApps.App.Controllers
                     publicName = doc.Name;
 
 
-                    var file = new FileDownloadResult()
+                    /*var file = new FileDownloadResult()
                     {
                         Blob = blob,
                         PublicName = doc.Name
-                    };
+                    };*/
                     Stream rtn = null;
-                    var aRequest = (HttpWebRequest)WebRequest.Create(file.Blob.Uri.AbsoluteUri);
+                    var aRequest = (HttpWebRequest)WebRequest.Create(blob.Uri.AbsoluteUri);
                     var aResponse = (HttpWebResponse)aRequest.GetResponse();
                     rtn = aResponse.GetResponseStream();
-                    return File(rtn, DocumentHelper.GetType(file.PublicName), file.PublicName);
+                    return File(rtn, DocumentHelper.GetType(publicName), publicName);
                 }
                 else
                 {

@@ -26,6 +26,7 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Platform.Identity;
 using Npgsql;
+using PrimeApps.App.Extensions;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers.QueryTranslation;
@@ -935,7 +936,7 @@ namespace PrimeApps.App.Controllers
             var emailData = new Dictionary<string, string>();
             string domain;
 
-            if (!HttpContext.Current.Request.IsLocal)
+            if (!Request.IsLocal())
             {
                 domain = "https://{0}.ofisim.com/";
                 var appDomain = "crm";
@@ -1026,7 +1027,7 @@ namespace PrimeApps.App.Controllers
             string domain;
             var subdomain = "";
 
-            if (!HttpContext.Current.Request.IsLocal)
+            if (!Request.IsLocal())
             {
                 domain = "https://{0}.ofisim.com/";
                 var appDomain = "crm";

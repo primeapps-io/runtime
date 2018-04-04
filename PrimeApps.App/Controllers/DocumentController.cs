@@ -30,6 +30,7 @@ using MimeMapping;
 using Aspose.Words.MailMerging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
+using PrimeApps.App.Extensions;
 
 namespace PrimeApps.App.Controllers
 {
@@ -63,7 +64,7 @@ namespace PrimeApps.App.Controllers
         [Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
         {
-            ;
+            var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
             var isUploaded = DocumentHelper.Upload(Request.Body, out result);
 
@@ -566,7 +567,7 @@ namespace PrimeApps.App.Controllers
                 //}
 
 
-                return await Storage.DownloadToFileStreamResult(blob, publicName);
+                return await Storage.DownloadToFileStreamResultAsync(blob, publicName);
             }
             else
             {
@@ -621,7 +622,7 @@ namespace PrimeApps.App.Controllers
                 }
                 publicName = docName;
 
-                return await Storage.DownloadToFileStreamResult(blob, publicName);
+                return await Storage.DownloadToFileStreamResultAsync(blob, publicName);
 
             }
             else
@@ -834,9 +835,17 @@ namespace PrimeApps.App.Controllers
                 FileNameStar = fileName
             };
 
-            var response = ResponseMessage(rMessage);
+	        // TODO: Test this !
+			var response = new ContentResult
+	        {
+		        Content = rMessage.Content.ToString(),
+		        ContentType = rMessage.Content.GetType().ToString(),
+		        StatusCode = (int)rMessage.StatusCode
+	        };
 
-            return response;
+			//var response = ResponseMessage(rMessage);
+
+			return response;
         }
 
         [Route("download_template"), HttpGet]
@@ -875,7 +884,7 @@ namespace PrimeApps.App.Controllers
                 string[] splittedFileName = template.Content.Split('.');
                 string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
 
-                return await Storage.DownloadToFileStreamResult(blob, $"{template.Name}.{extension}");
+                return await Storage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
 
             }
             else

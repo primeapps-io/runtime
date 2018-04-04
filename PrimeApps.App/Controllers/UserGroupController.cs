@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -53,7 +54,14 @@ namespace PrimeApps.App.Controllers
             if (users.Count < userGroup.UserIds.Count)
                 return BadRequest("User not found.");
 
-            var userGroupEntity = UserGroupHelper.CreateEntity(userGroup, users);
+            var userUserGroup = new List<TenantUserGroup>();
+            foreach (var user in users)
+            {
+                if (user != null)
+                    userUserGroup.Add(new TenantUserGroup{ UserId = user.Id });
+            }
+
+            var userGroupEntity = UserGroupHelper.CreateEntity(userGroup, userUserGroup);
             var result = await _userGroupRepository.Create(userGroupEntity);
 
             if (result < 1)
@@ -83,7 +91,14 @@ namespace PrimeApps.App.Controllers
             if (users.Count < userGroup.UserIds.Count)
                 return BadRequest("User not found.");
 
-            UserGroupHelper.UpdateEntity(userGroup, userGroupEntity, users);
+            var userUserGroup = new List<TenantUserGroup>();
+            foreach (var user in users)
+            {
+                if (user != null)
+                    userUserGroup.Add(new TenantUserGroup { UserId = user.Id });
+            }
+
+            UserGroupHelper.UpdateEntity(userGroup, userGroupEntity, userUserGroup);
             await _userGroupRepository.Update(userGroupEntity);
 
             return Ok(userGroupEntity);

@@ -1,122 +1,126 @@
 ﻿@model PrimeApps.App.Models.LoginBindingModel
 @{
 
-    ViewBag.Title = "Login";
-    Layout = "~/ViewsMvc/Shared/_LayoutAuth.cshtml";
+	ViewBag.Title = "Login";
+	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
 
-    var app = "crm";
-    var logo = ViewBag.AppInfo["logo"].Value;
-    var customDomain = false;
-    string customLanguage = null;
+	var app = "crm";
+	var logo = ViewBag.AppInfo["logo"].Value;
+	var customDomain = false;
+	string customLanguage = null;
 
-    if (ViewBag.AppInfo != null)
-    {
-        app = ViewBag.AppInfo["app"].Value;
-        ViewBag.Title = ViewBag.AppInfo["title"].Value;
-        customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
-        customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
-    }
-    var otherLang = ViewBag.Lang == "tr" ? "en" : "tr";
-    var error = ViewBag.Error;
+	if (ViewBag.AppInfo != null)
+	{
+		app = ViewBag.AppInfo["app"].Value;
+		ViewBag.Title = ViewBag.AppInfo["title"].Value;
+		customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
+		customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
+	}
+	var otherLang = ViewBag.Lang == "tr" ? "en" : "tr";
+	var error = ViewBag.Error;
 }
 
 <div class="col-md-4 login-sec">
-    <img class="logo-img" src="@Url.Content(logo)" />
-    @if (!customDomain)
-    {
-        <span class="free-info-header">
-            @MvcHtmlString.Create(string.Format(@PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfo, "<a href=" + @Url.Action("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }) + ">" + @PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfoLink + "</a>"))
-        </span>
-    }
+	<img class="logo-img" src="@Url.Content(logo)" />
+	@if (!customDomain)
+	{
+		<span class="free-info-header">
+			@Html.Raw(string.Format(@PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfo, "<a href=" + @Url.Action("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }) + ">" + @PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfoLink + "</a>"))
+		</span>
+	}
 
-    @using (Html.BeginForm("Login", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "login-form", role = "form", id = "login-form" }))
-    {
-        @Html.AntiForgeryToken()
-        <div class="form-group">
-            <div class="input-group input-group-first">
-                <span class="input-group-addon">
-                    <span class="flaticon-email26"></span>
-                </span>
-                <!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email, tabindex = "1" })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <span class="flaticon-padlock50"></span>
-                </span>
-                <!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Password, tabindex = "2" })
-            </div>
-        </div>
-        if (error != null)
-        {
-            if (error == "wrongInfo")
-            {
-                <div class="error">@PrimeApps.App.Resources.Auth.Resource.WrongInfo</div>
-            }
-            else if (error == "notFound")
-            {
-                <div class="error">@PrimeApps.App.Resources.Auth.Resource.NotFound</div>
-            }
-        }
-        <div class="error-all"></div>
-        <div class="error-email"></div>
-        <div class="error-pass"></div>
-        <div class="form-check">
-            <button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right" tabindex="3">@PrimeApps.App.Resources.Auth.Resource.Login</button>
-            @if (!customDomain)
-            {
-                <hr />
-                <button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@PrimeApps.App.Resources.Auth.Resource.SignWithOffice</button>
-            }
-            <div class="language">
-                @if (otherLang == "tr" && string.IsNullOrEmpty(customLanguage))
-                {
-                    <a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.TR</a> <span>|</span>
-                }
-                else if (otherLang == "en" && string.IsNullOrEmpty(customLanguage))
-                {
-                    <a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.EN</a> <span>|</span>
-                }
-                <a href="@Url.Action("ForgotPassword", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Email = Model != null ? Model.Email : ""})" class="">@PrimeApps.App.Resources.Auth.Resource.ForgotPass</a>
-            </div>
-        </div>
-    }
+	<form asp-controller="Auth" asp-action="Login" asp-route-returnurl="@ViewBag.ReturnUrl" method="post" class="login-form" role="form" id="login-form">
+		@Html.AntiForgeryToken()
+		<div class="form-group">
+			<div class="input-group input-group-first">
+				<span class="input-group-addon">
+					<span class="flaticon-email26"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+				@Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email, tabindex = "1" })
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">
+					<span class="flaticon-padlock50"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+				@Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Password, tabindex = "2" })
+			</div>
+		</div>
+		@if (error != null)
+		{
+			if (error == "wrongInfo")
+			{
+				<div class="error">@PrimeApps.App.Resources.Auth.Resource.WrongInfo</div>
+			}
+			else if (error == "notFound")
+			{
+				<div class="error">@PrimeApps.App.Resources.Auth.Resource.NotFound</div>
+			}
+		}
+		<div class="error-all"></div>
+		<div class="error-email"></div>
+		<div class="error-pass"></div>
+		<div class="form-check">
+			<button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right" tabindex="3">@PrimeApps.App.Resources.Auth.Resource.Login</button>
+			@if (!customDomain)
+			{
+				<hr />
+				<button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@PrimeApps.App.Resources.Auth.Resource.SignWithOffice</button>
+			}
+			<div class="language">
+				@if (otherLang == "tr" && string.IsNullOrEmpty(customLanguage))
+				{
+					<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.TR</a> <span>|</span>
+				}
+				else if (otherLang == "en" && string.IsNullOrEmpty(customLanguage))
+				{
+					<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.EN</a> <span>|</span>
+				}
+				<a href="@Url.Action("ForgotPassword", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Email = Model != null ? Model.Email : ""})" class="">@PrimeApps.App.Resources.Auth.Resource.ForgotPass</a>
+			</div>
+		</div>
+	</form>
+
+	@*using (Html.BeginForm("Login", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "login-form", role = "form", id = "login-form" }))
+	{
+
+	}*@
 </div>
 
 @section scripts {
-    <script type="text/javascript">
+	<script type="text/javascript">
         $(document).ready(function() {
             var postTry = false;
 
             if ("@ViewBag.Success" === "accountActivated") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.JoinSuccessTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.JoinSuccessMessage)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.JoinSuccessTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.JoinSuccessMessage)",
                     icon: "success",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             } else if ("@ViewBag.Success" === "passwordChanged") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessMessage)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessMessage)",
                     icon: "success",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             } else if ("@ViewBag.Error" === "notActive") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
+                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
                     icon: "error",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             } else if ("@ViewBag.Error" === "isNotValidApp") {
                 swal({
-                    title: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppTitle)",
-                    text: "@MvcHtmlString.Create(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppContent)",
-                    icon: "error",
+                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppTitle)",
+                    text: "@MvcHtmlString.Create(string.Format(OfisimCRM.App.Resources.Auth.Resource.IsNotValidAppContent, ViewData["appName"]))",
+                                        icon: "error",
                     button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
                 });
             }
@@ -225,5 +229,5 @@
                 $(e.target).closest(".input-group").removeClass("input-focus");
             });
         });
-    </script>
+	</script>
 }

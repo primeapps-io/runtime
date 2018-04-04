@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ActivationError" xml:space="preserve">
+    <value>Invalid activation code.</value>
+  </data>
+  <data name="ActivationMessageFree" xml:space="preserve">
+    <value>Your account is activating. Please wait...</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="CreateAccount" xml:space="preserve">
+    <value>Create My Account</value>
+  </data>
+  <data name="CreateInfo" xml:space="preserve">
+    <value>By clicking on 'Create My Account' button, you agree to {0} and {1}</value>
+  </data>
+  <data name="DontHaveAccount" xml:space="preserve">
+    <value>If you don't have an account you can</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-Mail</value>
+  </data>
+  <data name="EN" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Unexpected error occurred. Please try again later.</value>
+  </data>
+  <data name="ForgotInfo" xml:space="preserve">
+    <value>Enter your registered e-mail address. We'll send you the instructions to reset your password.</value>
+  </data>
+  <data name="ForgotNotActivated" xml:space="preserve">
+    <value>Your account is not activated.</value>
+  </data>
+  <data name="ForgotNotFound" xml:space="preserve">
+    <value>No user is found with this e-mail address.</value>
+  </data>
+  <data name="ForgotPass" xml:space="preserve">
+    <value>Forgot Password</value>
+  </data>
+  <data name="ForgotPasswordSuccess" xml:space="preserve">
+    <value>Please check your e-mail for a message from Ofisim.com then click on the link to change your password.</value>
+  </data>
+  <data name="ForgotPasswordSuccessTitle" xml:space="preserve">
+    <value>Your password reset link has been sent</value>
+  </data>
+  <data name="Free" xml:space="preserve">
+    <value>Please fill out the form below and start using your &lt;strong&gt;free trial with full of features for 15 days !&lt;/strong&gt;</value>
+  </data>
+  <data name="HaveAccount" xml:space="preserve">
+    <value>Already have an account? Sign-in.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Please enter a valid e-mail.</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Please enter a valid phone number.</value>
+  </data>
+  <data name="JoinSuccessMessage" xml:space="preserve">
+    <value>Please login to continue.</value>
+  </data>
+  <data name="JoinSuccessTitle" xml:space="preserve">
+    <value>Your account has been created successfully.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LoginFieldRequiredEmail" xml:space="preserve">
+    <value>Please enter your e-mail.</value>
+  </data>
+  <data name="LoginFieldRequiredPassword" xml:space="preserve">
+    <value>Pelase enter your password.</value>
+  </data>
+  <data name="LoginFieldsRequired" xml:space="preserve">
+    <value>Please enter your e-mail and password.</value>
+  </data>
+  <data name="LoginForm" xml:space="preserve">
+    <value>Already have an account? Sign-in.</value>
+  </data>
+  <data name="LoginRegisterInfo" xml:space="preserve">
+    <value>{0} and start using your &lt;br /&gt;&lt;strong&gt;trial with full of features for 15 days.&lt;/strong&gt;</value>
+  </data>
+  <data name="LoginRegisterInfoLink" xml:space="preserve">
+    <value>Register for free</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NameMinimum" xml:space="preserve">
+    <value>Please enter minimum of 2 (two) characters for your name/lastname.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>User Not Found !</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PasswordConfirm" xml:space="preserve">
+    <value>Password (Again)</value>
+  </data>
+  <data name="PasswordMinimum" xml:space="preserve">
+    <value>Password must be minimum 6 characters.</value>
+  </data>
+  <data name="PasswordNotMatch" xml:space="preserve">
+    <value>New passwords do not match.</value>
+  </data>
+  <data name="PasswordRecoveryError" xml:space="preserve">
+    <value>Sorry, this link was already used. Please request for a new password recovery link.</value>
+  </data>
+  <data name="PasswordSuccessMessage" xml:space="preserve">
+    <value>Now, you can login with your new password.</value>
+  </data>
+  <data name="PasswordSuccessTitle" xml:space="preserve">
+    <value>Your password has been reset successfully.</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Policy" xml:space="preserve">
+    <value>Ofisim.com Privacy Policy</value>
+  </data>
+  <data name="ProcessCodeErrorMessage" xml:space="preserve">
+    <value>This e-mail has already been registered.</value>
+  </data>
+  <data name="ProcessCodeErrorTitle" xml:space="preserve">
+    <value>User exist !</value>
+  </data>
+  <data name="ProcessCodeMessage" xml:space="preserve">
+    <value>You must be logged in with your Office 365 e-mail to be able to use the features.</value>
+  </data>
+  <data name="ProcessCodeTitle" xml:space="preserve">
+    <value>Connection Successful</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register for free now</value>
+  </data>
+  <data name="RegisterFieldsRequired" xml:space="preserve">
+    <value>All fields are required.</value>
+  </data>
+  <data name="ResendMail" xml:space="preserve">
+    <value>To resend the activation e-mail</value>
+  </data>
+  <data name="ResendMailLink" xml:space="preserve">
+    <value>click here.</value>
+  </data>
+  <data name="ResendMailSuccess" xml:space="preserve">
+    <value>Activation e-mail sent again.</value>
+  </data>
+  <data name="ReturnInfo" xml:space="preserve">
+    <value>Back to login form</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Sign-in</value>
+  </data>
+  <data name="SignWithOffice" xml:space="preserve">
+    <value>Fast access with Office 365</value>
+  </data>
+  <data name="Surname" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Terms" xml:space="preserve">
+    <value>Ofisim.com Terms &amp; Conditions</value>
+  </data>
+  <data name="TR" xml:space="preserve">
+    <value>Türkçe</value>
+  </data>
+  <data name="UserExist" xml:space="preserve">
+    <value>You’ve tried to sign up with your {0} application account. Please try another e-mail address to sign up.</value>
+  </data>
+  <data name="VerifyAlreadyActivated" xml:space="preserve">
+    <value>Account already activated.</value>
+  </data>
+  <data name="VerifyEmailRequired" xml:space="preserve">
+    <value>E-Mail is required.</value>
+  </data>
+  <data name="VerifyMail" xml:space="preserve">
+    <value>We just sent you an account activation e-mail.&lt;br&gt;&lt;br&gt;&lt;span class=\"spot\"&gt;Please check your e-mail and follow the instructions. Your account will be activated immediately.&lt;/span&gt;</value>
+  </data>
+  <data name="VerifyUserNotFound" xml:space="preserve">
+    <value>Account not found.</value>
+  </data>
+  <data name="WrongInfo" xml:space="preserve">
+    <value>E-mail or password is invalid.</value>
+  </data>
+  <data name="EmailNotMatchContent" xml:space="preserve">
+    <value>The e-mail you have chosen does not match your registered e-mail.</value>
+  </data>
+  <data name="EmailNotMatchTitle" xml:space="preserve">
+    <value>E-Mail match problem.</value>
+  </data>
+  <data name="RegisterWithOffice" xml:space="preserve">
+    <value>Fast registration with Office 365</value>
+  </data>
+  <data name="OfficeLoginNotActiveContent" xml:space="preserve">
+    <value>Your Office 365 account is not active. Please contact your system administrator.</value>
+  </data>
+  <data name="OfficeLoginNotActiveTitle" xml:space="preserve">
+    <value>Office 365 is not Active</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="NotFoundContent" xml:space="preserve">
+    <value>For some reason the page you requested could not be found on our server.</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>SOMETHING JUST WENT WRONG</value>
+  </data>
+  <data name="IsNotValidAppContent" xml:space="preserve">
+    <value>You’ve tried to sign in with your {0} application account. Please try another e-mail address to sign in.</value>
+  </data>
+  <data name="IsNotValidAppTitle" xml:space="preserve">
+    <value>The information does not match the application.</value>
+  </data>
+</root>

@@ -414,7 +414,7 @@ namespace PrimeApps.App.Controllers
             {
                 var currencyfield = quoteModule.Fields.FirstOrDefault(x => x.Name == "currency");
                 var currencyPicklist = await _picklistRepository.FindItemByLabel(currencyfield.PicklistId.Value, (string)salesOrder["currency"], AppUser.TenantLanguage);
-                salesOrder["currency"] = currencyPicklist.Id;
+                salesOrder["currency"] = AppUser.PicklistLanguage == "tr" ? currencyPicklist.LabelTr : currencyPicklist.LabelEn;
             }
             var resultBefore = await RecordHelper.BeforeCreateUpdate(salesOrderModule, salesOrder, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
 
