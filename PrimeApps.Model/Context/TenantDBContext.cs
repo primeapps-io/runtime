@@ -405,7 +405,93 @@ namespace PrimeApps.Model.Context
             //Calculation
             modelBuilder.Entity<Calculation>()
             .HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Chart>()
+            .HasIndex(x => x.ReportId);
 
+            //Components
+            modelBuilder.Entity<Components>()
+            .HasIndex(x => x.ModuleId);
+
+            //ConversionMapping
+            modelBuilder.Entity<ConversionMapping>().HasIndex(x => x.ModuleId);
+            //ConversionSubModules
+            modelBuilder.Entity<ConversionMapping>().HasIndex(x => x.ModuleId);
+
+            //Dashboard
+            modelBuilder.Entity<Dashboard>().HasIndex(x => x.UserId);
+            modelBuilder.Entity<Dashboard>().HasIndex(x => x.ProfileId);
+            modelBuilder.Entity<Dashboard>().HasIndex(x => x.SharingType);
+
+            //Dashlet
+            modelBuilder.Entity<Dashlet>().HasIndex(x => x.ChartId);
+            modelBuilder.Entity<Dashlet>().HasIndex(x => x.WidgetId);
+            modelBuilder.Entity<Dashlet>().HasIndex(x => x.DashboardId);
+
+            //Dependency
+            modelBuilder.Entity<Dependency>().HasIndex(x => x.ModuleId);
+
+            //Document
+            modelBuilder.Entity<Document>().HasIndex(x => x.ModuleId);
+
+            //Field
+            modelBuilder.Entity<Field>().HasIndex(x => new { x.ModuleId, x.Name }).IsUnique();
+
+            //FieldCombination
+            //FieldFilter
+            //Help
+            //Import
+            //Module
+            //ModuleProfileSetting
+            //Note
+            //NoteLikes
+            //Notification
+            //Picklist
+            //PicklistItem
+            //Proess
+            //ProcessApprover
+            //ProcessFilter
+            //ProcessLog
+            //ProcessRequest
+            //Profile
+            //ProfilePermission
+            //Relation
+            //Reminder
+            //Report
+            //ReportAggregation
+            //ReportCategory
+            //ReportField
+            //ReportFilter
+            //ReportShares
+            //Role
+            //Section
+            //SectionPermission
+            //Setting
+            //Template
+            //TemplatePermission
+            //TemplateShares
+            //TenantUser
+            //TenantUserGroup
+            //UserCustomShare
+            //UserGroup
+            //View
+            //ViewFilter
+            //ViewShares
+            //ViewState
+            //Widget
+            //Workflow
+            //WorkflowFilter
+            //WorkflowLog
+            //WorkflowNotification
+            //WorkflowTask
+            //WorkflowUpdate
+            //WorkflowWebhook
+            //PlatformUser
+            //ApiLog
+            //App
+            //ExchangeRate
+            //PlatformWarehouse
+            //Tenant
+            //UserApp
 
 
         }
