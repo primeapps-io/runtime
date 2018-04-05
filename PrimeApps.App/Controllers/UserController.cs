@@ -6,7 +6,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +28,8 @@ using User = PrimeApps.Model.Entities.Application.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
 using PrimeApps.Model.Entities.Platform.Identity;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Hangfire;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/User"), Authorize]
@@ -491,7 +492,8 @@ namespace PrimeApps.App.Controllers
             registerModel.Password = randomPassword;
             registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
 
-            HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertUser(registerModel, _warehouse));
+			BackgroundJob.Enqueue(() => Integration.InsertUser(registerModel, _warehouse));
+			//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertUser(registerModel, _warehouse));
 
             var user = await _platformUserRepository.Get(applicationUser.Id);
             var adminUser = await _platformUserRepository.GetUserByAutoId(tenantId);
@@ -594,8 +596,8 @@ namespace PrimeApps.App.Controllers
 
                 List<PlatformUser> systemUsers = await _platformUserRepository.GetAllByTenant(AppUser.TenantId);
                 var availableUsers = new JArray();
-
-                for (var i = users.Count - 1; i >= 0; i--)
+				
+                for (var i = users.Length - 1; i >= 0; i--)
                 {
                     var officeUser = users[i];
                     var user = systemUsers.FirstOrDefault(x => x.ActiveDirectoryEmail == officeUser.Mail);

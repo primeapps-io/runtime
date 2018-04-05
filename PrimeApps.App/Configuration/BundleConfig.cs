@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace PrimeApps.App.Configuration
+namespace PrimeApps.App
 {
-    public class BundleConfig
+    public partial class Startup
     {
-	    public static void Configuration(IApplicationBuilder app)
+	    public static void BundleConfiguration(IApplicationBuilder app)
 	    {
 			var enableBundle = bool.Parse(ConfigurationManager.AppSettings["EnableBundle"]);
 

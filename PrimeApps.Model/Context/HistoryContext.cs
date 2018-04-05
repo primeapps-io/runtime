@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -10,14 +12,16 @@ namespace PrimeApps.Model.Context
     public class PostgreHistoryContext : NpgsqlHistoryRepository
 	{
 		public PostgreHistoryContext(
-			IRelationalDatabaseCreator databaseCreator, 
-			IRawSqlCommandBuilder rawSqlCommandBuilder, 
+			IRelationalDatabaseCreator databaseCreator,
+			IRawSqlCommandBuilder rawSqlCommandBuilder,
 			IRelationalConnection connection,
-			IDbContextOptions options, 
-			IMigrationsModelDiffer modelDiffer, 
-			IMigrationsSqlGenerator migrationsSqlGenerator, 
-			ISqlGenerationHelper sqlGenerationHelper)
-        : base(new HistoryRepositoryDependencies(databaseCreator, rawSqlCommandBuilder, connection, options, modelDiffer, migrationsSqlGenerator, sqlGenerationHelper))
+			IDbContextOptions options,
+			IMigrationsModelDiffer modelDiffer,
+			IMigrationsSqlGenerator migrationsSqlGenerator,
+			ISqlGenerationHelper sqlGenerationHelper,
+			ICoreConventionSetBuilder coreConventionSetBuilder,
+			IEnumerable<IConventionSetBuilder> conventionSetBuilders)
+        : base(new HistoryRepositoryDependencies(databaseCreator, rawSqlCommandBuilder, connection, options, modelDiffer, migrationsSqlGenerator, sqlGenerationHelper, coreConventionSetBuilder, conventionSetBuilders))
     {
     }
 

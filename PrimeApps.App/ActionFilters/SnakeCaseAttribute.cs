@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Net.Http.Formatting;
-using System.Web.Http.Controllers;
 using PrimeApps.App.Helpers;
 
 namespace PrimeApps.App.ActionFilters
