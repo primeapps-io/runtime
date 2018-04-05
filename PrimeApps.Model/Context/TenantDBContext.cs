@@ -429,19 +429,35 @@ namespace PrimeApps.Model.Context
 
             //Dependency
             modelBuilder.Entity<Dependency>().HasIndex(x => x.ModuleId);
-
             //Document
             modelBuilder.Entity<Document>().HasIndex(x => x.ModuleId);
 
             //Field
-            modelBuilder.Entity<Field>().HasIndex(x => new { x.ModuleId, x.Name }).IsUnique();
+            modelBuilder.Entity<Field>()
+            .HasIndex(x => new { x.ModuleId, x.Name })
+            .HasName("fields_IX_module_id_name")
+            .IsUnique();
 
             //FieldCombination
             //FieldFilter
+            //FieldPermission
+            modelBuilder.Entity<FieldPermission>()
+            .HasIndex(x => new { x.FieldId, x.ProfileId })
+            .HasName("field_permissions_IX_field_id_profile_id");
+
+            //FieldValidation
             //Help
+            modelBuilder.Entity<Help>().HasIndex(x => x.ModuleId);
+
             //Import
+            modelBuilder.Entity<Import>().HasIndex(x => x.ModuleId);
+
             //Module
+            modelBuilder.Entity<Module>().HasIndex(x => x.Name).IsUnique();
+
             //ModuleProfileSetting
+            modelBuilder.Entity<ModuleProfileSetting>().HasIndex(x => x.ModuleId);
+
             //Note
             //NoteLikes
             //Notification
