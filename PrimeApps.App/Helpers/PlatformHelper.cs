@@ -9,6 +9,7 @@ using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Common.Cache;
+using Hangfire;
 
 namespace PrimeApps.App.Helpers
 {
@@ -101,9 +102,10 @@ namespace PrimeApps.App.Helpers
             };
 
             await tenantRepository.UpdateAsync(tenant);
-            HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appEntity.TemplateId.Value, tenant.Language));
+            //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appEntity.TemplateId.Value, tenant.Language));
+			BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appEntity.TemplateId.Value, tenant.Language));
 
-            await platformUserRepository.UpdateAsync(user);
+			await platformUserRepository.UpdateAsync(user);
 
             await UserHelper.AddUser(addUserRequest, user.Culture, user.Currency, appUser.TenantLanguage, appEntity.Id, user.Email, tenant.Id, userManager, userRepository, profileRepository, roleRepository, recordRepository, platformUserRepository, warehouse, applicationUser);
             await recordRepository.UpdateSystemData(tenantUser.Id, DateTime.UtcNow, appUser.TenantLanguage, appEntity.TemplateId.Value);
@@ -172,9 +174,10 @@ namespace PrimeApps.App.Helpers
 
             await tenantRepository.UpdateAsync(tenant);
 
-            HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appId, tenant.Language));
+            //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appId, tenant.Language));
+			BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appId, tenant.Language));
 
-            await UserHelper.AddUserToNewTenant(addUserRequest, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenantUser.Id, userManager, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUser);
+			await UserHelper.AddUserToNewTenant(addUserRequest, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenantUser.Id, userManager, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUser);
 
 
             var addUserRequestOld = new AddUserBindingModel

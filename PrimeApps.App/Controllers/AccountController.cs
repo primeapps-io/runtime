@@ -32,6 +32,8 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using ChallengeResult = PrimeApps.App.Results.ChallengeResult;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Hangfire;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace PrimeApps.App.Controllers
 {
@@ -288,8 +290,8 @@ namespace PrimeApps.App.Controllers
 
             if (externalLogin == null)
             {
-                return InternalServerError();
-            }
+				return StatusCode(HttpStatusCode.Status500InternalServerError);
+			}
 
             if (externalLogin.LoginProvider != provider)
             {
@@ -347,7 +349,7 @@ namespace PrimeApps.App.Controllers
                 var login = new ExternalLoginViewModel
                 {
                     Name = description.Caption,
-                    Url = Url.Route("ExternalLogin", new
+                    Url = Url.RouteUrl("ExternalLogin", new
                     {
                         provider = description.AuthenticationType,
                         response_type = "token",
@@ -410,16 +412,15 @@ namespace PrimeApps.App.Controllers
 
             var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
 
-            //TODO: HOSTINGENVIRONMENT.QUEUE...
-            //Insert user to Ofisim CRM account
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
+			//Insert user to Ofisim CRM account
+			//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
+			BackgroundJob.Enqueue(() => Integration.InsertSubscriber(model, _warehouse));
+			//if (!isFreeLicense)
+			//    HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
+			//else
+			//    HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertUser(model, _warehouse));
 
-            //if (!isFreeLicense)
-            //    HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
-            //else
-            //    HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertUser(model, _warehouse));
-
-            if (model.OfficeSignIn)
+			if (model.OfficeSignIn)
             {
                 var automaticAccountActivationModel = new AutomaticAccountActivationModel
                 {
@@ -448,8 +449,8 @@ namespace PrimeApps.App.Controllers
             var info = await Authentication.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                return InternalServerError();
-            }
+                return StatusCode(HttpStatusCode.Status500InternalServerError);
+			}
 
             var user = new PlatformUser() { UserName = model.Email, Email = model.Email };
 
@@ -554,10 +555,11 @@ namespace PrimeApps.App.Controllers
 
                     if (officeSignIn)
                         user.ActiveDirectoryEmail = user.Email;
-                    //TODO: HOSTINGENVIRONMENT.QUEUE...
-                    //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
 
-                    user.TenantId = user.Id;
+                    //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
+					BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
+
+					user.TenantId = user.Id;
                     tenant.HasAnalyticsLicense = true;
                     await _platformUserRepository.UpdateAsync(user);
                     await _tenantRepository.UpdateAsync(tenant);
@@ -565,8 +567,8 @@ namespace PrimeApps.App.Controllers
                     await Cache.ApplicationUser.Add(user.Email, user.Id);
                     await Cache.User.Get(user.Id);
 
-                    //TODO: HOSTINGENVIRONMENT.QUEUE...
-                    //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
+					BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
+					//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
                 }
                 catch (Exception ex)
                 {
@@ -836,16 +838,17 @@ namespace PrimeApps.App.Controllers
         {
             if (result == null)
             {
-                return InternalServerError();
+				return StatusCode(500);
+                //return InternalServerError();
             }
 
             if (!result.Succeeded)
             {
                 if (result.Errors != null)
                 {
-                    foreach (string error in result.Errors)
+                    foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError("", error);
+                        ModelState.AddModelError("", error.Description);
                     }
                 }
 
@@ -926,7 +929,9 @@ namespace PrimeApps.App.Controllers
 
                 byte[] data = new byte[strengthInBytes];
                 _random.GetBytes(data);
-                return HttpServerUtility.UrlTokenEncode(data);
+
+				return WebEncoders.Base64UrlEncode(data);
+				//return HttpServerUtility.UrlTokenEncode(data);
             }
         }
 
@@ -1066,7 +1071,7 @@ namespace PrimeApps.App.Controllers
             emailData.Add("PasswordResetUrl", string.Format(url, subdomain, HttpUtility.UrlEncode(token), userId));
             emailData.Add("FullName", fullName);
 
-            var notification = new Email(typeof(Microsoft.AspNetCore.Authentication.Resources.Email.PasswordReset), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
+            var notification = new Email(typeof(Resources.Email.PasswordReset), Thread.CurrentThread.CurrentCulture.Name, emailData, appId);
             notification.AddRecipient(email);
             notification.AddToQueue();
         }
