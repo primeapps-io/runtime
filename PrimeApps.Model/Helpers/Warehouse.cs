@@ -21,7 +21,6 @@ using Microsoft.SqlServer.Management.Smo;
 
 namespace PrimeApps.Model.Helpers
 {
-    //TODO: Revise Warehouse.
     public class Warehouse
     {
         private IAnalyticRepository _analyticRepository;

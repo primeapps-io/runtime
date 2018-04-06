@@ -97,7 +97,6 @@ namespace PrimeApps.App
                         NoStore = true,
                     });
             });*/
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 			services.AddCors(options =>
 			{
 				options.AddPolicy("AllowAll",
@@ -111,8 +110,8 @@ namespace PrimeApps.App
 					});
 			});
 
-			services.AddMvc();
-			RegisterBundle(services);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            RegisterBundle(services);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
