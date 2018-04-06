@@ -20,7 +20,10 @@ namespace PrimeApps.Model.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=platform;User Id=postgres;Password=VerySecurePwd;");
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=platform;User Id=postgres;Password=VerySecurePwd;",
+                options => options
+                .EnableRetryOnFailure(3)
+                );
         }
 
         public PlatformDBContext(DbContextOptions options) : base(options)
@@ -34,9 +37,6 @@ namespace PrimeApps.Model.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // PostgreSQL uses the public schema by default - not dbo.
-            modelBuilder.HasDefaultSchema("public");
-
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<PlatformUser>().ToTable("users");
