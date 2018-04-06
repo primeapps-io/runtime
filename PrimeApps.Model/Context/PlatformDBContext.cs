@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Context
                 );
         }
 
-        public PlatformDBContext(DbContextOptions options) : base(options)
+        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
         {
         }
 

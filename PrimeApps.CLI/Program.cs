@@ -22,7 +22,7 @@ namespace PrimeApps.CLI
             string connStr = null;
             string version = null;
 
-            var multitenancyDatabase = new Multitenancy.Database();
+            var databaseMigration = new Migration.Database();
             var result = new JObject();
             Exception exception = null;
             var deploy = false;
@@ -35,7 +35,7 @@ namespace PrimeApps.CLI
                         switch (command)
                         {
                             case "-all":
-                                result = multitenancyDatabase.MigrateTenantDatabases(param1);
+                                result = databaseMigration.MigrateTenantDatabases(param1);
                                 break;
                             case "-all-deploy":
                                 deploy = true;
@@ -50,12 +50,12 @@ namespace PrimeApps.CLI
                                     version = param1;
                                 }
 
-                                result = multitenancyDatabase.MigrateTenantDatabases(version, connStr);
+                                result = databaseMigration.MigrateTenantDatabases(version, connStr);
 
                                 break;
                             default:
                                 var tenantDatabaseName = command;
-                                result = multitenancyDatabase.MigrateDatabase(tenantDatabaseName, param1);
+                                result = databaseMigration.MigrateDatabase(tenantDatabaseName, param1);
                                 break;
                         }
                         break;
@@ -63,7 +63,7 @@ namespace PrimeApps.CLI
                         switch (command)
                         {
                             case "-all":
-                                result = multitenancyDatabase.MigrateTemplateDatabases(param1);
+                                result = databaseMigration.MigrateTemplateDatabases(param1);
                                 break;
                             case "-all-deploy":
                                 deploy = true;
@@ -79,7 +79,7 @@ namespace PrimeApps.CLI
                                     version = param1;
                                 }
 
-                                result = multitenancyDatabase.MigrateTemplateDatabases(version, connStr);
+                                result = databaseMigration.MigrateTemplateDatabases(version, connStr);
                                 break;
                         }
                         break;
@@ -87,10 +87,10 @@ namespace PrimeApps.CLI
                         switch (command)
                         {
                             case "-template":
-                                result = multitenancyDatabase.RunSqlTemplateDatabases(param1, param2);
+                                result = databaseMigration.RunSqlTemplateDatabases(param1, param2);
                                 break;
                             default:
-                                result = multitenancyDatabase.RunSqlTenantDatabases(param1, param2);
+                                result = databaseMigration.RunSqlTenantDatabases(param1, param2);
                                 break;
                         }
                         break;

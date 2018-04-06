@@ -1,4 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using System;
 using System.Collections.Generic;
@@ -6,7 +9,7 @@ using System.IO;
 
 namespace PrimeApps.CLI.Base
 {
-    public class Multitenancy
+    public class Migration
     {
         public class Database
         {
@@ -14,28 +17,34 @@ namespace PrimeApps.CLI.Base
             {
 
                 JObject dbStatus = new JObject();
-                try
-                {
-                    var migrationConfig = new Model.Migrations.TenantDB.Configuration();
-                    migrationConfig.TargetDatabase = new System.Data.Entity.Infrastructure.DbConnectionInfo(Postgres.GetConnectionString(_databaseName, externalConnectionString), "Npgsql");
-                    var migrator = new DbMigrator(migrationConfig);
 
-                    if (targetVersion != null)
-                    {
-                        migrator.Update(targetVersion);
-                    }
-                    else
-                    {
-                        migrator.Update();
-                    }
-
-                    dbStatus["name"] = _databaseName;
-                    dbStatus["result"] = "Successful";
-                }
-                catch (Exception ex)
+                using (var dbContext = new Model.Context.TenantDBContext(_databaseName))
                 {
-                    dbStatus["name"] = _databaseName;
-                    dbStatus["result"] = ex.Message;
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(externalConnectionString))
+                        {
+                            dbContext.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(_databaseName, externalConnectionString);
+                        }
+
+                        if (targetVersion != null)
+                        {
+                            dbContext.GetService<IMigrator>().Migrate(targetVersion);
+                        }
+                        else
+                        {
+                            dbContext.GetService<IMigrator>().Migrate();
+
+                        }
+
+                        dbStatus["name"] = _databaseName;
+                        dbStatus["result"] = "Successful";
+                    }
+                    catch (Exception ex)
+                    {
+                        dbStatus["name"] = _databaseName;
+                        dbStatus["result"] = ex.Message;
+                    }
                 }
 
                 return dbStatus;
@@ -52,33 +61,34 @@ namespace PrimeApps.CLI.Base
 
                 foreach (string databaseName in dbs)
                 {
-                    try
+                    using (var dbContext = new Model.Context.TenantDBContext(databaseName))
                     {
-                        var migrationConfig = new Model.Migrations.TenantDB.Configuration();
-                        migrationConfig.TargetDatabase = new System.Data.Entity.Infrastructure.DbConnectionInfo(Postgres.GetConnectionString(databaseName, externalConnectionString), "Npgsql");
-                        var migrator = new DbMigrator(migrationConfig);
-
-                        if (targetVersion != null)
+                        try
                         {
-                            migrator.Update(targetVersion);
-                        }
-                        else
-                        {
-                            migrator.Update();
-                        }
 
-                        JObject dbStatus = new JObject();
-                        dbStatus["name"] = databaseName;
-                        dbStatus["result"] = "success";
-                        ((JArray)result["successful"]).Add(dbStatus);
+                            if (targetVersion != null)
+                            {
+                                dbContext.GetService<IMigrator>().Migrate(targetVersion);
+                            }
+                            else
+                            {
+                                dbContext.GetService<IMigrator>().Migrate();
+                            }
+
+                            JObject dbStatus = new JObject();
+                            dbStatus["name"] = databaseName;
+                            dbStatus["result"] = "success";
+                            ((JArray)result["successful"]).Add(dbStatus);
+                        }
+                        catch (Exception ex)
+                        {
+                            JObject dbStatus = new JObject();
+                            dbStatus["name"] = databaseName;
+                            dbStatus["result"] = ex.Message;
+                            ((JArray)result["failed"]).Add(dbStatus);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        JObject dbStatus = new JObject();
-                        dbStatus["name"] = databaseName;
-                        dbStatus["result"] = ex.Message;
-                        ((JArray)result["failed"]).Add(dbStatus);
-                    }
+
                 }
 
                 return result;
@@ -94,42 +104,42 @@ namespace PrimeApps.CLI.Base
 
                 foreach (string databaseName in dbs)
                 {
-                    try
+                    using (var dbContext = new Model.Context.TenantDBContext(databaseName))
                     {
-                        Postgres.PrepareTemplateDatabaseForUpgrade(databaseName, externalConnectionString);
 
-                        var migrationConfig = new Model.Migrations.TenantDB.Configuration();
-                        migrationConfig.TargetDatabase = new System.Data.Entity.Infrastructure.DbConnectionInfo(Postgres.GetConnectionString($"{databaseName}_new", externalConnectionString), "Npgsql");
-                        var migrator = new DbMigrator(migrationConfig);
-
-                        if (targetVersion != null)
+                        try
                         {
-                            migrator.Update(targetVersion);
+                            Postgres.PrepareTemplateDatabaseForUpgrade(databaseName, externalConnectionString);
+
+                            if (targetVersion != null)
+                            {
+                                dbContext.GetService<IMigrator>().Migrate(targetVersion);
+                            }
+                            else
+                            {
+                                dbContext.GetService<IMigrator>().Migrate();
+                            }
+
+                            Postgres.FinalizeTemplateDatabaseUpgrade(databaseName, externalConnectionString);
+
+                            JObject dbStatus = new JObject
+                            {
+                                ["name"] = databaseName,
+                                ["result"] = "success"
+                            };
+
+                            ((JArray)result["successful"]).Add(dbStatus);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            migrator.Update();
+                            JObject dbStatus = new JObject
+                            {
+                                ["name"] = databaseName,
+                                ["result"] = ex.Message
+                            };
+
+                            ((JArray)result["failed"]).Add(dbStatus);
                         }
-
-                        Postgres.FinalizeTemplateDatabaseUpgrade(databaseName, externalConnectionString);
-
-                        JObject dbStatus = new JObject
-                        {
-                            ["name"] = databaseName,
-                            ["result"] = "success"
-                        };
-
-                        ((JArray)result["successful"]).Add(dbStatus);
-                    }
-                    catch (Exception ex)
-                    {
-                        JObject dbStatus = new JObject
-                        {
-                            ["name"] = databaseName,
-                            ["result"] = ex.Message
-                        };
-
-                        ((JArray)result["failed"]).Add(dbStatus);
                     }
                 }
 
