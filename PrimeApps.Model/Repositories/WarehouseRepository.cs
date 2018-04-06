@@ -16,10 +16,11 @@ namespace PrimeApps.Model.Repositories
     public class WarehouseRepository : RepositoryBaseTenant, IWarehouseRepository
     {
         private Warehouse _warehouse;
-
-        public WarehouseRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        private IPlatformWarehouseRepository _platformWarehouseRepository;
+        public WarehouseRepository(TenantDBContext dbContext, Warehouse warehouse, IPlatformWarehouseRepository platformWarehouseRepository) : base(dbContext)
         {
             _warehouse = warehouse;
+            _platformWarehouseRepository = platformWarehouseRepository;
         }
 
         public async Task Create(WarehouseCreateRequest request, ICollection<Module> modules, string userEmail, string tenantLanguage)
@@ -44,8 +45,16 @@ namespace PrimeApps.Model.Repositories
 
             // Wait two minute for Sql Server database creation is completed
             await Task.Delay(120000);
+            var warehouse = _platformWarehouseRepository.Create(new PlatformWarehouse()
+            {
+                Completed = false,
+                DatabaseName = request.DatabaseName,
+                DatabaseUser = request.DatabaseUser,
+                PowerbiWorkspaceId = request.PowerBiWorkspaceId,
+                TenantId = request.TenantId
 
-            Model.Entities.Platform.PlatformWarehouse warehouse = Model.Entities.Platform.PlatformWarehouse.Create(request);
+            });
+            //Model.Entities.Platform.PlatformWarehouse warehouse = Model.Entities.Platform.PlatformWarehouse.Create(request);
             await Sync(warehouse, modules, userEmail, tenantLanguage);
         }
 
@@ -58,7 +67,7 @@ namespace PrimeApps.Model.Repositories
             _warehouse.CreateSchema(warehouseEntity, modules, tenantLanguage);
             _warehouse.SyncData(modules, warehouseEntity.DatabaseName, TenantId.Value, tenantLanguage);
 
-            Model.Entities.Platform.PlatformWarehouse.SetCompleted(warehouseEntity, userEmail);
+            _platformWarehouseRepository.SetCompleted(warehouseEntity, userEmail);
         }
 
         public void ChangePassword(string username, string password)

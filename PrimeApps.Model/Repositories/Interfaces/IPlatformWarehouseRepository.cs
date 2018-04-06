@@ -11,5 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IPlatformWarehouseRepository : IRepositoryBasePlatform
     {
         Task<PlatformWarehouse> GetByTenantId(int tenantId);
+        PlatformWarehouse Create(PlatformWarehouse warehouse);
+        void SetCompleted(PlatformWarehouse warehouse, string userEmail);
     }
 }

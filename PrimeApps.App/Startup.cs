@@ -1,32 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System.IdentityModel.Tokens.Jwt;
-using System.Configuration;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using System.Threading.Tasks;
-using PrimeApps.Services;
-using System.Security.Claims;
-using PrimeApps.Model.Entities.Platform.Identity;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories;
 using System.Web;
 
 namespace PrimeApps.App
 {
-	public partial class Startup
+    public partial class Startup
 	{
 		public IHostingEnvironment HostingEnvironment { get; }
 		public IConfiguration Configuration { get; }

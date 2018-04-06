@@ -63,6 +63,70 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ApplicationUserLogin>().Property(x => x.LoginProvider).HasColumnName("login_provider");
             modelBuilder.Entity<ApplicationUserLogin>().Property(x => x.ProviderKey).HasColumnName("provider_key");
             modelBuilder.Entity<ApplicationUserLogin>().Property(x => x.UserId).HasColumnName("user_id");
+
+            BuildIndexes(modelBuilder);
+        }
+
+        public void BuildIndexes(ModelBuilder modelBuilder)
+        {
+            //PlatformUser
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Id);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.TenantId);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Email);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.FirstName);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.LastName);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.EmailConfirmed);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.PasswordHash);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.PhoneNumberConfirmed);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.TwoFactorEnabled);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.LockoutEnd);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.LockoutEnabled);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.AccessFailedCount);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Currency);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryEmail);
+
+
+            //ApiLog
+            //App
+            //ExchangeRate
+            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Date);
+            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Year);
+            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Month);
+            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Day);
+
+            //PlatformWarehouse
+            modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.TenantId);
+            modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.DatabaseName);
+            modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.Completed);
+
+            //Tenant
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.GuidId);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.Language);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.HasSampleData);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.HasAnalytics);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.HasPhone);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.CustomDomain);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.MailSenderEmail);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.CustomTitle);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.UserLicenseCount);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.ModuleLicenseCount);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.HasAnalyticsLicense);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.IsPaidCustomer);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.IsDeactivated);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.IsSuspended);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.DeactivatedAt);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.SuspendedAt);
+            modelBuilder.Entity<Tenant>().HasIndex(x => x.OwnerId);
+
+            //UserApp
+            modelBuilder.Entity<UserApp>().HasIndex(x => x.UserId);
+            modelBuilder.Entity<UserApp>().HasIndex(x => x.TenantId);
+            modelBuilder.Entity<UserApp>().HasIndex(x => x.MainTenantId);
+            modelBuilder.Entity<UserApp>().HasIndex(x => x.Email);
+            modelBuilder.Entity<UserApp>().HasIndex(x => x.Active);
+            modelBuilder.Entity<UserApp>().HasIndex(x => x.AppId);
+
         }
 
         public DbSet<Client> Clients { get; set; }

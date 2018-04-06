@@ -362,6 +362,9 @@ namespace PrimeApps.Model.Context
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.SharedReports)
                 .HasForeignKey(pt => pt.UserId);
+
+
+            BuildIndexes(modelBuilder);
         }
 
         public void BuildIndexes(ModelBuilder modelBuilder)
@@ -459,57 +462,124 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ModuleProfileSetting>().HasIndex(x => x.ModuleId);
 
             //Note
+            modelBuilder.Entity<Note>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Note>().HasIndex(x => x.RecordId);
+
             //NoteLikes
             //Notification
+            modelBuilder.Entity<Notification>().HasIndex(x => x.NotificationType);
+
             //Picklist
+            modelBuilder.Entity<Picklist>().HasIndex(x => x.LabelEn).IsUnique();
+            modelBuilder.Entity<Picklist>().HasIndex(x => x.LabelTr).IsUnique();
+
             //PicklistItem
-            //Proess
+            modelBuilder.Entity<PicklistItem>().HasIndex(x => x.PicklistId);
+            modelBuilder.Entity<PicklistItem>().HasIndex(x => x.SystemCode).IsUnique();
+
+
+            //Process
+            modelBuilder.Entity<Process>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Process>().HasIndex(x => x.Active);
+
             //ProcessApprover
+            modelBuilder.Entity<ProcessApprover>().HasIndex(x => x.ProcessId);
+
             //ProcessFilter
+            modelBuilder.Entity<ProcessFilter>().HasIndex(x => x.ProcessId);
+
             //ProcessLog
+            modelBuilder.Entity<ProcessLog>().HasIndex(x => x.ProcessId);
+            modelBuilder.Entity<ProcessLog>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<ProcessLog>().HasIndex(x => x.RecordId);
+
+
             //ProcessRequest
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.ProcessId);
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.Module);
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.RecordId);
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.Status);
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.OperationType);
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.ProcessStatusOrder);
+            modelBuilder.Entity<ProcessRequest>().HasIndex(x => x.Active);
+
             //Profile
             //ProfilePermission
             //Relation
+            modelBuilder.Entity<Relation>().HasIndex(x => x.ModuleId);
+
             //Reminder
+            modelBuilder.Entity<Reminder>().HasIndex(x => x.ReminderScope);
+            modelBuilder.Entity<Reminder>().HasIndex(x => x.ReminderType);
+
             //Report
+            modelBuilder.Entity<Report>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Report>().HasIndex(x => x.UserId);
+            modelBuilder.Entity<Report>().HasIndex(x => x.CategoryId);
+            modelBuilder.Entity<Report>().HasIndex(x => x.SharingType);
+
             //ReportAggregation
             //ReportCategory
+            modelBuilder.Entity<ReportCategory>().HasIndex(x => x.UserId);
+
             //ReportField
             //ReportFilter
             //ReportShares
             //Role
             //Section
+            modelBuilder.Entity<Section>().HasIndex(x => new { x.ModuleId, x.Name }).HasName("sections_IX_module_id_name").IsUnique();
+
             //SectionPermission
+            modelBuilder.Entity<SectionPermission>().HasIndex(x => new { x.SectionId, x.ProfileId }).HasName("section_permissions_IX_section_id_profile_id").IsUnique();
+
             //Setting
+            modelBuilder.Entity<Setting>().HasIndex(x => x.UserId).HasName("settings_IX_user_id").IsUnique();
+            modelBuilder.Entity<Setting>().HasIndex(x => x.Key);
+
+
             //Template
+            modelBuilder.Entity<Template>().HasIndex(x => x.SharingType);
+
             //TemplatePermission
+            modelBuilder.Entity<TemplatePermission>().HasIndex(x => new { x.TemplateId, x.ProfileId }).HasName("template_permissions_IX_template_id_profile_id").IsUnique();
+
             //TemplateShares
             //TenantUser
+            modelBuilder.Entity<TenantUser>().HasIndex(x => x.Email);
+            modelBuilder.Entity<TenantUser>().HasIndex(x => x.FullName);
+
             //TenantUserGroup
             //UserCustomShare
             //UserGroup
             //View
+            modelBuilder.Entity<View>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<View>().HasIndex(x => x.SharingType);
+
             //ViewFilter
             //ViewShares
             //ViewState
+            modelBuilder.Entity<ViewState>().HasIndex(x => new { x.ModuleId, x.UserId }).HasName("view_states_IX_module_id_user_id").IsUnique();
+
             //Widget
+            modelBuilder.Entity<Widget>().HasIndex(x => x.ReportId);
+            modelBuilder.Entity<Widget>().HasIndex(x => x.ViewId);
+
             //Workflow
+            modelBuilder.Entity<Workflow>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Workflow>().HasIndex(x => x.Active);
+
             //WorkflowFilter
+            modelBuilder.Entity<WorkflowFilter>().HasIndex(x => x.WorkflowId);
+
             //WorkflowLog
+            modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.WorkflowId);
+            modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.RecordId);
+
             //WorkflowNotification
             //WorkflowTask
             //WorkflowUpdate
             //WorkflowWebhook
-            //PlatformUser
-            //ApiLog
-            //App
-            //ExchangeRate
-            //PlatformWarehouse
-            //Tenant
-            //UserApp
-
-
         }
         public DbSet<TenantUser> Users { get; set; }
         public DbSet<Document> Documents { get; set; }
