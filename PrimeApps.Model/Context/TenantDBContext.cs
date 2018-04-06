@@ -56,7 +56,7 @@ namespace PrimeApps.Model.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=primeapps;User Id=postgres;Password=VerySecurePwd;");
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=tenant1;User Id=postgres;Password=VerySecurePwd;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -380,7 +380,6 @@ namespace PrimeApps.Model.Context
             //Analytics
             modelBuilder.Entity<Analytic>()
             .HasIndex(x => x.PowerBiReportId);
-
             modelBuilder.Entity<Analytic>()
             .HasIndex(x => x.SharingType);
 

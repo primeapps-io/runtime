@@ -16,7 +16,7 @@ namespace PrimeApps.App.Models
 
         public string Template { get; set; }
 
-        public WebhhokHttpMethod MethodType { get; set; }
+        public WebhhookHttpMethod MethodType { get; set; }
 
         public string Parameters { get; set; }
 

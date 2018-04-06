@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Enums
             Form = 2,
             All = 3
         }
-        public enum WebhhokHttpMethod
+        public enum WebhhookHttpMethod
         {
 
             [EnumMember(Value = "post")]

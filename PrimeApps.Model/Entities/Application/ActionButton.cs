@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Entities.Application
         public string Dependent { get; set; }
 
         [Column("method_type"), Required, DefaultValue(WorkflowHttpMethod.Post)]
-        public WebhhokHttpMethod MethodType { get; set; }
+        public WebhhookHttpMethod MethodType { get; set; }
 
         [Column("parameters")]
         public string Parameters { get; set; }
