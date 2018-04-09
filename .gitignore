@@ -217,3 +217,5 @@ FakesAssemblies/
 !.vscode/extensions.json
 .history
 /.vscode
+/PrimeApps.CLI/appsettings.json
+/PrimeApps.CLI/Properties/launchSettings.json
