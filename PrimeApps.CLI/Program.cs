@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using PrimeApps.CLI.Base;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.CLI
 {
@@ -14,6 +15,12 @@ namespace PrimeApps.CLI
                 Console.WriteLine("No command area and/or command specified. CLI will exit.");
                 Environment.Exit(0);
             }
+
+            // Adding JSON file into IConfiguration.
+            IConfiguration config =  new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .AddEnvironmentVariables()
+                .Build();
 
             string commandArea = args[0];
             string command = args[1];
