@@ -1,13 +1,21 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
-using PrimeApps.CLI.Base;
+using PrimeApps.CLI.Migration;
 using Microsoft.Extensions.Configuration;
+using System.IO;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using PrimeApps.Model.Context;
 
 namespace PrimeApps.CLI
 {
     class Program
     {
+        public static ILoggerFactory LoggerFactory;
+        public static IConfigurationRoot Configuration;
+
         static void Main(string[] args)
         {
             if (args == null || args.Length < 2 || string.IsNullOrEmpty(args[0]) || string.IsNullOrEmpty(args[1]))
@@ -17,10 +25,29 @@ namespace PrimeApps.CLI
             }
 
             // Adding JSON file into IConfiguration.
-            IConfiguration config =  new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, true)
-                .AddEnvironmentVariables()
-                .Build();
+            var builder = new ConfigurationBuilder()
+                            .SetBasePath(Directory.GetCurrentDirectory())
+                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            Configuration = builder.Build();
+
+            // Setup DI
+            var serviceProvider = new ServiceCollection()
+                .AddLogging(config=>config.SetMinimumLevel(LogLevel.Error))
+                .AddEntityFrameworkNpgsql()
+                .AddDbContext<PlatformDBContext>(options=>options.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")))
+                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")))
+                .AddSingleton<IDatabaseService, DatabaseService>()
+                .AddSingleton<IConfiguration>(Configuration)
+                .BuildServiceProvider();
+
+            LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
+
+            var logger = LoggerFactory.CreateLogger<Program>();
+            logger.LogDebug("Starting application");
+
+            var databaseMigration = serviceProvider.GetService<IDatabaseService>();
+
+
 
             string commandArea = args[0];
             string command = args[1];
@@ -29,7 +56,6 @@ namespace PrimeApps.CLI
             string connStr = null;
             string version = null;
 
-            var databaseMigration = new Migration.Database();
             var result = new JObject();
             Exception exception = null;
             var deploy = false;

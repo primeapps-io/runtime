@@ -38,11 +38,11 @@ namespace PrimeApps.Model.Helpers
         /// </summary>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        public static string GetConnectionString(string databaseName, string externalConnectionString = null)
+        public static string GetConnectionString(string databaseName, string connectionString = null)
         {
             var builder = new DbConnectionStringBuilder(false);
 
-            builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? ConfigurationManager.ConnectionStrings["PostgreSqlConnection"].ConnectionString : externalConnectionString;
+            builder.ConnectionString = string.IsNullOrWhiteSpace(connectionString) ? ConfigurationManager.ConnectionStrings["PostgreSqlConnection"].ConnectionString : connectionString;
 
             if (string.IsNullOrWhiteSpace(databaseName))
             {

@@ -20,10 +20,6 @@ namespace PrimeApps.Model.Context
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=platform;User Id=postgres;Password=VerySecurePwd;",
-                options => options
-                .EnableRetryOnFailure(3)
-                );
         }
 
         public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
