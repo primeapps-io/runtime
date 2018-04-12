@@ -242,10 +242,27 @@ namespace PrimeApps.App.Jobs.Email
 
                         var fields = module.Fields.Where(x => x.DisplayDetail && x.Validation != null && x.Validation.Required.HasValue && x.Validation.Required.Value && (x.Permissions == null || x.Permissions.Count < 1));
 
-                        foreach (var field in fields)
+                        if (module.Name == "izinler" && !record["calisan.id"].IsNullOrEmpty())
                         {
-                            if (!record[field.Name].IsNullOrEmpty())
-                                recordTable += recordRow.Replace("{label}", field.LabelTr).Replace("{value}", record[field.Name].ToString());
+                            var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + "Gün";
+
+                            recordTable += recordRow.Replace("{label}", "Adı Soyadı").Replace("{value}", record["calisan.ad_soyad"].ToString());
+                            recordTable += recordRow.Replace("{label}", "Unvanı").Replace("{value}", record["calisan.unvan"].ToString());
+                            recordTable += recordRow.Replace("{label}", "Departman").Replace("{value}", record["calisan.departman"].ToString());
+                            recordTable += recordRow.Replace("{label}", "İzin Türü").Replace("{value}", record["izin_turu.adi"].ToString());
+                            recordTable += recordRow.Replace("{label}", "Tarih").Replace("{value}", tarih);
+                            recordTable += recordRow.Replace("{label}", "Açıklama").Replace("{value}", record["izin_turu.aciklama"].ToString());
+
+                        }
+                        else
+                        {
+                            foreach (var field in fields)
+                            {
+                                if (!record[field.Name].IsNullOrEmpty())
+                                    recordTable += recordRow.Replace("{label}", field.LabelTr).Replace("{value}", record[field.Name].ToString());
+
+                            }
+
                         }
 
                         content = content.Replace("[[recordTable]]", recordTable);

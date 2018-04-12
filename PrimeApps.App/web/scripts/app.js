@@ -138,6 +138,7 @@ angular.module('ofisim',
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 $rootScope.currentPath = $location.path();
+                $window.yaCounter47616517.hit($location.path());
             });
 
             $rootScope.app = 'crm';

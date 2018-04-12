@@ -5,6 +5,8 @@
         public string Subject { get; set; }
         public string TemplateWithBody { get; set; }
         public string[] ToAddresses { get; set; }
+        public string Cc { get; set; }
+        public string Bcc { get; set; }
 
     }
 }

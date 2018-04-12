@@ -432,7 +432,7 @@ angular.module('ofisim')
                             }
                             else {
                                 var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
-                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true, deleted: false }, true)[0];
                                 lookupRecord.primary_value = lookupRecord[lookupModulePrimaryField.name];
                             }
 
@@ -1851,20 +1851,20 @@ angular.module('ofisim')
                                 record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
                             }
 
-                            if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"] &&
-                                ((baslangicTarihi.getMonth() !== bitisTarihi.getMonth() ||
-                                    baslangicTarihi.getDate() !== bitisTarihi.getDate() ||
-                                    baslangicTarihi.getYear() !== bitisTarihi.getYear()) ||
-                                    bitisTarihi.getHours() === baslangicTarihi.getHours())) {
+                            //if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"] &&
+                            //    ((baslangicTarihi.getMonth() !== bitisTarihi.getMonth() ||
+                            //        baslangicTarihi.getDate() !== bitisTarihi.getDate() ||
+                            //        baslangicTarihi.getYear() !== bitisTarihi.getYear()) ||
+                            //        bitisTarihi.getHours() === baslangicTarihi.getHours())) {
 
-                                baslangicTarihi = angular.copy(baslangicTarihi);
-                                baslangicTarihi.setHours(8, 0, 0, 0);
-                                record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
+                            //    baslangicTarihi = angular.copy(baslangicTarihi);
+                            //    baslangicTarihi.setHours(8, 0, 0, 0);
+                            //    record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
 
-                                bitisTarihi = angular.copy(baslangicTarihi);
-                                bitisTarihi.setHours(17, 0, 0, 0);
-                                record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
-                            }
+                            //    bitisTarihi = angular.copy(baslangicTarihi);
+                            //    bitisTarihi.setHours(17, 0, 0, 0);
+                            //    record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                            //}
                         }
 
                         if (record['izin_turu_data'] && record['baslangic_tarihi'] && record['bitis_tarihi']) {

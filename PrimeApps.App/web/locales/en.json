@@ -118,7 +118,7 @@
     "Left": "Left",
     "Right": "Right",
     "Homepage": "Home Page",
-    "TimetrackerNotFound" : "You do not have a employee record. Please contact your system administrator."
+    "TimetrackerNotFound": "You do not have a employee record. Please contact your system administrator."
   },
   "Auth": {
     "Email": "E-Mail",

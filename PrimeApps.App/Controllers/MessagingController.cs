@@ -77,9 +77,9 @@ namespace PrimeApps.App.Controllers
             }
             else
             {
-	            return StatusCode(500);
-				//return InternalServerError();
-			}
+                return StatusCode(500);
+                //return InternalServerError();
+            }
             return Ok();
         }
 
@@ -138,29 +138,42 @@ namespace PrimeApps.App.Controllers
             }
             else
             {
-	            return StatusCode(500);
-				//return InternalServerError();
-			}
+                return StatusCode(500);
+                //return InternalServerError();
+            }
             return Ok();
         }
+
         /// <summary>
         /// Sends email from an external source like an api etc.
         /// </summary>
         /// <returns></returns>
         [Route("send_external_email")]
-        public async Task<IActionResult> SendExternalEmail(ExternalEmail emailRequest)
+        public async Task<IHttpActionResult> SendExternalEmail(ExternalEmail emailRequest)
         {
             if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
             {
+                if (emailRequest.Cc == null)
+                    emailRequest.Cc = "";
 
-                foreach (var emailRecipient in emailRequest.ToAddresses)
+                if (emailRequest.Bcc == null)
+                    emailRequest.Bcc = "";
+
+                using (var session = Provider.GetSession())
                 {
+                    using (var transaction = session.BeginTransaction())
+                    {
+                        foreach (var emailRecipient in emailRequest.ToAddresses)
+                        {
+                            var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
+                            externalEmail.AddRecipient(emailRecipient);
+                            externalEmail.AddToQueue(session, appUser: AppUser);
+                        }
 
-                    var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
-                    externalEmail.AddRecipient(emailRecipient);
-                    externalEmail.AddToQueue(appUser: AppUser);
+                        //commit transaction to apply changes to the database.
+                        transaction.Commit();
+                    }
                 }
-
                 return Ok(emailRequest.ToAddresses.Count());
             }
 

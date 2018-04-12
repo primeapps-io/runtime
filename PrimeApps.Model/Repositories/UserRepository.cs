@@ -74,7 +74,7 @@ namespace PrimeApps.Model.Repositories
                            .Include(x => x.Profile)
                            .Include(x => x.Role)
                            .Include(x => x.Groups)
-						   .ThenInclude(x => x.User)
+                           .ThenInclude(x => x.User)
                            .Select(user => new UserInfo()
                            {
                                picture = user.Picture,
@@ -169,6 +169,14 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Users
                 .Where(x => !x.Deleted && userIds.Contains(x.Id))
+                .ToListAsync();
+        }
+
+        // Gets users by an profile id list.
+        public async Task<ICollection<User>> GetByProfileIds(List<int> profileIds)
+        {
+            return await DbContext.Users
+                .Where(x => !x.Deleted && profileIds.Contains(x.Profile.Id))
                 .ToListAsync();
         }
 

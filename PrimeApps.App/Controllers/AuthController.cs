@@ -206,10 +206,10 @@ namespace PrimeApps.App.Controllers
                 client.DefaultRequestHeaders.Accept.Add(
                     new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-	            var dataAsString = JsonConvert.SerializeObject(registerBindingModel);
-	            var content = new StringContent(dataAsString);
-				var response = await client.PostAsync(apiUrl, content);
-				//var response = await client.PostAsJsonAsync(apiUrl, registerBindingModel); 
+                var dataAsString = JsonConvert.SerializeObject(registerBindingModel);
+                var content = new StringContent(dataAsString);
+                var response = await client.PostAsync(apiUrl, content);
+                //var response = await client.PostAsJsonAsync(apiUrl, registerBindingModel); 
                 if (response.IsSuccessStatusCode)
                 {
                     if (!officeSignIn)
@@ -282,11 +282,11 @@ namespace PrimeApps.App.Controllers
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-	            var dataAsString = JsonConvert.SerializeObject(resetPasswordBindingModel);
-	            var contentResetPasswordBindingModel = new StringContent(dataAsString);
-	            var response = await client.PostAsync(apiUrl, contentResetPasswordBindingModel);
+                var dataAsString = JsonConvert.SerializeObject(resetPasswordBindingModel);
+                var contentResetPasswordBindingModel = new StringContent(dataAsString);
+                var response = await client.PostAsync(apiUrl, contentResetPasswordBindingModel);
 
-				//var response = await client.PostAsJsonAsync(apiUrl, resetPasswordBindingModel);
+                //var response = await client.PostAsJsonAsync(apiUrl, resetPasswordBindingModel);
                 var res = "";
 
                 if (response.IsSuccessStatusCode)
@@ -535,7 +535,7 @@ namespace PrimeApps.App.Controllers
             {
                 return Redirect(returnUrl);
             }
-			
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -607,6 +607,10 @@ namespace PrimeApps.App.Controllers
             if (url.Contains("crm.ofisim.com") || url.Contains("test.ofisim.com") || url.Contains("dev.ofisim.com"))
             {
                 return 1;
+            }
+            if (url.Contains("crm.livasmart.com"))
+            {
+                return 6;
             }
             return 1;
         }

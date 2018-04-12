@@ -15,6 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<TenantUser> GetById(int userId);
         Task<TenantUser> GetByEmail(string email);
         Task<ICollection<TenantUser>> GetByIds(List<int> userIds);
+        Task<ICollection<User>> GetByProfileIds(List<int> profileIds);
         Task<int> TerminateUser(TenantUser user);
         Task<ICollection<TenantUser>> GetNonSubscribers();
     }

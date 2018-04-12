@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
+using PrimeApps.App.Jobs;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Application;
@@ -88,7 +89,7 @@ namespace PrimeApps.App.Controllers
             try
             {
                 var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository);
-                var defaultViewMyRecordsEntity = ViewHelper.CreateDefaultViewMyRecords(moduleEntity);
+                //var defaultViewMyRecordsEntity = ViewHelper.CreateDefaultViewMyRecords(moduleEntity);
 
                 var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
 
@@ -99,14 +100,13 @@ namespace PrimeApps.App.Controllers
                     //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
                 }
 
-                var resultCreateViewMyRecords = await _viewRepository.Create(defaultViewMyRecordsEntity);
+                //var resultCreateViewMyRecords = await _viewRepository.Create(defaultViewMyRecordsEntity);
 
-                if (resultCreateViewMyRecords < 1)
-                {
-                    await _moduleRepository.DeleteHard(moduleEntity);
-                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-                }
+                //if (resultCreateViewMyRecords < 1)
+                //{
+                //    await _moduleRepository.DeleteHard(moduleEntity);
+                //    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                //}
             }
             catch (Exception)
             {
@@ -162,7 +162,7 @@ namespace PrimeApps.App.Controllers
             ModuleHelper.AfterCreate(AppUser, moduleEntity);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
@@ -297,7 +297,7 @@ namespace PrimeApps.App.Controllers
             }
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 
@@ -356,7 +356,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
         }
 

@@ -103,7 +103,7 @@
                     <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
                        <li ng-show="hasPermission(type, operations.remove)">
-                            <a href ng-click="deleteSelecteds()">
+                           <a href ng-click="showDeleteModal()">
                                 <i class="fa fa-trash pull-left"></i> {{'Module.DeleteSelecteds' | translate }}
                             </a>
                         </li>

@@ -330,7 +330,8 @@ namespace PrimeApps.App.Controllers
 
             foreach (JObject activity in activities)
             {
-                activity["related_to"] = (int)contact["id"];
+                activity["related_to"] = (int)account["id"];
+                activity["related_module"] = AppUser.PicklistLanguage == "tr" ? accountModule.LabelTrSingular : accountModule.LabelEnSingular;
                 await _recordRepository.Update(activity, activityModule);
             }
 

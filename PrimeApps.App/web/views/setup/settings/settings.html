@@ -7,21 +7,21 @@
                     <div class="form-group" show-errors>
                         <label class="col-sm-3 control-label">{{'Setup.Settings.Email' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="email" name="email" class="form-control" maxlength="50" ng-minlength="3" required ng-model-options="{ updateOn: 'blur' }" ng-model="userModel.email" disabled/>
+                            <input type="email" name="email" class="form-control" maxlength="50" ng-minlength="3" required ng-model-options="{ updateOn: 'blur' }" ng-model="userModel.email" disabled />
                         </div>
                     </div>
 
                     <div class="form-group" show-errors>
                         <label class="col-sm-3 control-label">{{'Setup.Settings.FirstName' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="text" name="firstName" class="form-control" ng-minlength="2" maxlength="40" required ng-model="userModel.firstName"/>
+                            <input type="text" name="firstName" class="form-control" ng-minlength="2" maxlength="40" required ng-model="userModel.firstName" />
                         </div>
                     </div>
 
                     <div class="form-group" show-errors>
                         <label class="col-sm-3 control-label">{{'Setup.Settings.LastName' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="text" name="lastName" class="form-control" ng-minlength="2" maxlength="40" required ng-model="userModel.lastName"/>
+                            <input type="text" name="lastName" class="form-control" ng-minlength="2" maxlength="40" required ng-model="userModel.lastName" />
                         </div>
                     </div>
 
@@ -52,21 +52,21 @@
                     <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.current.$invalid}">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.CurrentPassword' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="password" name="current" class="form-control" maxlength="20" ng-minlength="6" required ng-model="passwordModel.current" ng-change="passwordForm.current.$setValidity('wrongPassword', true);"/>
+                            <input type="password" name="current" class="form-control" maxlength="20" ng-minlength="6" required ng-model="passwordModel.current" ng-change="passwordForm.current.$setValidity('wrongPassword', true);" />
                         </div>
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.password.$invalid}">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.Password' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="password" name="password" class="form-control" maxlength="20" ng-minlength="6" compare-to="passwordModel.confirm" required ng-model="passwordModel.password"/>
+                            <input type="password" name="password" class="form-control" maxlength="20" ng-minlength="6" compare-to="passwordModel.confirm" required ng-model="passwordModel.password" />
                         </div>
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.confirm.$invalid}">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.PasswordAgain' | translate}}</label>
                         <div class="col-sm-9">
-                            <input type="password" name="confirm" class="form-control" maxlength="20" required ng-model="passwordModel.confirm"/>
+                            <input type="password" name="confirm" class="form-control" maxlength="20" required ng-model="passwordModel.confirm" />
                         </div>
                     </div>
 
@@ -97,10 +97,10 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label"></label>
                         <div class="col-sm-9">
-                            <img src="web/images/user-image.png"
-                                 ng-src="{{user.picture ? user.picture : 'web/images/user-image.png'}}"
-                                 user-image="{{user.ID}}" class="img-rounded" ng-if="!croppedImage"/>
-                            <img ng-src="{{croppedImage}}" class="img-rounded" ng-if="croppedImage"/>
+                            <img src="images/user-image.png"
+                                 ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}"
+                                 user-image="{{user.ID}}" class="img-rounded" ng-if="!croppedImage" />
+                            <img ng-src="{{croppedImage}}" class="img-rounded" ng-if="croppedImage" />
                         </div>
                     </div>
 
@@ -108,6 +108,9 @@
                         <div class="col-sm-offset-3 col-sm-9">
                             <span class="file-input btn btn-custom btn-sm btn-file">
                                 {{'Setup.Settings.NewProfilePicture' | translate}} <input type="file" nv-file-select uploader="uploader" ng-disabled="croppedImage">
+                            </span>
+                            <span class="file-input btn btn-custom btn-sm btn-file" ng-click="removeProfileImage()">
+                                {{'Setup.Settings.RemoveProfileImage' | translate}}
                             </span>
                         </div>
                     </div>
@@ -117,44 +120,44 @@
                         <div class="col-sm-9">
                             <table class="table">
                                 <thead>
-                                <tr>
-                                    <th></th>
-                                    <th ng-show="uploader.isHTML5">{{'Documents.Size' | translate}}</th>
-                                    <th ng-show="uploader.isHTML5">{{'Documents.Progress' | translate}}</th>
-                                    <th>{{'Documents.Result' | translate}}</th>
-                                    <th>{{'Documents.Actions' | translate}}</th>
-                                </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th ng-show="uploader.isHTML5">{{'Documents.Size' | translate}}</th>
+                                        <th ng-show="uploader.isHTML5">{{'Documents.Progress' | translate}}</th>
+                                        <th>{{'Documents.Result' | translate}}</th>
+                                        <th>{{'Documents.Actions' | translate}}</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr ng-repeat="item in uploader.queue">
-                                    <td>
-                                        <div class="cropArea">
-                                            <img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>
-                                        </div>
-                                    </td>
-                                    <td ng-show="uploader.isHTML5" nowrap>{{item.file.size | size}}</td>
-                                    <td ng-show="uploader.isHTML5">
-                                        <div class="progress" style="margin-bottom: 0;">
-                                            <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <span ng-show="item.isSuccess"><i class="fa fa-check-circle icon-success"></i></span>
-                                        <span ng-show="item.isCancel"><i class="fa fa-ban icon-cancel"></i></span>
-                                        <span ng-show="item.isError"><i class="fa fa-exclamation-circle icon-error"></i></span>
-                                    </td>
-                                    <td nowrap>
-                                        <button type="button" class="btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                                            <span class="fa fa-upload"></span> {{'Documents.Upload' | translate}}
-                                        </button>
-                                        <button type="button" class="btn btn-custom btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                                            <span class="fa fa-ban"></span> {{'Documents.Cancel' | translate}}
-                                        </button>
-                                        <button type="button" class="btn btn-custom btn-xs" ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">
-                                            <span class="fa fa-trash-o"></span> {{'Common.Cancel' | translate}}
-                                        </button>
-                                    </td>
-                                </tr>
+                                    <tr ng-repeat="item in uploader.queue">
+                                        <td>
+                                            <div class="cropArea">
+                                                <img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>
+                                            </div>
+                                        </td>
+                                        <td ng-show="uploader.isHTML5" nowrap>{{item.file.size | size}}</td>
+                                        <td ng-show="uploader.isHTML5">
+                                            <div class="progress" style="margin-bottom: 0;">
+                                                <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span ng-show="item.isSuccess"><i class="fa fa-check-circle icon-success"></i></span>
+                                            <span ng-show="item.isCancel"><i class="fa fa-ban icon-cancel"></i></span>
+                                            <span ng-show="item.isError"><i class="fa fa-exclamation-circle icon-error"></i></span>
+                                        </td>
+                                        <td nowrap>
+                                            <button type="button" class="btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                <span class="fa fa-upload"></span> {{'Documents.Upload' | translate}}
+                                            </button>
+                                            <button type="button" class="btn btn-custom btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                                <span class="fa fa-ban"></span> {{'Documents.Cancel' | translate}}
+                                            </button>
+                                            <button type="button" class="btn btn-custom btn-xs" ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">
+                                                <span class="fa fa-trash-o"></span> {{'Common.Cancel' | translate}}
+                                            </button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -164,11 +167,11 @@
             </div>
         </div>
 
-        <div class="subpanel" ng-show="!customLanguage">
+        <div class="subpanel">
             <h5 class="subpanel-heading">{{'Setup.Settings.Title4' | translate}}</h5>
             <div class="subpanel-body">
                 <form class="form-horizontal">
-                    <div class="form-group">
+                    <div class="form-group" ng-show="!customLanguage">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.Language' | translate}}</label>
                         <div class="col-sm-9">
                             <label class="radio-inline"><input type="radio" name="language" value="tr" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.Turkish' | translate}}</label>
@@ -278,7 +281,7 @@
                                 <button type="button" name="addSender" class="btn btn-xs btn-custom" ng-click="showNewSenderForm()" style="padding: 4px 5px;">{{'Common.Add' | translate}}</button>
                             </div>
                         </div>
-                        <div class="col-sm-12"><b>*</b> {{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}} </div>
+                        <div class="col-sm-12"><b>*</b> {{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</div>
                         <div class="form-group am-fade-and-slide-top" ng-show="emailForm.$submitted && emailForm.$invalid">
                             <div class="col-sm-offset-2 col-sm-8">
                                 <div class="callout callout-danger">
@@ -320,7 +323,7 @@
                     <button type="button"
                             class="btn btn-danger btn-w-xlg"
                             ng-show="showDeleteButton"
-                            data-template-url="web/views/setup/settings/accountDelete.html"
+                            data-template-url="views/app/setup/crm/settings/accountDelete.html"
                             data-placement="top"
                             bs-popover><i class="fa fa-exclamation-circle pull-left"></i> {{'Setup.Settings.DeleteAccount' | translate}}
                     </button>

@@ -2,8 +2,8 @@
 
 angular.module('ofisim')
 
-    .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies',
-        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies) {
+    .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state',
+        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies, $state) {
             $scope.userModel = {};
             $scope.userModel.firstName = $rootScope.user.firstName;
             $scope.userModel.lastName = $rootScope.user.lastName;
@@ -28,9 +28,9 @@ angular.module('ofisim')
             }
 
             $scope.tableParams = new ngTableParams({
-                    page: 1,            // show first page
-                    count: 10           // count per page
-                },
+                page: 1,            // show first page
+                count: 10           // count per page
+            },
                 {
                     total: 0, // length of data
                     getData: function ($defer, params) {

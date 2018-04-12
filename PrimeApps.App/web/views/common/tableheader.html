@@ -57,7 +57,7 @@
                 type="text"
                 class="form-control"
                 ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
+            ng-disabled="params.filters[field.fieldName].disabled || field.data_type === 'image'"
                 maxlength="100"
                 ng-enter="params.reloading = true; params.renew = true; params.reload();"
                 ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'text_single' || field.data_type === 'text_multi' || field.data_type === 'email' || field.data_type === 'document' || field.data_type === 'url' || field.data_type === 'location' || field.data_type === 'image') : (field.lookupModulePrimaryField.data_type === 'text_single' || field.lookupModulePrimaryField.data_type === 'text_multi' || field.lookupModulePrimaryField.data_type === 'email' || field.lookupModulePrimaryField.data_type === 'document') && field.lookup_type !='users'"/>

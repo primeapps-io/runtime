@@ -121,7 +121,7 @@
     <value>Sayın {:ApproverName},&lt;br&gt; {:UserName} yeni bir {:ModuleName} onay talebi gönderdi.&lt;br&gt;{:ExtraLeave}</value>
   </data>
   <data name="RecordLink" xml:space="preserve">
-    <value>Kayıt Detayına Git</value>
+    <value>Detayları görmek  ve onaylamak için tıklayınız</value>
   </data>
   <data name="Subject" xml:space="preserve">
     <value>Yeni {:ModuleName} Talebi</value>

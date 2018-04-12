@@ -53,17 +53,21 @@ angular.module('ofisim')
                 return;
             }
 
-            $scope.setDropdownData = function(field){
+            $scope.setDropdownData = function (field) {
+                if (field.filters && field.filters.length > 0)
+                    $scope.dropdownFieldDatas[field.name] = null;
+                else if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
+                    return;
                 $scope.currentLookupField = field;
                 $scope.lookup()
-                    .then(function(response){
+                    .then(function (response) {
                         $scope.dropdownFieldDatas[field.name] = response;
                     });
             };
 
             $scope.dropdownFields = $filter('filter')($scope.module.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
             $scope.dropdownFieldDatas = {};
-            for(var i = 0; i < $scope.dropdownFields.length; i++) {
+            for (var i = 0; i < $scope.dropdownFields.length; i++) {
                 $scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
             }
 
@@ -185,8 +189,8 @@ angular.module('ofisim')
                             }
 
                         }).then(function () {
-                        $scope.isActive[$state.params.rptype] = true;
-                    });
+                            $scope.isActive[$state.params.rptype] = true;
+                        });
                 });
             }
 
@@ -279,7 +283,7 @@ angular.module('ofisim')
                                                 }
                                             }
                                         } else {
-                                            if(record.process_status_order === 1){
+                                            if (record.process_status_order === 1) {
                                                 var customApprover = record.custom_approver;
                                                 if (customApprover === $rootScope.user.email)
                                                     $scope.isApprovalRecord = true;
@@ -287,7 +291,7 @@ angular.module('ofisim')
                                                     $scope.waitingForApproval = true;
                                                 }
                                             }
-                                            else if(record.process_status_order === 2){
+                                            else if (record.process_status_order === 2) {
                                                 var customApprover2 = record.custom_approver_2;
                                                 if (customApprover2 === $rootScope.user.email)
                                                     $scope.isApprovalRecord = true;
@@ -322,7 +326,7 @@ angular.module('ofisim')
                                     var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
                                     angular.forEach(freezeFields, function (field) {
                                         angular.forEach(dependencie.values_array, function (value) {
-                                            if (record[field.name] && ( value == record[field.name] || value == record[field.name].id ))
+                                            if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
                                                 record.freeze = true;
                                         });
                                     });
@@ -332,16 +336,16 @@ angular.module('ofisim')
                             if ($scope.freeze)
                                 record.freeze = true;
 
-                            if($scope.currentModuleProcess !== null){
-                                if($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length>0){
-                                    for(var k=0; k < $scope.currentModuleProcess.profile_list.length; k++){
+                            if ($scope.currentModuleProcess !== null) {
+                                if ($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length > 0) {
+                                    for (var k = 0; k < $scope.currentModuleProcess.profile_list.length; k++) {
                                         var profile = $scope.currentModuleProcess.profile_list[k];
-                                        if(parseInt(profile) === $rootScope.user.profile.ID)
+                                        if (parseInt(profile) === $rootScope.user.profile.ID)
                                             record.freeze = false;
                                     }
                                 }
 
-                                if($rootScope.user.profile.HasAdminRights)
+                                if ($rootScope.user.profile.HasAdminRights)
                                     record.freeze = false;
 
                             }
@@ -600,7 +604,7 @@ angular.module('ofisim')
                                                                 }
                                                             }
                                                         } else {
-                                                            if(record.process_status_order === 1){
+                                                            if (record.process_status_order === 1) {
                                                                 var customApprover = record.custom_approver;
                                                                 if (customApprover === $rootScope.user.email)
                                                                     $scope.isApprovalRecord = true;
@@ -608,7 +612,7 @@ angular.module('ofisim')
                                                                     $scope.waitingForApproval = true;
                                                                 }
                                                             }
-                                                            else if(record.process_status_order === 2){
+                                                            else if (record.process_status_order === 2) {
                                                                 var customApprover2 = record.custom_approver_2;
                                                                 if (customApprover2 === $rootScope.user.email)
                                                                     $scope.isApprovalRecord = true;
@@ -644,18 +648,18 @@ angular.module('ofisim')
                                                     var freezeFields = $filter('filter')($scope.module.fields, { name: dependencie.parent_field }, true);
                                                     angular.forEach(freezeFields, function (field) {
                                                         angular.forEach(dependencie.values_array, function (value) {
-                                                            if (record[field.name] && ( value == record[field.name] || value == record[field.name].id ))
+                                                            if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
                                                                 record.freeze = true;
                                                         });
                                                     });
                                                 });
                                             }
 
-                                            if($scope.currentModuleProcess !== null){
-                                                if($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length>0){
-                                                    for(var k=0; k < $scope.currentModuleProcess.profile_list.length; k++){
+                                            if ($scope.currentModuleProcess !== null) {
+                                                if ($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length > 0) {
+                                                    for (var k = 0; k < $scope.currentModuleProcess.profile_list.length; k++) {
                                                         var profile = $scope.currentModuleProcess.profile_list[k];
-                                                        if(parseInt(profile) === $rootScope.user.profile.ID)
+                                                        if (parseInt(profile) === $rootScope.user.profile.ID)
                                                             record.freeze = false;
                                                     }
                                                 }
@@ -1459,8 +1463,8 @@ angular.module('ofisim')
                         $scope.approving = false;
                         $scope.waitingForApproval = true;
                     }).catch(function onError() {
-                    $scope.approving = false;
-                });
+                        $scope.approving = false;
+                    });
             }
 
             $scope.rejectProcess = function (message) {
@@ -1473,8 +1477,8 @@ angular.module('ofisim')
                         $scope.record.process_status = 3;
                         $scope.rejectModal.hide();
                     }).catch(function onError() {
-                    $scope.rejecting = false;
-                });
+                        $scope.rejecting = false;
+                    });
             }
 
             $scope.reApproveProcess = function () {
@@ -1488,8 +1492,8 @@ angular.module('ofisim')
                         $scope.record.process_status = 1;
                         $scope.record.process_status_order++;
                     }).catch(function onError() {
-                    $scope.reapproving = false;
-                });
+                        $scope.reapproving = false;
+                    });
             }
 
             $scope.openRejectApprovalModal = function () {
@@ -1521,8 +1525,8 @@ angular.module('ofisim')
                         $scope.record.process_status = 1;
                         $scope.record.process_status_order++;
                     }).catch(function onError() {
-                    $scope.manuelApproveRequest = false;
-                });
+                        $scope.manuelApproveRequest = false;
+                    });
             }
 
 

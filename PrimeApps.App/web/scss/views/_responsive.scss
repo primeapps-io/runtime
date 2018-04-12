@@ -1,4 +1,16 @@
-﻿@media (max-width: 1024px) {
+﻿@media (max-width: 1450px) {
+    .summary-count-value {
+        font-size: 20px;
+        padding-left: 10px;
+    }
+
+    .summary-count-text {
+        font-size: 20px;
+        margin-left: 10px;
+    }
+}
+
+@media (max-width: 1024px) {
     .navbar-header {
         float: left;
     }

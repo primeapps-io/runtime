@@ -11,7 +11,7 @@ using System.Net;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -548,9 +548,9 @@ namespace PrimeApps.App.Controllers
                     await _userRepository.UpdateAsync(tenantUser);
                     await _recordRepository.UpdateSystemData(user.Id, DateTime.UtcNow, tenant.Language, user.AppId);
 
-                    if (user.AppId == 1 || user.AppId == 2)
-                        await _recordRepository.InsertSampleData(user.Id, tenant.Language, user.AppId);
-                    else
+                    //if (user.AppId == 1 || user.AppId == 2)
+                    //    await _recordRepository.InsertSampleData(user.Id, tenant.Language, user.AppId);
+                    //else
                         await _recordRepository.UpdateSampleData(user);
 
                     if (officeSignIn)

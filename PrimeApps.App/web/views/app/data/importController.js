@@ -273,12 +273,12 @@ angular.module('ofisim')
                 $scope.fixedField = field;
 
                 $scope.fixedValueModal = $scope.fixedValueModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'web/views/app/data/fixedValue.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'web/views/app/data/fixedValue.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.fixedValueModal.$promise.then(function () {
                     $scope.fixedValueModal.show();
@@ -498,7 +498,13 @@ angular.module('ofisim')
                             if (field.lookup_type === 'relation')
                                 field.lookup_type = $scope.fixedValue.related_module.value;
 
-                            var lookupIds = $filter('filter')($scope.lookupIds[field.lookup_type], { value: recordValue }, true);
+                            var lookupIds = [];
+                            for (var j = 0; j < $scope.lookupIds[field.lookup_type].length; j++) {
+                                var lookupIdItem = $scope.lookupIds[field.lookup_type][j];
+
+                                if (lookupIdItem.value == recordValue)
+                                    lookupIds.push(lookupIdItem);
+                            }
                             var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 
                             if (field.lookup_type === 'users') {
