@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PrimeApps.App.Helpers
 {
-    public class SnakeCaseActionSelector : ApiControllerActionSelector
+    /*public class SnakeCaseActionSelector : ApiControllerActionSelector
     {
         public override HttpActionDescriptor SelectAction(HttpControllerContext controllerContext)
         {
@@ -33,5 +33,5 @@ namespace PrimeApps.App.Helpers
 
             return "?" + queryPairs.Select(x => $"{x.Key}={x.Value}").Aggregate((x, y) => x + "&" + y);
         }
-    }
+    }*/
 }

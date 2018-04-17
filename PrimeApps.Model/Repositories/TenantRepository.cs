@@ -42,7 +42,7 @@ namespace PrimeApps.Model.Repositories
                  {
                      tenantId = t.Id,
                      title = t.Title,
-                     currency = t.Currency,
+					 currency = t.Currency,
                      language = t.Language,
                      logo = t.Logo,
                      logoUrl = t.Logo,
@@ -77,7 +77,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<Entities.Platform.Tenant> GetByCustomDomain(string customDomain)
         {
-            return await DbContext.Tenants.Where(x => x.CustomDomain == customDomain).SingleOrDefaultAsync();
+            return await DbContext.Tenants.Where(x => x.Info.CustomDomain == customDomain).SingleOrDefaultAsync();
         }
 
         public async Task<int> GetUserCount(int tenantId)

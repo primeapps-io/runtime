@@ -12,8 +12,8 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process_request"), Authorize, SnakeCase]
-    public class ProcessRequestController : BaseController
+    [Route("api/process_request"), Authorize/*, SnakeCase*/]
+	public class ProcessRequestController : BaseController
     {
         private IProcessRequestRepository _processRequestRepository;
         private IModuleRepository _moduleRepository;

@@ -22,8 +22,8 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/data"), Authorize, SnakeCase]
-    public class DataController : BaseController
+    [Route("api/data"), Authorize/*, SnakeCase*/]
+	public class DataController : BaseController
     {
         private IAuditLogRepository _auditLogRepository;
         private IRecordRepository _recordRepository;

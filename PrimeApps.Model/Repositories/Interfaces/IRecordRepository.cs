@@ -4,7 +4,7 @@ using PrimeApps.Model.Entities.Application;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {

@@ -1,6 +1,4 @@
-﻿using Microsoft.Owin.Security.DataProtection;
-using Microsoft.Owin.Security.OAuth;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,7 +8,7 @@ namespace PrimeApps.App.Helpers
     /// <summary>
     /// Helps to encode/decode access token of Owin Authentication. 
     /// </summary>
-    public class MachineKeyProtector : IDataProtector
+    /*public class MachineKeyProtector : IDataProtector
     {
         private readonly string[] _purpose =
         {
@@ -28,5 +26,5 @@ namespace PrimeApps.App.Helpers
         {
             return System.Web.Security.MachineKey.Unprotect(protectedData, _purpose);
         }
-    }
+    }*/
 }

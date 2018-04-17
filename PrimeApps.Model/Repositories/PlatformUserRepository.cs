@@ -1,6 +1,6 @@
 ﻿using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;

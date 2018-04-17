@@ -173,7 +173,7 @@ namespace PrimeApps.Model.Repositories
         }
 
         // Gets users by an profile id list.
-        public async Task<ICollection<User>> GetByProfileIds(List<int> profileIds)
+        public async Task<ICollection<TenantUser>> GetByProfileIds(List<int> profileIds)
         {
             return await DbContext.Users
                 .Where(x => !x.Deleted && profileIds.Contains(x.Profile.Id))

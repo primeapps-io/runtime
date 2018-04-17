@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories.Interfaces;
 

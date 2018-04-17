@@ -5,7 +5,7 @@ using PrimeApps.Model.Common.Warehouse;
 
 namespace PrimeApps.Model.Entities.Platform
 {
-    [Table("warehouses")]
+    [Table("warehouse")]
     public class PlatformWarehouse
     {
         [Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

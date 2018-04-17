@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage.Internal.Mapping;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform.Identity;
 
 namespace PrimeApps.Model.Migrations.PlatformDB
 {

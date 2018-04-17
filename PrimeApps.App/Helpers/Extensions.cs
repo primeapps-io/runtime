@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.Optimization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.String;
@@ -206,18 +205,18 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static Bundle NonOrdering(this Bundle bundle)
+        /*public static Bundle NonOrdering(this Bundle bundle)
         {
             bundle.Orderer = new NonOrderingBundleOrderer();
             return bundle;
-        }
+        }*/
     }
 
-    public class NonOrderingBundleOrderer : IBundleOrderer
+    /*public class NonOrderingBundleOrderer : IBundleOrderer
     {
         public IEnumerable<BundleFile> OrderFiles(BundleContext context, IEnumerable<BundleFile> files)
         {
             return files;
         }
-    }
+    }*/
 }

@@ -8,8 +8,8 @@ using PrimeApps.App.Helpers;
 using PrimeApps.Model.Context;
 using Microsoft.EntityFrameworkCore;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Cache
 {
