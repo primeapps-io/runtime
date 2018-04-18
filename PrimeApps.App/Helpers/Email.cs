@@ -9,6 +9,7 @@ using System.Security.Claims;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
+using Microsoft.AspNetCore.Hosting;
 
 namespace PrimeApps.App.Helpers
 {
@@ -22,6 +23,11 @@ namespace PrimeApps.App.Helpers
     /// </summary>
     public class Email
     {
+        private IHostingEnvironment _hostingEnvironment;
+        public Email(IHostingEnvironment hostingEnvironment)
+        {
+            hostingEnvironment = _hostingEnvironment;
+        }
         /// <summary>
         /// The pattern of template placeholders.
         /// </summary>
@@ -86,7 +92,7 @@ namespace PrimeApps.App.Helpers
             Localization lcl = new Localization(culture, resourceType);
 
             // get template file for the email by resource name.
-            path = HostingEnvironment.MapPath("~/Templates/Email/" + resourceType.Name + ".html");
+            path = Path.Combine(_hostingEnvironment.WebRootPath, $"Templates/Email/{resourceType.Name}.html");
 
             System.IO.FileInfo file = new FileInfo(path);
             if (!file.Exists)

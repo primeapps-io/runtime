@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 using System.Web;
 
 namespace PrimeApps.App
@@ -36,7 +39,7 @@ namespace PrimeApps.App
 		public void ConfigureServices(IServiceCollection services)
 		{
 
-			/*services.AddLocalization(o => o.ResourcesPath = "Resources");
+			services.AddLocalization(o => o.ResourcesPath = "Localization");
 	        services.Configure<RequestLocalizationOptions>(options =>
 	        {
 		        var supportedCultures = new[]
@@ -56,17 +59,17 @@ namespace PrimeApps.App
 		        // i.e. we have localized resources for.
 
 		        options.SupportedUICultures = supportedCultures;
-	        });*/
+	        });
 
-			// Add application services. DI
-			//services.AddTransient<IProductRepository, ProductRepository>();
+            // Add application services. DI
+            //services.AddTransient<IProductRepository, ProductRepository>();
 
-			//var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
-			//var appKey = ConfigurationManager.AppSettings["ida:Password"];
-			//var authority = "https://login.microsoftonline.com/common/";
-			//var graphResourceID = "https://graph.windows.net";
+            //var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
+            //var appKey = ConfigurationManager.AppSettings["ida:Password"];
+            //var authority = "https://login.microsoftonline.com/common/";
+            //var graphResourceID = "https://graph.windows.net";
 
-			RegisterAuth(services);
+            RegisterAuth(services);
 
 			/*services.AddMvc(options =>
             {
@@ -91,7 +94,11 @@ namespace PrimeApps.App
 					});
 			});
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddViewLocalization(
+            LanguageViewLocationExpanderFormat.Suffix,
+            opts => { opts.ResourcesPath = "Localization"; })
+        .AddDataAnnotationsLocalization();
             RegisterBundle(services);
 		}
 
