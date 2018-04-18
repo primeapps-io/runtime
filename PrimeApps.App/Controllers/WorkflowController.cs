@@ -12,7 +12,7 @@ using PrimeApps.App.ActionFilters;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/workflow"), Authorize, SnakeCase]
+    [Route("api/workflow"), Authorize/*, SnakeCase*/]
     public class WorkflowController : BaseController
     {
         private IWorkflowRepository _workflowRepository;

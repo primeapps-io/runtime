@@ -133,11 +133,11 @@ angular.module('ofisim')
                 }
 
                 $scope.mailModal = $scope.mailModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'web/views/app/leave/collectiveLeave.html',
-                        backdrop: 'static',
-                        show: true
-                    });
+                    scope: $scope,
+                    templateUrl: 'web/views/app/leave/collectiveLeave.html',
+                    backdrop: 'static',
+                    show: true
+                });
             };
 
             $scope.delete = function (id) {
@@ -250,32 +250,32 @@ angular.module('ofisim')
 
             $scope.showActivityButtons = function () {
                 $scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
-                        templateUrl: 'web/views/common/newactivity.html',
-                        placement: 'bottom',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'web/views/common/newactivity.html',
+                    placement: 'bottom',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                        templateUrl: 'web/views/common/newtransaction.html',
-                        placement: 'bottom',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'web/views/common/newtransaction.html',
+                    placement: 'bottom',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.showDataTransferButtons = function () {
                 $scope.dataTransferButtonsPopover = $scope.dataTransferButtonsPopover || $popover(angular.element(document.getElementById('dataTransferButtons')), {
-                        template: 'web/views/common/datatransfer.html',
-                        placement: 'bottom',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    template: 'web/views/common/datatransfer.html',
+                    placement: 'bottom',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.selectRow = function ($event, record) {
@@ -309,8 +309,8 @@ angular.module('ofisim')
 
             $scope.isRowSelected = function (id) {
                 return $scope.selectedRows.filter(function (selectedItem) {
-                        return selectedItem == id;
-                    }).length > 0;
+                    return selectedItem == id;
+                }).length > 0;
             };
 
             $scope.selectAll = function ($event, data) {
@@ -345,6 +345,7 @@ angular.module('ofisim')
                         $cache.remove(cacheKey);
                         $scope.tableParams.reloading = true;
                         $scope.tableParams.reload();
+                        ngToast.create({ content: $filter('translate')('Silme işleminiz başarıyla gerçekleşti. '), className: 'success' });
                         $scope.selectedRows = [];
                         $scope.isAllSelected = false;
                     });
@@ -367,11 +368,11 @@ angular.module('ofisim')
                 }
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'web/views/app/email/bulkEMailModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'web/views/app/email/bulkEMailModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.mailModal.$promise.then($scope.mailModal.show);
             };
@@ -389,11 +390,11 @@ angular.module('ofisim')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.smsModal = $scope.smsModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'web/views/app/sms/bulkSMSModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'web/views/app/sms/bulkSMSModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.smsModal.$promise.then($scope.smsModal.show);
             };
@@ -561,7 +562,7 @@ angular.module('ofisim')
                         case 'checkbox':
                             fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
                             break;
-                        default :
+                        default:
                             fieldValue = value;
                             break;
                     }
@@ -593,17 +594,32 @@ angular.module('ofisim')
                 $scope.selected = $scope.selectedRows.length;
 
                 $scope.updateModal = $scope.updateModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'web/views/app/module/bulkUpdateModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'createModal'
-                    });
+                    scope: $scope,
+                    templateUrl: 'web/views/app/module/bulkUpdateModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
                 $scope.updateModal.$promise.then($scope.updateModal.show);
             };
 
+            $scope.showDeleteModal = function () {
+
+                $scope.selected = $scope.selectedRows.length;
+
+                $scope.deleteModal = $scope.deleteModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'views/app/crm/module/bulkDelete.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
+
+                $scope.deleteModal.$promise.then($scope.deleteModal.show);
+            };
 
         }
     ]);

@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/module_profile_settings"), Authorize, SnakeCase]
-    public class ModuleProfileSettingController : BaseController
+    [Route("api/module_profile_settings"), Authorize/*, SnakeCase*/]
+	public class ModuleProfileSettingController : BaseController
     {
         private IModuleProfileSettingRepository _moduleProfileSettingRepository;
 

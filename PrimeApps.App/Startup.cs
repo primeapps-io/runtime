@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
+using PrimeApps.App.ActionFilters;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Platform.Identity;
 using System.Globalization;
 using System.Web;
 
@@ -24,6 +28,7 @@ namespace PrimeApps.App
 		{
 			PublicClientId = "self";
 
+
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(env.ContentRootPath)
 				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -38,6 +43,43 @@ namespace PrimeApps.App
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			#region IdentityServer4
+			services.AddMvcCore()
+				.AddAuthorization()
+				.AddJsonFormatters();
+
+			services.AddAuthentication("Bearer")
+				.AddIdentityServerAuthentication(options =>
+				{
+					options.Authority = "http://localhost:51735";
+					options.RequireHttpsMetadata = false;
+					options.ApiName = "api1";
+				}); 
+			#endregion
+
+			/*services.AddIdentity<PlatformUser, ApplicationRole>()
+			   .AddUserStore<PlatformDBContext>()
+			   .AddUserManager<ApplicationUserManager>()
+			   .AddRoleManager<ApplicationUserRole>()
+			   .AddEntityFrameworkStores<PlatformDBContext, int>()
+			   .AddDefaultTokenProviders();*/
+
+			/*services.AddIdentity<ApplicationUserManager, ApplicationUserRole>(options =>
+			{
+				options.Password.RequiredLength = 10;
+				options.Password.RequireLowercase = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequireNonAlphanumeric = false;
+				options.Password.RequireDigit = false;
+
+				options.User.RequireUniqueEmail = true;
+				options.User.AllowedUserNameCharacters = "";
+			});*/
+
+			services.Configure<MvcOptions>(options =>
+			{
+				options.Filters.Add(new RequireHttpsAttribute());
+			});
 
 			services.AddLocalization(o => o.ResourcesPath = "Localization");
 	        services.Configure<RequestLocalizationOptions>(options =>
@@ -94,12 +136,27 @@ namespace PrimeApps.App
 					});
 			});
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddViewLocalization(
-            LanguageViewLocationExpanderFormat.Suffix,
-            opts => { opts.ResourcesPath = "Localization"; })
-        .AddDataAnnotationsLocalization();
-            RegisterBundle(services);
+            services.AddMvc()
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+				.AddJsonOptions(opt =>
+				{
+					#region SnakeCaseAttribute
+					opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
+					{
+						NamingStrategy = new SnakeCaseNamingStrategy()
+					}; 
+					#endregion
+				});
+
+			#region RequireHttpsAttribute
+			services.Configure<MvcOptions>(options =>
+				{
+					options.Filters.Add(new RequireHttps());
+				});
+			#endregion
+			
+
+			RegisterBundle(services);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

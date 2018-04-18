@@ -161,6 +161,134 @@ namespace PrimeApps.App.Helpers
                 }
 
             }
+            if (appId == 6)
+            {
+                //1 Upload bireysel-siparis-teslim-formu.docx
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/bireysel-siparis-teslim-formu.docx"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "bireysel-siparis-teslim-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    Storage.CommitFile("bireysel-siparis-teslim-formu.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                }
+
+                //2 Upload firmaya-ozel-teklif-kdv-dahil.docx
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/firmaya-ozel-teklif-kdv-dahil.docx"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    Storage.CommitFile("firmaya-ozel-teklif-kdv-dahil.docx", "templates/firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                }
+
+                //3 Upload firmaya-ozel-teklif-kdvsiz.docx
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/firmaya-ozel-teklif-kdvsiz.docx"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    Storage.CommitFile("firmaya-ozel-teklif-kdvsiz.docx", "templates/firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                }
+
+                //4 Upload gorev-ciktisi.docx
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/gorev-ciktisi.docx"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    Storage.CommitFile("gorev-ciktisi.docx", "templates/gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                }
+
+                //5 Upload ozel-pasta-formu.docx
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta-formu.docx"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    Storage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                }
+
+                //6 Upload ozel-pasta-formu.docx
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta-formu.docx"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    Storage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                }
+
+                // Upload kiralama-alani1.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani1.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani1.jpg", "image/jpeg");
+                    Storage.CommitFile("kiralama-alani1.jpg", "kiralama-alani1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload kiralama-alani2.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani2.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani2.jpg", "image/jpeg");
+                    Storage.CommitFile("kiralama-alani2.jpg", "kiralama-alani2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload kiralama-alani3.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani3.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani3.jpg", "image/jpeg");
+                    Storage.CommitFile("kiralama-alani3.jpg", "kiralama-alani3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload kiralama-alani4.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani4.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani4.jpg", "image/jpeg");
+                    Storage.CommitFile("kiralama-alani4.jpg", "kiralama-alani4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload ozel-pasta1.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta1.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta1.jpg", "image/jpeg");
+                    Storage.CommitFile("ozel-pasta1.jpg", "ozel-pasta1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload ozel-pasta2.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta2.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta2.jpg", "image/jpeg");
+                    Storage.CommitFile("ozel-pasta2.jpg", "ozel-pasta2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload ozel-pasta3.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta3.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta3.jpg", "image/jpeg");
+                    Storage.CommitFile("ozel-pasta3.jpg", "ozel-pasta3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+
+                // Upload ozel-pasta4.jpg
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta4.jpg"));
+
+                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta4.jpg", "image/jpeg");
+                    Storage.CommitFile("ozel-pasta4.jpg", "ozel-pasta4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                }
+            }
 
             return 0;
         }

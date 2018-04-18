@@ -20,8 +20,8 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/outlook"), Authorize, SnakeCase]
-    public class OutlookController : BaseController
+    [Route("api/outlook"), Authorize/*, SnakeCase*/]
+	public class OutlookController : BaseController
     {
         private ISettingRepository _settingRepository;
         private IModuleRepository _moduleRepository;
@@ -400,15 +400,17 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
+			//TODO Change
 			var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse)
             {
-                Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))
+                /*Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))*/
             };
 
-            moduleController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
+            /*moduleController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
             moduleController.Configuration.Formatters.Clear();
             moduleController.Configuration.Formatters.Add(new JsonMediaTypeFormatter { SerializerSettings = serializerSettings });
             moduleController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());
+			*/
 
             return await moduleController.Create(module);
         }
@@ -447,16 +449,18 @@ namespace PrimeApps.App.Controllers
             mail["related_to"] = records[0]["id"];
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
-            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _warehouse)
+
+			//TODO Change
+			var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _warehouse)
             {
-                Request = new HttpRequestMessage(HttpMethod.Post,
-	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))
+                /*Request = new HttpRequestMessage(HttpMethod.Post,
+	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))*/
 			};
 
-			recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
+			/*recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
             recordController.Configuration.Formatters.Clear();
             recordController.Configuration.Formatters.Add(new JsonMediaTypeFormatter { SerializerSettings = serializerSettings });
-            recordController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());
+            recordController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());*/
 
             return await recordController.Create("mails", mail);
         }

@@ -11,10 +11,10 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using System.Configuration;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Common.Record;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Helpers
 {
@@ -1447,6 +1447,9 @@ namespace PrimeApps.Model.Helpers
 
             sql += $"UPDATE reports SET user_id={user.Id} WHERE user_id IS NOT NULL;\n";
             sql += $"UPDATE process_approvers SET user_id={user.Id};\n";
+			
+            if (user.AppID == 1)
+                sql += "UPDATE sales_orders_d SET onay_tarihi=now() WHERE id=19281;\n";
 
             if (user.AppId == 4 && !string.IsNullOrEmpty(user.Email))
                 sql += $"UPDATE calisanlar_d SET ad='{user.FirstName}', soyad='{user.LastName}', ad_soyad='{user.FirstName + " " + user.LastName}', e_posta='{user.Email}', cep_telefonu={user.PhoneNumber}, yoneticisi=1 WHERE id=1;\n";

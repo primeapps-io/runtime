@@ -20,8 +20,9 @@ using PrimeApps.Model.Repositories;
 namespace PrimeApps.App.Helpers
 {
     public static class UserHelper
-    {
-        public static async Task<string> AddUser(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId, ApplicationUserManager userManager, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse, PlatformUser applicationUser = null, string password = "")
+	{
+		//TODO Removed
+		public static async Task<string> AddUser(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId/*, ApplicationUserManager userManager*/, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse, PlatformUser applicationUser = null, string password = "")
         {
             if (applicationUser == null)
             {
@@ -40,17 +41,18 @@ namespace PrimeApps.App.Helpers
                     CreatedAt = DateTime.Now,
                     AppId = appId
                 };
+				//TODO Removed
+				//var result = await userManager.CreateAsync(applicationUser, password);
 
-                var result = await userManager.CreateAsync(applicationUser, password);
-
-                if (!result.Succeeded)
+                if (/*!result.Succeeded*/ false)
                     throw new Exception();
             }
 
-            var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser.Id);
-            var confirmResponse = await userManager.ConfirmEmailAsync(applicationUser.Id, confirmationToken);
+			//TODO Removed
+			//var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser.Id);
+			//var confirmResponse = await userManager.ConfirmEmailAsync(applicationUser.Id, confirmationToken);
 
-            if (!confirmResponse.Succeeded)
+            if (/*!confirmResponse.Succeeded*/ false)
                 throw new Exception();
 
             var registerModel = new RegisterBindingModel();
@@ -95,7 +97,8 @@ namespace PrimeApps.App.Helpers
             return password;
         }
 
-        public static async Task<string> AddUserToNewTenant(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId, ApplicationUserManager userManager, IPlatformUserRepository platformUserRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, Warehouse warehouse, PlatformUser platformUser = null, string password = "")
+		//TODO Removed
+		public static async Task<string> AddUserToNewTenant(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId/*, ApplicationUserManager userManager*/, IPlatformUserRepository platformUserRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, Warehouse warehouse, PlatformUser platformUser = null, string password = "")
         {
             if (platformUser == null)
             {
@@ -115,16 +118,17 @@ namespace PrimeApps.App.Helpers
                     AppId = appId
                 };
 
-                var result = await userManager.CreateAsync(platformUser, password);
+				//TODO Removed
+				//var result = await userManager.CreateAsync(platformUser, password);
 
-                if (!result.Succeeded)
+				if (/*!result.Succeeded*/ false)
                     throw new Exception();
             }
+			//TODO Removed
+			//var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(platformUser.Id);
+			//var confirmResponse = await userManager.ConfirmEmailAsync(platformUser.Id, confirmationToken);
 
-            var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(platformUser.Id);
-            var confirmResponse = await userManager.ConfirmEmailAsync(platformUser.Id, confirmationToken);
-
-            if (!confirmResponse.Succeeded)
+			if (/*!confirmResponse.Succeeded*/ false)
                 throw new Exception();
 
             var registerModel = new RegisterBindingModel();
@@ -161,8 +165,10 @@ namespace PrimeApps.App.Helpers
             await profileRepository.AddUserAsync(user.Id, request.ProfileId);
             await roleRepository.AddUserAsync(user.Id, request.RoleId);
 
-            user.TenantId = tenantId;
-            user.EmailConfirmed = true;
+			//TODO Removed
+			//user.TenantId = tenantId;
+
+			user.EmailConfirmed = true;
             await platformUserRepository.UpdateAsync(user);
             //await Cache.Workgroup.UpdateRoles(instanceId);
             //await Cache.Workgroup.UpdateProfiles(instanceId);

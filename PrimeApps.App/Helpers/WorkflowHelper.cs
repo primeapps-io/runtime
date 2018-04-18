@@ -734,7 +734,16 @@ namespace PrimeApps.App.Helpers
 
                     if (field.DataType == DataType.Picklist)
                     {
-                        picklistItemIds.Add(int.Parse(filterModel.Value.ToString()));
+                        int tempvalue;
+                        if (int.TryParse(filterModel.Value.ToString(), out tempvalue))
+                        {
+                            picklistItemIds.Add(int.Parse(filterModel.Value.ToString()));
+                        }
+
+                        else
+                        {
+                            picklistItemIds.Add(char.Parse(filterModel.Value.ToString()));
+                        }
                     }
                     else if (field.DataType == DataType.Multiselect)
                     {

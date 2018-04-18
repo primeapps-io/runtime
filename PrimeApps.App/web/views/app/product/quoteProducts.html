@@ -79,7 +79,7 @@
                                           text-no-results="{{'Common.NoResults' | translate}}"
                                           use-original-object="true"
                                           value-changed="selectProduct(quoteProduct);"
-                                          placeholder="{{'Product.ProductName' | translate}}"
+                                          placeholder="{{productModule['label_' + language + '_singular']}}"
                                           create-new="openFormModal"
                                           hide-create-new="false"
                                           ng-if="!readonly"/>

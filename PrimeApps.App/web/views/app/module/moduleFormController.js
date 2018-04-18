@@ -1072,7 +1072,7 @@ angular.module('ofisim')
                         if ($scope.saveAndNew) {
                             if ($scope.type === 'quotes') {
                                 ModuleService.getDailyRates()
-                                    .then(function(response) {
+                                    .then(function (response) {
                                         if (!response.data)
                                             return;
 
@@ -1703,9 +1703,10 @@ angular.module('ofisim')
             });
 
             $scope.setDropdownData = function (field) {
-                if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
+                if (field.filters && field.filters.length > 0)
+                    $scope.dropdownFieldDatas[field.name] = null;
+                else if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
                     return;
-
                 $scope.currentLookupField = field;
                 $scope.lookup()
                     .then(function (response) {

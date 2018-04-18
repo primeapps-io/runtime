@@ -201,6 +201,9 @@ namespace PrimeApps.Model.Repositories
                  .Include(x => x.Module)
                  .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
 
+            if (view == null)
+                return data;
+
             var findRequest = new FindRequest
             {
                 Fields = new List<string>(),

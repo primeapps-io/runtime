@@ -478,7 +478,7 @@
                                                    pattern="{{field.validation.pattern}}"
                                                    ng-if="field.data_type === 'url' " />
 
-                                            <ui-select name="{{field.name}}" ng-change="fieldValueChange(field);" ng-required="{{field.validation.required}}" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
+                                        <ui-select name="{{field.name}}" ng-change="fieldValueChange(field);" ng-required="{{field.validation.required}}" ng-disabled="field.validation.readonly || (id && !field.editable)" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
                                                 <ui-select-match placeholder="{{('Common.Select' | translate)}}">{{$select.selected.primary_value}}</ui-select-match>
                                                 <ui-select-choices repeat="user in dropdownFieldDatas[field.name] | filter:{primary_value: $select.search} | orderBy:'primary_value'">
                                                     <div ng-bind-html="user.primary_value | highlight: $select.search"></div>

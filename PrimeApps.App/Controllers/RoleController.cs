@@ -11,8 +11,8 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/role"), Authorize, SnakeCase]
-    public class RoleController : BaseController
+    [Route("api/role"), Authorize/*, SnakeCase*/]
+	public class RoleController : BaseController
     {
         private IRoleRepository _roleRepository;
         private IUserRepository _userRepository;

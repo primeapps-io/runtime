@@ -3,7 +3,7 @@
 angular.module('ofisim')
     .controller('PurchaseProductsController', ['$rootScope', '$scope', '$state', 'config', 'ngToast', '$localStorage', '$filter', 'ngTableParams', '$stateParams', 'PurchaseProductsService', 'ModuleService',
         function ($rootScope, $scope, $state, config, ngToast, $localStorage, $filter, ngTableParams, $stateParams, PurchaseProductsService, ModuleService) {
-            
+
             if ($scope.$parent.$parent.type != 'purchase_orders')
                 return;
 
@@ -14,7 +14,7 @@ angular.module('ofisim')
             }
 
             $scope.purchaseProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_order_products' }, true)[0];
-            
+
             if (!$scope.purchaseProductModule) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.crm.dashboard');
@@ -22,8 +22,8 @@ angular.module('ofisim')
             }
 
             $scope.productField = $filter('filter')($scope.purchaseProductModule.fields, { name: 'product' }, true)[0];
-            var productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
-            $scope.productField.lookupModulePrimaryField = $filter('filter')(productModule.fields, { name: 'name' }, true)[0];
+            $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
+            $scope.productField.lookupModulePrimaryField = $filter('filter')($scope.productModule.fields, { name: 'name' }, true)[0];
 
             ModuleService.getPicklists($scope.purchaseProductModule)
                 .then(function (picklists) {
@@ -81,7 +81,7 @@ angular.module('ofisim')
                     purchaseProduct.amount = unitPrice;
 
                     if (purchaseProduct.product.usage_unit) {
-                        purchaseProduct.usage_unit =purchaseProduct.product.usage_unit.label[$rootScope.language];
+                        purchaseProduct.usage_unit = purchaseProduct.product.usage_unit.label[$rootScope.language];
                     }
                 }
 
@@ -223,7 +223,7 @@ angular.module('ofisim')
                     total += amount;
                     vatTotal += vat;
 
-                    var vatItem = $filter('filter')(vatList, {percent: purchaseProduct.product.vat_percent}, true)[0];
+                    var vatItem = $filter('filter')(vatList, { percent: purchaseProduct.product.vat_percent }, true)[0];
 
                     if (!vatItem) {
                         vatItem = {};

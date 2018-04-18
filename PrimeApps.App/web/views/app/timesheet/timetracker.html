@@ -24,7 +24,7 @@
                                 </div>
                                 <a ng-hide="loggedInUser != owner.Id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week + 1, days, 'next')"
                                    class="btn btn-sm btn-custom"
-                                   ng-disabled="week == weekLength">
+                                   ng-disabled="week == weekLength + 4">
                                     <i class="fa fa-chevron-right"></i>
                                 </a>
                             </div>
@@ -41,7 +41,7 @@
                                 <h4 style="display: inline-block; margin-left: 15px">
                                     <span class="label label-info" ng-if="waitingForApproval && !isApproved && currentTimetracker.process_status == 1">{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}</span>
                                     <span class="label label-danger" ng-if="currentTimetracker.process_status == 3">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}</span>
-                                    <span class="label label-success" ng-if="isApproved && currentTimetracker.process_status == 2">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
+                                    <span class="label label-success" ng-hide="true" ng-if="isApproved && currentTimetracker.process_status == 2">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}</span>
                                 </h4>
                             </div>
                         </div>

@@ -118,7 +118,7 @@
     "Left": "Sol",
     "Right": "Sağ",
     "Homepage": "Ana Sayfa",
-    "TimetrackerNotFound" : "Çalışan kaydınız bulunmamaktadır. Lütfen sistem yöneticinize başvurunuz."
+    "TimetrackerNotFound": "Çalışan kaydınız bulunmamaktadır. Lütfen sistem yöneticinize başvurunuz."
   },
   "Auth": {
     "Email": "E-posta",
@@ -192,7 +192,7 @@
       "Forecast": "SATIŞ TAHMİNİ",
       "Calendar": "TAKVİM",
       "Timesheet": "TIMESHEET",
-      "Timetracker": "ZAMAN ÇİZELGESİ",
+      "Timetracker": "ZAMAN ÇİZELGEM",
       "AdvancedDocumentSearch": "DOKÜMAN ARA",
       "Likes": "Beğenenler",
       "Reports": "RAPORLAR"
@@ -652,7 +652,9 @@
       "AsList": "Liste şeklinde",
       "AdvancedDocumentSearch": "Gelişmiş Doküman Arama",
       "UpdateSuccessGeneralSettings": "Ayar başarılı şekilde kaydedilmiştir.",
-      "ThemeSettings": "Tema Ayarları"
+      "ThemeSettings": "Tema Ayarları",
+      "RemoveProfileImage": "Profil Resmini Kaldır"
+
     },
     "GeneralSettings": {
       "DetailViewType": "Detay Sayfası Görünümü",
@@ -1418,12 +1420,12 @@
         "Instant": "Anında",
         "DynamicApprover": "Dinamik Onaycı",
         "ProfileAuthorization": "Profil Yetkilendirme",
-        "ApproverModule" : "Bulunduğu Modül",
-        "ApproverLookup" : "Bulunduğu Alan",
-        "ApproverEmailField" : "İlişkili E-Posta Alanı",
-        "Approver" : "Onaycı",
-        "GoToRecordDetail":"İlgili Kayda Git",
-        "GoToRecordApprove":"İlgili Zaman Çizelgesi’ni görüntülemek ve onaylamak için tıklayınız"
+        "ApproverModule": "Bulunduğu Modül",
+        "ApproverLookup": "Bulunduğu Alan",
+        "ApproverEmailField": "İlişkili E-Posta Alanı",
+        "Approver": "Onaycı",
+        "GoToRecordDetail": "İlgili Kayda Git",
+        "GoToRecordApprove": "İlgili Zaman Çizelgesi’ni görüntülemek ve onaylamak için tıklayınız"
       },
       "ExecutionFrequency": "Çalıştırılma Sıklığı",
       "ProcessCanNotDelete": "Bu onay sürecine bağlı henüz onaylanmamış işlemler olduğu için silemezsiniz.",
@@ -1660,7 +1662,7 @@
     "GrandTotal": "Genel Toplam",
     "Products": "Ürünler",
     "Services": "Hizmetler",
-    "AddLine": "Ürün Satırı Ekle",
+    "AddLine": "Satır Ekle",
     "AddSeparator": "Başlık Ekle",
     "Unit": "Birim",
     "ExchangeRates": "Kur Bilgisi",

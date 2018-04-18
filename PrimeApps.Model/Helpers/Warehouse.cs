@@ -1309,6 +1309,10 @@ namespace PrimeApps.Model.Helpers
                     case Enums.DataType.Email:
                     case Enums.DataType.Picklist:
                     case Enums.DataType.Multiselect:
+                    case Enums.DataType.Url:
+                    case Enums.DataType.Image:
+                    case Enums.DataType.Location:
+                    case Enums.DataType.Document:
                         if (!string.IsNullOrWhiteSpace(value))
                             command.Parameters.Add(new SqlParameter { ParameterName = key, SqlValue = value, SqlDbType = SqlDbType.NVarChar });
                         else
@@ -1316,6 +1320,7 @@ namespace PrimeApps.Model.Helpers
                         break;
                     case Enums.DataType.Number:
                     case Enums.DataType.NumberDecimal:
+                    case Enums.DataType.Rating:
                         if (!string.IsNullOrWhiteSpace(value))
                             command.Parameters.Add(new SqlParameter { ParameterName = key, SqlValue = decimal.Parse(value), SqlDbType = SqlDbType.Float });
                         else

@@ -340,14 +340,19 @@ namespace PrimeApps.App.Helpers
                                     if ((bool)record["izin_turu.yillik_izin"] && (int)record["mevcut_kullanilabilir_izin"] -
                                         (int)record["hesaplanan_alinacak_toplam_izin"] < 0)
                                     {
-                                        if (appUser.TenantLanguage == "tr")
-                                            emailData.Add("ExtraLeave", "İlgili çalışan izin borçlanma talep etmektedir.");
+                                        if (appUser.PicklistLanguage == "tr")
+                                            emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışan izin borçlanma talep etmektedir.İzin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
                                         else
-                                            emailData.Add("ExtraLeave", "The employee requests for leave with borrowing right.");
+                                            emailData.Add("ExtraLeave", "Employee" + " " + (string)record["calisan.ad_soyad"] + ", with the details below requests leave of absence. It has been submitted for your approval as the manager.");
                                     }
                                     else
                                     {
-                                        emailData.Add("ExtraLeave", "");
+                                        if (appUser.PicklistLanguage == "tr")
+                                            emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışana ait izin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
+                                        else
+                                        {
+                                            emailData.Add("ExtraLeave", "The request form for leave of absence relating to employee" + " " + (string)record["calisan.ad_soyad"] + " " + "with the details below is submitted for your approval as the manager.");
+                                        }
                                     }
 
                                 }

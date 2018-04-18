@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Instance;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {

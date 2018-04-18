@@ -21,8 +21,8 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/record"), Authorize, SnakeCase]
-    public class RecordController : BaseController
+    [Route("api/record"), Authorize/*, SnakeCase*/]
+	public class RecordController : BaseController
     {
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;

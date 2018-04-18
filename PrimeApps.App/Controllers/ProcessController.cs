@@ -13,8 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process"), Authorize, SnakeCase]
-    public class ProcessController : BaseController
+    [Route("api/process"), Authorize/*, SnakeCase*/]
+	public class ProcessController : BaseController
     {
         private IProcessRepository _processRepository;
         private IModuleRepository _moduleRepository;

@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/user_custom_shares"), Authorize, SnakeCase]
-    public class UserCustomShareController : BaseController
+    [Route("api/user_custom_shares"), Authorize/*, SnakeCase*/]
+	public class UserCustomShareController : BaseController
     {
         private IUserCustomShareRepository _userOwnerRepository;
 

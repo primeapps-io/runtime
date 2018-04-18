@@ -8,7 +8,7 @@
                    ng-class="{'product-list-readonly':readonly}" ng-show="$parent.$parent.orderProducts.length">
                 <thead>
                     <tr>
-                        <th class="product-name">{{'Product.ProductName' | translate}}</th>
+                        <th class="product-name">{{productModule['label_' + language + '_singular']}}</th>
                         <th class="product-quantity">{{'Product.Quantity' | translate}}</th>
                         <th class="product-unit">{{'Product.Unit' | translate}}</th>
                         <th class="product-price">{{'Product.ListPrice' | translate}}</th>

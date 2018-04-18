@@ -26,9 +26,9 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Helpers;
 using User = PrimeApps.Model.Entities.Application.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
-using PrimeApps.Model.Entities.Platform.Identity;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Hangfire;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Controllers
 {
@@ -101,11 +101,13 @@ namespace PrimeApps.App.Controllers
                 //if users avatar changed check update it.
                 if (user.picture.Trim() != string.Empty)
                 {
-                    if (tenantUserToEdit.Picture != null)
-                    {
-                        //if the user had an avatar already, remove it from storage.
-                        Storage.RemoveFile("user-images", tenantUserToEdit.Picture);
-                    }
+                    //if users avatar changed check update it.
+
+                    //if (userToEdit.avatar != null)
+                    //{
+                    //    //if the user had an avatar already, remove it from storage.
+                    //    // Storage.RemoveFile("user-images", userToEdit.avatar);
+                    //}
 
                     //update the new filename.
                     tenantUserToEdit.Picture = user.picture;
@@ -570,6 +572,14 @@ namespace PrimeApps.App.Controllers
             };
 
             return Ok(userModel);
+        }
+
+        [Route("get_users_by_profile_ids"), HttpPost]
+        public async Task<IActionResult> GetUserByProfileIds(List<int> ids)
+        {
+            var users = await _userRepository.GetByProfileIds(ids);
+
+            return Ok(users);
         }
 
         public async Task<IActionResult> GetOfficeUsers()

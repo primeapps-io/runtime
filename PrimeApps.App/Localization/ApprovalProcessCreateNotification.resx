@@ -121,7 +121,7 @@
     <value>Dear {:ApproverName},&lt;br&gt; {:UserName} has sent a new {:ModuleName} approval request.&lt;br&gt;{:ExtraLeave}</value>
   </data>
   <data name="RecordLink" xml:space="preserve">
-    <value>Go to Record Detail</value>
+    <value>To see the details and approve please click here</value>
   </data>
   <data name="Subject" xml:space="preserve">
     <value>New {:ModuleName} Request</value>

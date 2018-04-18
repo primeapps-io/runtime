@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/action_button"), Authorize, SnakeCase]
+    [Route("api/action_button"), Authorize/*, SnakeCase*/]
 
-    public class ActionButtonController : BaseController
+	public class ActionButtonController : BaseController
     {
         private IActionButtonRepository _actionButtonRepository;
 

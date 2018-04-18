@@ -11,8 +11,6 @@ using System.Net;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Identity;
@@ -41,26 +39,17 @@ namespace PrimeApps.App.Controllers
     public class AccountController : BaseController
     {
         private const string LocalLoginProvider = "Local";
-        private ApplicationUserManager _userManager;
-        private IUserRepository _userRepository;
-        private IProfileRepository _profileRepository;
-        private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
         private IPlatformUserRepository _platformUserRepository;
         private ITenantRepository _tenantRepository;
         private Warehouse _warehouse;
 
-        public AccountController(ApplicationUserManager userManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat, IProfileRepository profileRepository, IUserRepository userRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Warehouse warehouse) : this(profileRepository, userRepository, roleRepository, recordRepository, platformUserRepository, tenantRepository, warehouse)
+        /*public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Warehouse warehouse) : this(recordRepository, platformUserRepository, tenantRepository, warehouse)
         {
-            UserManager = userManager;
-            AccessTokenFormat = accessTokenFormat;
-        }
+        }*/
 
-        public AccountController(IProfileRepository profileRepository, IUserRepository userRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Warehouse warehouse) : this()
+        public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Warehouse warehouse) : this()
         {
-            _userRepository = userRepository;
-            _profileRepository = profileRepository;
-            _roleRepository = roleRepository;
             _recordRepository = recordRepository;
             _warehouse = warehouse;
             _platformUserRepository = platformUserRepository;
@@ -71,7 +60,7 @@ namespace PrimeApps.App.Controllers
         }
         public AccountController() { }
 
-        public ApplicationUserManager UserManager
+        /*public ApplicationUserManager UserManager
         {
             get
             {
@@ -81,13 +70,12 @@ namespace PrimeApps.App.Controllers
             {
                 _userManager = value;
             }
-        }
+        }*/
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         // GET account/user_info
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
-        [Route("user_info")]
+        /*[Route("user_info")]
         public UserInfoViewModel GetUserInfo()
         {
             var externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
@@ -98,18 +86,18 @@ namespace PrimeApps.App.Controllers
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null
             };
-        }
+        }*/
 
         // POST account/logout
         [Route("logout")]
         public IActionResult Logout()
         {
-            Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
+            //Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
             return Ok();
         }
 
         // GET account/manage_info?returnUrl=&generateState=
-        [Route("manage_info")]
+        /*[Route("manage_info")]
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
             var user = await UserManager.FindByIdAsync(int.Parse(User.Identity.GetUserId()));
@@ -146,7 +134,7 @@ namespace PrimeApps.App.Controllers
                 Logins = logins,
                 ExternalLoginProviders = GetExternalLogins(returnUrl, generateState)
             };
-        }
+        }*/
 
         // POST account/change_password
         [Route("change_password")]
@@ -159,7 +147,8 @@ namespace PrimeApps.App.Controllers
 
             var prefixAvailable = User.Identity.Name.StartsWith("pre__");
 
-            var result = await UserManager.ChangePasswordAsync(int.Parse(User.Identity.GetUserId()), model.OldPassword, model.NewPassword);
+			//TODO Removed
+			//var result = await UserManager.ChangePasswordAsync(int.Parse(User.Identity.GetUserId()), model.OldPassword, model.NewPassword);
 
             var otherAppEmail = "";
 
@@ -177,16 +166,17 @@ namespace PrimeApps.App.Controllers
                 await _platformUserRepository.UpdateAsync(otherAppUser);
             }
 
-            if (!result.Succeeded)
+			//TODO Removed
+			if (/*!result.Succeeded*/ false)
             {
-                return GetErrorResult(result);
+                //return GetErrorResult(result);
             }
 
             return Ok();
         }
 
         // POST account/set_password
-        [Route("set_password")]
+        /*[Route("set_password")]
         public async Task<IActionResult> SetPassword(SetPasswordBindingModel model)
         {
             if (!ModelState.IsValid)
@@ -202,10 +192,10 @@ namespace PrimeApps.App.Controllers
             }
 
             return Ok();
-        }
+        }*/
 
         // POST account/add_external
-        [Route("add_external")]
+        /*[Route("add_external")]
         public async Task<IActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
         {
             if (!ModelState.IsValid)
@@ -239,10 +229,10 @@ namespace PrimeApps.App.Controllers
             }
 
             return Ok();
-        }
+        }*/
 
         // POST account/remove_login
-        [Route("remove_login")]
+        /*[Route("remove_login")]
         public async Task<IActionResult> RemoveLogin(RemoveLoginBindingModel model)
         {
             if (!ModelState.IsValid)
@@ -267,10 +257,10 @@ namespace PrimeApps.App.Controllers
             }
 
             return Ok();
-        }
+        }*/
 
         // GET account/external
-        [OverrideAuthentication]
+        /*[OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
         [Route("external", Name = "ExternalLogin")]
@@ -322,10 +312,10 @@ namespace PrimeApps.App.Controllers
             }
 
             return Ok();
-        }
+        }*/
 
         // GET account/externals?returnUrl=&generateState=
-        [AllowAnonymous]
+        /*[AllowAnonymous]
         [Route("externals")]
         public IEnumerable<ExternalLoginViewModel> GetExternalLogins(string returnUrl, bool generateState = false)
         {
@@ -363,7 +353,7 @@ namespace PrimeApps.App.Controllers
             }
 
             return logins;
-        }
+        }*/
 
         // POST account/register
         [AllowAnonymous]
@@ -403,14 +393,17 @@ namespace PrimeApps.App.Controllers
                 AppId = model.AppID > 0 ? model.AppID : 1
             };
 
-            var result = await UserManager.CreateAsync(user, model.Password);
+			//TODO Removed
+			//var result = await UserManager.CreateAsync(user, model.Password);
 
-            if (!result.Succeeded)
+			//TODO Removed
+			if (/*!result.Succeeded*/ false)
             {
-                return GetErrorResult(result);
+                //return GetErrorResult(result);
             }
 
-            var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+			//TODO Removed
+			//var token = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
 
 			//Insert user to Ofisim CRM account
 			//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertSubscriber(model, _warehouse));
@@ -424,19 +417,21 @@ namespace PrimeApps.App.Controllers
             {
                 var automaticAccountActivationModel = new AutomaticAccountActivationModel
                 {
-                    Token = token,
+					//TODO Removed
+					Token = /*token*/"",
                     Id = user.Id
                 };
                 return Ok(automaticAccountActivationModel);
             }
 
-            SendActivationMail(token, false, user.Id, user.FirstName, user.LastName, user.Email, user.AppId);
+			//TODO Removed
+			SendActivationMail(/*token*/"", false, user.Id, user.FirstName, user.LastName, user.Email, user.AppId);
 
             return Ok();
         }
 
         // POST account/register_external
-        [OverrideAuthentication]
+        /*[OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("register_external")]
         public async Task<IActionResult> RegisterExternal(RegisterExternalBindingModel model)
@@ -469,7 +464,7 @@ namespace PrimeApps.App.Controllers
             }
 
             return Ok();
-        }
+        }*/
 
         // GET account/activate?userId=&token=&culture=
         [HttpGet]
@@ -484,11 +479,16 @@ namespace PrimeApps.App.Controllers
             }
 
             var userIdInt = int.Parse(userId);
-            var confirmResponse = await UserManager.ConfirmEmailAsync(userIdInt, token);
 
-            if (confirmResponse.Succeeded)
+			//TODO Removed
+			//var confirmResponse = await UserManager.ConfirmEmailAsync(userIdInt, token);
+
+
+			//TODO Removed
+			if (/*confirmResponse.Succeeded*/ true)
             {
-                await UserManager.UpdateSecurityStampAsync(userIdInt);
+				//TODO Removed
+				//await UserManager.UpdateSecurityStampAsync(userIdInt);
 
                 PlatformUser user = await _platformUserRepository.Get(userIdInt);
 
@@ -548,9 +548,9 @@ namespace PrimeApps.App.Controllers
                     await _userRepository.UpdateAsync(tenantUser);
                     await _recordRepository.UpdateSystemData(user.Id, DateTime.UtcNow, tenant.Language, user.AppId);
 
-                    if (user.AppId == 1 || user.AppId == 2)
-                        await _recordRepository.InsertSampleData(user.Id, tenant.Language, user.AppId);
-                    else
+                    //if (user.AppId == 1 || user.AppId == 2)
+                    //    await _recordRepository.InsertSampleData(user.Id, tenant.Language, user.AppId);
+                    //else
                         await _recordRepository.UpdateSampleData(user);
 
                     if (officeSignIn)
@@ -652,7 +652,7 @@ namespace PrimeApps.App.Controllers
             if (!string.IsNullOrWhiteSpace(culture) && Helpers.Constants.CULTURES.Contains(culture))
                 Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
 
-            var token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            var token = await UserManager.GeneratePasswordResetTokenAsync(user.);
 
             var fullName = user.FirstName + " " + user.LastName;
 
@@ -803,7 +803,7 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
 
-        public static AuthenticationProperties CreateProperties(string userName, string clientId = null)
+        /*public static AuthenticationProperties CreateProperties(string userName, string clientId = null)
         {
             var data = new Dictionary<string, string>
             {
@@ -814,7 +814,7 @@ namespace PrimeApps.App.Controllers
                 data.Add("as:client_id", clientId);
 
             return new AuthenticationProperties(data);
-        }
+        }*/
 
         protected override void Dispose(bool disposing)
         {
@@ -829,10 +829,10 @@ namespace PrimeApps.App.Controllers
 
         #region Helpers
 
-        private IAuthenticationManager Authentication
+        /*private IAuthenticationManager Authentication
         {
             get { return Request.GetOwinContext().Authentication; }
-        }
+        }*/
 
         private IActionResult GetErrorResult(IdentityResult result)
         {
@@ -864,7 +864,7 @@ namespace PrimeApps.App.Controllers
             return null;
         }
 
-        private class ExternalLoginData
+        /*private class ExternalLoginData
         {
             public string LoginProvider { get; set; }
             public string ProviderKey { get; set; }
@@ -910,9 +910,9 @@ namespace PrimeApps.App.Controllers
                     UserName = identity.FindFirstValue(ClaimTypes.Name)
                 };
             }
-        }
+        }*/
 
-        private static class RandomOAuthStateGenerator
+        /*private static class RandomOAuthStateGenerator
         {
             private static RandomNumberGenerator _random = new RNGCryptoServiceProvider();
 
@@ -933,7 +933,7 @@ namespace PrimeApps.App.Controllers
 				return WebEncoders.Base64UrlEncode(data);
 				//return HttpServerUtility.UrlTokenEncode(data);
             }
-        }
+        }*/
 
         private void SendActivationMail(string token, bool isFreeLicense, int userId, string firstName, string lastName, string email, int appId)
         {
