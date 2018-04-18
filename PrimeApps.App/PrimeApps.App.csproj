@@ -21,6 +21,7 @@
     <PackageReference Include="MimeMapping" Version="1.0.1.12" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="PowerBI.NetStandard.Api" Version="1.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="StackExchange.Redis.Extensions.Jil" Version="3.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0-preview1-26216-02" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0-preview1-26216-02" />

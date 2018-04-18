@@ -21,6 +21,7 @@ namespace PrimeApps.App
 		{
 			PublicClientId = "self";
 
+
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(env.ContentRootPath)
 				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
