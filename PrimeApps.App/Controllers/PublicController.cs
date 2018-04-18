@@ -67,13 +67,13 @@ namespace PrimeApps.App.Controllers
                 return Ok();
 
             customInfo = new CustomInfoDTO();
-            customInfo.Logo = TenantRepository.GetLogoUrl(tenant.Logo);
-            customInfo.Title = tenant.CustomTitle;
-            customInfo.Description = tenant.CustomDescription;
-            customInfo.Favicon = tenant.CustomFavicon;
-            customInfo.Color = tenant.CustomColor;
-            customInfo.Image = tenant.CustomImage;
-            customInfo.Language = tenant.Language;
+            customInfo.Logo = TenantRepository.GetLogoUrl(tenant.Info.Logo);
+            customInfo.Title = tenant.Info.CustomTitle;
+            customInfo.Description = tenant.Info.CustomDescription;
+            customInfo.Favicon = tenant.Info.CustomFavicon;
+            customInfo.Color = tenant.Info.CustomColor;
+            customInfo.Image = tenant.Info.CustomImage;
+            customInfo.Language = tenant.Info.Language;
 
             await cacheClient.AddAsync($"custom_info_{customDomain.Replace(".", "")}", customInfo, TimeSpan.FromDays(90));
 

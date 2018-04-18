@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Context;
 using Microsoft.EntityFrameworkCore;
 

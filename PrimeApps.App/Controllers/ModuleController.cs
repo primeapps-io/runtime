@@ -19,16 +19,16 @@ using ModuleHelper = PrimeApps.App.Helpers.ModuleHelper;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/module"), Authorize, SnakeCase]
-    public class ModuleController : BaseController
+    [Route("api/module"), Authorize/*, SnakeCase*/]
+	public class ModuleController : BaseController
     {
         private IModuleRepository _moduleRepository;
         private IViewRepository _viewRepository;
         private IProfileRepository _profileRepository;
         private ISettingRepository _settingRepository;
-        private Warehouse _warehouse;
+		private Model.Helpers.Warehouse _warehouse;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse)
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Model.Helpers.Warehouse warehouse)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;

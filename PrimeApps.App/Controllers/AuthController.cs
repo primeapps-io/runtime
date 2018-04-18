@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -23,14 +24,14 @@ namespace PrimeApps.App.Controllers
     [Route("auth"), Authorize]
     public class AuthController : Controller
     {
-        private ApplicationSignInManager _signInManager;
+        //private ApplicationSignInManager _signInManager;
 
         [Route("authorize"), HttpGet]
         public ActionResult Authorize()
         {
             var claims = new ClaimsPrincipal(User).Claims.ToArray();
             var identity = new ClaimsIdentity(claims, "Bearer");
-            Authentication.SignIn(identity);
+            //Authentication.SignIn(identity);
 
             return new EmptyResult();
         }
@@ -75,50 +76,51 @@ namespace PrimeApps.App.Controllers
 
             PlatformUser user;
             int appId;
-            SignInStatus result;
+			//SignInStatus result;
+			var result = false;
             using (var platformDBContext = new PlatformDBContext())
             using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
-
             {
                 user = await platformUserRepository.Get(model.Email);
                 appId = GetAppId(url);
-                result = SignInStatus.Failure;
+                //result = SignInStatus.Failure;
 
                 if (user != null)
                 {
-                    if (url.Contains("localhost") || url.Contains("mirror.ofisim.com") || url.Contains("staging.ofisim.com") || user.AppId == appId)
-                        result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
-                    else
-                    {
+					if (url.Contains("localhost") || url.Contains("mirror.ofisim.com") || url.Contains("staging.ofisim.com") || user.AppId == appId) { }
+					//result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+					else
+					{
 
-                        var app = platformDBContext.UserApps.FirstOrDefault(x => x.UserId == user.Id && x.AppId == appId);
+						var app = platformDBContext.UserApps.FirstOrDefault(x => x.UserId == user.Id && x.AppId == appId);
 
-                        if (app != null)
-                        {
-                            result = await SignInManager.PasswordSignInAsync(app.Email, model.Password, model.RememberMe, shouldLockout: false);
-                        }
+						if (app != null)
+						{
+							//result = await SignInManager.PasswordSignInAsync(app.Email, model.Password, model.RememberMe, shouldLockout: false);
+						}
 
-                        else if (user.AppID != appId)
-                        {
-                            if (user.AppID == 1)
-                                ViewData["appName"] = "CRM";
-                            else
-                                ViewData["appName"] = "İK";
+						else if (user.AppId != appId)
+						{
+							if (user.AppId == 1)
+								ViewData["appName"] = "CRM";
+							else
+								ViewData["appName"] = "İK";
 
-                            result = SignInStatus.LockedOut;
-                        }
+							//result = SignInStatus.LockedOut;
+						}
 
-                    }
+					}
                 }
             }
 
             switch (result)
             {
-                case SignInStatus.Success:
+                //case SignInStatus.Success:
+                case true:
                     return RedirectToLocal(returnUrl);
-                case SignInStatus.LockedOut:
-                    ViewBag.Error = "isNotValidApp";
-                    return View(model);
+                //case SignInStatus.LockedOut:
+               //     ViewBag.Error = "isNotValidApp";
+               //     return View(model);
                 //case SignInStatus.RequiresVerification:
                 //    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 //case SignInStatus.Failure:
@@ -224,20 +226,22 @@ namespace PrimeApps.App.Controllers
                     return RedirectToAction("Activation", "Auth",
                         new { Token = token, Uid = guid, OfficeSignIn = true });
                 }
-                if (response.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    var user = crmUser.GetByEmail(registerBindingModel.Email);
+				if (response.StatusCode == HttpStatusCode.BadRequest)
+				{
+					using (var platformDBContext = new PlatformDBContext())
+					using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
+					{
+						var user = await platformUserRepository.Get(registerBindingModel.Email);
+						if (user != null)
+						{
+							if (user.AppId == 1)
+								ViewData["appName"] = "CRM";
+							else
+								ViewData["appName"] = "İK";
 
-                    if (user != null)
-                    {
-                        if (user.AppID == 1)
-                            ViewData["appName"] = "CRM";
-                        else
-                            ViewData["appName"] = "İK";
-
-                        ViewBag.Error = "User exist";
-                    }
-
+							ViewBag.Error = "User exist";
+						}
+					} 
                 }
                 else
                 {
@@ -508,11 +512,11 @@ namespace PrimeApps.App.Controllers
         [Route("logout"), HttpPost, ValidateAntiForgeryToken]
         public ActionResult Logout()
         {
-            Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            //Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Login", "Auth");
         }
 
-        public ApplicationSignInManager SignInManager
+        /*public ApplicationSignInManager SignInManager
         {
             get
             {
@@ -522,12 +526,12 @@ namespace PrimeApps.App.Controllers
             {
                 _signInManager = value;
             }
-        }
+        }*/
 
-        private IAuthenticationManager Authentication
+        /*private IAuthenticationManager Authentication
         {
             get { return Request.GetOwinContext().Authentication; }
-        }
+        }*/
 
         private ActionResult RedirectToLocal(string returnUrl)
         {
@@ -542,10 +546,10 @@ namespace PrimeApps.App.Controllers
         [Route("Auth"), AllowAnonymous]
         public void SignInAd()
         {
-            if (!Request.IsAuthenticated)
+            /*if (!Request.IsAuthenticated)
             {
                 HttpContext.GetOwinContext().Authentication.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectAuthenticationDefaults.AuthenticationType);
-            }
+            }*/
         }
 
         // sign out triggered from the Sign Out gesture in the UI
@@ -553,25 +557,24 @@ namespace PrimeApps.App.Controllers
         [Route("SignOut"), AllowAnonymous]
         public ActionResult SignOut()
         {
-            //HttpContext.GetOwinContext().Authentication.SignOut(
-            //OpenIdConnectAuthenticationDefaults.AuthenticationType, CookieAuthenticationDefaults.AuthenticationType);
-            Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            //Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Login", "Auth");
         }
 
-        public void EndSession()
+        /*public void EndSession()
         {
             // If AAD sends a single sign-out message to the app, end the user's session, but don't redirect to AAD for sign out.
             HttpContext.GetOwinContext().Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
-        }
+        }*/
 
         private void SetLanguae(string lang)
         {
             if (string.IsNullOrWhiteSpace(lang))
                 lang = "tr";
 
-            var cookieVisitor = new HttpCookie("_lang", lang) { Expires = DateTime.Now.AddYears(20) };
-            Response.Cookies.Add(cookieVisitor);
+            HttpContext.Response.Cookies.Append("_lang", lang,new CookieOptions { Expires = DateTime.Now.AddYears(20) });
+            //Response.Cookies.Add(cookieVisitor);
+			Response.Cookies.Append("_lang", lang, new CookieOptions { Expires = DateTime.Now.AddYears(20) });
         }
 
         private string GetLanguage()
@@ -579,7 +582,7 @@ namespace PrimeApps.App.Controllers
             var lang = Request.Cookies["_lang"];
             if (lang != null)
             {
-                return lang.Value;
+                return lang;
             }
 
             SetLanguae("tr");

@@ -14,8 +14,8 @@ using PrimeApps.Model.Enums;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/report"), Authorize, SnakeCase]
-    public class ReportController : BaseController
+    [Route("api/report"), Authorize/*, SnakeCase*/]
+	public class ReportController : BaseController
     {
         private IReportRepository _reportRepository;
         private IRecordRepository _recordRepository;

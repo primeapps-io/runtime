@@ -26,9 +26,9 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Helpers;
 using User = PrimeApps.Model.Entities.Application.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
-using PrimeApps.Model.Entities.Platform.Identity;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Hangfire;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Controllers
 {
@@ -575,7 +575,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_users_by_profile_ids"), HttpPost]
-        public async Task<IHttpActionResult> GetUserByProfileIds(List<int> ids)
+        public async Task<IActionResult> GetUserByProfileIds(List<int> ids)
         {
             var users = await _userRepository.GetByProfileIds(ids);
 

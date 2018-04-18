@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{A02346A3-1F14-479C-8684-A3581C1A0047}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{A02346A3-1F14-479C-8684-A3581C1A0047}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.Console", "PrimeApps.Console\PrimeApps.Console.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Console", "PrimeApps.Console\PrimeApps.Console.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.Model", "PrimeApps.Model\PrimeApps.Model.csproj", "{618C5D45-32AD-4F59-8D8E-D3258CE09033}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Model", "PrimeApps.Model\PrimeApps.Model.csproj", "{618C5D45-32AD-4F59-8D8E-D3258CE09033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{783021F3-EB68-41A8-98CE-6AF8436D7523}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.CLI", "PrimeApps.CLI\PrimeApps.CLI.csproj", "{783021F3-EB68-41A8-98CE-6AF8436D7523}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Auth", "PrimeApps.Auth\PrimeApps.Auth.csproj", "{C8EF9B17-501C-4F15-A295-2E09A9B10485}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{783021F3-EB68-41A8-98CE-6AF8436D7523}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8EF9B17-501C-4F15-A295-2E09A9B10485}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8EF9B17-501C-4F15-A295-2E09A9B10485}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8EF9B17-501C-4F15-A295-2E09A9B10485}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8EF9B17-501C-4F15-A295-2E09A9B10485}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

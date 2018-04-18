@@ -18,8 +18,8 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/convert"), Authorize, SnakeCase]
-    public class ConvertController : BaseController
+    [Route("api/convert"), Authorize/*, SnakeCase*/]
+	public class ConvertController : BaseController
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
@@ -331,7 +331,7 @@ namespace PrimeApps.App.Controllers
             foreach (JObject activity in activities)
             {
                 activity["related_to"] = (int)account["id"];
-                activity["related_module"] = AppUser.PicklistLanguage == "tr" ? accountModule.LabelTrSingular : accountModule.LabelEnSingular;
+                activity["related_module"] = AppUser.TenantLanguage == "tr" ? accountModule.LabelTrSingular : accountModule.LabelEnSingular;
                 await _recordRepository.Update(activity, activityModule);
             }
 
@@ -415,7 +415,7 @@ namespace PrimeApps.App.Controllers
             {
                 var currencyfield = quoteModule.Fields.FirstOrDefault(x => x.Name == "currency");
                 var currencyPicklist = await _picklistRepository.FindItemByLabel(currencyfield.PicklistId.Value, (string)salesOrder["currency"], AppUser.TenantLanguage);
-                salesOrder["currency"] = AppUser.PicklistLanguage == "tr" ? currencyPicklist.LabelTr : currencyPicklist.LabelEn;
+                salesOrder["currency"] = AppUser.TenantLanguage == "tr" ? currencyPicklist.LabelTr : currencyPicklist.LabelEn;
             }
             var resultBefore = await RecordHelper.BeforeCreateUpdate(salesOrderModule, salesOrder, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
 

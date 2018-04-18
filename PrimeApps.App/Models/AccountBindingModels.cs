@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using PrimeApps.Model.Entities.Platform.Identity;
 
 namespace PrimeApps.App.Models
 {
@@ -154,7 +153,8 @@ namespace PrimeApps.App.Models
         public string Token { get; set; }
     }
 
-    public class ClientBindingModel
+	//TODO Removed
+    /*public class ClientBindingModel
     {
         public string Id { get; set; }
 
@@ -168,7 +168,7 @@ namespace PrimeApps.App.Models
 
         [MaxLength(200)]
         public string AllowedOrigin { get; set; }
-    }
+    }*/
 
     public class ChangeEmailBindingModel
     {

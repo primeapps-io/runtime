@@ -14,8 +14,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/user_group"), Authorize, SnakeCase]
-    public class UserGroupController : BaseController
+    [Route("api/user_group"), Authorize/*, SnakeCase*/]
+	public class UserGroupController : BaseController
     {
         private IUserGroupRepository _userGroupRepository;
         private IUserRepository _userRepository;

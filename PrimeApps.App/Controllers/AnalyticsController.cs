@@ -17,8 +17,8 @@ using PrimeApps.Model.Common.Warehouse;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/analytics"), Authorize, SnakeCase]
-    public class AnalyticsController : BaseController
+    [Route("api/analytics"), Authorize/*, SnakeCase*/]
+	public class AnalyticsController : BaseController
     {
         private Warehouse _warehouseHelper;
         private IAnalyticRepository _analyticRepository;

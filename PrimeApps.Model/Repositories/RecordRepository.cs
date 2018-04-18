@@ -11,10 +11,10 @@ using Newtonsoft.Json.Linq;
 using Npgsql;
 using NpgsqlTypes;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using Microsoft.EntityFrameworkCore;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Repositories
 {
