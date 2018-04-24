@@ -42,8 +42,11 @@ namespace PrimeApps.Model.Entities.Platform
 
         [Column("currency")]//]//, Index]
         public string Currency { get; set; }
-        
-        [Column("created_at")]//]//, Index]
+
+		[Column("phone")]//]//, Index]
+		public string Phone { get; set; }
+
+		[Column("created_at")]//]//, Index]
         public DateTime CreatedAt { get; set; }
 
 		[Column("updated_at")]//]//, Index]
@@ -63,13 +66,15 @@ namespace PrimeApps.Model.Entities.Platform
 		//public virtual ICollection<Tenant> Tenant { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<TeamUsers> Teams { get; set; }
+		public virtual ICollection<TeamUser> UserTeams { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<OrganizationUsers> Organizations { get; set; }
+		public virtual ICollection<OrganizationUser> UserOrganizations { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<UserTenants> Tenants { get; set; }
+		public virtual ICollection<UserTenant> TenantsAsOwner { get; set; }
+
+		public virtual ICollection<Tenant> TenantsAsUser { get; set; }
 
 
 		//public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<PlatformUser, int manager, string authenticationType)

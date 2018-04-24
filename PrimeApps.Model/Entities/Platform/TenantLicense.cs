@@ -5,8 +5,8 @@ using System.Text;
 
 namespace PrimeApps.Model.Entities.Platform
 {
-	[Table("tenant_settings")]
-	public class TenantSettings
+	[Table("tenant_licenses")]
+	public class TenantLicense
     {
 		[Column("tenant_id")]
 		public int TenantId { get; set; }

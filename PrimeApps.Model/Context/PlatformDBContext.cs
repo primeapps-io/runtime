@@ -81,12 +81,25 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Culture);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryEmail);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryTenantId);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.UpdatedAt);
 
 
-            //ApiLog
-            //App
-            //ExchangeRate
-            modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Date);
+			//App
+			modelBuilder.Entity<App>().HasIndex(x => x.Name);
+			modelBuilder.Entity<App>().HasIndex(x => x.Description);
+			modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
+
+			modelBuilder.Entity<App>().HasIndex(x => x.CreatedBy);
+			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
+			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);
+			modelBuilder.Entity<App>().HasIndex(x => x.Deleted);
+
+			//ApiLog
+			//App
+			//ExchangeRate
+			modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Date);
             modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Year);
             modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Month);
             modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Day);
@@ -101,21 +114,31 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Tenant>().HasIndex(x => x.OwnerId);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.AppId);
 
-			//TenantInfo
-			modelBuilder.Entity<TenantInfo>().HasIndex(x => x.Language);
-			modelBuilder.Entity<TenantInfo>().HasIndex(x => x.CustomDomain);
-			modelBuilder.Entity<TenantInfo>().HasIndex(x => x.MailSenderEmail);
-			modelBuilder.Entity<TenantInfo>().HasIndex(x => x.CustomTitle);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedBy);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedAt);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedAt);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.Deleted);
 
-			//LicenceInfo
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.UserLicenseCount);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.ModuleLicenseCount);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.AnalyticsLicenseCount);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.IsPaidCustomer);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.IsDeactivated);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.IsSuspended);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.DeactivatedAt);
-			modelBuilder.Entity<TenantSettings>().HasIndex(x => x.SuspendedAt);
+			//TenantSetting
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.TenantId);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.CustomDomain);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.MailSenderName);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.MailSenderEmail);
+
+			//AppSetting
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.AppId);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Domain);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderName);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderEmail);
+
+			//TenantLicense
+			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.TenantId);
+			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.IsPaidCustomer);
+			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.IsDeactivated);
+			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.IsSuspended);
+			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.DeactivatedAt);
+			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.SuspendedAt);
 
 
 			//UserApp
@@ -132,107 +155,117 @@ namespace PrimeApps.Model.Context
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Owner);
 
+			modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedBy);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedAt);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedAt);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.Deleted);
 
 			//Team
 			modelBuilder.Entity<Team>().HasIndex(x => x.Id);
 			modelBuilder.Entity<Team>().HasIndex(x => x.Name);
 			modelBuilder.Entity<Team>().HasIndex(x => x.OrganizationId);
-			modelBuilder.Entity<Team>().HasIndex(x => x.Owner);
+
+			modelBuilder.Entity<Team>().HasIndex(x => x.CreatedBy);
+			modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<Team>().HasIndex(x => x.CreatedAt);
+			modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedAt);
+			modelBuilder.Entity<Team>().HasIndex(x => x.Deleted);
 
 			//UserTenants
-			modelBuilder.Entity<UserTenants>().HasIndex(x => x.UserId);
-			modelBuilder.Entity<UserTenants>().HasIndex(x => x.TenantId);
+			modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
+			modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
 
 			//TeamApps
-			modelBuilder.Entity<TeamApps>().HasIndex(x => x.AppId);
-			modelBuilder.Entity<TeamApps>().HasIndex(x => x.TeamId);
+			modelBuilder.Entity<TeamApp>().HasIndex(x => x.AppId);
+			modelBuilder.Entity<TeamApp>().HasIndex(x => x.TeamId);
 
 			//TeamUsers
-			modelBuilder.Entity<TeamUsers>().HasIndex(x => x.UserId);
-			modelBuilder.Entity<TeamUsers>().HasIndex(x => x.TeamId);
+			modelBuilder.Entity<TeamUser>().HasIndex(x => x.UserId);
+			modelBuilder.Entity<TeamUser>().HasIndex(x => x.TeamId);
 
 			//OrganizationUsers
-			modelBuilder.Entity<OrganizationUsers>().HasIndex(x => x.UserId);
-			modelBuilder.Entity<OrganizationUsers>().HasIndex(x => x.OrganizationId);
+			modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.UserId);
+			modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.OrganizationId);
 		}
 
 		private void CreateCustomModelMapping(ModelBuilder modelBuilder)
 		{
 			//TenantInfo One to One and Cascade delete for TenantInfo
 			modelBuilder.Entity<Tenant>()
-				.HasOne(x => x.Info)
+				.HasOne(x => x.Setting)
 				.WithOne(i => i.Tenant)
-				.HasForeignKey<TenantInfo>(b => b.TenantId)
+				.HasForeignKey<TenantSetting>(b => b.TenantId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			//TenantSetting One to One and Cascade delete for TenantSettings
+			//TenantLicense One to One and Cascade delete for TenantLicenses
 			modelBuilder.Entity<Tenant>()
-				.HasOne(x => x.Settings)
+				.HasOne(x => x.Setting)
 				.WithOne(i => i.Tenant)
-				.HasForeignKey<TenantSettings>(b => b.TenantId)
+				.HasForeignKey<TenantLicense>(b => b.TenantId)
 				.OnDelete(DeleteBehavior.Cascade);
 
 			//TenantInfo One to One and Cascade delete for TenantInfo
 			modelBuilder.Entity<App>()
-				.HasOne(x => x.Info)
+				.HasOne(x => x.Setting)
 				.WithOne(i => i.App)
-				.HasForeignKey<AppInfo>(b => b.AppId)
+				.HasForeignKey<AppSetting>(b => b.AppId)
 				.OnDelete(DeleteBehavior.Cascade);
 			
 			//TeamApps Many to Many
-			modelBuilder.Entity<TeamApps>()
+			modelBuilder.Entity<TeamApp>()
 			   .HasKey(t => new { t.AppId, t.TeamId});
 
-			modelBuilder.Entity<TeamApps>()
+			modelBuilder.Entity<TeamApp>()
 				.HasOne(pt => pt.App)
-				.WithMany(p => p.Teams)
+				.WithMany(p => p.AppTeams)
 				.HasForeignKey(pt => pt.AppId);
 
-			modelBuilder.Entity<TeamApps>()
+			modelBuilder.Entity<TeamApp>()
 				.HasOne(pt => pt.Team)
-				.WithMany(t => t.Apps)
+				.WithMany(t => t.TeamApps)
 				.HasForeignKey(pt => pt.TeamId);
 
 			//TeamUsers Many to Many
-			modelBuilder.Entity<TeamUsers>()
+			modelBuilder.Entity<TeamUser>()
 			   .HasKey(t => new { t.UserId, t.TeamId });
 
-			modelBuilder.Entity<TeamUsers>()
+			modelBuilder.Entity<TeamUser>()
 				.HasOne(pt => pt.PlatformUser)
-				.WithMany(p => p.Teams)
+				.WithMany(p => p.UserTeams)
 				.HasForeignKey(pt => pt.TeamId);
 
-			modelBuilder.Entity<TeamUsers>()
+			modelBuilder.Entity<TeamUser>()
 				.HasOne(pt => pt.Team)
-				.WithMany(t => t.Users)
+				.WithMany(t => t.TeamUsers)
 				.HasForeignKey(pt => pt.UserId);
 
 			//OrganizationUsers Many to Many
-			modelBuilder.Entity<OrganizationUsers>()
+			modelBuilder.Entity<OrganizationUser>()
 			   .HasKey(t => new { t.UserId, t.OrganizationId });
 
-			modelBuilder.Entity<OrganizationUsers>()
+			modelBuilder.Entity<OrganizationUser>()
 				.HasOne(pt => pt.PlatformUser)
-				.WithMany(p => p.Organizations)
+				.WithMany(p => p.UserOrganizations)
 				.HasForeignKey(pt => pt.OrganizationId);
 
-			modelBuilder.Entity<OrganizationUsers>()
+			modelBuilder.Entity<OrganizationUser>()
 				.HasOne(pt => pt.Organization)
-				.WithMany(t => t.Users)
+				.WithMany(t => t.OrganizationUsers)
 				.HasForeignKey(pt => pt.UserId);
 
-			//UserTenants Many to Many
-			modelBuilder.Entity<UserTenants>()
+			//UserTenant Many to Many
+			modelBuilder.Entity<UserTenant>()
 			   .HasKey(t => new { t.UserId, t.TenantId });
 
-			modelBuilder.Entity<UserTenants>()
+			modelBuilder.Entity<UserTenant>()
 				.HasOne(pt => pt.PlatformUser)
-				.WithMany(p => p.Tenants)
+				.WithMany(p => p.TenantsAsOwner)
 				.HasForeignKey(pt => pt.TenantId);
 
-			modelBuilder.Entity<UserTenants>()
+			modelBuilder.Entity<UserTenant>()
 				.HasOne(pt => pt.Tenant)
-				.WithMany(t => t.Users)
+				.WithMany(t => t.TenantUsers)
 				.HasForeignKey(pt => pt.UserId);
 
 			//Apps and Tenants One to Many 
@@ -241,12 +274,17 @@ namespace PrimeApps.Model.Context
 			   .WithOne(i => i.App)
 			   .HasForeignKey(b => b.AppId);
 
-			//Organization and Team One to Many 
-			modelBuilder.Entity<Organization>()
-			   .HasMany(p => p.Teams)
-			   .WithOne(i => i.Organization)
-			   .HasForeignKey(b => b.OrganizationId);
+			//Organization and Team One to Many
+			modelBuilder.Entity<Team>()
+				.HasOne(p => p.Organization)
+				.WithMany(b => b.Teams)
+				.HasForeignKey(p => p.OrganizationId);
 
+			//Organization and Team One to Many
+			modelBuilder.Entity<Tenant>()
+				.HasOne(p => p.Owner)
+				.WithMany(b => b.TenantsAsUser)
+				.HasForeignKey(p => p.OwnerId);
 
 			BuildIndexes(modelBuilder);
 		}
@@ -257,23 +295,24 @@ namespace PrimeApps.Model.Context
 		//TODO Removed
 		//public DbSet<RefreshToken> RefreshTokens { get; set; }
 		public DbSet<PlatformUser> Users { get; set; }
+		public DbSet<App> Apps { get; set; }
+		public DbSet<AppSetting> AppSettings { get; set; }
 		public DbSet<ActiveDirectoryTenant> ActiveDirectoryTenants { get; set; }
         public DbSet<ActiveDirectoryCache> ActiveDirectoryCache { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
-        public DbSet<Organization> Organization { get; set; }
-		public DbSet<TenantInfo> TenantInfo { get; set; }
-		public DbSet<TenantSettings> TenantSettings { get; set; }
-		public DbSet<Team> Team { get; set; }
-		public DbSet<TeamUsers> TeamUsers { get; set; }
-		public DbSet<TeamApps> TeamApps { get; set; }
-		public DbSet<OrganizationUsers> OrganizationUsers { get; set; }	
+        public DbSet<Organization> Organizations { get; set; }
+		public DbSet<TenantSetting> TenantSettings { get; set; }
+		public DbSet<TenantLicense> TenantLicenses { get; set; }
+		public DbSet<Team> Teams { get; set; }
+		public DbSet<TeamUser> TeamUsers { get; set; }
+		public DbSet<TeamApp> TeamApps { get; set; }
+		public DbSet<OrganizationUser> OrganizationUsers { get; set; }	
 		//public DbSet<ApiLog> ApiLogs { get; set; } // TODO: Refactor with .net core and postgresql json
 		public DbSet<ExchangeRate> ExchangeRates { get; set; }
-        public DbSet<App> Apps { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
 		//TODO Removed
 		//public DbSet<UserApp> UserApps { get; set; }
-		public DbSet<UserTenants> UserTenants { get; set; }
+		public DbSet<UserTenant> UserTenants { get; set; }
 
     }
 }

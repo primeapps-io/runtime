@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Services;
 using System;

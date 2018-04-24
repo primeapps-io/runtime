@@ -7,8 +7,8 @@ using System.Text;
 
 namespace PrimeApps.Model.Entities.Platform
 {
-	[Table("tenant_info")]
-	public class TenantInfo
+	[Table("tenant_settings")]
+	public class TenantSetting
     {
 		[JsonIgnore]
 		[Column("tenant_id"), Key]
@@ -23,7 +23,7 @@ namespace PrimeApps.Model.Entities.Platform
 
 		/// <summary>
 		/// Language
-		/// </summary>
+		/// </summary>	
 		[Column("language")]//]//, Index]
 		public string Language { get; set; }
 

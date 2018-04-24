@@ -190,7 +190,7 @@ namespace PrimeApps.App.Controllers
             UserLicenseDTO userLicense = new UserLicenseDTO();
 
             Model.Entities.Platform.Tenant tenant = await _tenantRepository.GetAsync(AppUser.TenantId);
-            userLicense.Total = tenant.UserLicenseCount;
+            userLicense.Total = tenant.License.UserLicenseCount;
             int usedLicenseCount = await _tenantRepository.GetUserCount(AppUser.TenantId);
             userLicense.Used = usedLicenseCount;
 
@@ -204,7 +204,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
             var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
-            subscriberTenant.UserLicenseCount = count;
+            subscriberTenant.License.UserLicenseCount = count;
             await _tenantRepository.UpdateAsync(subscriberTenant);
 
             await Cache.Tenant.Remove(subscriberTenant.Id);
@@ -220,7 +220,7 @@ namespace PrimeApps.App.Controllers
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
-            subscriberTenant.ModuleLicenseCount = count;
+            subscriberTenant.License.ModuleLicenseCount = count;
             await _tenantRepository.UpdateAsync(subscriberTenant);
             await Cache.Tenant.Remove(subscriberTenant.Id);
 
@@ -284,7 +284,7 @@ namespace PrimeApps.App.Controllers
 
             var tenant = await _tenantRepository.GetAsync(tenantId);
 
-            tenant.IsPaidCustomer = !tenant.IsPaidCustomer;
+            tenant.License.IsPaidCustomer = !tenant.License.IsPaidCustomer;
             await _tenantRepository.UpdateAsync(tenant);
 
             await Cache.Tenant.Remove(tenant.Id);
@@ -309,8 +309,8 @@ namespace PrimeApps.App.Controllers
             var tenant = await _tenantRepository.GetAsync(tenantId);
             _userRepository.DbContext.TenantId = tenantId;
 
-            tenant.IsDeactivated = true;
-            tenant.DeactivatedAt = DateTime.UtcNow;
+            tenant.License.IsDeactivated = true;
+            tenant.License.DeactivatedAt = DateTime.UtcNow;
 
             foreach (var user in users)
             {
@@ -365,9 +365,9 @@ namespace PrimeApps.App.Controllers
                 await Cache.User.Remove(user.Id);
             }
 
-            tenant.IsDeactivated = false;
-            tenant.IsSuspended = false;
-            tenant.IsPaidCustomer = true;
+            tenant.License.IsDeactivated = false;
+            tenant.License.IsSuspended = false;
+            tenant.License.IsPaidCustomer = true;
             await _tenantRepository.UpdateAsync(tenant);
 
             return Ok();
@@ -386,8 +386,8 @@ namespace PrimeApps.App.Controllers
 
             var tenant = await _tenantRepository.GetAsync(tenantId);
 
-            tenant.IsSuspended = true;
-            tenant.SuspendedAt = DateTime.UtcNow;
+            tenant.License.IsSuspended = true;
+            tenant.License.SuspendedAt = DateTime.UtcNow;
 
             _userRepository.DbContext.TenantId = tenantId;
             var tenantUsers = await _userRepository.GetAllAsync();

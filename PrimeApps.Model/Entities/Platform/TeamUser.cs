@@ -3,7 +3,7 @@
 namespace PrimeApps.Model.Entities.Platform
 {
 	[Table("team_users")]
-	public class TeamUsers
+	public class TeamUser
 	{
 		[Column("user_id")]
 		public int UserId { get; set; }

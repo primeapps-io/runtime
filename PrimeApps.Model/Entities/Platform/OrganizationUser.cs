@@ -6,7 +6,7 @@ using System.Text;
 namespace PrimeApps.Model.Entities.Platform
 {
 	[Table("organization_users")]
-	public class OrganizationUsers
+	public class OrganizationUser
 	{
 		[Column("user_id")]
 		public int UserId { get; set; }

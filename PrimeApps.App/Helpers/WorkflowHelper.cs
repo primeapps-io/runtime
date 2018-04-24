@@ -19,8 +19,8 @@ using System.Configuration;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.Model.Entities.Platform.Identity;
 using Newtonsoft.Json;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Helpers
 {

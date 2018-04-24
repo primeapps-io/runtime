@@ -22,7 +22,6 @@ using PrimeApps.App.Providers;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Entities.Platform.Identity;
 using Npgsql;
 using PrimeApps.App.Extensions;
 using PrimeApps.Model.Context;

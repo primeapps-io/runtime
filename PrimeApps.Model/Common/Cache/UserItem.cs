@@ -78,12 +78,6 @@ namespace PrimeApps.Model.Common.Cache
         public string TenantLanguage { get; set; }
 
         /// <summary>
-        /// Gets or sets the security stamp for OAuth2.
-        /// </summary>
-        /// <value>The Security Stamp</value>
-        public string SecurityStamp { get; set; }
-
-        /// <summary>
         /// Gets or sets the App ID.
         /// </summary>
         /// <value>The AppID.</value>

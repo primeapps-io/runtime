@@ -42,21 +42,22 @@ namespace PrimeApps.Model.Repositories
                  {
                      tenantId = t.Id,
                      title = t.Title,
-					 currency = t.Currency,
-                     language = t.Language,
-                     logo = t.Logo,
-                     logoUrl = t.Logo,
-                     hasSampleData = t.HasSampleData,
-                     hasAnalytics = t.HasAnalytics,
-                     hasPhone = t.HasPhone,
+					 currency = t.Setting.Currency,
+                     language = t.Setting.Language,
+                     logo = t.Setting.Logo,
+                     logoUrl = t.Setting.Logo,
+					 //TODO Removed
+                     //hasSampleData = t.HasSampleData,
+                     //hasPhone = t.HasPhone,
+                     hasAnalytics = t.License.AnalyticsLicenseCount > 0,
                      owner = t.Owner.Id,
-                     users = t.Users.Select(u => new UserList //get users for the instance.
+                     users = t.TenantUsers.Select(u => new UserList //get users for the instance.
                      {
-                         Id = u.Id,
-                         userName = u.FirstName + " " + u.LastName,
-                         email = u.Email,
+                         Id = u.UserId,
+                         userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
+                         email = u.PlatformUser.Email,
                          hasAccount = true,
-                         isAdmin = t.Owner.Id == u.Id
+                         isAdmin = t.Owner.Id == u.UserId
                      }).OrderByDescending(x => x.isAdmin).ToList()
                  }).ToListAsync();
         }
@@ -77,7 +78,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<Entities.Platform.Tenant> GetByCustomDomain(string customDomain)
         {
-            return await DbContext.Tenants.Where(x => x.Info.CustomDomain == customDomain).SingleOrDefaultAsync();
+            return await DbContext.Tenants.Where(x => x.Setting.CustomDomain == customDomain).SingleOrDefaultAsync();
         }
 
         public async Task<int> GetUserCount(int tenantId)

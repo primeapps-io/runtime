@@ -6,7 +6,7 @@ using System.Text;
 namespace PrimeApps.Model.Entities.Platform
 {
 	[Table("team_apps")]
-	public class TeamApps
+	public class TeamApp
 	{
 		[Column("app_id")]
 		public int AppId { get; set; }

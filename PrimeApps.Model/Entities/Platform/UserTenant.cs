@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeApps.Model.Entities.Platform
 {
 	[Table("user_tenants")]
-	public class UserTenants
+	public class UserTenant
     {
 		[Column("user_id")]//]//, Index]
 		public int UserId { get; set; }

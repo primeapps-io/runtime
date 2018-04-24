@@ -42,10 +42,10 @@ namespace PrimeApps.App.Cache
                     using (TenantRepository tRepository = new TenantRepository(pDbContext))
                     {
                         Model.Entities.Platform.Tenant tenant = await tRepository.GetAsync(tenantId);
-                        value.Language = tenant.Language;
+                        value.Language = tenant.Info.Language;
                         value.OwnerId = tenant.OwnerId;
-                        value.HasAnalytics = tenant.HasAnalytics;
-                        value.Users = tenant.Users.Select(x => x.Id).ToArray();
+                        value.HasAnalytics = tenant.Settings.AnalyticsLicenseCount > 0;
+                        value.Users = tenant.Users.Select(x => x.UserId).ToArray();
                     }
                 }
 

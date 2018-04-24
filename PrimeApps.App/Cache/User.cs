@@ -51,7 +51,6 @@ namespace PrimeApps.App.Cache
                 newCacheEntry.Id = user.Id;
                 newCacheEntry.TenantId = user.TenantId.Value;
                 newCacheEntry.AppId = user.AppId;
-                newCacheEntry.SecurityStamp = user.SecurityStamp;
                 newCacheEntry.TenantGuid = user.Tenant.GuidId;
 
                 //create tenant sessions for the tenant in the user's session.

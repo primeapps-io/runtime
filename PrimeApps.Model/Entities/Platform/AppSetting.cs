@@ -7,8 +7,8 @@ using System.Text;
 
 namespace PrimeApps.Model.Entities.Platform
 {
-	[Table("app_info")]
-	public class AppInfo
+	[Table("app_settings")]
+	public class AppSetting
 	{
 		[JsonIgnore]
 		[Column("app_id"), Key]

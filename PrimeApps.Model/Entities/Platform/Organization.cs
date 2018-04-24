@@ -14,14 +14,16 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("name"), MaxLength(700)]
 		public string Name { get; set; }
 
-		[Column("owner")]
-		public int Owner { get; set; }
+		[Column("owner"), ForeignKey("Owner")]
+		public int OwnerId { get; set; }
+
+		public virtual PlatformUser Owner { get; set; }
 
 		//Apps and Tenants One to Many 
 		public virtual ICollection<Team> Teams { get; set; }
 
 		//[JsonIgnore]
-		public virtual ICollection<OrganizationUsers> Users { get; set; }
+		public virtual ICollection<OrganizationUser> OrganizationUsers { get; set; }
 
 	}
 }
