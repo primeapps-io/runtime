@@ -9,7 +9,7 @@ using PrimeApps.App.Cache;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Results;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories;
 
 namespace PrimeApps.App.Controllers

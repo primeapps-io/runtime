@@ -72,7 +72,7 @@ namespace PrimeApps.Auth
 
 					// this enables automatic token cleanup. this is optional.
 					options.EnableTokenCleanup = true;
-					options.TokenCleanupInterval = 30;
+					options.TokenCleanupInterval = 3600; //3600 (1 hour)
 				})
 				.AddAspNetIdentity<ApplicationUser>();
 
