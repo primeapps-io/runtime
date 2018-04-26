@@ -10,7 +10,6 @@ using PrimeApps.App.Models;
 using System.Security.Claims;
 using System.Threading;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform.Identity;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using System.Configuration;

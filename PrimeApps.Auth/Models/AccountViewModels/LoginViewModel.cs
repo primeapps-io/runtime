@@ -6,17 +6,15 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.Models.AccountViewModels
 {
-    public class LoginViewModel
+    public class LoginViewModel : LoginInputModel
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+		public bool AllowRememberLogin { get; set; }
+		public bool EnableLocalLogin { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+		public IEnumerable<ExternalProviderModel> ExternalProviders { get; set; }
+		public IEnumerable<ExternalProviderModel> VisibleExternalProviders => ExternalProviders.Where(x => !String.IsNullOrWhiteSpace(x.DisplayName));
 
-        [Display(Name = "Remember me?")]
-        public bool RememberMe { get; set; }
-    }
+		public bool IsExternalLoginOnly => EnableLocalLogin == false && ExternalProviders?.Count() == 1;
+		public string ExternalLoginScheme => IsExternalLoginOnly ? ExternalProviders?.SingleOrDefault()?.AuthenticationScheme : null;
+	}
 }

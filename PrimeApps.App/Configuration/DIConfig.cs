@@ -5,18 +5,20 @@ using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
 using Hangfire;
 using PrimeApps.App.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App
 {
 	public partial class Startup
 	{
-		public static void DIRegister(IServiceCollection services)
+		public static void DIRegister(IServiceCollection services, IConfiguration configuration)
 		{
+			
 			services.AddDbContext<TenantDBContext>(options =>
-				options.UseNpgsql("Data Source=blog.db"));
-
+				options.UseNpgsql(configuration.GetConnectionString("PostgreSqlConnection")));
+			
 			services.AddDbContext<PlatformDBContext>(options =>
-				options.UseNpgsql("Data Source=blog.db"));
+				options.UseNpgsql(configuration.GetConnectionString("PostgreSqlConnection")));
 
 			services.AddScoped<WarehouseHelper, WarehouseHelper>();
 			services.AddScoped<Warehouse, Warehouse>();
@@ -30,6 +32,8 @@ namespace PrimeApps.App
 			services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
 			services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
 			services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
+
+			services.AddSingleton(configuration);
 
 			GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(services.BuildServiceProvider()));
 		}

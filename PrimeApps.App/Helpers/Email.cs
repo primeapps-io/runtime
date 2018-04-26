@@ -73,8 +73,6 @@ namespace PrimeApps.App.Helpers
         /// <param name="dataFields">The data fields of email</param>
         public Email(Type resourceType, string culture, Dictionary<string, string> dataFields, int AppId = 1, UserItem AppUser = null)
         {
-
-
             string path = "",
                    tmpl = "",
                    appUrl = "",
@@ -82,7 +80,7 @@ namespace PrimeApps.App.Helpers
                    appCodeUrl = "",
                    appColor = "",
                    socialMediaIcons = "";
-            footer = "";
+				   footer = "";
 
 
             dataRegex = new Regex(dataPattern);

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using Microsoft.EntityFrameworkCore.Storage.Internal.Mapping;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;

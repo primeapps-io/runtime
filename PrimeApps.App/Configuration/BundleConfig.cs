@@ -4,15 +4,16 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace PrimeApps.App
 {
     public partial class Startup
     {
-	    public static void BundleConfiguration(IApplicationBuilder app)
+	    public static void BundleConfiguration(IApplicationBuilder app, IConfiguration Configuration)
 	    {
-			var enableBundle = bool.Parse(ConfigurationManager.AppSettings["EnableBundle"]);
+			var enableBundle = bool.Parse(Configuration.GetSection("AppSettings").GetValue<string>("EnableBundle"));
 
 		    if (enableBundle)
 			    app.UseWebOptimizer();

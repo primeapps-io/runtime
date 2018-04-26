@@ -28,7 +28,6 @@ namespace PrimeApps.App
         {
             PublicClientId = "self";
 
-
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -43,28 +42,77 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
-            #region IdentityServer4
-            services.AddMvcCore()
-                .AddAuthorization()
-                .AddJsonFormatters();
+			//Register DI
+			DIRegister(services, Configuration);
 
-            services.AddAuthentication("Bearer")
-                .AddIdentityServerAuthentication(options =>
-                {
-                    options.Authority = "http://localhost:51735";
-                    options.RequireHttpsMetadata = false;
-                    options.ApiName = "api1";
-                });
-            #endregion
+			services.AddLocalization(o => o.ResourcesPath = "Localization");
 
-            /*services.AddIdentity<PlatformUser, ApplicationRole>()
+			services.Configure<MvcOptions>(options =>
+			{
+				options.Filters.Add(new RequireHttpsAttribute());
+			});
+
+			services.Configure<RequestLocalizationOptions>(options =>
+			{
+				var supportedCultures = new[]
+				{
+					new CultureInfo("en-US"),
+					new CultureInfo("tr-TR")
+				};
+				options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
+
+				// You must explicitly state which cultures your application supports.
+				// These are the cultures the app supports for formatting 
+				// numbers, dates, etc.
+
+				options.SupportedCultures = supportedCultures;
+
+				// These are the cultures the app supports for UI strings, 
+				// i.e. we have localized resources for.
+
+				options.SupportedUICultures = supportedCultures;
+			});
+
+			services.AddCors(options =>
+			{
+				options.AddPolicy("AllowAll",
+					builder =>
+					{
+						builder
+							.AllowAnyOrigin()
+							.AllowAnyMethod()
+							.AllowAnyHeader()
+							.AllowCredentials();
+					});
+			});
+
+
+			services.AddMvc()
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+				.AddJsonOptions(opt =>
+				{
+					#region SnakeCaseAttribute
+					opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
+					{
+						NamingStrategy = new SnakeCaseNamingStrategy()
+					};
+					#endregion
+				}).AddViewLocalization(
+				LanguageViewLocationExpanderFormat.Suffix,
+				opts => { opts.ResourcesPath = "Localization"; })
+				.AddDataAnnotationsLocalization();
+
+			AuthConfiguration(services, Configuration);
+
+
+			/*services.AddIdentity<PlatformUser, ApplicationRole>()
 			   .AddUserStore<PlatformDBContext>()
 			   .AddUserManager<ApplicationUserManager>()
 			   .AddRoleManager<ApplicationUserRole>()
 			   .AddEntityFrameworkStores<PlatformDBContext, int>()
 			   .AddDefaultTokenProviders();*/
 
-            /*services.AddIdentity<ApplicationUserManager, ApplicationUserRole>(options =>
+			/*services.AddIdentity<ApplicationUserManager, ApplicationUserRole>(options =>
 			{
 				options.Password.RequiredLength = 10;
 				options.Password.RequireLowercase = false;
@@ -76,32 +124,7 @@ namespace PrimeApps.App
 				options.User.AllowedUserNameCharacters = "";
 			});*/
 
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new RequireHttpsAttribute());
-            });
-
-            services.AddLocalization(o => o.ResourcesPath = "Localization");
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                var supportedCultures = new[]
-                {
-                    new CultureInfo("en-US"),
-                    new CultureInfo("tr-TR")
-                };
-                options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
-
-                // You must explicitly state which cultures your application supports.
-                // These are the cultures the app supports for formatting 
-                // numbers, dates, etc.
-
-                options.SupportedCultures = supportedCultures;
-
-                // These are the cultures the app supports for UI strings, 
-                // i.e. we have localized resources for.
-
-                options.SupportedUICultures = supportedCultures;
-            });
+			
 
             // Add application services. DI
             //services.AddTransient<IProductRepository, ProductRepository>();
@@ -110,9 +133,7 @@ namespace PrimeApps.App
             //var appKey = ConfigurationManager.AppSettings["ida:Password"];
             //var authority = "https://login.microsoftonline.com/common/";
             //var graphResourceID = "https://graph.windows.net";
-
-            RegisterAuth(services);
-
+			
             /*services.AddMvc(options =>
             {
 
@@ -123,38 +144,14 @@ namespace PrimeApps.App
                         NoStore = true,
                     });
             });*/
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll",
-                    builder =>
-                    {
-                        builder
-                            .AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials();
-                    });
-            });
+            
 
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddJsonOptions(opt =>
-                {
-                    #region SnakeCaseAttribute
-                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
-                    {
-                        NamingStrategy = new SnakeCaseNamingStrategy()
-                    };
-                    #endregion
-                }).AddViewLocalization(
-                LanguageViewLocationExpanderFormat.Suffix,
-                opts => { opts.ResourcesPath = "Localization"; })
-                .AddDataAnnotationsLocalization();
+            
 
             #region RequireHttpsAttribute
             services.Configure<MvcOptions>(options =>
                 {
-                    options.Filters.Add(new RequireHttps());
+                    options.Filters.Add(new RequireHttps(Configuration));
                 });
             #endregion
 
@@ -187,7 +184,6 @@ namespace PrimeApps.App
 
             app.UseAuthentication();
 
-
             BundleConfiguration(app);
 
             if (env.IsDevelopment())
@@ -216,6 +212,7 @@ namespace PrimeApps.App
             app.UseCors("AllowAll");
 
             JobConfiguration(app);
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

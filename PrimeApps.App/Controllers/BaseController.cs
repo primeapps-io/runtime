@@ -10,7 +10,7 @@ using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Controllers
 {
-    [Authorize, Microsoft.AspNetCore.Mvc.RequireHttps, ResponseCache(CacheProfileName = "Nocache")] 
+    [Authorize, Microsoft.AspNetCore.Mvc.RequireHttps, ResponseCache(CacheProfileName = "Nocache")]
 
     public class BaseController : Controller
     {

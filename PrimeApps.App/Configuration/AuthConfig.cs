@@ -1,143 +1,93 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories;
-using PrimeApps.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace PrimeApps.App
 {
-    public partial class Startup
-    {
-		public static void RegisterAuth(IServiceCollection services)
+	public partial class Startup
+	{
+		public static void AuthConfiguration(IServiceCollection services, IConfiguration configuration)
 		{
-			var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
-			var authority = "https://login.microsoftonline.com/common/";
+			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddCookie("Cookieauth", options =>
+			services.AddAuthentication(options =>
+			{
+				options.DefaultScheme = "Cookies";
+				options.DefaultChallengeScheme = "oidc";
+			})
+				.AddCookie("Cookies")
+				.AddOpenIdConnect("oidc", options =>
 				{
-					options.LoginPath = new PathString("/auth/login");
-					options.ExpireTimeSpan = TimeSpan.FromDays(14);
-				})
-				.AddOpenIdConnect(options =>
-				{
-					options.Authority = authority;
-					options.ClientId = clientId;
-					options.TokenValidationParameters = new TokenValidationParameters
-					{
-						ValidateIssuer = false
-					};
+					options.TokenValidationParameters.NameClaimType = "email";
+					options.SignInScheme = "Cookies";
+
+					options.Authority = "http://localhost:5000";
+					options.RequireHttpsMetadata = false;
+
+					options.ClientId = "mvc";
+					options.ClientSecret = "secret";
+					options.ResponseType = "code id_token";
+
+					options.SaveTokens = true;
+					options.GetClaimsFromUserInfoEndpoint = true;
+
+					options.Scope.Add("api1");
+
 					options.Events = new OpenIdConnectEvents
 					{
-						OnRedirectToIdentityProvider = ctx =>
+						/*OnAuthorizationCodeReceived = async ctx =>
 						{
-							var appBaseUrl = ctx.Request.Scheme + "://" + ctx.Request.Host + ctx.Request.PathBase;
-							ctx.ProtocolMessage.RedirectUri = appBaseUrl + "/";
-							ctx.ProtocolMessage.PostLogoutRedirectUri = appBaseUrl;
-							return Task.FromResult(0);
-						},
-						OnAuthorizationCodeReceived = async ctx =>
+							var request = ctx.HttpContext.Request;
+							var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+							var credential = new ClientCredential(ctx.Options.ClientId, ctx.Options.ClientSecret);
+
+							var distributedCache = ctx.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
+							string userId = ctx.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+
+							var cache = new AdalDistributedTokenCache(distributedCache, userId);
+
+							var authContext = new AuthenticationContext(ctx.Options.Authority, cache);
+
+							var result = await authContext.AcquireTokenByAuthorizationCodeAsync(
+								ctx.ProtocolMessage.Code, new Uri(currentUri), credential, ctx.Options.Resource);
+
+							ctx.HandleCodeRedemption(result.AccessToken, result.IdToken);
+						}*/
+						/*OnTokenValidated = async ctx =>
 						{
-							var code = ctx.ProtocolMessage.Code;
-							// Redeem auth code for access token and cache it for later use
-							ctx.HttpContext.User = ctx.Principal;
+							//Get user's immutable object id from claims that came from Azure AD
+							string oid = ctx.Principal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier");
 
-							IAzureAdTokenService tokenService = (IAzureAdTokenService)ctx.HttpContext.RequestServices.GetService(typeof(IAzureAdTokenService));
-							await tokenService.RedeemAuthCodeForAadGraph(ctx.ProtocolMessage.Code, ctx.Properties.Items[OpenIdConnectDefaults.RedirectUriForCodePropertiesKey]);
+							//Get EF context
+							/*var db = ctx.HttpContext.RequestServices.GetRequiredService<AuthorizationDbContext>();
 
-							// Notify the OIDC middleware that we already took care of code redemption.
-							ctx.HandleCodeRedemption();
-						},
-						OnTokenValidated = async ctx =>
-						{
-							var issuer = ctx.SecurityToken.Issuer;
-							var email = ctx.Principal.FindFirst(ClaimTypes.Name).Value;
-							var name = ctx.Principal.FindFirst(ClaimTypes.GivenName).Value;
-							var lastname = ctx.Principal.FindFirst(ClaimTypes.Surname).Value;
-
-							PlatformUser user;
-							using (var dbContext = new PlatformDBContext())
+							//Check is user a super admin
+							bool isSuperAdmin = await db.SuperAdmins.AnyAsync(a => a.ObjectId == oid);
+							if (isSuperAdmin)
 							{
-								using (var platformUserRepository = new PlatformUserRepository(dbContext))
-								{
-									user = await platformUserRepository.GetUserByActiveDirectoryTenantEmail(email);
+								//Add claim if they are
+								var claims = new List<Claim>
+											{
+												new Claim(ClaimTypes.Role, "superadmin")
+											};
+								var appIdentity = new ClaimsIdentity(claims);
 
-
-									if (user == null)
-									{
-										var resultControl = await platformUserRepository.IsEmailAvailable(email);
-
-										if (resultControl == false)
-											ctx.Response.Redirect("/Auth/Login?Error=notActive");
-										else
-											ctx.Response.Redirect("/Auth/Register?Email=" + email + "&Name=" + HttpUtility.UrlEncode(name) + "&Lastname=" + HttpUtility.UrlEncode(lastname) + "&OfficeSignIn=" + true);
-
-										ctx.HandleResponse();
-										return /*Task.FromResult(0)*/;
-										//throw new SecurityTokenValidationException();
-									}
-								}
-							}
-
-							var currentNameClaim = ctx.Principal.FindFirst(ClaimTypes.Name);
-
-							var claimsIdentity = (ClaimsIdentity)ctx.Principal.Identity;
-							//add your custom claims here
-							claimsIdentity.RemoveClaim(currentNameClaim);
-							claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, user.Email));
-							claimsIdentity.AddClaim(new Claim("user_id", user.Id.ToString()));
-							claimsIdentity.AddClaim(new Claim("tenant_id", user.TenantId.ToString()));
-
-							return /*Task.FromResult(0)*/;
-						},
-						OnAuthenticationFailed = ctx =>
+								ctx.Principal.AddIdentity(appIdentity);
+						},*/
+						OnUserInformationReceived = context =>
 						{
-							ctx.Response.Redirect("/Auth/Login?ReturnUrl=/&Error=notFound");
-							ctx.HandleResponse();
-
-							return Task.FromResult(0);
-						}
-
+							var a = context.ProtocolMessage.AccessToken;
+							return Task.CompletedTask;
+						},
 					};
-				})
-				.AddJwtBearer(options =>
-				{
-					var issuer = "0f!s!mJWT";
-					var audienceId = ConfigurationManager.AppSettings["as:AudienceId"];
-
-					//byte[] encodedBytes = System.Text.Encoding.Unicode.GetBytes(ConfigurationManager.AppSettings["as:AudienceSecret"]);
-					//string audienceSecret = Convert.ToBase64String(encodedBytes);
-
-					//var audienceSecret = TextEncodings.Base64Url.Decode(ConfigurationManager.AppSettings["as:AudienceSecret"]);
-
-					options.RequireHttpsMetadata = false;
-					options.SaveToken = true;
-
-					options.TokenValidationParameters = new TokenValidationParameters()
-					{
-						ValidateIssuer = true,
-						ValidateAudience = true,
-						ValidateLifetime = true,
-						ValidateIssuerSigningKey = true,
-
-						ValidIssuer = issuer,
-						ValidAudience = audienceId,
-						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ConfigurationManager.AppSettings["as:AudienceSecret"])) //Secret
-					};
-
+					//options.Scope.Add("offline_access");
 				});
-
 		}
 	}
 }

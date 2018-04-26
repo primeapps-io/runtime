@@ -6,11 +6,10 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class WorkflowRepository : RepositoryBaseTenant, IWorkflowRepository
+	public class WorkflowRepository : RepositoryBaseTenant, IWorkflowRepository
     {
         public WorkflowRepository(TenantDBContext dbContext) : base(dbContext) { }
 

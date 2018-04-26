@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal;
 
 namespace PrimeApps.Model.Context
 {
@@ -20,8 +21,9 @@ namespace PrimeApps.Model.Context
 			IMigrationsSqlGenerator migrationsSqlGenerator,
 			ISqlGenerationHelper sqlGenerationHelper,
 			ICoreConventionSetBuilder coreConventionSetBuilder,
-			IEnumerable<IConventionSetBuilder> conventionSetBuilders)
-        : base(new HistoryRepositoryDependencies(databaseCreator, rawSqlCommandBuilder, connection, options, modelDiffer, migrationsSqlGenerator, sqlGenerationHelper, coreConventionSetBuilder, conventionSetBuilders))
+			IEnumerable<IConventionSetBuilder> conventionSetBuilders,
+			IRelationalTypeMappingSource typeMappingSource)
+        : base(new HistoryRepositoryDependencies(databaseCreator,rawSqlCommandBuilder,connection,options,modelDiffer,migrationsSqlGenerator, sqlGenerationHelper,coreConventionSetBuilder,conventionSetBuilders,typeMappingSource))
     {
     }
 
