@@ -27,6 +27,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<IList<Workgroup>> MyWorkgroups(int globalId);
         Task<IList<int>> GetExpiredTenantIdsToDelete();
         Task<IList<PlatformUser>> GetAllAccountOwners();
-
+        PlatformUser GetByEmailAndTenantId(string email, int tenantId);
     }
 }

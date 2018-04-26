@@ -183,5 +183,16 @@ namespace PrimeApps.Model.Repositories
             //return workgroup object.
             return result;
         }
+
+        public PlatformUser GetByEmailAndTenantId(string email, int tenantId)
+        {
+            var user = DbContext.Users
+                .Include(x => x.TenantsAsUser.Where(z => z.Id == tenantId))
+                .Include(x => x.TenantsAsUser.Select(z => z.Setting))
+                .Include(x => x.TenantsAsUser.Select(z => z.License))
+                .SingleOrDefault(x => x.Email == email);
+
+            return user;
+        }
     }
 }

@@ -1,21 +1,17 @@
-using System;
 using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Cache;
+using PrimeApps.App.ActionFilters;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Controllers
 {
-    [Authorize, Microsoft.AspNetCore.Mvc.RequireHttps, ResponseCache(CacheProfileName = "Nocache")] 
+    [Authorize, AuthorizeTenant, RequireHttps, ResponseCache(CacheProfileName = "Nocache")]
 
     public class BaseController : Controller
     {
         private UserItem _appUser;
-        private string _clientId;
 
         /// <summary>
         /// Contains basic information related to authorized user.
@@ -24,76 +20,36 @@ namespace PrimeApps.App.Controllers
         {
             get
             {
-                if (_appUser == null && User.Identity != null && !string.IsNullOrEmpty(User.Identity.Name))
+                if (_appUser == null && HttpContext.Items?["user"] != null)
                 {
-                    _appUser = GetAppUserSync();
+                    _appUser = GetUser();
                 }
 
                 return _appUser;
             }
         }
 
-        /// <summary>
-        /// Client id that user currently authorized with the current access token
-        /// </summary>
-        public string ClientId
+        private UserItem GetUser()
         {
-            get
+            var platformUser = (PlatformUser)HttpContext.Items["user"];
+            var tenant = platformUser.TenantsAsUser.Single();
+
+            var appUser = new UserItem
             {
-                if (string.IsNullOrEmpty(_clientId))
-                {
-                    var principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
-                    _clientId = principal?.Claims.FirstOrDefault(c => c.Type == "client_id")?.Value;
-                }
+                Id = platformUser.Id,
+                AppId = tenant.AppId,
+                TenantId = tenant.Id,
+                TenantGuid = tenant.GuidId,
+                TenantLanguage = tenant.Setting.Language,
+                Email = platformUser.Email,
+                UserName = platformUser.FirstName + " " + platformUser.LastName,
+                Culture = tenant.Setting.Language == "en" ? "en-US" : "tr-TR",
+                Currency = platformUser.Currency
+            };
 
-                return _clientId;
-            }
-        }
+            if(tenant.License.)
 
-        /// <summary>
-        /// Gets the cache object for application user directly from REDIS synchronously.
-        /// </summary>
-        /// <returns></returns>
-        private UserItem GetAppUserSync()
-        {
-            UserItem result = null;
-
-            if (User.Identity != null && !string.IsNullOrEmpty(User.Identity.Name))
-            {
-                var userId = AsyncHelpers.RunSync(() => Cache.ApplicationUser.GetId(User.Identity.Name));
-
-                // try to get user object only if user id exists in session cache.
-                if (userId != 0)
-                    result = AsyncHelpers.RunSync(() => Cache.User.Get(userId));
-                else
-                    throw new ApplicationException(HttpStatusCode.Unauthorized.ToString());
-                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
-
-                // check token's tenant_id equals user's tenant_id
-                var principal = Request.GetRequestContext().Principal as ClaimsPrincipal;
-                var tenantId = principal?.Claims.FirstOrDefault(c => c.Type == "tenant_id")?.Value;
-
-                int tokenTenantId;
-
-                if (string.IsNullOrWhiteSpace(tenantId) || !int.TryParse(tenantId, out tokenTenantId))
-                    throw new ApplicationException(HttpStatusCode.Unauthorized.ToString());
-
-                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
-
-                if (result.TenantId != tokenTenantId)
-                    throw new ApplicationException(HttpStatusCode.Unauthorized.ToString());
-
-                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));
-
-                var tenant = AsyncHelpers.RunSync(() => Cache.Tenant.Get(result.TenantId));
-
-                if ((tenant.IsDeactivated || tenant.IsSuspended) && result.TenantId == result.Id)
-                    throw new ApplicationException(HttpStatusCode.PaymentRequired.ToString());
-
-                //throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.PaymentRequired));
-            }
-
-            return result;
+            return appUser;
         }
     }
 }
