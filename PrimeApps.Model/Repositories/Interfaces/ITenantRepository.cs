@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Instance;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface ITenantRepository : IRepositoryBasePlatform
     {
-        Task<Entities.Platform.Tenant> GetAsync(int tenantId);
+        Task<Tenant> GetAsync(int tenantId);
         Task<IList<TenantInfo>> GetTenantInfo(int tenantId);
-        Task UpdateAsync(Entities.Platform.Tenant tenant);
-        Task<Entities.Platform.Tenant> GetByCustomDomain(string customDomain);
-        Task<Entities.Platform.Tenant> GetWithOwnerAsync(int tenantId);
-        Task<int> GetUserCount(int tenantId);
-
+        Task UpdateAsync(Tenant tenant);
+        Task<Tenant> GetByCustomDomain(string customDomain);
+        Task<Tenant> GetWithOwnerAsync(int tenantId);
+        Task<IList<Tenant>> GetExpiredTenants();
     }
 }

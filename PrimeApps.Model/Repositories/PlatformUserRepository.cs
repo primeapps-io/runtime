@@ -25,15 +25,9 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Users.Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
         }
 
-        public async Task<PlatformUser> GetWithTenant(int platformUserId)
+        public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
         {
-            return await DbContext.Users.Include(x => x.Tenant).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
-        }
-
-        public async Task<IList<PlatformUser>> GetExpiredUsers()
-        {
-            DateTime fifteenDaysBefore = DateTime.Now.AddDays(-15);
-            return await DbContext.Users.Include(x => x.Tenant).Where(x => x.EmailConfirmed && x.CreatedAt < fifteenDaysBefore && !x.Tenant.IsPaidCustomer && !x.Tenant.IsDeactivated).ToListAsync();
+            return await DbContext.Users.Include(x => x.TenantsAsUser.Where(z => z.Id == tenantId)).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
         }
 
         public async Task<IList<PlatformUser>> GetAllAccountOwners()
@@ -137,7 +131,12 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<List<PlatformUser>> GetAllByTenant(int tenantId)
         {
-            return await DbContext.Users.Where(x => x.TenantId == tenantId).ToListAsync();
+            var tenant = await DbContext.Tenants
+                 .Include(x => x.TenantUsers)
+                 .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
+                 .FirstOrDefaultAsync(x => x.Id == tenantId);
+
+            return tenant?.TenantUsers.Select(x => x.PlatformUser).ToList();
         }
 
         public async Task<ActiveDirectoryTenant> GetConfirmedActiveDirectoryTenant(int tenantId)
@@ -169,14 +168,13 @@ namespace PrimeApps.Model.Repositories
                     TenantId = i.Id,
                     Title = i.Title,
                     OwnerId = i.OwnerId,
-                    Users = i.Users.Select(u => new UserList //get users for the instance.
+                    Users = i.TenantUsers.Select(u => new UserList //get users for the instance.
                     {
-                        Id = u.Id,
-                        userName = u.FirstName + " " + u.LastName,
-                        email = u.Email,
+                        Id = u.PlatformUser.Id,
+                        userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
+                        email = u.PlatformUser.Email,
                         hasAccount = true,
-                        isAdmin = u.TenantId == u.Id,
-                        activeDirectoryEmail = u.ActiveDirectoryEmail
+                        isAdmin = u.TenantId == u.PlatformUser.Id
                     }).OrderByDescending(x => x.isAdmin).ToList()
                 }).ToListAsync();
 

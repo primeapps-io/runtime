@@ -21,7 +21,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<PlatformUser>> GetAllByTenant(int tenantId);
         Task<ActiveDirectoryTenant> GetConfirmedActiveDirectoryTenant(int tenantId);
         Task<PlatformUser> GetUserByActiveDirectoryTenantEmail(string email);
-        Task<IList<PlatformUser>> GetExpiredUsers();
         Task<IList<PlatformUser>> GetTrialUsers();
         Task<string> GetEmail(int userId);
         Task<IList<Workgroup>> MyWorkgroups(int globalId);

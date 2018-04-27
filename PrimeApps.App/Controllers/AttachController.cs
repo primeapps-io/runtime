@@ -2,41 +2,37 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PrimeApps.App.Cache;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Results;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("attach"), Authorize]
-    public class AttachController : Controller
+    [Route("attach")]
+    public class AttachController : BaseController
     {
+        private ITenantRepository _tenantRepository;
+
+        public AttachController(ITenantRepository tenantRepository)
+        {
+            _tenantRepository = tenantRepository;
+        }
+
         [Route("download"), HttpGet]
         public async Task<FileStreamResult> Download(int FileId)
         {
+            var tenant = await _tenantRepository.GetAsync(AppUser.TenantId);
 
-            var userId = await ApplicationUser.GetId(User.Identity.Name);
-
-            PlatformUser user;
-            using (var _platformUserRepository = new PlatformUserRepository(new PlatformDBContext()))
-            {
-                user = await _platformUserRepository.GetWithTenant(userId);
-            }
-
-            using (var tenantDbContext = new TenantDBContext(user.TenantId.Value))
+            using (var tenantDbContext = new TenantDBContext(AppUser.TenantId))
             {
                 var publicName = "";
                 var doc = await tenantDbContext.Documents.FirstOrDefaultAsync(x => x.Id == FileId && x.Deleted == false);
                 if (doc != null)
                 {
                     //if there is a document with this id, try to get it from blob storage.
-                    var blob = Storage.GetBlob(string.Format("inst-{0}", user.Tenant.GuidId), doc.UniqueName);
+                    var blob = Storage.GetBlob(string.Format("inst-{0}", tenant.GuidId), doc.UniqueName);
                     try
                     {
                         //try to get the attributes of blob.

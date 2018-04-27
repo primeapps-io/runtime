@@ -31,47 +31,6 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
-        public PlatformDBContext DbContextLazy
-        {
-            get
-            {
-                // TODO: Find another way to configure those.
-                //DbContext.Configuration.LazyLoadingEnabled = true;
-                //DbContext.Configuration.ProxyCreationEnabled = true;
-
-                return DbContext;
-            }
-        }
-
-        public CurrentUser CurrentUser
-        {
-            get
-            {
-                var claimsPrincipal = Thread.CurrentPrincipal as ClaimsPrincipal;
-                ClaimsIdentity claimsIdentity = null;
-
-                if (claimsPrincipal != null)
-                    claimsIdentity = (ClaimsIdentity)claimsPrincipal.Identity;
-
-                var currentUser = new CurrentUser
-                {
-                    TenantId = -1,
-                    UserId = -1
-                };
-
-                if (claimsIdentity != null && claimsIdentity.HasClaim(x => x.Type == "user_id"))
-                {
-                    currentUser.UserId = int.Parse(claimsIdentity.FindFirst(x => x.Type == "user_id").Value);
-                }
-                else if (_userId.HasValue)
-                {
-                    currentUser.UserId = _userId.Value;
-                }
-
-                return currentUser;
-            }
-        }
-
         public void Dispose()
         {
         }

@@ -13,10 +13,12 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<UserInfo> GetUserInfoAsync(int userId);
         Task UpdateAsync(TenantUser usr);
         Task<TenantUser> GetById(int userId);
+        TenantUser GetByIdSync(int userId);
         Task<TenantUser> GetByEmail(string email);
         Task<ICollection<TenantUser>> GetByIds(List<int> userIds);
         Task<ICollection<TenantUser>> GetByProfileIds(List<int> profileIds);
         Task<int> TerminateUser(TenantUser user);
         Task<ICollection<TenantUser>> GetNonSubscribers();
+        Task<int> GetTenantUserCount();
     }
 }

@@ -5,9 +5,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IRepositoryBaseTenant
     {
-        CurrentUser CurrentUser { get; }
+        CurrentUser CurrentUser { get; set; }
         TenantDBContext DbContext { get; }
-        TenantDBContext DbContextLazy { get; }
         int? TenantId { get; set; }
     }
 }

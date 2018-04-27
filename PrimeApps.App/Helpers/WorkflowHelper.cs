@@ -610,12 +610,13 @@ namespace PrimeApps.App.Helpers
                                                     {
                                                         using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDBContext))
                                                         {
-                                                            subscriber = await platformUserRepository.GetWithTenant(appUser.TenantId);
+                                                            subscriber = await platformUserRepository.GetWithTenant(appUser.TenantId, appUser.TenantId);
                                                         }
                                                     }
 
                                                     var recordData = recordRepository.GetById(module, recordId, false, lookupModules);
-                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, subscriber.Tenant.Language, subscriber.Culture, 180, lookupModules);
+                                                    var tenant = subscriber.TenantsAsUser.Single();
+                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, tenant.Setting.Language, subscriber.Culture, 180, lookupModules);
 
                                                     foreach (var dataString in data)
                                                     {

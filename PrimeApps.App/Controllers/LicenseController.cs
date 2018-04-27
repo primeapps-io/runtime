@@ -191,7 +191,7 @@ namespace PrimeApps.App.Controllers
 
             Model.Entities.Platform.Tenant tenant = await _tenantRepository.GetAsync(AppUser.TenantId);
             userLicense.Total = tenant.License.UserLicenseCount;
-            int usedLicenseCount = await _tenantRepository.GetUserCount(AppUser.TenantId);
+            int usedLicenseCount = await _userRepository.GetTenantUserCount();
             userLicense.Used = usedLicenseCount;
 
             return Ok(userLicense);

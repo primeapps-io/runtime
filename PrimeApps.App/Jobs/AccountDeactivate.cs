@@ -1,15 +1,11 @@
-﻿using System;
-using Hangfire;
+﻿using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
 using System.Threading.Tasks;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Entities.Platform.Identity;
-using System.Collections.Generic;
 using System.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Jobs
 {
@@ -18,20 +14,17 @@ namespace PrimeApps.App.Jobs
         [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
         public async Task Deactivate()
         {
-            using (PlatformDBContext platformDbContext = new PlatformDBContext())
+            using (var platformDbContext = new PlatformDBContext())
             {
-                using (TenantRepository tenantRepository = new TenantRepository(platformDbContext))
-
-                using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDbContext))
+                using (var tenantRepository = new TenantRepository(platformDbContext))
                 {
 
-                    IList<PlatformUser> subscribers = await platformUserRepository.GetExpiredUsers();
+                    var tenants = await tenantRepository.GetExpiredTenants();
 
-                    foreach (var subscriber in subscribers)
+                    foreach (var tenant in tenants)
                     {
-                        using (var databaseContext = new TenantDBContext(subscriber.TenantId.Value))
+                        using (var databaseContext = new TenantDBContext(tenant.Id))
                         using (var userRepository = new UserRepository(databaseContext))
-
                         {
                             var users = await userRepository.GetAllAsync();
 
@@ -43,12 +36,12 @@ namespace PrimeApps.App.Jobs
                                     databaseContext.SaveChanges();
                                 }
                                 //TODO: ex.InnerException.InnerException olabilir
-								catch (DataException ex)
+                                catch (DataException ex)
                                 {
                                     if (ex.InnerException is PostgresException)
                                     {
                                         var innerEx = (PostgresException)ex.InnerException;
-										
+
                                         if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
                                             continue;
                                     }
@@ -59,8 +52,8 @@ namespace PrimeApps.App.Jobs
                                 await Cache.User.Remove(user.Id);
                             }
                         }
-                        var tenant = await tenantRepository.GetAsync(subscriber.TenantId.Value);
-                        tenant.IsDeactivated = true;
+
+                        tenant.License.IsDeactivated = true;
                         await tenantRepository.UpdateAsync(tenant);
                     }
                 }

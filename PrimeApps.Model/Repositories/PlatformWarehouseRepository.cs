@@ -19,6 +19,11 @@ namespace PrimeApps.Model.Repositories
             return DbContext.Warehouses.Where(x => x.TenantId == tenantId).SingleOrDefaultAsync();
         }
 
+        public PlatformWarehouse GetByTenantIdSync(int tenantId)
+        {
+            return DbContext.Warehouses.SingleOrDefault(x => x.TenantId == tenantId);
+        }
+
         public PlatformWarehouse Create(PlatformWarehouse warehouse)
         {
             warehouse.Completed = false;
@@ -42,8 +47,10 @@ namespace PrimeApps.Model.Repositories
         {
             var tenant = DbContext.Tenants.Single(x => x.Id == tenantId);
 
-            tenant.HasAnalyticsLicense = true;
-            tenant.HasAnalytics = true;
+            if (tenant.License == null)
+                tenant.License = new TenantLicense();
+
+            tenant.License.AnalyticsLicenseCount = 1;
 
             DbContext.SaveChanges();
         }

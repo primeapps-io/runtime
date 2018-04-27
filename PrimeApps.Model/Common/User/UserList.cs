@@ -30,7 +30,5 @@
         /// Is this user administrator of the workgroup?
         /// </summary>
         public bool isAdmin { get; set; }
-
-        public string activeDirectoryEmail { get; set; }
     }
 }

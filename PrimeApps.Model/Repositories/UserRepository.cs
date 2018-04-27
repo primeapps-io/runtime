@@ -150,6 +150,13 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Users.FindAsync(userId);
         }
 
+        public TenantUser GetByIdSync(int userId)
+        {
+            return DbContext.Users
+                .Include(x => x.Profile)
+                .FirstOrDefault(x => x.Id == userId);
+        }
+
         /// <summary>
         /// Gets a user by its email.
         /// </summary>
@@ -187,6 +194,11 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<TenantUser>> GetNonSubscribers()
         {
             return await DbContext.Users.Where(x => !x.Deleted && !x.IsSubscriber).ToListAsync();
+        }
+
+        public Task<int> GetTenantUserCount()
+        {
+            return DbContext.Users.Where(x => x.Deleted == false && x.IsActive).CountAsync();
         }
 
         /// <summary>

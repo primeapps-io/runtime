@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
@@ -13,9 +15,6 @@ namespace PrimeApps.App.Controllers
     {
         private UserItem _appUser;
 
-        /// <summary>
-        /// Contains basic information related to authorized user.
-        /// </summary>
         public UserItem AppUser
         {
             get
@@ -27,6 +26,11 @@ namespace PrimeApps.App.Controllers
 
                 return _appUser;
             }
+        }
+
+        public void SetCurrentUser(IRepositoryBaseTenant repository)
+        {
+            repository.CurrentUser = new CurrentUser { UserId = _appUser.Id, TenantId = _appUser.TenantId };
         }
 
         private UserItem GetUser()
@@ -47,7 +51,24 @@ namespace PrimeApps.App.Controllers
                 Currency = platformUser.Currency
             };
 
-            if(tenant.License.)
+            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+            var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
+
+            appUser.Role = tenantUser.RoleId ?? 0;
+            appUser.ProfileId = tenantUser.ProfileId ?? 0;
+            appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
+
+            if (tenant.License.AnalyticsLicenseCount > 0)
+            {
+                var warehouseRepository = (IPlatformWarehouseRepository)HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                var warehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
+
+                appUser.WarehouseDatabaseName = warehouse.DatabaseName;
+            }
+            else
+            {
+                appUser.WarehouseDatabaseName = "0";
+            }
 
             return appUser;
         }

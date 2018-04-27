@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Note;
@@ -18,7 +16,7 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/note"), Authorize/*, SnakeCase*/]
-	public class NoteController : BaseController
+    public class NoteController : BaseController
     {
         private INoteRepository _noteRepository;
         private IUserRepository _userRepository;
@@ -35,6 +33,13 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _profileRepository = profileRepository;
             _picklistRepository = picklistRepository;
+
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_picklistRepository);
         }
 
         [Route("get/{id:int}"), HttpGet]
@@ -53,11 +58,10 @@ namespace PrimeApps.App.Controllers
                 foreach (var likedUser in noteEntity.Likes)
                 {
                     if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
-	                    likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
+                        likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
                 }
             }
-
-
+            
             return Ok(noteEntity);
         }
 
@@ -77,7 +81,7 @@ namespace PrimeApps.App.Controllers
                     foreach (var likedUser in note.Likes)
                     {
                         if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
-	                        likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
+                            likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
                     }
                 }
 
@@ -93,7 +97,7 @@ namespace PrimeApps.App.Controllers
                             foreach (var subLikedUser in note.Likes)
                             {
                                 if (subLikedUser.TenantUser.Picture != null && !subLikedUser.TenantUser.Picture.StartsWith("http://"))
-	                                subLikedUser.TenantUser.Picture = Storage.GetAvatarUrl(subLikedUser.TenantUser.Picture);
+                                    subLikedUser.TenantUser.Picture = Storage.GetAvatarUrl(subLikedUser.TenantUser.Picture);
                             }
                         }
                     }
@@ -194,7 +198,7 @@ namespace PrimeApps.App.Controllers
             noteEntity.CreatedBy.Picture = Storage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + workflowEntity.Id, workflowEntity);
         }
 

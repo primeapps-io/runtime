@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Context;
+﻿using System;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Common.User;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -28,7 +30,7 @@ namespace PrimeApps.Model.Repositories
 
         public Entities.Platform.Tenant Get(int tenantId)
         {
-            return DbContext.Tenants.Where(x => x.Id == tenantId).SingleOrDefault();
+            return DbContext.Tenants.SingleOrDefault(x => x.Id == tenantId);
         }
         public async Task UpdateAsync(Entities.Platform.Tenant tenant)
         {
@@ -81,9 +83,11 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Tenants.Where(x => x.Setting.CustomDomain == customDomain).SingleOrDefaultAsync();
         }
 
-        public async Task<int> GetUserCount(int tenantId)
+        public async Task<IList<Tenant>> GetExpiredTenants()
         {
-            return await DbContext.Users.Where(x => x.TenantId == tenantId).CountAsync();
+            var fifteenDaysBefore = DateTime.Now.AddDays(-15);
+
+            return await DbContext.Tenants.Include(x => x.License).Where(x => x.CreatedAt < fifteenDaysBefore && !x.License.IsPaidCustomer && !x.License.IsDeactivated).ToListAsync();
         }
     }
 }
