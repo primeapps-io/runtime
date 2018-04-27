@@ -18,21 +18,27 @@ namespace PrimeApps.Model.Repositories
         {
 
         }
-        public async Task<Entities.Platform.Tenant> GetAsync(int tenantId)
+        public async Task<Tenant> GetAsync(int tenantId)
         {
             return await DbContext.Tenants.Where(x => x.Id == tenantId).SingleOrDefaultAsync();
         }
 
-        public async Task<Entities.Platform.Tenant> GetWithOwnerAsync(int tenantId)
+        public async Task<Tenant> GetWithOwnerAsync(int tenantId)
         {
-            return await DbContext.Tenants.Include(x=>x.Owner).Where(x => x.Id == tenantId).SingleOrDefaultAsync();
+            return await DbContext.Tenants.Include(x => x.Owner).Where(x => x.Id == tenantId).SingleOrDefaultAsync();
         }
 
-        public Entities.Platform.Tenant Get(int tenantId)
+        public Tenant Get(int tenantId)
         {
             return DbContext.Tenants.SingleOrDefault(x => x.Id == tenantId);
         }
-        public async Task UpdateAsync(Entities.Platform.Tenant tenant)
+
+        public async Task<IList<Tenant>> GetAllActive()
+        {
+            return await DbContext.Tenants.Include(x => x.License).Where(x => !x.License.IsDeactivated).ToListAsync();
+        }
+
+        public async Task UpdateAsync(Tenant tenant)
         {
             await DbContext.SaveChangesAsync();
         }
@@ -44,11 +50,11 @@ namespace PrimeApps.Model.Repositories
                  {
                      tenantId = t.Id,
                      title = t.Title,
-					 currency = t.Setting.Currency,
+                     currency = t.Setting.Currency,
                      language = t.Setting.Language,
                      logo = t.Setting.Logo,
                      logoUrl = t.Setting.Logo,
-					 //TODO Removed
+                     //TODO Removed
                      //hasSampleData = t.HasSampleData,
                      //hasPhone = t.HasPhone,
                      hasAnalytics = t.License.AnalyticsLicenseCount > 0,
@@ -64,10 +70,6 @@ namespace PrimeApps.Model.Repositories
                  }).ToListAsync();
         }
 
-        /// <summary>
-        /// Gets logo full url
-        /// </summary>
-        /// <returns></returns>
         public static string GetLogoUrl(string logo)
         {
             if (string.IsNullOrWhiteSpace(logo))
@@ -88,6 +90,26 @@ namespace PrimeApps.Model.Repositories
             var fifteenDaysBefore = DateTime.Now.AddDays(-15);
 
             return await DbContext.Tenants.Include(x => x.License).Where(x => x.CreatedAt < fifteenDaysBefore && !x.License.IsPaidCustomer && !x.License.IsDeactivated).ToListAsync();
+        }
+
+        public async Task<IList<int>> GetExpiredTenantIdsToDelete()
+        {
+            var lastMonth = DateTime.Now.AddMonths(-1);
+
+            return await DbContext.Tenants.Include(x => x.License).Where(x => x.License.DeactivatedAt < lastMonth && !x.License.IsPaidCustomer && !x.License.IsDeactivated).OrderBy(x => x.Id).Select(x => x.Id).ToListAsync();
+        }
+
+        public async Task<IList<Tenant>> GetTrialTenants()
+        {
+            var minusFourteenDays = DateTime.Now.AddDays(-14);
+            var minusFourteenDaysPlusOneHours = minusFourteenDays.AddHours(1);
+
+            return await DbContext.Tenants
+                .Include(x => x.License)
+                .Include(x => x.TenantUsers.Where(z => z.UserId == x.Id))
+                .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
+                .Where(x => x.CreatedAt > minusFourteenDays && x.CreatedAt <= minusFourteenDaysPlusOneHours && !x.License.IsPaidCustomer)
+                .ToListAsync();
         }
     }
 }

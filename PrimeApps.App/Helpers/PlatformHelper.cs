@@ -5,7 +5,6 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Common.Cache;
@@ -14,7 +13,8 @@ using Hangfire;
 namespace PrimeApps.App.Helpers
 {
 	public static class PlatformHelper
-	{
+    {
+        /*
 		public static async Task<Model.Entities.Platform.App> CreateEntity(AppBindingModel appModel, IUserRepository userRepository)
 		{
 			var app = new Model.Entities.Platform.App
@@ -37,7 +37,7 @@ namespace PrimeApps.App.Helpers
 			return app;
 		}
 
-		public static async Task AppAfterCreate(UserItem appUser, Model.Entities.Platform.App appEntity/*, ApplicationUserManager userManager*/, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Model.Helpers.Warehouse warehouse)
+		public static async Task AppAfterCreate(UserItem appUser, Model.Entities.Platform.App appEntity, ApplicationUserManager userManager, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Model.Helpers.Warehouse warehouse)
 		{
 			PlatformUser user;
 			using (PlatformDBContext platformDbContext = new PlatformDBContext())
@@ -74,7 +74,7 @@ namespace PrimeApps.App.Helpers
 			//TODO Removed
 			//var result = await userManager.CreateAsync(applicationUser, ConfigurationManager.AppSettings["PrimeAppsPreviewPassword"]);
 			
-            if (/*!result.Succeeded*/ false)
+            if (!result.Succeeded false)
                 throw new Exception();
 
             var tenantUser = await platformUserRepository.Get(applicationUser.Id);
@@ -108,13 +108,13 @@ namespace PrimeApps.App.Helpers
 
 			await platformUserRepository.UpdateAsync(user);
 
-            await UserHelper.AddUser(addUserRequest, user.Culture, user.Currency, appUser.TenantLanguage, appEntity.Id, user.Email, tenant.Id/*, userManager*/, userRepository, profileRepository, roleRepository, recordRepository, platformUserRepository, warehouse, applicationUser);
+            await UserHelper.AddUser(addUserRequest, user.Culture, user.Currency, appUser.TenantLanguage, appEntity.Id, user.Email, tenant.Id, userManager, userRepository, profileRepository, roleRepository, recordRepository, platformUserRepository, warehouse, applicationUser);
             await recordRepository.UpdateSystemData(tenantUser.Id, DateTime.UtcNow, appUser.TenantLanguage, appEntity.TemplateId.Value);
             await recordRepository.UpdateSampleData(tenantUser);
         }
 
 		//TODO Removed
-		public static async Task AddApp(UserItem appUser, int appId, /*ApplicationUserManager userManager,*/ ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, Warehouse warehouse)
+		public static async Task AddApp(UserItem appUser, int appId, ApplicationUserManager userManager, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, Warehouse warehouse)
         {
             var user = await platformUserRepository.Get(appUser.Id);
             char[] emailCharset = { '@' };
@@ -147,7 +147,7 @@ namespace PrimeApps.App.Helpers
 			//TODO Removed
 			//var result = await userManager.CreateAsync(applicationUser, Utils.GenerateRandomUnique(8));
 
-            if (/*!result.Succeeded*/ false)
+            if (!result.Succeeded false)
                 throw new Exception();
 
             var tenantUser = await platformUserRepository.Get(applicationUser.Id);
@@ -180,7 +180,7 @@ namespace PrimeApps.App.Helpers
             //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appId, tenant.Language));
 			BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appId, tenant.Language));
 			//TODO Removed
-			await UserHelper.AddUserToNewTenant(addUserRequest, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenantUser.Id/*, userManager*/, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUser);
+			await UserHelper.AddUserToNewTenant(addUserRequest, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenantUser.Id, userManager, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUser);
 
 
             var addUserRequestOld = new AddUserBindingModel
@@ -208,9 +208,9 @@ namespace PrimeApps.App.Helpers
 				//TODO Removed AppId = appId
 			};
 			//TODO Removed
-			await UserHelper.AddUserToNewTenant(addUserRequestOld, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenant.Id/*, userManager*/, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUserOld);
+			await UserHelper.AddUserToNewTenant(addUserRequestOld, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenant.Id, userManager, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUserOld);
 			//TODO Removed
-			await UserHelper.AddUserToNewTenant(addUserRequest, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenant.Id/*, userManager*/, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUser);
+			await UserHelper.AddUserToNewTenant(addUserRequest, user.Culture, user.Currency, tenant.Language, appId, user.Email, tenant.Id, userManager, platformUserRepository, userRepository, profileRepository, roleRepository, recordRepository, warehouse, applicationUser);
 
             await recordRepository.UpdateSystemData(tenantUser.Id, DateTime.UtcNow, tenant.Language, appId);
 
@@ -223,7 +223,7 @@ namespace PrimeApps.App.Helpers
             using (var dbContext = new PlatformDBContext())
             {
 				//TODO Removed
-				/*var app = new UserApp
+				var app = new UserApp
                 {
                     UserId = user.Id,
                     TenantId = tenantUser.TenantId.Value,
@@ -235,8 +235,10 @@ namespace PrimeApps.App.Helpers
 
                 dbContext.UserApps.Add(app);
 				//dbContext.UserApps.AddOrUpdate(app);
-				dbContext.SaveChanges();*/
+				dbContext.SaveChanges();
             }
         }
+
+		*/
     }
 }

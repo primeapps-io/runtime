@@ -1,17 +1,13 @@
 ﻿using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Repositories;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using Microsoft.IdentityModel.Protocols;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Jobs
 {
@@ -20,51 +16,25 @@ namespace PrimeApps.App.Jobs
         [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
         public async Task TrialExpire()
         {
-            IList<PlatformUser> trialUsers = new List<PlatformUser>();
+            IList<Tenant> trialTenants = new List<Tenant>();
 
-            using (PlatformDBContext platformDBContext = new PlatformDBContext())
+            using (var platformDBContext = new PlatformDBContext())
+            using (var tenantRepository = new TenantRepository(platformDBContext))
             {
-                using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDBContext))
-                {
-                    trialUsers = await platformUserRepository.GetTrialUsers();
-                }
+                trialTenants = await tenantRepository.GetTrialTenants();
             }
 
-            foreach (var user in trialUsers)
+            foreach (var tenant in trialTenants)
             {
                 var emailData = new Dictionary<string, string>();
-                string domain;
-
-                domain = "https://{0}.ofisim.com/";
-                var appDomain = "crm";
-
-                switch (user.AppId)
-                {
-                    case 2:
-                        appDomain = "kobi";
-                        break;
-                    case 3:
-                        appDomain = "asistan";
-                        break;
-                    case 4:
-                        appDomain = "ik";
-                        break;
-                    case 5:
-                        appDomain = "cagri";
-                        break;
-                }
-
-                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
-                domain = string.Format(domain, subdomain);
-
-                //domain = "http://localhost:5554/";
-
+                var tenantUser = tenant.TenantUsers.Single();
+                var user = tenantUser.PlatformUser;
                 emailData.Add("UserName", user.FirstName + " " + user.LastName);
 
                 if (!string.IsNullOrWhiteSpace(user.Culture) && Helpers.Constants.CULTURES.Contains(user.Culture))
                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
-                var notification = new Helpers.Email(typeof(Resources.Email.TrialExpireMail), Thread.CurrentThread.CurrentCulture.Name, emailData, user.AppId);
+                var notification = new Helpers.Email(typeof(Resources.Email.TrialExpireMail), Thread.CurrentThread.CurrentCulture.Name, emailData, tenant.AppId);
                 notification.AddRecipient(user.Email);
                 notification.AddToQueue();
             }

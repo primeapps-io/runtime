@@ -362,14 +362,7 @@ namespace PrimeApps.Model.Repositories
 
             return result;
         }
-
-        public async Task<int> InsertSampleData(int tenantId, string tenantLanguage, int appId)
-        {
-            var sql = RecordHelper.GenerateSampleDataSql(tenantId, tenantLanguage, appId);
-
-            return await DbContext.Database.ExecuteSqlCommandAsync(sql);
-        }
-
+        
         public async Task<int> UpdateSampleData(PlatformUser user)
         {
             var modules = DbContext.Modules.ToList();

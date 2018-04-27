@@ -7,11 +7,15 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface ITenantRepository : IRepositoryBasePlatform
     {
+        Tenant Get(int tenantId);
         Task<Tenant> GetAsync(int tenantId);
+        Task<IList<Tenant>> GetAllActive();
         Task<IList<TenantInfo>> GetTenantInfo(int tenantId);
         Task UpdateAsync(Tenant tenant);
         Task<Tenant> GetByCustomDomain(string customDomain);
         Task<Tenant> GetWithOwnerAsync(int tenantId);
         Task<IList<Tenant>> GetExpiredTenants();
+        Task<IList<int>> GetExpiredTenantIdsToDelete();
+        Task<IList<Tenant>> GetTrialTenants();
     }
 }

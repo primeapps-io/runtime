@@ -16,8 +16,9 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/platform"), Authorize/*, SnakeCase*/]
-	public class PlatformController : BaseController
+    public class PlatformController : BaseController
     {
+        /*
         private IPlatformRepository _platformRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
@@ -117,7 +118,7 @@ namespace PrimeApps.App.Controllers
 			//TODO Removed
             //var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
 
-            await PlatformHelper.AppAfterCreate(appUser, appEntity/*, userManager*/, _userRepository, _profileRepository, _roleRepository, _recordRepository, _platformUserRepository, _tenantRepository, _warehouse);
+            await PlatformHelper.AppAfterCreate(appUser, appEntity, userManager, _userRepository, _profileRepository, _roleRepository, _recordRepository, _platformUserRepository, _tenantRepository, _warehouse);
 
             var uri = new Uri(Request.GetDisplayUrl());
 			return Created(uri.Scheme + "://" + uri.Authority + "/api/app/get_app/" + appEntity.Id, appEntity);
@@ -224,26 +225,27 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            /*var appEntity = await PlatformHelper.CreateEntity(app, _userRepository);
-            var result = await _platformRepository.AppCreate(appEntity);*/
+            var appEntity = await PlatformHelper.CreateEntity(app, _userRepository);
+            var result = await _platformRepository.AppCreate(appEntity);
 
-            /*if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+        if (result < 1)
+            throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            appEntity = await _platformRepository.AppGetById(appEntity.Id);
+        appEntity = await _platformRepository.AppGetById(appEntity.Id);
 
-            if (!appEntity.TemplateId.HasValue)
-                appEntity.TemplateId = 0;*/
+        if (!appEntity.TemplateId.HasValue)
+            appEntity.TemplateId = 0;
 
-            var appUser = AppUser;
-			//TODO Removed
-			//var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+        var appUser = AppUser;
+        //TODO Removed
+        //var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
 
-			//TODO Removed
-			await PlatformHelper.AddApp(appUser, appId/*, userManager*/, _tenantRepository, _platformUserRepository, _userRepository, _profileRepository, _roleRepository, _recordRepository, _warehouse);
+        //TODO Removed
+        await PlatformHelper.AddApp(appUser, appId, userManager, _tenantRepository, _platformUserRepository, _userRepository, _profileRepository, _roleRepository, _recordRepository, _warehouse);
 
-            var uri = new Uri(Request.GetDisplayUrl());
+        var uri = new Uri(Request.GetDisplayUrl());
 			return Ok();
         }
+        */
     }
 }

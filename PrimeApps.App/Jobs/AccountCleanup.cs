@@ -21,13 +21,14 @@ namespace PrimeApps.App.Jobs
         {
             IList<int> expiredTenants = new List<int>();
 
-            using (PlatformDBContext platformDbContext = new PlatformDBContext())
-            using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDbContext))
+            using (var platformDbContext = new PlatformDBContext())
+            using (var tenantRepository = new TenantRepository(platformDbContext))
             {
 
                 // Get expired inactive tenant ids.
-                expiredTenants = await platformUserRepository.GetExpiredTenantIdsToDelete();
+                expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
             }
+
             var dropSql = $"DROP DATABASE IF EXISTS";
 
             // create a connection to the server without specifying a database.

@@ -20,7 +20,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         void SetPicklists(Module module, JObject record, string picklistLanguage);
         void MultiselectsToString(Module module, JObject record);
         Task<int> UpdateSystemData(int createdBy, DateTime createdAt, string tenantLanguage, int appId);
-        Task<int> InsertSampleData(int tenantId, string tenantLanguage, int appId);
         Task<int> UpdateSampleData(PlatformUser user);
         Task<int> DeleteSampleData(List<Module> modules);
         JObject GetLookupIds(JArray lookupRequest);

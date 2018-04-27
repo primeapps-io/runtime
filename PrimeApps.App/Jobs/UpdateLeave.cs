@@ -22,23 +22,22 @@ namespace PrimeApps.App.Jobs
         public async Task Update()
         {
             using (var platformDatabaseContext = new PlatformDBContext())
-            using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext))
+            using (var tenantRepository = new TenantRepository(platformDatabaseContext))
             using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext))
             {
+                var tenants = await tenantRepository.GetAllActive();
 
-                var accountOwners = await platformUserRepository.GetAllAccountOwners();
-
-                foreach (var owner in accountOwners)
+                foreach (var tenant in tenants)
                 {
                     try
                     {
-                        using (var databaseContext = new TenantDBContext(owner.TenantId.Value))
+                        using (var databaseContext = new TenantDBContext(tenant.Id))
                         {
                             using (var analyticRepository = new AnalyticRepository(databaseContext))
                             {
                                 var warehouse = new Model.Helpers.Warehouse(analyticRepository);
 
-                                var warehouseEntity = await platformWarehouseRepository.GetByTenantId(owner.TenantId.Value);
+                                var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
 
                                 if (warehouseEntity != null)
                                     warehouse.DatabaseName = warehouseEntity.DatabaseName;
@@ -154,7 +153,7 @@ namespace PrimeApps.App.Jobs
                         }
                     }
                     //TODO: ex.InnerException.InnerException olabilir
-					catch (DataException ex)
+                    catch (DataException ex)
                     {
                         if (ex.InnerException is PostgresException)
                         {

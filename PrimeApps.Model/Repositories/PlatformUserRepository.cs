@@ -29,27 +29,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Users.Include(x => x.TenantsAsUser.Where(z => z.Id == tenantId)).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
         }
-
-        public async Task<IList<PlatformUser>> GetAllAccountOwners()
-        {
-            return await DbContext.Users.Include(x => x.Tenant).Where(x => !x.Tenant.IsDeactivated && x.TenantId == x.Id).ToListAsync();
-        }
-
-        public async Task<IList<int>> GetExpiredTenantIdsToDelete()
-        {
-            DateTime lastMonth = DateTime.Now.AddMonths(-1);
-            return await DbContext.Users.Include(x => x.Tenant).Where(x => x.Tenant.IsDeactivated && !x.Tenant.IsSuspended && x.Id == x.TenantId && x.AppId < 6 && x.Tenant.DeactivatedAt < lastMonth).OrderBy(x => x.TenantId).Select(x => x.TenantId.Value).ToListAsync();
-
-        }
-
-        public async Task<IList<PlatformUser>> GetTrialUsers()
-        {
-            DateTime minusFourteenDays = DateTime.Now.AddDays(-14),
-                minusFourteenDaysPlusOneHours = minusFourteenDays.AddHours(1);
-
-            return await DbContext.Users.Include(x => x.Tenant).Where(x => x.EmailConfirmed && x.CreatedAt > minusFourteenDays && x.CreatedAt <= minusFourteenDaysPlusOneHours && x.Id == x.TenantId && !x.Tenant.IsPaidCustomer).ToListAsync();
-        }
-
+        
         /// <summary>
         /// Gets avatar full url
         /// </summary>
