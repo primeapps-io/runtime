@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Entities.Platform.Identity;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Notifications
 {

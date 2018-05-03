@@ -62,9 +62,6 @@ namespace PrimeApps.Model.Entities.Platform
 		/// </summary>
 		[Column("mail_sender_email")]
 		public string MailSenderEmail { get; set; }
-
-		//Tenant One to One
-		public virtual Tenant Tenant { get; set; }
 		
 		//App One to One
 		public virtual App App { get; set; }

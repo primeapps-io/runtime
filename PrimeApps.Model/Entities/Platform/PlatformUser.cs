@@ -52,11 +52,12 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("updated_at")]//]//, Index]
 		public DateTime UpdatedAt { get; set; }
 
-		[Column("active_directory_tenant_id")]//]//, Index]
+		//TODO Removed
+		/*[Column("active_directory_tenant_id")]//]//, Index]
         public int ActiveDirectoryTenantId { get; set; }
 
         [Column("active_directory_email")]//]//, Index]
-        public string ActiveDirectoryEmail { get; set; }
+        public string ActiveDirectoryEmail { get; set; }*/
 
 		//TODO Removed
 		///public virtual App App { get; set; }

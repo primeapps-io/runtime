@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.App.Jobs.Messaging;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Jobs.Email
 {

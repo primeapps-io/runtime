@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;

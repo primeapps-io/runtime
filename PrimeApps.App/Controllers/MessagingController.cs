@@ -149,7 +149,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("send_external_email")]
-        public async Task<IHttpActionResult> SendExternalEmail(ExternalEmail emailRequest)
+        public async Task<IActionResult> SendExternalEmail(ExternalEmail emailRequest)
         {
             if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
             {

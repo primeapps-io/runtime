@@ -17,8 +17,8 @@ using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
-using PrimeApps.Model.Entities.Platform.Identity;
 using Microsoft.EntityFrameworkCore;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS
 {

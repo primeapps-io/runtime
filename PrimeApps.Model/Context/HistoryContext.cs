@@ -12,25 +12,15 @@ namespace PrimeApps.Model.Context
 {
     public class PostgreHistoryContext : NpgsqlHistoryRepository
 	{
-		public PostgreHistoryContext(
-			IRelationalDatabaseCreator databaseCreator,
-			IRawSqlCommandBuilder rawSqlCommandBuilder,
-			IRelationalConnection connection,
-			IDbContextOptions options,
-			IMigrationsModelDiffer modelDiffer,
-			IMigrationsSqlGenerator migrationsSqlGenerator,
-			ISqlGenerationHelper sqlGenerationHelper,
-			ICoreConventionSetBuilder coreConventionSetBuilder,
-			IEnumerable<IConventionSetBuilder> conventionSetBuilders,
-			IRelationalTypeMappingSource typeMappingSource)
-        : base(new HistoryRepositoryDependencies(databaseCreator,rawSqlCommandBuilder,connection,options,modelDiffer,migrationsSqlGenerator, sqlGenerationHelper,coreConventionSetBuilder,conventionSetBuilders,typeMappingSource))
-    {
-    }
+		public PostgreHistoryContext(HistoryRepositoryDependencies dependencies)
+        : base(dependencies)
+		{
+		}
 
 		protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
 		{
 			base.ConfigureTable(history);
-			history.ToTable("_migration_history", "public");
+			//history.ToTable("_migration_history", "public");
 			history.Property(h => h.MigrationId).HasColumnName("migration_id");
 			history.Property(h => h.ProductVersion).HasColumnName("product_version");
 		}

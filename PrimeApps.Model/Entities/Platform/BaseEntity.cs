@@ -11,10 +11,10 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Required]
 		public int Id { get; set; }
 
-		[Column("created_by")]//, Index]
+		[Column("created_by"), ForeignKey("CreatedBy")]//, Index]
 		public int CreatedById { get; set; }
 
-		[Column("updated_by")]//, Index]
+		[Column("updated_by"), ForeignKey("UpdatedBy")]//, Index]
 		public int? UpdatedById { get; set; }
 
 		[Column("created_at"), Required]//, Index]
@@ -26,10 +26,8 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("deleted")]//, Index]
 		public bool Deleted { get; set; }
 
-		[ForeignKey("CreatedBy")]
 		public virtual PlatformUser CreatedBy { get; set; }
 
-		[ForeignKey("UpdatedBy")]
 		public virtual PlatformUser UpdatedBy { get; set; }
 	}
 }

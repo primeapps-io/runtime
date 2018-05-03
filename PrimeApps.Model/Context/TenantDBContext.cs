@@ -69,9 +69,9 @@ namespace PrimeApps.Model.Context
         {
 
             var validationErrors = ChangeTracker
-       .Entries<IValidatableObject>()
-       .SelectMany(e => e.Entity.Validate(null))
-       .Where(r => r != ValidationResult.Success);
+									.Entries<IValidatableObject>()
+									.SelectMany(e => e.Entity.Validate(null))
+									.Where(r => r != ValidationResult.Success);
 
             if (validationErrors.Any())
             {
@@ -86,9 +86,9 @@ namespace PrimeApps.Model.Context
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var validationErrors = ChangeTracker
-        .Entries<IValidatableObject>()
-        .SelectMany(e => e.Entity.Validate(null))
-        .Where(r => r != ValidationResult.Success);
+									.Entries<IValidatableObject>()
+									.SelectMany(e => e.Entity.Validate(null))
+									.Where(r => r != ValidationResult.Success);
 
             if (validationErrors.Any())
             {

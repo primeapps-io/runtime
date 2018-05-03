@@ -10,53 +10,71 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.IdentityModel.Tokens;
+using IdentityServer4.Services;
 using System.Reflection;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 
 namespace PrimeApps.Auth
 {
-    public class Startup
-    {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+	public class Startup
+	{
+		public IConfiguration Configuration { get; }
+		public IHostingEnvironment Environment { get; }
+	
 
-        public IConfiguration Configuration { get; }
+		public Startup(IConfiguration configuration, IHostingEnvironment environment)
+		{
+			Configuration = configuration;
+			Environment = environment;
+		}
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddDbContext<ApplicationDbContext>(options =>
+				options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+			services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 			{
-				options.Password.RequiredLength = 6;
-				options.Password.RequireLowercase = false;
-				options.Password.RequireUppercase = false;
-				options.Password.RequireNonAlphanumeric = false;
-				options.Password.RequireDigit = false;
+				config.Password.RequiredLength = 6;
+				config.Password.RequireLowercase = false;
+				config.Password.RequireUppercase = false;
+				config.Password.RequireNonAlphanumeric = false;
+				config.Password.RequireDigit = false;
 
-				options.User.RequireUniqueEmail = false;
-				options.SignIn.RequireConfirmedEmail = false;
+				config.User.RequireUniqueEmail = false;
+				config.SignIn.RequireConfirmedEmail = false;
 			})
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddDefaultTokenProviders();
 
-            // Add application services.
-            //services.AddTransient<IEmailSender, EmailSender>();
-
-            services.AddMvc();
+			services.AddMvc();
 			var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
-			// configure identity server with in-memory stores, keys, clients and scopes
-			services.AddIdentityServer()
-				/*.AddInMemoryPersistedGrants()
-				.AddInMemoryIdentityResources(Config.GetIdentityResources())
+			services.AddSingleton<IProfileService, CustomProfileService>();
+
+			services.Configure<IISOptions>(iis =>
+			{
+				iis.AuthenticationDisplayName = "Windows";
+				iis.AutomaticAuthentication = false;
+			});
+
+			var builder = services.AddIdentityServer(options =>
+				{
+					options.Events.RaiseErrorEvents = true;
+					options.Events.RaiseInformationEvents = true;
+					options.Events.RaiseFailureEvents = true;
+					options.Events.RaiseSuccessEvents = true;
+				})
+				/*.AddInMemoryIdentityResources(Config.GetIdentityResources())
 				.AddInMemoryApiResources(Config.GetApiResources())
-				.AddInMemoryClients(Config.GetClients())*/
+				.AddInMemoryClients(Config.GetClients())
+				.AddAspNetIdentity<ApplicationUser>()*/
 				.AddConfigurationStore(options =>
 				{
 					options.ConfigureDbContext = opt =>
@@ -74,39 +92,80 @@ namespace PrimeApps.Auth
 					options.EnableTokenCleanup = true;
 					options.TokenCleanupInterval = 3600; //3600 (1 hour)
 				})
-				.AddAspNetIdentity<ApplicationUser>();
+				.AddAspNetIdentity<ApplicationUser>()
+				.AddProfileService<CustomProfileService>();
+
+			if (Environment.IsDevelopment())
+			{
+				builder.AddDeveloperSigningCredential();
+			}
+			else
+			{
+				throw new Exception("need to configure key material");
+			}
+
+			services.AddAuthentication()
+				.AddOpenIdConnect("aad", "Azure AD", options =>
+				{
+					options.Authority = "https://login.microsoftonline.com/common/";
+					options.ClientId = "7697cae4-0291-4449-8046-7b1cae642982";
+					options.GetClaimsFromUserInfoEndpoint = true;
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuer = false,
+						
+					};
+
+					options.Events = new OpenIdConnectEvents
+					{
+						OnAuthorizationCodeReceived = async ctx =>
+						{
+							var request = ctx.HttpContext.Request;
+							var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+							var credential = new ClientCredential(ctx.Options.ClientId, ctx.Options.ClientSecret);
+
+							var distributedCache = ctx.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
+							string userId = ctx.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
+
+							/*var cache = new AdalDistributedTokenCache(distributedCache, userId);
+
+							var authContext = new AuthenticationContext(ctx.Options.Authority, cache);
+
+							var result = await authContext.AcquireTokenByAuthorizationCodeAsync(
+								ctx.ProtocolMessage.Code, new Uri(currentUri), credential, ctx.Options.Resource);
+
+							ctx.HandleCodeRedemption(result.AccessToken, result.IdToken);*/
+						}
+					};
+				})
+				.AddGoogle(options =>
+				{
+					options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
+					options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
+				});
 
 			//dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration - c PersistedGrantDbContext - o Data / Migrations / IdentityServer / PersistedGrantDb
 			//dotnet ef migrations add InitialIdentityServerConfigurationDbMigration - c ConfigurationDbContext - o Data / Migrations / IdentityServer / ConfigurationDb
 		}
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseBrowserLink();
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+				app.UseDatabaseErrorPage();
+			}
+			else
+			{
+				app.UseExceptionHandler("/Home/Error");
+			}
 
 			//InitializeDatabase(app);
 
 			app.UseStaticFiles();
-
-			// app.UseAuthentication(); // not needed, since UseIdentityServer adds the authentication middleware
 			app.UseIdentityServer();
-			app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
+			app.UseMvcWithDefaultRoute();
+		}
 
 		private void InitializeDatabase(IApplicationBuilder app)
 		{

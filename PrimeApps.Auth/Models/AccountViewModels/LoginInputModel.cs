@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace PrimeApps.Auth.Models.AccountViewModels
+
+using System.ComponentModel.DataAnnotations;
+
+namespace PrimeApps.Auth.UI
 {
-	public class LoginInputModel
-	{
-		[Required]
-		public string Username { get; set; }
-		[Required]
-		public string Password { get; set; }
-		public bool RememberLogin { get; set; }
-		public string ReturnUrl { get; set; }
-	}
+    public class LoginInputModel
+    {
+        [Required]
+        public string Username { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public bool RememberLogin { get; set; }
+        public string ReturnUrl { get; set; }
+    }
 }

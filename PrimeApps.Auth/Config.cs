@@ -16,6 +16,7 @@ namespace PrimeApps.Auth
             return new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
+				new IdentityResources.Email(),
                 new IdentityResources.Profile(),
             };
         }
@@ -24,7 +25,7 @@ namespace PrimeApps.Auth
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "PrimeApps API")
+                new ApiResource("api1", "PrimeApps Api Auth")
             };
         }
 
@@ -36,7 +37,7 @@ namespace PrimeApps.Auth
             {
                 new Client
                 {
-                    ClientId = "prime.client",
+                    ClientId = "primeapps.client",
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
 
                     ClientSecrets = 
@@ -49,25 +50,25 @@ namespace PrimeApps.Auth
                 // resource owner password grant client
                 new Client
                 {
-                    ClientId = "prime.grant_client",
+                    ClientId = "primeapps.resource",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     ClientSecrets = 
                     {
                         new Secret("secret".Sha256())
                     },
-                    AllowedScopes = { "api1", "offline_access" },
-					AllowOfflineAccess = true
+                    AllowedScopes = { "api1" }
 				},
 
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
                 {
-                    ClientId = "prime.mvc",
+                    ClientId = "primeapps.mvc",
                     ClientName = "PrimeApps MVC Client",
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
-
-                    RequireConsent = false,
+					AllowRememberConsent = false, // Permission ı hatırlıyor
+					AlwaysSendClientClaims = true,
+					RequireConsent = false,
 
                     ClientSecrets = 
                     {
@@ -81,9 +82,9 @@ namespace PrimeApps.Auth
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
                         "api1"
-                    },
-                    AllowOfflineAccess = true
+                    }
                 }
             };
         }

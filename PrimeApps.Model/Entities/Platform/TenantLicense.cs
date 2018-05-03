@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace PrimeApps.Model.Entities.Platform
 	[Table("tenant_licenses")]
 	public class TenantLicense
     {
-		[Column("tenant_id")]
+		[Column("tenant_id"), Key]
 		public int TenantId { get; set; }
 
 		[Column("user_license_count")]

@@ -27,8 +27,8 @@ namespace PrimeApps.App.Helpers
         {
             _ctx = new PlatformDBContext();
         }
-
-        public async Task<bool> AddClient(Client client)
+		//TODO Removed
+		/*public async Task<bool> AddClient(Client client)
         {
 
             var existingToken = _ctx.Clients.SingleOrDefault(r => r.Name == client.Name && r.ApplicationType == client.ApplicationType);
@@ -92,9 +92,9 @@ namespace PrimeApps.App.Helpers
         public List<RefreshToken> GetAllRefreshTokens()
         {
             return _ctx.RefreshTokens.ToList();
-        }
+        }*/
 
-        public void Dispose()
+		public void Dispose()
         {
             _ctx.Dispose();
 

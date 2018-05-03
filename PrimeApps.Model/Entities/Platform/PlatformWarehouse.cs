@@ -6,11 +6,8 @@ using PrimeApps.Model.Common.Warehouse;
 namespace PrimeApps.Model.Entities.Platform
 {
     [Table("warehouse")]
-    public class PlatformWarehouse
+    public class PlatformWarehouse : BaseEntity
     {
-        [Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
-
         [Column("tenant_id")]//]//, Index]
         public int TenantId { get; set; }
          

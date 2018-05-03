@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using System;
@@ -17,11 +19,12 @@ namespace PrimeApps.Model.Context
         public PlatformDBContext() : base()
         {
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-        }
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+			=> optionsBuilder
+				.UseNpgsql("Server=pg-dev.ofisim.com;Port=5433;Database=platform;User Id=postgres;Password=0f!s!mCRMDev;", x => x.MigrationsHistoryTable("_migration_history", "public"))
+				.ReplaceService<IHistoryRepository, PostgreHistoryContext>();
 
-        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
+		public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
         {
         }
 
@@ -79,8 +82,8 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.LastName);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Currency);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Culture);
-            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryEmail);
-            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryTenantId);
+            /*modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryEmail);
+            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryTenantId);*/
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.UpdatedAt);
 
@@ -90,11 +93,11 @@ namespace PrimeApps.Model.Context
 			modelBuilder.Entity<App>().HasIndex(x => x.Description);
 			modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
 
-			modelBuilder.Entity<App>().HasIndex(x => x.CreatedBy);
-			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedBy);
-			modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
+			modelBuilder.Entity<App>().HasIndex(x => x.CreatedById);
+			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedById);
+			/*modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
 			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);
-			modelBuilder.Entity<App>().HasIndex(x => x.Deleted);
+			modelBuilder.Entity<App>().HasIndex(x => x.Deleted);*/
 
 			//ApiLog
 			//App
@@ -114,8 +117,8 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Tenant>().HasIndex(x => x.OwnerId);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.AppId);
 
-			modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedBy);
-			modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedById);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedById);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedAt);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedAt);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.Deleted);
@@ -153,10 +156,10 @@ namespace PrimeApps.Model.Context
 			//Organization
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Id);
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
-			modelBuilder.Entity<Organization>().HasIndex(x => x.Owner);
+			/*modelBuilder.Entity<Organization>().HasIndex(x => x.Owner);*/
 
-			modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedBy);
-			modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedById);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedById);
 			modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedAt);
 			modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedAt);
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Deleted);
@@ -166,8 +169,8 @@ namespace PrimeApps.Model.Context
 			modelBuilder.Entity<Team>().HasIndex(x => x.Name);
 			modelBuilder.Entity<Team>().HasIndex(x => x.OrganizationId);
 
-			modelBuilder.Entity<Team>().HasIndex(x => x.CreatedBy);
-			modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedBy);
+			modelBuilder.Entity<Team>().HasIndex(x => x.CreatedById);
+			modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedById);
 			modelBuilder.Entity<Team>().HasIndex(x => x.CreatedAt);
 			modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedAt);
 			modelBuilder.Entity<Team>().HasIndex(x => x.Deleted);
@@ -200,7 +203,7 @@ namespace PrimeApps.Model.Context
 
 			//TenantLicense One to One and Cascade delete for TenantLicenses
 			modelBuilder.Entity<Tenant>()
-				.HasOne(x => x.Setting)
+				.HasOne(x => x.License)
 				.WithOne(i => i.Tenant)
 				.HasForeignKey<TenantLicense>(b => b.TenantId)
 				.OnDelete(DeleteBehavior.Cascade);
@@ -286,6 +289,12 @@ namespace PrimeApps.Model.Context
 				.WithMany(b => b.TenantsAsUser)
 				.HasForeignKey(p => p.OwnerId);
 
+			//BaseEntity Tenant CreatedBy Relation. For Solving Error: Unable to determine the relationship represented by navigation property 'Tenant.CreatedBy' of type 'PlatformUser'.
+			modelBuilder.Entity<Tenant>()
+				.HasOne(x => x.CreatedBy)
+				.WithMany()
+				.HasForeignKey(x => x.CreatedById);
+
 			BuildIndexes(modelBuilder);
 		}
 
@@ -297,8 +306,8 @@ namespace PrimeApps.Model.Context
 		public DbSet<PlatformUser> Users { get; set; }
 		public DbSet<App> Apps { get; set; }
 		public DbSet<AppSetting> AppSettings { get; set; }
-		public DbSet<ActiveDirectoryTenant> ActiveDirectoryTenants { get; set; }
-        public DbSet<ActiveDirectoryCache> ActiveDirectoryCache { get; set; }
+		/*public DbSet<ActiveDirectoryTenant> ActiveDirectoryTenants { get; set; }
+        public DbSet<ActiveDirectoryCache> ActiveDirectoryCache { get; set; }*/
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<Organization> Organizations { get; set; }
 		public DbSet<TenantSetting> TenantSettings { get; set; }

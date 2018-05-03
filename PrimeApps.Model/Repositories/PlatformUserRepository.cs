@@ -69,9 +69,10 @@ namespace PrimeApps.Model.Repositories
         {
             bool status = true;
 
-            //get session and check the email address
-            var result = await DbContext.Users.Where(x => x.Email == email || x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
-
+			//get session and check the email address
+			//TODO Removed
+			//var result = await DbContext.Users.Where(x => x.Email == email || x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
+			var result = false;
             if (result != null)
             {
                 //the email address exists so set the variable to false.
@@ -91,8 +92,9 @@ namespace PrimeApps.Model.Repositories
         {
             bool status = true;
 
-            //get session and check the email address
-            var result = await DbContext.Users.Where(x => x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
+			//get session and check the email address
+			//TODO Removed
+			var result = false;//await DbContext.Users.Where(x => x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
 
             if (result != null)
             {
@@ -119,7 +121,8 @@ namespace PrimeApps.Model.Repositories
             return tenant?.TenantUsers.Select(x => x.PlatformUser).ToList();
         }
 
-        public async Task<ActiveDirectoryTenant> GetConfirmedActiveDirectoryTenant(int tenantId)
+		//TODO Removed
+        /*public async Task<ActiveDirectoryTenant> GetConfirmedActiveDirectoryTenant(int tenantId)
         {
             return await DbContext.ActiveDirectoryTenants.FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Confirmed);
         }
@@ -128,7 +131,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Users.Where(x => x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
 
-        }
+        }*/
 
         public async Task<string> GetEmail(int userId)
         {

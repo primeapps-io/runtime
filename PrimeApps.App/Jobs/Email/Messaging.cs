@@ -1,7 +1,6 @@
 ﻿using PrimeApps.App.Jobs.Messaging.SMS;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories;
 using System;

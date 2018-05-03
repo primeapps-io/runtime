@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Hangfire;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
-using PrimeApps.Model.Entities.Platform.Identity;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using Newtonsoft.Json.Linq;
@@ -16,6 +15,7 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Helpers
 {
@@ -31,9 +31,8 @@ namespace PrimeApps.App.Helpers
 
                 applicationUser = new PlatformUser
                 {
-                    UserName = request.Email,
                     Email = request.Email,
-                    PhoneNumber = request.Phone,
+                    Phone = request.Phone,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Culture = culture,
@@ -107,9 +106,8 @@ namespace PrimeApps.App.Helpers
 
                 platformUser = new PlatformUser
                 {
-                    UserName = request.Email,
                     Email = request.Email,
-                    PhoneNumber = request.Phone,
+                    Phone = request.Phone,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     Culture = culture,
@@ -167,9 +165,9 @@ namespace PrimeApps.App.Helpers
 
 			//TODO Removed
 			//user.TenantId = tenantId;
+			//user.EmailConfirmed = true;
 
-			user.EmailConfirmed = true;
-            await platformUserRepository.UpdateAsync(user);
+			await platformUserRepository.UpdateAsync(user);
             //await Cache.Workgroup.UpdateRoles(instanceId);
             //await Cache.Workgroup.UpdateProfiles(instanceId);
             await Cache.ApplicationUser.Add(user.Email, user.Id);
