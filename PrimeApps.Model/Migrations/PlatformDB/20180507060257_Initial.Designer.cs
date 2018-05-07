@@ -11,7 +11,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180503092624_Initial")]
+    [Migration("20180507060257_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,9 +56,16 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<int?>("UpdatedById")
                         .HasColumnName("updated_by");
 
+                    b.Property<bool>("UseTenantSettings")
+                        .HasColumnName("use_tenant_settings");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
 
                     b.HasIndex("Description");
 
@@ -66,7 +73,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("TemplateId");
 
+                    b.HasIndex("UpdatedAt");
+
                     b.HasIndex("UpdatedById");
+
+                    b.HasIndex("UseTenantSettings");
 
                     b.ToTable("apps");
                 });
@@ -78,6 +89,12 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.Property<string>("Color")
                         .HasColumnName("color");
+
+                    b.Property<string>("Culture")
+                        .HasColumnName("culture");
+
+                    b.Property<string>("Currency")
+                        .HasColumnName("currency");
 
                     b.Property<string>("Description")
                         .HasColumnName("description");
@@ -91,11 +108,17 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("Image")
                         .HasColumnName("image");
 
+                    b.Property<string>("Language")
+                        .HasColumnName("language");
+
                     b.Property<string>("MailSenderEmail")
                         .HasColumnName("mail_sender_email");
 
                     b.Property<string>("MailSenderName")
                         .HasColumnName("mail_sender_name");
+
+                    b.Property<string>("TimeZone")
+                        .HasColumnName("time_zone");
 
                     b.Property<string>("Title")
                         .HasColumnName("title");
@@ -104,11 +127,19 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("AppId");
 
+                    b.HasIndex("Culture");
+
+                    b.HasIndex("Currency");
+
                     b.HasIndex("Domain");
+
+                    b.HasIndex("Language");
 
                     b.HasIndex("MailSenderEmail");
 
                     b.HasIndex("MailSenderName");
+
+                    b.HasIndex("TimeZone");
 
                     b.ToTable("app_settings");
                 });
@@ -225,12 +256,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Culture")
-                        .HasColumnName("culture");
-
-                    b.Property<string>("Currency")
-                        .HasColumnName("currency");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnName("email");
@@ -243,19 +268,12 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .IsRequired()
                         .HasColumnName("last_name");
 
-                    b.Property<string>("Phone")
-                        .HasColumnName("phone");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt");
-
-                    b.HasIndex("Culture");
-
-                    b.HasIndex("Currency");
 
                     b.HasIndex("Email");
 
@@ -268,6 +286,41 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("UpdatedAt");
 
                     b.ToTable("users");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.PlatformUserSetting", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_id");
+
+                    b.Property<string>("Culture")
+                        .HasColumnName("culture");
+
+                    b.Property<string>("Currency")
+                        .HasColumnName("currency");
+
+                    b.Property<string>("Language")
+                        .HasColumnName("language");
+
+                    b.Property<string>("Phone")
+                        .HasColumnName("phone");
+
+                    b.Property<string>("TimeZone")
+                        .HasColumnName("time_zone");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("Culture");
+
+                    b.HasIndex("Currency");
+
+                    b.HasIndex("Language");
+
+                    b.HasIndex("Phone");
+
+                    b.HasIndex("TimeZone");
+
+                    b.ToTable("user_settings");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.PlatformWarehouse", b =>
@@ -440,6 +493,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<int?>("UpdatedById")
                         .HasColumnName("updated_by");
 
+                    b.Property<bool>("UseUserSettings")
+                        .HasColumnName("use_user_settings");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppId");
@@ -457,6 +513,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("UpdatedAt");
 
                     b.HasIndex("UpdatedById");
+
+                    b.HasIndex("UseUserSettings");
 
                     b.ToTable("tenants");
                 });
@@ -512,6 +570,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<int>("TenantId")
                         .HasColumnName("tenant_id");
 
+                    b.Property<string>("Culture")
+                        .HasColumnName("culture");
+
                     b.Property<string>("Currency")
                         .HasColumnName("currency");
 
@@ -533,6 +594,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("CustomTitle")
                         .HasColumnName("custom_title");
 
+                    b.Property<bool>("HasSampleData")
+                        .HasColumnName("has_sample_data");
+
                     b.Property<string>("Language")
                         .HasColumnName("language");
 
@@ -545,15 +609,26 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("MailSenderName")
                         .HasColumnName("mail_sender_name");
 
+                    b.Property<string>("TimeZone")
+                        .HasColumnName("time_zone");
+
                     b.HasKey("TenantId");
 
+                    b.HasIndex("Culture");
+
+                    b.HasIndex("Currency");
+
                     b.HasIndex("CustomDomain");
+
+                    b.HasIndex("Language");
 
                     b.HasIndex("MailSenderEmail");
 
                     b.HasIndex("MailSenderName");
 
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("TimeZone");
 
                     b.ToTable("tenant_settings");
                 });
@@ -622,6 +697,14 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasOne("PrimeApps.Model.Entities.Platform.Organization", "Organization")
                         .WithMany("OrganizationUsers")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.PlatformUserSetting", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "User")
+                        .WithOne("Setting")
+                        .HasForeignKey("PrimeApps.Model.Entities.Platform.PlatformUserSetting", "UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

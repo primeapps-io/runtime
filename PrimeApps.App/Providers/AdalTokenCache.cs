@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Providers
 {
-    public class AdTokenCache : TokenCache
+	//TODO Removed
+    /*public class AdTokenCache : TokenCache
     {
         private string _user;
         private ActiveDirectoryCache _cache;
@@ -106,5 +107,5 @@ namespace PrimeApps.App.Providers
         {
             // if you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
         }
-    }
+    }*/
 }

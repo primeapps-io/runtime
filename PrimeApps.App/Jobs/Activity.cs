@@ -18,7 +18,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// </summary>
         /// <param name="reminderMessage"></param>
         /// <returns>it will return false only when an error occured during the processing, not when the reminder revision is wrong or non-existant.</returns>
-        public async Task<bool> Process(ReminderDTO reminderMessage)
+        public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser)
         {
             Model.Entities.Application.Reminder reminder;
             bool status = false;
@@ -50,13 +50,13 @@ namespace PrimeApps.App.Jobs.Reminder
                                     switch (reminderType)
                                     {
                                         case "task":
-                                            await Task(reminder, reminderMessage, platformUserRepository);
+                                            await Task(reminder, reminderMessage, platformUserRepository, appUser);
                                             break;
                                         case "event":
-                                            await Event(reminder, reminderMessage, platformUserRepository);
+                                            await Event(reminder, reminderMessage, platformUserRepository, appUser);
                                             break;
                                         case "call":
-                                            await Call(reminder, reminderMessage, platformUserRepository);
+                                            await Call(reminder, reminderMessage, platformUserRepository, appUser);
                                             break;
                                         default:
                                             break;
@@ -88,7 +88,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for event typed activity records.
         /// </summary>
-        private async Task Event(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository)
+        private async Task Event(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
 
             try
@@ -113,14 +113,14 @@ namespace PrimeApps.App.Jobs.Reminder
                         var user = await platformUserRepository.Get(usr.Email);
                         var appUser = new UserItem
                         {
-                           AppId = user.AppId,
-                           TenantId = user.TenantId.Value,
+                           AppId = _appUser.AppId,
+                           TenantId = _appUser.TenantId,
                            Id = user.Id,
                            UserName = user.Email,
                            Email = user.Email
                         };
 
-                        Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, user.AppId, appUser);
+                        Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, _appUser.AppId, appUser);
                         /// program notification email for the reminder date.
 
 
@@ -136,7 +136,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for call typed activity records.
         /// </summary>
-        private async Task Call(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository)
+        private async Task Call(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
 
 
@@ -163,13 +163,13 @@ namespace PrimeApps.App.Jobs.Reminder
                             var user = await platformUserRepository.Get(usr.Email);
                             var appUser = new UserItem
                             {
-                                AppId = user.AppId,
-                                TenantId = user.TenantId.Value,
+                                AppId = _appUser.AppId,
+                                TenantId = _appUser.TenantId,
                                 Id = user.Id,
                                 UserName = user.Email,
                                 Email = user.Email
                             };
-                            Email.Notification.Call(userName, subject, email, usr.Culture, startDate,  user.AppId, appUser);
+                            Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser);
 
                         /// program notification email for the reminder date.
 
@@ -186,7 +186,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for task typed activity records.
         /// </summary>
-        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository)
+        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
 
             try
@@ -221,14 +221,14 @@ namespace PrimeApps.App.Jobs.Reminder
                         /// send notification email.
                         var appUser = new UserItem
                         {
-                            AppId = user.AppId,
-                            TenantId = user.TenantId.Value,
+                            AppId = _appUser.AppId,
+                            TenantId = _appUser.TenantId,
                             Id = user.Id,
                             UserName = user.Email,
                             Email = user.Email
                         };
 
-                        Email.Notification.Task(userName, subject, email, usr.Culture, deadline,  user.AppId, appUser);
+                        Email.Notification.Task(userName, subject, email, usr.Culture, deadline, _appUser.AppId, appUser);
                     };
                 }
 
@@ -258,7 +258,7 @@ namespace PrimeApps.App.Jobs.Reminder
                             {
                                 reminderMessage.Rev = result.Rev;
                                 DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
-                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage), dateOffset);
+                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser), dateOffset);
 
                             }
 

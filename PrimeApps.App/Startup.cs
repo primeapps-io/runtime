@@ -155,7 +155,6 @@ namespace PrimeApps.App
                 });
             #endregion
 
-
             RegisterBundle(services);
         }
 
@@ -181,10 +180,9 @@ namespace PrimeApps.App
                 await next.Invoke();
             });
 
-
             app.UseAuthentication();
 
-            BundleConfiguration(app);
+			BundleConfiguration(app, Configuration);
 
             if (env.IsDevelopment())
             {

@@ -164,13 +164,13 @@ namespace PrimeApps.App.Helpers
                 using (TenantRepository tRepo = new TenantRepository(pdbCtx))
                 {
                     var instance = tRepo.Get(AppUser.TenantId);
-                    if (!string.IsNullOrEmpty(instance.MailSenderName) && !string.IsNullOrEmpty(instance.MailSenderEmail))
+                    if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
                     {
-                        appUrl = TenantRepository.GetLogoUrl(instance.Logo);
+                        appUrl = TenantRepository.GetLogoUrl(instance.Setting.Logo);
                         appCodeUrl = "#";
-                        appName = instance.MailSenderName;
+                        appName = instance.Setting.MailSenderName;
                         socialMediaIcons = "none";
-                        footer = instance.MailSenderName;
+                        footer = instance.Setting.MailSenderName;
 
                     }
                 }
@@ -297,10 +297,10 @@ namespace PrimeApps.App.Helpers
                 using (TenantRepository tRepo = new TenantRepository(pdbCtx))
                 {
                     var tenant = tRepo.Get(appUser.TenantId);
-                    if (!string.IsNullOrEmpty(tenant.MailSenderName) && !string.IsNullOrEmpty(tenant.MailSenderEmail))
+                    if (!string.IsNullOrEmpty(tenant.Setting.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting.MailSenderEmail))
                     {
-                        from = tenant.MailSenderEmail;
-                        fromName = tenant.MailSenderName;
+                        from = tenant.Setting.MailSenderEmail;
+                        fromName = tenant.Setting.MailSenderName;
                     }
                 }
             }
@@ -339,10 +339,10 @@ namespace PrimeApps.App.Helpers
                 using (TenantRepository tRepo = new TenantRepository(pdbCtx))
                 {
                     var instance = tRepo.Get(appUser.TenantId);
-                    if (!string.IsNullOrEmpty(instance.MailSenderName) && !string.IsNullOrEmpty(instance.MailSenderEmail))
+                    if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
                     {
-                        from = instance.MailSenderEmail;
-                        fromName = instance.MailSenderName;
+                        from = instance.Setting.MailSenderEmail;
+                        fromName = instance.Setting.MailSenderName;
                     }
                 }
             }

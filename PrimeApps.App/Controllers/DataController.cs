@@ -153,6 +153,7 @@ namespace PrimeApps.App.Controllers
             if (result > 0)
             {
                 var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
+				_tenantRepository.
                 instanceToUpdate.HasSampleData = false;
                await _tenantRepository.UpdateAsync(instanceToUpdate);
             }

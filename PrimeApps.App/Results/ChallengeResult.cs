@@ -1,15 +1,11 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.App.Results
 {
-    public class ChallengeResult : IActionResult
+	public class ChallengeResult : IActionResult
     {
         public ChallengeResult(string loginProvider, Controller controller)
         {
@@ -19,8 +15,9 @@ namespace PrimeApps.App.Results
 
         public string LoginProvider { get; set; }
         public HttpRequest Request { get; set; }
-
-        public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
+		
+		//TODO Removed
+        /*public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
             
             Request.GetOwinContext().Authentication.Challenge(LoginProvider);
@@ -28,7 +25,7 @@ namespace PrimeApps.App.Results
             HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
             response.RequestMessage = Request;
             return Task.FromResult(response);
-        }
+        }*/
 
         public Task ExecuteResultAsync(ActionContext context)
         {

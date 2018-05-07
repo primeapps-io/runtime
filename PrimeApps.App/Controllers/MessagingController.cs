@@ -70,7 +70,6 @@ namespace PrimeApps.App.Controllers
                 }
                 catch (Exception ex)
                 {
-
                     throw ex;
                 }
 
@@ -159,21 +158,14 @@ namespace PrimeApps.App.Controllers
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
 
-                using (var session = Provider.GetSession())
+           
+                foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
-                    using (var transaction = session.BeginTransaction())
-                    {
-                        foreach (var emailRecipient in emailRequest.ToAddresses)
-                        {
-                            var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
-                            externalEmail.AddRecipient(emailRecipient);
-                            externalEmail.AddToQueue(session, appUser: AppUser);
-                        }
-
-                        //commit transaction to apply changes to the database.
-                        transaction.Commit();
-                    }
-                }
+                    var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
+                    externalEmail.AddRecipient(emailRecipient);
+                    externalEmail.AddToQueue(appUser: AppUser);
+                }                    
+                
                 return Ok(emailRequest.ToAddresses.Count());
             }
 

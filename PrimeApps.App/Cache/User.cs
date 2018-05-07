@@ -24,7 +24,7 @@ namespace PrimeApps.App.Cache
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async static Task<UserItem> Get(int userId, bool createIfNotExists = true)
+        public async static Task<UserItem> Get(int userId, int tenantId, bool createIfNotExists = true)
         {
             UserItem value = await _cacheClient.GetAsync<UserItem>(string.Format("user_{0}", userId));
 
@@ -35,36 +35,64 @@ namespace PrimeApps.App.Cache
 
                 // The key exists in DB. Let's cache it in memory, so that the subsequent requests can be faster.
                 PlatformUser user;
+			 	PrimeApps.Model.Entities.Platform.Tenant userTenant;
 
                 using (var pDbContext = new PlatformDBContext())
                 {
                     using (PlatformUserRepository puRepository = new PlatformUserRepository(pDbContext))
+                    using (TenantRepository tenantRepository = new TenantRepository(pDbContext))
                     {
-                        user = await puRepository.GetWithTenant(userId);
+						userTenant = await tenantRepository.GetWithSettingsAsync(tenantId);
+                        user = await puRepository.GetWithSettings(userId);
                     }
                 }
 
-                UserItem newCacheEntry = new UserItem();
+				string culture = "";
+				string lang = "";
+				string currency = "";
+
+				if (!userTenant.App.UseTenantSettings)
+				{
+					culture = userTenant.App.Setting.Culture;
+					lang = userTenant.App.Setting.Language;
+					currency = userTenant.App.Setting.Currency;
+				}
+				else if (!userTenant.UseUserSettings)
+				{
+					culture = userTenant.Setting.Culture;
+					lang = userTenant.Setting.Language;
+					currency = userTenant.Setting.Currency;
+				}
+				else
+				{
+					culture = user.Setting.Culture;
+					lang = user.Setting.Language;
+					currency = user.Setting.Currency;
+				}
+
+				UserItem newCacheEntry = new UserItem();
                 newCacheEntry.UserName = user.FirstName + " " + user.LastName;
                 newCacheEntry.Email = user.Email;
-                newCacheEntry.Currency = user.Currency;
+                newCacheEntry.Currency = currency;
                 newCacheEntry.Id = user.Id;
-                newCacheEntry.TenantId = user.TenantId.Value;
-                newCacheEntry.AppId = user.AppId;
-                newCacheEntry.TenantGuid = user.Tenant.GuidId;
+                newCacheEntry.TenantId = userTenant.Id;
+                newCacheEntry.AppId = userTenant.AppId;
+                newCacheEntry.TenantGuid = userTenant.GuidId;
 
                 //create tenant sessions for the tenant in the user's session.
                 //get session for the instance
-                var tenant = await Tenant.Get(user.TenantId.Value);
+                //var tenant = await Tenant.Get(userTenant.Id);
 
-                newCacheEntry.TenantLanguage = tenant.Language;
-                newCacheEntry.Culture = tenant.Language == "en" ? "en-US" : "tr-TR";
+				newCacheEntry.TenantLanguage = lang;
+                newCacheEntry.Culture = culture;
 
-                if (!tenant.Users.Contains(userId))
+				var tenantUser = userTenant.TenantUsers.Where(x => x.UserId == userId).FirstOrDefault();
+
+                if (tenantUser != null)
                 {
                     //if instance's user list does not contain user's id, modify the array and add current user in it.
-                    var users = tenant.Users;
-                    Array.Resize<int>(ref users, tenant.Users.Length + 1);
+                    var users = userTenant.TenantUsers;
+                    Array.Resize<int>(ref users, userTenant.TenantUsers.Count + 1);
                     tenant.Users = users;
                     tenant.Users[tenant.Users.Length - 1] = userId;
 
@@ -174,7 +202,7 @@ namespace PrimeApps.App.Cache
 
             foreach (int userId in inst.Users)
             {
-                UserItem user = await Get(userId, false);
+                UserItem user = await Get(userId, false, instanceId);
                 if (user == null) return;
 
                 //remove the tenant id from
@@ -183,12 +211,13 @@ namespace PrimeApps.App.Cache
             }
         }
 
-        /// <summary>
-        /// Adds tenant to users session also adds users entry to joined instances session.
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <param name="tenantId"></param>
-        public async static Task JoinToInstance(int userId, int tenantId)
+		//TODO Removed
+		/// <summary>
+		/// Adds tenant to users session also adds users entry to joined instances session.
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="tenantId"></param>
+		/*public async static Task JoinToInstance(int userId, int tenantId)
         {
             //get all instances that belong to the user
             UserItem user = await Get(userId);
@@ -219,7 +248,7 @@ namespace PrimeApps.App.Cache
 
             //remove the user from tenant cache too
             await Tenant.RemoveUser(userId, tenantId);
-        }
-    }
+        }*/
+	}
 
 }

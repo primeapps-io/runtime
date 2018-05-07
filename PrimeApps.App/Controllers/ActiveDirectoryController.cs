@@ -16,7 +16,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("active_directory"), Authorize]
+	//TODO Removed
+    /*[Route("active_directory"), Authorize]
     public class ActiveDirectoryController : Controller
     {
         private IPlatformUserRepository _platformUserRepository;
@@ -77,8 +78,8 @@ namespace PrimeApps.App.Controllers
                 var user = await _platformUserRepository.Get(userId);
 
                 // try to get user object only if user id exists in session cache.
-                /*if (userId != Guid.Empty)
-                    userItem = AsyncHelpers.RunSync(() => Cache.User.Get(userId));*/
+                //if (userId != Guid.Empty)
+                    //userItem = AsyncHelpers.RunSync(() => Cache.User.Get(userId));
                 if (error == "access_denied")
                 {
                     ViewBag.Error = "accessDenied";
@@ -135,5 +136,5 @@ namespace PrimeApps.App.Controllers
                 return View();
             }
         }
-    }
+    }*/
 }

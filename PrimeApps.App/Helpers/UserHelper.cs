@@ -22,7 +22,7 @@ namespace PrimeApps.App.Helpers
     public static class UserHelper
 	{
 		//TODO Removed
-		public static async Task<string> AddUser(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId/*, ApplicationUserManager userManager*/, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse, PlatformUser applicationUser = null, string password = "")
+		/*public static async Task<string> AddUser(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId, ApplicationUserManager userManager, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse, PlatformUser applicationUser = null, string password = "")
         {
             if (applicationUser == null)
             {
@@ -43,7 +43,7 @@ namespace PrimeApps.App.Helpers
 				//TODO Removed
 				//var result = await userManager.CreateAsync(applicationUser, password);
 
-                if (/*!result.Succeeded*/ false)
+                if (!result.Succeeded)
                     throw new Exception();
             }
 
@@ -51,7 +51,7 @@ namespace PrimeApps.App.Helpers
 			//var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser.Id);
 			//var confirmResponse = await userManager.ConfirmEmailAsync(applicationUser.Id, confirmationToken);
 
-            if (/*!confirmResponse.Succeeded*/ false)
+            if (!confirmResponse.Succeeded)
                 throw new Exception();
 
             var registerModel = new RegisterBindingModel();
@@ -97,7 +97,7 @@ namespace PrimeApps.App.Helpers
         }
 
 		//TODO Removed
-		public static async Task<string> AddUserToNewTenant(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId/*, ApplicationUserManager userManager*/, IPlatformUserRepository platformUserRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, Warehouse warehouse, PlatformUser platformUser = null, string password = "")
+		public static async Task<string> AddUserToNewTenant(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId, ApplicationUserManager userManager, IPlatformUserRepository platformUserRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, Warehouse warehouse, PlatformUser platformUser = null, string password = "")
         {
             if (platformUser == null)
             {
@@ -119,14 +119,14 @@ namespace PrimeApps.App.Helpers
 				//TODO Removed
 				//var result = await userManager.CreateAsync(platformUser, password);
 
-				if (/*!result.Succeeded*/ false)
+				if (!result.Succeeded)
                     throw new Exception();
             }
 			//TODO Removed
 			//var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(platformUser.Id);
 			//var confirmResponse = await userManager.ConfirmEmailAsync(platformUser.Id, confirmationToken);
 
-			if (/*!confirmResponse.Succeeded*/ false)
+			if (!confirmResponse.Succeeded)
                 throw new Exception();
 
             var registerModel = new RegisterBindingModel();
@@ -264,6 +264,6 @@ namespace PrimeApps.App.Helpers
 
             //if (errorList.Count > 0)
                 //ErrorLog.GetDefault(null).Log(new Error(new Exception(errorList.ToJsonString())));
-        }
+        }*/
     }
 }

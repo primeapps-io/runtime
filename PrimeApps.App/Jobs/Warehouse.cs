@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Hangfire;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Warehouse;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -20,13 +21,13 @@ namespace PrimeApps.App.Jobs
         }
 
         [QueueAttributes.WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public async Task Create(WarehouseCreateRequest request, string userEmail)
+        public async Task Create(WarehouseCreateRequest request, UserItem appUser)
         {
             _moduleRepository.TenantId = request.TenantId;
             _warehouseRepository.TenantId = request.TenantId;
 
             var modules = await _moduleRepository.GetAll();
-            var tenantLanguage = (await _tenantRepository.GetAsync(request.TenantId)).Language;
+            var tenantLanguage = appUser.TenantLanguage;
 
             var warehouse = new PlatformWarehouse
             {
@@ -35,7 +36,7 @@ namespace PrimeApps.App.Jobs
                 PowerbiWorkspaceId = request.PowerBiWorkspaceId
             };
 
-            await _warehouseRepository.Create(warehouse, modules, userEmail, tenantLanguage);
+            await _warehouseRepository.Create(warehouse, modules, appUser.Email, tenantLanguage);
         }
 
         public void ChangePassword(WarehousePasswordRequest request, PlatformWarehouse warehouse)

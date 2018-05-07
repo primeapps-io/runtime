@@ -40,11 +40,23 @@ namespace PrimeApps.Model.Common.Cache
         /// <value>The currency.</value>
         public string Currency { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Tenant ID.
-        /// </summary>
-        /// <value>The Tenant ID.</value>
-        public int TenantId { get; set; }
+		/// <summary>
+		/// Gets or sets the currency.
+		/// </summary>
+		/// <value>The currency.</value>
+		public string TimeZone { get; set; }
+
+		/// <summary>
+		/// Gets or sets the currency.
+		/// </summary>
+		/// <value>The currency.</value>
+		public string Language { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Tenant ID.
+		/// </summary>
+		/// <value>The Tenant ID.</value>
+		public int TenantId { get; set; }
 
 
         /// <summary>

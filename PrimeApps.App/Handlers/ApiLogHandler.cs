@@ -12,11 +12,13 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.App.Handlers
 {
-    /// <summary>
-    /// This handler will log request and response data for each request being made to our api.
-    /// </summary>
-    public class ApiLogHandler : DelegatingHandler
+	/// <summary>
+	/// This handler will log request and response data for each request being made to our api.
+	/// </summary>
+	/// //TODO Removed
+	/*public class ApiLogHandler : DelegatingHandler
     {
+		
         /// <summary>
         /// We override SendAsync method of http handler to identify and log the incoming requests from tenant and public sources.
         /// </summary>
@@ -136,5 +138,5 @@ namespace PrimeApps.App.Handlers
 
             return JsonConvert.SerializeObject(dict, Formatting.Indented);
         }
-    }
+    }*/
 }

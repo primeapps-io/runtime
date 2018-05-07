@@ -51,8 +51,8 @@ namespace PrimeApps.App.Controllers
 
             //if it is valid, then update the changed fields.
             tenantToUpdate.Title = tenantDto.Title;
-            tenantToUpdate.Currency = tenantDto.Currency;
-            tenantToUpdate.Logo = tenantDto.Logo;
+            tenantToUpdate.Setting.Currency = tenantDto.Currency;
+            tenantToUpdate.Setting.Logo = tenantDto.Logo;
             await _tenantRepository.UpdateAsync(tenantToUpdate);
 
             if (!string.IsNullOrEmpty(tenantDto.Language))
@@ -206,7 +206,7 @@ namespace PrimeApps.App.Controllers
                 //return new ForbiddenResult(Request);
             }
 
-            instanceToUpdate.Logo = (string)logo["url"];
+            instanceToUpdate.Setting.Logo = (string)logo["url"];
             await _tenantRepository.UpdateAsync(instanceToUpdate);
             return Ok();
         }

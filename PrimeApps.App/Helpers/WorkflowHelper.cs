@@ -616,7 +616,7 @@ namespace PrimeApps.App.Helpers
 
                                                     var recordData = recordRepository.GetById(module, recordId, false, lookupModules);
                                                     var tenant = subscriber.TenantsAsUser.Single();
-                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, tenant.Setting.Language, subscriber.Culture, 180, lookupModules);
+                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, tenant.Setting.Language, subscriber.Setting.Culture, 180, lookupModules);
 
                                                     foreach (var dataString in data)
                                                     {

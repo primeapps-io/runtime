@@ -179,16 +179,25 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 noAddress = 0,
                 notAllowed = 0;
 
-            PlatformUser subscriber = null;
+			Tenant subscriber = null;
             using (PlatformDBContext platformDBContext = new PlatformDBContext())
             {
-                using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDBContext))
+                using (TenantRepository platformUserRepository = new TenantRepository(platformDBContext))
                 {
 
-                    subscriber = await platformUserRepository.GetWithTenant(messageDto.TenantId);
+                    subscriber = await platformUserRepository.GetWithSettingsAsync(messageDto.TenantId);
 
                 }
             }
+
+			string culture = subscriber.Setting.Culture;
+			string lang = subscriber.Setting.Language;
+
+			if (!subscriber.App.UseTenantSettings)
+			{
+				culture = subscriber.App.Setting.Culture;
+				lang = subscriber.App.Setting.Language;
+			}
 
             /// get all required fields from template.
             MatchCollection matches = templatePattern.Matches(messageBody);
@@ -253,7 +262,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                         var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
                                         var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
                                         var recordCopy = record;
-                                        record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Tenant.Language, subscriber.Culture, 180, lookupModules);
+                                        record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, lang, culture, 180, lookupModules);
 
                                         if (record[phoneField] != null)
                                         {

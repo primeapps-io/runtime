@@ -36,9 +36,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     email = table.Column<string>(nullable: false),
                     first_name = table.Column<string>(nullable: false),
                     last_name = table.Column<string>(nullable: false),
-                    culture = table.Column<string>(nullable: true),
-                    currency = table.Column<string>(nullable: true),
-                    phone = table.Column<string>(nullable: true),
                     created_at = table.Column<DateTime>(nullable: false),
                     updated_at = table.Column<DateTime>(nullable: false)
                 },
@@ -61,7 +58,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     name = table.Column<string>(maxLength: 400, nullable: true),
                     description = table.Column<string>(maxLength: 4000, nullable: true),
                     logo = table.Column<string>(nullable: true),
-                    template_id = table.Column<int>(nullable: true)
+                    template_id = table.Column<int>(nullable: true),
+                    use_tenant_settings = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -118,6 +116,28 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 });
 
             migrationBuilder.CreateTable(
+                name: "user_settings",
+                columns: table => new
+                {
+                    user_id = table.Column<int>(nullable: false),
+                    phone = table.Column<string>(nullable: true),
+                    culture = table.Column<string>(nullable: true),
+                    currency = table.Column<string>(nullable: true),
+                    time_zone = table.Column<string>(nullable: true),
+                    language = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_settings", x => x.user_id);
+                    table.ForeignKey(
+                        name: "FK_user_settings_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "warehouse",
                 columns: table => new
                 {
@@ -163,7 +183,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     image = table.Column<string>(nullable: true),
                     domain = table.Column<string>(nullable: true),
                     mail_sender_name = table.Column<string>(nullable: true),
-                    mail_sender_email = table.Column<string>(nullable: true)
+                    mail_sender_email = table.Column<string>(nullable: true),
+                    currency = table.Column<string>(nullable: true),
+                    culture = table.Column<string>(nullable: true),
+                    time_zone = table.Column<string>(nullable: true),
+                    language = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -190,7 +214,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     app_id = table.Column<int>(nullable: false),
                     guid_id = table.Column<Guid>(nullable: false),
                     title = table.Column<string>(nullable: true),
-                    owner_id = table.Column<int>(nullable: false)
+                    owner_id = table.Column<int>(nullable: false),
+                    use_user_settings = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -313,6 +338,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 {
                     tenant_id = table.Column<int>(nullable: false),
                     currency = table.Column<string>(nullable: true),
+                    culture = table.Column<string>(nullable: true),
+                    time_zone = table.Column<string>(nullable: true),
                     language = table.Column<string>(nullable: true),
                     logo = table.Column<string>(nullable: true),
                     mail_sender_name = table.Column<string>(nullable: true),
@@ -322,7 +349,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     custom_description = table.Column<string>(nullable: true),
                     custom_favicon = table.Column<string>(nullable: true),
                     custom_color = table.Column<string>(nullable: true),
-                    custom_image = table.Column<string>(nullable: true)
+                    custom_image = table.Column<string>(nullable: true),
+                    has_sample_data = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -414,9 +442,24 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "app_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_app_settings_culture",
+                table: "app_settings",
+                column: "culture");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_settings_currency",
+                table: "app_settings",
+                column: "currency");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_app_settings_domain",
                 table: "app_settings",
                 column: "domain");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_settings_language",
+                table: "app_settings",
+                column: "language");
 
             migrationBuilder.CreateIndex(
                 name: "IX_app_settings_mail_sender_email",
@@ -429,9 +472,24 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "mail_sender_name");
 
             migrationBuilder.CreateIndex(
+                name: "IX_app_settings_time_zone",
+                table: "app_settings",
+                column: "time_zone");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_apps_created_at",
+                table: "apps",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_apps_created_by",
                 table: "apps",
                 column: "created_by");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_apps_deleted",
+                table: "apps",
+                column: "deleted");
 
             migrationBuilder.CreateIndex(
                 name: "IX_apps_description",
@@ -449,9 +507,19 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "template_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_apps_updated_at",
+                table: "apps",
+                column: "updated_at");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_apps_updated_by",
                 table: "apps",
                 column: "updated_by");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_apps_use_tenant_settings",
+                table: "apps",
+                column: "use_tenant_settings");
 
             migrationBuilder.CreateIndex(
                 name: "IX_exchange_rates_date",
@@ -614,9 +682,24 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tenant_settings_culture",
+                table: "tenant_settings",
+                column: "culture");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tenant_settings_currency",
+                table: "tenant_settings",
+                column: "currency");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_tenant_settings_custom_domain",
                 table: "tenant_settings",
                 column: "custom_domain");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tenant_settings_language",
+                table: "tenant_settings",
+                column: "language");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenant_settings_mail_sender_email",
@@ -632,6 +715,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 name: "IX_tenant_settings_tenant_id",
                 table: "tenant_settings",
                 column: "tenant_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_tenant_settings_time_zone",
+                table: "tenant_settings",
+                column: "time_zone");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenants_app_id",
@@ -674,6 +762,36 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "updated_by");
 
             migrationBuilder.CreateIndex(
+                name: "IX_tenants_use_user_settings",
+                table: "tenants",
+                column: "use_user_settings");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_settings_culture",
+                table: "user_settings",
+                column: "culture");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_settings_currency",
+                table: "user_settings",
+                column: "currency");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_settings_language",
+                table: "user_settings",
+                column: "language");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_settings_phone",
+                table: "user_settings",
+                column: "phone");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_settings_time_zone",
+                table: "user_settings",
+                column: "time_zone");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_user_tenants_tenant_id",
                 table: "user_tenants",
                 column: "tenant_id");
@@ -687,16 +805,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 name: "IX_users_created_at",
                 table: "users",
                 column: "created_at");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_users_culture",
-                table: "users",
-                column: "culture");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_users_currency",
-                table: "users",
-                column: "currency");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_email",
@@ -771,6 +879,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
             migrationBuilder.DropTable(
                 name: "tenant_settings");
+
+            migrationBuilder.DropTable(
+                name: "user_settings");
 
             migrationBuilder.DropTable(
                 name: "user_tenants");

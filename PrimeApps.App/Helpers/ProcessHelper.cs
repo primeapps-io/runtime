@@ -340,14 +340,14 @@ namespace PrimeApps.App.Helpers
                                     if ((bool)record["izin_turu.yillik_izin"] && (int)record["mevcut_kullanilabilir_izin"] -
                                         (int)record["hesaplanan_alinacak_toplam_izin"] < 0)
                                     {
-                                        if (appUser.PicklistLanguage == "tr")
+                                        if (appUser.TenantLanguage == "tr")
                                             emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışan izin borçlanma talep etmektedir.İzin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
                                         else
                                             emailData.Add("ExtraLeave", "Employee" + " " + (string)record["calisan.ad_soyad"] + ", with the details below requests leave of absence. It has been submitted for your approval as the manager.");
                                     }
                                     else
                                     {
-                                        if (appUser.PicklistLanguage == "tr")
+                                        if (appUser.TenantLanguage == "tr")
                                             emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışana ait izin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
                                         else
                                         {

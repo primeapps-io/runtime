@@ -23,7 +23,25 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Tenants.Where(x => x.Id == tenantId).SingleOrDefaultAsync();
         }
 
-        public async Task<Tenant> GetWithOwnerAsync(int tenantId)
+		public async Task<Tenant> GetWithSettingsAsync(int tenantId)
+		{
+			return await DbContext.Tenants
+				.Include(x => x.Setting)
+				.Where(x => x.Id == tenantId)
+				.SingleOrDefaultAsync();
+		}
+
+		public async Task<Tenant> GetWithAllAsync(int tenantId)
+		{
+			return await DbContext.Tenants
+				.Include(x => x.Setting)
+				.Include(x => x.App)
+				.Include(x => x.App.Setting)
+				.Where(x => x.Id == tenantId)
+				.SingleOrDefaultAsync();
+		}
+
+		public async Task<Tenant> GetWithOwnerAsync(int tenantId)
         {
             return await DbContext.Tenants.Include(x => x.Owner).Where(x => x.Id == tenantId).SingleOrDefaultAsync();
         }
@@ -108,6 +126,8 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.License)
                 .Include(x => x.TenantUsers.Where(z => z.UserId == x.Id))
                 .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
+				.Include(x => x.App)
+				.Include(x => x.App.Setting)
                 .Where(x => x.CreatedAt > minusFourteenDays && x.CreatedAt <= minusFourteenDaysPlusOneHours && !x.License.IsPaidCustomer)
                 .ToListAsync();
         }

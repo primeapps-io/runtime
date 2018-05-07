@@ -260,12 +260,16 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var subscriberUser = await _platformUserRepository.Get(email);
-            var subscriberTenant = await _tenantRepository.GetAsync(subscriberUser.TenantId.Value);
-            subscriberTenant.HasAnalyticsLicense = active;
-            await _tenantRepository.UpdateAsync(subscriberTenant);
+			var subscriberUser = await _platformUserRepository.Get(email);
+			//var subscriberTenant = await _tenantRepository.GetAsync(subscriberUser.TenantId.Value);
 
-            await Cache.Tenant.Remove(subscriberTenant.Id);
+			var licenseSetting = await _settingRepository.GetByKeyAsync("HasAnalyticsLicense", subscriberUser.Id);
+			licenseSetting.Value = active.ToString();
+			await _settingRepository.Update(licenseSetting);
+
+            /*subscriberTenant.HasAnalyticsLicense = active;
+            await _tenantRepository.UpdateAsync(subscriberTenant);*/
+			
 
             return Ok();
         }
@@ -315,19 +319,16 @@ namespace PrimeApps.App.Controllers
             foreach (var user in users)
             {
                 await _platformUserRepository.UpdateAsync(user);
-                var userTenant = await _userRepository.GetById(user.TenantId.Value);
+				//TODO Removed
+                var userTenant = await _userRepository.GetById(/*user.TenantId.Value*/ tenantId);
 
                 if (userTenant != null)
                 {
                     userTenant.IsActive = false;
                     await _userRepository.UpdateAsync(userTenant);
                 }
-
-
-                await Cache.User.Remove(user.Id);
             }
-
-            await Cache.Tenant.Remove(tenant.Id);
+			
             await _tenantRepository.UpdateAsync(tenant);
 
             return Ok();

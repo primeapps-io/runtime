@@ -20,6 +20,9 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("template_id")]
         public int? TemplateId { get; set; }
 
+		[Column("use_tenant_settings")]
+		public bool UseTenantSettings { get; set; }
+
 		//AppInfo One to One
 		public virtual AppSetting Setting { get; set; }
 

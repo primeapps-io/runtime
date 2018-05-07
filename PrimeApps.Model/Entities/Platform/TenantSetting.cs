@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ namespace PrimeApps.Model.Entities.Platform
 {
 	[Table("tenant_settings")]
 	public class TenantSetting
-    {
+	{
 		[JsonIgnore]
 		[Column("tenant_id"), Key]
 		public int TenantId { get; set; }
@@ -20,7 +21,11 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("currency")]
 		public string Currency { get; set; }
 
+		[Column("culture")]
+		public string Culture { get; set; }
 
+		[Column("time_zone")]
+		public string TimeZone { get; set; }
 		/// <summary>
 		/// Language
 		/// </summary>	
@@ -80,6 +85,9 @@ namespace PrimeApps.Model.Entities.Platform
 		/// </summary>
 		[Column("custom_image")]
 		public string CustomImage { get; set; }
+
+		[Column("has_sample_data")]
+		public bool HasSampleData { get; set; }
 
 		//Tenant One to One
 		public virtual Tenant Tenant { get; set; }

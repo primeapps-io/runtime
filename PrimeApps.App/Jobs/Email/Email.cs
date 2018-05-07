@@ -192,12 +192,12 @@ namespace PrimeApps.App.Jobs.Email
             var pattern = new Regex(@"{(.*?)}");
             var contentFields = new List<string>();
             var matches = pattern.Matches(content);
-            PlatformUser subscriber = null;
+            Tenant subscriber = null;
 
             using (var platformDBContext = new PlatformDBContext())
-            using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
+            using (var tenantRepository = new TenantRepository(platformDBContext))
             {
-                subscriber = await platformUserRepository.GetWithTenant(tenantId);
+				subscriber = await tenantRepository.GetAsync(tenantId);
             }
 
             foreach (object match in matches)
@@ -222,7 +222,7 @@ namespace PrimeApps.App.Jobs.Email
 
                 if (!record.IsNullOrEmpty())
                 {
-                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Tenant.Language, subscriber.Culture, 180, lookupModules, true);
+                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Setting.Language, subscriber.Setting.Language, 180, lookupModules, true);
 
                     if (contentFields.Count > 0)
                     {

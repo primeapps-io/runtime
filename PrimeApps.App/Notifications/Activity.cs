@@ -115,7 +115,7 @@ namespace PrimeApps.App.Notifications
                         //await ServiceBus.SendMessage("reminder", reminderDto, nextReminder);
 
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(nextReminder, DateTimeKind.Utc);
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
                     }
                 }
 
@@ -168,7 +168,7 @@ namespace PrimeApps.App.Notifications
                         //await ServiceBus.SendMessage("reminder", reminderDto, nextReminder);
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(nextReminder, DateTimeKind.Utc);
 
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
 
                     }
                 }
@@ -228,7 +228,7 @@ namespace PrimeApps.App.Notifications
 
                                 DateTimeOffset dateOffset = DateTime.SpecifyKind(taskReminderDate, DateTimeKind.Utc);
                                 /// send message to the queue.
-                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto), dateOffset);
+                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
                             }
                         }
                     }
@@ -367,7 +367,7 @@ namespace PrimeApps.App.Notifications
                         /// send message to the queue.
                         //await ServiceBus.SendMessage("reminder", reminder, remindOn);
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser), dateOffset);
                     }
 
                 }
@@ -413,7 +413,7 @@ namespace PrimeApps.App.Notifications
                         /// send message to the queue.
                         //await ServiceBus.SendMessage("reminder", reminderDto, callStartDate);
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(callStartDate, DateTimeKind.Utc);
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
                     }
 
                 }
@@ -507,7 +507,7 @@ namespace PrimeApps.App.Notifications
                     //await ServiceBus.SendMessage("reminder", reminder, (DateTime)remindOn);
                     DateTimeOffset dateOffset = DateTime.SpecifyKind((DateTime)remindOn, DateTimeKind.Utc);
 
-                    Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder), dateOffset);
+                    Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser), dateOffset);
                 }
             }
 

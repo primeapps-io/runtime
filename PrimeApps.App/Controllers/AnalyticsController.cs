@@ -38,7 +38,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var isPasswordComplex = await Utils.IsComplexPassword(request.DatabasePassword);
+            var isPasswordComplex = Utils.IsComplexPassword(request.DatabasePassword);
 
             if (!isPasswordComplex)
                 ModelState.AddModelError("password", "Password validation failed. The password does not meet policy requirements because it is not complex enough.");
@@ -54,7 +54,7 @@ namespace PrimeApps.App.Controllers
             var powerBiWorkspace = await PowerBiHelper.CreateWorkspace();
             request.PowerBiWorkspaceId = powerBiWorkspace.WorkspaceId;
 
-            var jobId = BackgroundJob.Enqueue(() => _warehouseHelper.Create(request, AppUser.Email));
+            var jobId = BackgroundJob.Enqueue(() => _warehouseHelper.Create(request, AppUser));
 
             _analyticRepository.TenantId = request.TenantId;
             var currentAnalytics = await _analyticRepository.GetAll();
@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
         [Route("change_warehouse_password"), HttpPut]
         public async Task<IActionResult> ChangeWarehousePassword(WarehousePasswordRequest request)
         {
-            var isPasswordComplex = await Utils.IsComplexPassword(request.DatabasePassword);
+            var isPasswordComplex = Utils.IsComplexPassword(request.DatabasePassword);
 
             if (!isPasswordComplex)
                 ModelState.AddModelError("password", "Password validation failed. The password does not meet policy requirements because it is not complex enough.");

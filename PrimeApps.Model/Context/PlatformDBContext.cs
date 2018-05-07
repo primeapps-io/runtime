@@ -80,24 +80,40 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Email);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.FirstName);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.LastName);
-            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Currency);
-            modelBuilder.Entity<PlatformUser>().HasIndex(x => x.Culture);
             /*modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryEmail);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.ActiveDirectoryTenantId);*/
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<PlatformUser>().HasIndex(x => x.UpdatedAt);
 
+			//PlatformUserSettings
+			modelBuilder.Entity<PlatformUserSetting>().HasIndex(x => x.Culture);
+			modelBuilder.Entity<PlatformUserSetting>().HasIndex(x => x.Currency);
+			modelBuilder.Entity<PlatformUserSetting>().HasIndex(x => x.Language);
+			modelBuilder.Entity<PlatformUserSetting>().HasIndex(x => x.TimeZone);
+			modelBuilder.Entity<PlatformUserSetting>().HasIndex(x => x.Phone);
 
 			//App
 			modelBuilder.Entity<App>().HasIndex(x => x.Name);
 			modelBuilder.Entity<App>().HasIndex(x => x.Description);
 			modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
+			modelBuilder.Entity<App>().HasIndex(x => x.UseTenantSettings);
 
 			modelBuilder.Entity<App>().HasIndex(x => x.CreatedById);
 			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedById);
-			/*modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
+			modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
 			modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);
-			modelBuilder.Entity<App>().HasIndex(x => x.Deleted);*/
+			modelBuilder.Entity<App>().HasIndex(x => x.Deleted);
+
+
+			//AppSetting
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.AppId);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Domain);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderName);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderEmail);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Currency);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Culture);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Language);
+			modelBuilder.Entity<AppSetting>().HasIndex(x => x.TimeZone);
 
 			//ApiLog
 			//App
@@ -116,6 +132,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Tenant>().HasIndex(x => x.GuidId);
             modelBuilder.Entity<Tenant>().HasIndex(x => x.OwnerId);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.AppId);
+			modelBuilder.Entity<Tenant>().HasIndex(x => x.UseUserSettings);
 
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedById);
 			modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedById);
@@ -128,12 +145,11 @@ namespace PrimeApps.Model.Context
 			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.CustomDomain);
 			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.MailSenderName);
 			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.MailSenderEmail);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.Culture);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.Currency);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.Language);
+			modelBuilder.Entity<TenantSetting>().HasIndex(x => x.TimeZone);
 
-			//AppSetting
-			modelBuilder.Entity<AppSetting>().HasIndex(x => x.AppId);
-			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Domain);
-			modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderName);
-			modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderEmail);
 
 			//TenantLicense
 			modelBuilder.Entity<TenantLicense>().HasIndex(x => x.TenantId);
@@ -194,21 +210,28 @@ namespace PrimeApps.Model.Context
 
 		private void CreateCustomModelMapping(ModelBuilder modelBuilder)
 		{
-			//TenantInfo One to One and Cascade delete for TenantInfo
+			//PlatformUser One to One and Cascade delete for TenantInfo
+			modelBuilder.Entity<PlatformUser>()
+				.HasOne(x => x.Setting)
+				.WithOne(i => i.User)
+				.HasForeignKey<PlatformUserSetting>(b => b.UserId)
+				.OnDelete(DeleteBehavior.Cascade);
+
+			//Tenant One to One and Cascade delete for TenantSetting
 			modelBuilder.Entity<Tenant>()
 				.HasOne(x => x.Setting)
 				.WithOne(i => i.Tenant)
 				.HasForeignKey<TenantSetting>(b => b.TenantId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			//TenantLicense One to One and Cascade delete for TenantLicenses
+			//Tenant One to One and Cascade delete for TenantLicense
 			modelBuilder.Entity<Tenant>()
 				.HasOne(x => x.License)
 				.WithOne(i => i.Tenant)
 				.HasForeignKey<TenantLicense>(b => b.TenantId)
 				.OnDelete(DeleteBehavior.Cascade);
 
-			//TenantInfo One to One and Cascade delete for TenantInfo
+			//App One to One and Cascade delete for AppSetting
 			modelBuilder.Entity<App>()
 				.HasOne(x => x.Setting)
 				.WithOne(i => i.App)
@@ -304,6 +327,7 @@ namespace PrimeApps.Model.Context
 		//TODO Removed
 		//public DbSet<RefreshToken> RefreshTokens { get; set; }
 		public DbSet<PlatformUser> Users { get; set; }
+		public DbSet<PlatformUserSetting> UserSettings { get; set; }
 		public DbSet<App> Apps { get; set; }
 		public DbSet<AppSetting> AppSettings { get; set; }
 		/*public DbSet<ActiveDirectoryTenant> ActiveDirectoryTenants { get; set; }

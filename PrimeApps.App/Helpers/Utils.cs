@@ -178,21 +178,24 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task<bool> IsComplexPassword(string password)
+        public static bool IsComplexPassword(string password)
         {
-            var passwordValidator = new PasswordValidator
-            {
-                RequiredLength = 8,
-                RequireNonLetterOrDigit = false,
-                RequireDigit = true,
-                RequireLowercase = true,
-                RequireUppercase = true,
-            };
+			var status = true;
 
-            var passwordValidateResult = await passwordValidator.ValidateAsync(password);
+			if (password.Length < 8)
+				status = false;
+			else if (!password.Any(char.IsUpper))
+				status = false;
+			else if (!password.Any(char.IsLower))
+				status = false;
+			else if (!password.Any(char.IsDigit))
+				status = false;
+			else if (password.Any(x => !Char.IsLetterOrDigit(x)))
+				status = false;
 
-            return passwordValidateResult.Succeeded;
-        }
+			return status;
+
+		}
 
         public static string GenerateRandomUnique(int length)
         {

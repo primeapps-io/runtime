@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IPlatformUserRepository : IRepositoryBasePlatform
     {
         Task<PlatformUser> Get(int platformUserId);
+        Task<PlatformUser> GetWithSettings(int platformUserId);
         Task<PlatformUser> Get(string email);
 
         Task UpdateAsync(PlatformUser userToEdit);

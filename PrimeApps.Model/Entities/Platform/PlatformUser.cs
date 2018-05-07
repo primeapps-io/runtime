@@ -37,15 +37,6 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("last_name"), Required]//]//, Index]
         public string LastName { get; set; }
 
-        [Column("culture")]
-        public string Culture { get; set; }
-
-        [Column("currency")]//]//, Index]
-        public string Currency { get; set; }
-
-		[Column("phone")]//]//, Index]
-		public string Phone { get; set; }
-
 		[Column("created_at")]//]//, Index]
         public DateTime CreatedAt { get; set; }
 
@@ -76,6 +67,8 @@ namespace PrimeApps.Model.Entities.Platform
 		public virtual ICollection<UserTenant> TenantsAsOwner { get; set; }
 
 		public virtual ICollection<Tenant> TenantsAsUser { get; set; }
+
+		public virtual PlatformUserSetting Setting { get; set; }
 
 
 		//public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<PlatformUser, int manager, string authenticationType)

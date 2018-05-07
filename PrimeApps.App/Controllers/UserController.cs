@@ -93,7 +93,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Edit(UserDTO user)
         {
             //get user to start modification.
-            PlatformUser userToEdit = await _platformUserRepository.Get(AppUser.Id);
+            PlatformUser userToEdit = await _platformUserRepository.GetWithSettings(AppUser.Id);
             User tenantUserToEdit = await _userRepository.GetById(AppUser.Id);
 
             if (user.picture != tenantUserToEdit.Picture && user.picture != null)
@@ -119,7 +119,7 @@ namespace PrimeApps.App.Controllers
             if (user.firstName != userToEdit.FirstName || userToEdit.LastName != user.lastName)
             {
                 /// user name has changed, update all session entries for user.
-                UserItem se = await Cache.User.Get(userToEdit.Id);
+                UserItem se = await Cache.User.Get(userToEdit.Id, AppUser.TenantId);
                 string newUserName = $"{user.firstName} {user.lastName}";
 
                 se.UserName = newUserName;
@@ -129,7 +129,7 @@ namespace PrimeApps.App.Controllers
             /// update other properties
             userToEdit.FirstName = user.firstName;
             userToEdit.LastName = user.lastName;
-            userToEdit.PhoneNumber = user.phone;
+            userToEdit.Setting.Phone = user.phone;
             /// update tenant database properties
             tenantUserToEdit.FirstName = user.firstName;
             tenantUserToEdit.LastName = user.lastName;
@@ -192,10 +192,10 @@ namespace PrimeApps.App.Controllers
             if (!Helpers.Constants.CULTURES.Contains(culture)) { return NotFound(); }
 
             /// get user
-            PlatformUser user = await _platformUserRepository.Get(AppUser.Id);
+            PlatformUser user = await _platformUserRepository.GetWithSettings(AppUser.Id);
 
             /// change culture and save it.
-            user.Culture = culture;
+            user.Setting.Culture = culture;
             await _platformUserRepository.UpdateAsync(user);
 
             ///Modify the culture in current session and update it globally in all sessions of the user.
@@ -216,9 +216,9 @@ namespace PrimeApps.App.Controllers
             if (!Helpers.Constants.CURRENCIES.Contains(currency)) { return NotFound(); }
 
             ///get user
-            PlatformUser user = await _platformUserRepository.Get(AppUser.Id);
+            PlatformUser user = await _platformUserRepository.GetWithSettings(AppUser.Id);
             //change culture and save it.
-            user.Currency = currency;
+            user.Setting.Currency = currency;
             await _platformUserRepository.UpdateAsync(user);
 
             ///Modify the currency in current session and update it globally in all sessions of the user.
@@ -245,7 +245,9 @@ namespace PrimeApps.App.Controllers
             {
 
                 var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
-                using (var dbContext = new PlatformDBContext())
+
+				//TODO Removed
+                /*using (var dbContext = new PlatformDBContext())
                 {
                     apps = dbContext.UserApps.Where(x => x.UserId == AppUser.Id)
                         .Select(i => new UserAppInfo()
@@ -259,7 +261,7 @@ namespace PrimeApps.App.Controllers
                             MainTenantId = i.MainTenantId
                         }).ToList();
                 }
-
+				*/
                 if (AppUser.AppId == 1 || AppUser.AppId == 4)
                 {
                     var activeApp = apps.SingleOrDefault(x => x.Active);
@@ -267,7 +269,7 @@ namespace PrimeApps.App.Controllers
                     var mainApp = new UserAppInfo();
                     mainApp.MainTenantId = mainTenant.Id;
                     mainApp.Email = mainTenant.Email;
-                    mainApp.AppId = mainTenant.AppId;
+                    mainApp.AppId = mainTenant.TenantsAsUser.Where(x => x.Id == AppUser.TenantId).FirstOrDefault().AppId;
                     mainApp.TenantId = mainTenant.Id;
                     mainApp.UserId = mainTenant.Id;
                     mainApp.Active = activeApp == null;
@@ -298,7 +300,8 @@ namespace PrimeApps.App.Controllers
             return Ok(acc); //Success service request - but no account data - disabled user(inactive)
         }
 
-        [Route("ActiveDirectoryInfo"), HttpGet]
+		//TODO Removed
+        /*[Route("ActiveDirectoryInfo"), HttpGet]
         public async Task<IActionResult> GetAdInfo()
         {
             PlatformUser accountOwner = await _platformUserRepository.GetUserByAutoId(AppUser.TenantId);
@@ -318,7 +321,7 @@ namespace PrimeApps.App.Controllers
 
                 return Ok(data);
             }
-        }
+        }*/
 
 
         /// <summary>
@@ -394,7 +397,9 @@ namespace PrimeApps.App.Controllers
         [Route("add_user"), HttpPost]
         public async Task<IActionResult> AddUser(AddUserBindingModel request)
         {
-            var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email);
+			return NotFound();
+			//TODO Removed
+            /*var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email);
 
             if (resultControl == false)
                 return StatusCode(HttpStatusCode.Status409Conflict);
@@ -418,13 +423,13 @@ namespace PrimeApps.App.Controllers
                     return StatusCode(HttpStatusCode.Status403Forbidden);
 
                 var subscriberUser = await _platformUserRepository.GetUserByAutoId(request.TenantId.Value);
-                tenantId = subscriberUser.TenantId.Value;
+                tenantId = request.TenantId.Value;
                 adminUserLocalId = subscriberUser.Id;
                 adminUserGlobalId = subscriberUser.Id;
                 adminUserEmail = subscriberUser.Email;
                 culture = subscriberUser.Culture;
                 currency = subscriberUser.Currency;
-                appId = subscriberUser.AppId;
+                appId = subscriberUser.TenantsAsUser.Where(x => x.Id == request.TenantId.Value).FirstOrDefault().AppId;
                 createdBy = subscriberUser.Email;
 
                 _userRepository.TenantId = tenantId;
@@ -464,15 +469,15 @@ namespace PrimeApps.App.Controllers
             var applicationUser = new PlatformUser
             {
                 //Id = Guid.NewGuid(),
-                UserName = request.Email,
+                //UserName = request.Email,
                 Email = request.Email,
-                PhoneNumber = request.Phone,
+                Phone = request.Phone,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Culture = culture,
                 Currency = currency,
                 CreatedAt = DateTime.Now,
-                AppId = appId
+                //AppId = appId
             };
 
             var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
@@ -538,11 +543,12 @@ namespace PrimeApps.App.Controllers
             await Cache.ApplicationUser.Add(user.Email, user.Id);
             await Cache.User.Get(user.Id);
 
-            return Ok(randomPassword);
+            return Ok(randomPassword);*/
         }
 
+		//TODO TenantId
         [Route("get_user"), HttpGet]
-        public async Task<IActionResult> GetUser(string email)
+        public async Task<IActionResult> GetUser(string email, int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -552,13 +558,18 @@ namespace PrimeApps.App.Controllers
             if (userEntity == null)
                 return NotFound();
 
-            _userRepository.TenantId = userEntity.TenantId;
+			var userTenant = userEntity.TenantsAsUser.Where(x => x.Id == tenantId);
+
+			if (userTenant == null)
+				return NotFound();
+
+			_userRepository.TenantId = tenantId;
             var user = await _userRepository.GetById(userEntity.Id);
 
             var userModel = new
             {
                 Id = user.Id,
-                TenantId = userEntity.TenantId,
+                TenantId = tenantId,
                 Email = user.Email,
                 CreatedAt = user.CreatedAt,
                 FirstName = user.FirstName,
@@ -581,7 +592,8 @@ namespace PrimeApps.App.Controllers
 
             return Ok(users);
         }
-
+		//TODO Removed
+		/*
         public async Task<IActionResult> GetOfficeUsers()
         {
             var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
@@ -632,7 +644,7 @@ namespace PrimeApps.App.Controllers
 
         }
 
-        [Route("UpdateActiveDirectoryEmail"), HttpGet]
+		[Route("UpdateActiveDirectoryEmail"), HttpGet]
         public async Task<IActionResult> UpdateActiveDirectoryEmail(int userId, string email)
         {
             var resultControl = await _platformUserRepository.IsActiveDirectoryEmailAvailable(email);
@@ -665,6 +677,6 @@ namespace PrimeApps.App.Controllers
             AuthenticationContext authContext = new AuthenticationContext(string.Format("https://login.microsoftonline.com/{0}", tenantID), new AdTokenCache(signedInUserID));
             AuthenticationResult result = await authContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return result.AccessToken;
-        }
-    }
+        }*/
+	}
 }

@@ -1148,7 +1148,7 @@ namespace PrimeApps.Model.Helpers
                 sql += "UPDATE sales_orders_d SET onay_tarihi=now() WHERE id=19281;\n";
 
             if (tenant.AppId == 4 && !string.IsNullOrEmpty(user.Email))
-                sql += $"UPDATE calisanlar_d SET ad='{user.FirstName}', soyad='{user.LastName}', ad_soyad='{user.FirstName + " " + user.LastName}', e_posta='{user.Email}', cep_telefonu={user.Phone}, yoneticisi=1 WHERE id=1;\n";
+                sql += $"UPDATE calisanlar_d SET ad='{user.FirstName}', soyad='{user.LastName}', ad_soyad='{user.FirstName + " " + user.LastName}', e_posta='{user.Email}', cep_telefonu={user.Setting.Phone}, yoneticisi=1 WHERE id=1;\n";
 
             return sql;
         }

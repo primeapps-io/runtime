@@ -62,7 +62,21 @@ namespace PrimeApps.Model.Entities.Platform
 		/// </summary>
 		[Column("mail_sender_email")]
 		public string MailSenderEmail { get; set; }
-		
+
+		[Column("currency")]
+		public string Currency { get; set; }
+
+		[Column("culture")]
+		public string Culture { get; set; }
+
+		[Column("time_zone")]
+		public string TimeZone { get; set; }
+		/// <summary>
+		/// Language
+		/// </summary>	
+		[Column("language")]//]//, Index]
+		public string Language { get; set; }
+
 		//App One to One
 		public virtual App App { get; set; }
 	}
