@@ -40,9 +40,8 @@ namespace PrimeApps.App.Controllers
         {
             //check if the tenant id is valid, within the current session's context.
             var tenantToUpdate = await _tenantRepository.GetAsync(tenantDto.TenantId);
-            bool isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(tenantDto.TenantId, AppUser.Id);
 
-            if (tenantToUpdate.OwnerId != AppUser.Id && !isOperationAllowed)
+            if (tenantToUpdate.OwnerId != AppUser.Id)
             {
                 //it is an unauthorized request, block it by sending forbidden status code.
                 return Forbid();
@@ -68,15 +67,6 @@ namespace PrimeApps.App.Controllers
 
                     dbContext.SaveChanges();
                 }
-
-                var instanceCache = await Cache.Tenant.Get(tenantDto.TenantId);
-
-                foreach (var userId in instanceCache.Users)
-                {
-                    await Cache.User.Remove(userId);
-                }
-
-                await Cache.Tenant.Delete(tenantDto.TenantId);
             }
 
             return Ok();
@@ -93,11 +83,8 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetWorkgroup()
         {
             var result = new WorkgroupsResult();
-            var defaultInstance = await Cache.Tenant.Get(AppUser.TenantId);
-            var adminUser = await Cache.User.Get(defaultInstance.OwnerId);
-
             //get personal instances
-            result.Personal = await _platformUserRepository.MyWorkgroups(adminUser.Id);
+            result.Personal = await _platformUserRepository.MyWorkgroups(AppUser.TenantId);
 
             return Ok(result);
         }
@@ -198,9 +185,8 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> SaveLogo(JObject logo)
         {
             var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
-            var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
 
-            if (instanceToUpdate.OwnerId != AppUser.TenantId && !isOperationAllowed)
+            if (instanceToUpdate.OwnerId != AppUser.TenantId)
             {
                 return Forbid();
                 //return new ForbiddenResult(Request);

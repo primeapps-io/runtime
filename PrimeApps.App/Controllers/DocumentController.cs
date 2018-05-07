@@ -278,9 +278,7 @@ namespace PrimeApps.App.Controllers
             fileNameExt = data["fileNameExt"]?.ToString();
             tenantId = data["tenantId"]?.ToString();
 
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Write, null, EntityType.Document, int.Parse(tenantId), AppUser.Id);
-
-            if (int.Parse(tenantId) != AppUser.TenantId || !isOperationAllowed)
+            if (int.Parse(tenantId) != AppUser.TenantId)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
                 return Forbid();
@@ -357,9 +355,8 @@ namespace PrimeApps.App.Controllers
         {
             //validate instance id for the request.
 
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Write, null, EntityType.Document, document.TenantId, AppUser.Id);
 
-            if (document.TenantId != AppUser.TenantId || !isOperationAllowed)
+            if (document.TenantId != AppUser.TenantId)
             {
                 //if instance id does not belong to current session, stop the request and send the forbidden status code.
                 return Forbid();
@@ -428,8 +425,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetEntityDocuments(DocumentRequest req)
         {
             //validate instance id for the request.
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, req.TenantId, AppUser.Id);
-            if (AppUser.TenantId != req.TenantId || !isOperationAllowed)
+            if (AppUser.TenantId != req.TenantId)
             {
                 //if the requested instance does not belong to the current session, than return Forbidden status message
                 return Forbid();
@@ -458,9 +454,8 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetDocuments(DocumentRequest req)
         {
             //validate the instance id by the session instances.
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, req.TenantId, AppUser.Id);
 
-            if (req.TenantId != AppUser.TenantId || !isOperationAllowed)
+            if (req.TenantId != AppUser.TenantId)
             {
                 //if the requested instance does not belong to the current session, than return Forbidden status message
                 return Forbid();
@@ -487,15 +482,6 @@ namespace PrimeApps.App.Controllers
         [Route("GetDocument"), HttpPost]
         public async Task<IActionResult> GetDocumentById([FromBody] int fileID)
         {
-
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, AppUser.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-            }
-
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
             if (doc != null)
@@ -516,16 +502,6 @@ namespace PrimeApps.App.Controllers
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
             string publicName = "";
-
-            /* disabled temporarily - https://ofisim.visualstudio.com/Ofisim/_workitems/edit/757 must be solved
-            bool isOperationAllowed = await Cache.Workgroup.CheckPermission(PermissionEnum.Read, null, EntityType.Document, AppUser.InstanceId, AppUser.LocalId);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
-            }
-            */
 
             if (doc != null)
             {
@@ -584,18 +560,7 @@ namespace PrimeApps.App.Controllers
         [Route("download_module_document"), HttpGet]
         public async Task<IActionResult> DownloadModuleDocument([FromRoute] string module, [FromRoute] string fileName, [FromRoute] string fileNameExt, [FromRoute] string fieldName, [FromRoute] string recordId)
         {
-
             var publicName = "";
-
-            /* disabled temporarily - https://ofisim.visualstudio.com/Ofisim/_workitems/edit/757 must be solved
-            bool isOperationAllowed = await Cache.Workgroup.CheckPermission(PermissionEnum.Read, null, EntityType.Document, AppUser.InstanceId, AppUser.LocalId);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return new  ForbiddenResult(Request.HttpContext.GetHttpRequestMessage());
-            }
-            */
 
             if (!string.IsNullOrEmpty(module) && !string.IsNullOrEmpty(fileNameExt) && !string.IsNullOrEmpty(fieldName))
             {
@@ -639,16 +604,6 @@ namespace PrimeApps.App.Controllers
         [Route("Remove"), HttpPost]
         public async Task<IActionResult> Remove(DocumentDTO doc)
         {
-
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Remove, null, EntityType.Document, doc.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-            }
-
-
             //if the document is not null open a new session and transaction
             var result = await _documentRepository.RemoveAsync(doc.ID);
             if (result != null)
@@ -668,14 +623,6 @@ namespace PrimeApps.App.Controllers
         [Route("Modify"), HttpPost]
         public async Task<IActionResult> Modify(DocumentDTO document)
         {
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Modify, null, EntityType.Document, document.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-            }
-
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
             {
                 Id = document.ID,
@@ -835,17 +782,17 @@ namespace PrimeApps.App.Controllers
                 FileNameStar = fileName
             };
 
-	        // TODO: Test this !
-			var response = new ContentResult
-	        {
-		        Content = rMessage.Content.ToString(),
-		        ContentType = rMessage.Content.GetType().ToString(),
-		        StatusCode = (int)rMessage.StatusCode
-	        };
+            // TODO: Test this !
+            var response = new ContentResult
+            {
+                Content = rMessage.Content.ToString(),
+                ContentType = rMessage.Content.GetType().ToString(),
+                StatusCode = (int)rMessage.StatusCode
+            };
 
-			//var response = ResponseMessage(rMessage);
+            //var response = ResponseMessage(rMessage);
 
-			return response;
+            return response;
         }
 
         [Route("download_template"), HttpGet]
@@ -854,14 +801,6 @@ namespace PrimeApps.App.Controllers
             //get the document record from database
             var template = await _templateRepository.GetById(templateId);
             string publicName = "";
-
-            bool isOperationAllowed = await Cache.Tenant.CheckPermission(PermissionEnum.Read, null, EntityType.Document, AppUser.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-            }
 
             if (template != null)
             {

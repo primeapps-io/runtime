@@ -25,19 +25,9 @@ namespace PrimeApps.App.Controllers
         [Route("Create"), HttpPost]
         public async Task<IActionResult> Create(ProfileDTO NewProfile)
         {
-            //get instance admin to validate if entity belongs to this session's user.
-            bool isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-                //return new ForbiddenResult(Request);
-            }
-
             await _profileRepository.CreateAsync(NewProfile);
 
-            await Cache.Tenant.UpdateProfiles(AppUser.TenantId);
+            
             return Ok();
         }
 
@@ -48,18 +38,7 @@ namespace PrimeApps.App.Controllers
         [Route("Update"), HttpPost]
         public async Task<IActionResult> Update(ProfileDTO UpdatedProfile)
         {
-
-            //get instance admin to validate if entity belongs to this session's user.
-            bool isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-                //return new ForbiddenResult(Request);
-            }
             await _profileRepository.UpdateAsync(UpdatedProfile);
-            await Cache.Tenant.UpdateProfiles(AppUser.TenantId);
             return Ok();
         }
 
@@ -70,19 +49,9 @@ namespace PrimeApps.App.Controllers
         [Route("Remove"), HttpPost]
         public async Task<IActionResult> Remove(ProfileRemovalDTO RemovalRequest)
         {
-            //get instance admin to validate if entity belongs to this session's user.
-            bool isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-                //return new ForbiddenResult(Request);
-            }
-
             await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
 
-            await Cache.Tenant.UpdateProfiles(AppUser.TenantId);
+            
             return Ok();
         }
 
@@ -105,20 +74,9 @@ namespace PrimeApps.App.Controllers
         [Route("ChangeUserProfile"), HttpPost]
         public async Task<IActionResult> ChangeUserProfile(ProfileTransferDTO transfer)
         {
-            //get instance admin to validate if entity belongs to this session's user.
-            bool isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!isOperationAllowed)
-            {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
-                //return new ForbiddenResult(Request);
-            }
-
-
             await _profileRepository.AddUserAsync(transfer.UserID, transfer.TransferedProfileID);
             /// update session cache
-            await Cache.Tenant.UpdateProfiles(AppUser.TenantId);
+            
             return Ok();
         }
 

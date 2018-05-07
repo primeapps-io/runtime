@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.App.ActionFilters;
-using PrimeApps.Model.Context;
 using System.Globalization;
 using System.Web;
 
@@ -103,57 +100,6 @@ namespace PrimeApps.App
 				.AddDataAnnotationsLocalization();
 
 			AuthConfiguration(services, Configuration);
-
-
-			/*services.AddIdentity<PlatformUser, ApplicationRole>()
-			   .AddUserStore<PlatformDBContext>()
-			   .AddUserManager<ApplicationUserManager>()
-			   .AddRoleManager<ApplicationUserRole>()
-			   .AddEntityFrameworkStores<PlatformDBContext, int>()
-			   .AddDefaultTokenProviders();*/
-
-			/*services.AddIdentity<ApplicationUserManager, ApplicationUserRole>(options =>
-			{
-				options.Password.RequiredLength = 10;
-				options.Password.RequireLowercase = false;
-				options.Password.RequireUppercase = false;
-				options.Password.RequireNonAlphanumeric = false;
-				options.Password.RequireDigit = false;
-
-				options.User.RequireUniqueEmail = true;
-				options.User.AllowedUserNameCharacters = "";
-			});*/
-
-			
-
-            // Add application services. DI
-            //services.AddTransient<IProductRepository, ProductRepository>();
-
-            //var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
-            //var appKey = ConfigurationManager.AppSettings["ida:Password"];
-            //var authority = "https://login.microsoftonline.com/common/";
-            //var graphResourceID = "https://graph.windows.net";
-			
-            /*services.AddMvc(options =>
-            {
-
-                options.CacheProfiles.Add("Nocache",
-                    new CacheProfile()
-                    {
-                        Location = ResponseCacheLocation.None,
-                        NoStore = true,
-                    });
-            });*/
-            
-
-            
-
-            #region RequireHttpsAttribute
-            services.Configure<MvcOptions>(options =>
-                {
-                    options.Filters.Add(new RequireHttps(Configuration));
-                });
-            #endregion
 
             RegisterBundle(services);
         }

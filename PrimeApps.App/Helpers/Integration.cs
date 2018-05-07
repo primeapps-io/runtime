@@ -509,11 +509,11 @@ namespace PrimeApps.App.Helpers
 
         private static UserItem GetAppUser()
         {
-            var userEmail = ConfigurationManager.AppSettings.Get("OfisimTenantEmail");
-            var userId = AsyncHelpers.RunSync(() => Cache.ApplicationUser.GetId(userEmail));
-            var user = AsyncHelpers.RunSync(() => Cache.User.Get(userId, true));
+            //var userEmail = ConfigurationManager.AppSettings.Get("OfisimTenantEmail");
+            //var userId = AsyncHelpers.RunSync(() => Cache.ApplicationUser.GetId(userEmail));
+            //var user = AsyncHelpers.RunSync(() => Cache.User.Get(userId, true));
 
-            return user;
+            return null;
         }
 
         private static JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId)

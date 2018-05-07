@@ -57,10 +57,6 @@ namespace PrimeApps.App.Controllers
         [Route("update"), HttpPut]
         public async Task Update([FromBody]RoleDTO role)
         {
-            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!hasAdministrativeRights) return;
-
             Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
             if (roleToUpdate == null) return;
 
@@ -70,22 +66,12 @@ namespace PrimeApps.App.Controllers
         [Route("delete"), HttpDelete]
         public async Task Delete([FromRoute]int id, [FromRoute]int transferRoleId)
         {
-            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!hasAdministrativeRights) return;
-
             await _roleRepository.RemoveAsync(id, transferRoleId);
-
-            await Cache.Tenant.UpdateRoles(AppUser.TenantId);
         }
 
         [Route("update_user_role"), HttpPut]
         public async Task UpdateUserRole([FromRoute]int userId, [FromRoute]int roleId)
         {
-            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!hasAdministrativeRights) return;
-
             var user = await _userRepository.GetById(userId);
 
             if (user.RoleId.HasValue)
@@ -96,17 +82,11 @@ namespace PrimeApps.App.Controllers
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
             await _roleRepository.AddUserAsync(user.Id, roleId);
-
-            await Cache.Tenant.UpdateRoles(AppUser.TenantId);
         }
 
         [Route("update_user_role_bulk"), HttpPut]
         public async Task UpdateUserRoleBulk()
         {
-            bool hasAdministrativeRights = await Cache.Tenant.CheckProfilesAdministrativeRights(AppUser.TenantId, AppUser.Id);
-
-            if (!hasAdministrativeRights) return;
-
             var users = await _userRepository.GetAllAsync();
 
             foreach (var user in users)
@@ -119,8 +99,6 @@ namespace PrimeApps.App.Controllers
                 _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
                 await _roleRepository.AddUserAsync(user.Id, user.RoleId.Value);
-
-                await Cache.Tenant.UpdateRoles(AppUser.TenantId);
             }
         }
     }

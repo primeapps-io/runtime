@@ -150,13 +150,12 @@ namespace PrimeApps.App.Controllers
         {
             var result = await _recordRepository.DeleteSampleData((List<Module>) await _moduleRepository.GetAll());
 
-            if (result > 0)
-            {
-                var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
-				_tenantRepository.
-                instanceToUpdate.HasSampleData = false;
-               await _tenantRepository.UpdateAsync(instanceToUpdate);
-            }
+            //if (result > 0)
+            //{
+            //    var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
+            //    instanceToUpdate.HasSampleData = false;
+            //   await _tenantRepository.UpdateAsync(instanceToUpdate);
+            //}
 
             return Ok();
         }

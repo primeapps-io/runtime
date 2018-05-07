@@ -119,7 +119,7 @@ namespace PrimeApps.App.Helpers
             return reportViewModel;
         }
 
-    
+
         public static List<ReportViewModel> MapToViewModel(ICollection<Report> reports)
         {
             return reports.Select(MapToViewModel).ToList();
@@ -270,14 +270,14 @@ namespace PrimeApps.App.Helpers
 
             if (reportModel.Shares != null && reportModel.Shares.Count > 0)
             {
-                report.Shares = new List<TenantUser>();
+                report.Shares = new List<ReportShares>();
 
                 foreach (var userId in reportModel.Shares)
                 {
                     var sharedUser = await userRepository.GetById(userId);
 
                     if (sharedUser != null)
-                        report.Shares.Add(sharedUser);
+                        report.Shares.Add(new ReportShares { TenantUser = sharedUser });
                 }
             }
         }

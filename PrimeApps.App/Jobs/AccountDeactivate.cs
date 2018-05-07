@@ -48,8 +48,6 @@ namespace PrimeApps.App.Jobs
 
                                     throw;
                                 }
-
-                                await Cache.User.Remove(user.Id);
                             }
                         }
 

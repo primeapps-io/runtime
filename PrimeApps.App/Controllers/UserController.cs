@@ -114,18 +114,6 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-
-
-            if (user.firstName != userToEdit.FirstName || userToEdit.LastName != user.lastName)
-            {
-                /// user name has changed, update all session entries for user.
-                UserItem se = await Cache.User.Get(userToEdit.Id, AppUser.TenantId);
-                string newUserName = $"{user.firstName} {user.lastName}";
-
-                se.UserName = newUserName;
-                await Cache.User.Update(userToEdit.Id, se);
-            }
-
             /// update other properties
             userToEdit.FirstName = user.firstName;
             userToEdit.LastName = user.lastName;
@@ -200,7 +188,6 @@ namespace PrimeApps.App.Controllers
 
             ///Modify the culture in current session and update it globally in all sessions of the user.
             AppUser.Culture = culture;
-            await Cache.User.Update(AppUser.Id, AppUser);
             return Ok();
         }
 
@@ -223,7 +210,6 @@ namespace PrimeApps.App.Controllers
 
             ///Modify the currency in current session and update it globally in all sessions of the user.
             AppUser.Currency = currency;
-            await Cache.User.Update(AppUser.Id, AppUser);
             return Ok();
         }
 

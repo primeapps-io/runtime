@@ -207,8 +207,6 @@ namespace PrimeApps.App.Controllers
             subscriberTenant.License.UserLicenseCount = count;
             await _tenantRepository.UpdateAsync(subscriberTenant);
 
-            await Cache.Tenant.Remove(subscriberTenant.Id);
-
             return Ok();
         }
 
@@ -222,7 +220,6 @@ namespace PrimeApps.App.Controllers
             var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
             subscriberTenant.License.ModuleLicenseCount = count;
             await _tenantRepository.UpdateAsync(subscriberTenant);
-            await Cache.Tenant.Remove(subscriberTenant.Id);
 
             return Ok();
         }
@@ -290,8 +287,6 @@ namespace PrimeApps.App.Controllers
 
             tenant.License.IsPaidCustomer = !tenant.License.IsPaidCustomer;
             await _tenantRepository.UpdateAsync(tenant);
-
-            await Cache.Tenant.Remove(tenant.Id);
 
 
             return Ok();
@@ -362,8 +357,6 @@ namespace PrimeApps.App.Controllers
                     userTenant.IsActive = true;
                     await _userRepository.UpdateAsync(userTenant);
                 }
-
-                await Cache.User.Remove(user.Id);
             }
 
             tenant.License.IsDeactivated = false;
@@ -397,9 +390,7 @@ namespace PrimeApps.App.Controllers
             {
                 tenantUser.IsActive = false;
                 await _userRepository.UpdateAsync(tenantUser);
-                await Cache.User.Remove(tenantUser.Id);
             }
-            await Cache.Tenant.Remove(tenantId);
 
             return Ok();
         }
