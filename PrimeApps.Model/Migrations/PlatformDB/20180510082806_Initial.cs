@@ -374,15 +374,15 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 {
                     table.PrimaryKey("PK_user_tenants", x => new { x.user_id, x.tenant_id });
                     table.ForeignKey(
-                        name: "FK_user_tenants_users_tenant_id",
+                        name: "FK_user_tenants_tenants_tenant_id",
                         column: x => x.tenant_id,
-                        principalTable: "users",
+                        principalTable: "tenants",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_user_tenants_tenants_user_id",
+                        name: "FK_user_tenants_users_user_id",
                         column: x => x.user_id,
-                        principalTable: "tenants",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });

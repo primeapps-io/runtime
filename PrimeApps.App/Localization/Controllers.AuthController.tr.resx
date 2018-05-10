@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ActivationError" xml:space="preserve">
+    <value>Geçersiz aktivasyon kodu!</value>
+  </data>
+  <data name="ActivationMessageFree" xml:space="preserve">
+    <value>Hesabınız aktif ediliyor. Lütfen bekleyiniz...</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Parolamı Değiştir</value>
+  </data>
+  <data name="CreateAccount" xml:space="preserve">
+    <value>Hesabımı Oluştur</value>
+  </data>
+  <data name="CreateInfo" xml:space="preserve">
+    <value>'Hesabımı Oluştur' butonuna tıklayarak {0}  ve {1} okumuş ve kabul etmiş sayılacaksınız.</value>
+  </data>
+  <data name="DontHaveAccount" xml:space="preserve">
+    <value>Eğer hesabınız yoksa</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-Posta</value>
+  </data>
+  <data name="EmailNotMatchContent" xml:space="preserve">
+    <value>Seçmiş olduğunuz e-posta kayıtlı olduğunuz e-posta ile eşleşmemektedir.</value>
+  </data>
+  <data name="EmailNotMatchTitle" xml:space="preserve">
+    <value>E-Posta adresleri eşleşmiyor.</value>
+  </data>
+  <data name="EN" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Beklenmedik bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</value>
+  </data>
+  <data name="ForgotInfo" xml:space="preserve">
+    <value>Lütfen e-posta adresinizi giriniz. Parolanızı sıfırlamak için bağlantı içeren bir e-posta göndereceğiz.</value>
+  </data>
+  <data name="ForgotNotActivated" xml:space="preserve">
+    <value>Hesabınız aktif edilmemiş.</value>
+  </data>
+  <data name="ForgotNotFound" xml:space="preserve">
+    <value>Bu e-postaya sahip kayıtlı kullanıcı bulunamadı.</value>
+  </data>
+  <data name="ForgotPass" xml:space="preserve">
+    <value>Parolamı Unuttum</value>
+  </data>
+  <data name="ForgotPasswordSuccess" xml:space="preserve">
+    <value>E-posta adresinize parola sıfırlama işlemi için mail gönderdik. Mail içerisindeki bağlantıya tıklayarak parolanızı yenileyebilirsiniz.</value>
+  </data>
+  <data name="ForgotPasswordSuccessTitle" xml:space="preserve">
+    <value>Parola sıfırlama linkiniz gönderilmiştir.</value>
+  </data>
+  <data name="Free" xml:space="preserve">
+    <value>&lt;strong&gt;Uygulamanızı tüm özellikleri ile 15 gün ücretsiz&lt;/strong&gt; kullanmak için aşağıdaki formu doldurmanız yeterli.</value>
+  </data>
+  <data name="HaveAccount" xml:space="preserve">
+    <value>Hesabınız var mı? Giriş yapın</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Anasayfa</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Lütfen geçerli bir e-posta giriniz.</value>
+  </data>
+  <data name="InvalidPhone" xml:space="preserve">
+    <value>Cep telefonu numarası 5 ile başlamalı ve 10 haneli olmalıdır.</value>
+  </data>
+  <data name="IsNotValidAppContent" xml:space="preserve">
+    <value>{0} uygulamasına kayıtlı hesabınızla giriş yapmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla giriş yapmayı deneyin.</value>
+  </data>
+  <data name="IsNotValidAppTitle" xml:space="preserve">
+    <value>Uygulama bilgileri eşleşmiyor.</value>
+  </data>
+  <data name="JoinSuccessMessage" xml:space="preserve">
+    <value>Sisteme giriş sayfasına yönlendiriliyorsunuz.</value>
+  </data>
+  <data name="JoinSuccessTitle" xml:space="preserve">
+    <value>Üyeliğiniz başarılı bir şekilde gerçekleştirildi.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="LoginFieldRequiredEmail" xml:space="preserve">
+    <value>Lütfen e-posta adresinizi giriniz.</value>
+  </data>
+  <data name="LoginFieldRequiredPassword" xml:space="preserve">
+    <value>Lütfen parolanızı giriniz.</value>
+  </data>
+  <data name="LoginFieldsRequired" xml:space="preserve">
+    <value>Lütfen e-posta adresinizi ve parolanızı giriniz.</value>
+  </data>
+  <data name="LoginForm" xml:space="preserve">
+    <value>Hesabınız var mı? Giriş yapın</value>
+  </data>
+  <data name="LoginRegisterInfo" xml:space="preserve">
+    <value>&lt;strong&gt;Uygulamanızı tüm özellikleri ile 15 gün ücretsiz&lt;/strong&gt; kullanmaya başlamak için {0}</value>
+  </data>
+  <data name="LoginRegisterInfoLink" xml:space="preserve">
+    <value>üye olmanız yeterli.</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="NameMinimum" xml:space="preserve">
+    <value>Lütfen ad/soyad alanlarına minimum 2 (iki) karakter giriniz.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Kullanıcı Bulunamadı !</value>
+  </data>
+  <data name="NotFoundContent" xml:space="preserve">
+    <value>Girmeye çalıştığınız sayfa sunucumuzda bulunamamıştır.</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>BİR ŞEYLER TERS GİTMİŞ GİBİ GÖRÜNÜYOR</value>
+  </data>
+  <data name="OfficeLoginNotActiveContent" xml:space="preserve">
+    <value>Office 365 hesabınız aktif değildir. Lütfen sistem yöneticinize başvurun.</value>
+  </data>
+  <data name="OfficeLoginNotActiveTitle" xml:space="preserve">
+    <value>Office 365 hesabınız aktif değil !</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Parola</value>
+  </data>
+  <data name="PasswordConfirm" xml:space="preserve">
+    <value>Parola (Tekrar)</value>
+  </data>
+  <data name="PasswordMinimum" xml:space="preserve">
+    <value>Lütfen parola olarak minimum 6 (altı) karakter giriniz.</value>
+  </data>
+  <data name="PasswordNotMatch" xml:space="preserve">
+    <value>Lütfen parola alanlarına aynı değeri giriniz.</value>
+  </data>
+  <data name="PasswordRecoveryError" xml:space="preserve">
+    <value>Bu link daha önce kullanılmıştır. Lütfen yeni bir istekte bulununuz.</value>
+  </data>
+  <data name="PasswordSuccessMessage" xml:space="preserve">
+    <value>Yeni parolanız ile giriş yapabilirsiniz.</value>
+  </data>
+  <data name="PasswordSuccessTitle" xml:space="preserve">
+    <value>Parolanız başarılı bir şekilde değiştirilmiştir.</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Cep Telefonu</value>
+  </data>
+  <data name="Policy" xml:space="preserve">
+    <value>Ofisim.com Gizlilik Politikasını</value>
+  </data>
+  <data name="ProcessCodeErrorMessage" xml:space="preserve">
+    <value>Bu e-posta adresi sistemde kayıtlıdır.</value>
+  </data>
+  <data name="ProcessCodeErrorTitle" xml:space="preserve">
+    <value>Kayıtlı kullanıcı !</value>
+  </data>
+  <data name="ProcessCodeMessage" xml:space="preserve">
+    <value>Özellikleri kullanabilmek için office 365 e-postanız ile giriş yapılması zorunludur</value>
+  </data>
+  <data name="ProcessCodeTitle" xml:space="preserve">
+    <value>Bağlantı Başarılı</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Ücretsiz üye ol</value>
+  </data>
+  <data name="RegisterFieldsRequired" xml:space="preserve">
+    <value>Tüm alanların doldurulması zorunludur.</value>
+  </data>
+  <data name="RegisterWithOffice" xml:space="preserve">
+    <value>Office 365 ile hızlı kayıt</value>
+  </data>
+  <data name="ResendMail" xml:space="preserve">
+    <value>Tekrar doğrulama gönderilmesi için</value>
+  </data>
+  <data name="ResendMailLink" xml:space="preserve">
+    <value>buraya tıklayınız.</value>
+  </data>
+  <data name="ResendMailSuccess" xml:space="preserve">
+    <value>Doğrulama e-postası tekrar gönderildi.</value>
+  </data>
+  <data name="ReturnInfo" xml:space="preserve">
+    <value>Giriş formuna geri dön</value>
+  </data>
+  <data name="Send" xml:space="preserve">
+    <value>Gönder</value>
+  </data>
+  <data name="SignIn" xml:space="preserve">
+    <value>Giriş yap</value>
+  </data>
+  <data name="SignWithOffice" xml:space="preserve">
+    <value>Office 365 ile hızlı erişim</value>
+  </data>
+  <data name="Surname" xml:space="preserve">
+    <value>Soyad</value>
+  </data>
+  <data name="Terms" xml:space="preserve">
+    <value>Ofisim.com Kullanım Sözleşmesi</value>
+  </data>
+  <data name="TR" xml:space="preserve">
+    <value>Türkçe</value>
+  </data>
+  <data name="UserExist" xml:space="preserve">
+    <value>{0} uygulamasına kayıtlı hesabınızla kayıt olmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla kayıt olmayı deneyin.</value>
+  </data>
+  <data name="VerifyAlreadyActivated" xml:space="preserve">
+    <value>Hesap daha önce aktif edilmiştir.</value>
+  </data>
+  <data name="VerifyEmailRequired" xml:space="preserve">
+    <value>E-Posta adresi zorunludur.</value>
+  </data>
+  <data name="VerifyMail" xml:space="preserve">
+    <value>Güvenliğiniz için e-posta adresinize bir doğrulama &lt;br&gt;e-postası gönderdik.&lt;br&gt; &lt;br&gt;Bazı durumlarda e-postalar spam kutusuna düştüğü için Spam/Gereksiz kutusunu da kontrol etmenizi rica ederiz&lt;br&gt; &lt;br&gt;&lt;span class=\"spot\"&gt;E-postada yer alan bağlantıya tıklayarak hemen Ofisim.com hesabınızı kullanmaya başlayabilirsiniz.&lt;/span&gt;</value>
+  </data>
+  <data name="VerifyUserNotFound" xml:space="preserve">
+    <value>Aktif edilecek hesap bulunamamıştır.</value>
+  </data>
+  <data name="WrongInfo" xml:space="preserve">
+    <value>Hatalı e-posta veya şifre girdiniz.</value>
+  </data>
+</root>

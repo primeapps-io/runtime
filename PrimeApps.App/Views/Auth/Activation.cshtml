@@ -1,5 +1,11 @@
 ﻿﻿@using PrimeApps.App.Models
+
 @model PrimeApps.App.Models.RegisterBindingModel
+
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
 @{
 
     ViewBag.Title = "Activation";
@@ -12,45 +18,48 @@
         app = ViewBag.AppInfo["app"].Value;
         ViewBag.Title = ViewBag.AppInfo["title"].Value;
     }
+
 }
 
 <div class="col-md-4 login-sec">
 	<img class="logo-img" src="@Url.Content(logo)" />
-	@*@using (Html.BeginForm("Activation", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, Token = ViewBag.Token, Uid = ViewBag.Uid, OfficeSignIn = ViewBag.OfficeSignIn }, FormMethod.Post, new { @class = "login-form invisible", role = "form", id = "activation-form" }))
-	{
-		@Html.AntiForgeryToken()
-	}*@
-	<form asp-controller="Auth" asp-action="Activation" asp-route-returnurl="@ViewBag.ReturnUrl" asp-route-token="@ViewBag.Token" asp-route-uid="@ViewBag.Uid" asp-route-officeSignIn="@ViewBag.OfficeSignIn" method="post" class="login-form invisible" role="form" id = "activation-form">
-		@Html.AntiForgeryToken()
-	</form>
-	<span class="free-info-header">
+		@*@using (Html.BeginForm("Activation", "Auth", new { ReturnUrl = ViewBag.ReturnUrl, Token = ViewBag.Token, Uid = ViewBag.Uid, OfficeSignIn = ViewBag.OfficeSignIn }, FormMethod.Post, new { @class = "login-form invisible", role = "form", id = "activation-form" }))
+		{
+			@Html.AntiForgeryToken()
+		}*@
+		<form asp-controller="Auth" asp-action="Activation" asp-route-returnurl="@ViewBag.ReturnUrl" asp-route-token="@ViewBag.Token" asp-route-uid="@ViewBag.Uid" asp-route-officeSignIn="@ViewBag.OfficeSignIn" method="post" class="login-form invisible" role="form" id="activation-form">
+@Html.AntiForgeryToken()
+</form>
+<span class="free-info-header">
 		@if (ViewBag.Error != null)
 		{
-			<div class="error">@PrimeApps.App.Resources.Auth.Resource.ActivationError</div>
+			<div class="error">@Localizer["ActivationError"]</div>
 		}
 		else
 		{
 			<i class="fa fa-lg fa-spinner fa-pulse"></i>
-			@PrimeApps.App.Resources.Auth.Resource.ActivationMessageFree
+			@Localizer["ActivationMessageFree"]
 		}
 	</span>
 </div>
 
+
 @section scripts {
-	<script type="text/javascript">
+<script type="text/javascript">
 		$(document).ready(function () {
-			if ("@ViewBag.Error" === "anErrorOccured") {
-				swal({
-					title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Error)",
+			if (@ViewBag.Error === "anErrorOccured") {
+			swal({
+					title: @Html.Raw(Localizer["Error"]),
 					text: "",
 					icon: "error",
-					button: "@PrimeApps.App.Resources.Auth.Resource.Ok"
+					button: @Localizer["Ok"]
 				});
 			}
 
-			if ("@ViewBag.PostBack" != "PostBack") {
+			if (@ViewBag.PostBack != "PostBack") {
 				$("#activation-form").submit();
 			}
 		});
-	</script>
+</script>
+
 }

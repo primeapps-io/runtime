@@ -287,12 +287,12 @@ namespace PrimeApps.Model.Context
 			modelBuilder.Entity<UserTenant>()
 				.HasOne(pt => pt.PlatformUser)
 				.WithMany(p => p.TenantsAsOwner)
-				.HasForeignKey(pt => pt.TenantId);
+				.HasForeignKey(pt => pt.UserId);
 
 			modelBuilder.Entity<UserTenant>()
 				.HasOne(pt => pt.Tenant)
 				.WithMany(t => t.TenantUsers)
-				.HasForeignKey(pt => pt.UserId);
+				.HasForeignKey(pt => pt.TenantId);
 
 			//Apps and Tenants One to Many 
 			modelBuilder.Entity<App>()

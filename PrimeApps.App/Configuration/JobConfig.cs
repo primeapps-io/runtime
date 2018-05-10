@@ -14,16 +14,11 @@ namespace PrimeApps.App
     {
 		public static void JobConfiguration(IApplicationBuilder app)
 		{
-
-			// it is required to be specified for postgres driver before initialization.
-			JobStorage.Current = new PostgreSqlStorage("HangfireConnection");
-
 			// Configure hangfire and initialize it.
 			app.UseHangfireServer(new BackgroundJobServerOptions
 			{
 				Queues = ConfigurationManager.AppSettings["HangfireQueues"].Split(',')
-			}
-			);
+			});
 			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
 
 			ConfigureRecurringJobs();

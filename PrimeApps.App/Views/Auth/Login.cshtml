@@ -1,4 +1,7 @@
 ﻿@model PrimeApps.App.Models.LoginBindingModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
 
 	ViewBag.Title = "Login";
@@ -25,7 +28,7 @@
 	@if (!customDomain)
 	{
 		<span class="free-info-header">
-			@Html.Raw(string.Format(@PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfo, "<a href=" + @Url.Action("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }) + ">" + @PrimeApps.App.Resources.Auth.Resource.LoginRegisterInfoLink + "</a>"))
+			@*Html.Raw(string.Format(@Localizer["LoginRegisterInfo"], "<a href=" + @Url.Action("Register", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }) + ">" + @Localizer["LoginRegisterInfoLink"] + "</a>"))*@
 		</span>
 	}
 
@@ -37,7 +40,7 @@
 					<span class="flaticon-email26"></span>
 				</span>
 				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-				@Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Email, tabindex = "1" })
+				@Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = @Localizer["Email"], tabindex = "1" })
 			</div>
 		</div>
 		<div class="form-group">
@@ -46,82 +49,82 @@
 					<span class="flaticon-padlock50"></span>
 				</span>
 				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-				@Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @PrimeApps.App.Resources.Auth.Resource.Password, tabindex = "2" })
+				@Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = @Localizer["Password"], tabindex = "2" })
 			</div>
 		</div>
 		@if (error != null)
 		{
 			if (error == "wrongInfo")
 			{
-				<div class="error">@PrimeApps.App.Resources.Auth.Resource.WrongInfo</div>
+				<div class="error">@Localizer["WrongInfo"]</div>
 			}
 			else if (error == "notFound")
 			{
-				<div class="error">@PrimeApps.App.Resources.Auth.Resource.NotFound</div>
+				<div class="error">@Localizer["NotFound"]</div>
 			}
 		}
 		<div class="error-all"></div>
 		<div class="error-email"></div>
 		<div class="error-pass"></div>
 		<div class="form-check">
-			<button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right" tabindex="3">@PrimeApps.App.Resources.Auth.Resource.Login</button>
+			<button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right" tabindex="3">@Localizer["Login"]</button>
 			@if (!customDomain)
 			{
 				<hr />
-				<button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@PrimeApps.App.Resources.Auth.Resource.SignWithOffice</button>
+				<button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@Localizer["SignWithOffice"]</button>
 			}
 			<div class="language">
 				@if (otherLang == "tr" && string.IsNullOrEmpty(customLanguage))
 				{
-					<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.TR</a> <span>|</span>
+					<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@Localizer["TR"]</a> <span>|</span>
 				}
 				else if (otherLang == "en" && string.IsNullOrEmpty(customLanguage))
 				{
-					<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@PrimeApps.App.Resources.Auth.Resource.EN</a> <span>|</span>
+					<a href="@Url.Action("Login", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Language = otherLang})">@Localizer["EN"]</a> <span>|</span>
 				}
-				<a href="@Url.Action("ForgotPassword", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Email = Model != null ? Model.Email : ""})" class="">@PrimeApps.App.Resources.Auth.Resource.ForgotPass</a>
+				<a href="@Url.Action("ForgotPassword", "Auth", new {ReturnUrl = ViewBag.ReturnUrl, Email = Model != null ? Model.Email : ""})" class="">@Localizer["ForgotPass"]</a>
 			</div>
 		</div>
 	</form>
 
 	@*using (Html.BeginForm("Login", "Auth", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "login-form", role = "form", id = "login-form" }))
-	{
+		{
 
-	}*@
+		}*@
 </div>
 
-@section scripts {
+@*section scripts {
 	<script type="text/javascript">
         $(document).ready(function() {
             var postTry = false;
 
-            if ("@ViewBag.Success" === "accountActivated") {
+            if (@ViewBag.Success === "accountActivated") {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.JoinSuccessTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.JoinSuccessMessage)",
+                    title: @Html.Raw("Localizer["JoinSuccessTitle"]"),
+                    text: @Html.Raw("Localizer["JoinSuccessMessage"]"),
                     icon: "success",
-                    button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
+                    button: @Localizer["Ok"],
                 });
             } else if ("@ViewBag.Success" === "passwordChanged") {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordSuccessMessage)",
+                    title: "@Html.Raw(Localizer["PasswordSuccessTitle"])",
+                    text: "@Html.Raw(Localizer["PasswordSuccessMessage"])",
                     icon: "success",
-                    button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
+                    button: @Localizer["Ok"],
                 });
             } else if ("@ViewBag.Error" === "notActive") {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
+                    title: @Html.Raw(Localizer["OfficeLoginNotActiveTitle"]),
+                    text: @Html.Raw(Localizer["OfficeLoginNotActiveContent"]),
                     icon: "error",
-                    button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
+                    button: @Localizer["Ok"],
                 });
-            } else if ("@ViewBag.Error" === "isNotValidApp") {
+            } else if (@ViewBag.Error === "isNotValidApp") {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.IsNotValidAppTitle)",
-                    text: "@MvcHtmlString.Create(string.Format(OfisimCRM.App.Resources.Auth.Resource.IsNotValidAppContent, ViewData["appName"]))",
+                    title: @Html.Raw(Localizer["IsNotValidAppTitle"]),
+                    text: @MvcHtmlString.Create(string.Format(OfisimCRM.App.Resources.Auth.Resource.IsNotValidAppContent, ViewData["appName"])),
                                         icon: "error",
-                    button: "@PrimeApps.App.Resources.Auth.Resource.Ok",
+                    button: @Localizer["Ok"],
                 });
             }
 
@@ -135,7 +138,7 @@
                     } else {
                         removeFieldErrors();
                         $(".error-all").addClass("error");
-                        $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.LoginFieldsRequired)");
+                        $(".error-all").text("@Html.Raw(Localizer["LoginFieldsRequired"])");
                     }
                 }
             });
@@ -157,7 +160,7 @@
                     }
                 } else {
                     $(".error-all").addClass("error");
-                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.LoginFieldsRequired)");
+                    $(".error-all").text("@Html.Raw(Localizer["LoginFieldsRequired"])");
 
                     e.stopPropagation();
                     e.preventDefault();
@@ -181,11 +184,11 @@
                 if (fieldValue === "") {
                     removeFieldErrors();
                     $(".error-all").addClass("error");
-                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.LoginFieldsRequired)");
+                    $(".error-all").text("@Html.Raw(Localizer["LoginFieldsRequired"])");
                     isValid = false;
                 } else if (!result) {
                     $(".error-email").addClass("error");
-                    $(".error-email").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.InvalidEmail)");
+                    $(".error-email").text("@Html.Raw(Localizer["InvalidEmail"])");
                     isValid = false;
                 } else {
                     $(".error-email").removeClass("error");
@@ -197,14 +200,14 @@
             function passwordValidator() {
                 var isValid = true;
                 var fieldValue = $("#Password").val();
-                if (fieldValue === "") {
+                if (fieldValue == "") {
                     removeFieldErrors();
                     $(".error-all").addClass("error");
-                    $(".error-all").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.LoginFieldsRequired)");
+                    $(".error-all").text(@Html.Raw(Localizer["LoginFieldsRequired"]));
                     isValid = false;
                 } else if (fieldValue.length < 5) {
                     $(".error-pass").addClass("error");
-                    $(".error-pass").text("@Html.Raw(PrimeApps.App.Resources.Auth.Resource.PasswordMinimum)");
+                    $(".error-pass").text(@Html.Raw(Localizer["PasswordMinimum"]));
                     isValid = false;
                 } else {
                     $(".error-pass").removeClass("error");
@@ -230,4 +233,4 @@
             });
         });
 	</script>
-}
+}*@

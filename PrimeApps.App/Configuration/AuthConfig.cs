@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -16,6 +17,18 @@ namespace PrimeApps.App
 		{
 			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
+			services.AddMvcCore()
+				.AddAuthorization()
+				.AddJsonFormatters();
+
+			services.AddAuthentication("Bearer")
+				.AddIdentityServerAuthentication(options =>
+				{
+					options.Authority = "http://localhost:5000";
+					options.RequireHttpsMetadata = false;
+					options.ApiName = "api1";
+				});
+
 			services.AddAuthentication(options =>
 			{
 				options.DefaultScheme = "Cookies";
@@ -30,7 +43,7 @@ namespace PrimeApps.App
 					options.Authority = "http://localhost:5000";
 					options.RequireHttpsMetadata = false;
 
-					options.ClientId = "mvc";
+					options.ClientId = "primeapps.mvc";
 					options.ClientSecret = "secret";
 					options.ResponseType = "code id_token";
 
@@ -38,6 +51,7 @@ namespace PrimeApps.App
 					options.GetClaimsFromUserInfoEndpoint = true;
 
 					options.Scope.Add("api1");
+					options.Scope.Add("email");
 
 					options.Events = new OpenIdConnectEvents
 					{

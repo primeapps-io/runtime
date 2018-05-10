@@ -13,9 +13,10 @@ namespace PrimeApps.App
     {
 	    public static void BundleConfiguration(IApplicationBuilder app, IConfiguration Configuration)
 	    {
-			var enableBundle = bool.Parse(Configuration.GetSection("AppSettings").GetValue<string>("EnableBundle"));
+			var enableBundle = bool.Parse(ConfigurationManager.AppSettings["EnableBundle"]);
 
-		    if (enableBundle)
+
+			if (enableBundle)
 			    app.UseWebOptimizer();
 		}
 

@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Context
             //Configuration.LazyLoadingEnabled = false;
             //Configuration.ProxyCreationEnabled = false;
         }
-        public TenantDBContext(DbContextOptions options) : base(options)
+        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options)
         {
 
         }
@@ -242,11 +242,13 @@ namespace PrimeApps.Model.Context
             //Temporary relation fix.
             modelBuilder.Entity<Profile>()
             .HasMany(x => x.Users)
-            .WithOne(x => x.Profile);
+            .WithOne(x => x.Profile)
+			.HasForeignKey(x => x.ProfileId);
 
             modelBuilder.Entity<Role>()
             .HasMany(x => x.Users)
-            .WithOne(x => x.Role);
+            .WithOne(x => x.Role)
+			.HasForeignKey(x => x.RoleId);
 
             //Cascade delete profile permissions.
             /*modelBuilder.Entity<ProfilePermission>()
@@ -359,7 +361,12 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.SharedReports)
                 .HasForeignKey(pt => pt.UserId);
 
-
+			//BaseEntity Tenant CreatedBy Relation. For Solving Error: Unable to determine the relationship represented by navigation property 'Tenant.CreatedBy' of type 'PlatformUser'.
+			modelBuilder.Entity<Profile>()
+				.HasOne(x => x.CreatedBy)
+				.WithMany()
+				.HasForeignKey(x => x.CreatedById);
+			
             BuildIndexes(modelBuilder);
         }
 

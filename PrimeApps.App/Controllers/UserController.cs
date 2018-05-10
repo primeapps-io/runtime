@@ -29,10 +29,12 @@ using Utils = PrimeApps.App.Helpers.Utils;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Hangfire;
 using PrimeApps.Model.Entities.Platform;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/User"), Authorize]
+    [Route("api/User")]
     public class UserController : BaseController
     {
         private IUserRepository _userRepository;
@@ -44,8 +46,9 @@ namespace PrimeApps.App.Controllers
         private ITenantRepository _tenantRepository;
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
+		private IHttpContextAccessor _httpContextAccessor;
 
-        public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
+		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -56,9 +59,17 @@ namespace PrimeApps.App.Controllers
             _platformUserRepository = platformUserRepository;
             _tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-            //Set warehouse database name Ofisim to integration
-            //_warehouse.DatabaseName = "Ofisim";
-        }
+			_httpContextAccessor = httpContextAccessor;
+			
+			/*SetCurrentUser(_userRepository, _httpContextAccessor);
+			SetCurrentUser(_settingRepository, _httpContextAccessor);
+			SetCurrentUser(_profileRepository, _httpContextAccessor);
+			SetCurrentUser(_roleRepository, _httpContextAccessor);
+			SetCurrentUser(_recordRepository, _httpContextAccessor);*/
+
+			//Set warehouse database name Ofisim to integration
+			//_warehouse.DatabaseName = "Ofisim";
+		}
 
         /// <summary>
         /// Gets avatar from blob storage by the file id.
@@ -578,6 +589,11 @@ namespace PrimeApps.App.Controllers
 
             return Ok(users);
         }
+
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			base.OnActionExecuting(context);
+		}
 		//TODO Removed
 		/*
         public async Task<IActionResult> GetOfficeUsers()

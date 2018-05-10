@@ -1,4 +1,4 @@
-﻿@if (Request.IsAuthenticated)
+﻿@*if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("Logout", "Auth", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
@@ -15,3 +15,4 @@ else
         <li>@Html.ActionLink("Log in", "Login", "Auth", routeValues: new { area = "" }, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }
+*@
