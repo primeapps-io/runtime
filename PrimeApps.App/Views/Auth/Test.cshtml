@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Authentication;
+@{
+	Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>Test</title>
+</head>
+<body>
+	<div class="col-md-12">
+		<h2>Application uses</h2>
+		<dl>
+			@foreach (var claim in User.Claims)
+			{
+				<dt>@claim.Type</dt>
+				<dd>@claim.Value</dd>
+
+			}
+			<dt>access token</dt>
+			<dd>@await ViewContext.HttpContext.GetTokenAsync("access_token")</dd>
+			<dt>refresh token</dt>
+			<dd>@await ViewContext.HttpContext.GetTokenAsync("refresh_token")</dd>
+		</dl>
+	</div>
+</body>
+</html>

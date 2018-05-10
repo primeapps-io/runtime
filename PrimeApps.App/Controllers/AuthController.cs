@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Extensions;
@@ -21,10 +22,15 @@ using PrimeApps.Model.Repositories;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("auth"), Authorize]
     public class AuthController : Controller
     {
-        //private ApplicationSignInManager _signInManager;
+		//private ApplicationSignInManager _signInManager;
+		private readonly IStringLocalizer<AuthController> _localizer;
+
+		public AuthController(IStringLocalizer<AuthController> localizer)
+		{
+			_localizer = localizer;
+		}
 
 		[Route("authorize"), HttpGet]
 		public ActionResult Authorize()
@@ -36,7 +42,12 @@ namespace PrimeApps.App.Controllers
 			return new EmptyResult();
 		}
 
-		[Route("login"), AllowAnonymous]
+		[Authorize]
+		public ActionResult Test()
+		{
+			return View();
+		}
+		
 		public async Task<ActionResult> Login(string returnUrl, string language = null, string error = null, string success = "")
 		{
 			var lang = GetLanguage();

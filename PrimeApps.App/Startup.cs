@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using System.Configuration;
 using System.Globalization;
 using System.Web;
 
@@ -39,15 +42,17 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
+			var hangfireStorage = new PostgreSqlStorage(ConfigurationManager.ConnectionStrings["HangfireConnection"].ConnectionString);
+			Hangfire.GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
+			services.AddHangfire(x => x.UseStorage(hangfireStorage));
+
 			//Register DI
 			DIRegister(services, Configuration);
 
-			services.AddLocalization(o => o.ResourcesPath = "Localization");
-
-			services.Configure<MvcOptions>(options =>
+			/*services.Configure<MvcOptions>(options =>
 			{
 				options.Filters.Add(new RequireHttpsAttribute());
-			});
+			});*/
 
 			services.Configure<RequestLocalizationOptions>(options =>
 			{
@@ -84,7 +89,16 @@ namespace PrimeApps.App
 			});
 
 
-			services.AddMvc()
+			services.AddMvc(options =>
+			{
+
+				options.CacheProfiles.Add("Nocache",
+					new CacheProfile()
+					{
+						Location = ResponseCacheLocation.None,
+						NoStore = true,
+					});
+			})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
 				.AddJsonOptions(opt =>
 				{
@@ -94,9 +108,12 @@ namespace PrimeApps.App
 						NamingStrategy = new SnakeCaseNamingStrategy()
 					};
 					#endregion
-				}).AddViewLocalization(
-				LanguageViewLocationExpanderFormat.Suffix,
-				opts => { opts.ResourcesPath = "Localization"; })
+				})
+				.AddViewLocalization(
+						LanguageViewLocationExpanderFormat.Suffix,
+						opts => { opts.ResourcesPath = "Localization";
+				})
+
 				.AddDataAnnotationsLocalization();
 
 			AuthConfiguration(services, Configuration);
@@ -107,7 +124,7 @@ namespace PrimeApps.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.Use(async (context, next) =>
+			/*app.Use(async (context, next) =>
             {
                 if (context.Request.QueryString.HasValue)
                 {
@@ -124,25 +141,23 @@ namespace PrimeApps.App
                 }
                 // Call the next delegate/middleware in the pipeline
                 await next.Invoke();
-            });
+            });*/
 
-            app.UseAuthentication();
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+				app.UseDatabaseErrorPage();
+			}
+			else
+			{
+				//app.UseExceptionHandler("/Home/Error");
+				app.UseHttpsRedirection();
+			}
 
 			BundleConfiguration(app, Configuration);
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-
-                //app.UseDatabaseErrorPage();
-                //app.UseBrowserLink();
-            }
-            else
-            {
-                //app.UseExceptionHandler("/Home/Error");
-            }
+            
             /// Must always stay before static files middleware.
-            app.UseHttpsRedirection();
 
             /*
 			 * In ASP.NET, static files are stored in various directories and referenced in the views.
@@ -150,25 +165,30 @@ namespace PrimeApps.App
 			 * The files are loaded into the request pipeline by invoking the UseStaticFiles
 			 */
             app.UseStaticFiles();
+			app.UseAuthentication();
+			//app.UseIdentity();
 
-            //app.UseIdentity();
+			app.UseCors("AllowAll");
 
-            app.UseCors("AllowAll");
+			JobConfiguration(app);
 
-            JobConfiguration(app);
-
-            app.UseMvc(routes =>
+			app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Auth}/{action=Login}/{id?}");
+                    template: "{controller=Auth}/{action=Test}/{id?}"
+				);
+
+				routes.MapRoute(
+					name: "DefaultApi",
+					template: "api/{controller}/{id}"
+				);
             });
 
             /*app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("Hello World!");
             });*/
-            app.UseHsts();
         }
     }
 }

@@ -176,13 +176,17 @@ namespace PrimeApps.Model.Repositories
 		public PlatformUser GetByEmailAndTenantId(string email, int tenantId)
 		{
 			var user = DbContext.Users
-				.Include(x => x.TenantsAsUser.Where(z => z.Id == tenantId))
-				.Include(x => x.TenantsAsUser.Select(z => z.Setting))
-				.Include(x => x.TenantsAsUser.Select(z => z.License))
-				.Include(x => x.TenantsAsUser.Select(z => z.App))
-				.Include(x => x.TenantsAsUser.Select(z => z.App.Setting))
+				.Include(x => x.TenantsAsUser)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
 				.Include(x => x.Setting)
 				.SingleOrDefault(x => x.Email == email);
+
+			user.TenantsAsUser = user.TenantsAsUser.Where(x => x.Id == tenantId).ToList();
+
+			if (user.TenantsAsUser.Count == 0)
+				return null;
 
 			return user;
 		}

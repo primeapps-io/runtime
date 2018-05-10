@@ -802,13 +802,13 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.UserTenant", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
-                        .WithMany("TenantsAsOwner")
+                    b.HasOne("PrimeApps.Model.Entities.Platform.Tenant", "Tenant")
+                        .WithMany("TenantUsers")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Tenant", "Tenant")
-                        .WithMany("TenantUsers")
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
+                        .WithMany("TenantsAsOwner")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

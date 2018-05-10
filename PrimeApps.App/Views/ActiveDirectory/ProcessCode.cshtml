@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+@{
 	Layout = null;
 
 }
@@ -30,7 +33,7 @@
         .swal-text {
             text-align: center;
         }
-    </style>
+	</style>
 </head>
 <body>
 	<div class="container">
@@ -53,19 +56,19 @@
             var error = "@ViewBag.Error";
             if (error === "userExist") {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeErrorTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeErrorMessage)",
+                    title: "@Html.Raw(Localizer["ProcessCodeErrorTitle"])",
+                    text: "@Html.Raw(Localizer["ProcessCodeErrorMessage"])",
                     icon: "error",
-                    button: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Ok)",
+                    button: "@Html.Raw(Localizer["Ok"])",
                 }).then(function() {
                     window.open('', '_self', ''); window.close();
                 });
             } else if (error === "emailNotMatch") {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.EmailNotMatchTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.EmailNotMatchContent)",
+                    title: "@Html.Raw(Localizer["EmailNotMatchTitle"])",
+                    text: "@Html.Raw(Localizer["EmailNotMatchContent"])",
                     icon: "error",
-                    button: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Ok)",
+                    button: "@Html.Raw(Localizer["Ok"])",
                 }).then(function() {
                     window.open('', '_self', ''); window.close();
                 });
@@ -73,10 +76,10 @@
                 window.open('', '_self', ''); window.close();
             } else {
                 swal({
-                    title: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeTitle)",
-                    text: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.ProcessCodeMessage)",
+                    title: "@Html.Raw(Localizer["ProcessCodeTitle"])",
+                    text: "@Html.Raw(Localizer["ProcessCodeMessage"])",
                     icon: "success",
-                    button: "@Html.Raw(PrimeApps.App.Resources.Auth.Resource.Ok)",
+                    button: "@Html.Raw(Localizer["Ok"])",
                 }).then(function() {
                     window.open('', '_self', ''); window.close();
                 });

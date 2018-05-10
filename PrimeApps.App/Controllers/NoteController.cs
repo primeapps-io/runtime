@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
@@ -15,8 +16,10 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/note"), Authorize/*, SnakeCase*/]
-    public class NoteController : BaseController
+    [Route("api/note")/*, SnakeCase*/]
+	[Authorize]
+
+	public class NoteController : BaseController
     {
         private INoteRepository _noteRepository;
         private IUserRepository _userRepository;
@@ -24,8 +27,9 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
+		private IHttpContextAccessor _httpContextAccessor;
 
-        public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository)
+		public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, IHttpContextAccessor httpContextAccessor)
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
@@ -33,13 +37,14 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _profileRepository = profileRepository;
             _picklistRepository = picklistRepository;
+			_httpContextAccessor = httpContextAccessor;
 
-            SetCurrentUser(_noteRepository);
-            SetCurrentUser(_userRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_profileRepository);
-            SetCurrentUser(_picklistRepository);
+			/*SetCurrentUser(_noteRepository, _httpContextAccessor);
+            SetCurrentUser(_userRepository, _httpContextAccessor);
+            SetCurrentUser(_recordRepository, _httpContextAccessor);
+            SetCurrentUser(_moduleRepository, _httpContextAccessor);
+            SetCurrentUser(_profileRepository, _httpContextAccessor);
+            SetCurrentUser(_picklistRepository, _httpContextAccessor);*/
         }
 
         [Route("get/{id:int}"), HttpGet]

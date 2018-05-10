@@ -169,7 +169,7 @@ namespace PrimeApps.App.Helpers
                             var description = !result["Description"].IsNullOrEmpty() ? result["Description"] : "";
                             var color = !result["Color"].IsNullOrEmpty() ? result["Color"] : "#555198";
                             var lang = !result["Language"].IsNullOrEmpty() ? (string)result["Language"] : string.Empty;
-                            var favicon = !result["Favicon"].IsNullOrEmpty() ? result["Favicon"] : cdnUrlStatic + "/images/favicon/primeapps.ico";
+                            var favicon = !result["Favicon"].IsNullOrEmpty() ? result["Favicon"] : cdnUrlStatic + "~/web/images/favicon/primeapps.ico";
                             json = @"{app: 'primeapps', title: '" + title + "', logo: '" + result["Logo"] + "', desc_tr:'" + description + "', desc_en:'" + description + "', color: '" + color + "', customDomain: true, language: '" + lang + "', favicon: '" + favicon + "' }";
                             AppInfo = json;
                             return JObject.Parse(json);

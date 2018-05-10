@@ -11,7 +11,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180507060257_Initial")]
+    [Migration("20180510082806_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -803,13 +803,13 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.UserTenant", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
-                        .WithMany("TenantsAsOwner")
+                    b.HasOne("PrimeApps.Model.Entities.Platform.Tenant", "Tenant")
+                        .WithMany("TenantUsers")
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Tenant", "Tenant")
-                        .WithMany("TenantUsers")
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
+                        .WithMany("TenantsAsOwner")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

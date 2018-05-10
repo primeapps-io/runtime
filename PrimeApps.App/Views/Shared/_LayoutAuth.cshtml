@@ -1,37 +1,38 @@
 ﻿@using PrimeApps.App.Extensions
-@{
-    var app = "primeapps";
-    var desc = "PrimeApps";
-    var color = "#555198";
-    if (ViewBag.AppInfo != null)
-    {
-        app = ViewBag.AppInfo["app"].Value;
-        desc = ViewBag.AppInfo["desc_" + ViewBag.Lang].Value;
-        color = ViewBag.AppInfo["color"].Value;
-    }
-    var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
-    var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-    var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-    var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";
-    var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
-    var customImage = ViewBag.AppInfo["customImage"] != null ? ViewBag.AppInfo["customImage"].Value.ToString() : "";
-    var favicon = ViewBag.AppInfo["favicon"].Value;
 
-}
+@{
+	var app = "primeapps";
+	var desc = "PrimeApps";
+	var color = "#555198";
+	if (ViewBag.AppInfo != null)
+	{
+		app = ViewBag.AppInfo["app"].Value;
+		desc = ViewBag.AppInfo["desc_" + ViewBag.Lang].Value;
+		color = ViewBag.AppInfo["color"].Value;
+	}
+	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
+	var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+	var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+	var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+	var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";
+	var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
+	var customImage = ViewBag.AppInfo["customImage"] != null ? ViewBag.AppInfo["customImage"].Value.ToString() : "";
+	var favicon = ViewBag.AppInfo["favicon"].Value;
+
+	}
 
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.AppInfo["title"].Value</title>
-    <link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.AppInfo["title"].Value</title>
+	<link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<link rel="stylesheet" href="~/web/bundle-css/auth.css" inline />
-    @*Styles.Render("~/bundles-css/auth")*@
-    <style>
+	@*Styles.Render("~/bundles-css/auth")*@
+	<style>
         .login-block{
             float:left;
             width:100%;
@@ -227,64 +228,64 @@
                  max-width: 50%;
               }
         }
-    </style>
+	</style>
 </head>
 <body>
-    <section class="login-block">
-        <div class="container">
-            <div class="row">
-                @RenderBody()
-                <div class="col-md-8 banner-sec" style="@(!string.IsNullOrEmpty(customImage) ? "background-image: " + customImage +" !important" : "")">
-                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                        <!--<ol class="carousel-indicators">carousel-indicators
-                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                        </ol>-->
-                        <div class="carousel-inner" role="listbox">
-                            <div class="carousel-item active">
-                                <!--<img class="d-block img-fluid" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="First slide">-->
-                                <div class="carousel-caption d-none d-md-block">
-                                    <div class="banner-text">
-                                        <!--<h2 style="text-transform: uppercase">OFİSİM @app</h2>-->
-                                        <p>@desc</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <!--<div class="carousel-item">
-                                <img class="d-block img-fluid" src="https://images.pexels.com/photos/7097/people-coffee-tea-meeting.jpg" alt="First slide">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <div class="banner-text">
-                                        <h2>This is Heaven</h2>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img class="d-block img-fluid" src="https://static.pexels.com/photos/497848/pexels-photo-497848.jpeg" alt="First slide">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <div class="banner-text">
-                                        <h2>This is Heaven</h2>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
-                                    </div>
-                                </div>
-                            </div>-->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <script>
+	<section class="login-block">
+		<div class="container">
+			<div class="row">
+				@RenderBody()
+				<div class="col-md-8 banner-sec" style="@(!string.IsNullOrEmpty(customImage) ? "background-image: " + customImage +" !important" : "")">
+					<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+						<!--<ol class="carousel-indicators">carousel-indicators
+							<li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+							<li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+							<li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+						</ol>-->
+						<div class="carousel-inner" role="listbox">
+							<div class="carousel-item active">
+								<!--<img class="d-block img-fluid" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="First slide">-->
+								<div class="carousel-caption d-none d-md-block">
+									<div class="banner-text">
+										<!--<h2 style="text-transform: uppercase">OFİSİM @app</h2>-->
+										<p>@desc</p>
+									</div>
+								</div>
+							</div>
+							<!--<div class="carousel-item">
+								<img class="d-block img-fluid" src="https://images.pexels.com/photos/7097/people-coffee-tea-meeting.jpg" alt="First slide">
+								<div class="carousel-caption d-none d-md-block">
+									<div class="banner-text">
+										<h2>This is Heaven</h2>
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+									</div>
+								</div>
+							</div>
+							<div class="carousel-item">
+								<img class="d-block img-fluid" src="https://static.pexels.com/photos/497848/pexels-photo-497848.jpeg" alt="First slide">
+								<div class="carousel-caption d-none d-md-block">
+									<div class="banner-text">
+										<h2>This is Heaven</h2>
+										<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
+									</div>
+								</div>
+							</div>-->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script>
         window.localStorage.setItem("locale_key", "@ViewBag.Lang");
         window.localStorage.setItem("NG_TRANSLATE_LANG_KEY", "@ViewBag.Lang");
         var version = '@typeof(ControllerContext).Assembly.GetName().Version';
         window.localStorage.removeItem('access_token');
-    </script>
-    @if (!customDomain && !ViewContext.HttpContext.Request.IsLocal())
-    {
-        <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
-        <script>
+	</script>
+	@if (!customDomain && !ViewContext.HttpContext.Request.IsLocal())
+	{
+		<script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
+		<script>
             //Google Analytics
             window.dataLayer = window.dataLayer || [];
 
@@ -307,14 +308,15 @@
                 s1.setAttribute('crossorigin', '*');
                 s0.parentNode.insertBefore(s1, s0);
             })();
-        </script>
-    }
+		</script>
+	}
 	<script src="~/web/bundles-js/auth.js" inline></script>
-    @*Scripts.Render("~/bundles-js/auth")*@
-    @if (enableBundle)
-    {
-        @Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\" async></script>", "~/bundles-js/vendor")
-    }
-    @RenderSection("scripts", required: false)
+	@*Scripts.Render("~/bundles-js/auth")*@
+	@if (enableBundle)
+	{
+		@:executeJsfunction("<script type=\"text/javascript\" src=\"~/bundles-js/vendor\" async></script>");
+		//@Scripts.RenderFormat("<script type=\"text/javascript\" src=\"{0}\" async></script>", "~/bundles-js/vendor")
+	}
+	@RenderSection("scripts", required: false)
 </body>
 </html>

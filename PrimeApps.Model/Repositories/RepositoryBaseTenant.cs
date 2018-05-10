@@ -31,15 +31,17 @@ namespace PrimeApps.Model.Repositories
         {
             get
             {
-                if (_dbContext.Database.GetDbConnection().State != System.Data.ConnectionState.Open)
+				var con = _dbContext.Database.GetDbConnection();
+
+				if (con.State != System.Data.ConnectionState.Open)
                 {
                     if (TenantId.HasValue)
                     {
-                        _dbContext.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(TenantId.Value);
+						con.ConnectionString = Postgres.GetConnectionString(TenantId.Value);
                     }
                     else if (CurrentUser.TenantId != -1)
                     {
-                        _dbContext.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(CurrentUser.TenantId);
+						con.ConnectionString = Postgres.GetConnectionString(CurrentUser.TenantId);
                     }
                     else
                     {

@@ -1,55 +1,69 @@
 ﻿@using System.Globalization
 @using System.Threading
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 @{
 
-    ViewBag.Title = "Error";
-    var language = ViewContext.HttpContext.Request.Cookies["_lang"];
-    var lang = language == "tr" ? language : "en";
-    Thread.CurrentThread.CurrentUICulture = lang == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
+	ViewBag.Title = "Error";
+	var language = ViewContext.HttpContext.Request.Cookies["_lang"];
+	var lang = language == "tr" ? language : "en";
+	Thread.CurrentThread.CurrentUICulture = lang == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Error</title>
+	<meta name="viewport" content="width=device-width" />
+	<title>Error</title>
 </head>
 <style>
-    #fof{display:block; width:100%; padding:150px 0; line-height:1.6em; text-align:center;}
-    #fof .hgroup h1, #fof .hgroup h2 {
-        margin: 0;
-        padding: 0;
-        text-transform: uppercase;
-        font-family: sans-serif;
-    }
-    #fof h1 {
-        font-size: 25px;
-        font-family: sans-serif;
-    }
-    #fof p {
-        display: block;
-        margin: 15px 0 0 0;
-        padding: 0;
-        font-size: 16px;
-        font-family: sans-serif;
-    }
-    #fof p:first-child{margin-top:0;}
+	#fof {
+		display: block;
+		width: 100%;
+		padding: 150px 0;
+		line-height: 1.6em;
+		text-align: center;
+	}
+
+		#fof .hgroup h1, #fof .hgroup h2 {
+			margin: 0;
+			padding: 0;
+			text-transform: uppercase;
+			font-family: sans-serif;
+		}
+
+		#fof h1 {
+			font-size: 25px;
+			font-family: sans-serif;
+		}
+
+		#fof p {
+			display: block;
+			margin: 15px 0 0 0;
+			padding: 0;
+			font-size: 16px;
+			font-family: sans-serif;
+		}
+
+			#fof p:first-child {
+				margin-top: 0;
+			}
 </style>
 <body>
-<div class="wrapper row2">
-    <div id="container" class="clear">
-       
-        <div id="fof" class="clear">
-           
-            <div class="hgroup">
-                <img src="~/images/404image.png"/>
-            </div>
-            
-            <h1>@PrimeApps.App.Resources.Auth.Resource.NotFoundTitle</h1>
-            <p>@PrimeApps.App.Resources.Auth.Resource.NotFoundContent</p>
-            <p><a href="/">@PrimeApps.App.Resources.Auth.Resource.Home</a></p>
-        </div>
-    </div>
-</div>
+	<div class="wrapper row2">
+		<div id="container" class="clear">
+
+			<div id="fof" class="clear">
+
+				<div class="hgroup">
+					<img src="~/images/404image.png" />
+				</div>
+
+				<h1>@Localizer["NotFoundTitle"]</h1>
+				<p>@Localizer["NotFoundContent"]</p>
+				<p><a href="/">@Localizer["Home"]</a></p>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

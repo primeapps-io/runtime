@@ -6,6 +6,14 @@ using Hangfire;
 using PrimeApps.App.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Repositories;
+using System.Reflection;
+using System.Linq;
+using System;
+using System.Configuration;
+using Microsoft.AspNetCore.Http;
+using PrimeApps.App.ActionFilters;
 
 namespace PrimeApps.App
 {
@@ -15,10 +23,54 @@ namespace PrimeApps.App
 		{
 			
 			services.AddDbContext<TenantDBContext>(options =>
-				options.UseNpgsql(configuration.GetConnectionString("PostgreSqlConnection")));
+				options.UseNpgsql(ConfigurationManager.ConnectionStrings["PostgreSqlConnection"].ConnectionString));
 			
 			services.AddDbContext<PlatformDBContext>(options =>
-				options.UseNpgsql(configuration.GetConnectionString("PostgreSqlConnection")));
+				options.UseNpgsql(ConfigurationManager.ConnectionStrings["PostgreSqlConnection"].ConnectionString));
+
+			/*services.AddScoped<IActionButtonRepository, ActionButtonRepository>();
+			services.AddScoped<IAnalyticRepository, AnalyticRepository>();
+			services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+			services.AddScoped<IChangeLogRepository, ChangeLogRepository>();
+			services.AddScoped<IConversionMappingRepository, ConversionMappingRepository>();
+			services.AddScoped<IDashboardRepository, DashboardRepository>();
+			services.AddScoped<IDashletRepository, DashletRepository>();
+			services.AddScoped<IDocumentRepository, DocumentRepository>();
+			services.AddScoped<IHelpRepository, HelpRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();
+			services.AddScoped<IUserRepository, UserRepository>();*/
+
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+			// Register Repositories
+			foreach (var a in new string[] { "PrimeApps.Model" })
+			{
+				Assembly loadedAss = Assembly.Load(a);
+
+				var allServices = loadedAss.GetTypes().Where(t =>
+									t.GetTypeInfo().IsClass &&
+									!t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository"));
+
+				foreach (var type in allServices)
+				{
+					var allInterfaces = type.GetInterfaces().Where(x => x.Name.EndsWith("Repository"));
+					var mainInterfaces = allInterfaces.Except
+							(allInterfaces.SelectMany(t => t.GetInterfaces()));
+					foreach (var itype in mainInterfaces)
+					{
+						if (allServices.Any(x => !x.Equals(type) && itype.IsAssignableFrom(x)))
+						{
+							throw new Exception("The " + itype.Name + " type has more than one implementations, please change your filter");
+						}
+						services.AddTransient(itype, type);
+					}
+				}
+
+			}
 
 			services.AddScoped<WarehouseHelper, WarehouseHelper>();
 			services.AddScoped<Warehouse, Warehouse>();
