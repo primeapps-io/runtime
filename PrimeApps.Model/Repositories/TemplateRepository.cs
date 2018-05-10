@@ -22,6 +22,14 @@ namespace PrimeApps.Model.Repositories
             return template;
         }
 
+        public async Task<Template> GetByCode(string code)
+        {
+
+            var template = await DbContext.Templates.FirstOrDefaultAsync(x => x.Code == code);
+
+            return template;
+        }
+
         public async Task<ICollection<Template>> GetAll(TemplateType templateType = TemplateType.NotSet, string moduleName = "")
         {
 

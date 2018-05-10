@@ -69,9 +69,9 @@ namespace PrimeApps.Model.Context
         {
 
             var validationErrors = ChangeTracker
-									.Entries<IValidatableObject>()
-									.SelectMany(e => e.Entity.Validate(null))
-									.Where(r => r != ValidationResult.Success);
+                                    .Entries<IValidatableObject>()
+                                    .SelectMany(e => e.Entity.Validate(null))
+                                    .Where(r => r != ValidationResult.Success);
 
             if (validationErrors.Any())
             {
@@ -86,9 +86,9 @@ namespace PrimeApps.Model.Context
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             var validationErrors = ChangeTracker
-									.Entries<IValidatableObject>()
-									.SelectMany(e => e.Entity.Validate(null))
-									.Where(r => r != ValidationResult.Success);
+                                    .Entries<IValidatableObject>()
+                                    .SelectMany(e => e.Entity.Validate(null))
+                                    .Where(r => r != ValidationResult.Success);
 
             if (validationErrors.Any())
             {
@@ -686,6 +686,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Setting>().HasIndex(x => x.Deleted);
 
             //Template
+            modelBuilder.Entity<Template>().HasIndex(x => new { x.Id, x.Code }).IsUnique();
             modelBuilder.Entity<Template>().HasIndex(x => x.SharingType);
             modelBuilder.Entity<Template>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Template>().HasIndex(x => x.CreatedById);

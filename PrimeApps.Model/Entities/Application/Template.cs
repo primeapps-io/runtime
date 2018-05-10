@@ -11,6 +11,9 @@ namespace PrimeApps.Model.Entities.Application
         [Column("template_type")]
         public TemplateType TemplateType { get; set; }
 
+        [Column("code")]
+        public string Code { get; set; }
+
         [Column("name"), MaxLength(200)]
         public string Name { get; set; }
 
