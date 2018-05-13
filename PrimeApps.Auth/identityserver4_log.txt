@@ -31323,3 +31323,70 @@ System.InvalidOperationException: An exception has been raised that is likely du
 2018-05-10 18:22:38.470 +03:00 [DBG] Start key discovery request
 2018-05-10 18:33:02.487 +03:00 [INF] Clearing 0 tokens
 2018-05-10 19:33:02.815 +03:00 [INF] Clearing 0 tokens
+2018-05-10 18:52:22.729 +02:00 [DBG] Using Identity.Application as default scheme for authentication
+2018-05-10 18:52:22.752 +02:00 [DBG] Using Identity.External as default scheme for sign-in
+2018-05-10 18:52:22.753 +02:00 [DBG] Using Identity.External as default scheme for sign-out
+2018-05-10 18:52:22.753 +02:00 [DBG] Using Identity.Application as default scheme for challenge
+2018-05-10 18:52:22.753 +02:00 [DBG] Using Identity.Application as default scheme for forbid
+2018-05-10 18:52:23.234 +02:00 [DBG] Starting token cleanup
+2018-05-10 18:52:25.437 +02:00 [DBG] Request path /.well-known/openid-configuration matched to endpoint type Discovery
+2018-05-10 18:52:25.465 +02:00 [DBG] Endpoint enabled: Discovery, successfully created handler: IdentityServer4.Endpoints.DiscoveryEndpoint
+2018-05-10 18:52:25.466 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.DiscoveryEndpoint for /.well-known/openid-configuration
+2018-05-10 18:52:25.468 +02:00 [DBG] Start discovery request
+2018-05-10 18:52:27.732 +02:00 [DBG] Found ["openid","email","profile","api1"] as all scopes in database
+2018-05-10 18:52:27.854 +02:00 [DBG] Request path /.well-known/openid-configuration/jwks matched to endpoint type Discovery
+2018-05-10 18:52:27.855 +02:00 [DBG] Endpoint enabled: Discovery, successfully created handler: IdentityServer4.Endpoints.DiscoveryKeyEndpoint
+2018-05-10 18:52:27.855 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.DiscoveryKeyEndpoint for /.well-known/openid-configuration/jwks
+2018-05-10 18:52:27.858 +02:00 [DBG] Start key discovery request
+2018-05-10 18:52:27.964 +02:00 [DBG] Request path /connect/authorize matched to endpoint type Authorize
+2018-05-10 18:52:27.969 +02:00 [DBG] Endpoint enabled: Authorize, successfully created handler: IdentityServer4.Endpoints.AuthorizeEndpoint
+2018-05-10 18:52:27.969 +02:00 [INF] Invoking IdentityServer endpoint: IdentityServer4.Endpoints.AuthorizeEndpoint for /connect/authorize
+2018-05-10 18:52:27.973 +02:00 [DBG] Start authorize request
+2018-05-10 18:52:27.986 +02:00 [DBG] No user present in authorize request
+2018-05-10 18:52:27.990 +02:00 [DBG] Start authorize request protocol validation
+2018-05-10 18:52:28.464 +02:00 [DBG] primeapps.mvc found in database: true
+2018-05-10 18:52:28.470 +02:00 [DBG] Checking for PKCE parameters
+2018-05-10 18:52:28.471 +02:00 [DBG] No PKCE used.
+2018-05-10 18:52:28.546 +02:00 [DBG] Found ["openid","email","profile"] identity scopes in database
+2018-05-10 18:52:28.695 +02:00 [DBG] Found ["api1"] API scopes in database
+2018-05-10 18:52:28.733 +02:00 [DBG] Found ["openid","email","profile"] identity scopes in database
+2018-05-10 18:52:28.784 +02:00 [DBG] Found ["api1"] API scopes in database
+2018-05-10 18:52:28.797 +02:00 [DBG] Calling into custom validator: IdentityServer4.Validation.DefaultCustomAuthorizeRequestValidator
+2018-05-10 18:52:28.835 +02:00 [INF] ValidatedAuthorizeRequest
+{
+  "ClientId": "primeapps.mvc",
+  "ClientName": "PrimeApps MVC Client",
+  "RedirectUri": "http://localhost:5002/signin-oidc",
+  "AllowedRedirectUris": [
+    "http://localhost:5002/signin-oidc"
+  ],
+  "SubjectId": "anonymous",
+  "ResponseType": "code id_token",
+  "ResponseMode": "form_post",
+  "GrantType": "hybrid",
+  "RequestedScopes": "openid profile api1 email",
+  "State": "CfDJ8ItjHtZaZYJCgVNF8CJsrH74BqmFtJORKp5MDV0dveolMIwMr1naOrlwQ_yx-QLZObka1yO9we6uTO7VcV1oaLy-zDuakDGxzuGALmr5P1mqeaEaJF1z9bhPsbbHqVuiPnOeauGw4bhXrpSyYSguAtFRFjrRns7gG4wphYO_T3EqHozDe6tu-HO09G-_hjMeUaz37_cJEtun3X2P1bew1FtGCq5y_V6wNKvt5_oFFG7ZgoD6V0R2fhvV_96vT8w0xLASQMMGpAkYLs44J2g_K1gGJXcpNaoYxQmAd_IWDrs9tPjvhhr4LiuqHF4UmzgA3g",
+  "Nonce": "636615679479303139.ZDNhNDQxMzctY2RjMi00YTRmLWI3NGMtN2JmNTJiYjgxMzQ3NmU3M2ZjMmUtZjAwMC00YjkzLWEwNDgtZWE4OTA5MDZjNTJm",
+  "Raw": {
+    "client_id": "primeapps.mvc",
+    "redirect_uri": "http://localhost:5002/signin-oidc",
+    "response_type": "code id_token",
+    "scope": "openid profile api1 email",
+    "response_mode": "form_post",
+    "nonce": "636615679479303139.ZDNhNDQxMzctY2RjMi00YTRmLWI3NGMtN2JmNTJiYjgxMzQ3NmU3M2ZjMmUtZjAwMC00YjkzLWEwNDgtZWE4OTA5MDZjNTJm",
+    "state": "CfDJ8ItjHtZaZYJCgVNF8CJsrH74BqmFtJORKp5MDV0dveolMIwMr1naOrlwQ_yx-QLZObka1yO9we6uTO7VcV1oaLy-zDuakDGxzuGALmr5P1mqeaEaJF1z9bhPsbbHqVuiPnOeauGw4bhXrpSyYSguAtFRFjrRns7gG4wphYO_T3EqHozDe6tu-HO09G-_hjMeUaz37_cJEtun3X2P1bew1FtGCq5y_V6wNKvt5_oFFG7ZgoD6V0R2fhvV_96vT8w0xLASQMMGpAkYLs44J2g_K1gGJXcpNaoYxQmAd_IWDrs9tPjvhhr4LiuqHF4UmzgA3g",
+    "x-client-SKU": "ID_NETSTANDARD1_4",
+    "x-client-ver": "5.2.0.0"
+  }
+}
+2018-05-10 18:52:28.843 +02:00 [INF] Showing login: User is not authenticated
+2018-05-10 18:52:29.008 +02:00 [DBG] Start authorize request protocol validation
+2018-05-10 18:52:29.154 +02:00 [DBG] primeapps.mvc found in database: true
+2018-05-10 18:52:29.154 +02:00 [DBG] Checking for PKCE parameters
+2018-05-10 18:52:29.154 +02:00 [DBG] No PKCE used.
+2018-05-10 18:52:29.184 +02:00 [DBG] Found ["openid","email","profile"] identity scopes in database
+2018-05-10 18:52:29.317 +02:00 [DBG] Found ["api1"] API scopes in database
+2018-05-10 18:52:29.337 +02:00 [DBG] Found ["openid","email","profile"] identity scopes in database
+2018-05-10 18:52:29.390 +02:00 [DBG] Found ["api1"] API scopes in database
+2018-05-10 18:52:29.390 +02:00 [DBG] Calling into custom validator: IdentityServer4.Validation.DefaultCustomAuthorizeRequestValidator
+2018-05-10 18:52:29.503 +02:00 [DBG] primeapps.mvc found in database: true

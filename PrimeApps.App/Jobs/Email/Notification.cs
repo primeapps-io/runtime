@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -25,7 +26,7 @@ namespace PrimeApps.App.Jobs.Email
             emailData.Add("Deadline", deadline);
 
             /// send the email.
-            Helpers.Email email = new Helpers.Email(typeof(Resources.Email.TaskReminder), culture, emailData, appId, appUser);
+            Helpers.Email email = new Helpers.Email(EmailResource.TaskReminder, culture, emailData, appId, appUser);
             email.AddRecipient(emailAddress);
             email.AddToQueue(appUser : appUser);
         }
@@ -47,7 +48,7 @@ namespace PrimeApps.App.Jobs.Email
             emailData.Add("EndDate", endDate);
 
             /// send the email.
-            Helpers.Email email = new Helpers.Email(typeof(Resources.Email.EventReminder), culture, emailData, appId, appUser);
+            Helpers.Email email = new Helpers.Email(EmailResource.EventReminder, culture, emailData, appId, appUser);
             email.AddRecipient(emailAddress);
             email.AddToQueue(appUser : appUser);
         }
@@ -64,7 +65,7 @@ namespace PrimeApps.App.Jobs.Email
             emailData.Add("StartDate", startDate);
 
             /// send the email.
-            Helpers.Email email = new Helpers.Email(typeof(Resources.Email.CallReminder), culture, emailData, appId, appUser);
+            Helpers.Email email = new Helpers.Email(EmailResource.CallReminder, culture, emailData, appId, appUser);
             email.AddRecipient(emailAddress);
             email.AddToQueue(appUser: appUser);
         }

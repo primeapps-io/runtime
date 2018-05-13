@@ -17,15 +17,15 @@ namespace PrimeApps.Model.Repositories
         public async Task<Template> GetById(int id)
         {
 
-            var template = await DbContext.Templates.Include(x=> x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
+            var template = await DbContext.Templates.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
 
             return template;
         }
 
-        public async Task<Template> GetByCode(string code)
+        public Template GetByCode(string code)
         {
 
-            var template = await DbContext.Templates.FirstOrDefaultAsync(x => x.Code == code);
+            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code);
 
             return template;
         }
@@ -35,8 +35,8 @@ namespace PrimeApps.Model.Repositories
 
             var templates = DbContext.Templates
                 .Include(x => x.Shares)
-				.ThenInclude(x => x.TenantUser)
-				.Include(x => x.Permissions)
+                .ThenInclude(x => x.TenantUser)
+                .Include(x => x.Permissions)
                 .Where(x => x.Deleted == false);
 
             if (templateType != TemplateType.NotSet)

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text.RegularExpressions;
 using Hangfire;
 using PrimeApps.App.Jobs.Messaging;
-using System.Threading;
-using System.Security.Claims;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
-using Microsoft.AspNetCore.Hosting;
+using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Common.Resources;
+using System.Reflection;
 
 namespace PrimeApps.App.Helpers
 {
@@ -23,11 +22,6 @@ namespace PrimeApps.App.Helpers
     /// </summary>
     public class Email
     {
-        private IHostingEnvironment _hostingEnvironment;
-        public Email(IHostingEnvironment hostingEnvironment)
-        {
-            hostingEnvironment = _hostingEnvironment;
-        }
         /// <summary>
         /// The pattern of template placeholders.
         /// </summary>
@@ -71,38 +65,28 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(Type resourceType, string culture, Dictionary<string, string> dataFields, int AppId = 1, UserItem AppUser = null)
+        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, int AppId = 1, UserItem AppUser = null)
         {
-            string path = "",
-                   tmpl = "",
+            string tmpl = "",
                    appUrl = "",
                    appName = "",
                    appCodeUrl = "",
                    appColor = "",
-                   socialMediaIcons = "";
-				   footer = "";
+                   socialMediaIcons = "",
+                   footer = "",
+                   resourceTypeName = "";
 
 
             dataRegex = new Regex(dataPattern);
             templateRegex = new Regex(templatePattern);
+            resourceTypeName = GetResourceTypeName(resourceType);
 
-            // Get localization helper for the specific culture.
-            Localization lcl = new Localization(culture, resourceType);
 
-            // get template file for the email by resource name.
-            path = Path.Combine(_hostingEnvironment.WebRootPath, $"Templates/Email/{resourceType.Name}.html");
-
-            System.IO.FileInfo file = new FileInfo(path);
-            if (!file.Exists)
+            Template templateEntity;
+            using (TenantDBContext tdbCtx = new TenantDBContext(AppUser.TenantId))
+            using (TemplateRepository tRepo = new TemplateRepository(tdbCtx))
             {
-                // file does not exist, throw an error about it.
-                throw new FileNotFoundException(string.Format("Email template:'{0}' not found!", resourceType.Name));
-            }
-
-            using (System.IO.TextReader tr = new StreamReader(path))
-            {
-                // read template text.
-                tmpl = tr.ReadToEnd();
+                templateEntity = tRepo.GetByCode(resourceTypeName);
             }
 
             switch (AppId)
@@ -177,7 +161,7 @@ namespace PrimeApps.App.Helpers
             }
 
 
-
+            tmpl = templateEntity.Content;
             tmpl = tmpl.Replace("{{URL}}", appUrl);
             tmpl = tmpl.Replace("{{APP_URL}}", appCodeUrl);
             tmpl = tmpl.Replace("{{APP_COLOR}}", appColor);
@@ -185,14 +169,12 @@ namespace PrimeApps.App.Helpers
             tmpl = tmpl.Replace("{{FOOTER}}", footer);
             dataFields.Add("appName", appName);
 
-            // make translations and fill data fields.
-            tmpl = TranslateTemplate(tmpl, lcl);
             // fill this value with data parameters if any of them in it.
             tmpl = FillData(tmpl, dataFields);
 
 
             this.Template = tmpl;
-            this.Subject = lcl.GetString("Subject");
+            this.Subject = templateEntity.Subject; /*lcl.GetString("Subject");*/
 
 
             /// fill subject with data if there are any data fields.
@@ -273,6 +255,22 @@ namespace PrimeApps.App.Helpers
             return tmpl;
         }
 
+        private string GetResourceTypeName(EmailResource value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            ResourceNameAttribute[] attributes =
+                (ResourceNameAttribute[])fi.GetCustomAttributes(
+                typeof(ResourceNameAttribute),
+                false);
+
+            if (attributes == null ||
+                attributes.Length == 0)
+                throw new Exception("Resource Name is not defined.");
+
+
+            return attributes[0].ResourceName;
+        }
         /// <summary>
         /// Adds the email address to the recipients of email.
         /// </summary>
@@ -366,5 +364,6 @@ namespace PrimeApps.App.Helpers
                 BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary), TimeSpan.FromSeconds(5));
             }
         }
+
     }
 }

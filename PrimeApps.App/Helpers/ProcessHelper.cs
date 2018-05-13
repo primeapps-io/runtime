@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Helpers
 {
@@ -366,13 +367,13 @@ namespace PrimeApps.App.Helpers
 
                                 if (operationType == OperationType.insert)
                                 {
-                                    var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                    var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                     notification.AddRecipient(user.Email);
                                     notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
                                 }
                                 else if (operationType == OperationType.update)
                                 {
-                                    var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                    var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                     notification.AddRecipient(user.Email);
                                     notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
                                 }
@@ -749,13 +750,13 @@ namespace PrimeApps.App.Helpers
 
                                 if (request.OperationType == OperationType.insert)
                                 {
-                                    var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                    var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                     notification.AddRecipient(user.Email);
                                     notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                                 }
                                 else if (request.OperationType == OperationType.update)
                                 {
-                                    var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                    var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                     notification.AddRecipient(user.Email);
                                     notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                                 }
@@ -827,7 +828,7 @@ namespace PrimeApps.App.Helpers
                                 if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
                                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessApproveNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
@@ -907,13 +908,13 @@ namespace PrimeApps.App.Helpers
 
                             if (request.OperationType == OperationType.insert)
                             {
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessRejectNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
                             else if (request.OperationType == OperationType.update)
                             {
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateRejectNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessUpdateRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
@@ -1037,13 +1038,13 @@ namespace PrimeApps.App.Helpers
 
                             if (request.OperationType == OperationType.insert)
                             {
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
                             else if (request.OperationType == OperationType.update)
                             {
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
@@ -1131,7 +1132,7 @@ namespace PrimeApps.App.Helpers
                                 if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
                                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
-                                var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, (int)record["id"], appUser: appUser);
                             }

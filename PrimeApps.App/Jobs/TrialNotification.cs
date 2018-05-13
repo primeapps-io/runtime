@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Jobs
 {
@@ -44,7 +45,7 @@ namespace PrimeApps.App.Jobs
                 if (!string.IsNullOrWhiteSpace(culture) && Helpers.Constants.CULTURES.Contains(culture))
                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
 
-                var notification = new Helpers.Email(typeof(Resources.Email.TrialExpireMail), Thread.CurrentThread.CurrentCulture.Name, emailData, tenant.AppId);
+                var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, tenant.AppId);
                 notification.AddRecipient(user.Email);
                 notification.AddToQueue();
             }

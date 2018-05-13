@@ -21,6 +21,7 @@ using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Helpers
 {
@@ -335,7 +336,7 @@ namespace PrimeApps.App.Helpers
                                             emailData.Add("Content", sendNotification.Message);
                                             emailData.Add("Url", url);
 
-                                            var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
+                                            var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, appUser.AppId, appUser);
                                             email.AddRecipient(recipient);
 
                                             if (sendNotification.Schedule.HasValue)

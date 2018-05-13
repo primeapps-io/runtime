@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -47,12 +48,12 @@ namespace PrimeApps.App.Jobs.Email
                     emailData.Add("MissingNumbers", missingAddresses.ToString());
                     emailData.Add("NotAllowed", notAllowed.ToString());
 
-                    email = new Helpers.Email(typeof(Resources.Email.EMailStatusSuccessful), owner.Culture, emailData);
+                    email = new Helpers.Email(EmailResource.EMailStatusSuccessful, owner.Culture, emailData);
                 }
                 else
                 {
                     emailData.Add("ErrorReason", $"{{{status.ToString()}}}");
-                    email = new Helpers.Email(typeof(Resources.Email.EMailStatusFailed), owner.Culture, emailData);
+                    email = new Helpers.Email(EmailResource.EMailStatusFailed, owner.Culture, emailData);
                 }
 
                 /// send the email.

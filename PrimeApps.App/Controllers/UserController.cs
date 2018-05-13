@@ -31,6 +31,7 @@ using Hangfire;
 using PrimeApps.Model.Entities.Platform;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Controllers
 {
@@ -166,7 +167,7 @@ namespace PrimeApps.App.Controllers
                 Dictionary<string, string> emailData = new Dictionary<string, string>();
                 emailData.Add("EmailResetUrl", string.Format("https://{0}.ofisim.com/REST/Public/ConfirmEmail/{1}", subdomain, passcode));
 
-                Email removalNotification = new Email(typeof(Resources.Email.EmailReset), Thread.CurrentThread.CurrentCulture.Name, emailData, AppUser.AppId);
+                Email removalNotification = new Email(EmailResource.EmailReset, Thread.CurrentThread.CurrentCulture.Name, emailData, AppUser.AppId);
                 //removalNotification.AddRecipient(req.email);
                 removalNotification.AddToQueue();
             }

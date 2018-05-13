@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Notifications
 {
@@ -145,7 +146,7 @@ namespace PrimeApps.App.Notifications
                 emailData.Add("OldOwner", oldOwnerName);
                 emailData.Add("DueDate", formattedDueDate);
 
-                Email email = new Email(typeof(Resources.Email.TaskOwnerChangedNotification), appUser.Culture, emailData, appUser.AppId);
+                Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, appUser.AppId);
                 email.AddRecipient(newOwner.Email);
                 email.AddToQueue(appUser: appUser);
             }
@@ -192,7 +193,7 @@ namespace PrimeApps.App.Notifications
 
                 emailData.Add("PrimaryValue", moduleRecordPrimary[modulePkey]?.ToString()); //?wtf to change
 
-                Email email = new Email(typeof(Resources.Email.OwnerChangedNotification), appUser.Culture, emailData, appUser.AppId);
+                Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, appUser.AppId);
                 email.AddRecipient(newOwner.Email);
                 email.AddToQueue(appUser: appUser);
             }
@@ -257,7 +258,7 @@ namespace PrimeApps.App.Notifications
                 emailData.Add("DueDate", ((DateTime)fullRecord["task_due_date"]).ToString(appUser.TenantLanguage == "tr" ? "dd.MM.yyyy" : "MM/dd/yyyy"));
                 emailData.Add("Subject", (string)fullRecord["subject"]);
 
-                var email = new Email(typeof(Resources.Email.TaskAssignedNotification), appUser.Culture, emailData, appUser.AppId);
+                var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, appUser.AppId);
                 email.AddRecipient((string)fullRecord["owner.email"]);
                 email.AddToQueue(appUser: appUser);
             }
