@@ -9,6 +9,7 @@ using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Common.Resources;
 using System.Reflection;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Helpers
 {
@@ -81,12 +82,12 @@ namespace PrimeApps.App.Helpers
             templateRegex = new Regex(templatePattern);
             resourceTypeName = GetResourceTypeName(resourceType);
 
-
+            LanguageType language = culture.Contains("tr") ? LanguageType.Tr : LanguageType.En;
             Template templateEntity;
             using (TenantDBContext tdbCtx = new TenantDBContext(AppUser.TenantId))
             using (TemplateRepository tRepo = new TemplateRepository(tdbCtx))
             {
-                templateEntity = tRepo.GetByCode(resourceTypeName);
+                templateEntity = tRepo.GetByCode(resourceTypeName, language);
             }
 
             switch (AppId)

@@ -22,10 +22,10 @@ namespace PrimeApps.Model.Repositories
             return template;
         }
 
-        public Template GetByCode(string code)
+        public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
         {
 
-            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code);
+            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language==language);
 
             return template;
         }
