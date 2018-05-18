@@ -56,14 +56,14 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             if (noteEntity.CreatedBy.Picture != null && !noteEntity.CreatedBy.Picture.StartsWith("http://"))
-                noteEntity.CreatedBy.Picture = Storage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
+                noteEntity.CreatedBy.Picture = AzureStorage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
 
             if (noteEntity.Likes.Count > 0)
             {
                 foreach (var likedUser in noteEntity.Likes)
                 {
                     if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
-                        likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
+                        likedUser.TenantUser.Picture = AzureStorage.GetAvatarUrl(likedUser.TenantUser.Picture);
                 }
             }
             
@@ -79,14 +79,14 @@ namespace PrimeApps.App.Controllers
             foreach (var note in notes)
             {
                 if (note.CreatedBy.Picture != null && !note.CreatedBy.Picture.StartsWith("http://"))
-                    note.CreatedBy.Picture = Storage.GetAvatarUrl(note.CreatedBy.Picture);
+                    note.CreatedBy.Picture = AzureStorage.GetAvatarUrl(note.CreatedBy.Picture);
 
                 if (note.Likes.Count > 0)
                 {
                     foreach (var likedUser in note.Likes)
                     {
                         if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
-                            likedUser.TenantUser.Picture = Storage.GetAvatarUrl(likedUser.TenantUser.Picture);
+                            likedUser.TenantUser.Picture = AzureStorage.GetAvatarUrl(likedUser.TenantUser.Picture);
                     }
                 }
 
@@ -95,14 +95,14 @@ namespace PrimeApps.App.Controllers
                     foreach (var subNote in note.Notes)
                     {
                         if (subNote.CreatedBy.Picture != null && !subNote.CreatedBy.Picture.StartsWith("http://"))
-                            subNote.CreatedBy.Picture = Storage.GetAvatarUrl(subNote.CreatedBy.Picture);
+                            subNote.CreatedBy.Picture = AzureStorage.GetAvatarUrl(subNote.CreatedBy.Picture);
 
                         if (subNote.Likes.Count > 0)
                         {
                             foreach (var subLikedUser in note.Likes)
                             {
                                 if (subLikedUser.TenantUser.Picture != null && !subLikedUser.TenantUser.Picture.StartsWith("http://"))
-                                    subLikedUser.TenantUser.Picture = Storage.GetAvatarUrl(subLikedUser.TenantUser.Picture);
+                                    subLikedUser.TenantUser.Picture = AzureStorage.GetAvatarUrl(subLikedUser.TenantUser.Picture);
                             }
                         }
                     }
@@ -200,7 +200,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             noteEntity = await _noteRepository.GetById(noteEntity.Id);
-            noteEntity.CreatedBy.Picture = Storage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
+            noteEntity.CreatedBy.Picture = AzureStorage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);

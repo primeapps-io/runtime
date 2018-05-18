@@ -14,6 +14,7 @@ using System;
 using System.Configuration;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.App.ActionFilters;
+using Minio;
 
 namespace PrimeApps.App
 {
@@ -84,8 +85,11 @@ namespace PrimeApps.App
 			services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
 			services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
 			services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-
-			services.AddSingleton(configuration);
+            services.AddTransient(x => new MinioClient(ConfigurationManager.ConnectionStrings["AzureStorageConnection"].ConnectionString,
+                ConfigurationManager.AppSettings.Get("AzureStorageAccessKey"),
+                ConfigurationManager.AppSettings.Get("AzureStorageSecretKey")
+                ));
+            services.AddSingleton(configuration);
 
 			GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(services.BuildServiceProvider()));
 		}

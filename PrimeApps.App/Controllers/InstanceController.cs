@@ -159,15 +159,15 @@ namespace PrimeApps.App.Controllers
                     uniqueName = Guid.NewGuid() + ext;
                 }
 
-                //upload file to the temporary storage.
-                Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                //upload file to the temporary AzureStorage.
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
 
                 if (chunk == chunks - 1)
                 {
                     //if this is last chunk, then move the file to the permanent storage by commiting it.
                     //as a standart all avatar files renamed to UserID_UniqueFileName format.
                     var logo = string.Format("{0}_{1}", AppUser.TenantGuid, uniqueName);
-                    Storage.CommitFile(uniqueName, logo, parser.ContentType, "company-logo", chunks);
+                    AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "company-logo", chunks);
                     return Ok(logo);
                 }
 

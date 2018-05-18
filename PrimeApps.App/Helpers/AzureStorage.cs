@@ -22,10 +22,10 @@ namespace PrimeApps.App.Helpers
     /// Also we use crmDocuments table to store some information about files, like file name, content-type, file size, user and instance on Windows Azure.
     /// For more information about Windows Azure Storage: http://www.windowsazure.com/en-us/documentation/services/storage/
     /// </summary>
-    class Storage
+    class AzureStorage
     {
         /// <summary>
-        /// This method allows to upload chunked files to the storage.
+        /// This method allows to upload chunked files to the AzureStorage.
         /// </summary>
         /// <param name="chunk">Chunk count for the file</param>
         /// <param name="fileContent">Chunk stream</param>
@@ -46,7 +46,7 @@ namespace PrimeApps.App.Helpers
             //seek file stream to the beginning.
             fileContent.Seek(0, SeekOrigin.Begin);
 
-            //put block to the blob storage.
+            //put block to the blob AzureStorage.
             tempBlob.PutBlockAsync(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3) }, new OperationContext());
         }
 
@@ -159,7 +159,7 @@ namespace PrimeApps.App.Helpers
             CloudBlobContainer blobContainer;
 
             // Use the local storage account.
-            cloudStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("Microsoft.WindowsAzure.Plugins.Storage.ConnectionString"));
+            cloudStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("Microsoft.WindowsAzure.Plugins.AzureStorage.ConnectionString"));
 
             // create blob container
             blobClient = cloudStorageAccount.CreateCloudBlobClient();
@@ -178,8 +178,8 @@ namespace PrimeApps.App.Helpers
         /// <returns></returns>
         public static CopyStatus CopyBlob(ref string fileName, Guid containerName)
         {
-            CloudBlobContainer sourceContainer = Storage.GetBlobContainer(string.Format("inst-{0}", containerName));
-            CloudBlobContainer targetContainer = Storage.GetBlobContainer(string.Format("inst-{0}", containerName));
+            CloudBlobContainer sourceContainer = AzureStorage.GetBlobContainer(string.Format("inst-{0}", containerName));
+            CloudBlobContainer targetContainer = AzureStorage.GetBlobContainer(string.Format("inst-{0}", containerName));
 
             string newFileName = Guid.NewGuid().ToString();
 

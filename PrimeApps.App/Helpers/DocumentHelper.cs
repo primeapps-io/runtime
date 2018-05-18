@@ -47,7 +47,7 @@ namespace PrimeApps.App.Helpers
                 uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
             //send stream and parameters to storage upload helper method for temporary upload.
-            Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+            AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
 
             result = new DocumentUploadResult
             {
@@ -62,7 +62,7 @@ namespace PrimeApps.App.Helpers
 
         public static string Save(DocumentUploadResult result, string containerName)
         {
-            var blob = Storage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks);
+            var blob = AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks);
             var fileUrl = $"{ConfigurationManager.AppSettings.Get("BlobUrl")}{blob.Uri.AbsolutePath}";
 
             return fileUrl;
@@ -77,8 +77,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri($"http://file.ofisim.com/static/quote-template-{language}.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", $"quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile($"quote-template-{language}.docx", $"templates/quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", $"quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile($"quote-template-{language}.docx", $"templates/quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
             }
 
@@ -90,8 +90,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/female.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "female.jpg", "image/jpeg");
-                    Storage.CommitFile("female.jpg", "female.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "female.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("female.jpg", "female.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload male picture
@@ -99,8 +99,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/male.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "male.jpg", "image/jpeg");
-                    Storage.CommitFile("male.jpg", "male.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "male.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("male.jpg", "male.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload empty profile picture
@@ -108,8 +108,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/empty-profile.png"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "empty-profile.png", "image/jpeg");
-                    Storage.CommitFile("empty-profile.png", "empty-profile.png", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "empty-profile.png", "image/jpeg");
+                    AzureStorage.CommitFile("empty-profile.png", "empty-profile.png", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
             }
 
@@ -120,8 +120,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/calisma-belgesi.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("calisma-belgesi.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("calisma-belgesi.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //2 Upload izin-formu.docx
@@ -129,8 +129,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/izin-formu.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "izin-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("izin-formu.docx", "templates/izin-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "izin-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("izin-formu.docx", "templates/izin-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //3 Upload arac-zimmet-formu.docx
@@ -138,8 +138,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/arac-zimmet-formu.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "arac-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("arac-zimmet-formu.docx", "templates/arac-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "arac-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("arac-zimmet-formu.docx", "templates/arac-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //4 Upload calisan-ozgecmisi.docx
@@ -147,8 +147,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/calisan-ozgecmisi.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "calisan-ozgecmisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("calisan-ozgecmisi.docx", "templates/calisan-ozgecmisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "calisan-ozgecmisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("calisan-ozgecmisi.docx", "templates/calisan-ozgecmisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //5 Upload cihaz-zimmet-formu.docx
@@ -156,8 +156,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/cihaz-zimmet-formu.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "cihaz-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("cihaz-zimmet-formu.docx", "templates/cihaz-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "cihaz-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("cihaz-zimmet-formu.docx", "templates/cihaz-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
             }
@@ -168,8 +168,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/bireysel-siparis-teslim-formu.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "bireysel-siparis-teslim-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("bireysel-siparis-teslim-formu.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "bireysel-siparis-teslim-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("bireysel-siparis-teslim-formu.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //2 Upload firmaya-ozel-teklif-kdv-dahil.docx
@@ -177,8 +177,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/firmaya-ozel-teklif-kdv-dahil.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("firmaya-ozel-teklif-kdv-dahil.docx", "templates/firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("firmaya-ozel-teklif-kdv-dahil.docx", "templates/firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //3 Upload firmaya-ozel-teklif-kdvsiz.docx
@@ -186,8 +186,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/firmaya-ozel-teklif-kdvsiz.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("firmaya-ozel-teklif-kdvsiz.docx", "templates/firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("firmaya-ozel-teklif-kdvsiz.docx", "templates/firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //4 Upload gorev-ciktisi.docx
@@ -195,8 +195,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/gorev-ciktisi.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("gorev-ciktisi.docx", "templates/gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("gorev-ciktisi.docx", "templates/gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //5 Upload ozel-pasta-formu.docx
@@ -204,8 +204,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta-formu.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 //6 Upload ozel-pasta-formu.docx
@@ -213,8 +213,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta-formu.docx"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-                    Storage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+                    AzureStorage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1);
                 }
 
                 // Upload kiralama-alani1.jpg
@@ -222,8 +222,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani1.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani1.jpg", "image/jpeg");
-                    Storage.CommitFile("kiralama-alani1.jpg", "kiralama-alani1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani1.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("kiralama-alani1.jpg", "kiralama-alani1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload kiralama-alani2.jpg
@@ -231,8 +231,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani2.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani2.jpg", "image/jpeg");
-                    Storage.CommitFile("kiralama-alani2.jpg", "kiralama-alani2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani2.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("kiralama-alani2.jpg", "kiralama-alani2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload kiralama-alani3.jpg
@@ -240,8 +240,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani3.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani3.jpg", "image/jpeg");
-                    Storage.CommitFile("kiralama-alani3.jpg", "kiralama-alani3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani3.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("kiralama-alani3.jpg", "kiralama-alani3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload kiralama-alani4.jpg
@@ -249,8 +249,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani4.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani4.jpg", "image/jpeg");
-                    Storage.CommitFile("kiralama-alani4.jpg", "kiralama-alani4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani4.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("kiralama-alani4.jpg", "kiralama-alani4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload ozel-pasta1.jpg
@@ -258,8 +258,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta1.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta1.jpg", "image/jpeg");
-                    Storage.CommitFile("ozel-pasta1.jpg", "ozel-pasta1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta1.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("ozel-pasta1.jpg", "ozel-pasta1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload ozel-pasta2.jpg
@@ -267,8 +267,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta2.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta2.jpg", "image/jpeg");
-                    Storage.CommitFile("ozel-pasta2.jpg", "ozel-pasta2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta2.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("ozel-pasta2.jpg", "ozel-pasta2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload ozel-pasta3.jpg
@@ -276,8 +276,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta3.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta3.jpg", "image/jpeg");
-                    Storage.CommitFile("ozel-pasta3.jpg", "ozel-pasta3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta3.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("ozel-pasta3.jpg", "ozel-pasta3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
 
                 // Upload ozel-pasta4.jpg
@@ -285,8 +285,8 @@ namespace PrimeApps.App.Helpers
                 {
                     var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta4.jpg"));
 
-                    Storage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta4.jpg", "image/jpeg");
-                    Storage.CommitFile("ozel-pasta4.jpg", "ozel-pasta4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta4.jpg", "image/jpeg");
+                    AzureStorage.CommitFile("ozel-pasta4.jpg", "ozel-pasta4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1);
                 }
             }
 

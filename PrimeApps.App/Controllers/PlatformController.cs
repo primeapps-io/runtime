@@ -58,7 +58,7 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             if (appEntity.Logo != null && !appEntity.Logo.StartsWith("http://"))
-                appEntity.Logo = Storage.GetLogoUrl(appEntity.Logo);
+                appEntity.Logo = AzureStorage.GetLogoUrl(appEntity.Logo);
 
             return Ok(appEntity);
         }
@@ -80,7 +80,7 @@ namespace PrimeApps.App.Controllers
             foreach (var item in appEntities)
             {
                 if (item.Logo != null && !item.Logo.StartsWith("http://"))
-                    item.Logo = Storage.GetLogoUrl(item.Logo);
+                    item.Logo = AzureStorage.GetLogoUrl(item.Logo);
             }
 
             return Ok(appEntities);
@@ -204,12 +204,12 @@ namespace PrimeApps.App.Controllers
                     uniqueName = Guid.NewGuid() + ext;
                 }
 
-                Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
 
                 if (chunk == chunks - 1)
                 {
                     var logo = $"{AppUser.TenantGuid}_{uniqueName}";
-                    Storage.CommitFile(uniqueName, logo, parser.ContentType, "app-logo", chunks);
+                    AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "app-logo", chunks);
                     return Ok(logo);
                 }
 

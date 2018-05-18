@@ -1,4 +1,3 @@
-using Microsoft.WindowsAzure.Storage.Blob;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.Helpers;
@@ -28,9 +27,9 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using Aspose.Words;
 using MimeMapping;
 using Aspose.Words.MailMerging;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using PrimeApps.App.Extensions;
+using Minio;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace PrimeApps.App.Controllers
 {
@@ -44,16 +43,16 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
-
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepostory templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository)
+        private MinioClient _storageClient;
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepostory templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, MinioClient storageClient)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _templateRepository = templateRepository;
             _noteRepository = noteRepository;
-            _picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
+            _storageClient = storageClient;
         }
 
         /// <summary>
@@ -125,7 +124,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
@@ -133,7 +132,7 @@ namespace PrimeApps.App.Controllers
 
                 if (chunk == chunks - 1)
                 {
-                    CloudBlockBlob blob = Storage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks);
+                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks);
                     result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
                 }
 
@@ -238,14 +237,14 @@ namespace PrimeApps.App.Controllers
                 var chunks = 1; //one part chunk
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
                 result.UniqueName = fullFileName;
 
 
-                CloudBlockBlob blob = Storage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
+                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
                 result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
 
 
@@ -292,7 +291,8 @@ namespace PrimeApps.App.Controllers
             string uniqueFileName = $"{AppUser.TenantGuid}/{moduleDashesName}/{recordId}_{fieldName}.{fileNameExt}";
 
             //remove document
-            Storage.RemoveFile(containerName, uniqueFileName);
+            //AzureStorage.RemoveFile(containerName, uniqueFileName);
+            await _storageClient.RemoveObjectAsync(containerName, uniqueFileName);
 
 
 
@@ -328,7 +328,7 @@ namespace PrimeApps.App.Controllers
                 for (var i = 0; i < chunks.Count; i++)
                 {
                     //send stream and parameters to storage upload helper method for temporary upload.
-                    Storage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType);
+                    AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType);
                 }
 
                 var result = new DocumentUploadResult
@@ -381,7 +381,7 @@ namespace PrimeApps.App.Controllers
             if (await _documentRepository.CreateAsync(currentDoc) != null)
             {
                 //transfer file to the permanent storage by committing it.
-                Storage.CommitFile(document.UniqueFileName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), document.ChunkSize);
+                AzureStorage.CommitFile(document.UniqueFileName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), document.ChunkSize);
                 return Ok(currentDoc.Id.ToString());
             }
 
@@ -406,7 +406,7 @@ namespace PrimeApps.App.Controllers
 
             if (UniqueFileName != null)
             {
-                Storage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize);
+                AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize);
                 return Ok(UniqueFileName);
             }
 
@@ -505,8 +505,8 @@ namespace PrimeApps.App.Controllers
 
             if (doc != null)
             {
-                //if there is a document with this id, try to get it from blob storage.
-                var blob = Storage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName);
+                //if there is a document with this id, try to get it from blob AzureStorage.
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName);
                 try
                 {
                     //try to get the attributes of blob.
@@ -519,7 +519,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //Is bandwidth enough to download this file?
-                //Bandwidth is enough, send the Storage.
+                //Bandwidth is enough, send the AzureStorage.
                 publicName = doc.Name;
 
 
@@ -543,7 +543,7 @@ namespace PrimeApps.App.Controllers
                 //}
 
 
-                return await Storage.DownloadToFileStreamResultAsync(blob, publicName);
+                return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
             }
             else
             {
@@ -573,8 +573,8 @@ namespace PrimeApps.App.Controllers
                 string uniqueFileName = $"{AppUser.TenantGuid}/{module}/{recordId}_{fieldName}.{fileNameExt}";
                 var docName = fileName + "." + fileNameExt;
 
-                //if there is a document with this id, try to get it from blob storage.
-                var blob = Storage.GetBlob(containerName, uniqueFileName);
+                //if there is a document with this id, try to get it from blob AzureStorage.
+                var blob = AzureStorage.GetBlob(containerName, uniqueFileName);
                 try
                 {
                     //try to get the attributes of blob.
@@ -587,7 +587,7 @@ namespace PrimeApps.App.Controllers
                 }
                 publicName = docName;
 
-                return await Storage.DownloadToFileStreamResultAsync(blob, publicName);
+                return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
 
             }
             else
@@ -598,7 +598,7 @@ namespace PrimeApps.App.Controllers
         }
 
         /// <summary>
-        /// Removes the document from database and blob storage.
+        /// Removes the document from database and blob AzureStorage.
         /// </summary>
         /// <param name="DocID">The document identifier.</param>
         [Route("Remove"), HttpPost]
@@ -658,8 +658,8 @@ namespace PrimeApps.App.Controllers
             if (templateEntity == null)
                 return BadRequest();
 
-            //if there is a template with this id, try to get it from blob storage.
-            var templateBlob = Storage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}");
+            //if there is a template with this id, try to get it from blob AzureStorage.
+            var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}");
 
             try
             {
@@ -765,8 +765,8 @@ namespace PrimeApps.App.Controllers
             if (save)
             {
 
-                Storage.UploadFile(0, outputStream, "temp", fileName, mimeType);
-                var blob = Storage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1);
+                AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType);
+                var blob = AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1);
 
                 outputStream.Position = 0;
                 var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
@@ -804,8 +804,8 @@ namespace PrimeApps.App.Controllers
 
             if (template != null)
             {
-                //if there is a document with this id, try to get it from blob storage.
-                var blob = Storage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
+                //if there is a document with this id, try to get it from blob AzureStorage.
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
                 try
                 {
                     //try to get the attributes of blob.
@@ -817,13 +817,13 @@ namespace PrimeApps.App.Controllers
                     return NotFound();
                 }
 
-                //Bandwidth is enough, send the Storage.
+                //Bandwidth is enough, send the AzureStorage.
                 publicName = template.Name;
 
                 string[] splittedFileName = template.Content.Split('.');
                 string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
 
-                return await Storage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
+                return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
 
             }
             else

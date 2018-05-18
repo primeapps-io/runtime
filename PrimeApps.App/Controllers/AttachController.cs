@@ -31,8 +31,8 @@ namespace PrimeApps.App.Controllers
                 var doc = await tenantDbContext.Documents.FirstOrDefaultAsync(x => x.Id == FileId && x.Deleted == false);
                 if (doc != null)
                 {
-                    //if there is a document with this id, try to get it from blob storage.
-                    var blob = Storage.GetBlob(string.Format("inst-{0}", tenant.GuidId), doc.UniqueName);
+                    //if there is a document with this id, try to get it from blob AzureStorage.
+                    var blob = AzureStorage.GetBlob(string.Format("inst-{0}", tenant.GuidId), doc.UniqueName);
                     try
                     {
                         //try to get the attributes of blob.
@@ -45,7 +45,7 @@ namespace PrimeApps.App.Controllers
                     }
 
                     //Is bandwidth enough to download this file?
-                    //Bandwidth is enough, send the Storage.
+                    //Bandwidth is enough, send the AzureStorage.
                     publicName = doc.Name;
 
 
