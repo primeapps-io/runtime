@@ -1,4 +1,6 @@
-﻿using Hangfire;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,81 +44,92 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
-			var hangfireStorage = new PostgreSqlStorage(ConfigurationManager.ConnectionStrings["HangfireConnection"].ConnectionString);
-			Hangfire.GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
-			services.AddHangfire(x => x.UseStorage(hangfireStorage));
+            var hangfireStorage = new PostgreSqlStorage(ConfigurationManager.ConnectionStrings["HangfireConnection"].ConnectionString);
+            Hangfire.GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
+            services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
-			//Register DI
-			DIRegister(services, Configuration);
+            //Register DI
+            DIRegister(services, Configuration);
 
-			/*services.Configure<MvcOptions>(options =>
+            /*services.Configure<MvcOptions>(options =>
 			{
 				options.Filters.Add(new RequireHttpsAttribute());
 			});*/
 
-			services.Configure<RequestLocalizationOptions>(options =>
-			{
-				var supportedCultures = new[]
-				{
-					new CultureInfo("en-US"),
-					new CultureInfo("tr-TR")
-				};
-				options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[]
+                {
+                    new CultureInfo("en-US"),
+                    new CultureInfo("tr-TR")
+                };
+                options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
 
-				// You must explicitly state which cultures your application supports.
-				// These are the cultures the app supports for formatting 
-				// numbers, dates, etc.
+                // You must explicitly state which cultures your application supports.
+                // These are the cultures the app supports for formatting 
+                // numbers, dates, etc.
 
-				options.SupportedCultures = supportedCultures;
+                options.SupportedCultures = supportedCultures;
 
-				// These are the cultures the app supports for UI strings, 
-				// i.e. we have localized resources for.
+                // These are the cultures the app supports for UI strings, 
+                // i.e. we have localized resources for.
 
-				options.SupportedUICultures = supportedCultures;
-			});
+                options.SupportedUICultures = supportedCultures;
+            });
 
-			services.AddCors(options =>
-			{
-				options.AddPolicy("AllowAll",
-					builder =>
-					{
-						builder
-							.AllowAnyOrigin()
-							.AllowAnyMethod()
-							.AllowAnyHeader()
-							.AllowCredentials();
-					});
-			});
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder =>
+                    {
+                        builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    });
+            });
 
 
-			services.AddMvc(options =>
-			{
+            services.AddMvc(options =>
+            {
 
-				options.CacheProfiles.Add("Nocache",
-					new CacheProfile()
-					{
-						Location = ResponseCacheLocation.None,
-						NoStore = true,
-					});
-			})
-				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-				.AddJsonOptions(opt =>
-				{
-					#region SnakeCaseAttribute
-					opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
-					{
-						NamingStrategy = new SnakeCaseNamingStrategy()
-					};
-					#endregion
-				})
-				.AddViewLocalization(
-						LanguageViewLocationExpanderFormat.Suffix,
-						opts => { opts.ResourcesPath = "Localization";
-				})
+                options.CacheProfiles.Add("Nocache",
+                    new CacheProfile()
+                    {
+                        Location = ResponseCacheLocation.None,
+                        NoStore = true,
+                    });
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddJsonOptions(opt =>
+                {
+                    #region SnakeCaseAttribute
+                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
+                    {
+                        NamingStrategy = new SnakeCaseNamingStrategy()
+                    };
+                    #endregion
+                })
+                .AddViewLocalization(
+                        LanguageViewLocationExpanderFormat.Suffix,
+                        opts =>
+                        {
+                            opts.ResourcesPath = "Localization";
+                        })
 
-				.AddDataAnnotationsLocalization();
+                .AddDataAnnotationsLocalization();
 
-			AuthConfiguration(services, Configuration);
+            var awsOptions = Configuration.GetAWSOptions();
+            awsOptions.DefaultClientConfig.ServiceURL = ConfigurationManager.ConnectionStrings["AzureStorageConnection"].ConnectionString;
+            //awsOptions.Credentials = new EnvironmentVariablesAWSCredentials(); // For futures usage!!! Getting credentials from docker environmental variables.
+            awsOptions.Credentials = new BasicAWSCredentials(
+                ConfigurationManager.AppSettings.Get("AzureStorageAccessKey"),
+                ConfigurationManager.AppSettings.Get("AzureStorageSecretKey"));
+            services.AddDefaultAWSOptions(awsOptions);
+            services.AddAWSService<IAmazonS3>();
+
+            AuthConfiguration(services, Configuration);
 
             RegisterBundle(services);
         }
@@ -124,7 +137,7 @@ namespace PrimeApps.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-			/*app.Use(async (context, next) =>
+            /*app.Use(async (context, next) =>
             {
                 if (context.Request.QueryString.HasValue)
                 {
@@ -143,20 +156,20 @@ namespace PrimeApps.App
                 await next.Invoke();
             });*/
 
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseDatabaseErrorPage();
-			}
-			else
-			{
-				//app.UseExceptionHandler("/Home/Error");
-				app.UseHttpsRedirection();
-			}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
+            }
+            else
+            {
+                //app.UseExceptionHandler("/Home/Error");
+                app.UseHttpsRedirection();
+            }
 
-			BundleConfiguration(app, Configuration);
+            BundleConfiguration(app, Configuration);
 
-            
+
             /// Must always stay before static files middleware.
 
             /*
@@ -165,24 +178,24 @@ namespace PrimeApps.App
 			 * The files are loaded into the request pipeline by invoking the UseStaticFiles
 			 */
             app.UseStaticFiles();
-			app.UseAuthentication();
-			//app.UseIdentity();
+            app.UseAuthentication();
+            //app.UseIdentity();
 
-			app.UseCors("AllowAll");
+            app.UseCors("AllowAll");
 
-			JobConfiguration(app);
+            JobConfiguration(app);
 
-			app.UseMvc(routes =>
+            app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Auth}/{action=Test}/{id?}"
-				);
+                );
 
-				routes.MapRoute(
-					name: "DefaultApi",
-					template: "api/{controller}/{id}"
-				);
+                routes.MapRoute(
+                    name: "DefaultApi",
+                    template: "api/{controller}/{id}"
+                );
             });
 
             /*app.Run(async (context) =>

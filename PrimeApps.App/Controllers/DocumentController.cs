@@ -28,8 +28,8 @@ using Aspose.Words;
 using MimeMapping;
 using Aspose.Words.MailMerging;
 using PrimeApps.App.Extensions;
-using Minio;
 using Microsoft.WindowsAzure.Storage.Blob;
+using PrimeApps.App.Storage;
 
 namespace PrimeApps.App.Controllers
 {
@@ -43,8 +43,7 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
-        private MinioClient _storageClient;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepostory templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, MinioClient storageClient)
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepostory templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -52,7 +51,6 @@ namespace PrimeApps.App.Controllers
             _templateRepository = templateRepository;
             _noteRepository = noteRepository;
             _settingRepository = settingRepository;
-            _storageClient = storageClient;
         }
 
         /// <summary>
@@ -291,8 +289,7 @@ namespace PrimeApps.App.Controllers
             string uniqueFileName = $"{AppUser.TenantGuid}/{moduleDashesName}/{recordId}_{fieldName}.{fileNameExt}";
 
             //remove document
-            //AzureStorage.RemoveFile(containerName, uniqueFileName);
-            await _storageClient.RemoveObjectAsync(containerName, uniqueFileName);
+            AzureStorage.RemoveFile(containerName, uniqueFileName);
 
 
 

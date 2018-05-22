@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrimeApps.App.Helpers
+namespace PrimeApps.App.Storage
 {
     /// <summary>
     /// Main storage class for the Webservice.

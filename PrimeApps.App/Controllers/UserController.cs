@@ -32,6 +32,7 @@ using PrimeApps.Model.Entities.Platform;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common.Resources;
+using PrimeApps.App.Storage;
 
 namespace PrimeApps.App.Controllers
 {
@@ -276,7 +277,7 @@ namespace PrimeApps.App.Controllers
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
-                acc.user.picture = Helpers.AzureStorage.GetAvatarUrl(acc.user.picture);
+                acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
                 acc.imageUrl = ConfigurationManager.AppSettings.Get("BlobUrl") + "/record-detail-" + tenant[0].tenantId + "/";
                 //acc.user.userLicenseCount = AppUser.UserLicenseCount;

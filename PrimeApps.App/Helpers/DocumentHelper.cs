@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Document;
 
 namespace PrimeApps.App.Helpers
