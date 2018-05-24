@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
@@ -6,14 +7,9 @@ using System.Security.Claims;
 
 namespace PrimeApps.App.ActionFilters
 {
-    public class AuthorizeTenant : ActionFilterAttribute
-    {
-		public override void OnActionExecuted(ActionExecutedContext context)
-		{
-			base.OnActionExecuted(context);
-		}
-
-		public override void OnActionExecuting(ActionExecutingContext context)
+    public class AuthorizeTenant : AuthorizeAttribute
+	{
+		public void OnAuthorization(AuthorizationFilterContext context)
 		{
 			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
 				context.Result = new UnauthorizedResult();
@@ -36,8 +32,6 @@ namespace PrimeApps.App.ActionFilters
 				context.Result = new UnauthorizedResult();
 
 			context.HttpContext.Items.Add("user", platformUser);
-
-			base.OnActionExecuting(context);
 		}
 	}
 }

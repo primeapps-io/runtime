@@ -33,6 +33,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common.Resources;
 using PrimeApps.App.Storage;
+using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Controllers
 {
@@ -48,9 +49,8 @@ namespace PrimeApps.App.Controllers
         private ITenantRepository _tenantRepository;
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
-		private IHttpContextAccessor _httpContextAccessor;
 
-		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse, IHttpContextAccessor httpContextAccessor)
+		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -61,24 +61,56 @@ namespace PrimeApps.App.Controllers
             _platformUserRepository = platformUserRepository;
             _tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-			_httpContextAccessor = httpContextAccessor;
 			
-			/*SetCurrentUser(_userRepository, _httpContextAccessor);
-			SetCurrentUser(_settingRepository, _httpContextAccessor);
-			SetCurrentUser(_profileRepository, _httpContextAccessor);
-			SetCurrentUser(_roleRepository, _httpContextAccessor);
-			SetCurrentUser(_recordRepository, _httpContextAccessor);*/
+			/*SetCurrentUser(_userRepository, _userContextServices);
+			SetCurrentUser(_settingRepository, _userContextServices);
+			SetCurrentUser(_profileRepository, _userContextServices);
+			SetCurrentUser(_roleRepository, _userContextServices);
+			SetCurrentUser(_recordRepository, _userContextServices);*/
 
 			//Set warehouse database name Ofisim to integration
 			//_warehouse.DatabaseName = "Ofisim";
 		}
 
-        /// <summary>
-        /// Gets avatar from blob storage by the file id.
-        /// </summary>
-        /// <param name="fileName">File name of the avatar</param>
-        /// <returns>Stream.</returns>
-        [Route("Avatar"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+				context.Result = new UnauthorizedResult();
+
+			var tenantId = 0;
+
+			if (string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
+				context.Result = new UnauthorizedResult();
+
+			if (tenantId < 1)
+				context.Result = new UnauthorizedResult();
+
+			if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
+				context.Result = new UnauthorizedResult();
+
+			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
+
+			if (platformUser == null || platformUser.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
+				context.Result = new UnauthorizedResult();
+
+			context.HttpContext.Items.Add("user", platformUser);
+
+			SetCurrentUser(_userRepository);
+			SetCurrentUser(_settingRepository);
+			SetCurrentUser(_profileRepository);
+			SetCurrentUser(_roleRepository);
+			SetCurrentUser(_recordRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		/// <summary>
+		/// Gets avatar from blob storage by the file id.
+		/// </summary>
+		/// <param name="fileName">File name of the avatar</param>
+		/// <returns>Stream.</returns>
+		[Route("Avatar"), HttpPost]
         public async Task<IActionResult> Avatar(string fileName)
         {
             //get uploaded file from storage
@@ -591,11 +623,7 @@ namespace PrimeApps.App.Controllers
 
             return Ok(users);
         }
-
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			base.OnActionExecuting(context);
-		}
+		
 		//TODO Removed
 		/*
         public async Task<IActionResult> GetOfficeUsers()

@@ -12,9 +12,11 @@ namespace PrimeApps.App.Controllers
         [Authorize]
         public async Task<ActionResult> Index()
         {
-            await SetValues();
+			//await SetValues();
 
-            return View();
+
+
+			return View();
         }
 
         public async Task<ActionResult> Preview()

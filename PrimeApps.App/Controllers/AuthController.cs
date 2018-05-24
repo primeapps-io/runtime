@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -45,6 +46,15 @@ namespace PrimeApps.App.Controllers
 		[Authorize]
 		public ActionResult Test()
 		{
+			//return RedirectToLocal(returnUrl);
+			/*var tokenClient = new TokenClient("http://localhost:5000/connect/token", "primeapps.mvc", "secret");
+			var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
+
+			var client = new HttpClient();
+			client.SetBearerToken(tokenResponse.AccessToken);
+			var content = await client.GetStringAsync("http://localhost:5002/api/User/get_all");
+
+			ViewBag.Json = JArray.Parse(content).ToString();*/
 			return View();
 		}
 		

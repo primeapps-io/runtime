@@ -9,6 +9,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Controllers
 {
@@ -16,15 +17,13 @@ namespace PrimeApps.App.Controllers
 
 	public class BaseController : Controller
 	{
-		private HttpContext _httpContext;
-
 		private UserItem _appUser;
 
 		public UserItem AppUser
 		{
 			get
 			{
-				if (_appUser == null && _httpContext.Items?["user"] != null)
+				if ( _appUser == null && HttpContext.Items?["user"] != null)
 				{
 					_appUser = GetUser();
 				}
@@ -33,36 +32,34 @@ namespace PrimeApps.App.Controllers
 			}
 		}
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
+		//public override void OnActionExecuting(ActionExecutingContext context)
+		//{
+		//	if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+		//		context.Result = new UnauthorizedResult();
 
-			var b = context.ActionDescriptor.FilterDescriptors;
-			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-				context.Result = new UnauthorizedResult();
+		//	var tenantId = 0;
 
-			var tenantId = 0;
+		//	if (string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
+		//		context.Result = new UnauthorizedResult();
 
-			if (string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
-				context.Result = new UnauthorizedResult();
+		//	if (tenantId < 1)
+		//		context.Result = new UnauthorizedResult();
 
-			if (tenantId < 1)
-				context.Result = new UnauthorizedResult();
+		//	if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
+		//		context.Result = new UnauthorizedResult();
 
-			if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-				context.Result = new UnauthorizedResult();
+		//	var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+		//	var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
 
-			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
+		//	if (platformUser == null || platformUser.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
+		//		context.Result = new UnauthorizedResult();
 
-			if (platformUser == null || platformUser.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-				context.Result = new UnauthorizedResult();
+		//	context.HttpContext.Items.Add("user", platformUser);
 
-			context.HttpContext.Items.Add("user", platformUser);
-			
-			_httpContext = context.HttpContext;
+		//	_httpContext = context.HttpContext;
 
-			base.OnActionExecuting(context);
-		}
+		//	base.OnActionExecuting(context);
+		//}
 
 		public void SetCurrentUser(IRepositoryBaseTenant repository)
 		{
@@ -71,7 +68,7 @@ namespace PrimeApps.App.Controllers
 
 		private UserItem GetUser()
 		{
-			var platformUser = (PlatformUser)_httpContext.Items["user"];
+			var platformUser = (PlatformUser)HttpContext.Items["user"];
 			var tenant = platformUser.TenantsAsUser.Single();
 
 			var currency = "";
@@ -116,16 +113,17 @@ namespace PrimeApps.App.Controllers
 				TimeZone = timeZone
 			};
 
-			var tenantUserRepository = (IUserRepository)_httpContext.RequestServices.GetService(typeof(IUserRepository));
+			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+			tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
 			var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-			appUser.Role = tenantUser.RoleId ?? 0;
-			appUser.ProfileId = tenantUser.ProfileId ?? 0;
+			appUser.Role = tenantUser.RoleId != null ? (int)tenantUser.RoleId : 0;
+			appUser.ProfileId = tenantUser.RoleId != null ? (int)tenantUser.RoleId : 0;
 			appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 
-			if (tenant.License.AnalyticsLicenseCount > 0)
+			if (tenant.License?.AnalyticsLicenseCount > 0)
 			{
-				var warehouseRepository = (IPlatformWarehouseRepository)_httpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+				var warehouseRepository = (IPlatformWarehouseRepository)HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
 				var warehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
 				appUser.WarehouseDatabaseName = warehouse.DatabaseName;
@@ -136,11 +134,6 @@ namespace PrimeApps.App.Controllers
 			}
 
 			return appUser;
-		}
-
-		public override void OnActionExecuted(ActionExecutedContext context)
-		{
-			base.OnActionExecuted(context);
 		}
 	}
 }

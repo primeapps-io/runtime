@@ -85,8 +85,28 @@ namespace PrimeApps.Auth
                         IdentityServerConstants.StandardScopes.Email,
                         "api1"
                     }
-                }
-            };
+                },
+
+				 // JavaScript Client
+                new Client
+				{
+					ClientId = "js",
+					ClientName = "JavaScript Client",
+					AllowedGrantTypes = GrantTypes.Implicit,
+					AllowAccessTokensViaBrowser = true,
+
+					RedirectUris = { "http://localhost:5002/callback.html" },
+					PostLogoutRedirectUris = { "http://localhost:5002/index.html" },
+					AllowedCorsOrigins = { "http://localhost:5002" },
+
+					AllowedScopes =
+					{
+						IdentityServerConstants.StandardScopes.OpenId,
+						IdentityServerConstants.StandardScopes.Profile,
+						"api1"
+					},
+				}
+			};
         }
     }
 }

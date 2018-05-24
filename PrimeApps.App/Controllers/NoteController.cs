@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -48,7 +49,19 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_picklistRepository, _httpContextAccessor);*/
         }
 
-        [Route("get/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetCurrentUser(_noteRepository);
+			SetCurrentUser(_userRepository);
+			SetCurrentUser(_recordRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_profileRepository);
+			SetCurrentUser(_picklistRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var noteEntity = await _noteRepository.GetById(id);
@@ -248,5 +261,7 @@ namespace PrimeApps.App.Controllers
             await _noteRepository.Update(noteEntity);
             return Ok(noteEntity);
         }
-    }
+
+		
+	}
 }
