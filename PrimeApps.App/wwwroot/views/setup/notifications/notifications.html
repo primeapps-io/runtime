@@ -1,0 +1,61 @@
+<div class="panel panel-default setup-panel">
+    <div class="panel-body">
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Notifications.Title' | translate}}</h5>
+            <div class="subpanel-body">
+                <form class="form-horizontal" style="margin-top: 30px">
+                    <div class="form-group">
+                        <div class="col-sm-1">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="user.isTaskNotificationsEnabled" ng-change="toggleTaskReminder()" ng-disabled="isChanging"/>
+                                <i></i>
+                            </label>
+                        </div>
+                        <label class="col-sm-11">{{'Setup.Notifications.DailySummary' | translate}}</label>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-1">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="user.isTaskCompletedNotificationsEnabled" ng-change="toggleTaskCompleted()" ng-disabled="isChanging"/>
+                                <i></i>
+                            </label>
+                        </div>
+                        <label class="col-sm-11">{{'Setup.Notifications.TaskCompleted' | translate}}</label>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-1">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="user.isTaskAssignedNotificationsEnabled" ng-change="toggleTaskAssigned()" ng-disabled="isChanging"/>
+                                <i></i>
+                            </label>
+                        </div>
+                        <label class="col-sm-11">{{'Setup.Notifications.TaskAssigned' | translate}}</label>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-1">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="user.isActivityNotificationsEnabled" ng-change="toggleActivity()" ng-disabled="isChanging"/>
+                                <i></i>
+                            </label>
+                        </div>
+                        <label class="col-sm-11">{{'Setup.Notifications.ActivityComment' | translate}}</label>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-sm-1">
+                            <label class="switch">
+                                <input type="checkbox" ng-model="user.isNewNoteNotificationsEnabled" ng-change="toggleNewNote()" ng-disabled="isChanging"/>
+                                <i></i>
+                            </label>
+                        </div>
+                        <label class="col-sm-11">{{'Setup.Notifications.NoteAdded' | translate}}</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

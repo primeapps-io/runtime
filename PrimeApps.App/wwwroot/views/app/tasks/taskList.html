@@ -1,0 +1,122 @@
+<help-page route="currentPath"></help-page>
+<div class="page tasks">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <div class="pull-left form-inline">
+                <select class="form-control"
+                        ng-model="view"
+                        ng-change="filterChanged()"
+                        ng-options="o as o.label for o in views">
+                    <option value="" ng-if="false"></option>
+                </select>
+                <ui-select ng-model="filter.assignedTo" ng-change="filterChanged()">
+                    <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.FullName}}</ui-select-match>
+                    <ui-select-choices repeat="user in users | filter:{FullName: $select.search}">
+                        <div ng-bind-html="user.FullName | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="pull-right">
+                <a href class="btn btn-sm btn-custom" data-template-url="views/app/tasks/taskSearch.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-search"></i> {{'Common.Search'
+                    | translate}}</a>
+                <a href class="btn btn-sm btn-custom" ng-click="showTaskForm = !showTaskForm"
+                   ng-show="hasPermission('activities', operations.write)"><i class="fa fa-plus"></i> {{'Tasks.NewTask'
+                    | translate}}</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="empty-message" ng-if="tasks.length < 1 && !loading && !filter.subject">{{'Tasks.Message' |
+                translate}}
+            </div>
+            <div class="subpanel" ng-show="showTaskForm">
+                <h5 class="subpanel-heading">{{'Tasks.NewTask' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div task-form show="showTaskForm"></div>
+                </div>
+            </div>
+            <div class="subpanel" ng-show="(tasks.length || filter.subject) && !loading">
+                <h5 class="subpanel-heading">{{view.label}}</h5>
+                <div class="subpanel-body">
+                    <div class="empty-message" ng-if="tasks.length < 1 && !loading && filter.subject">{{'Tasks.NoResult'
+                        | translate}}
+                    </div>
+                    <div tasks="tasks" is-all="true"></div>
+                    <ul class="task-list">
+                        <li ng-repeat="task in tasks" class="list-unstyled clearfix" ng-class="{editing: task.editing}">
+                            <span class="task">
+                                <span ng-if="!task.isCompleted || task.marking" class="label label-{{task.dueDate | taskLabel}}">{{task.dueDate | taskDateActive}}</span>
+                                <span ng-if="task.isCompleted && !task.marking" class="label label-default">{{task.dueDate | taskDateCompleted}}</span>
+                                <label class="ui-checkbox ui-checkbox-task" ng-show="!task.marking" ng-if="hasPermission('activities', operations.modify)"><input type="checkbox" ng-click="mark(task)" ng-model="task.isCompleted" ng-disabled="task.isCompleted"><span></span></label>
+                                <span class="spinner" ng-show="task.marking"><i class="fa-li fa fa-spinner fa-spin"></i></span>
+                                <span class="assigned-to" ng-hide="hideUser">{{task['owner.users.full_name'] + ':'}}</span>
+                                <a href="#/app/crm/module/activities?id={{task.id}}&back=tasks" class="task-text">{{task.subject}}</a>
+                                <span class="info" ng-if="!task.isCompleted || task.marking">({{'Tasks.CreatedBy' | translate}}: {{task['created_by.users.full_name']}})</span>
+                                <span class="info" ng-if="task.isCompleted && !task.marking">({{'Tasks.FinishDate' | translate}}: {{task.completeDate | date:'shortDate'}})</span>
+                                <span class="task-buttons">
+                                    <i class="action-icon flaticon-pencil124" ng-click="edit(task)" title="{{'Common.Edit' | translate}}" ng-show="hasPermission('activities', operations.modify)"></i>
+                                    <i class="action-icon flaticon-bin9" confirm-click action="remove(task.id, $index)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission('activities', operations.remove)"></i>
+                                </span>
+                            </span>
+                            <form class="task-form form-inline" ng-submit="update(task)">
+                                <div class="form-group">
+                                    <input type="text"
+                                           class="task-date form-control ng-animate-disabled"
+                                           ng-model="task.task_due_date"
+                                           data-autoclose="1"
+                                           data-date-type="iso"
+                                           data-icon-left="fa fa-chevron-left"
+                                           data-icon-right="fa fa-chevron-right"
+                                           bs-datepicker>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <ui-select ng-model="task.assignedTo">
+                                            <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.FullName}}</ui-select-match>
+                                            <ui-select-choices repeat="user in $root.users | filter:{FullName: $select.search} | orderBy:'FullName'">
+                                                <div ng-bind-html="user.FullName | highlight: $select.search"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-right: 5px;">
+                                    <div class="input-group">
+                                        <input
+                                                class="form-control task-text"
+                                                placeholder="{{'Common.Task' | translate}}"
+                                                maxlength="{{taskSubjectField.validation.max_length || 50}}"
+                                                ng-minlength="taskSubjectField.validation.min_length || 0"
+                                                ng-model="task.subject">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-sm btn-primary" ladda="taskUpdating"
+                                            ng-disabled="!task.subject"><i class="fa fa-check"></i> {{'Common.Save' |
+                                        translate}}
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-custom" ng-click="cancelEdit(task)">
+                                        {{'Common.Cancel' | translate}}
+                                    </button>
+                                </div>
+                            </form>
+                        </li>
+                        <div class="paging">
+                            <a href ng-click="loadMore()" ng-if="!allTasksLoaded">
+                                <span>{{'Tasks.ShowMore' | translate}}</span>
+                                <i class="fa {{pagingIcon}} ng-animate-disabled" ng-if="!allTasksLoaded"></i>
+                            </a>
+                            <span ng-if="allTasksLoaded">{{'Tasks.AllTasksLoaded' | translate}}</span>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+            <div ng-if="(tasks.length) && !loading" class="callout callout-info">
+                <p style="font-weight: 500;">{{'Common.Tips' | translate}}</p>
+                <p> - {{'Tasks.Tip1' | translate}}</p>
+                <p> - {{'Tasks.Tip2' | translate}}</p>
+                <p> - {{'Tasks.Tip3' | translate}}</p>
+            </div>
+        </div>
+    </div>
+</div>

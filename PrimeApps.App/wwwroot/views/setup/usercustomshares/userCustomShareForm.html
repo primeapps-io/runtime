@@ -1,0 +1,106 @@
+﻿<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
+        <li><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
+        <li><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
+        <li><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
+        <li class="active"><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
+    </ul>
+</div>
+<div class="panel panel-default setup-panel role-form">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading">{{'Setup.UserCustomShares.Title' | translate}}</h5>
+                <form name="userOwnerForm" ng-submit="save()" novalidate>
+                    <div class="subpanel-body">
+                        <div class="row form-group" ng-class="{'has-error': userOwnerForm.$submitted && userOwnerForm.$error.user}">
+                            <label class="col-sm-3 control-label">{{'Setup.UserCustomShares.UserAtForm' | translate}}</label>
+                            <div class="col-sm-9">
+                                <select class="form-control"
+                                        name="user"
+                                        tabindex="1"
+                                        required
+                                        ng-model="userOwner.user"
+                                        ng-options="o.Id as  o.userName + ' - ' + o.email for o in users">
+                                    <option value="">{{'Setup.Workflow.ApprovelProcess.SelectUser' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group" ng-class="{'has-error': userOwnerForm.$submitted && userOwnerForm.$error.sharedUser}">
+                            <label class="col-sm-3 control-label">{{'Setup.UserCustomShares.UsersAndGroupsForPermissions' | translate}}</label>
+                            <div class="col-sm-9">
+                                <select class="form-control"
+                                        name="sharedUser"
+                                        tabindex="1"
+                                        required
+                                        ng-model="userOwner.shared_user"
+                                        ng-options="o.Id as  o.userName + ' - ' + o.email for o in users">
+                                    <option value="">{{'Setup.Workflow.ApprovelProcess.SelectUser' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!--<div class="row form-group" ng-class="{'has-error': userOwnerForm.$submitted  && (userOwnerForm.$error.minTags || userOwnerForm.$error.maxTags)}">-->
+                            <!--<label class="col-sm-3 control-label">{{'Setup.UserCustomShares.UsersAndGroupsForPermissions' | translate}}</label>-->
+                            <!--<div class="col-sm-9">-->
+                                <!--<tags-input name="shared"-->
+                                            <!--tabindex="2"-->
+                                            <!--style="width: 300px"-->
+                                            <!--ng-model="userOwner.owners"-->
+                                            <!--display-property="name"-->
+                                            <!--key-property="id"-->
+                                            <!--min-tags="1"-->
+                                            <!--max-tags="20"-->
+                                            <!--on-tag-added="setFormValid()"-->
+                                            <!--on-tag-removed="setFormValid()"-->
+                                            <!--placeholder="{{'Common.Search' | translate}}"-->
+                                            <!--replace-spaces-with-dashes="false"-->
+                                            <!--add-from-autocomplete-only="true">-->
+                                    <!--<auto-complete source="lookupUserAndGroup(0, true, $query)"-->
+                                                   <!--min-length="0"-->
+                                                   <!--load-on-focus="true"-->
+                                                   <!--load-on-empty="true"-->
+                                                   <!--max-results-to-show="9999"-->
+                                                   <!--template="views/common/taginput-autocomplete.html"></auto-complete>-->
+                                <!--</tags-input>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class="row form-group" ng-class="{'has-error': userOwnerForm.$submitted && userOwnerForm.modules.$invalid}">
+                            <label class="col-sm-3 control-label">{{'Setup.UserCustomShares.ModulePermission' | translate}}</label>
+                            <div class="col-sm-9">
+                                <tags-input style="width: 300px" name="modules"
+                                            tabindex="999"
+                                            ng-model="userOwner.modules"
+                                            display-property="label_{{language}}_plural"
+                                            key-property="id"
+                                            max-tags="20"
+                                            placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                            replace-spaces-with-dashes="false"
+                                            add-from-autocomplete-only="true"
+                                            min-length="1">
+                                    <auto-complete source="multiselect()"
+                                                   min-length="0"
+                                                   load-on-focus="true"
+                                                   load-on-empty="true"
+                                                   max-results-to-show="9999"></auto-complete>
+                                </tags-input>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="userOwnerForm.$submitted && userOwnerForm.$invalid">
+                            <div class="col-sm-12">
+                                <div class="callout callout-danger">
+                                    <p ng-if="userOwnerForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 40px; margin-bottom: 0;">
+                            <button type="button" class="btn btn-custom" ng-click="cancel()">{{'Common.Cancel' | translate}}</button>
+                            <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

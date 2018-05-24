@@ -1,0 +1,17 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <div class="popover-content">
+        <!--<div ng-if="!payment || !payment.LastFourDigitsOfCard" class="not-allowed">-->
+        <!--<i class="fa fa-2x fa-exclamation-circle"></i>-->
+        <!--<p ng-bind-html="'Setup.License.PaymentInfoRequired' | translate"></p>-->
+        <!--<a href ng-click="gotoPaymentInfo()" style="margin-left: 40px;">{{'Setup.License.PaymentInfoGoto' | translate}}</a>-->
+        <!--<button type="button" class="btn btn-custom" style="margin: 20px 0 0 40px;" ng-click="$hide()" ng-disabled="licenseChanging"> {{'Common.Cancel' | translate}}</button>-->
+        <!--</div>-->
+        <!--<div ng-if="payment.LastFourDigitsOfCard">-->
+        <div>
+            <p ng-bind-html="'Setup.License.AddonMessage' | translate"></p>
+            <button type="button" class="btn btn-custom" ng-click="$hide()" ng-disabled="licenseChanging">{{'Common.Cancel' | translate}}</button>
+            <button type="button" class="btn btn-primary btn-w-lg" ladda="addonAdding" ng-click="addAddon()"><i class="fa fa-check-circle pull-left"></i> {{'Common.Confirm' | translate}}</button>
+        </div>
+    </div>
+</div>

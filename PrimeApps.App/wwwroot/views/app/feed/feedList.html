@@ -1,0 +1,41 @@
+<div class="feed-list">
+    <div class="media clearfix" ng-repeat="activity in feed">
+        <span class="pull-left"><img src="images/user-image.png" user-image="{{activity.userID}}" class="img-rounded"></span>
+        <div class="media-body">
+            <h5 class="media-heading">{{activity.userName}} <span class="activity-time">{{activity.timeStamp | relativeTime}}</span></h5>
+            <p class="activity-text">
+                <span ng-if="activity.entityType != entityTypes.note" class="action">{{activity.entityTypeName}}</span>
+
+                <span ng-if="activity.entityType == entityTypes.task" class="action">{{'Common.Task' | translate}}</span>
+                <span ng-if="activity.entityType == entityTypes.document" class="action">{{'Common.Document' | translate}}</span>
+                <span ng-if="activity.entityType == entityTypes.entity" class="action">{{'Feed.EntityType' | translate}}</span>
+
+                <span ng-if="activity.entityType != entityTypes.note && activity.entityType != entityTypes.user" class="action">{{'Feed.Action' + activity.action | translate}}<span ng-hide="activity.entityID != guidEmpty && activity.entityType == activity.parentEntityType && activity.parentEntityID == entityId">:</span></span>
+                <span ng-if="activity.entityType == entityTypes.user" class="action">{{'Feed.ActionWorkgroup' + activity.action | translate}}</span>
+
+                <span ng-if="activity.entityName && (activity.entityType == entityTypes.task || activity.entityType == entityTypes.note)">{{activity.entityName}}</span>
+                <span ng-if="activity.entityID == guidEmpty && activity.entityName && activity.entityType != entityTypes.user && activity.entityType != entityTypes.note">{{activity.entityName}}</span>
+                <span ng-if="activity.entityType == entityTypes.entity">{{activity.entityName}}</span>
+                <span ng-if="activity.entityID != guidEmpty && activity.entityName && activity.entityType == entityTypes.document">{{activity.entityName}}</span>
+                <a href="#/app/crm/entity/{{activity.entityTypeName}}/{{activity.entityID}}" ng-if="activity.entityID != guidEmpty && activity.entityTypeName && activity.parentEntityID != entityId">{{activity.entityName}}</a>
+                <a ng-href="{{activity.parentEntityID != guidEmpty ? '#/app/entity/' + activity.parentEntityType + '/' + activity.parentEntityID : ''}}" ng-if="activity.parentEntityName && activity.action != 3 && (activity.parentEntityID == guidEmpty || activity.parentEntityID != entityId)">{{activity.parentEntityName}}</a>
+            </p>
+            <div class="media comment clearfix" ng-repeat="comment in activity.activities | orderBy:'timeStamp':true | limitTo:(activity.commentLimit || 2)" ng-show="activity.activities">
+                <span class="pull-left"><img src="images/user-image.png" user-image="{{comment.userID}}" class="img-rounded img48"></span>
+                <div class="media-body">
+                    <h5 class="media-heading">{{comment.userName}} <span>{{comment.timeStamp | relativeTime}}</span></h5>
+                    <p>{{comment.entityName}}</p>
+                </div>
+            </div>
+            <div ng-if="activity.activities.length > 2" class="showAllComments">
+                <a href ng-click="activity.showAllComments = !activity.showAllComments; activity.commentLimit = activity.showAllComments ? activity.activities.length : 2;">{{!activity.showAllComments ? ('Feed.ShowAllComments' | translate) : ('Feed.HideComments' | translate)}}</a>
+            </div>
+            <div class="activity-footer">
+                <form ng-submit="comment(activity)">
+                    <textarea rows="1" class="form-control" placeholder="{{'Feed.WriteComment' | translate}}" ng-model="activity.comment" focus="activity.formOpened" action="comment(activity)" custom-submit="{{$parent.enterToSend}}" maxlength="500" auto-grow></textarea>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="paging" ng-hide="(count && count < 5) || feed.length < 5"><a href ng-click="loadMore()">{{'Feed.ShowMore' | translate}} <i class="fa {{pagingIcon}}"></i></a></div>
+</div>

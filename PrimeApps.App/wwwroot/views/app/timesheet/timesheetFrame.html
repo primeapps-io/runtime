@@ -1,0 +1,14 @@
+﻿<div class="modal" tabindex="-1" role="dialog" ng-controller="TimesheetFrameController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">Timesheet Report
+                </div>
+            <div class="modal-body">
+                <iframe ng-src="{{$parent.$parent.timesheetUrl | trustUrl}}" src="http://timesheet.projectgroup.com.tr/" frameborder="0" style="width:550px;height:280px"></iframe>
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn btn-custom" ng-disabled="submittingModal" ng-click="cancel(); $hide();">{{'Common.Close' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

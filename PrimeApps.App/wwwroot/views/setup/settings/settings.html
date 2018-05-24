@@ -1,0 +1,352 @@
+﻿<div class="panel panel-default setup-panel settings">
+    <div class="panel-body">
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Settings.Title1' | translate}}</h5>
+            <div class="subpanel-body">
+                <form name="userForm" ng-submit="editUser(userModel)" class="form-horizontal" novalidate>
+                    <div class="form-group" show-errors>
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.Email' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="email" name="email" class="form-control" maxlength="50" ng-minlength="3" required ng-model-options="{ updateOn: 'blur' }" ng-model="userModel.email" disabled />
+                        </div>
+                    </div>
+
+                    <div class="form-group" show-errors>
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.FirstName' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="firstName" class="form-control" ng-minlength="2" maxlength="40" required ng-model="userModel.firstName" />
+                        </div>
+                    </div>
+
+                    <div class="form-group" show-errors>
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.LastName' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="lastName" class="form-control" ng-minlength="2" maxlength="40" required ng-model="userModel.lastName" />
+                        </div>
+                    </div>
+
+                    <div class="form-group am-fade-and-slide-top" ng-show="userForm.$submitted && userForm.$invalid">
+                        <div class="col-sm-offset-3 col-sm-8">
+                            <div class="callout callout-danger">
+                                <p ng-if="userForm.$error.required">{{'Setup.Settings.ErrorEmpty' | translate}}</p>
+                                <p ng-if="userForm.$error.email">{{'Setup.Settings.ErrorEmail' | translate}}</p>
+                                <p ng-if="userForm.$error.uniqueEmail">{{'Setup.Settings.ErrorUniqueEmail' | translate}}</p>
+                                <p ng-if="userForm.$error.minlength">{{'Setup.Settings.NameMinimum' | translate}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary btn-w-lg" ladda="userUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Settings.Title2' | translate}}</h5>
+            <div class="subpanel-body">
+                <form name="passwordForm" ng-submit="changePassword(passwordModel)" class="form-horizontal" novalidate>
+                    <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.current.$invalid}">
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.CurrentPassword' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="password" name="current" class="form-control" maxlength="20" ng-minlength="6" required ng-model="passwordModel.current" ng-change="passwordForm.current.$setValidity('wrongPassword', true);" />
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.password.$invalid}">
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.Password' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="password" name="password" class="form-control" maxlength="20" ng-minlength="6" compare-to="passwordModel.confirm" required ng-model="passwordModel.password" />
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.confirm.$invalid}">
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.PasswordAgain' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="password" name="confirm" class="form-control" maxlength="20" required ng-model="passwordModel.confirm" />
+                        </div>
+                    </div>
+
+                    <div class="form-group am-fade-and-slide-top" ng-show="passwordForm.$submitted && passwordForm.$invalid">
+                        <div class="col-sm-offset-3 col-sm-8">
+                            <div class="callout callout-danger">
+                                <p ng-if="passwordForm.$error.required">{{'Setup.Settings.ErrorEmpty' | translate}}</p>
+                                <p ng-if="passwordForm.$error.compareTo">{{'Setup.Settings.PasswordNotMatch' | translate}}</p>
+                                <p ng-if="passwordForm.$error.minlength">{{'Setup.Settings.PasswordMinimum' | translate}}</p>
+                                <p ng-if="passwordForm.$error.wrongPassword">{{'Setup.Settings.PasswordWrong' | translate}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <button type="submit" class="btn btn-primary btn-w-lg" ladda="passwordUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Change' | translate}}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Settings.Title3' | translate}}</h5>
+            <div class="subpanel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label"></label>
+                        <div class="col-sm-9">
+                            <img src="images/user-image.png"
+                                 ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}"
+                                 user-image="{{user.ID}}" class="img-rounded" ng-if="!croppedImage" />
+                            <img ng-src="{{croppedImage}}" class="img-rounded" ng-if="croppedImage" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <span class="file-input btn btn-custom btn-sm btn-file">
+                                {{'Setup.Settings.NewProfilePicture' | translate}} <input type="file" nv-file-select uploader="uploader" ng-disabled="croppedImage">
+                            </span>
+                            <span class="file-input btn btn-custom btn-sm btn-file" ng-click="removeProfileImage()">
+                                {{'Setup.Settings.RemoveProfileImage' | translate}}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-show="uploader.queue.length > 0">
+                        <label class="col-sm-3 control-label"></label>
+                        <div class="col-sm-9">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th ng-show="uploader.isHTML5">{{'Documents.Size' | translate}}</th>
+                                        <th ng-show="uploader.isHTML5">{{'Documents.Progress' | translate}}</th>
+                                        <th>{{'Documents.Result' | translate}}</th>
+                                        <th>{{'Documents.Actions' | translate}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in uploader.queue">
+                                        <td>
+                                            <div class="cropArea">
+                                                <img-crop image="item.image" result-image="$parent.croppedImage" area-type="square" result-image-size="250"></img-crop>
+                                            </div>
+                                        </td>
+                                        <td ng-show="uploader.isHTML5" nowrap>{{item.file.size | size}}</td>
+                                        <td ng-show="uploader.isHTML5">
+                                            <div class="progress" style="margin-bottom: 0;">
+                                                <div class="progress-bar" ng-style="{'width': item.progress + '%'}"></div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span ng-show="item.isSuccess"><i class="fa fa-check-circle icon-success"></i></span>
+                                            <span ng-show="item.isCancel"><i class="fa fa-ban icon-cancel"></i></span>
+                                            <span ng-show="item.isError"><i class="fa fa-exclamation-circle icon-error"></i></span>
+                                        </td>
+                                        <td nowrap>
+                                            <button type="button" class="btn btn-primary btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                <span class="fa fa-upload"></span> {{'Documents.Upload' | translate}}
+                                            </button>
+                                            <button type="button" class="btn btn-custom btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                                <span class="fa fa-ban"></span> {{'Documents.Cancel' | translate}}
+                                            </button>
+                                            <button type="button" class="btn btn-custom btn-xs" ng-click="item.remove(); item.image=null; $parent.croppedImage = null;">
+                                                <span class="fa fa-trash-o"></span> {{'Common.Cancel' | translate}}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Settings.Title4' | translate}}</h5>
+            <div class="subpanel-body">
+                <form class="form-horizontal">
+                    <div class="form-group" ng-show="!customLanguage">
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.Language' | translate}}</label>
+                        <div class="col-sm-9">
+                            <label class="radio-inline"><input type="radio" name="language" value="tr" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.Turkish' | translate}}</label>
+                            <label class="radio-inline"><input type="radio" name="language" value="en" ng-model="selectedLanguage" ng-click="changeLanguage()">{{'Setup.Settings.English' | translate}}</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.Format' | translate}}</label>
+                        <div class="col-sm-9">
+                            <label class="radio-inline"><input type="radio" name="locale" value="tr" ng-model="selectedLocale" ng-click="changeLocale()">{{'Setup.Settings.Turkey' | translate}}</label>
+                            <label class="radio-inline"><input type="radio" name="locale" value="en" ng-model="selectedLocale" ng-click="changeLocale()">{{'Setup.Settings.UnitedStates' | translate}}</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--Personal E-Mail Settings-->
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Messaging.EMail.PersonalTitle' | translate}}</h5>
+            <div class="subpanel-body">
+                <form name="emailForm" ng-submit="editEMail(emailModel)" class="form-horizontal" novalidate>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <label ng-if="!emailModel.provider">{{'Setup.Messaging.EMail.NoProvider' | translate}}</label>
+                            <label ng-if="emailModel.provider">{{'Setup.Messaging.EMail.ProviderTitle' | translate}}</label>
+                        </div>
+                    </div>
+                    <div class="form-group" show-errors>
+                        <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Provider' | translate}}</label>
+                        <div class="col-sm-10">
+                            <select name="provider" class="form-control" required ng-model="emailModel.provider">
+                                <option value="">{{'Common.Select' | translate}}</option>
+                                <option value="smtp">SMTP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div ng-show="emailModel.provider">
+                        <!--SMTP Settings-->
+                        <div ng-if="emailModel.provider==='smtp'">
+                            <div class="form-group" show-errors>
+                                <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.Host' | translate}}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="smtpHost" class="form-control" required ng-model="emailModel.host" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.SSLEnable'| translate}}<b>*</b></label>
+                                <div class="col-sm-10">
+                                    <input type="checkbox" ng-model="emailModel.enable_ssl" />
+                                </div>
+                            </div>
+                            <div class="form-group" show-errors>
+                                <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.SMTP.Port' | translate}}</label>
+                                <div class="col-sm-10">
+                                    <input type="text" numeric min="1" max="64738" name="smtpHost" class="form-control" required ng-model="emailModel.port" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" show-errors>
+                            <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.UserName' | translate}}</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="userName" class="form-control" required ng-model="emailModel.user_name" />
+                            </div>
+                        </div>
+                        <div class="form-group" show-errors>
+                            <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Password' | translate}}</label>
+                            <div class="col-sm-10">
+                                <input type="password" name="password" class="form-control" required ng-model="emailModel.password" />
+                            </div>
+                        </div>
+                        <div class="form-group" show-error>
+                            <label class="col-sm-2 control-label">{{'Setup.Messaging.EMail.Senders' | translate}}</label>
+                            <div class="col-sm-8">
+                                <div ng-if="emailModel.senders.length===0" style="padding:6px 0;">{{'Setup.Messaging.EMail.NoCustomSender' | translate}}</div>
+                                <div ng-show="emailModel.senders.length>0">
+                                    <table ng-table="tableParams" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    {{'Setup.Messaging.EMail.Alias' | translate}}
+                                                </th>
+                                                <th>
+                                                    {{'Setup.Messaging.EMail.Address' | translate}}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tr ng-repeat="sender in $data">
+                                            <td>
+                                                {{sender.alias}}
+                                            </td>
+                                            <td>
+                                                {{sender.email}}
+                                            </td>
+                                            <td>
+                                                <div class="view-action-buttons pull-right">
+                                                    <a href confirm-click action="removeSender(sender)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}">
+                                                        {{'Common.Delete' | translate}}
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button type="button" name="addSender" class="btn btn-xs btn-custom" ng-click="showNewSenderForm()" style="padding: 4px 5px;">{{'Common.Add' | translate}}</button>
+                            </div>
+                        </div>
+                        <div class="col-sm-12"><b>*</b> {{'Setup.Messaging.EMail.SMTP.WhatIsSSL' | translate}}</div>
+                        <div class="form-group am-fade-and-slide-top" ng-show="emailForm.$submitted && emailForm.$invalid">
+                            <div class="col-sm-offset-2 col-sm-8">
+                                <div class="callout callout-danger">
+                                    <p ng-if="emailForm.$error.required">{{'Setup.Settings.ErrorEmpty' | translate}}</p>
+                                    <p ng-if="emailForm.$error.noSender">{{'Setup.Messaging.EMail.NoSender' | translate}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2">
+                                <button type="button" ng-show="!system.messaging.PersonalEMail.provider" ng-click="resetEMailForm()" class="btn btn-custom" ladda="emailUpdating"> {{'Common.Cancel' | translate}}</button>
+
+                                <button type="button" ng-show="system.messaging.PersonalEMail.provider" confirm-click placement="top" action="removePersonalEMailSettings()"
+                                        confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}"
+                                        confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" class="btn btn-w-lg btn-custom"
+                                        ladda="emailUpdating">
+                                    <i class="fa fa-minus-circle pull-left"></i> {{'Common.Delete' | translate}}
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-w-lg" ladda="emailUpdating" style="margin-left:10px;">
+                                    <i class="fa fa-check-circle pull-left"></i>
+                                    <span ng-show="system.messaging.PersonalEMail.provider">{{'Common.Update' | translate}}</span>
+                                    <span ng-show="!system.messaging.PersonalEMail.provider">{{'Common.Save' | translate}}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!--Geçici olarak deaktif edildi. #264 nolu bug düzeldiğinde tekrar aktif edilmelidir.-->
+        <!--<div class="subpanel" ng-if="!licenseStatus.License.IsSingleWorkgroupLimited">
+            <div class="subpanel-body">
+                <div class="delete-account">
+                    <p class="delete-account-message">{{'Setup.Settings.DeleteAccountMessage1' | translate}} <a href ng-click="showDeleteButton = !showDeleteButton">{{'Setup.Settings.DeleteAccountMessage2' | translate}}</a></p>
+                    <button type="button"
+                            class="btn btn-danger btn-w-xlg"
+                            ng-show="showDeleteButton"
+                            data-template-url="views/app/setup/crm/settings/accountDelete.html"
+                            data-placement="top"
+                            bs-popover><i class="fa fa-exclamation-circle pull-left"></i> {{'Setup.Settings.DeleteAccount' | translate}}
+                    </button>
+                </div>
+            </div>
+        </div>-->
+        <div class="subpanel">
+            <h5 class="subpanel-heading">{{'Setup.Settings.ThemeSettings' | translate}}</h5>
+            <div class="subpanel-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">{{'Common.ThemeColor' | translate }}: </label>
+                        <div class="col-sm-10" style="padding-top: 7px;">
+                            <ul class="color-picker-simple">
+                                <li ng-repeat="theme in themes"
+                                    ng-class="{selected: (selectedTheme === theme.name)}"
+                                    ng-click="setThemeColor(theme)"
+                                    ng-style="{'background-color': theme.color}"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

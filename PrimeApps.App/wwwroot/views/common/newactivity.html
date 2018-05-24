@@ -1,0 +1,8 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <div class="popover-content" style="max-width: 140px; text-align: center;">
+        <a href="#/app/crm/moduleForm/{{type}}?stype={{activityType.value}}" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)" ng-repeat="activityType in activityTypes | filter:{hidden:'!true'}">
+            <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:activityType.label[language]} }}
+        </a>
+    </div>
+</div>

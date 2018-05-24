@@ -1,0 +1,100 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
+        <li class="active"><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
+        <li><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
+        <li><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
+        <li><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
+    </ul>
+</div>
+<div class="panel panel-default setup-panel">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div class="profiles" ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading" ng-if="!profile.ID"> {{'Setup.Profiles.NewProfile' | translate}}</h5>
+                <h5 class="subpanel-heading" ng-if="profile.ID"> {{'Setup.Profiles.EditProfile' | translate}}</h5>
+                <div class="subpanel-body">
+                    <form name="profileForm" ng-submit="submit()" novalidate>
+                        <div class="form-group" ng-class="{'has-error': profileForm.$submitted && profileForm['name'].$invalid}">
+                            <input type="text" name="name" class="form-control" placeholder="{{'Setup.Profiles.ProfileName' | translate}}" maxlength="50" required ng-model="profile.Name" ng-change="profileForm['name'].$setValidity('unique', true)" ng-disabled="profile.IsPersistent" />
+                        </div>
+                        <div class="form-group">
+                            <textarea rows="2" name="description" class="form-control" maxlength="255" placeholder="{{'Setup.Profiles.ProfileDescription' | translate}}" auto-grow ng-model="profile.Description" ng-disabled="profile.IsPersistent"></textarea>
+                        </div>
+                        <h5>{{'Setup.Profiles.Permissions' | translate}}:</h5>
+                        <div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>{{'Setup.Profiles.Module' | translate}}</th>
+                                        <th class="text-center">{{'Setup.Profiles.PermissionRead' | translate}}</th>
+                                        <th class="text-center">{{'Setup.Profiles.PermissionModify' | translate}}</th>
+                                        <th class="text-center">{{'Setup.Profiles.PermissionWrite' | translate}}</th>
+                                        <th class="text-center">{{'Setup.Profiles.PermissionRemove' | translate}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="permission in profile.Permissions">
+                                        <td class="text-uppercase">{{permission.EntityTypeName}}</td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Read" ng-disabled="profile.IsPersistent" ng-click="!permission.Read ? permission.Modify = false : ''; !permission.Read ? permission.Write = false : ''; !permission.Read ? permission.Remove = false : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Modify" ng-disabled="profile.IsPersistent" ng-click="permission.Modify ? permission.Read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Write" ng-disabled="profile.IsPersistent" ng-click="permission.Write ? permission.Read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Remove" ng-disabled="profile.IsPersistent" ng-click="permission.Remove ? permission.Read = true : '';" /><span></span></label></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <h5>{{'Setup.Profiles.PermissionsOther' | translate}}:</h5>
+                        <div class="form-group">
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.HasAdminRights" ng-disabled="profile.IsPersistent" /><span>{{'Setup.Profiles.PermissionSystem' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.SendEmail" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.PermissionEmail' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.SendSMS" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.PermissionSMS' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.ExportData" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.PermissionExportData' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.ImportData" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.PermissionImportData' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.WordPdfDownload" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.WordPdfDownload' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.DocumentSearch" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.DocumentSearch' | translate}}</span></label>
+                            <label class="ui-checkbox" ng-if="moduleLead"><input type="checkbox" ng-model="profile.LeadConvert" ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.LeadConvert' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.Tasks"
+                                                              ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.Tasks' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.Calendar"
+                                                              ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.Calendar' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.Newsfeed"
+                                                              ng-disabled="profile.HasAdminRights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.Dashboard" ng-disabled="profile.HasAdminRights" /><span>Pano</span></label>
+                            <label class="ui-checkbox" ng-if="moduleRehber"><input type="checkbox"
+                                                                                         ng-model="profile.Home"
+                                                                                         ng-disabled="profile.HasAdminRights"/><span>{{'Common.Homepage' | translate}}</span></label>
+
+                            <label class="ui-checkbox" ng-if="moduleIzinler"><input type="checkbox"
+                                                                                         ng-model="profile.CollectiveAnnualLeave"
+                                                                                         ng-disabled="profile.HasAdminRights"/><span>{{'Leave.CollectiveAnnualLeave' | translate}}</span></label>
+                        </div>
+                        <h5 ng-show="!profile || !(profile.HasAdminRights && profile.IsPersistent)">
+                            {{'Setup.Profiles.StarPage' | translate}} :</h5>
+                        <div class="form-group" ng-show="!profile || !(profile.HasAdminRights && profile.IsPersistent)">
+                            <select class="form-control"
+                                    ng-model="profile.PageStart"
+                                    ng-change="SetStartPage()"
+                                    ng-options="item.name for item in startPageList">
+                                <option value="">{{'Common.Select' | translate}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" ng-show="profileForm.$submitted && profileForm.$invalid">
+                            <div class="col-sm-12">
+                                <div class="callout callout-danger">
+                                    <p ng-if="profileForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                    <p ng-if="profileForm.$error.unique">{{'Setup.Profiles.DuplicateName' | translate}}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <a href="#/app/setup/profiles" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
+                            <button type="submit" class="btn btn-primary btn-w-lg" ladda="profileSubmit" ng-disabled="profile.HasAdminRights && profile.IsPersistent"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
