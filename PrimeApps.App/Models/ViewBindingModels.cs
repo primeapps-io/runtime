@@ -31,7 +31,7 @@ namespace PrimeApps.App.Models
     public class ViewFieldBindingModel
     {
         [Required, StringLength(120)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field { get; set; }
 
         [Required]
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Models
         public int ActiveView { get; set; }
 
         [StringLength(120)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string SortField { get; set; }
 
         public SortDirection SortDirection { get; set; }

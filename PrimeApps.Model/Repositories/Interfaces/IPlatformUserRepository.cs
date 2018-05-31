@@ -26,5 +26,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<string> GetEmail(int userId);
         Task<IList<Workgroup>> MyWorkgroups(int globalId);
         PlatformUser GetByEmailAndTenantId(string email, int tenantId);
-    }
+        Tenant GetTenantByEmailAndAppId(string email, int appId);
+		int GetAppIdByDomain(string domain);
+	}
 }

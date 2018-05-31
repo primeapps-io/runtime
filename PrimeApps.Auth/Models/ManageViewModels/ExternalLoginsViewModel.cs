@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
-namespace PrimeApps.Auth.Models.ManageViewModels
+namespace PrimeApps.Auth.UI
 {
     public class ExternalLoginsViewModel
     {

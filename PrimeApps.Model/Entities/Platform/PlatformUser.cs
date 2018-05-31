@@ -64,9 +64,9 @@ namespace PrimeApps.Model.Entities.Platform
 		public virtual ICollection<OrganizationUser> UserOrganizations { get; set; }
 
 		[JsonIgnore]
-		public virtual ICollection<UserTenant> TenantsAsOwner { get; set; }
+		public virtual ICollection<UserTenant> TenantsAsUser { get; set; }
 
-		public virtual ICollection<Tenant> TenantsAsUser { get; set; }
+		public virtual ICollection<Tenant> TenantsAsOwner { get; set; }
 
 		public virtual PlatformUserSetting Setting { get; set; }
 

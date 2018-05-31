@@ -10,7 +10,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class TemplateRepository : RepositoryBaseTenant, ITemplateRepostory
+    public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
     {
         public TemplateRepository(TenantDBContext dbContext) : base(dbContext) { }
 

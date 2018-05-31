@@ -16,6 +16,8 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/convert"), Authorize/*, SnakeCase*/]
@@ -40,7 +42,20 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
         }
 
-        [Route("create_mapping"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_recordRepository);
+			SetCurrentUser(_picklistRepository);
+			SetCurrentUser(_documentRepository);
+			SetCurrentUser(_noteRepository);
+			SetCurrentUser(_conversionMappingRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("create_mapping"), HttpPost]
         public async Task<IActionResult> CreateLeadConversionMapping(ConversionMapping conversionMapping)
         {
             if (ModelState.IsValid)

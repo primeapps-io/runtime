@@ -611,7 +611,7 @@ angular.module('ofisim')
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
                     scope: $scope,
-                    templateUrl: 'views/app/crm/module/bulkDelete.html',
+                    templateUrl: 'views/app/module/bulkDelete.html',
                     animation: '',
                     backdrop: 'static',
                     show: false,

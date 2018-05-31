@@ -21,11 +21,12 @@ namespace PrimeApps.App.Controllers
             _tenantRepository = tenantRepository;
             _platformUserRepository = platformUserRepository;
         }
-        /// <summary>
-        /// Detects the culture of the client.
-        /// </summary>
-        /// <returns>System.String.</returns>
-        [Route("DetectCulture")]
+
+		/// <summary>
+		/// Detects the culture of the client.
+		/// </summary>
+		/// <returns>System.String.</returns>
+		[Route("DetectCulture")]
         [ProducesResponseType(typeof(string), 200)]
         //[ResponseType(typeof(string))]
         [HttpPost]

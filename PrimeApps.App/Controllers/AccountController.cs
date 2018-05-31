@@ -31,6 +31,7 @@ using ChallengeResult = PrimeApps.App.Results.ChallengeResult;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Hangfire;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -57,7 +58,16 @@ namespace PrimeApps.App.Controllers
             //Set warehouse database name Ofisim to integration
             //_warehouse.DatabaseName = "Ofisim";
         }
-        public AccountController() { }
+
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_recordRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		public AccountController() { }
 
         /*public ApplicationUserManager UserManager
         {

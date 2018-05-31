@@ -12,13 +12,14 @@ using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Services;
 using System.Reflection;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace PrimeApps.Auth
 {
@@ -48,12 +49,12 @@ namespace PrimeApps.Auth
 				config.Password.RequireDigit = false;
 
 				config.User.RequireUniqueEmail = false;
-				config.SignIn.RequireConfirmedEmail = false;
+				config.SignIn.RequireConfirmedEmail = true;
 			})
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
 
-			services.AddMvc();
+			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 			var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
 			services.AddSingleton<IProfileService, CustomProfileService>();
@@ -144,8 +145,8 @@ namespace PrimeApps.Auth
 					options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
 				});
 
-			//dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration - c PersistedGrantDbContext - o Data / Migrations / IdentityServer / PersistedGrantDb
-			//dotnet ef migrations add InitialIdentityServerConfigurationDbMigration - c ConfigurationDbContext - o Data / Migrations / IdentityServer / ConfigurationDb
+			//dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
+			//dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -158,10 +159,12 @@ namespace PrimeApps.Auth
 			else
 			{
 				app.UseExceptionHandler("/Home/Error");
+				app.UseHsts();
 			}
 
 			//InitializeDatabase(app);
 
+			//app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseIdentityServer();
 			app.UseMvcWithDefaultRoute();

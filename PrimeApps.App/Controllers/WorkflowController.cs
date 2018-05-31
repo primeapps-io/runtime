@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/workflow"), Authorize/*, SnakeCase*/]
@@ -26,7 +28,17 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
         }
 
-        [Route("get/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_workflowRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_picklistRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var workflowEntity = await _workflowRepository.GetById(id);

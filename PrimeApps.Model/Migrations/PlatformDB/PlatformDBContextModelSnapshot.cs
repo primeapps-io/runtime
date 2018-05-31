@@ -775,7 +775,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "Owner")
-                        .WithMany("TenantsAsUser")
+                        .WithMany("TenantsAsOwner")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade);
 
@@ -808,7 +808,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
-                        .WithMany("TenantsAsOwner")
+                        .WithMany("TenantsAsUser")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

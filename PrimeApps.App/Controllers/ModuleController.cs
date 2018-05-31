@@ -17,6 +17,8 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using ModuleHelper = PrimeApps.App.Helpers.ModuleHelper;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/module"), Authorize/*, SnakeCase*/]
@@ -37,7 +39,18 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
         }
 
-        [Route("get_by_id/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_viewRepository);
+			SetCurrentUser(_profileRepository);
+			SetCurrentUser(_settingRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_by_id/{id:int}"), HttpGet]
         public async Task<IActionResult> GetById(int id)
         {
             var module = await _moduleRepository.GetById(id);

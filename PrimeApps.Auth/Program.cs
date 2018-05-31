@@ -22,7 +22,7 @@ namespace PrimeApps.Auth
             var seed = args.Any(x => x == "/seed");
             if (seed) args = args.Except(new[] { "/seed" }).ToArray();
 
-            var host = BuildWebHost(args);
+            var host = CreateWebHostBuilder(args).Build();
 
             if (seed)
             {
@@ -33,7 +33,7 @@ namespace PrimeApps.Auth
             host.Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
@@ -51,8 +51,7 @@ namespace PrimeApps.Auth
                     {
                         builder.ClearProviders();
                         builder.AddSerilog();
-                    })
-                    .Build();
+                    });
         }
     }
 }

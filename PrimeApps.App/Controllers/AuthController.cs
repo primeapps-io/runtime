@@ -5,8 +5,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using IdentityModel.Client;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -14,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
@@ -23,8 +21,8 @@ using PrimeApps.Model.Repositories;
 
 namespace PrimeApps.App.Controllers
 {
-    public class AuthController : Controller
-    {
+	public class AuthController : Controller
+	{
 		//private ApplicationSignInManager _signInManager;
 		private readonly IStringLocalizer<AuthController> _localizer;
 
@@ -33,14 +31,13 @@ namespace PrimeApps.App.Controllers
 			_localizer = localizer;
 		}
 
-		[Route("authorize"), HttpGet]
-		public ActionResult Authorize()
+		public async Task<ActionResult> Authorize()
 		{
 			var claims = new ClaimsPrincipal(User).Claims.ToArray();
 			var identity = new ClaimsIdentity(claims, "Bearer");
 			//Authentication.SignIn(identity);
-
-			return new EmptyResult();
+			var token = await HttpContext.GetTokenAsync("access_token");
+			return Redirect(Request.Scheme + "://" + Request.Host.Value + "#access_token=" + token);
 		}
 
 		[Authorize]
@@ -57,7 +54,7 @@ namespace PrimeApps.App.Controllers
 			ViewBag.Json = JArray.Parse(content).ToString();*/
 			return View();
 		}
-		
+
 		public async Task<ActionResult> Login(string returnUrl, string language = null, string error = null, string success = "")
 		{
 			var lang = GetLanguage();
@@ -71,7 +68,7 @@ namespace PrimeApps.App.Controllers
 			ViewBag.Error = error;
 			ViewBag.ReturnUrl = returnUrl;
 
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language);
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language);
 
 			if (!string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value))
 			{
@@ -82,15 +79,15 @@ namespace PrimeApps.App.Controllers
 			return View();
 		}
 
-        [Route("login"), HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginBindingModel model, string returnUrl)
-        {
-            var url = new Uri(Request.GetDisplayUrl()).Host;
-            var lang = GetLanguage();
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
-            model.Email = model.Email.Replace(@" ", "");
+		[Route("login"), HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+		public async Task<ActionResult> Login(LoginBindingModel model, string returnUrl)
+		{
+			var url = new Uri(Request.GetDisplayUrl()).Host;
+			var lang = GetLanguage();
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = returnUrl;
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			model.Email = model.Email.Replace(@" ", "");
 
 			//TODO: Remove this when remember me feature developed
 			model.RememberMe = true;
@@ -177,12 +174,12 @@ namespace PrimeApps.App.Controllers
 				SetLanguae(lang);
 			}
 
-            ViewBag.OfficeSignIn = officeSignIn;
-            ViewBag.Lang = lang;
-            ViewBag.error = error;
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
-            ViewBag.AppId = appId;
+			ViewBag.OfficeSignIn = officeSignIn;
+			ViewBag.Lang = lang;
+			ViewBag.error = error;
+			ViewBag.ReturnUrl = returnUrl;
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			ViewBag.AppId = appId;
 
 			if (!string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value))
 			{
@@ -209,10 +206,10 @@ namespace PrimeApps.App.Controllers
 			if (officeSignIn)
 				registerBindingModel.Password = Utils.GenerateRandomUnique(8);
 
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
-            ViewBag.OfficeSignIn = officeSignIn;
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = returnUrl;
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			ViewBag.OfficeSignIn = officeSignIn;
 
 			if (!string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value))
 			{
@@ -276,18 +273,18 @@ namespace PrimeApps.App.Controllers
 			return View(registerBindingModel);
 		}
 
-        [Route("ResetPassword"), AllowAnonymous]
-        public async Task<ActionResult> ResetPassword(string returnUrl, string token, Guid uid, string error = null)
-        {
-            var lang = GetLanguage();
-            ViewBag.Lang = lang;
-            ViewBag.Error = error;
-            ViewBag.Token = WebUtility.UrlEncode(token);
-            ViewBag.Uid = uid;
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
-            return View();
-        }
+		[Route("ResetPassword"), AllowAnonymous]
+		public async Task<ActionResult> ResetPassword(string returnUrl, string token, Guid uid, string error = null)
+		{
+			var lang = GetLanguage();
+			ViewBag.Lang = lang;
+			ViewBag.Error = error;
+			ViewBag.Token = WebUtility.UrlEncode(token);
+			ViewBag.Uid = uid;
+			ViewBag.ReturnUrl = returnUrl;
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			return View();
+		}
 
 		[Route("ResetPassword"), HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
 		public async Task<ActionResult> ResetPassword(ResetPasswordBindingModel resetPasswordBindingModel, string token, int uid)
@@ -296,9 +293,9 @@ namespace PrimeApps.App.Controllers
 			resetPasswordBindingModel.UserId = uid;
 			resetPasswordBindingModel.Token = WebUtility.UrlDecode(token);
 
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = "/";
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = "/";
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
 			var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
 			var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/reset_password";
@@ -334,20 +331,20 @@ namespace PrimeApps.App.Controllers
 			return View(resetPasswordBindingModel);
 		}
 
-        [Route("ForgotPassword"), AllowAnonymous]
-        public async Task<ActionResult> ForgotPassword(string email = null, string language = null, string error = null, string info = null)
-        {
-            var lang = GetLanguage();
-            if (language != null)
-            {
-                lang = language;
-                SetLanguae(lang);
-            }
-            ViewBag.Lang = lang;
-            ViewBag.error = error;
-            ViewBag.Info = info;
-            ViewBag.ReturnUrl = "/";
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+		[Route("ForgotPassword"), AllowAnonymous]
+		public async Task<ActionResult> ForgotPassword(string email = null, string language = null, string error = null, string info = null)
+		{
+			var lang = GetLanguage();
+			if (language != null)
+			{
+				lang = language;
+				SetLanguae(lang);
+			}
+			ViewBag.Lang = lang;
+			ViewBag.error = error;
+			ViewBag.Info = info;
+			ViewBag.ReturnUrl = "/";
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
 			if (!string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value))
 			{
@@ -365,9 +362,9 @@ namespace PrimeApps.App.Controllers
 			var culture = lang == "tr" ? "tr-TR" : "en-US";
 			ViewBag.Error = null;
 
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = "/";
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = "/";
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
 			var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
 			var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/forgot_password?email=" + email.Replace(@" ", "") + "&culture=" + culture;
@@ -414,11 +411,11 @@ namespace PrimeApps.App.Controllers
 			var lang = GetLanguage();
 			var culture = lang == "tr" ? "tr-TR" : "en-US";
 
-            var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
-            var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/activate?userId=" + uid + "&token=" + WebUtility.UrlEncode(token) + "&culture=" + culture + "&officeSignIn=" + officeSignIn;
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = "/";
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			var index = new Uri(Request.GetDisplayUrl()).OriginalString.IndexOf(new Uri(Request.GetDisplayUrl()).PathAndQuery);
+			var apiUrl = new Uri(Request.GetDisplayUrl()).OriginalString.Remove(index) + "/api/account/activate?userId=" + uid + "&token=" + WebUtility.UrlEncode(token) + "&culture=" + culture + "&officeSignIn=" + officeSignIn;
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = "/";
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
 			using (var client = new HttpClient())
 			{
@@ -458,29 +455,29 @@ namespace PrimeApps.App.Controllers
 			return View();
 		}
 
-        [Route("Activation"), AllowAnonymous]
-        public async Task<ActionResult> Activation(string token = "", string uid = null, string app = null, bool officeSignIn = false)
-        {
-            var lang = GetLanguage();
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = "/";
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
-            ViewBag.Token = token;
-            ViewBag.Uid = uid;
-            ViewBag.PostBack = "";
-            ViewBag.OfficeSignIn = officeSignIn;
-            return View();
-        }
+		[Route("Activation"), AllowAnonymous]
+		public async Task<ActionResult> Activation(string token = "", string uid = null, string app = null, bool officeSignIn = false)
+		{
+			var lang = GetLanguage();
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = "/";
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+			ViewBag.Token = token;
+			ViewBag.Uid = uid;
+			ViewBag.PostBack = "";
+			ViewBag.OfficeSignIn = officeSignIn;
+			return View();
+		}
 
-        [Route("Verify"), AllowAnonymous]
-        public async Task<ActionResult> Verify(string returnUrl, string email, bool resend = false)
-        {
-            var lang = GetLanguage();
-            ViewBag.Lang = lang;
-            ViewBag.ReturnUrl = returnUrl;
-            ViewBag.Email = email.Replace(@" ", "");
-            ViewBag.Resend = resend;
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
+		[Route("Verify"), AllowAnonymous]
+		public async Task<ActionResult> Verify(string returnUrl, string email, bool resend = false)
+		{
+			var lang = GetLanguage();
+			ViewBag.Lang = lang;
+			ViewBag.ReturnUrl = returnUrl;
+			ViewBag.Email = email.Replace(@" ", "");
+			ViewBag.Resend = resend;
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang);
 
 			if (!resend) return View();
 
@@ -577,11 +574,12 @@ namespace PrimeApps.App.Controllers
 
 		// sign out triggered from the Sign Out gesture in the UI
 		// after sign out, it redirects to Post_Logout_Redirect_Uri (as set in Startup.Auth.cs)
-		[Route("SignOut"), AllowAnonymous]
-		public ActionResult SignOut()
+		public async Task<ActionResult> SignOut()
 		{
+			await HttpContext.SignOutAsync("Cookies");
+			await HttpContext.SignOutAsync("oidc");
 			//Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-			return RedirectToAction("Login", "Auth");
+			return RedirectToAction("Index", "Home");
 		}
 
 		/*public void EndSession()

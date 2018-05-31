@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.User;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/License")]
@@ -24,166 +26,175 @@ namespace PrimeApps.App.Controllers
             _tenantRepository = tenantRepository;
         }
 
-        ///// <summary>
-        ///// Gets all license types.
-        ///// </summary>
-        ///// <returns>IList{DTO.LicenseDTO}.</returns>
-        //[Route("GetAll")]
-        //[ResponseType(typeof(LicenseUpgradeResult))]
-        //[HttpPost]
-        //public IActionResult GetAll()
-        //{
-        //    IList<LicenseDTO> paidLicenses = new List<LicenseDTO>();
-        //    LicenseUpgradeResult result = null;
-        //    using (ISession session = Provider.GetSession())
-        //    {
-        //        ///get all upgradeable paid licenses
-        //        paidLicenses = crmLicenses.GetAll(AppUser.Currency, Provider.GetSession()).Where(x => x.Price > 0 && x.Title.Contains("Silver")).OrderBy(x => x.Price).ToList();
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_settingRepository);
+			SetCurrentUser(_userRepository);
 
-        //        result = crmLicenses.CalculateLicenseUpgradePrices(AppUser.GlobalId, paidLicenses, session);
-        //    }
+			base.OnActionExecuting(context);
+		}
 
-        //    return Ok(result);
-        //}
+		///// <summary>
+		///// Gets all license types.
+		///// </summary>
+		///// <returns>IList{DTO.LicenseDTO}.</returns>
+		//[Route("GetAll")]
+		//[ResponseType(typeof(LicenseUpgradeResult))]
+		//[HttpPost]
+		//public IActionResult GetAll()
+		//{
+		//    IList<LicenseDTO> paidLicenses = new List<LicenseDTO>();
+		//    LicenseUpgradeResult result = null;
+		//    using (ISession session = Provider.GetSession())
+		//    {
+		//        ///get all upgradeable paid licenses
+		//        paidLicenses = crmLicenses.GetAll(AppUser.Currency, Provider.GetSession()).Where(x => x.Price > 0 && x.Title.Contains("Silver")).OrderBy(x => x.Price).ToList();
 
-        ///// <summary>
-        ///// Upgrades and Downgrades license of the user if it is available.
-        ///// </summary>
-        ///// <param name="LicenseID">The license identifier.</param>
-        //[Route("Upgrade")]
-        //[ResponseType(typeof(void))]
-        //[HttpPost]
-        //public async Task<IActionResult> Upgrade(UpgradeRequest request)
-        //{
-        //    crmUser user = null;
-        //    int currentWorkgroupCount = 0;
-        //    LicenseItem currentLicense = null;
-        //    LicenseDTO licenseToUpgrade = null;
-        //    using (ISession session = Provider.GetSession())
-        //    {
-        //        using (ITransaction transaction = session.BeginTransaction())
-        //        {
-        //            /// get the license that user wants to upgrade.
-        //            licenseToUpgrade = crmLicenses.GetDTOByID(request.LicenseID, AppUser.Currency, session).SingleOrDefault();
+		//        result = crmLicenses.CalculateLicenseUpgradePrices(AppUser.GlobalId, paidLicenses, session);
+		//    }
 
-        //            ///safety check.
-        //            if (licenseToUpgrade == null) return Ok();
+		//    return Ok(result);
+		//}
 
+		///// <summary>
+		///// Upgrades and Downgrades license of the user if it is available.
+		///// </summary>
+		///// <param name="LicenseID">The license identifier.</param>
+		//[Route("Upgrade")]
+		//[ResponseType(typeof(void))]
+		//[HttpPost]
+		//public async Task<IActionResult> Upgrade(UpgradeRequest request)
+		//{
+		//    crmUser user = null;
+		//    int currentWorkgroupCount = 0;
+		//    LicenseItem currentLicense = null;
+		//    LicenseDTO licenseToUpgrade = null;
+		//    using (ISession session = Provider.GetSession())
+		//    {
+		//        using (ITransaction transaction = session.BeginTransaction())
+		//        {
+		//            /// get the license that user wants to upgrade.
+		//            licenseToUpgrade = crmLicenses.GetDTOByID(request.LicenseID, AppUser.Currency, session).SingleOrDefault();
 
-        //            /// get workgroup count of user to check if it is applicable for current license.
-        //            currentWorkgroupCount = Provider.GetSession().QueryOver<crmInstance>().Where(x => x.Admin.ID == AppUser.GlobalId).RowCount();
-
-        //            /// get current license from users session with current usage
-        //            currentLicense = await Cache.License.Get(AppUser.GlobalId);
-
-        //            if (currentLicense.LicenseUsage.DownloadSize > licenseToUpgrade.DownloadLimit ||
-        //                currentLicense.LicenseUsage.FileStorageSize + currentLicense.LicenseUsage.OtherStorageSize > licenseToUpgrade.StorageSize ||
-        //                (currentWorkgroupCount > 1 && licenseToUpgrade.IsSingleWorkgroupLimited))
-        //            {
-        //                /// The chosen license is not applicable.
-        //                return Ok();
-        //            }
-
-        //            ///get user.
-        //            user = session.Get<crmUser>(AppUser.GlobalId);
-
-        //            if (request.IsFreeLicense)
-        //            {
-        //                crmInstance inst = new crmInstance();
-
-        //                inst = new crmInstance();
-        //                inst.Title = string.Format(Resources.System.Instance.UsersInstance, user.firstName);
-        //                inst.Admin = user;
-        //                session.Save(inst);
-
-        //                //assign new instance id's to user and update user.
-        //                user.defaultInstanceID = inst.ID;
-        //                user.lastInstanceID = inst.ID;
-        //                session.Update(user);
-
-        //                //create instance relation for the new user.
-        //                crmInstanceRelation relation = new crmInstanceRelation();
-        //                relation.Instance = inst;
-        //                relation.User = user;
-        //                session.Save(relation);
-
-        //                /// Update additional license
-        //                crmAddonLicenseType freeDaysAddonLicenseType = session.Get<crmAddonLicenseType>(Guid.Parse("D1C97898-441A-47DA-9A4D-0501CDE49782"));
-        //                crmAddonLicense.UpdateUsersFreeAddonLicense(user.ID);
-
-        //                /// create first invoice, set it's payment date same with the additional licenses end date.
-        //                crmInvoice firstInvoice = new crmInvoice()
-        //                {
-        //                    User = user,
-        //                    Amount = 0,
-        //                    InvoiceDate = DateTime.UtcNow.AddDays(freeDaysAddonLicenseType.Value),
-        //                    Status = PaymentStatusEnum.Unpaid,
-        //                    Type = InvoiceTypeEnum.Periodic,
-        //                    Frequency = user.PaymentMethod.Frequency
-        //                };
-
-        //                session.Save(firstInvoice);
-
-        //                /// Update previous unpaid invoice
-        //                var unpaidInvoice = crmInvoice.GetUsersUnpaidInvoice(user.ID);
-        //                unpaidInvoice.Status = PaymentStatusEnum.Paid;
-        //                session.Update(unpaidInvoice);
-
-        //                /// assign first invoice as the next invoice of the user.
-        //                user.NextInvoice = firstInvoice;
-        //                session.Update(user);
-        //            }
-
-        //            IList<LicenseDTO> licenseToCalculate = new List<LicenseDTO>();
-        //            licenseToCalculate.Add(licenseToUpgrade);
-
-        //            LicenseUpgradeResult upgradeResult = crmLicenses.CalculateLicenseUpgradePrices(AppUser.GlobalId, licenseToCalculate, session);
-
-        //            /// get the calculation results
-        //            CalculatedLicense calculation = upgradeResult.AvailableLicenses.SingleOrDefault();
-
-        //            /// this is not an upgradable
-        //            if (!calculation.IsUpgradable) return Ok();
+		//            ///safety check.
+		//            if (licenseToUpgrade == null) return Ok();
 
 
-        //            if (calculation.Type == InvoiceTypeEnum.OneTimeOnly)
-        //            {
-        //                /// An invoice needs to be created because this user uses an annual payment method. Remaining balance is not enough and it is not the last month of next invoice.
-        //                crmInvoice.InvoiceUpgradedLicense(calculation, currentLicense.License, user, session);
-        //            }
+		//            /// get workgroup count of user to check if it is applicable for current license.
+		//            currentWorkgroupCount = Provider.GetSession().QueryOver<crmInstance>().Where(x => x.Admin.ID == AppUser.GlobalId).RowCount();
 
-        //            /// update users license in database.
-        //            user.license = session.Get<crmLicenses>(request.LicenseID);
-        //            session.Update(user);
+		//            /// get current license from users session with current usage
+		//            currentLicense = await Cache.License.Get(AppUser.GlobalId);
 
-        //            if (upgradeResult.IsFrequencyChangeAllowed && user.PaymentMethod.Frequency != request.Frequency && request.Frequency != FrequencyEnum.None)
-        //            {
-        //                /// update frequency of the
-        //                user.PaymentMethod.Frequency = request.Frequency;
-        //                user.NextInvoice.Frequency = request.Frequency;
-        //                session.Update(user.NextInvoice);
-        //            }
+		//            if (currentLicense.LicenseUsage.DownloadSize > licenseToUpgrade.DownloadLimit ||
+		//                currentLicense.LicenseUsage.FileStorageSize + currentLicense.LicenseUsage.OtherStorageSize > licenseToUpgrade.StorageSize ||
+		//                (currentWorkgroupCount > 1 && licenseToUpgrade.IsSingleWorkgroupLimited))
+		//            {
+		//                /// The chosen license is not applicable.
+		//                return Ok();
+		//            }
 
-        //            /// campaign lost.
-        //            user.PaymentMethod.CampaignCode = String.Empty;
-        //            user.PaymentMethod.UsageAmountOfCampaign = 0;
-        //            session.Update(user.PaymentMethod);
+		//            ///get user.
+		//            user = session.Get<crmUser>(AppUser.GlobalId);
 
-        //            //Update license membership type on Ofisim CRM account
-        //            //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateLicenseMembershipType(AppUser.Email, AppUser.GlobalId, request.Frequency));
+		//            if (request.IsFreeLicense)
+		//            {
+		//                crmInstance inst = new crmInstance();
 
-        //            transaction.Commit();
-        //        }
-        //    }
+		//                inst = new crmInstance();
+		//                inst.Title = string.Format(Resources.System.Instance.UsersInstance, user.firstName);
+		//                inst.Admin = user;
+		//                session.Save(inst);
 
-        //    /// set new license to current license object, then update all roles and notify clients.
-        //    currentLicense.License = licenseToUpgrade;
-        //    await Cache.License.AddOrUpdate(AppUser.GlobalId, currentLicense);
+		//                //assign new instance id's to user and update user.
+		//                user.defaultInstanceID = inst.ID;
+		//                user.lastInstanceID = inst.ID;
+		//                session.Update(user);
 
-        //    return Ok();
-        //}
+		//                //create instance relation for the new user.
+		//                crmInstanceRelation relation = new crmInstanceRelation();
+		//                relation.Instance = inst;
+		//                relation.User = user;
+		//                session.Save(relation);
 
-        [Route("GetUserLicenseStatus")]
+		//                /// Update additional license
+		//                crmAddonLicenseType freeDaysAddonLicenseType = session.Get<crmAddonLicenseType>(Guid.Parse("D1C97898-441A-47DA-9A4D-0501CDE49782"));
+		//                crmAddonLicense.UpdateUsersFreeAddonLicense(user.ID);
+
+		//                /// create first invoice, set it's payment date same with the additional licenses end date.
+		//                crmInvoice firstInvoice = new crmInvoice()
+		//                {
+		//                    User = user,
+		//                    Amount = 0,
+		//                    InvoiceDate = DateTime.UtcNow.AddDays(freeDaysAddonLicenseType.Value),
+		//                    Status = PaymentStatusEnum.Unpaid,
+		//                    Type = InvoiceTypeEnum.Periodic,
+		//                    Frequency = user.PaymentMethod.Frequency
+		//                };
+
+		//                session.Save(firstInvoice);
+
+		//                /// Update previous unpaid invoice
+		//                var unpaidInvoice = crmInvoice.GetUsersUnpaidInvoice(user.ID);
+		//                unpaidInvoice.Status = PaymentStatusEnum.Paid;
+		//                session.Update(unpaidInvoice);
+
+		//                /// assign first invoice as the next invoice of the user.
+		//                user.NextInvoice = firstInvoice;
+		//                session.Update(user);
+		//            }
+
+		//            IList<LicenseDTO> licenseToCalculate = new List<LicenseDTO>();
+		//            licenseToCalculate.Add(licenseToUpgrade);
+
+		//            LicenseUpgradeResult upgradeResult = crmLicenses.CalculateLicenseUpgradePrices(AppUser.GlobalId, licenseToCalculate, session);
+
+		//            /// get the calculation results
+		//            CalculatedLicense calculation = upgradeResult.AvailableLicenses.SingleOrDefault();
+
+		//            /// this is not an upgradable
+		//            if (!calculation.IsUpgradable) return Ok();
+
+
+		//            if (calculation.Type == InvoiceTypeEnum.OneTimeOnly)
+		//            {
+		//                /// An invoice needs to be created because this user uses an annual payment method. Remaining balance is not enough and it is not the last month of next invoice.
+		//                crmInvoice.InvoiceUpgradedLicense(calculation, currentLicense.License, user, session);
+		//            }
+
+		//            /// update users license in database.
+		//            user.license = session.Get<crmLicenses>(request.LicenseID);
+		//            session.Update(user);
+
+		//            if (upgradeResult.IsFrequencyChangeAllowed && user.PaymentMethod.Frequency != request.Frequency && request.Frequency != FrequencyEnum.None)
+		//            {
+		//                /// update frequency of the
+		//                user.PaymentMethod.Frequency = request.Frequency;
+		//                user.NextInvoice.Frequency = request.Frequency;
+		//                session.Update(user.NextInvoice);
+		//            }
+
+		//            /// campaign lost.
+		//            user.PaymentMethod.CampaignCode = String.Empty;
+		//            user.PaymentMethod.UsageAmountOfCampaign = 0;
+		//            session.Update(user.PaymentMethod);
+
+		//            //Update license membership type on Ofisim CRM account
+		//            //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateLicenseMembershipType(AppUser.Email, AppUser.GlobalId, request.Frequency));
+
+		//            transaction.Commit();
+		//        }
+		//    }
+
+		//    /// set new license to current license object, then update all roles and notify clients.
+		//    currentLicense.License = licenseToUpgrade;
+		//    await Cache.License.AddOrUpdate(AppUser.GlobalId, currentLicense);
+
+		//    return Ok();
+		//}
+
+		[Route("GetUserLicenseStatus")]
         [HttpPost]
         public async Task<IActionResult> GetUserLicenseStatus()
         {

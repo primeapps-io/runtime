@@ -10,7 +10,7 @@ namespace PrimeApps.App.Models
     public class ModuleBindingModel
     {
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Name { get; set; }
 
         [Required, StringLength(50)]
@@ -62,7 +62,7 @@ namespace PrimeApps.App.Models
         public int? Id { get; set; }
 
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Name { get; set; }
 
         [Required, StringLength(50)]
@@ -95,7 +95,7 @@ namespace PrimeApps.App.Models
         public int? Id { get; set; }
 
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Name { get; set; }
 
         [Required]
@@ -142,11 +142,11 @@ namespace PrimeApps.App.Models
         public SortOrder PicklistSortorder { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string LookupType { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string LookupRelation { get; set; }
 
         public byte DecimalPlaces { get; set; }
@@ -169,7 +169,7 @@ namespace PrimeApps.App.Models
         public string Placeholder { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string UniqueCombine { get; set; }
 
         public AddressType AddressType { get; set; }
@@ -231,11 +231,11 @@ namespace PrimeApps.App.Models
     public class FieldCombinationBindingModel
     {
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field1 { get; set; }
 
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field2 { get; set; }
 
         [StringLength(50)]
@@ -264,7 +264,7 @@ namespace PrimeApps.App.Models
         public RelationType RelationType { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string RelationField { get; set; }
 
         public string[] DisplayFields { get; set; }
@@ -306,25 +306,25 @@ namespace PrimeApps.App.Models
         public DependencyType DependencyType { get; set; }
 
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string ParentField { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string ChildField { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string ChildSection { get; set; }
 
         public string[] Values { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string FieldMapParent { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string FieldMapChild { get; set; }
 
         [StringLength(4000)]
@@ -342,15 +342,15 @@ namespace PrimeApps.App.Models
         public int? Id { get; set; }
 
         [Required, StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string ResultField { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field1 { get; set; }
 
         [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field2 { get; set; }
 
         public double? CustomValue { get; set; }

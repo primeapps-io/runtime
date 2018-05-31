@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -25,7 +26,16 @@ namespace PrimeApps.App.Controllers
             _userRepository = userRepository;
         }
 
-        [Route("get/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userRepository);
+			SetCurrentUser(_viewRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
@@ -132,7 +142,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("set_view_state"), HttpPut]
-        public async Task<IActionResult> SetViewState(ViewStateBindingModel viewState)
+        public async Task<IActionResult> SetViewState([FromBody] ViewStateBindingModel viewState)
         {
             var viewStateEntity = await _viewRepository.GetViewState(viewState.ModuleId, AppUser.Id);
 

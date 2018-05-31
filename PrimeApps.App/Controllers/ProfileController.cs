@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Profile;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -18,11 +19,19 @@ namespace PrimeApps.App.Controllers
             _profileRepository = profileRepository;
         }
 
-        /// <summary>
-        /// Creates a new profile.
-        /// </summary>
-        /// <param name="NewProfile"></param>
-        [Route("Create"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_profileRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		/// <summary>
+		/// Creates a new profile.
+		/// </summary>
+		/// <param name="NewProfile"></param>
+		[Route("Create"), HttpPost]
         public async Task<IActionResult> Create(ProfileDTO NewProfile)
         {
             await _profileRepository.CreateAsync(NewProfile);

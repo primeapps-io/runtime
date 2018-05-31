@@ -4,7 +4,6 @@
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using IdentityServer4.Events;
@@ -18,6 +17,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using PrimeApps.Auth.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace PrimeApps.Auth.UI
 {
@@ -55,7 +55,6 @@ namespace PrimeApps.Auth.UI
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
 		{
 			ViewData["ReturnUrl"] = returnUrl;

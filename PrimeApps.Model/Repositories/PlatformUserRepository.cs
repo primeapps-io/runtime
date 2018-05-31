@@ -35,7 +35,7 @@ namespace PrimeApps.Model.Repositories
 		
 		public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
 		{
-			return await DbContext.Users.Include(x => x.TenantsAsUser.Where(z => z.Id == tenantId)).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
+			return await DbContext.Users.Include(x => x.TenantsAsUser.Where(z => z.TenantId == tenantId)).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
 		}
 
 		/// <summary>
@@ -175,20 +175,51 @@ namespace PrimeApps.Model.Repositories
 
 		public PlatformUser GetByEmailAndTenantId(string email, int tenantId)
 		{
-			var user = DbContext.Users
-				.Include(x => x.TenantsAsUser)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
+			var user = DbContext.UserTenants
+				.Include(x => x.Tenant)
+				.Include(x => x.Tenant).ThenInclude(z => z.Setting)
+				.Include(x => x.Tenant).ThenInclude(z => z.License)
+				.Include(x => x.Tenant).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
+				.Include(x => x.PlatformUser).ThenInclude(z => z.Setting)
+				/*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
 				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
-				.Include(x => x.Setting)
-				.SingleOrDefault(x => x.Email == email);
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
+				.SingleOrDefault(x => x.PlatformUser.Email == email && x.TenantId == tenantId);
 
-			user.TenantsAsUser = user.TenantsAsUser.Where(x => x.Id == tenantId).ToList();
 
-			if (user.TenantsAsUser.Count == 0)
+			if (user == null)
 				return null;
 
-			return user;
+			return user.PlatformUser;
+		}
+
+		public Tenant GetTenantByEmailAndAppId(string email, int appId)
+		{
+			var userTenant = DbContext.UserTenants
+				.Include(x => x.Tenant)
+				.Include(x => x.Tenant).ThenInclude(z => z.App)
+				/*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
+				.SingleOrDefault(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
+
+
+			if (userTenant == null)
+				return null;
+
+			return userTenant.Tenant;
+		}
+
+		public int GetAppIdByDomain(string domain)
+		{
+			var app = DbContext.AppSettings
+				.SingleOrDefault(x => x.Domain == domain);
+
+
+			if (app == null)
+				return 0;
+
+			return app.AppId;
 		}
 	}
 }

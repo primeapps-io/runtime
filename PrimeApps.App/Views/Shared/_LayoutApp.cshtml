@@ -1,18 +1,18 @@
 ﻿@using PrimeApps.App.Extensions
 @{
-    var app = "primeapps";
-    if (ViewBag.AppInfo != null)
-    {
-        app = ViewBag.AppInfo["app"].Value;
-    }
-    var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
-    var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-    var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
-    var customDomain =  false;
-    var customLanguage = string.Empty;
-    //var favicon = ViewBag.AppInfo["favicon"].Value;
+	var app = "primeapps";
+	if (ViewBag.AppInfo != null)
+	{
+		app = ViewBag.AppInfo["app"].Value;
+	}
+	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
+	var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+	var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+	/*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+	var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
+	var customDomain = false;
+	var customLanguage = string.Empty;
+	//var favicon = ViewBag.AppInfo["favicon"].Value;
 }
 
 <!DOCTYPE html>
@@ -28,7 +28,9 @@
 	<meta name="robots" content="noindex" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<link rel="stylesheet" href="/styles/bundles-css/auth.css" inline />
+	@*<link rel="stylesheet" href="/styles/bundles-css/auth.css" inline />*@
+	<link rel="stylesheet" href="/styles/bundles-css/vendor.css" inline />
+	<link rel="stylesheet" href="/styles/bundles-css/app.css" inline />
 </head>
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
 	@RenderBody()
@@ -107,9 +109,7 @@
 		var loaderDiv = document.getElementById('loader');
 		loaderDiv.style.display = 'block';
 
-
 	</script>
-	<script src="/scripts/vendor/oidc-clientt.js"></script>
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
@@ -122,7 +122,7 @@
 	<script src="/scripts/vendor/sip.min.js"></script>
 	<script src="/scripts/vendor/xlsx.core.min.js"></script>
 	<script src="/scripts/bundles-js/vendor.js"></script>
-	<script src="/scripts/bundles-js/vovoc.js"></script>
+	<script src="/scripts/bundles-js/apps1.js"></script>
 
 	@*Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.min.js")
 		@Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.charts.min.js")

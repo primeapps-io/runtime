@@ -63,29 +63,33 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<IList<TenantInfo>> GetTenantInfo(int tenantId)
         {
-            return await DbContext.Tenants.Where(x => x.Owner.Id == tenantId)
-                 .Select(t => new TenantInfo() //get instances of this user.
-                 {
-                     tenantId = t.Id,
-                     title = t.Title,
-                     currency = t.Setting.Currency,
-                     language = t.Setting.Language,
-                     logo = t.Setting.Logo,
-                     logoUrl = t.Setting.Logo,
-                     //TODO Removed
-                     //hasSampleData = t.HasSampleData,
-                     //hasPhone = t.HasPhone,
-                     hasAnalytics = t.License.AnalyticsLicenseCount > 0,
-                     owner = t.Owner.Id,
-                     users = t.TenantUsers.Select(u => new UserList //get users for the instance.
-                     {
-                         Id = u.UserId,
-                         userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
-                         email = u.PlatformUser.Email,
-                         hasAccount = true,
-                         isAdmin = t.Owner.Id == u.UserId
-                     }).OrderByDescending(x => x.isAdmin).ToList()
-                 }).ToListAsync();
+			var a = await DbContext.Tenants.Where(x => x.Id == tenantId)
+				 .Select(t => new TenantInfo() //get instances of this user.
+				 {
+					 tenantId = t.Id,
+					 title = t.Title,
+					 currency = t.Setting.Currency,
+					 language = t.Setting.Language,
+					 logo = t.Setting.Logo,
+					 logoUrl = t.Setting.Logo,
+					 //TODO Removed
+					 //hasSampleData = t.HasSampleData,
+					 //hasPhone = t.HasPhone,
+					 hasAnalytics = t.License.AnalyticsLicenseCount > 0,
+					 owner = t.Owner.Id,
+
+					 users = t.TenantUsers.Select(u => new UserList //get users for the instance.
+					 {
+						 Id = u.UserId,
+						 userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
+						 email = u.PlatformUser.Email,
+						 hasAccount = true,
+						 isAdmin = t.Owner.Id == u.UserId
+					 }).ToList()
+
+				 }).ToListAsync();
+			
+			return a;
         }
 
         public static string GetLogoUrl(string logo)

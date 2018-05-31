@@ -17,6 +17,7 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -41,8 +42,21 @@ namespace PrimeApps.App.Controllers
             _recordRepository = recordRepository;
             _warehouse = warehouse;
         }
+		
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_settingRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_viewRepository);
+			SetCurrentUser(_profileRepository);
+			SetCurrentUser(_picklistRepository);
+			SetCurrentUser(_recordRepository);
 
-        [Route("get_settings"), HttpGet]
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_settings"), HttpGet]
         public async Task<IActionResult> GetSettings()
         {
             List<Setting> outlookSettings = null;

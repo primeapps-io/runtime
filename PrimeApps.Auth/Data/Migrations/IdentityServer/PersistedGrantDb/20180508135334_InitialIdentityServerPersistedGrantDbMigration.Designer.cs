@@ -4,13 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
 namespace PrimeApps.Auth.Data.Migrations.IdentityServer.PersistedGrantDb
 {
-    [DbContext(typeof(PersistedGrantDbContext))]
+	[DbContext(typeof(PersistedGrantDbContext))]
     [Migration("20180508135334_InitialIdentityServerPersistedGrantDbMigration")]
     partial class InitialIdentityServerPersistedGrantDbMigration
     {

@@ -12,7 +12,7 @@ angular.module('ofisim')
             $window.scrollTo(0, 0);
 
 
-            var startPageLower = $rootScope.user.profile.StartPage.toLowerCase();
+            var startPageLower = $rootScope.user.profile.start_page.toLowerCase();
 
             if (startPageLower != 'dashboard') {
                 window.location = '#/app/crm/' + startPageLower;

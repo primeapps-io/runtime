@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/process"), Authorize/*, SnakeCase*/]
@@ -29,7 +31,18 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
         }
 
-        [Route("get/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_processRepository);
+			SetCurrentUser(_viewRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_picklistRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var processEntity = await _processRepository.GetAllById(id);

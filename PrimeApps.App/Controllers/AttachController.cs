@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Storage;
@@ -21,7 +22,14 @@ namespace PrimeApps.App.Controllers
             _tenantRepository = tenantRepository;
         }
 
-        [Route("download"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			
+			base.OnActionExecuting(context);
+		}
+
+		[Route("download"), HttpGet]
         public async Task<FileStreamResult> Download(int FileId)
         {
             var tenant = await _tenantRepository.GetAsync(AppUser.TenantId);

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -22,7 +23,15 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
         }
 
-        [Route("get/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_picklistRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var picklistEntity = await _picklistRepository.GetById(id);

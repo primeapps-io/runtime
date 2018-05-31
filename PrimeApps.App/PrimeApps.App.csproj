@@ -1,8 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Version>1.2.3.4</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,43 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\images\404image.png" />
-    <None Include="wwwroot\images\app-launcher-crm.png" />
-    <None Include="wwwroot\images\app-launcher-ik.png" />
-    <None Include="wwwroot\images\background_lines_2.png" />
-    <None Include="wwwroot\images\favicon\app.ico" />
-    <None Include="wwwroot\images\favicon\ofisim.ico" />
-    <None Include="wwwroot\images\favicon\primeapps.ico" />
-    <None Include="wwwroot\images\helpcoming.png" />
-    <None Include="wwwroot\images\loader.gif" />
-    <None Include="wwwroot\images\lock_mail_icon.png" />
-    <None Include="wwwroot\images\login\banner\asistan-background.jpg" />
-    <None Include="wwwroot\images\login\banner\cagri-background.jpg" />
-    <None Include="wwwroot\images\login\banner\crm-background.jpg" />
-    <None Include="wwwroot\images\login\banner\ik-background.jpg" />
-    <None Include="wwwroot\images\login\banner\kobi-background.jpg" />
-    <None Include="wwwroot\images\login\banner\primeapps-background.jpg" />
-    <None Include="wwwroot\images\login\logos\login_asistan.png" />
-    <None Include="wwwroot\images\login\logos\login_cagri.png" />
-    <None Include="wwwroot\images\login\logos\login_crm.png" />
-    <None Include="wwwroot\images\login\logos\login_ik.png" />
-    <None Include="wwwroot\images\login\logos\login_kobi.png" />
-    <None Include="wwwroot\images\login\logos\login_primeapps.png" />
-    <None Include="wwwroot\images\logo-header-asistan.jpg" />
-    <None Include="wwwroot\images\logo-header-cagri.jpg" />
-    <None Include="wwwroot\images\logo-header-crm.jpg" />
-    <None Include="wwwroot\images\logo-header-ik.jpg" />
-    <None Include="wwwroot\images\logo-header-kobi.jpg" />
-    <None Include="wwwroot\images\logo-header-primeapps.jpg" />
-    <None Include="wwwroot\images\logo.png" />
-    <None Include="wwwroot\images\office-login-logo.png" />
-    <None Include="wwwroot\images\office365logo.png" />
-    <None Include="wwwroot\images\ofisim_ui_bg.gif" />
-    <None Include="wwwroot\images\ofisim_ui_bg_en.gif" />
-    <None Include="wwwroot\images\report\single-report.png" />
-    <None Include="wwwroot\images\report\summary-report.png" />
-    <None Include="wwwroot\images\report\tabular-report.png" />
-    <None Include="wwwroot\images\user-image.png" />
     <None Include="wwwroot\scripts\app.js" />
     <None Include="wwwroot\scripts\config.js" />
     <None Include="wwwroot\scripts\constants.js" />
@@ -473,62 +434,14 @@
     <None Include="wwwroot\scripts\vendor\spin.js" />
     <None Include="wwwroot\scripts\vendor\sweetalert.js" />
     <None Include="wwwroot\scripts\vendor\tinymce\langs\tr.js" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\codesample\css\prism.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-cool.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-cry.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-embarassed.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-foot-in-mouth.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-frown.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-innocent.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-kiss.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-laughing.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-money-mouth.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-sealed.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-smile.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-surprised.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-tongue-out.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-undecided.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-wink.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\emoticons\img\smiley-yell.gif" />
     <None Include="wwwroot\scripts\vendor\tinymce\plugins\placeholder\plugin.js" />
     <None Include="wwwroot\scripts\vendor\tinymce\plugins\placeholder\plugin.min.js" />
-    <None Include="wwwroot\scripts\vendor\tinymce\plugins\visualblocks\css\visualblocks.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\content.inline.min.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\content.min.css" />
     <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\readme.md" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce-small.eot" />
     <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce-small.svg" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce-small.ttf" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce-small.woff" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce.eot" />
     <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce.svg" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce.ttf" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\fonts\tinymce.woff" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\img\anchor.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\img\loader.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\img\object.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\img\trans.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\skin.ie7.min.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\skin.min.css" />
     <None Include="wwwroot\scripts\vendor\tinymce\skins\custom\Variables.less" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\content.inline.min.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\content.min.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\content.mobile.min.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce-mobile.woff" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce-small.svg" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce-small.ttf" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce-small.woff" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce.eot" />
     <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce.svg" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce.ttf" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\fonts\tinymce.woff" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\img\anchor.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\img\loader.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\img\object.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\img\trans.gif" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\skin.min.css" />
-    <None Include="wwwroot\scripts\vendor\tinymce\skins\lightgray\skin.mobile.min.css" />
     <None Include="wwwroot\scripts\vendor\tinymce\tinymce.min.js" />
     <None Include="wwwroot\scripts\vendor\xlsx.core.min.js" />
     <None Include="wwwroot\scss\app.scss" />
@@ -607,384 +520,178 @@
     <None Include="wwwroot\scss\views\_tasks.scss" />
     <None Include="wwwroot\scss\views\_view.scss" />
     <None Include="wwwroot\scss\_variables.scss" />
-    <None Include="wwwroot\styles\app.css" />
-    <None Include="wwwroot\styles\fonts\flaticon.eot" />
     <None Include="wwwroot\styles\fonts\flaticon.svg" />
-    <None Include="wwwroot\styles\fonts\flaticon.ttf" />
-    <None Include="wwwroot\styles\fonts\flaticon.woff" />
-    <None Include="wwwroot\styles\fonts\fontawesome-webfont.eot" />
     <None Include="wwwroot\styles\fonts\fontawesome-webfont.svg" />
-    <None Include="wwwroot\styles\fonts\fontawesome-webfont.ttf" />
-    <None Include="wwwroot\styles\fonts\fontawesome-webfont.woff" />
     <None Include="wwwroot\styles\fonts\fontawesome-webfont.woff2" />
-    <None Include="wwwroot\styles\fonts\FontAwesome.otf" />
-    <None Include="wwwroot\styles\fonts\glyphicons-halflings-regular.eot" />
     <None Include="wwwroot\styles\fonts\glyphicons-halflings-regular.svg" />
-    <None Include="wwwroot\styles\fonts\glyphicons-halflings-regular.ttf" />
-    <None Include="wwwroot\styles\fonts\glyphicons-halflings-regular.woff" />
     <None Include="wwwroot\styles\fonts\glyphicons-halflings-regular.woff2" />
-    <None Include="wwwroot\styles\ui.css" />
-    <None Include="wwwroot\styles\vendor\angular-block-ui.css" />
-    <None Include="wwwroot\styles\vendor\angular-bootstrap-calendar.css" />
-    <None Include="wwwroot\styles\vendor\angular-motion.css" />
-    <None Include="wwwroot\styles\vendor\angular-resizable.css" />
-    <None Include="wwwroot\styles\vendor\angular-ui-tree.css" />
-    <None Include="wwwroot\styles\vendor\bootstrap-additions.css" />
-    <None Include="wwwroot\styles\vendor\bootstrap.css" />
-    <None Include="wwwroot\styles\vendor\dragular.css" />
-    <None Include="wwwroot\styles\vendor\flaticon.css" />
-    <None Include="wwwroot\styles\vendor\font-awesome.css" />
-    <None Include="wwwroot\styles\vendor\ladda-themeless.css" />
-    <None Include="wwwroot\styles\vendor\ng-table.css" />
-    <None Include="wwwroot\styles\vendor\ng-tags-input.bootstrap.css" />
-    <None Include="wwwroot\styles\vendor\ng-tags-input.css" />
-    <None Include="wwwroot\styles\vendor\ngToast.css" />
-    <None Include="wwwroot\styles\vendor\select.css" />
-    <None Include="wwwroot\styles\vendor\xeditable.css" />
-    <None Include="wwwroot\views\app.html" />
     <None Include="wwwroot\views\appController.js" />
     <None Include="wwwroot\views\appService.js" />
     <None Include="wwwroot\views\app\actionbutton\actionButtonFrameController.js" />
-    <None Include="wwwroot\views\app\actionbutton\actionButtonFrameModal.html" />
-    <None Include="wwwroot\views\app\analytics\analytics.html" />
     <None Include="wwwroot\views\app\analytics\analyticsController.js" />
-    <None Include="wwwroot\views\app\analytics\analyticsForm.html" />
     <None Include="wwwroot\views\app\analytics\analyticsFormController.js" />
     <None Include="wwwroot\views\app\analytics\analyticsService.js" />
-    <None Include="wwwroot\views\app\calendar\calendar.html" />
     <None Include="wwwroot\views\app\calendar\calendarController.js" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarDayView.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarHourList.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarMonthCell.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarMonthCellEvents.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarMonthView.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarSlideBox.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarWeekView.html" />
-    <None Include="wwwroot\views\app\calendar\templates\calendarYearView.html" />
-    <None Include="wwwroot\views\app\convert\leadConvert.html" />
     <None Include="wwwroot\views\app\convert\leadConvertController.js" />
     <None Include="wwwroot\views\app\convert\leadConvertService.js" />
-    <None Include="wwwroot\views\app\convert\personalConvert.html" />
     <None Include="wwwroot\views\app\convert\personalConvertController.js" />
     <None Include="wwwroot\views\app\convert\personalConvertService.js" />
-    <None Include="wwwroot\views\app\convert\quoteConvert.html" />
     <None Include="wwwroot\views\app\convert\quoteConvertController.js" />
     <None Include="wwwroot\views\app\convert\quoteConvertService.js" />
-    <None Include="wwwroot\views\app\crm.html" />
     <None Include="wwwroot\views\app\crmController.js" />
-    <None Include="wwwroot\views\app\dashboard\dashboard.html" />
     <None Include="wwwroot\views\app\dashboard\dashboardController.js" />
-    <None Include="wwwroot\views\app\dashboard\dashboardOrderChange.html" />
     <None Include="wwwroot\views\app\dashboard\dashboardService.js" />
-    <None Include="wwwroot\views\app\dashboard\formModal.html" />
-    <None Include="wwwroot\views\app\dashboard\formModalDashlet.html" />
-    <None Include="wwwroot\views\app\data\fixedValue.html" />
-    <None Include="wwwroot\views\app\data\import.html" />
     <None Include="wwwroot\views\app\data\importController.js" />
     <None Include="wwwroot\views\app\data\importService.js" />
-    <None Include="wwwroot\views\app\directory\directory.html" />
-    <None Include="wwwroot\views\app\directory\directoryDetail.html" />
     <None Include="wwwroot\views\app\directory\directoryDetailController.js" />
     <None Include="wwwroot\views\app\directory\directoryDirective.js" />
-    <None Include="wwwroot\views\app\documents\advDocumentSearch.html" />
     <None Include="wwwroot\views\app\documents\advDocumentSearchController.js" />
     <None Include="wwwroot\views\app\documents\documentController.js" />
     <None Include="wwwroot\views\app\documents\documentDirective.js" />
-    <None Include="wwwroot\views\app\documents\documentFilter.html" />
-    <None Include="wwwroot\views\app\documents\documentForm.html" />
-    <None Include="wwwroot\views\app\documents\documentList.html" />
-    <None Include="wwwroot\views\app\documents\documents.html" />
-    <None Include="wwwroot\views\app\documents\documentSearch.html" />
     <None Include="wwwroot\views\app\documents\documentService.js" />
-    <None Include="wwwroot\views\app\documents\documentSort.html" />
     <None Include="wwwroot\views\app\email\bulkEMailController.js" />
-    <None Include="wwwroot\views\app\email\bulkEMailModal.html" />
     <None Include="wwwroot\views\app\email\singleEmailController.js" />
-    <None Include="wwwroot\views\app\email\singleEmailModal.html" />
     <None Include="wwwroot\views\app\email\templateService.js" />
     <None Include="wwwroot\views\app\feed\feedDirective.js" />
-    <None Include="wwwroot\views\app\feed\feedForm.html" />
-    <None Include="wwwroot\views\app\feed\feedList.html" />
     <None Include="wwwroot\views\app\feed\feedService.js" />
-    <None Include="wwwroot\views\app\home\home.html" />
     <None Include="wwwroot\views\app\home\homeController.js" />
-    <None Include="wwwroot\views\app\join\join.html" />
     <None Include="wwwroot\views\app\join\joinController.js" />
-    <None Include="wwwroot\views\app\leave\collectiveLeave.html" />
     <None Include="wwwroot\views\app\leave\collectiveLeaveController.js" />
-    <None Include="wwwroot\views\app\location\locationFormModal.html" />
     <None Include="wwwroot\views\app\location\locationFormModalController.js" />
-    <None Include="wwwroot\views\app\module\bulkDelete.html" />
-    <None Include="wwwroot\views\app\module\bulkUpdateModal.html" />
-    <None Include="wwwroot\views\app\module\moduleAddModal.html" />
     <None Include="wwwroot\views\app\module\moduleAddModalController.js" />
-    <None Include="wwwroot\views\app\module\moduleDetail.html" />
     <None Include="wwwroot\views\app\module\moduleDetailController.js" />
-    <None Include="wwwroot\views\app\module\moduleForm.html" />
     <None Include="wwwroot\views\app\module\moduleFormController.js" />
-    <None Include="wwwroot\views\app\module\moduleFormModal.html" />
     <None Include="wwwroot\views\app\module\moduleFormModalController.js" />
-    <None Include="wwwroot\views\app\module\moduleList.html" />
     <None Include="wwwroot\views\app\module\moduleListController.js" />
-    <None Include="wwwroot\views\app\module\modulePdfModal.html" />
     <None Include="wwwroot\views\app\module\moduleService.js" />
-    <None Include="wwwroot\views\app\module\rejectProcessModal.html" />
-    <None Include="wwwroot\views\app\newsfeed\newsfeed.html" />
     <None Include="wwwroot\views\app\newsfeed\newsfeedController.js" />
     <None Include="wwwroot\views\app\note\noteDirective.js" />
-    <None Include="wwwroot\views\app\note\noteForm.html" />
-    <None Include="wwwroot\views\app\note\noteLikes.html" />
-    <None Include="wwwroot\views\app\note\noteList.html" />
     <None Include="wwwroot\views\app\note\noteService.js" />
-    <None Include="wwwroot\views\app\payment\paymentForm.html" />
     <None Include="wwwroot\views\app\payment\paymentFormController.js" />
-    <None Include="wwwroot\views\app\phone\sipPhone.html" />
     <None Include="wwwroot\views\app\phone\sipPhoneController.js" />
-    <None Include="wwwroot\views\app\product\orderProducts.html" />
     <None Include="wwwroot\views\app\product\orderProductsController.js" />
     <None Include="wwwroot\views\app\product\orderProductsService.js" />
-    <None Include="wwwroot\views\app\product\productInfo.html" />
-    <None Include="wwwroot\views\app\product\purchaseProducts.html" />
     <None Include="wwwroot\views\app\product\purchaseProductsController.js" />
     <None Include="wwwroot\views\app\product\purchaseProductsService.js" />
-    <None Include="wwwroot\views\app\product\quoteProducts.html" />
     <None Include="wwwroot\views\app\product\quoteProductsController.js" />
     <None Include="wwwroot\views\app\product\quoteProductsService.js" />
-    <None Include="wwwroot\views\app\reports\common\createCategoryReport.html" />
-    <None Include="wwwroot\views\app\reports\createReport.html" />
     <None Include="wwwroot\views\app\reports\createReportController.js" />
-    <None Include="wwwroot\views\app\reports\reportCategory.html" />
     <None Include="wwwroot\views\app\reports\reportCategoryController.js" />
     <None Include="wwwroot\views\app\reports\reportsService.js" />
     <None Include="wwwroot\views\app\sms\bulkSMSController.js" />
-    <None Include="wwwroot\views\app\sms\bulkSMSModal.html" />
     <None Include="wwwroot\views\app\sms\singleSMSController.js" />
-    <None Include="wwwroot\views\app\sms\singleSMSModal.html" />
     <None Include="wwwroot\views\app\tasks\taskController.js" />
     <None Include="wwwroot\views\app\tasks\taskDirective.js" />
-    <None Include="wwwroot\views\app\tasks\taskForm.html" />
-    <None Include="wwwroot\views\app\tasks\taskList.html" />
-    <None Include="wwwroot\views\app\tasks\tasks.html" />
-    <None Include="wwwroot\views\app\tasks\taskSearch.html" />
     <None Include="wwwroot\views\app\tasks\taskService.js" />
-    <None Include="wwwroot\views\app\timesheet\rejectModal.html" />
-    <None Include="wwwroot\views\app\timesheet\timesheet.html" />
     <None Include="wwwroot\views\app\timesheet\timesheetController.js" />
-    <None Include="wwwroot\views\app\timesheet\timesheetFrame.html" />
     <None Include="wwwroot\views\app\timesheet\timesheetFrameController.js" />
-    <None Include="wwwroot\views\app\timesheet\timesheetModal.html" />
     <None Include="wwwroot\views\app\timesheet\timesheetModalController.js" />
-    <None Include="wwwroot\views\app\timesheet\timetracker.html" />
     <None Include="wwwroot\views\app\timesheet\timetrackerController.js" />
-    <None Include="wwwroot\views\app\timesheet\timetrackerModal.html" />
     <None Include="wwwroot\views\app\timesheet\timetrackerModalController.js" />
     <None Include="wwwroot\views\app\timesheet\timetrackerService.js" />
-    <None Include="wwwroot\views\app\timesheet\timetrackerSettingsModal.html" />
-    <None Include="wwwroot\views\app\trial\promotionFormModal.html" />
-    <None Include="wwwroot\views\app\trial\trial-box.html" />
-    <None Include="wwwroot\views\app\view\viewForm.html" />
     <None Include="wwwroot\views\app\view\viewFormController.js" />
     <None Include="wwwroot\views\app\view\viewService.js" />
     <None Include="wwwroot\views\authService.js" />
-    <None Include="wwwroot\views\common\angucomplete-xeditable.html" />
-    <None Include="wwwroot\views\common\angucomplete.html" />
-    <None Include="wwwroot\views\common\app-launcher.html" />
-    <None Include="wwwroot\views\common\blockui.html" />
-    <None Include="wwwroot\views\common\confirm.html" />
-    <None Include="wwwroot\views\common\datatransfer.html" />
-    <None Include="wwwroot\views\common\help.html" />
-    <None Include="wwwroot\views\common\newactivity.html" />
-    <None Include="wwwroot\views\common\newtransaction.html" />
-    <None Include="wwwroot\views\common\pagination.html" />
-    <None Include="wwwroot\views\common\password-meter.html" />
-    <None Include="wwwroot\views\common\subtable.html" />
-    <None Include="wwwroot\views\common\tablebody.html" />
-    <None Include="wwwroot\views\common\tableheader.html" />
-    <None Include="wwwroot\views\common\taginput-autocomplete.html" />
-    <None Include="wwwroot\views\common\taginput.html" />
-    <None Include="wwwroot\views\common\typeahead.html" />
     <None Include="wwwroot\views\setup\approvel_process\approvelProcessController.js" />
-    <None Include="wwwroot\views\setup\approvel_process\approvelProcesses.html" />
-    <None Include="wwwroot\views\setup\approvel_process\approvelProcessForm.html" />
     <None Include="wwwroot\views\setup\approvel_process\approvelProcessFormController.js" />
     <None Include="wwwroot\views\setup\approvel_process\approvelProcessService.js" />
     <None Include="wwwroot\views\setup\auditlog\auditLogController.js" />
-    <None Include="wwwroot\views\setup\auditlog\auditlogs.html" />
     <None Include="wwwroot\views\setup\auditlog\auditLogService.js" />
-    <None Include="wwwroot\views\setup\convert\candidateConvertMap.html" />
     <None Include="wwwroot\views\setup\convert\candidateConvertMapController.js" />
     <None Include="wwwroot\views\setup\convert\convertMapService.js" />
-    <None Include="wwwroot\views\setup\convert\leadConvertMap.html" />
     <None Include="wwwroot\views\setup\convert\leadConvertMapController.js" />
-    <None Include="wwwroot\views\setup\convert\quoteConvertMap.html" />
     <None Include="wwwroot\views\setup\convert\quoteConvertMapController.js" />
-    <None Include="wwwroot\views\setup\general\generalSettings.html" />
     <None Include="wwwroot\views\setup\general\generalSettingsController.js" />
     <None Include="wwwroot\views\setup\general\generalSettingsService.js" />
     <None Include="wwwroot\views\setup\help\helpController.js" />
-    <None Include="wwwroot\views\setup\help\helpPage.html" />
-    <None Include="wwwroot\views\setup\help\helpPageModal.html" />
-    <None Include="wwwroot\views\setup\help\helpPageSide.html" />
-    <None Include="wwwroot\views\setup\help\helpPageSides.html" />
     <None Include="wwwroot\views\setup\help\helpService.js" />
-    <None Include="wwwroot\views\setup\importhistory\importHistory.html" />
     <None Include="wwwroot\views\setup\importhistory\importHistoryController.js" />
     <None Include="wwwroot\views\setup\importhistory\importHistoryService.js" />
-    <None Include="wwwroot\views\setup\license\license.html" />
-    <None Include="wwwroot\views\setup\license\licenseAddon.html" />
-    <None Include="wwwroot\views\setup\license\licenseChange.html" />
     <None Include="wwwroot\views\setup\license\licenseController.js" />
-    <None Include="wwwroot\views\setup\license\licenseRemove.html" />
     <None Include="wwwroot\views\setup\license\licenseService.js" />
-    <None Include="wwwroot\views\setup\messaging\messaging.html" />
     <None Include="wwwroot\views\setup\messaging\messagingController.js" />
     <None Include="wwwroot\views\setup\messaging\messagingService.js" />
-    <None Include="wwwroot\views\setup\messaging\senderAdd.html" />
-    <None Include="wwwroot\views\setup\modules\actionButtonForm.html" />
-    <None Include="wwwroot\views\setup\modules\actionButtons.html" />
     <None Include="wwwroot\views\setup\modules\actionButtonsController.js" />
-    <None Include="wwwroot\views\setup\modules\deleteForm.html" />
-    <None Include="wwwroot\views\setup\modules\dependencyForm.html" />
-    <None Include="wwwroot\views\setup\modules\editForm.html" />
-    <None Include="wwwroot\views\setup\modules\fieldForm.html" />
-    <None Include="wwwroot\views\setup\modules\moduleDependencies.html" />
     <None Include="wwwroot\views\setup\modules\moduleDependencyController.js" />
-    <None Include="wwwroot\views\setup\modules\moduleProfileSettingForm.html" />
-    <None Include="wwwroot\views\setup\modules\moduleProfileSettings.html" />
     <None Include="wwwroot\views\setup\modules\moduleProfileSettingsController.js" />
     <None Include="wwwroot\views\setup\modules\moduleRelationController.js" />
-    <None Include="wwwroot\views\setup\modules\moduleRelations.html" />
     <None Include="wwwroot\views\setup\modules\moduleSetupController.js" />
-    <None Include="wwwroot\views\setup\modules\moduleSetupForm.html" />
     <None Include="wwwroot\views\setup\modules\moduleSetupFormController.js" />
     <None Include="wwwroot\views\setup\modules\moduleSetupLayoutController.js" />
     <None Include="wwwroot\views\setup\modules\moduleSetupService.js" />
-    <None Include="wwwroot\views\setup\modules\modulesSetup.html" />
-    <None Include="wwwroot\views\setup\modules\relationForm.html" />
-    <None Include="wwwroot\views\setup\modules\sectionForm.html" />
-    <None Include="wwwroot\views\setup\modules\warningRequiredFieldDisplay.html" />
     <None Include="wwwroot\views\setup\notifications\notificationController.js" />
-    <None Include="wwwroot\views\setup\notifications\notifications.html" />
     <None Include="wwwroot\views\setup\notifications\notificationService.js" />
-    <None Include="wwwroot\views\setup\office\office.html" />
     <None Include="wwwroot\views\setup\office\officeController.js" />
     <None Include="wwwroot\views\setup\office\officeService.js" />
-    <None Include="wwwroot\views\setup\organization\organization.html" />
     <None Include="wwwroot\views\setup\organization\organizationController.js" />
     <None Include="wwwroot\views\setup\organization\organizationService.js" />
-    <None Include="wwwroot\views\setup\outlook\outlook.html" />
     <None Include="wwwroot\views\setup\outlook\outlookController.js" />
     <None Include="wwwroot\views\setup\outlook\outlookService.js" />
-    <None Include="wwwroot\views\setup\payment\payment.html" />
     <None Include="wwwroot\views\setup\payment\paymentController.js" />
     <None Include="wwwroot\views\setup\payment\paymentDirective.js" />
-    <None Include="wwwroot\views\setup\payment\paymentForm.html" />
-    <None Include="wwwroot\views\setup\payment\paymentHistory.html" />
     <None Include="wwwroot\views\setup\payment\paymentHistoryController.js" />
     <None Include="wwwroot\views\setup\payment\paymentService.js" />
-    <None Include="wwwroot\views\setup\phone\phone.html" />
     <None Include="wwwroot\views\setup\phone\phoneSettingsController.js" />
     <None Include="wwwroot\views\setup\phone\phoneSettingsService.js" />
-    <None Include="wwwroot\views\setup\phone\sipAccountCreate.html" />
-    <None Include="wwwroot\views\setup\phone\sipAccountDelete.html" />
-    <None Include="wwwroot\views\setup\phone\sipAccountEdit.html" />
     <None Include="wwwroot\views\setup\profiles\profileController.js" />
-    <None Include="wwwroot\views\setup\profiles\profileDelete.html" />
-    <None Include="wwwroot\views\setup\profiles\profileForm.html" />
     <None Include="wwwroot\views\setup\profiles\profileFormController.js" />
-    <None Include="wwwroot\views\setup\profiles\profiles.html" />
     <None Include="wwwroot\views\setup\profiles\profileService.js" />
     <None Include="wwwroot\views\setup\roles\roleController.js" />
-    <None Include="wwwroot\views\setup\roles\roleDelete.html" />
-    <None Include="wwwroot\views\setup\roles\roleForm.html" />
     <None Include="wwwroot\views\setup\roles\roleFormController.js" />
-    <None Include="wwwroot\views\setup\roles\roles.html" />
     <None Include="wwwroot\views\setup\roles\roleService.js" />
-    <None Include="wwwroot\views\setup\roles\roleTreeTemplate.html" />
-    <None Include="wwwroot\views\setup\settings\accountDelete.html" />
     <None Include="wwwroot\views\setup\settings\settingController.js" />
-    <None Include="wwwroot\views\setup\settings\settings.html" />
     <None Include="wwwroot\views\setup\settings\settingService.js" />
-    <None Include="wwwroot\views\setup\setup.html" />
     <None Include="wwwroot\views\setup\setupController.js" />
     <None Include="wwwroot\views\setup\templates\templateController.js" />
-    <None Include="wwwroot\views\setup\templates\templateForm.html" />
     <None Include="wwwroot\views\setup\templates\templateFormController.js" />
-    <None Include="wwwroot\views\setup\templates\templateGuide.html" />
     <None Include="wwwroot\views\setup\templates\templateGuideController.js" />
-    <None Include="wwwroot\views\setup\templates\templates.html" />
     <None Include="wwwroot\views\setup\templates\templateService.js" />
     <None Include="wwwroot\views\setup\usercustomshares\userCustomShareController.js" />
-    <None Include="wwwroot\views\setup\usercustomshares\userCustomShareForm.html" />
     <None Include="wwwroot\views\setup\usercustomshares\userCustomShareFormController.js" />
-    <None Include="wwwroot\views\setup\usercustomshares\userCustomShares.html" />
     <None Include="wwwroot\views\setup\usercustomshares\userCustomShareService.js" />
     <None Include="wwwroot\views\setup\usergroups\userGroupController.js" />
-    <None Include="wwwroot\views\setup\usergroups\userGroupForm.html" />
     <None Include="wwwroot\views\setup\usergroups\userGroupFormController.js" />
-    <None Include="wwwroot\views\setup\usergroups\userGroups.html" />
     <None Include="wwwroot\views\setup\usergroups\userGroupService.js" />
-    <None Include="wwwroot\views\setup\users\officeUserCreate.html" />
     <None Include="wwwroot\views\setup\users\userController.js" />
-    <None Include="wwwroot\views\setup\users\userCreate.html" />
-    <None Include="wwwroot\views\setup\users\userDelete.html" />
-    <None Include="wwwroot\views\setup\users\userEdit.html" />
-    <None Include="wwwroot\views\setup\users\users.html" />
     <None Include="wwwroot\views\setup\users\userService.js" />
-    <None Include="wwwroot\views\setup\warehouse\warehouse.html" />
     <None Include="wwwroot\views\setup\warehouse\warehouseController.js" />
     <None Include="wwwroot\views\setup\workflow\workflowController.js" />
-    <None Include="wwwroot\views\setup\workflow\workflowForm.html" />
     <None Include="wwwroot\views\setup\workflow\workflowFormController.js" />
-    <None Include="wwwroot\views\setup\workflow\workflows.html" />
     <None Include="wwwroot\views\setup\workflow\workflowService.js" />
     <None Include="wwwroot\views\setup\workgroups\workgroupService.js" />
   </ItemGroup>
 
   <ItemGroup>
+
     <PackageReference Include="Aspose.Words" Version="18.5.0" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.5" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.18.2" />
     <PackageReference Include="BundlerMinifier.Core" Version="2.8.391" />
     <PackageReference Include="DalSoft.Hosting.BackgroundQueue" Version="1.0.4" />
-    <PackageReference Include="HangFire" Version="1.6.19" />
+    <PackageReference Include="HangFire" Version="1.7.0-beta1" />
     <PackageReference Include="Hangfire.PostgreSql.NetCore" Version="1.4.3" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.5.0" />
     <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.215" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0-preview2-final" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.0-preview2-final" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.0" />
     <PackageReference Include="Microsoft.Azure.Search" Version="5.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.0" />
     <PackageReference Include="MimeMapping" Version="1.0.1.12" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="PowerBI.NetStandard.Api" Version="1.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Sinks.ElasticSearch" Version="6.5.0" />
     <PackageReference Include="StackExchange.Redis.Extensions.Jil" Version="3.3.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0-preview2-26406-04" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0-preview2-26406-04" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.1.1" />
+
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Localization\ApprovalProcessApproveNotification.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ApprovalProcessApproveNotification.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Localization\ApprovalProcessApproveNotification.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ApprovalProcessApproveNotification.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

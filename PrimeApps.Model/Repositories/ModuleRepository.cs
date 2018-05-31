@@ -80,7 +80,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Module>> GetAll()
         {
-            var modules = await GetModuleQuery()
+			var modules = await GetModuleQuery()
                 .Where(x => !x.Deleted)
                 .ToListAsync();
 
@@ -307,17 +307,20 @@ namespace PrimeApps.Model.Repositories
         private IQueryable<Module> GetModuleQuery()
         {
             return DbContext.Modules
-                .Include(x => x.Sections)
-                .Include(x => x.Sections.Select(z => z.Permissions))
-                .Include(x => x.Fields)
-                .Include(x => x.Fields.Select(z => z.Validation))
-                .Include(x => x.Fields.Select(z => z.Combination))
-                .Include(x => x.Fields.Select(z => z.Filters))
-                .Include(x => x.Fields.Select(z => z.Permissions))
-                .Include(x => x.Relations)
-                .Include(x => x.Dependencies)
-                .Include(x => x.Calculations)
-				.Include(x => x.Components);
-        }
+				.Include(module => module.Sections)
+					.ThenInclude(section => section.Permissions)
+				.Include(module => module.Fields)
+					.ThenInclude(field => field.Validation)
+				.Include(module => module.Fields)
+					.ThenInclude(field => field.Combination)
+				.Include(module => module.Fields)
+					.ThenInclude(field => field.Filters)
+				.Include(module => module.Fields)
+					.ThenInclude(field => field.Permissions)
+				.Include(module => module.Relations)
+				.Include(module => module.Dependencies)
+				.Include(module => module.Calculations)
+				.Include(module => module.Components);
+		}
     }
 }

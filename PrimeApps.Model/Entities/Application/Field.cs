@@ -4,6 +4,7 @@ using PrimeApps.Model.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace PrimeApps.Model.Entities.Application
 {

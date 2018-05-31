@@ -30,6 +30,7 @@ using Aspose.Words.MailMerging;
 using PrimeApps.App.Extensions;
 using Microsoft.WindowsAzure.Storage.Blob;
 using PrimeApps.App.Storage;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -39,26 +40,41 @@ namespace PrimeApps.App.Controllers
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;
-        private ITemplateRepostory _templateRepository;
+        private ITemplateRepository _templateRepository;
         private INoteRepository _noteRepository;
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepostory templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository)
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _templateRepository = templateRepository;
             _noteRepository = noteRepository;
+			_picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
         }
 
-        /// <summary>
-        /// Uploads files by the chucks as a stream.
-        /// </summary>
-        /// <param name="fileContents">The file contents.</param>
-        /// <returns>System.String.</returns>
-        [Route("Upload"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_documentRepository);
+			SetCurrentUser(_recordRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_templateRepository);
+			SetCurrentUser(_noteRepository);
+			SetCurrentUser(_picklistRepository);
+			SetCurrentUser(_settingRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		/// <summary>
+		/// Uploads files by the chucks as a stream.
+		/// </summary>
+		/// <param name="fileContents">The file contents.</param>
+		/// <returns>System.String.</returns>
+		[Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
         {
             var requestStream = await Request.ReadAsStreamAsync();
@@ -419,7 +435,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="InstanceID">The instance identifier.</param>
         /// <returns>IList{DTO.DocumentResult}.</returns>
         [Route("GetEntityDocuments"), HttpPost]
-        public async Task<IActionResult> GetEntityDocuments(DocumentRequest req)
+        public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentRequest req)
         {
             //validate instance id for the request.
             if (AppUser.TenantId != req.TenantId)

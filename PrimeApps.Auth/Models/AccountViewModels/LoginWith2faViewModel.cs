@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PrimeApps.Auth.Models.AccountViewModels
+namespace PrimeApps.Auth.UI
 {
     public class LoginWith2faViewModel
     {

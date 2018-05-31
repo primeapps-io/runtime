@@ -12,6 +12,8 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Chart;
 using PrimeApps.Model.Enums;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/report"), Authorize/*, SnakeCase*/]
@@ -32,7 +34,18 @@ namespace PrimeApps.App.Controllers
             _userRepository = userRepository;
         }
 
-        [Route("get_all"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userRepository);
+			SetCurrentUser(_picklistRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_recordRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var report = _reportRepository.GetAllBasic();

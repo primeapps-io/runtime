@@ -4,13 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.Internal;
 using System;
 
 namespace PrimeApps.Auth.Data.Migrations.IdentityServer.ConfigurationDb
 {
-    [DbContext(typeof(ConfigurationDbContext))]
+	[DbContext(typeof(ConfigurationDbContext))]
     [Migration("20180508135535_InitialIdentityServerConfigurationDbMigration")]
     partial class InitialIdentityServerConfigurationDbMigration
     {

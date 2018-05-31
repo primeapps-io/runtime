@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/action_button"), Authorize/*, SnakeCase*/]
@@ -21,7 +23,16 @@ namespace PrimeApps.App.Controllers
         {
             _actionButtonRepository = actionButtonRepository;
         }
-        [Route("get/{id:int}"), HttpGet]
+
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_actionButtonRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> GetActionButtons(int id)
         {
             var buttons = await _actionButtonRepository.GetByModuleId(id);

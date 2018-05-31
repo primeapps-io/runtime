@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Phone;
 using PrimeApps.Model.Enums;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/phone")]
@@ -23,7 +25,16 @@ namespace PrimeApps.App.Controllers
         {
             _settingRepository = settingRepository;
         }
-        [Route("save_provider"), HttpPost]
+
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_settingRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("save_provider"), HttpPost]
         public async Task<IActionResult> SaveProvider(SipProvider sipProvider)
         {
             //Delete provider if exists

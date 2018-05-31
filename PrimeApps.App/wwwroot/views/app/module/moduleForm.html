@@ -500,7 +500,7 @@
                                                               search-fields="name"
                                                               title-field="primary_value"
                                                               minlength="1"
-                                                              template-url="views/app/common/angucomplete.html"
+                                                              template-url="views/common/angucomplete.html"
                                                               focus-in="setCurrentLookupField(field)"
                                                               text-searching="{{'Common.Searching' | translate}}"
                                                               text-no-results="{{'Common.NoResults' | translate}}"
@@ -542,13 +542,13 @@
                                                         placeholder="{{'Common.Search' | translate}}"
                                                         replace-spaces-with-dashes="false"
                                                         add-from-autocomplete-only="true"
-                                                        template="views/app/common/taginput.html">
+                                                        template="views/common/taginput.html">
                                                 <auto-complete source="lookupUserAndGroup(module.id, false, $query)"
                                                                min-length="0"
                                                                load-on-focus="true"
                                                                load-on-empty="true"
                                                                max-results-to-show="9999"
-                                                               template="views/app/common/taginput-autocomplete.html"></auto-complete>
+                                                               template="views/common/taginput-autocomplete.html"></auto-complete>
                                             </tags-input>
                                         </div>
                                     </div>
@@ -570,13 +570,13 @@
                                                         placeholder="{{'Common.Search' | translate}}"
                                                         replace-spaces-with-dashes="false"
                                                         add-from-autocomplete-only="true"
-                                                        template="views/app/common/taginput.html">
+                                                        template="views/common/taginput.html">
                                                 <auto-complete source="lookupUserAndGroup(module.id, true, $query)"
                                                                min-length="0"
                                                                load-on-focus="true"
                                                                load-on-empty="true"
                                                                max-results-to-show="9999"
-                                                               template="views/app/common/taginput-autocomplete.html"></auto-complete>
+                                                               template="views/common/taginput-autocomplete.html"></auto-complete>
                                             </tags-input>
                                         </div>
                                     </div>
@@ -720,9 +720,9 @@
                             </div>
                         </div>
                     </div>
-                    <ng-include ng-show="module.name === 'quotes'" src="'views/app/crm/product/quoteProducts.html'"></ng-include>
-                    <ng-include ng-show="module.name === 'sales_orders'" src="'views/app/crm/product/orderProducts.html'"></ng-include>
-                    <ng-include ng-show="module.name === 'purchase_orders'" src="'views/app/crm/product/purchaseProducts.html'"></ng-include>
+                    <ng-include ng-show="module.name === 'quotes'" src="'views/app/product/quoteProducts.html'"></ng-include>
+                    <ng-include ng-show="module.name === 'sales_orders'" src="'views/app/product/orderProducts.html'"></ng-include>
+                    <ng-include ng-show="module.name === 'purchase_orders'" src="'views/app/product/purchaseProducts.html'"></ng-include>
 
                     <div class="subpanel" ng-if="hasDocumentsPermission(operations.read)">
                         <h5 class="subpanel-heading">{{'Common.Attachments' | translate}}</h5>

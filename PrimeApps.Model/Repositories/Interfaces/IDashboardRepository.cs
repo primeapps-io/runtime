@@ -5,8 +5,8 @@ using PrimeApps.Model.Entities.Application;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IDashboardRepository
-    {
+    public interface IDashboardRepository : IRepositoryBaseTenant
+	{
         Task<ICollection<Dashboard>> GetAllBasic(UserItem appUser);
         Task<int> Create(Dashboard dashboard);
         Task<ICollection<Chart>> GetAllChart();

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -29,7 +30,17 @@ namespace PrimeApps.App.Controllers
 
         }
 
-        [Route("get_requests/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_processRequestRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_recordRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_requests/{id:int}"), HttpGet]
         public async Task<IActionResult> GetAll([FromRoute]int id)
         {
             var processRequestEntities = await _processRequestRepository.GetByProcessId(id);

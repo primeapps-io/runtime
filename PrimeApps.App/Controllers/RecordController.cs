@@ -19,6 +19,8 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/record"), Authorize/*, SnakeCase*/]
@@ -37,7 +39,17 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
         }
 
-        [Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_recordRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_picklistRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(string module, int id, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
         {
             JObject record;

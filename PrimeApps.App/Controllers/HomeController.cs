@@ -2,24 +2,37 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols;
 using PrimeApps.App.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    public class HomeController : Controller
+	public class HomeController : Controller
     {
-        [Authorize]
-        public async Task<ActionResult> Index()
-        {
-			//await SetValues();
+		[Authorize]
+		public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
+		{
+			if (string.IsNullOrEmpty(Request.Cookies["tenant_id"]))
+			{
+				var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+				var appId = platformUserRepository.GetAppIdByDomain(Request.Host.Value);
+
+				if (appId == 0 && localAppId != 0)
+					appId = localAppId;
+
+				var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+
+				if (tenant == null)
+					return BadRequest();
 
 
-
+				Response.Cookies.Append("tenant_id", tenant.Id.ToString());
+			}
+			
 			return View();
-        }
+		}
 
-        public async Task<ActionResult> Preview()
+		public async Task<ActionResult> Preview()
         {
             await SetValues();
 

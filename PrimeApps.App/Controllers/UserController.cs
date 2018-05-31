@@ -74,28 +74,7 @@ namespace PrimeApps.App.Controllers
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
-			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-				context.Result = new UnauthorizedResult();
-
-			var tenantId = 0;
-
-			if (string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
-				context.Result = new UnauthorizedResult();
-
-			if (tenantId < 1)
-				context.Result = new UnauthorizedResult();
-
-			if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-				context.Result = new UnauthorizedResult();
-
-			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
-
-			if (platformUser == null || platformUser.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-				context.Result = new UnauthorizedResult();
-
-			context.HttpContext.Items.Add("user", platformUser);
-
+			SetContext(context);
 			SetCurrentUser(_userRepository);
 			SetCurrentUser(_settingRepository);
 			SetCurrentUser(_profileRepository);
@@ -278,7 +257,7 @@ namespace PrimeApps.App.Controllers
                 var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
 
 				//TODO Removed
-                /*using (var dbContext = new PlatformDBContext())
+				/*using (var dbContext = new PlatformDBContext())
                 {
                     apps = dbContext.UserApps.Where(x => x.UserId == AppUser.Id)
                         .Select(i => new UserAppInfo()
@@ -292,7 +271,7 @@ namespace PrimeApps.App.Controllers
                             MainTenantId = i.MainTenantId
                         }).ToList();
                 }
-				*/
+				
                 if (AppUser.AppId == 1 || AppUser.AppId == 4)
                 {
                     var activeApp = apps.SingleOrDefault(x => x.Active);
@@ -305,9 +284,9 @@ namespace PrimeApps.App.Controllers
                     mainApp.UserId = mainTenant.Id;
                     mainApp.Active = activeApp == null;
                     apps.Add(mainApp);
-                }
+                }*/
 
-                acc.user.tenantLanguage = AppUser.TenantLanguage;
+				acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
                 acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
@@ -589,7 +568,7 @@ namespace PrimeApps.App.Controllers
             if (userEntity == null)
                 return NotFound();
 
-			var userTenant = userEntity.TenantsAsUser.Where(x => x.Id == tenantId);
+			var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
 
 			if (userTenant == null)
 				return NotFound();

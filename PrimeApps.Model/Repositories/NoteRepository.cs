@@ -87,14 +87,20 @@ namespace PrimeApps.Model.Repositories
 
             if (withIncludes)
             {
-                notes = notes
-                    .Include(x => x.Notes.Select(z => z.CreatedBy))
-                    .Include(x => x.Notes.Select(z => z.Likes))
+				notes = notes
+                    .Include(x => (x as Note).CreatedBy)
+                    .Include(x => (x as Note).Likes)
                     .Include(x => x.Likes).ThenInclude(y => y.TenantUser)
                     .Include(x => x.Module)
-                    .Include(x => x.Module.Fields)
-                    .Include(x => x.CreatedBy);
-            }
+					.Include(x => x.Module).ThenInclude(y => y.Fields)
+					.Include(x => x.CreatedBy);
+
+				/*notes = notes
+						.Include(x => x.Notes)
+						.Include(x => x.Likes).ThenInclude(y => y.TenantUser)
+						.Include(x => x.Module).ThenInclude(y => y.Fields)
+						.Include(x => x.CreatedBy);*/
+			}
 
             if (request.ModuleId.HasValue)
                 notes = notes.Where(x => x.ModuleId == request.ModuleId.Value);

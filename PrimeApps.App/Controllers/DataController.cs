@@ -19,6 +19,7 @@ using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -42,7 +43,18 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
         }
 
-        [Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_auditLogRepository);
+			SetCurrentUser(_recordRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_importRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
         public async Task<IActionResult> Import([FromRoute]string module, [FromBody]JArray records)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);

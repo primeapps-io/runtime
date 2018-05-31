@@ -29,9 +29,8 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
-		private IHttpContextAccessor _httpContextAccessor;
 
-		public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, IHttpContextAccessor httpContextAccessor)
+		public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository)
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
@@ -39,7 +38,6 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _profileRepository = profileRepository;
             _picklistRepository = picklistRepository;
-			_httpContextAccessor = httpContextAccessor;
 
 			/*SetCurrentUser(_noteRepository, _httpContextAccessor);
             SetCurrentUser(_userRepository, _httpContextAccessor);
@@ -51,6 +49,7 @@ namespace PrimeApps.App.Controllers
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
+			SetContext(context);
 			SetCurrentUser(_noteRepository);
 			SetCurrentUser(_userRepository);
 			SetCurrentUser(_recordRepository);

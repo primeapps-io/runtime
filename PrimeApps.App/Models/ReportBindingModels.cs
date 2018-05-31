@@ -48,7 +48,7 @@ namespace PrimeApps.App.Models
     public class ReportFieldBindingModel
     {
         [Required, StringLength(120)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field { get; set; }
 
         [Required]
@@ -58,7 +58,7 @@ namespace PrimeApps.App.Models
     public class ReportAggregationBindingModel
     {
         [Required, StringLength(120)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegex, ErrorMessage = ValidationMessages.AlphanumericError)]
+        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
         public string Field { get; set; }
 
         [Required]

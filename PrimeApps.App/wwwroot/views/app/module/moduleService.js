@@ -496,7 +496,7 @@ angular.module('ofisim')
                 processUser: function (user) {
                     var lookupUser = {};
                     lookupUser.id = user.ID;
-                    lookupUser.primary_value = user.firstName + ' ' + user.lastName;
+                    lookupUser.primary_value = user.first_name + ' ' + user.last_name;
                     lookupUser.email = user.email;
 
                     return lookupUser;

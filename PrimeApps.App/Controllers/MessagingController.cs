@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Enums;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -27,12 +28,22 @@ namespace PrimeApps.App.Controllers
             _messagingRepository = messagingRepository;
             _settingRepository = settingRepository;
         }
-        /// <summary>
-        /// Sends bulk short message
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [Route("send_sms")]
+
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_messagingRepository);
+			SetCurrentUser(_settingRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		/// <summary>
+		/// Sends bulk short message
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
+		[Route("send_sms")]
         public async Task<IActionResult> SendSMS(SMSRequest request)
         {
             var randomRevNumber = Helpers.Utils.CreateRandomString(20);

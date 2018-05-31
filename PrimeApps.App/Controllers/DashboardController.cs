@@ -9,6 +9,7 @@ using PrimeApps.App.Helpers;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -28,7 +29,16 @@ namespace PrimeApps.App.Controllers
             _reportRepository = reportRepository;
         }
 
-        [Route("get_dashlets"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_settingRepository);
+			SetCurrentUser(_dashboardRepository);
+			SetCurrentUser(_dashletRepository);
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_dashlets"), HttpGet]
         public async Task<IActionResult> GetDashlets([FromRoute]int dashboard, [FromRoute]string locale = "", [FromRoute]int? timezoneOffset = 180)
         {
             var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, locale, timezoneOffset.Value);

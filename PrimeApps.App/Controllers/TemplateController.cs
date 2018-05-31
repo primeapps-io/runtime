@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -16,16 +17,25 @@ namespace PrimeApps.App.Controllers
     [Route("api/template"), Authorize/*, SnakeCase*/]
 	public class TemplateController : BaseController
     {
-        private readonly ITemplateRepostory _templateRepostory;
+        private readonly ITemplateRepository _templateRepostory;
         private readonly IUserRepository _userRepository;
 
-        public TemplateController(ITemplateRepostory templateRepostory, IUserRepository userRepository)
+        public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository)
         {
             _templateRepostory = templateRepostory;
             _userRepository = userRepository;
         }
 
-        [Route("get/{id:int}"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userRepository);
+			SetCurrentUser(_templateRepostory);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var template = await _templateRepostory.GetById(id);

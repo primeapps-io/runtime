@@ -27,10 +27,10 @@ angular.module('ofisim')
     })
 
     .constant('operations', {
-        read: 'Read',
-        modify: 'Modify',
-        write: 'Write',
-        remove: 'Remove'
+        read: 'read',
+        modify: 'modify',
+        write: 'write',
+        remove: 'remove'
     })
 
     .constant('dataTypes', {

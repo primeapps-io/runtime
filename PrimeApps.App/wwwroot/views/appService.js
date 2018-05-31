@@ -21,19 +21,21 @@ angular.module('ofisim')
 
                     $http.post(config.apiUrl + 'User/MyAccount', {})
                         .then(function (responseAccount) {
-                            if (responseAccount.status != 200 || !responseAccount.data) {
-                                clearAuthCache();
-                                if (responseAccount.data === null) {
-                                    deferred.resolve(401);
-                                }
-                                else {
-                                    deferred.resolve(false);
-                                }
+							if (responseAccount.status != 200 || !responseAccount.data) {
+								clearAuthCache();
+								if (responseAccount.data === null) {
+									deferred.resolve(401);
+								}
+								else {
+									deferred.resolve(false);
+								}
 
-                                $window.location.href = '/Auth/SignOut';
+								$window.location.href = '/Auth/SignOut';
 
-                                return deferred.promise;
-                            }
+								return deferred.promise;
+							} else if (responseAccount === undefined) {
+								deferred.resolve(401);
+							}
 
                             //Check app domain and user app
                             var host = window.location.hostname;
@@ -301,7 +303,7 @@ angular.module('ofisim')
 
                                         //getUserSpecific sipAccount Info
                                         if (phoneSettings.sipUsers) {
-                                            var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.ID.toString(), isActive: 'true' }, true)[0];
+                                            var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.id.toString(), isActive: 'true' }, true)[0];
                                             if (sipData) {
                                                 var sipPromises = [];
                                                 sipPromises.push($http.get(config.apiUrl + 'phone/get_sip_password'));
@@ -379,13 +381,13 @@ angular.module('ofisim')
                                     $rootScope.detailViewType = $filter('filter')($rootScope.moduleSettings, { key: 'detail_view_type' }, true)[0];
                                     $rootScope.detailViewType = $rootScope.detailViewType ? $rootScope.detailViewType.value : 'tab';
                                     $rootScope.advancedDocumentSearch = $filter('filter')($rootScope.moduleSettings, { key: 'advanced_document_search' }, true)[0];
-                                    $rootScope.advancedDocumentSearch = $rootScope.advancedDocumentSearch ? ($rootScope.advancedDocumentSearch.value && $rootScope.user.profile.DocumentSearch) : false;
+									$rootScope.advancedDocumentSearch = $rootScope.advancedDocumentSearch ? ($rootScope.advancedDocumentSearch && $rootScope.user.profile.document_search) : false;
                                     $rootScope.showNotes = $filter('filter')($rootScope.moduleSettings, { key: 'show_notes' }, true)[0];
                                     $rootScope.showNotes = $rootScope.showNotes ? $rootScope.showNotes.value : true;
                                     $rootScope.calendarFields = $filter('filter')($rootScope.moduleSettings, { key: 'calendar_fields' }, true)[0];
                                     $rootScope.showSaveAndNew = $filter('filter')($rootScope.moduleSettings, { key: 'show_save_and_new' }, true)[0];
-                                    $rootScope.showSaveAndNew = $rootScope.showSaveAndNew ? $rootScope.showSaveAndNew.value : true;
-                                    $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.Permissions, { 'Type': 2 }, true)[0];
+                                    $rootScope.showSaveAndNew = $rootScope.showSaveAndNew ? $rootScope.showSaveAndNew : true;
+                                    $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, { type : 2 }, true)[0];
                                     that.setCustomActivityTypes(activityTypes);
 
                                     helper.hideLoader();

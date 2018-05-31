@@ -26,7 +26,7 @@ namespace PrimeApps.App
             try
             {
                 Log.Information("Starting web host");
-                BuildWebHost(args).Run();
+				CreateWebHostBuilder(args).Build().Run();
                 return;
             }
             catch (Exception ex)
@@ -40,11 +40,9 @@ namespace PrimeApps.App
             }
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://localhost:5002/")
-                .UseSerilog()
-                .Build();
+                .UseSerilog();
     }
 }

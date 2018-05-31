@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/module_profile_settings"), Authorize/*, SnakeCase*/]
@@ -21,7 +23,15 @@ namespace PrimeApps.App.Controllers
             _moduleProfileSettingRepository = moduleProfileSettingRepository;
         }
 
-        [Route("get_all"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_moduleProfileSettingRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var moduleProfileSettingEntities = await _moduleProfileSettingRepository.GetAllBasic();

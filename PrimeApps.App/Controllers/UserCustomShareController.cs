@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/user_custom_shares"), Authorize/*, SnakeCase*/]
@@ -21,7 +23,15 @@ namespace PrimeApps.App.Controllers
             _userOwnerRepository = userOwnerRepository;
         }
 
-        [Route("get_all"), HttpGet]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userOwnerRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var userOwnerEntities = await _userOwnerRepository.GetAllBasic();

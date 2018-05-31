@@ -286,7 +286,7 @@ namespace PrimeApps.Model.Context
 
 			modelBuilder.Entity<UserTenant>()
 				.HasOne(pt => pt.PlatformUser)
-				.WithMany(p => p.TenantsAsOwner)
+				.WithMany(p => p.TenantsAsUser)
 				.HasForeignKey(pt => pt.UserId);
 
 			modelBuilder.Entity<UserTenant>()
@@ -309,7 +309,7 @@ namespace PrimeApps.Model.Context
 			//Organization and Team One to Many
 			modelBuilder.Entity<Tenant>()
 				.HasOne(p => p.Owner)
-				.WithMany(b => b.TenantsAsUser)
+				.WithMany(b => b.TenantsAsOwner)
 				.HasForeignKey(p => p.OwnerId);
 
 			//BaseEntity Tenant CreatedBy Relation. For Solving Error: Unable to determine the relationship represented by navigation property 'Tenant.CreatedBy' of type 'PlatformUser'.

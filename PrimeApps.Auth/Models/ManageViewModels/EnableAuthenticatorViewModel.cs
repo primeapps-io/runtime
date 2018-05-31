@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace PrimeApps.Auth.Models.ManageViewModels
+namespace PrimeApps.Auth.UI
 {
     public class EnableAuthenticatorViewModel
     {

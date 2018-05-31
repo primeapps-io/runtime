@@ -15,6 +15,8 @@ using PrimeApps.App.Jobs;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Warehouse;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using Microsoft.AspNetCore.Mvc.Filters;
+
 namespace PrimeApps.App.Controllers
 {
     [Route("api/analytics"), Authorize/*, SnakeCase*/]
@@ -32,7 +34,16 @@ namespace PrimeApps.App.Controllers
             _warehousePlatformRepository = warehousePlatformRepository;
         }
 
-        [Route("create_warehouse"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_analyticRepository);
+			SetCurrentUser(_userRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("create_warehouse"), HttpPost]
         public async Task<IActionResult> CreateWarehouse(WarehouseCreateRequest request)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))

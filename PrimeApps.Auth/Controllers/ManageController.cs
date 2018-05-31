@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PrimeApps.Auth.Models;
-using PrimeApps.Auth.Models.ManageViewModels;
+using PrimeApps.Auth.UI;
 
 namespace PrimeApps.Auth.Controllers
 {

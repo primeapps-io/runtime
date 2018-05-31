@@ -10,6 +10,7 @@ using PrimeApps.Model.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.App.Storage;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -29,11 +30,19 @@ namespace PrimeApps.App.Controllers
             _platformUserRepository = platformUserRepository;
         }
 
-        /// <summary>
-        /// Updates instance.
-        /// </summary>
-        /// <param name="tenantDto">The instance.</param>
-        [Route("Edit")]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		/// <summary>
+		/// Updates instance.
+		/// </summary>
+		/// <param name="tenantDto">The instance.</param>
+		[Route("Edit")]
         [ProducesResponseType(typeof(void), 200)]
         //[ResponseType(typeof(void))]
         [HttpPost]

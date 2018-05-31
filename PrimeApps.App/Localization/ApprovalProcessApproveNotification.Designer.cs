@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PrimeApps.App.Resources.Email {
+namespace PrimeApps.App.Localization {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace PrimeApps.App.Resources.Email {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PrimeApps.App.Resources.Email.ApprovalProcessApproveNotification", typeof(ApprovalProcessApproveNotification).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PrimeApps.App.Localization.ApprovalProcessApproveNotification", typeof(ApprovalProcessApproveNotification).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

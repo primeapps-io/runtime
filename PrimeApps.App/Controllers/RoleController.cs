@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
@@ -24,7 +25,16 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
         }
 
-        [Route("find"), HttpPost]
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_userRepository);
+			SetCurrentUser(_roleRepository);
+
+			base.OnActionExecuting(context);
+		}
+
+		[Route("find"), HttpPost]
         public async Task<Role> Find([FromRoute]int id)
         {
             return await _roleRepository.GetByIdAsync(id);

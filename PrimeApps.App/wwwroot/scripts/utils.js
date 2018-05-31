@@ -609,7 +609,7 @@ angular.module('ofisim')
 
                     if (!module) return false;
 
-                    var permission = $filter('filter')($rootScope.user.profile.Permissions, { ModuleId: module.id }, true)[0];
+					var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
 
                     if (!permission)
                         return false;
@@ -654,7 +654,7 @@ angular.module('ofisim')
                     return true;
                 },
                 hasDocumentsPermission: function (operation) {
-                    var permission = $filter('filter')($rootScope.user.profile.Permissions, { Type: 1 })[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, { type: 1 })[0];
 
                     if (!permission)
                         return false;
