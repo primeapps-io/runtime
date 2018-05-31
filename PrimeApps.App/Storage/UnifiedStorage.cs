@@ -3,9 +3,12 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PrimeApps.App.Storage
@@ -13,14 +16,17 @@ namespace PrimeApps.App.Storage
     /// <summary>
     /// Unified Storage library based on Amazon S3
     /// </summary>
-    public class UnifiedStorage
+    public class UnifiedStorage : IUnifiedStorage
     {
         private IAmazonS3 _client;
+        public IAmazonS3 Client { get { return _client; } }
 
         public UnifiedStorage(IAmazonS3 client)
         {
             _client = client;
+            ((AmazonS3Config)(_client.Config)).ForcePathStyle = true;
         }
+
         /// <summary>
         /// Uploads a file stream into a bucket.
         /// </summary>
@@ -36,6 +42,93 @@ namespace PrimeApps.App.Storage
             {
                 await transUtil.UploadAsync(stream, bucket, key);
             }
+        }
+
+        /// <summary>
+        /// Initiates multipart upload.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <returns>Upload id required to upload parts.</returns>
+        public async Task<string> InitiateMultipartUpload(string bucket, string key)
+        {
+
+            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
+            if (!exists)
+            {
+                await _client.PutBucketAsync(bucket);
+            }
+
+            // initiate if it is first chunk.
+            var initialResult = await _client.InitiateMultipartUploadAsync(bucket, key);
+            return initialResult.UploadId;
+        }
+
+        /// <summary>
+        /// Uploads a multipart file stream into a bucket.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="chunk"></param>
+        /// <param name="chunks"></param>
+        /// <param name="eTags"></param>
+        /// <param name="uploadId"></param>
+        /// <param name="stream"></param>
+        /// <returns>ETag for the uploaded file part</returns>
+        public async Task<string> UploadPart(string bucket, string key, int chunk, int chunks, string uploadId, Stream stream)
+        {
+            UploadPartResponse response;
+
+            UploadPartRequest uploadRequest = new UploadPartRequest
+            {
+                BucketName = bucket,
+                Key = key,
+                UploadId = uploadId,
+                PartNumber = chunk,
+                InputStream = stream
+            };
+
+            // Upload a part
+            response = await _client.UploadPartAsync(uploadRequest);
+
+            return response.ETag;
+        }
+
+        /// <summary>
+        /// Aborts multipart upload request.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="uploadId"></param>
+        /// <returns></returns>
+        public async Task AbortMultipartUpload(string bucket, string key, string uploadId)
+        {
+            // Abort the upload.
+            AbortMultipartUploadRequest abortMPURequest = new AbortMultipartUploadRequest
+            {
+                BucketName = bucket,
+                Key = key,
+                UploadId = uploadId
+            };
+
+            await _client.AbortMultipartUploadAsync(abortMPURequest);
+        }
+
+        public async Task<CompleteMultipartUploadResponse> CompleteMultipartUpload(string bucket, string key, string eTags, string finalETag, string uploadId)
+        {
+            eTags += string.IsNullOrWhiteSpace(eTags) ? finalETag : $"|{finalETag}";
+            List<PartETag> eTagList = string.IsNullOrWhiteSpace(eTags.ToString()) ? new List<PartETag>() : eTags.ToString().Split("|").Select((x, i) => new PartETag(i + 1, x)).ToList();
+
+            // Setup to complete the upload.
+            CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest
+            {
+                BucketName = bucket,
+                Key = key,
+                UploadId = uploadId,
+                PartETags = eTagList
+            };
+
+            return await _client.CompleteMultipartUploadAsync(completeRequest);
         }
 
         /// <summary>
@@ -100,6 +193,42 @@ namespace PrimeApps.App.Storage
                };
 
             return _client.GetPreSignedURL(request);
+        }
+
+
+        /// <summary>
+        /// Copies objects from one bucket to another.
+        /// </summary>
+        /// <param name="sourceBucket"></param>
+        /// <param name="key"></param>
+        /// <param name="destinationBucket"></param>
+        /// <param name="destinationKey"></param>
+        /// <returns></returns>
+        public async Task<CopyObjectResponse> CopyObject(string sourceBucket, string key, string destinationBucket, string destinationKey)
+        {
+            CopyObjectRequest request = new CopyObjectRequest
+            {
+                SourceBucket = sourceBucket,
+                SourceKey = key,
+                DestinationBucket = destinationBucket,
+                DestinationKey = destinationKey
+            };
+            return await _client.CopyObjectAsync(request);
+        }
+        /// <summary>
+        /// Deletes an object from a bucket.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<DeleteObjectResponse> DeleteObject(string bucket, string key)
+        {
+            DeleteObjectRequest request = new DeleteObjectRequest
+            {
+                BucketName = bucket,
+                Key = key
+            };
+            return await _client.DeleteObjectAsync(request);
         }
     }
 }
