@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Storage;
 using System.Configuration;
 using System.Globalization;
 using System.Web;
@@ -251,6 +252,7 @@ namespace PrimeApps.App
                 ConfigurationManager.AppSettings.Get("AzureStorageSecretKey"));
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonS3>();
+            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
             AuthConfiguration(services, Configuration);
 
