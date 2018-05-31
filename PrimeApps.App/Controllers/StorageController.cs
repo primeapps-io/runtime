@@ -24,11 +24,11 @@ namespace PrimeApps.App.Controllers
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;
-        private ITemplateRepostory _templateRepository;
+        private ITemplateRepository _templateRepository;
         private INoteRepository _noteRepository;
         private ISettingRepository _settingRepository;
         private IUnifiedStorage _storage;
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepostory templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage)
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
