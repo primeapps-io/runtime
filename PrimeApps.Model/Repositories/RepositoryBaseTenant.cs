@@ -48,6 +48,9 @@ namespace PrimeApps.Model.Repositories
                         throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
                     }
                 }
+
+                _dbContext.UserId = CurrentUser.UserId;
+
                 return _dbContext;
             }
         }
