@@ -41,7 +41,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get_requests/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetAll([FromRoute]int id)
+        public async Task<IActionResult> GetAll([FromQuery(Name = "id")]int id)
         {
             var processRequestEntities = await _processRequestRepository.GetByProcessId(id);
 
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Controllers
         }
 
 	    [Route("approve_multiple_request"), HttpPut]
-	    public async Task<IActionResult> ApproveMultipleRequest(int[] RecordIds)
+	    public async Task<IActionResult> ApproveMultipleRequest([FromBody]int[] RecordIds)
 	    {
 		    if (!ModelState.IsValid)
 			    return BadRequest(ModelState);
@@ -70,7 +70,7 @@ namespace PrimeApps.App.Controllers
 	    }
 
 		[Route("approve"), HttpPut]
-        public async Task<IActionResult> ApproveRequest(ProcessRequestModel request)
+        public async Task<IActionResult> ApproveRequest([FromBody]ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -89,7 +89,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("reject"), HttpPut]
-        public async Task<IActionResult> RejectRequest(ProcessRequestRejectModel request)
+        public async Task<IActionResult> RejectRequest([FromBody]ProcessRequestRejectModel request)
         {
 
             var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
@@ -106,7 +106,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete"), HttpPut]
-        public async Task<IActionResult> DeleteRequest(ProcessRequestDeleteModel request)
+        public async Task<IActionResult> DeleteRequest([FromBody]ProcessRequestDeleteModel request)
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
@@ -116,7 +116,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval"), HttpPut]
-        public async Task<IActionResult> ReApprovalRequest(ProcessRequestModel request)
+        public async Task<IActionResult> ReApprovalRequest([FromBody]ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -135,7 +135,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval_manuel"), HttpPost]
-        public async Task<IActionResult> ManuelApprovalRequest(ProcessRequestManuelModel request)
+        public async Task<IActionResult> ManuelApprovalRequest([FromBody]ProcessRequestManuelModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

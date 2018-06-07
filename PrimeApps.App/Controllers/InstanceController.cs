@@ -46,7 +46,7 @@ namespace PrimeApps.App.Controllers
         [ProducesResponseType(typeof(void), 200)]
         //[ResponseType(typeof(void))]
         [HttpPost]
-        public async Task<IActionResult> Edit(TenantDTO tenantDto)
+        public async Task<IActionResult> Edit([FromBody]TenantDTO tenantDto)
         {
             //check if the tenant id is valid, within the current session's context.
             var tenantToUpdate = await _tenantRepository.GetAsync(tenantDto.TenantId);
@@ -107,7 +107,7 @@ namespace PrimeApps.App.Controllers
         [ProducesResponseType(typeof(void), 200)]
         //[ResponseType(typeof(void))]
         [HttpPost]
-        public async Task<IActionResult> Dismiss(DismissDTO relation)
+        public async Task<IActionResult> Dismiss([FromBody]DismissDTO relation)
         {
             TenantUser user = await _userRepository.GetByEmail(relation.EMail);
 
@@ -192,7 +192,7 @@ namespace PrimeApps.App.Controllers
         [ProducesResponseType(typeof(void), 200)]
         //[ResponseType(typeof(void))]
         [HttpPost]
-        public async Task<IActionResult> SaveLogo(JObject logo)
+        public async Task<IActionResult> SaveLogo([FromBody]JObject logo)
         {
             var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
 

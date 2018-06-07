@@ -49,7 +49,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById([FromQuery(Name = "id")]int id)
         {
             var helpEntity = await _helpRepository.GetById(id);
 
@@ -57,13 +57,13 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<ICollection<Help>> GetAll([FromRoute]ModalType modalType = ModalType.NotSet)
+        public async Task<ICollection<Help>> GetAll([FromQuery(Name = "modalType")]ModalType modalType = ModalType.NotSet)
         {
             return await _helpRepository.GetAll(modalType);
         }
 
         [Route("get_by_type"), HttpGet]
-        public async Task<Help> GetByType([FromRoute]ModalType templateType, [FromRoute]int? moduleId = null, [FromRoute]string route = "")
+        public async Task<Help> GetByType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleId")]int? moduleId = null, [FromQuery(Name = "route")]string route = "")
         {
             var templates = await _helpRepository.GetByType(templateType, moduleId, route);
 
@@ -71,7 +71,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_module_type"), HttpGet]
-        public async Task<Help> GetModuleType([FromRoute]ModalType templateType, [FromRoute]ModuleType moduleType, [FromRoute]int? moduleId = null)
+        public async Task<Help> GetModuleType([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "moduleType")]ModuleType moduleType, [FromQuery(Name = "moduleId")]int? moduleId = null)
         {
             var templates = await _helpRepository.GetModuleType(templateType, moduleType, moduleId);
 
@@ -79,7 +79,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_first_screen"), HttpGet]
-        public async Task<Help> GetFistScreen([FromRoute]ModalType templateType, [FromRoute]bool? firstscreen = false)
+        public async Task<Help> GetFistScreen([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "firstscreen")]bool? firstscreen = false)
         {
             var templates = await _helpRepository.GetFistScreen(templateType, firstscreen);
 
@@ -87,7 +87,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_custom_help"), HttpGet]
-        public async Task<ICollection<Help>> GetCustomHelp([FromRoute]ModalType templateType, [FromRoute]bool? customhelp = false)
+        public async Task<ICollection<Help>> GetCustomHelp([FromQuery(Name = "templateType")]ModalType templateType, [FromQuery(Name = "customhelp")]bool? customhelp = false)
         {
             var templates = await _helpRepository.GetCustomHelp(templateType, customhelp);
 
@@ -95,7 +95,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(HelpBindingModel help)
+        public async Task<IActionResult> Create([FromBody]HelpBindingModel help)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -113,7 +113,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]HelpBindingModel help)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]HelpBindingModel help)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -130,7 +130,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var helpEntity = await _helpRepository.GetByIdBasic(id);
 

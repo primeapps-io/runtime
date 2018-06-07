@@ -35,7 +35,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("find"), HttpPost]
-        public async Task<Role> Find([FromRoute]int id)
+        public async Task<Role> Find([FromQuery(Name = "id")]int id)
         {
             return await _roleRepository.GetByIdAsync(id);
         }
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task Create(RoleDTO role)
+        public async Task Create([FromBody]RoleDTO role)
         {
             await _roleRepository.CreateAsync(new Role()
             {
@@ -74,13 +74,13 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete"), HttpDelete]
-        public async Task Delete([FromRoute]int id, [FromRoute]int transferRoleId)
+        public async Task Delete([FromQuery(Name = "id")]int id, [FromQuery(Name = "transferRoleId")]int transferRoleId)
         {
             await _roleRepository.RemoveAsync(id, transferRoleId);
         }
 
         [Route("update_user_role"), HttpPut]
-        public async Task UpdateUserRole([FromRoute]int userId, [FromRoute]int roleId)
+        public async Task UpdateUserRole([FromQuery(Name = "userId")]int userId, [FromQuery(Name = "roleId")]int roleId)
         {
             var user = await _userRepository.GetById(userId);
 

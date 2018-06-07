@@ -54,14 +54,14 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_report/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetReport(int Id)
+        public async Task<IActionResult> GetReport([FromQuery(Name = "id")]int Id)
         {
             var report = await _reportRepository.GetById(Id);
 
             return Ok(report);
         }
         [Route("get_chart/{report:int}"), HttpGet]
-        public async Task<IActionResult> GetChart(int report)
+        public async Task<IActionResult> GetChart([FromQuery(Name = "id")]int report)
         {
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_widget/{report:int}"), HttpGet]
-        public async Task<IActionResult> GetWidget(int report)
+        public async Task<IActionResult> GetWidget([FromQuery(Name = "id")]int report)
         {
             var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser);
             var widget = await _reportRepository.GetWidgetByReportId(report);
@@ -102,7 +102,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(ReportBindingModel report)
+        public async Task<IActionResult> Create([FromBody]ReportBindingModel report)
         {
             ReportHelper.Validate(report, ModelState);
 
@@ -149,7 +149,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]ReportBindingModel report)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]ReportBindingModel report)
         {
             ReportHelper.Validate(report, ModelState);
 
@@ -199,7 +199,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var reportEntity = await _reportRepository.GetById(id);
 
@@ -220,7 +220,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_category"), HttpPost]
-        public async Task<IActionResult> CreateCategory(ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> CreateCategory([FromBody]ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -238,7 +238,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_category/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateCategory([FromRoute]int id, [FromBody]ReportCategoryBindingModel reportCategory)
+        public async Task<IActionResult> UpdateCategory([FromQuery(Name = "id")]int id, [FromBody]ReportCategoryBindingModel reportCategory)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -255,7 +255,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_category/{id:int}"), HttpDelete]
-        public async Task<IActionResult> DeleteCategory([FromRoute]int id)
+        public async Task<IActionResult> DeleteCategory([FromQuery(Name = "id")]int id)
         {
             var reportCategoryEntity = await _reportRepository.GetCategoryById(id);
 

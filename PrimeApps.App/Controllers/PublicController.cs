@@ -45,7 +45,7 @@ namespace PrimeApps.App.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         //[ResponseType(typeof(bool))]
         [HttpGet]
-        public IActionResult IsUniqueEmail(string email)
+        public IActionResult IsUniqueEmail([FromQuery(Name = "email")]string email)
         {
             //check it in the entity layer and return the result.
             var result = _platformUserRepository.IsEmailAvailable(email);
@@ -54,7 +54,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("GetCustomInfo")]
         [HttpGet]
-        public async Task<IActionResult> GetCustomInfo(string customDomain)
+        public async Task<IActionResult> GetCustomInfo([FromQuery(Name = "customDomain")]string customDomain)
         {
             var cacheClient = Redis.Client();
             var customInfo = await cacheClient.GetAsync<CustomInfoDTO>($"custom_info_{customDomain.Replace(".", "")}");

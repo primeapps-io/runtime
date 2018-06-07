@@ -40,7 +40,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(ModuleProfileSettingBindingModels moduleProfileSetting)
+        public async Task<IActionResult> Create([FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -58,7 +58,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -75,7 +75,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var moduleProfileSettingEntity = await _moduleProfileSettingRepository.GetByIdBasic(id);
 

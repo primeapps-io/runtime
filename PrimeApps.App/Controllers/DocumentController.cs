@@ -364,7 +364,7 @@ namespace PrimeApps.App.Controllers
         /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
         /// <param name="document">The document.</param>
-        public async Task<IActionResult> Create(DocumentDTO document)
+        public async Task<IActionResult> Create([FromBody]DocumentDTO document)
         {
             //validate instance id for the request.
 
@@ -464,7 +464,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="TenantId">The instance identifier.</param>
         /// <returns>DocumentExplorerResult.</returns>
         [Route("GetDocuments"), HttpPost]
-        public async Task<IActionResult> GetDocuments(DocumentRequest req)
+        public async Task<IActionResult> GetDocuments([FromBody]DocumentRequest req)
         {
             //validate the instance id by the session instances.
 
@@ -493,7 +493,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("GetDocument"), HttpPost]
-        public async Task<IActionResult> GetDocumentById([FromBody] int fileID)
+        public async Task<IActionResult> GetDocumentById([FromQuery(Name = "fileID")] int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -510,7 +510,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("Download"), HttpGet]
-        public async Task<IActionResult> Download([FromRoute] int fileID)
+        public async Task<IActionResult> Download([FromQuery(Name = "fileID")] int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -571,7 +571,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("download_module_document"), HttpGet]
-        public async Task<IActionResult> DownloadModuleDocument([FromRoute] string module, [FromRoute] string fileName, [FromRoute] string fileNameExt, [FromRoute] string fieldName, [FromRoute] string recordId)
+        public async Task<IActionResult> DownloadModuleDocument([FromQuery(Name = "module")] string module, [FromQuery(Name = "fileName")] string fileName, [FromQuery(Name = "fileNameExt")] string fileNameExt, [FromQuery(Name = "fieldName")] string fieldName, [FromQuery(Name = "recordId")] string recordId)
         {
             var publicName = "";
 
@@ -615,7 +615,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="DocID">The document identifier.</param>
         [Route("Remove"), HttpPost]
-        public async Task<IActionResult> Remove(DocumentDTO doc)
+        public async Task<IActionResult> Remove([FromBody]DocumentDTO doc)
         {
             //if the document is not null open a new session and transaction
             var result = await _documentRepository.RemoveAsync(doc.ID);
@@ -634,7 +634,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="document">The document.</param>
         [Route("Modify"), HttpPost]
-        public async Task<IActionResult> Modify(DocumentDTO document)
+        public async Task<IActionResult> Modify([FromBody]DocumentDTO document)
         {
             var updatedDoc = await _documentRepository.UpdateAsync(new Document()
             {
@@ -654,7 +654,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("export"), HttpGet]
-        public async Task<IActionResult> Export([FromRoute]string module, [FromRoute]int id, [FromRoute]int templateId, [FromRoute]string format, [FromRoute]string locale, [FromRoute]int timezoneOffset = 180, [FromRoute] bool save = false)
+        public async Task<IActionResult> Export([FromQuery(Name = "module")]string module, [FromQuery(Name = "id")]int id, [FromQuery(Name = "templateId")]int templateId, [FromQuery(Name = "format")]string format, [FromQuery(Name = "locale")]string locale, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180, [FromQuery(Name = "save")] bool save = false)
         {
             JObject record;
             var relatedModuleRecords = new Dictionary<string, JArray>();
@@ -809,7 +809,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download_template"), HttpGet]
-        public async Task<IActionResult> DownloadTemplate([FromRoute]int templateId)
+        public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "templateId")]int templateId)
         {
             //get the document record from database
             var template = await _templateRepository.GetById(templateId);
@@ -846,7 +846,7 @@ namespace PrimeApps.App.Controllers
             }
         }
         [Route("document_search"), HttpPost]
-        public async Task<IActionResult> SearchDocument(DocumentFilterRequest filterRequest)
+        public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
         {
             if (filterRequest != null && filterRequest.Filters.Count > 0)
             {
@@ -1245,7 +1245,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpPost]
-        public async Task<ICollection<DocumentResult>> Find(DocumentFindRequest request)
+        public async Task<ICollection<DocumentResult>> Find([FromBody]DocumentFindRequest request)
         {
             var documents = await _documentRepository.GetDocumentsByLimit(request);
 
@@ -1253,7 +1253,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("count"), HttpPost]
-        public async Task<int> Count(DocumentFindRequest request)
+        public async Task<int> Count([FromBody]DocumentFindRequest request)
         {
             return await _documentRepository.Count(request);
         }

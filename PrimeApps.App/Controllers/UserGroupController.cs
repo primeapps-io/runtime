@@ -37,7 +37,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var userGroupEntity = await _userGroupRepository.GetById(id);
 
@@ -54,7 +54,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(UserGroupBindingModel userGroup)
+        public async Task<IActionResult> Create([FromBody]UserGroupBindingModel userGroup)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -86,7 +86,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]UserGroupBindingModel userGroup)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]UserGroupBindingModel userGroup)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -115,7 +115,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var userGroupEntity = await _userGroupRepository.GetById(id);
 

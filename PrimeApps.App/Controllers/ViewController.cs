@@ -36,7 +36,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetAll(int moduleId)
+        public async Task<IActionResult> GetAll([FromQuery(Name = "moduleId")]int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");
@@ -70,7 +70,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(ViewBindingModel view)
+        public async Task<IActionResult> Create([FromBody]ViewBindingModel view)
         {
             if (!RecordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
                 ModelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
@@ -91,7 +91,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]ViewBindingModel view)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]ViewBindingModel view)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -118,7 +118,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -131,7 +131,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_view_state/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetViewState(int moduleId)
+        public async Task<IActionResult> GetViewState([FromQuery(Name = "moduleId")]int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");

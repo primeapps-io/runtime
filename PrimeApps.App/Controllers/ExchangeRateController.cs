@@ -14,7 +14,7 @@ namespace PrimeApps.App.Controllers
 	public class ExchangeRateController : BaseController
     {
         [Route("get_daily_rates"), HttpGet]
-        public async Task<IActionResult> GetDailyRates(int? year = null, int? month = null, int? day = null)
+        public async Task<IActionResult> GetDailyRates([FromQuery(Name = "year")]int? year = null, [FromQuery(Name = "month")]int? month = null, [FromQuery(Name = "day")]int? day = null)
         {
             ExchangeRate dailyRates;
 
