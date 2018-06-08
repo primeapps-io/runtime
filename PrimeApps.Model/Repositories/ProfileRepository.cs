@@ -213,7 +213,8 @@ namespace PrimeApps.Model.Repositories
                         Modify = y.Modify,
                         Read = y.Read,
                         Remove = y.Remove,
-                        Write = y.Write
+                        Write = y.Write,
+                        ModuleId = y.ModuleId
                     }).ToList()
                 }).ToListAsync();
         }

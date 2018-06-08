@@ -15,6 +15,18 @@ using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using Hangfire;
 
+/*
+ * using OfisimCRM.DTO.AuditLog;
+using OfisimCRM.DTO.Cache;
+using OfisimCRM.DTO.Record;
+using OfisimCRM.Model.Entities;
+using OfisimCRM.Model.Enums;
+using OfisimCRM.Model.Helpers;
+using OfisimCRM.Model.Repositories.Interfaces;
+using OfisimCRM.App.Notifications;
+using OfisimCRM.DTO.Common;
+ */
+
 namespace PrimeApps.App.Helpers
 {
     public static class RecordHelper

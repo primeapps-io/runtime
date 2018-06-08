@@ -17,6 +17,9 @@ namespace PrimeApps.Model.Enums
         Sms = 2,
 
         [EnumMember(Value = "module")]
-        Module = 3
+        Module = 3,
+
+        [EnumMember(Value = "excel")]
+        Excel = 4
     }
 }

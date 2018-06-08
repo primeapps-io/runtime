@@ -41,7 +41,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("sharing_type")]//, Index]
         public ReportSharingType SharingType { get; set; }
 
-        [Column("filter_logic"), MaxLength(50)]
+        [Column("filter_logic"), MaxLength(200)]
         public string FilterLogic { get; set; }
 
         public virtual Module Module { get; set; }

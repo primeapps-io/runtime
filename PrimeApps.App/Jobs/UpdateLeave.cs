@@ -84,6 +84,9 @@ namespace PrimeApps.App.Jobs
 
                                         var izinler = recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
 
+                                        if (izinler.IsNullOrEmpty())
+                                            continue;
+
                                         foreach (JObject calisan in calisanlar)
                                         {
                                             var kalanIzinHakki = 0;
