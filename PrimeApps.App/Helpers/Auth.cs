@@ -170,7 +170,8 @@ namespace PrimeApps.App.Helpers
                             var color = !result["Color"].IsNullOrEmpty() ? result["Color"] : "#555198";
                             var lang = !result["Language"].IsNullOrEmpty() ? (string)result["Language"] : string.Empty;
                             var favicon = !result["Favicon"].IsNullOrEmpty() ? result["Favicon"] : cdnUrlStatic + "images/favicon/primeapps.ico";
-                            json = @"{app: 'primeapps', title: '" + title + "', logo: '" + result["Logo"] + "', desc_tr:'" + description + "', desc_en:'" + description + "', color: '" + color + "', customDomain: true, language: '" + lang + "', favicon: '" + favicon + "' }";
+                            var image = !result["Image"].IsNullOrEmpty() ? result["Image"] : null;
+                            json = @"{app: 'primeapps', title: '" + title + "', logo: '" + result["Logo"] + "', desc_tr:'" + description + "', desc_en:'" + description + "', color: '" + color + "', customDomain: true, language: '" + lang + "', favicon: '" + favicon + "', customImage: '" + image + "' }";
                             AppInfo = json;
                             return JObject.Parse(json);
                         }
@@ -189,6 +190,10 @@ namespace PrimeApps.App.Helpers
             else if (url.Contains("ik.ofisim.com") || url.Contains("ik-test.ofisim.com") || url.Contains("ik-dev.ofisim.com"))
             {
                 json = @"{app: 'ik', title: 'Ofisim İK', logo: '" + cdnUrlStatic + "/images/login/logos/login_ik.png', desc_tr:'Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.', desc_en:'Manage your employees leaves, advances, expenses, trainings and personal information easily.', color: '#46428f', language: 'tr', favicon: '" + cdnUrlStatic + "/images/favicon/ofisim.ico' }";
+            }
+            else if (url.Contains("hr.ofisim.com") || url.Contains("hr-test.ofisim.com") || url.Contains("hr-dev.ofisim.com"))
+            {
+                json = @"{app: 'ik', title: 'Ofisim HR', logo: '" + cdnUrlStatic + "/images/login/logos/login_ik.png', desc_tr:'Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.', desc_en:'Manage your employees leaves, advances, expenses, trainings and personal information easily.', color: '#46428f', language: 'en', favicon: '" + cdnUrlStatic + "/images/favicon/ofisim.ico' }";
             }
             else if (url.Contains("cagri.ofisim.com") || url.Contains("cagri-test.ofisim.com"))
             {

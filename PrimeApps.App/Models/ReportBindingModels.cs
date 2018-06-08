@@ -29,7 +29,7 @@ namespace PrimeApps.App.Models
 
         public ReportSharingType SharingType { get; set; }
 
-        [StringLength(50), BalancedParentheses, FilterLogic]
+        [StringLength(200), BalancedParentheses, FilterLogic]
         public string FilterLogic { get; set; }
 
         public ChartBindingModel Chart { get; set; }

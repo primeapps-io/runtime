@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OfisimCRM.App.Jobs.Messaging.SMS.Providers;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
 {
@@ -32,7 +33,8 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
             this.SetCredentials(userName, password);
         }
 
-        public SMSProvider() {
+        public SMSProvider()
+        {
             this.Alias = "";
             this.SendDate = DateTime.UtcNow;
             this.Messages = new List<Message>();
@@ -52,7 +54,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
             return await Send();
         }
 
-        public void SetCredentials(string userName,string password)
+        public void SetCredentials(string userName, string password)
         {
             this.userName = userName;
             this.password = password;
@@ -67,7 +69,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
         {
             if (String.IsNullOrWhiteSpace(input)) return null;
 
-            Match match = AcceptedPhoneNumberFormat.Match(Regex.Replace(input, @"[^\d]",string.Empty));
+            Match match = AcceptedPhoneNumberFormat.Match(Regex.Replace(input, @"[^\d]", string.Empty));
             if (!match.Success) return String.Empty;
             return match.ToString();
         }
@@ -92,6 +94,9 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
                     break;
                 case "verimorsms":
                     newProvider = new VerimorSMS(userName, password);
+                    break;
+                case "netgsmsms":
+                    newProvider = new Netgsm(userName, password);
                     break;
                 default:
                     throw new SMSProviderNotFoundException($"SMS Provider {providerName} is not implemented!");

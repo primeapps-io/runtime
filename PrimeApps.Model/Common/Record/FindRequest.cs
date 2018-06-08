@@ -11,7 +11,7 @@ namespace PrimeApps.Model.Common.Record
 
         public List<Filter> Filters { get; set; }
 
-        [StringLength(50), BalancedParentheses, FilterLogic]
+        [StringLength(200), BalancedParentheses, FilterLogic]
         public string FilterLogic { get; set; }
 
         public string SortField { get; set; }

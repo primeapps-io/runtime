@@ -636,6 +636,14 @@ namespace PrimeApps.App.Controllers
             {
                 return 6;
             }
+            if (url.Contains("crm.appsila.com"))
+            {
+                return 7;
+            }
+            if (url.Contains("hr.ofisim.com") || url.Equals("hr-test.ofisim.com") || url.Contains("hr-dev.ofisim.com"))
+            {
+                return 8;
+            }
             return 1;
         }
     }

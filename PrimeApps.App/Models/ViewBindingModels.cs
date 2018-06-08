@@ -17,7 +17,7 @@ namespace PrimeApps.App.Models
 
         public ViewSharingType SharingType { get; set; }
 
-        [StringLength(50), BalancedParentheses, FilterLogic]
+        [StringLength(200), BalancedParentheses, FilterLogic]
         public string FilterLogic { get; set; }
 
         [RequiredCollection]
@@ -44,7 +44,7 @@ namespace PrimeApps.App.Models
 
         [Required, Range(1, int.MaxValue)]
         public int ModuleId { get; set; }
-        
+
         [Required]
         public int ActiveView { get; set; }
 

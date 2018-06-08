@@ -9,6 +9,7 @@ using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Common.Resources;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Helpers
@@ -73,6 +74,7 @@ namespace PrimeApps.App.Helpers
                    appName = "",
                    appCodeUrl = "",
                    appColor = "",
+                appLogo = "",
                    socialMediaIcons = "",
                    footer = "",
                    resourceTypeName = "";
@@ -99,6 +101,7 @@ namespace PrimeApps.App.Helpers
                     appColor = "2560f6";
                     socialMediaIcons = "true";
                     footer = "Ofisim.com";
+                    appLogo = "true";
                     break;
                 case 2:
                     appUrl = "http://www.ofisim.com/mail/kobi/logo.png";
@@ -107,6 +110,7 @@ namespace PrimeApps.App.Helpers
                     appColor = "20cb9a";
                     socialMediaIcons = "true";
                     footer = "Ofisim.com";
+                    appLogo = "true";
                     break;
                 case 3:
                     appUrl = "http://www.ofisim.com/mail/asistan/logo.png";
@@ -115,6 +119,7 @@ namespace PrimeApps.App.Helpers
                     appColor = "ef604e";
                     socialMediaIcons = "true";
                     footer = "Ofisim.com";
+                    appLogo = "true";
                     break;
                 case 4:
                     appUrl = "http://www.ofisim.com/mail/ik/logo.png";
@@ -123,6 +128,7 @@ namespace PrimeApps.App.Helpers
                     appColor = "454191";
                     socialMediaIcons = "true";
                     footer = "Ofisim.com";
+                    appLogo = "true";
                     break;
                 case 5:
                     appUrl = "http://www.ofisim.com/mail/cagri/logo.png";
@@ -131,6 +137,7 @@ namespace PrimeApps.App.Helpers
                     appColor = "79a7fd";
                     socialMediaIcons = "true";
                     footer = "Ofisim.com";
+                    appLogo = "true";
                     break;
                 default:
                     appUrl = "http://www.ofisim.com/mail/crm/logo.png";
@@ -139,6 +146,7 @@ namespace PrimeApps.App.Helpers
                     appColor = "2560f6";
                     socialMediaIcons = "true";
                     footer = "Ofisim.com";
+                    appLogo = "true";
                     break;
 
             }
@@ -156,7 +164,10 @@ namespace PrimeApps.App.Helpers
                         appName = instance.Setting.MailSenderName;
                         socialMediaIcons = "none";
                         footer = instance.Setting.MailSenderName;
-
+                        if (instance.MailSenderEmail.Contains("@etiya.com"))
+                        {
+                            appLogo = "none";
+                        }
                     }
                 }
             }
@@ -168,6 +179,7 @@ namespace PrimeApps.App.Helpers
             tmpl = tmpl.Replace("{{APP_COLOR}}", appColor);
             tmpl = tmpl.Replace("{{SOCIAL_ICONS}}", socialMediaIcons);
             tmpl = tmpl.Replace("{{FOOTER}}", footer);
+            tmpl = tmpl.Replace("{{APP_LOGO}}", appLogo);
             dataFields.Add("appName", appName);
 
             // fill this value with data parameters if any of them in it.
@@ -327,7 +339,7 @@ namespace PrimeApps.App.Helpers
         /// <summary>
         /// Writes email(s) into the database in a stateless session context.
         /// </summary>
-        public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
+        public void AddToQueue(ISession session, int recordId = 0, int tenantId = 0, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, string fromEmail = "")
         {
             from = "destek@ofisim.com";
             fromName = "Ofisim.com";
@@ -340,7 +352,10 @@ namespace PrimeApps.App.Helpers
                     var instance = tRepo.Get(appUser.TenantId);
                     if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
                     {
-                        from = instance.Setting.MailSenderEmail;
+                        if (!string.IsNullOrEmpty(fromEmail))
+                            from = fromEmail;
+                        else
+                            from = instance.Setting.MailSenderEmail;
                         fromName = instance.Setting.MailSenderName;
                     }
                 }

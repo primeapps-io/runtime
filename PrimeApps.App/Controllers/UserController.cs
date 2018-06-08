@@ -50,7 +50,7 @@ namespace PrimeApps.App.Controllers
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
 
-		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
+        public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -61,35 +61,35 @@ namespace PrimeApps.App.Controllers
             _platformUserRepository = platformUserRepository;
             _tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-			
-			/*SetCurrentUser(_userRepository, _userContextServices);
+
+            /*SetCurrentUser(_userRepository, _userContextServices);
 			SetCurrentUser(_settingRepository, _userContextServices);
 			SetCurrentUser(_profileRepository, _userContextServices);
 			SetCurrentUser(_roleRepository, _userContextServices);
 			SetCurrentUser(_recordRepository, _userContextServices);*/
 
-			//Set warehouse database name Ofisim to integration
-			//_warehouse.DatabaseName = "Ofisim";
-		}
+            //Set warehouse database name Ofisim to integration
+            //_warehouse.DatabaseName = "Ofisim";
+        }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_settingRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_roleRepository);
-			SetCurrentUser(_recordRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_settingRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_roleRepository);
+            SetCurrentUser(_recordRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		/// <summary>
-		/// Gets avatar from blob storage by the file id.
-		/// </summary>
-		/// <param name="fileName">File name of the avatar</param>
-		/// <returns>Stream.</returns>
-		[Route("Avatar"), HttpPost]
+        /// <summary>
+        /// Gets avatar from blob storage by the file id.
+        /// </summary>
+        /// <param name="fileName">File name of the avatar</param>
+        /// <returns>Stream.</returns>
+        [Route("Avatar"), HttpPost]
         public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
         {
             //get uploaded file from storage
@@ -256,8 +256,8 @@ namespace PrimeApps.App.Controllers
 
                 var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
 
-				//TODO Removed
-				/*using (var dbContext = new PlatformDBContext())
+                //TODO Removed
+                /*using (var dbContext = new PlatformDBContext())
                 {
                     apps = dbContext.UserApps.Where(x => x.UserId == AppUser.Id)
                         .Select(i => new UserAppInfo()
@@ -286,7 +286,7 @@ namespace PrimeApps.App.Controllers
                     apps.Add(mainApp);
                 }*/
 
-				acc.user.tenantLanguage = AppUser.TenantLanguage;
+                acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
                 acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
@@ -310,7 +310,7 @@ namespace PrimeApps.App.Controllers
             return Ok(acc); //Success service request - but no account data - disabled user(inactive)
         }
 
-		//TODO Removed
+        //TODO Removed
         /*[Route("ActiveDirectoryInfo"), HttpGet]
         public async Task<IActionResult> GetAdInfo()
         {
@@ -407,8 +407,8 @@ namespace PrimeApps.App.Controllers
         [Route("add_user"), HttpPost]
         public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel request)
         {
-			return NotFound();
-			//TODO Removed
+            return NotFound();
+            //TODO Removed
             /*var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email);
 
             if (resultControl == false)
@@ -556,7 +556,7 @@ namespace PrimeApps.App.Controllers
             return Ok(randomPassword);*/
         }
 
-		//TODO TenantId
+        //TODO TenantId
         [Route("get_user"), HttpGet]
         public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")] int tenantId)
         {
@@ -568,12 +568,12 @@ namespace PrimeApps.App.Controllers
             if (userEntity == null)
                 return NotFound();
 
-			var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
+            var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
 
-			if (userTenant == null)
-				return NotFound();
+            if (userTenant == null)
+                return NotFound();
 
-			_userRepository.TenantId = tenantId;
+            _userRepository.TenantId = tenantId;
             var user = await _userRepository.GetById(userEntity.Id);
 
             var userModel = new
@@ -602,9 +602,9 @@ namespace PrimeApps.App.Controllers
 
             return Ok(users);
         }
-		
-		//TODO Removed
-		/*
+
+        //TODO Removed
+        /*
         public async Task<IActionResult> GetOfficeUsers()
         {
             var clientId = ConfigurationManager.AppSettings["ida:ClientID"];
@@ -626,6 +626,20 @@ namespace PrimeApps.App.Controllers
 
                 //var users = await graphClient.Users.Where(x => x.ObjectId.Equals(userObjectID)).ExecuteAsync();
                 var users = graphClient.Users.ExecuteAsync().Result.CurrentPage.ToList();
+
+                //Core merge
+                var userResponse = await graphClient.Users.ExecuteAsync();
+                var users = userResponse.CurrentPage.ToList();
+
+                while (userResponse.MorePagesAvailable)
+                {
+                    userResponse = await userResponse.GetNextPageAsync();
+
+                    var newUsers = userResponse.CurrentPage.ToList();
+                    users.AddRange(newUsers);
+                }
+
+                users = users.OrderBy(x => x.Mail).ToList();
 
                 List<PlatformUser> systemUsers = await _platformUserRepository.GetAllByTenant(AppUser.TenantId);
                 var availableUsers = new JArray();
@@ -689,5 +703,5 @@ namespace PrimeApps.App.Controllers
             AuthenticationResult result = await authContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return result.AccessToken;
         }*/
-	}
+    }
 }

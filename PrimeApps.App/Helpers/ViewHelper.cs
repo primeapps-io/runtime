@@ -429,17 +429,20 @@ namespace PrimeApps.App.Helpers
                 view.Fields.Add(viewField);
             }
 
-            foreach (var viewFilterModel in viewModel.Filters)
+            if (view.SystemType == SystemType.Custom)
             {
-                var viewFilter = new ViewFilter
+                foreach (var viewFilterModel in viewModel.Filters)
                 {
-                    Field = viewFilterModel.Field,
-                    Operator = viewFilterModel.Operator,
-                    Value = viewFilterModel.Value.ToString(),
-                    No = viewFilterModel.No
-                };
+                    var viewFilter = new ViewFilter
+                    {
+                        Field = viewFilterModel.Field,
+                        Operator = viewFilterModel.Operator,
+                        Value = viewFilterModel.Value.ToString(),
+                        No = viewFilterModel.No
+                    };
 
-                view.Filters.Add(viewFilter);
+                    view.Filters.Add(viewFilter);
+                }
             }
 
             if (viewModel.Shares != null && viewModel.Shares.Count > 0)

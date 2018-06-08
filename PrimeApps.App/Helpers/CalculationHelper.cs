@@ -36,6 +36,1114 @@ namespace PrimeApps.App.Helpers
 
                                 switch (module.Name)
                                 {
+                                    case "sirket_ici_kariyer":
+                                        var calisanlarModule = await moduleRepository.GetByName("calisanlar");
+                                        var lookupModules = new List<Module>();
+                                        lookupModules.Add(calisanlarModule);
+                                        lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+
+                                        record = recordRepository.GetById(module, recordId, true, lookupModules, true);
+                                        var calisan = recordRepository.GetById(calisanlarModule, (int)record["personel.id"], true, lookupModules, true);
+
+                                        var calisanUpdate = new JObject();
+                                        calisanUpdate["id"] = calisan["id"];
+
+                                        if (!record["gorev_yeri"].IsNullOrEmpty())
+                                            calisanUpdate["lokasyon"] = record["gorev_yeri"];
+
+                                        if (!record["bolum"].IsNullOrEmpty())
+                                            calisanUpdate["departman"] = record["bolum"];
+
+                                        if (!record["is_alani"].IsNullOrEmpty())
+                                            calisanUpdate["is_alani"] = record["is_alani"];
+
+                                        if (!record["unvan"].IsNullOrEmpty())
+                                            calisanUpdate["unvan"] = record["unvan"];
+
+                                        if (!record["1yoneticisi.id"].IsNullOrEmpty())
+                                            calisanUpdate["yoneticisi"] = record["1yoneticisi.id"];
+
+                                        if (!record["2_yoneticisi.id"].IsNullOrEmpty())
+                                            calisanUpdate["2_yonetici"] = record["2_yoneticisi.id"];
+
+                                        if (!record["direktor.id"].IsNullOrEmpty())
+                                            calisanUpdate["direktor"] = record["direktor.id"];
+
+                                        if (!record["gmy.id"].IsNullOrEmpty())
+                                            calisanUpdate["gmy"] = record["gmy.id"];
+
+                                        await recordRepository.Update(calisanUpdate, calisanlarModule);
+
+                                        string mailSubject;
+                                        string mailBody;
+
+                                        using (var templateRepostory = new TemplateRepository(databaseContext))
+                                        {
+                                            var mailTemplate = await templateRepostory.GetById(48);//Organizasyonel değişiklik bildirimi
+                                            mailSubject = mailTemplate.Subject;
+                                            mailBody = mailTemplate.Content;
+                                        }
+
+                                        var ccList = new List<string>();
+                                        ccList.Add("hr@etiya.com");
+
+                                        if (!record["1yoneticisi.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)record["1yoneticisi.e_posta"]))
+                                            ccList.Add((string)record["1yoneticisi.e_posta"]);
+
+                                        if (!record["2_yoneticisi.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)record["2_yoneticisi.e_posta"]))
+                                            ccList.Add((string)record["2_yoneticisi.e_posta"]);
+
+                                        if (!record["direktor.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)record["direktor.e_posta"]))
+                                            ccList.Add((string)record["direktor.e_posta"]);
+
+                                        if (!record["gmy.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)record["gmy.e_posta"]))
+                                            ccList.Add((string)record["gmy.e_posta"]);
+
+                                        if (!calisan["yoneticisi.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)calisan["yoneticisi.e_posta"]))
+                                            ccList.Add((string)calisan["yoneticisi.e_posta"]);
+
+                                        if (!calisan["2_yonetici.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)calisan["2_yonetici.e_posta"]))
+                                            ccList.Add((string)calisan["2_yonetici.e_posta"]);
+
+                                        if (!calisan["direktor.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)calisan["direktor.e_posta"]))
+                                            ccList.Add((string)calisan["direktor.e_posta"]);
+
+                                        if (!calisan["gmy.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)calisan["gmy.e_posta"]))
+                                            ccList.Add((string)calisan["gmy.e_posta"]);
+
+                                        using (var session = Provider.SessionFactory.OpenSession())
+                                        {
+                                            using (var transaction = session.BeginTransaction())
+                                            {
+                                                var externalEmail = new Email(mailSubject, mailBody);
+                                                externalEmail.AddRecipient("finans@etiya.com");
+                                                externalEmail.AddToQueue(appUser.TenantID, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
+
+                                                transaction.Commit();
+                                            }
+                                        }
+                                        break;
+                                    case "ise_alim_talepleri":
+                                        var iseAlimTalebiModule = await moduleRepository.GetByName("ise_alim_talepleri");
+                                        var userRequest = new FindRequest { Fields = new List<string> { "email" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 1 };
+                                        var userData = recordRepository.Find("users", userRequest, false);
+                                        var calisanRequest = new FindRequest();
+                                        var calisanData = new JArray();
+                                        var calisanObj = new JObject();
+                                        if (!userData.IsNullOrEmpty())
+                                        {
+                                            calisanRequest = new FindRequest { Fields = new List<string> { "yoneticisi.calisanlar.e_posta" }, Filters = new List<Filter> { new Filter { Field = "e_posta", Operator = Operator.Is, Value = userData.First()["email"], No = 1 } }, Limit = 1 };
+                                            calisanData = recordRepository.Find("calisanlar", calisanRequest, false);
+                                            calisanObj = (JObject)calisanData.First();
+                                            var moduleCalisan = await moduleRepository.GetByName("calisanlar");
+                                            var departmanPicklist = moduleCalisan.Fields.Single(x => x.Name == "departman");
+                                            var departmanPicklistItem = await picklistRepository.FindItemByLabel(departmanPicklist.PicklistId.Value, (string)record["bolum"], appUser.PicklistLanguage);
+
+                                            if (!calisanObj["yoneticisi.calisanlar.e_posta"].IsNullOrEmpty())
+                                            {
+                                                record["custom_approver"] = calisanObj["yoneticisi.calisanlar.e_posta"];
+                                                int j = 1;
+                                                for (var i = 2; i < 6; i++)
+                                                {
+                                                    if (!calisanObj["yoneticisi.calisanlar.e_posta"].IsNullOrEmpty())
+                                                    {
+                                                        j++;
+                                                        calisanRequest = new FindRequest { Fields = new List<string> { "yoneticisi.calisanlar.e_posta" }, Filters = new List<Filter> { new Filter { Field = "e_posta", Operator = Operator.Is, Value = (string)calisanObj["yoneticisi.calisanlar.e_posta"], No = 1 }, new Filter { Field = "calisma_durumu", Operator = Operator.Is, Value = "Aktif", No = 2 } }, Limit = 1 };
+                                                        calisanData = recordRepository.Find("calisanlar", calisanRequest, false);
+                                                        calisanObj = (JObject)calisanData.First();
+
+                                                        if (!calisanObj["yoneticisi.calisanlar.e_posta"].IsNullOrEmpty())
+                                                            record["custom_approver_" + i] = calisanObj["yoneticisi.calisanlar.e_posta"];
+                                                        else
+                                                            j--;
+                                                    }
+                                                }
+                                                if (departmanPicklistItem != null && departmanPicklistItem.Value != "ceo_approve")
+                                                    record["custom_approver_" + j] = null;
+                                            }
+                                        }
+                                        await recordRepository.Update(record, iseAlimTalebiModule);
+                                        break;
+                                    case "sales_invoices":
+                                        var salesInvoiceModule = await moduleRepository.GetByName("sales_invoices");
+                                        var accountModule = await moduleRepository.GetByName("accounts");
+                                        var salesInvoiceStagePicklist = salesInvoiceModule.Fields.Single(x => x.Name == "asama");
+                                        var salesInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(salesInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.PicklistLanguage);
+                                        var currentAccountModule = await moduleRepository.GetByName("current_accounts");
+                                        var findRequestCurrentAccountRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "satis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                        var currentAccountRecord = recordRepository.Find("current_accounts", findRequestCurrentAccountRecord);
+
+                                        //Firma Obj
+                                        var recordAccount = new JObject();
+                                        decimal recordAccountBalance;
+
+                                        //para birimini bulma
+                                        var currencyFieldSalesInvoice = salesInvoiceModule.Fields.Single(x => x.Name == "fatura_para_birimi");
+                                        var currencyPicklistSalesInvoice = await picklistRepository.GetById(currencyFieldSalesInvoice.PicklistId.Value);
+                                        var currencySalesInvoice = currencyPicklistSalesInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["fatura_para_birimi"] : x.LabelEn == (string)record["fatura_para_birimi"]).SystemCode;
+
+                                        //Sipariş dönüştürmede otomaik oluşturulan veya manuel eklenen satış faturası
+                                        if (salesInvoiceStagePicklistItem.SystemCode == "onaylandi" && operationType != OperationType.delete)
+                                        {
+                                            var recordCurrentAccount = new JObject();
+
+                                            //create ya da update için cari hesabın alanlarını oluşturma ya da güncelleme
+                                            recordCurrentAccount["owner"] = record["owner"];
+                                            recordCurrentAccount["currency"] = record["fatura_para_birimi"];
+                                            recordCurrentAccount["customer"] = record["account"];
+                                            recordCurrentAccount["satis_faturasi"] = record["id"];
+                                            recordCurrentAccount["date"] = record["fatura_tarihi"];
+                                            var transactionField = currentAccountModule.Fields.Single(x => x.Name == "transaction_type");
+                                            var transactionTypes = await picklistRepository.GetById(transactionField.PicklistId.Value);
+                                            recordCurrentAccount["transaction_type"] = appUser.PicklistLanguage == "tr" ? transactionTypes.Items.Single(x => x.SystemCode == "sales_invoice").LabelTr : transactionTypes.Items.Single(x => x.SystemCode == "sales_invoice").LabelEn;
+                                            recordCurrentAccount["transaction_type_system"] = "sales_invoice";
+
+                                            //para birimine göre satış faturasını oluşturma
+                                            switch (currencySalesInvoice)
+                                            {
+                                                case "try":
+                                                    recordCurrentAccount["borc_tl"] = record["grand_total"];
+                                                    recordCurrentAccount["bakiye_tl"] = 0;
+
+                                                    if (currentAccountRecord.IsNullOrEmpty())
+                                                        await recordRepository.Create(recordCurrentAccount, currentAccountModule);
+                                                    else
+                                                    {
+                                                        recordCurrentAccount["id"] = currentAccountRecord.First()["id"];
+                                                        await recordRepository.Update(recordCurrentAccount, currentAccountModule);
+                                                    }
+
+                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                    recordAccount["balance"] = recordAccountBalance;
+
+                                                    break;
+                                                case "eur":
+                                                    recordCurrentAccount["borc_euro"] = record["grand_total"];
+                                                    recordCurrentAccount["bakiye_euro"] = 0;
+
+                                                    if (currentAccountRecord.IsNullOrEmpty())
+                                                        await recordRepository.Create(recordCurrentAccount, currentAccountModule);
+                                                    else
+                                                    {
+                                                        recordCurrentAccount["id"] = currentAccountRecord.First()["id"];
+                                                        await recordRepository.Update(recordCurrentAccount, currentAccountModule);
+                                                    }
+
+                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                    recordAccount["bakiye_eur"] = recordAccountBalance;
+
+                                                    break;
+                                                case "usd":
+                                                    recordCurrentAccount["borc_usd"] = record["grand_total"];
+                                                    recordCurrentAccount["bakiye_usd"] = 0;
+
+                                                    if (currentAccountRecord.IsNullOrEmpty())
+                                                        await recordRepository.Create(recordCurrentAccount, currentAccountModule);
+                                                    else
+                                                    {
+                                                        recordCurrentAccount["id"] = currentAccountRecord.First()["id"];
+                                                        await recordRepository.Update(recordCurrentAccount, currentAccountModule);
+                                                    }
+
+                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                    recordAccount["bakiye_usd"] = recordAccountBalance;
+
+                                                    break;
+                                            }
+                                        }
+                                        else if (salesInvoiceStagePicklistItem.SystemCode == "iptal_edildi" || operationType == OperationType.delete)
+                                        {
+                                            if (!currentAccountRecord.IsNullOrEmpty())
+                                            {
+                                                var currentAccountRecordObj = (JObject)currentAccountRecord.First();
+                                                await recordRepository.Delete(currentAccountRecordObj, currentAccountModule);
+
+                                                switch (currencySalesInvoice)
+                                                {
+                                                    case "try":
+                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                        recordAccount["balance"] = recordAccountBalance;
+                                                        break;
+                                                    case "eur":
+                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                        recordAccount["bakiye_eur"] = recordAccountBalance;
+                                                        break;
+                                                    case "usd":
+                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                        recordAccount["bakiye_usd"] = recordAccountBalance;
+                                                        break;
+                                                }
+                                            }
+                                        }
+
+                                        //firmanın balance'ını güncelleme
+                                        recordAccount["id"] = record["account"];
+                                        await recordRepository.Update(recordAccount, accountModule);
+
+                                        break;
+                                    case "purchase_invoices":
+                                        var purchaseInvoiceModule = await moduleRepository.GetByName("purchase_invoices");
+                                        var supplierModule = await moduleRepository.GetByName("suppliers");
+                                        var purchaseInvoiceStagePicklist = purchaseInvoiceModule.Fields.Single(x => x.Name == "asama");
+                                        var purchaseInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(purchaseInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.PicklistLanguage);
+                                        var currentSupplierModule = await moduleRepository.GetByName("current_accounts");
+                                        var findRequestCurrentAccountRecordForPurchase = new FindRequest { Filters = new List<Filter> { new Filter { Field = "alis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                        var currentAccountRecordForPurchase = recordRepository.Find("current_accounts", findRequestCurrentAccountRecordForPurchase);
+
+                                        //Firma Obj
+                                        var recordSupplier = new JObject();
+                                        decimal recordSupplierBalance;
+
+                                        //para birimini bulma
+                                        var currencyFieldPurchaseInvoice = purchaseInvoiceModule.Fields.Single(x => x.Name == "fatura_para_birimi");
+                                        var currencyPicklistPurchaseInvoice = await picklistRepository.GetById(currencyFieldPurchaseInvoice.PicklistId.Value);
+                                        var currencyPurchaseInvoice = currencyPicklistPurchaseInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["fatura_para_birimi"] : x.LabelEn == (string)record["fatura_para_birimi"]).SystemCode;
+
+                                        //Sipariş dönüştürmede otomaik oluşturulan veya manuel eklenen satış faturası
+                                        if (purchaseInvoiceStagePicklistItem.SystemCode == "onaylandi" && operationType != OperationType.delete)
+                                        {
+                                            var recordCurrentAccount = new JObject();
+
+                                            //create ya da update için cari hesabın alanlarını oluşturma ya da güncelleme
+                                            recordCurrentAccount["owner"] = record["owner"];
+                                            recordCurrentAccount["currency"] = record["fatura_para_birimi"];
+                                            recordCurrentAccount["supplier"] = record["tedarikci"];
+                                            recordCurrentAccount["alis_faturasi"] = record["id"];
+                                            recordCurrentAccount["date"] = record["fatura_tarihi"];
+                                            var transactionField = currentSupplierModule.Fields.Single(x => x.Name == "transaction_type");
+                                            var transactionTypes = await picklistRepository.GetById(transactionField.PicklistId.Value);
+                                            recordCurrentAccount["transaction_type"] = appUser.PicklistLanguage == "tr" ? transactionTypes.Items.Single(x => x.SystemCode == "purchase_invoice").LabelTr : transactionTypes.Items.Single(x => x.SystemCode == "purchase_invoice").LabelEn;
+                                            recordCurrentAccount["transaction_type_system"] = "purchase_invoice";
+
+                                            //para birimine göre satış faturasını oluşturma
+                                            switch (currencyPurchaseInvoice)
+                                            {
+                                                case "try":
+                                                    recordCurrentAccount["alacak"] = record["grand_total"];
+                                                    recordCurrentAccount["bakiye_tl"] = 0;
+
+                                                    if (currentAccountRecordForPurchase.IsNullOrEmpty())
+                                                        await recordRepository.Create(recordCurrentAccount, currentSupplierModule);
+                                                    else
+                                                    {
+                                                        recordCurrentAccount["id"] = currentAccountRecordForPurchase.First()["id"];
+                                                        await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
+                                                    }
+
+                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                    recordSupplier["balance"] = recordSupplierBalance;
+
+                                                    break;
+                                                case "eur":
+                                                    recordCurrentAccount["alacak_euro"] = record["grand_total"];
+                                                    recordCurrentAccount["bakiye_euro"] = 0;
+
+                                                    if (currentAccountRecordForPurchase.IsNullOrEmpty())
+                                                        await recordRepository.Create(recordCurrentAccount, currentSupplierModule);
+                                                    else
+                                                    {
+                                                        recordCurrentAccount["id"] = currentAccountRecordForPurchase.First()["id"];
+                                                        await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
+                                                    }
+
+                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                    recordSupplier["bakiye_euro"] = recordSupplierBalance;
+
+                                                    break;
+                                                case "usd":
+                                                    recordCurrentAccount["alacak_usd"] = record["grand_total"];
+                                                    recordCurrentAccount["bakiye_usd"] = 0;
+
+                                                    if (currentAccountRecordForPurchase.IsNullOrEmpty())
+                                                        await recordRepository.Create(recordCurrentAccount, currentSupplierModule);
+                                                    else
+                                                    {
+                                                        recordCurrentAccount["id"] = currentAccountRecordForPurchase.First()["id"];
+                                                        await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
+                                                    }
+
+                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                    recordSupplier["bakiye_usd"] = recordSupplierBalance;
+
+                                                    break;
+                                            }
+                                        }
+                                        else if (purchaseInvoiceStagePicklistItem.SystemCode == "iptal_edildi" || operationType == OperationType.delete)
+                                        {
+                                            if (!currentAccountRecordForPurchase.IsNullOrEmpty())
+                                            {
+                                                var currentAccountRecordObj = (JObject)currentAccountRecordForPurchase.First();
+                                                await recordRepository.Delete(currentAccountRecordObj, currentSupplierModule);
+
+                                                switch (currencyPurchaseInvoice)
+                                                {
+                                                    case "try":
+                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                        recordSupplier["balance"] = recordSupplierBalance;
+                                                        break;
+                                                    case "eur":
+                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                        recordSupplier["bakiye_euro"] = recordSupplierBalance;
+                                                        break;
+                                                    case "usd":
+                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                        recordSupplier["bakiye_usd"] = recordSupplierBalance;
+                                                        break;
+                                                }
+                                            }
+                                        }
+
+                                        //firmanın balance'ını güncelleme
+                                        recordSupplier["id"] = record["tedarikci"];
+                                        await recordRepository.Update(recordSupplier, supplierModule);
+
+                                        break;
+
+                                    case "current_accounts":
+                                        var currentAccountModuleObj = await moduleRepository.GetByName("current_accounts");
+                                        var currencyFieldCurrentAccount = currentAccountModuleObj.Fields.Single(x => x.Name == "currency");
+                                        var currencyPicklistCurrentAccount = await picklistRepository.GetById(currencyFieldCurrentAccount.PicklistId.Value);
+                                        var currencyCurrentAccount = currencyPicklistCurrentAccount.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
+
+                                        //tahsilat
+                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                        {
+                                            //Firma Obj
+                                            var parentAccountRecord = new JObject();
+                                            decimal parentAccountRecordBalance;
+
+
+                                            var parentAccountModule = await moduleRepository.GetByName("accounts");
+
+                                            switch (currencyCurrentAccount)
+                                            {
+                                                case "try":
+                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentAccountRecord["balance"] = parentAccountRecordBalance;
+                                                    break;
+                                                case "eur":
+                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentAccountRecord["bakiye_eur"] = parentAccountRecordBalance;
+                                                    break;
+                                                case "usd":
+                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentAccountRecord["bakiye_usd"] = parentAccountRecordBalance;
+                                                    break;
+                                            }
+
+                                            //firmanın balance'ını güncelleme
+                                            parentAccountRecord["id"] = record["customer"];
+                                            await recordRepository.Update(parentAccountRecord, parentAccountModule);
+                                        }
+                                        //ödeme
+                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                        {
+                                            //Tedarikci Obj
+                                            var parentSupplierRecord = new JObject();
+                                            decimal parentSupplierRecordBalance;
+
+                                            var parentSupplierModule = await moduleRepository.GetByName("suppliers");
+
+                                            switch (currencyCurrentAccount)
+                                            {
+                                                case "try":
+                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentSupplierRecord["balance"] = parentSupplierRecordBalance;
+                                                    break;
+                                                case "eur":
+                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentSupplierRecord["bakiye_euro"] = parentSupplierRecordBalance;
+                                                    break;
+                                                case "usd":
+                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentSupplierRecord["bakiye_usd"] = parentSupplierRecordBalance;
+                                                    break;
+                                            }
+
+                                            //Tedarikcinin balance'ını güncelleme
+                                            parentSupplierRecord["id"] = record["supplier"];
+                                            await recordRepository.Update(parentSupplierRecord, parentSupplierModule);
+                                        }
+
+                                        //oto kasa hareketi ekleme, güncelleme ya da silme
+                                        if (operationType != OperationType.delete)
+                                        {
+                                            if (!record["kasa"].IsNullOrEmpty())
+                                            {
+                                                var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
+                                                var kasaModule = await moduleRepository.GetByName("kasalar");
+                                                var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
+                                                var kasaHareketiRecord = new JObject();
+                                                kasaHareketiRecord["owner"] = record["owner"];
+                                                kasaHareketiRecord["islem_tarihi"] = record["date"];
+                                                kasaHareketiRecord["aciklama"] = record["description"];
+
+                                                kasaHareketiRecord["ilgili_cari_hareket"] = record["id"];
+                                                kasaHareketiRecord["kasa"] = record["kasa"];
+                                                switch (currencyCurrentAccount)
+                                                {
+                                                    case "try":
+                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                            kasaHareketiRecord["borc"] = record["alacak"];
+                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                            kasaHareketiRecord["alacak"] = record["borc_tl"];
+                                                        break;
+                                                    case "eur":
+                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                            kasaHareketiRecord["borc"] = record["alacak_euro"];
+                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                            kasaHareketiRecord["alacak"] = record["borc_euro"];
+                                                        break;
+                                                    case "usd":
+                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                            kasaHareketiRecord["borc"] = record["alacak_usd"];
+                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                            kasaHareketiRecord["alacak"] = record["borc_usd"];
+                                                        break;
+                                                }
+
+                                                var hareketTipiField = kasaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                                var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
+
+                                                if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                    kasaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
+                                                else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                    kasaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
+
+
+                                                if (!currentKasaHareketiRecord.IsNullOrEmpty())
+                                                {
+                                                    kasaHareketiRecord["id"] = currentKasaHareketiRecord.First()["id"];
+                                                    await recordRepository.Update(kasaHareketiRecord, kasaHareketiModule);
+                                                }
+                                                else
+                                                    await recordRepository.Create(kasaHareketiRecord, kasaHareketiModule);
+
+                                                //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
+                                                decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, recordRepository, kasaHareketiModule);
+                                                var kasaRecord = new JObject();
+                                                kasaRecord["id"] = record["kasa"];
+                                                kasaRecord["guncel_bakiye"] = kasaBalance;
+                                                await recordRepository.Update(kasaRecord, kasaModule);
+                                            }
+                                            else if (!record["banka"].IsNullOrEmpty())
+                                            {
+                                                var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
+                                                var bankaModule = await moduleRepository.GetByName("bankalar");
+                                                var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                var currentBankaHareketiRecord = recordRepository.Find("banka_hareketleri", findRequestBankaHareketi);
+                                                var bankaHareketiRecord = new JObject();
+                                                bankaHareketiRecord["owner"] = record["owner"];
+                                                bankaHareketiRecord["islem_tarihi"] = record["date"];
+                                                bankaHareketiRecord["aciklama"] = record["description"];
+                                                bankaHareketiRecord["ilgili_cari_hareket"] = record["id"];
+                                                bankaHareketiRecord["banka"] = record["banka"];
+                                                switch (currencyCurrentAccount)
+                                                {
+                                                    case "try":
+                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                            bankaHareketiRecord["borc"] = record["alacak"];
+                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                            bankaHareketiRecord["alacak"] = record["borc_tl"];
+                                                        break;
+                                                    case "eur":
+                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                            bankaHareketiRecord["borc"] = record["alacak_euro"];
+                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                            bankaHareketiRecord["alacak"] = record["borc_euro"];
+                                                        break;
+                                                    case "usd":
+                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                            bankaHareketiRecord["borc"] = record["alacak_usd"];
+                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                            bankaHareketiRecord["alacak"] = record["borc_usd"];
+                                                        break;
+                                                }
+
+                                                var hareketTipiField = bankaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                                var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
+                                                if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                    bankaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
+                                                else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                    bankaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
+
+                                                if (!currentBankaHareketiRecord.IsNullOrEmpty())
+                                                {
+                                                    bankaHareketiRecord["id"] = currentBankaHareketiRecord.First()["id"];
+                                                    await recordRepository.Update(bankaHareketiRecord, bankaHareketiModule);
+                                                }
+                                                else
+                                                    await recordRepository.Create(bankaHareketiRecord, bankaHareketiModule);
+
+                                                //banka hareketlerinin ve ana bankanın bakiyesini güncelleme
+                                                decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, recordRepository, bankaHareketiModule);
+                                                var bankaRecord = new JObject();
+                                                bankaRecord["id"] = record["banka"];
+                                                bankaRecord["guncel_bakiye"] = bankaBalance;
+                                                await recordRepository.Update(bankaRecord, bankaModule);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (!record["kasa"].IsNullOrEmpty())
+                                            {
+                                                var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
+                                                var kasaModule = await moduleRepository.GetByName("kasalar");
+                                                var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
+
+                                                if (!currentKasaHareketiRecord.IsNullOrEmpty())
+                                                {
+                                                    var hareketTipiField = kasaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                                    var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
+                                                    var kasaHareketiObj = (JObject)currentKasaHareketiRecord.First();
+                                                    await recordRepository.Delete(kasaHareketiObj, kasaHareketiModule);
+
+                                                    //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
+                                                    decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, recordRepository, kasaHareketiModule);
+                                                    var kasaRecord = new JObject();
+                                                    kasaRecord["id"] = record["kasa"];
+                                                    kasaRecord["guncel_bakiye"] = kasaBalance;
+                                                    await recordRepository.Update(kasaRecord, kasaModule);
+                                                }
+                                            }
+                                            else if (!record["banka"].IsNullOrEmpty())
+                                            {
+                                                var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
+                                                var bankaModule = await moduleRepository.GetByName("bankalar");
+                                                var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                var currentBankaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi);
+
+                                                if (!currentBankaHareketiRecord.IsNullOrEmpty())
+                                                {
+                                                    var hareketTipiField = bankaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                                    var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
+                                                    var bankaHareketiObj = (JObject)currentBankaHareketiRecord.First();
+                                                    await recordRepository.Delete(bankaHareketiObj, bankaHareketiModule);
+
+                                                    //banka hareketlerinin ve ana kasanın bakiyesini güncelleme
+                                                    decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, recordRepository, bankaHareketiModule);
+                                                    var bankaRecord = new JObject();
+                                                    bankaRecord["id"] = record["banka"];
+                                                    bankaRecord["guncel_bakiye"] = bankaBalance;
+                                                    await recordRepository.Update(bankaRecord, bankaModule);
+                                                }
+                                            }
+                                        }
+
+                                        break;
+                                    case "kasa_hareketleri":
+                                        var kasaHareketleriModule = await moduleRepository.GetByName("kasa_hareketleri");
+                                        var moduleKasa = await moduleRepository.GetByName("kasalar");
+                                        var kasaHareketTipiField = kasaHareketleriModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                        var kasaHareketTipleri = await picklistRepository.GetById(kasaHareketTipiField.PicklistId.Value);
+
+                                        var recordKasa = new JObject();
+                                        decimal kasaRecordBalance;
+
+                                        kasaRecordBalance = await CalculateKasaBalance(record, kasaHareketTipleri, appUser, recordRepository, kasaHareketleriModule);
+                                        recordKasa["guncel_bakiye"] = kasaRecordBalance;
+
+                                        //bankanın balance'ını güncelleme
+                                        recordKasa["id"] = record["kasa"];
+                                        await recordRepository.Update(recordKasa, moduleKasa);
+
+                                        break;
+                                    case "banka_hareketleri":
+                                        var bankaHareketleriModule = await moduleRepository.GetByName("banka_hareketleri");
+                                        var bankModule = await moduleRepository.GetByName("bankalar");
+                                        var bankaHareketTipiField = bankaHareketleriModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                        var bankaHareketTipleri = await picklistRepository.GetById(bankaHareketTipiField.PicklistId.Value);
+
+                                        var bankRecord = new JObject();
+                                        decimal bankaRecordBalance;
+
+                                        bankaRecordBalance = await CalculateBankaBalance(record, bankaHareketTipleri, appUser, recordRepository, bankaHareketleriModule);
+                                        bankRecord["guncel_bakiye"] = bankaRecordBalance;
+
+                                        //bankanın balance'ını güncelleme
+                                        bankRecord["id"] = record["banka"];
+                                        await recordRepository.Update(bankRecord, bankModule);
+
+                                        break;
+                                    case "country_travel_tracking":
+                                        var countryTravelTracking = await moduleRepository.GetByName("country_travel_tracking");
+                                        int approverId = 3488;
+                                        if (!record["shared_users_edit"].IsNullOrEmpty())
+                                        {
+                                            var sharedUsers = (JArray)record["shared_users_edit"];
+                                            foreach (var item in sharedUsers.ToList())
+                                            {
+                                                if ((int)item != approverId)
+                                                {
+                                                    sharedUsers.Add(approverId);
+                                                    record["shared_users_edit"] = sharedUsers;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var sharedUsers = new JArray();
+                                            sharedUsers.Add(approverId);
+                                            record["shared_users_edit"] = sharedUsers;
+                                        }
+
+                                        await recordRepository.Update(record, countryTravelTracking);
+                                        break;
+                                    case "referance_pool":
+                                        var referancePoolModule = await moduleRepository.GetByName("referance_pool");
+                                        var refObj = new JObject();
+                                        refObj["id"] = record["id"];
+                                        refObj["proportion_carried_out"] = (int)record["total_budget"] * (decimal)record["company_share"] / 100;
+                                        await recordRepository.Update(refObj, referancePoolModule);
+                                        break;
+                                    case "procurement_requisition":
+                                        var procurementRequisitionModule = await moduleRepository.GetByName("procurement_requisition");
+                                        var stepPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "procurement_step");
+                                        var stepPicklistItem = await picklistRepository.FindItemByLabel(stepPicklist.PicklistId.Value, (string)record["procurement_step"], appUser.PicklistLanguage);
+                                        if (stepPicklistItem.Value == "requisition")
+                                        {
+                                            var requestTypePicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "request_type");
+                                            var requestTypePicklistItem = await picklistRepository.FindItemByLabel(requestTypePicklist.PicklistId.Value, (string)record["request_type"], appUser.PicklistLanguage);
+                                            var sharedUsetFindRequest = new FindRequest();
+
+                                            if (requestTypePicklistItem != null)
+                                            {
+                                                if (requestTypePicklistItem.Value == "it")
+                                                    sharedUsetFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "gurkan.benekse@projectgroup.com.tr", No = 1 } }, Limit = 1 };
+                                                else
+                                                    sharedUsetFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "burcin.erkan@pf.com.tr", No = 1 } }, Limit = 1 };
+
+                                                var sharedUser = recordRepository.Find("users", sharedUsetFindRequest);
+
+                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                {
+                                                    int id = (int)sharedUser.First()["id"];
+                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                    foreach (var item in sharedUsers.ToList())
+                                                    {
+                                                        if ((int)item != id)
+                                                        {
+                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                            record["shared_users_edit"] = sharedUsers;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var sharedUsers = new JArray();
+                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                    record["shared_users_edit"] = sharedUsers;
+                                                }
+                                            }
+                                        }
+                                        else if (stepPicklistItem.Value == "offer_selection")
+                                        {
+                                            if (!record["selected_offer"].IsNullOrEmpty())
+                                            {
+                                                record["shared_users_edit"] = null;
+                                            }
+                                        }
+
+                                        if (!record["approver"].IsNullOrEmpty())
+                                        {
+                                            var approverPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "approver");
+                                            var approverPicklistItem = await picklistRepository.FindItemByLabel(approverPicklist.PicklistId.Value, (string)record["approver"], appUser.PicklistLanguage);
+                                            var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
+                                            var recordOwner = recordRepository.Find("users", recordOwnerRequest);
+                                            var recordOwnerObj = (JObject)recordOwner.First();
+                                            if (approverPicklistItem.Value == "levent_ergen")
+                                            {
+                                                if ((string)recordOwnerObj["email"] != "levent.ergen@pf.com.tr")
+                                                {
+                                                    record["custom_approver"] = "levent.ergen@pf.com.tr";
+                                                }
+                                                else
+                                                {
+                                                    record["custom_approver"] = "deniz.tekeli@projectgroup.com.tr";
+                                                }
+                                            }
+                                            else if (approverPicklistItem.Value == "deniz_tekeli")
+                                            {
+                                                if ((string)recordOwnerObj["email"] != "deniz.tekeli@projectgroup.com.tr")
+                                                {
+                                                    record["custom_approver"] = "deniz.tekeli@projectgroup.com.tr";
+                                                }
+                                                else
+                                                {
+                                                    record["custom_approver"] = "levent.ergen@pf.com.tr";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var projectOverheadPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "projectoverhead");
+                                                var projectOverheadPicklistItem = await picklistRepository.FindItemByLabel(projectOverheadPicklist.PicklistId.Value, (string)record["projectoverhead"], appUser.PicklistLanguage);
+                                                if (projectOverheadPicklistItem.Value == "project_expense")
+                                                {
+                                                    var bdpmPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "bdpm");
+                                                    var bdpmPicklistItem = await picklistRepository.FindItemByLabel(bdpmPicklist.PicklistId.Value, (string)record["bdpm"], appUser.PicklistLanguage);
+                                                    var approvalModule = await moduleRepository.GetByName("approval_workflow");
+                                                    var approvalPicklistId = approvalModule.Fields.Single(x => x.Name == "approval_type").PicklistId.Value;
+                                                    var approvalPicklist = await picklistRepository.GetById(approvalPicklistId);
+
+                                                    if (bdpmPicklistItem.Value == "bd_stage")
+                                                    {
+                                                        var approvalPicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "business");
+                                                        var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                        var approvalRecord = recordRepository.Find("approval_workflow", findRequestApproval);
+                                                        FindRequest approverRequest = null;
+                                                        JArray approverRecord = null;
+
+                                                        if (approverPicklistItem.Value == "project_officer")
+                                                        {
+                                                            approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["project_officer_staff"], No = 1 } }, Limit = 9999 };
+                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                            if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                            {
+                                                                int id = (int)sharedUser.First()["id"];
+                                                                var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                foreach (var item in sharedUsers.ToList())
+                                                                {
+                                                                    if ((int)item != id)
+                                                                    {
+                                                                        sharedUsers.Add(sharedUser.First()["id"]);
+                                                                        record["shared_users_edit"] = sharedUsers;
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                var sharedUsers = new JArray();
+                                                                sharedUsers.Add(sharedUser.First()["id"]);
+                                                                record["shared_users_edit"] = sharedUsers;
+                                                            }
+                                                            record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                        }
+                                                        else if (approverPicklistItem.Value == "first_approver")
+                                                        {
+                                                            approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
+                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            var approverRecordObj = (JObject)approverRecord.First();
+
+                                                            if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
+                                                            {
+                                                                approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                                approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                            }
+                                                            else
+                                                            {
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                            }
+                                                        }
+                                                        else if (approverPicklistItem.Value == "second_approver")
+                                                        {
+                                                            approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            var approverRecordObj = (JObject)approverRecord.First();
+
+                                                            if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
+                                                            {
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "deniz.tekeli@projectgroup.com.tr", No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = "deniz.tekeli@projectgroup.com.tr";
+                                                            }
+                                                            else
+                                                            {
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                            }
+                                                        }
+                                                    }
+                                                    else if (bdpmPicklistItem.Value == "pm_stage")
+                                                    {
+                                                        var approvalPicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "nonbillable");
+                                                        var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                        var approvalRecord = recordRepository.Find("approval_workflow", findRequestApproval);
+                                                        FindRequest approverRequest = null;
+                                                        JArray approverRecord = null;
+
+                                                        if (approverPicklistItem.Value == "project_officer")
+                                                        {
+                                                            approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["project_officer_staff"], No = 1 } }, Limit = 9999 };
+                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            var approverRecordObj = approverRecord.First();
+                                                            var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                            var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                            if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                            {
+                                                                int id = (int)sharedUser.First()["id"];
+                                                                var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                foreach (var item in sharedUsers.ToList())
+                                                                {
+                                                                    if ((int)item != id)
+                                                                    {
+                                                                        sharedUsers.Add(sharedUser.First()["id"]);
+                                                                        record["shared_users_edit"] = sharedUsers;
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                var sharedUsers = new JArray();
+                                                                sharedUsers.Add(sharedUser.First()["id"]);
+                                                                record["shared_users_edit"] = sharedUsers;
+                                                            }
+                                                            record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                        }
+                                                        else if (approverPicklistItem.Value == "first_approver")
+                                                        {
+                                                            approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
+                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            var approverRecordObj = approverRecord.First();
+
+                                                            if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
+                                                            {
+                                                                approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                                approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                            }
+                                                            else
+                                                            {
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                            }
+                                                        }
+                                                        else if (approverPicklistItem.Value == "second_approver")
+                                                        {
+                                                            approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                            approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            var approverRecordObj = approverRecord.First();
+
+                                                            if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
+                                                            {
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = "levent.ergen@pf.com.tr", No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = "levent.ergen@pf.com.tr";
+                                                            }
+                                                            else
+                                                            {
+                                                                var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                                var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                                if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                                {
+                                                                    int id = (int)sharedUser.First()["id"];
+                                                                    var sharedUsers = (JArray)record["shared_users_edit"];
+                                                                    foreach (var item in sharedUsers.ToList())
+                                                                    {
+                                                                        if ((int)item != id)
+                                                                        {
+                                                                            sharedUsers.Add(sharedUser.First()["id"]);
+                                                                            record["shared_users_edit"] = sharedUsers;
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    var sharedUsers = new JArray();
+                                                                    sharedUsers.Add(sharedUser.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
+                                                                record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else if (projectOverheadPicklistItem.Value == "overhead")
+                                                {
+                                                    var findRequestHumanResources = new FindRequest { Filters = new List<Filter> { new Filter { Field = "e_mail1", Operator = Operator.Equals, Value = appUser.Email, No = 1 } }, Limit = 9999 };
+                                                    var humanResourcesRecord = recordRepository.Find("human_resources", findRequestHumanResources);
+                                                    var approvalModule = await moduleRepository.GetByName("approval_workflow");
+                                                    var approvalPicklistId = approvalModule.Fields.Single(x => x.Name == "approval_type").PicklistId.Value;
+                                                    var approvalPicklist = await picklistRepository.GetById(approvalPicklistId);
+                                                    var approvalTypePicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "management");
+                                                    var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "staff", Operator = Operator.Equals, Value = (int)humanResourcesRecord.First()["id"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                    var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
+                                                    var findApproverRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
+                                                    var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
+                                                    var sharedUserFindRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 1 };
+                                                    var sharedUser = recordRepository.Find("users", sharedUserFindRequest);
+
+                                                    if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                    {
+                                                        int id = (int)sharedUser.First()["id"];
+                                                        var sharedUsers = (JArray)record["shared_users_edit"];
+                                                        foreach (var item in sharedUsers.ToList())
+                                                        {
+                                                            if ((int)item != id)
+                                                            {
+                                                                sharedUsers.Add(sharedUser.First()["id"]);
+                                                                record["shared_users_edit"] = sharedUsers;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        var sharedUsers = new JArray();
+                                                        sharedUsers.Add(sharedUser.First()["id"]);
+                                                        record["shared_users_edit"] = sharedUsers;
+                                                    }
+                                                    record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                }
+                                            }
+                                        }
+
+                                        await recordRepository.Update(record, procurementRequisitionModule);
+                                        break;
                                     case "petty_cash_requisition":
                                     case "expenditure":
                                         var pettyCashModule = await moduleRepository.GetByName("petty_cash");
@@ -170,10 +1278,24 @@ namespace PrimeApps.App.Helpers
                                                 var findRequestHumanResources = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
                                                 var humanResourcesRecord = recordRepository.Find("human_resources", findRequestHumanResources);
                                                 var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = humanResourcesRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
+                                                var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
+                                                var recordOwner = recordRepository.Find("users", recordOwnerRequest);
+                                                var recordOwnerObj = recordOwner.First();
+                                                var humanResourcesRecordObj = humanResourcesRecord.First();
                                                 approverUserRecord = recordRepository.Find("users", findApproverUser);
                                                 if (!humanResourcesRecord.IsNullOrEmpty())
                                                 {
-                                                    record["custom_approver"] = humanResourcesRecord.First()["e_mail1"];
+                                                    if (recordOwnerObj["email"] == humanResourcesRecordObj["e_mail1"])
+                                                    {
+                                                        var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                        var approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                        record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                    }
+                                                    else
+                                                    {
+                                                        record["custom_approver"] = humanResourcesRecord.First()["e_mail1"];
+                                                    }
+
                                                     if (!record["shared_users_edit"].IsNullOrEmpty())
                                                     {
                                                         int id = (int)approverUserRecord.First()["id"];
@@ -306,11 +1428,13 @@ namespace PrimeApps.App.Helpers
                                             var invoiceTypePicklistItem = await picklistRepository.FindItemByLabel(invoiceTypePicklist.PicklistId.Value, (string)record["invoice_type"], appUser.TenantLanguage);
                                             var invoiceApproverPicklist = invoiceModule.Fields.Single(x => x.Name == "approver");
                                             var invoiceApproverPicklistItem = await picklistRepository.FindItemByLabel(invoiceApproverPicklist.PicklistId.Value, (string)record["approver"], appUser.TenantLanguage);
-
+                                            var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
+                                            var recordOwner = recordRepository.Find("users", recordOwnerRequest);
+                                            var recordOwnerObj = recordOwner.First(); findRequestApprovalWorkflow
                                             if (invoiceTypePicklistItem.SystemCode == "project_expense")
                                             {
                                                 var approvalTypePicklistItem = approvalTypePicklist.Items.Single(x => x.SystemCode == "nonbillable");
-                                                var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
                                                 var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
 
                                                 if (invoiceApproverPicklistItem.SystemCode == "project_director")
@@ -319,10 +1443,20 @@ namespace PrimeApps.App.Helpers
                                                     var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
                                                     var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
                                                     var approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                    var approverRecordObj = approverRecord.First();
 
                                                     if (!approverRecord.IsNullOrEmpty())
                                                     {
-                                                        record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                        if (recordOwnerObj["email"] == approverRecordObj["e_mail1"])
+                                                        {
+                                                            var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                            var approverHumanRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            record["custom_approver"] = approverHumanRecord.First()["e_mail1"];
+                                                        }
+                                                        else
+                                                        {
+                                                            record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                        }
                                                         if (!record["shared_users_edit"].IsNullOrEmpty())
                                                         {
                                                             var sharedUsers = (JArray)record["shared_users_edit"];
@@ -343,6 +1477,7 @@ namespace PrimeApps.App.Helpers
                                                     var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
                                                     var findApproverUser = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = approverRecord.First()["e_mail1"], No = 1 } }, Limit = 9999 };
                                                     var approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                    var approverRecordObj = approverRecord.First();
 
                                                     if (!approverRecord.IsNullOrEmpty())
                                                     {
@@ -373,7 +1508,16 @@ namespace PrimeApps.App.Helpers
 
                                                 if (!humanResourcesRecord.IsNullOrEmpty())
                                                 {
-                                                    record["custom_approver"] = humanResourcesRecord.First()["e_mail1"];
+                                                    if (recordOwnerObj["email"] == approverRecordObj["e_mail1"])
+                                                    {
+                                                        var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
+                                                        var approverHumanRecord = recordRepository.Find("human_resources", approverRequest);
+                                                        record["custom_approver"] = approverHumanRecord.First()["e_mail1"];
+                                                    }
+                                                    else
+                                                    {
+                                                        record["custom_approver"] = approverRecordObj["e_mail1"];
+                                                    }
                                                     if (!record["shared_users_edit"].IsNullOrEmpty())
                                                     {
                                                         var sharedUsers = (JArray)record["shared_users_edit"];
@@ -483,7 +1627,7 @@ namespace PrimeApps.App.Helpers
                                             else if (module.Name == "purchase_order_products")
                                             {
                                                 prodItem["stock_quantity"] = (decimal)prodItem["stock_quantity"] + (decimal)record["quantity"];
-                                                var purcOrMod = await moduleRepository.GetByName("purchase_order_products");
+                                                var purcOrMod = await moduleRepository.GetByName("purchase_orders");
                                                 var purcOrItem = recordRepository.GetById(purcOrMod, (int)record["purchase_order"], false);
                                                 purcOrItem["approved"] = true;
                                                 await recordRepository.Update(purcOrItem, purcOrMod);
@@ -516,48 +1660,48 @@ namespace PrimeApps.App.Helpers
                                         await recordRepository.Update(product, productModuleObj);
                                         break;
 
-                                    case "current_accounts":
-                                        try
-                                        {
-                                            var currentTransactionType = (string)record["transaction_type_system"];
-                                            var recordUpdate = new JObject();
-                                            decimal balance;
-                                            Module moduleUpdate;
+                                    //case "current_accounts":
+                                    //    try
+                                    //    {
+                                    //        var currentTransactionType = (string)record["transaction_type_system"];
+                                    //        var recordUpdate = new JObject();
+                                    //        decimal balance;
+                                    //        Module moduleUpdate;
 
-                                            switch (currentTransactionType)
-                                            {
-                                                case "sales_invoice":
-                                                case "collection":
-                                                    var customerId = (int)record["customer"];
-                                                    balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
-                                                    moduleUpdate = await moduleRepository.GetByName("accounts");
-                                                    recordUpdate["id"] = customerId;
-                                                    recordUpdate["balance"] = balance;
-                                                    break;
-                                                case "purchase_invoice":
-                                                case "payment":
-                                                    var supplierId = (int)record["supplier"];
-                                                    balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
-                                                    moduleUpdate = await moduleRepository.GetByName("suppliers");
-                                                    recordUpdate["id"] = supplierId;
-                                                    recordUpdate["balance"] = balance;
-                                                    break;
-                                                default:
-                                                    throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment.");
-                                            }
+                                    //        switch (currentTransactionType)
+                                    //        {
+                                    //            case "sales_invoice":
+                                    //            case "collection":
+                                    //                var customerId = (int)record["customer"];
+                                    //                balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
+                                    //                moduleUpdate = await moduleRepository.GetByName("accounts");
+                                    //                recordUpdate["id"] = customerId;
+                                    //                recordUpdate["balance"] = balance;
+                                    //                break;
+                                    //            case "purchase_invoice":
+                                    //            case "payment":
+                                    //                var supplierId = (int)record["supplier"];
+                                    //                balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
+                                    //                moduleUpdate = await moduleRepository.GetByName("suppliers");
+                                    //                recordUpdate["id"] = supplierId;
+                                    //                recordUpdate["balance"] = balance;
+                                    //                break;
+                                    //            default:
+                                    //                throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment.");
+                                    //        }
 
-                                            recordUpdate["updated_by"] = (int)record["updated_by"];
+                                    //        recordUpdate["updated_by"] = (int)record["updated_by"];
 
-                                            var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
+                                    //        var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
 
-                                            //if (resultUpdate < 1)
-                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                        }
-                                        break;
+                                    //        //if (resultUpdate < 1)
+                                    //        //ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
+                                    //    }
+                                    //    catch (Exception ex)
+                                    //    {
+                                    //        //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //    }
+                                    //    break;
                                     case "project_indicators":
                                         var projectScopeModule = await moduleRepository.GetByName("project_scope");
                                         var projectScopeRecord = recordRepository.GetById(projectScopeModule, (int)record["related_result"]);
@@ -820,6 +1964,8 @@ namespace PrimeApps.App.Helpers
                                             }
                                         }
                                         */
+                                        //Core merge
+                                        //await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], recordRepository, moduleRepository);
                                         break;
                                     case "timesheet_item":
                                         var timesheetModule = await moduleRepository.GetByName("timesheet");
@@ -929,9 +2075,10 @@ namespace PrimeApps.App.Helpers
 
                                         var izinlerCalisan = recordRepository.Find("izin_turleri", findRequestIzinlerCalisan, false).First;
 
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], recordRepository, moduleRepository);
+
 
                                         var rehberModule = await moduleRepository.GetByName("rehber");
+                                        var calisanModule = await moduleRepository.GetByName("calisanlar");
                                         var recordRehber = new JObject();
 
                                         if (operationType == OperationType.update || operationType == OperationType.delete)
@@ -951,6 +2098,11 @@ namespace PrimeApps.App.Helpers
                                                 recordRehber = (JObject)recordsRehber[0];
                                             }
                                         }
+                                        var calismaDurumuField = calisanModule.Fields.Single(x => x.Name == "calisma_durumu");
+                                        var calismaDurumuPicklist = await picklistRepository.GetById(calismaDurumuField.PicklistId.Value);
+                                        var calismaDurumuPicklistItem = calismaDurumuPicklist.Items.SingleOrDefault(x => x.Value == "active");
+                                        var calismaDurumu = (string)record["calisma_durumu"];
+                                        var isActive = !string.IsNullOrEmpty(calismaDurumu) && calismaDurumuPicklistItem != null && calismaDurumu == (appUser.PicklistLanguage == "tr" ? calismaDurumuPicklistItem.LabelTr : calismaDurumuPicklistItem.LabelEn);
 
                                         if (operationType != OperationType.delete)
                                         {
@@ -990,7 +2142,7 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            if (operationType == OperationType.insert && recordRehber["id"].IsNullOrEmpty()) //create
+                                            if (operationType == OperationType.insert && recordRehber["id"].IsNullOrEmpty() && isActive) //create
                                             {
                                                 recordRehber["calisan_id"] = record["id"];
 
@@ -1008,6 +2160,26 @@ namespace PrimeApps.App.Helpers
                                             }
                                             else //update
                                             {
+                                                //Core merge
+                                                //if (!isActive)
+                                                //{
+                                                //    if (!recordRehber["id"].IsNullOrEmpty())
+                                                //    {
+                                                //        try
+                                                //        {
+                                                //            var resultDelete = await recordRepository.Delete(recordRehber, rehberModule);
+
+                                                //            if (resultDelete < 1)
+                                                //                ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be deleted! Object: " + recordRehber)));
+                                                //        }
+                                                //        catch (Exception ex)
+                                                //        {
+                                                //            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                //        }
+                                                //    }
+                                                //}
+                                                //else
+                                                //{
                                                 //try
                                                 //{
                                                 //    var resultUpdate = await recordRepository.Update(recordRehber, rehberModule);
@@ -1021,6 +2193,58 @@ namespace PrimeApps.App.Helpers
                                                 //}
                                             }
                                         }
+                                        //if (!record["dogum_tarihi"].IsNullOrEmpty())
+                                        //{
+                                        //    var today = DateTime.Today;
+                                        //    var birthDate = (DateTime)record["dogum_tarihi"];
+                                        //    var age = today.Year - birthDate.Year;
+
+                                        //    if (birthDate > today.AddYears(-age))
+                                        //        age--;
+
+                                        //    record["yasi"] = age;
+                                        //}
+
+                                        //if (!record["ise_baslama_tarihi"].IsNullOrEmpty())
+                                        //{
+                                        //    var timespan = DateTime.UtcNow.Subtract((DateTime)record["ise_baslama_tarihi"]);
+                                        //    record["deneyim_yil"] = Math.Floor(timespan.TotalDays / 365);
+
+                                        //    if ((int)record["deneyim_yil"] > 0)
+                                        //    {
+                                        //        record["deneyim_ay"] = Math.Floor(timespan.TotalDays / 30) - ((int)record["deneyim_yil"] * 12);
+                                        //    }
+                                        //    else
+                                        //    {
+                                        //        record["deneyim_ay"] = Math.Floor(timespan.TotalDays / 30);
+                                        //    }
+
+                                        //    var deneyimAyStr = (string)record["deneyim_ay"];
+
+                                        //    record["toplam_deneyim_firma"] = record["deneyim_yil"] + "." + (deneyimAyStr.Length == 1 ? "0" + deneyimAyStr : deneyimAyStr);
+                                        //    record["toplam_deneyim_firma_yazi"] = record["deneyim_yil"] + " yıl " + deneyimAyStr + " ay";
+
+                                        //    if (record["onceki_deneyim_yil"].IsNullOrEmpty())
+                                        //        record["onceki_deneyim_yil"] = 0;
+
+                                        //    if (record["onceki_deneyim_ay"].IsNullOrEmpty())
+                                        //        record["onceki_deneyim_ay"] = 0;
+
+                                        //    var deneyimYil = (int)record["deneyim_yil"] + (int)record["onceki_deneyim_yil"];
+                                        //    var deneyimAy = (int)record["deneyim_ay"] + (int)record["onceki_deneyim_ay"];
+
+                                        //    if (deneyimAy > 12)
+                                        //    {
+                                        //        deneyimAy -= 12;
+                                        //        deneyimYil += 1;
+                                        //    }
+
+                                        //    record["toplam_deneyim"] = deneyimYil + "." + (deneyimAy.ToString().Length == 1 ? "0" + deneyimAy : deneyimAy.ToString());
+                                        //    record["toplam_deneyim_yazi"] = deneyimYil + " yıl " + deneyimAy + " ay";
+                                        //}
+
+                                        //if (!record["dogum_tarihi"].IsNullOrEmpty() || !record["ise_baslama_tarihi"].IsNullOrEmpty())
+                                        //    await recordRepository.Update(record, calisanModule);
                                         else//delete
                                         {
                                             //try
@@ -1073,10 +2297,58 @@ namespace PrimeApps.App.Helpers
                                     case "masraf_kalemleri":
                                         try
                                         {
-                                            var recordUpdate = new JObject();
                                             var moduleUpdate = await moduleRepository.GetByName("masraflar");
+                                            var masrafKalemiModule = await moduleRepository.GetByName("masraf_kalemleri");
+                                            var masrafCalisanModule = await moduleRepository.GetByName("calisanlar");
+                                            var masrafTuruPicklist = masrafKalemiModule.Fields.Single(x => x.Name == "masraf_turu");
+                                            var odenecekTutarField = masrafKalemiModule.Fields.SingleOrDefault(x => x.Name == "odenecek_tutar");
+                                            var masrafRecord = new JObject();
+                                            bool masrafKalemiCalculate = false;
+                                            if (odenecekTutarField != null)
+                                            {
+                                                masrafRecord = recordRepository.GetById(moduleUpdate, (int)record["masraf"], true, null, true);
+                                            }
+                                            if (odenecekTutarField != null && (masrafRecord["process_status"].IsNullOrEmpty() || (int)masrafRecord["process_status"] == 3))
+                                            {
+                                                masrafKalemiCalculate = true;
+                                                var masrafTuruPicklistItem = await picklistRepository.FindItemByLabel(masrafTuruPicklist.PicklistId.Value, (string)record["masraf_turu"], appUser.PicklistLanguage);
+                                                if (masrafTuruPicklistItem.SystemCode == "yemek")
+                                                {
+                                                    var yurtIcıDisiPicklist = masrafKalemiModule.Fields.Single(x => x.Name == "yurticiyurtdisi");
+                                                    var yurtIcıDisiPicklistItem = await picklistRepository.FindItemByLabel(yurtIcıDisiPicklist.PicklistId.Value, (string)record["yurticiyurtdisi"], appUser.PicklistLanguage);
+                                                    if (yurtIcıDisiPicklistItem.SystemCode == "yurt_ici")
+                                                    {
+                                                        var findRequestMasrafCalisan = new FindRequest { Filters = new List<Filter> { new Filter { Field = "owner", Operator = Operator.Equals, Value = record["owner"], No = 1 } }, Limit = 1 };
+                                                        var recordsMasrafCalisan = recordRepository.Find("calisanlar", findRequestMasrafCalisan);
+                                                        var lokasyonPicklist = masrafCalisanModule.Fields.Single(x => x.Name == "lokasyon");
+                                                        var lokasyonPicklistItem = await picklistRepository.FindItemByLabel(lokasyonPicklist.PicklistId.Value, (string)recordsMasrafCalisan.First()["lokasyon"], appUser.PicklistLanguage);
+                                                        var illerPicklist = masrafKalemiModule.Fields.Single(x => x.Name == "iller");
+                                                        var illerPicklistItem = await picklistRepository.FindItemByLabel(illerPicklist.PicklistId.Value, (string)record["iller"], appUser.PicklistLanguage);
+                                                        if (lokasyonPicklistItem.Value == illerPicklistItem.SystemCode)
+                                                        {
+                                                            record["odenecek_tutar"] = 24;
+                                                        }
+                                                        else
+                                                        {
+                                                            record["odenecek_tutar"] = 30;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        record["odenecek_tutar"] = record["tutar"];
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    record["odenecek_tutar"] = record["tutar"];
+                                                }
+
+                                                await recordRepository.Update(record, masrafKalemiModule);
+                                            }
+                                            var recordUpdate = new JObject();
                                             var masrafId = (int)record["masraf"];
                                             decimal totalAmount = 0;
+                                            decimal totalOdenecekTutar = 0;
 
                                             var findRequestMasrafKalemi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "masraf", Operator = Operator.Equals, Value = masrafId, No = 1 } }, Limit = 9999 };
                                             var recordsMasrafKalemi = recordRepository.Find(module.Name, findRequestMasrafKalemi);
@@ -1089,11 +2361,23 @@ namespace PrimeApps.App.Helpers
                                                     amount = (decimal)recordMasrafKalemi["tutar"];
 
                                                 totalAmount += amount;
+
+                                                if (!recordMasrafKalemi["odenecek_tutar"].IsNullOrEmpty())
+                                                {
+                                                    decimal odenecekTutar = 0;
+                                                    odenecekTutar = (decimal)recordMasrafKalemi["odenecek_tutar"];
+                                                    totalOdenecekTutar += odenecekTutar;
+                                                }
                                             }
 
                                             recordUpdate["id"] = masrafId;
                                             recordUpdate["toplam_tutar"] = totalAmount;
                                             recordUpdate["updated_by"] = (int)record["updated_by"];
+
+                                            if (masrafKalemiCalculate)
+                                            {
+                                                recordUpdate["odenecek_toplam_tutar"] = totalOdenecekTutar;
+                                            }
 
                                             var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
 
@@ -1210,7 +2494,7 @@ namespace PrimeApps.App.Helpers
                 if (kidemeGoreIzin + (double)izinKurali["yillik_izin_hakki_gun"] > yasaGoreIzin)
                     hakedilenIzin = kidemeGoreIzin + (double)izinKurali["yillik_izin_hakki_gun"];
                 else
-                    hakedilenIzin = yasaGoreIzin + (double)izinKurali["yillik_izin_hakki_gun"];
+                    hakedilenIzin = yasaGoreIzin;
                 #endregion
             }
 
@@ -1486,6 +2770,184 @@ namespace PrimeApps.App.Helpers
             }
 
             return true;
+        }
+
+        public static async Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, RecordRepository recordRepository, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module)
+        {
+            decimal balance = 0;
+            switch (currency)
+            {
+                case "try":
+                    var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsTry = recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
+                    if (accountCurrentAccountsTry.Count > 0)
+                    {
+                        foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
+                        {
+                            if ((string)accountCurrentAccountTry["transaction_type_system"] == "sales_invoice")
+                                balance += (decimal)accountCurrentAccountTry["borc_tl"];
+                            else
+                                balance -= (decimal)accountCurrentAccountTry["alacak"];
+
+                            accountCurrentAccountTry["bakiye_tl"] = balance;
+                            await recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
+                        }
+
+                    }
+                    break;
+
+                case "eur":
+                    var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsEuro = recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
+                    if (accountCurrentAccountsEuro.Count > 0)
+                    {
+                        foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
+                        {
+                            if ((string)accountCurrentAccountEuro["transaction_type_system"] == "sales_invoice")
+                                balance += (decimal)accountCurrentAccountEuro["borc_euro"];
+                            else
+                                balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
+
+                            accountCurrentAccountEuro["bakiye_euro"] = balance;
+                            await recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
+                        }
+                    }
+                    break;
+
+                case "usd":
+                    var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsUsd = recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
+                    if (accountCurrentAccountsUsd.Count > 0)
+                    {
+                        foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
+                        {
+                            if ((string)accountCurrentAccountUsd["transaction_type_system"] == "sales_invoice")
+                                balance += (decimal)accountCurrentAccountUsd["borc_usd"];
+                            else
+                                balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
+
+                            accountCurrentAccountUsd["bakiye_usd"] = balance;
+                            await recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
+                        }
+                    }
+                    break;
+            }
+
+            return balance;
+        }
+
+        public static async Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, RecordRepository recordRepository, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module)
+        {
+            decimal balance = 0;
+            switch (currency)
+            {
+                case "try":
+                    var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsTry = recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
+                    if (accountCurrentAccountsTry.Count > 0)
+                    {
+                        foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
+                        {
+                            if ((string)accountCurrentAccountTry["transaction_type_system"] == "purchase_invoice")
+                                balance -= (decimal)accountCurrentAccountTry["alacak"];
+                            else
+                                balance += (decimal)accountCurrentAccountTry["borc_tl"];
+
+                            accountCurrentAccountTry["bakiye_tl"] = balance;
+                            await recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
+                        }
+
+                    }
+                    break;
+
+                case "eur":
+                    var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsEuro = recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
+                    if (accountCurrentAccountsEuro.Count > 0)
+                    {
+                        foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
+                        {
+                            if ((string)accountCurrentAccountEuro["transaction_type_system"] == "purchase_invoice")
+                                balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
+                            else
+                                balance += (decimal)accountCurrentAccountEuro["borc_euro"];
+
+                            accountCurrentAccountEuro["bakiye_euro"] = balance;
+                            await recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
+                        }
+                    }
+                    break;
+
+                case "usd":
+                    var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsUsd = recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
+                    if (accountCurrentAccountsUsd.Count > 0)
+                    {
+                        foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
+                        {
+                            if ((string)accountCurrentAccountUsd["transaction_type_system"] == "purchase_invoice")
+                                balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
+                            else
+                                balance += (decimal)accountCurrentAccountUsd["borc_usd"];
+
+                            accountCurrentAccountUsd["bakiye_usd"] = balance;
+                            await recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
+                        }
+                    }
+                    break;
+            }
+
+            return balance;
+        }
+
+        public static async Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, RecordRepository recordRepository, Module kasaHareketiModule)
+        {
+            decimal balance = 0;
+            var kasaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "kasa", Operator = Operator.Equals, Value = (int)record["kasa"], No = 1 } }, Limit = 9999 };
+            var kasaHareketleri = recordRepository.Find("kasa_hareketleri", kasaHareketleriRequest);
+            if (kasaHareketleri.Count > 0)
+            {
+                foreach (JObject kasaHareketi in kasaHareketleri)
+                {
+                    var hareketTipi = hareketTipleri.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)kasaHareketi["hareket_tipi"] : x.LabelEn == (string)kasaHareketi["hareket_tipi"]).SystemCode;
+
+                    if (hareketTipi == "para_cikisi")
+                        balance -= (decimal)kasaHareketi["alacak"];
+                    else
+                        balance += (decimal)kasaHareketi["borc"];
+
+                    kasaHareketi["bakiye"] = balance;
+                    await recordRepository.Update(kasaHareketi, kasaHareketiModule);
+                }
+
+            }
+
+            return balance;
+        }
+
+        public static async Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, RecordRepository recordRepository, Module bankaHareketiModule)
+        {
+            decimal balance = 0;
+            var bankaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "banka", Operator = Operator.Equals, Value = (int)record["banka"], No = 1 } }, Limit = 9999 };
+            var bankaHareketleri = recordRepository.Find("banka_hareketleri", bankaHareketleriRequest);
+            if (bankaHareketleri.Count > 0)
+            {
+                foreach (JObject bankaHareketi in bankaHareketleri)
+                {
+                    var hareketTipi = hareketTipleri.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)bankaHareketi["hareket_tipi"] : x.LabelEn == (string)bankaHareketi["hareket_tipi"]).SystemCode;
+
+                    if (hareketTipi == "para_cikisi")
+                        balance -= (decimal)bankaHareketi["alacak"];
+                    else
+                        balance += (decimal)bankaHareketi["borc"];
+
+                    bankaHareketi["bakiye"] = balance;
+                    await recordRepository.Update(bankaHareketi, bankaHareketiModule);
+                }
+
+            }
+
+            return balance;
         }
     }
 }
