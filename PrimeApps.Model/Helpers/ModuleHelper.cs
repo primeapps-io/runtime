@@ -71,6 +71,8 @@ namespace PrimeApps.Model.Helpers
             switch (module.Name)
             {
                 case "quotes":
+                case "sales_invoices":
+                case "purchase_invoices":
                 case "sales_orders":
                 case "purchase_orders":
                     var hasCurrencyField = module.Fields.Any(x => x.Name == "currency");

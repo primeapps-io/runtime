@@ -178,9 +178,9 @@ namespace PrimeApps.App.Helpers
                                         decimal recordAccountBalance;
 
                                         //para birimini bulma
-                                        var currencyFieldSalesInvoice = salesInvoiceModule.Fields.Single(x => x.Name == "fatura_para_birimi");
+                                        var currencyFieldSalesInvoice = salesInvoiceModule.Fields.Single(x => x.Name == "currency");
                                         var currencyPicklistSalesInvoice = await picklistRepository.GetById(currencyFieldSalesInvoice.PicklistId.Value);
-                                        var currencySalesInvoice = currencyPicklistSalesInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["fatura_para_birimi"] : x.LabelEn == (string)record["fatura_para_birimi"]).SystemCode;
+                                        var currencySalesInvoice = currencyPicklistSalesInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
 
                                         //Sipariş dönüştürmede otomaik oluşturulan veya manuel eklenen satış faturası
                                         if (salesInvoiceStagePicklistItem.SystemCode == "onaylandi" && operationType != OperationType.delete)
@@ -189,7 +189,7 @@ namespace PrimeApps.App.Helpers
 
                                             //create ya da update için cari hesabın alanlarını oluşturma ya da güncelleme
                                             recordCurrentAccount["owner"] = record["owner"];
-                                            recordCurrentAccount["currency"] = record["fatura_para_birimi"];
+                                            recordCurrentAccount["currency"] = record["currency"];
                                             recordCurrentAccount["customer"] = record["account"];
                                             recordCurrentAccount["satis_faturasi"] = record["id"];
                                             recordCurrentAccount["date"] = record["fatura_tarihi"];
@@ -295,9 +295,9 @@ namespace PrimeApps.App.Helpers
                                         decimal recordSupplierBalance;
 
                                         //para birimini bulma
-                                        var currencyFieldPurchaseInvoice = purchaseInvoiceModule.Fields.Single(x => x.Name == "fatura_para_birimi");
+                                        var currencyFieldPurchaseInvoice = purchaseInvoiceModule.Fields.Single(x => x.Name == "currency");
                                         var currencyPicklistPurchaseInvoice = await picklistRepository.GetById(currencyFieldPurchaseInvoice.PicklistId.Value);
-                                        var currencyPurchaseInvoice = currencyPicklistPurchaseInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["fatura_para_birimi"] : x.LabelEn == (string)record["fatura_para_birimi"]).SystemCode;
+                                        var currencyPurchaseInvoice = currencyPicklistPurchaseInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
 
                                         //Sipariş dönüştürmede otomaik oluşturulan veya manuel eklenen satış faturası
                                         if (purchaseInvoiceStagePicklistItem.SystemCode == "onaylandi" && operationType != OperationType.delete)
@@ -1555,51 +1555,103 @@ namespace PrimeApps.App.Helpers
                                         }
 
                                         break;
+                                    case "sales_orders":
+                                        var salesOrderModuleObj = await moduleRepository.GetByName("sales_orders");
+                                        var prodModObj = await moduleRepository.GetByName("products");
+                                        var salesOrderPicklist = salesOrderModuleObj.Fields.Single(x => x.Name == "order_stage");
+                                        var stockModObj = await moduleRepository.GetByName("stock_transactions");
+                                        var salesOrderModulePicklist = await picklistRepository.FindItemByLabel(salesOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.PicklistLanguage);
+                                        var findRequestCurrentStockRecordObj = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                        var currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj);
+                                        if ((operationType == OperationType.delete && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice") || (salesOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && salesOrderModulePicklist.SystemCode != "confirmed_order_stage" && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice"))
+                                        {
+                                            if (currentStockRecordArr.Count > 0)
+                                            {
+                                                foreach (JObject stockTransObj in currentStockRecordArr)
+                                                {
+                                                    await recordRepository.Delete(stockTransObj, stockModObj);
+                                                    var prodItemObj = new JObject();
+                                                    decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, recordRepository, stockModObj, picklistRepository);
+                                                    prodItemObj["stock_quantity"] = productStockQuantity;
+                                                    prodItemObj["id"] = stockTransObj["product"];
+                                                    await recordRepository.Update(prodItemObj, prodModObj);
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    case "purchase_orders":
+                                        var purchaseOrderModuleObj = await moduleRepository.GetByName("purchase_orders");
+                                        var prodModObj2 = await moduleRepository.GetByName("products");
+                                        var purchaseOrderPicklist = purchaseOrderModuleObj.Fields.Single(x => x.Name == "order_stage");
+                                        var stockModObj2 = await moduleRepository.GetByName("stock_transactions");
+                                        var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.PicklistLanguage);
+                                        var findRequestCurrentStockRecordObj2 = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                        var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2);
+                                        if (operationType == OperationType.delete || (purchaseOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && purchaseOrderModulePicklist.SystemCode != "confirmed_order_stage"))
+                                        {
+                                            if (currentStockRecordArr2.Count > 0)
+                                            {
+                                                foreach (JObject stockTransObj in currentStockRecordArr2)
+                                                {
+                                                    await recordRepository.Delete(stockTransObj, stockModObj2);
+                                                    var prodItemObj = new JObject();
+                                                    decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, recordRepository, stockModObj2, picklistRepository);
+                                                    prodItemObj["stock_quantity"] = productStockQuantity;
+                                                    prodItemObj["id"] = stockTransObj["product"];
+                                                    await recordRepository.Update(prodItemObj, prodModObj2);
+                                                }
+                                            }
+                                        }
+                                        break;
                                     case "order_products":
                                     case "purchase_order_products":
-                                        var isApproved = false;
                                         var prodMod = await moduleRepository.GetByName("products");
                                         var prodItem = recordRepository.GetById(prodMod, (int)record["product"], false);
+                                        var currentModulePicklist = new PicklistItem();
+                                        var findRequestCurrentStockRecord = new FindRequest();
                                         if (module.Name == "order_products")
                                         {
+                                            findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["sales_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 };
                                             var salesOrderModule = await moduleRepository.GetByName("sales_orders");
                                             var salesOrderItem = recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
                                             var salesStagePicklist = salesOrderModule.Fields.Single(x => x.Name == "order_stage");
-                                            var salesStagePicklistItem = await picklistRepository.FindItemByLabel(salesStagePicklist.PicklistId.Value, (string)salesOrderItem["order_stage"], appUser.TenantLanguage);
-                                            if (salesStagePicklistItem.SystemCode == "confirmed_order_stage" && !(bool)salesOrderItem["approved"] && (bool)prodItem["using_stock"])
-                                                isApproved = true;
+                                            currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.PicklistLanguage);
+                                         
                                         }
                                         else if (module.Name == "purchase_order_products")
                                         {
+                                            findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["purchase_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 }
                                             var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
                                             var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
                                             var purchaseStagePicklist = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
-                                            var purchaseStagePicklistItem = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.TenantLanguage);
-                                            if (purchaseStagePicklistItem.SystemCode == "confirmed_purchase_order_stage" && !(bool)purchaseOrderItem["approved"] && (bool)prodItem["using_stock"])
-                                                isApproved = true;
+                                            currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.PicklistLanguage);
+                                           
                                         }
 
-                                        if (isApproved)
+                                        var currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord);
+                                        var stockModule = await moduleRepository.GetByName("stock_transactions");
+
+                                        if ((currentModulePicklist.SystemCode == "confirmed_purchase_order_stage" || currentModulePicklist.SystemCode == "confirmed_order_stage") && operationType != OperationType.delete)
                                         {
                                             var modelStateTransaction = new ModelStateDictionary();
-                                            var stockModule = await moduleRepository.GetByName("stock_transactions");
                                             var transactionTypeField = stockModule.Fields.Single(x => x.Name == "stock_transaction_type");
                                             var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
 
                                             var stock = new JObject();
                                             stock["owner"] = appUser.Id;
                                             stock["product"] = record["product"];
-                                            stock["quantity"] = record["quantity"];
                                             stock["transaction_date"] = DateTime.UtcNow.Date;
 
                                             if (module.Name == "order_products")
                                             {
+                                                stock["cikan_miktar"] = record["quantity"];
                                                 stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_output").Id;
                                                 stock["sales_order"] = (int)record["sales_order"];
 
                                             }
                                             else if (module.Name == "purchase_order_products")
                                             {
+                                                stock["quantity"] = record["quantity"];
                                                 stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_input").Id;
                                                 stock["purchase_order"] = (int)record["purchase_order"];
                                             }
@@ -1610,28 +1662,21 @@ namespace PrimeApps.App.Helpers
                                                 //ErrorLog.GetDefault(null).Log(new Error(new Exception("Stock transaction can not be created")));
                                                 return;
                                             }
+                                            if (currentStockRecord.Count > 0)
+                                            {
+                                                stock["id"] = currentStockRecord.First()["id"];
+                                                await recordRepository.Update(stock, stockModule);
+                                            }
+                                            else
 
-                                            await recordRepository.Create(stock, stockModule);
+                                                await recordRepository.Create(stock, stockModule);
 
                                             if (prodItem["stock_quantity"].IsNullOrEmpty())
                                                 prodItem["stock_quantity"] = 0;
 
-                                            if (module.Name == "order_products")
-                                            {
-                                                prodItem["stock_quantity"] = (decimal)prodItem["stock_quantity"] - (decimal)record["quantity"];
-                                                var salOrMod = await moduleRepository.GetByName("sales_orders");
-                                                var salOrItem = recordRepository.GetById(salOrMod, (int)record["sales_order"], false);
-                                                salOrItem["approved"] = true;
-                                                await recordRepository.Update(salOrItem, salOrMod);
-                                            }
-                                            else if (module.Name == "purchase_order_products")
-                                            {
-                                                prodItem["stock_quantity"] = (decimal)prodItem["stock_quantity"] + (decimal)record["quantity"];
-                                                var purcOrMod = await moduleRepository.GetByName("purchase_orders");
-                                                var purcOrItem = recordRepository.GetById(purcOrMod, (int)record["purchase_order"], false);
-                                                purcOrItem["approved"] = true;
-                                                await recordRepository.Update(purcOrItem, purcOrMod);
-                                            }
+
+                                            decimal productStockQuantity = await CalculateStock(record, appUser, recordRepository, stockModule, picklistRepository);
+                                            prodItem["stock_quantity"] = productStockQuantity;
 
                                             await recordRepository.Update(prodItem, prodMod);
                                         }
@@ -1647,15 +1692,8 @@ namespace PrimeApps.App.Helpers
 
                                         var stockModuleObj = await moduleRepository.GetByName("stock_transactions");
                                         var transactionTypePicklist = stockModuleObj.Fields.Single(x => x.Name == "stock_transaction_type");
-                                        var transactionTypePicklistItem = await picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)record["stock_transaction_type"], appUser.TenantLanguage);
-                                        if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
-                                        {
-                                            product["stock_quantity"] = (decimal)product["stock_quantity"] + (decimal)record["quantity"];
-                                        }
-                                        else if (transactionTypePicklistItem.Value2 == "supplier_return" || transactionTypePicklistItem.Value2 == "stock_output")
-                                        {
-                                            product["stock_quantity"] = (decimal)product["stock_quantity"] - (decimal)record["quantity"];
-                                        }
+                                        decimal stockQuantity = await CalculateStock(record, appUser, recordRepository, stockModuleObj, picklistRepository);
+                                        product["stock_quantity"] = stockQuantity;
 
                                         await recordRepository.Update(product, productModuleObj);
                                         break;
@@ -2943,6 +2981,37 @@ namespace PrimeApps.App.Helpers
 
                     bankaHareketi["bakiye"] = balance;
                     await recordRepository.Update(bankaHareketi, bankaHareketiModule);
+                }
+
+            }
+
+            return balance;
+        }
+
+        public static async Task<decimal> CalculateStock(JObject record, UserItem appUser, RecordRepository recordRepository, Module stockTransactionModule, PicklistRepository picklistRepository)
+        {
+            decimal balance = 0;
+            var stockTransactionRequest = new FindRequest { SortField = "transaction_date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 1 } }, Limit = 9999 };
+            var stockTransactions = recordRepository.Find("stock_transactions", stockTransactionRequest);
+            if (stockTransactions.Count > 0)
+            {
+                var transactionTypePicklist = stockTransactionModule.Fields.Single(x => x.Name == "stock_transaction_type");
+                var transactionsTypes = await picklistRepository.GetById(transactionTypePicklist.PicklistId.Value);
+
+                foreach (JObject stockTransaction in stockTransactions)
+                {
+                    var transactionTypePicklistItem = await picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.PicklistLanguage);
+                    if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
+                    {
+                        balance += (decimal)stockTransaction["quantity"];
+                    }
+                    else if (transactionTypePicklistItem.Value2 == "supplier_return" || transactionTypePicklistItem.Value2 == "stock_output")
+                    {
+                        balance -= (decimal)stockTransaction["cikan_miktar"];
+                    }
+
+                    stockTransaction["bakiye"] = balance;
+                    await recordRepository.Update(stockTransaction, stockTransactionModule);
                 }
 
             }

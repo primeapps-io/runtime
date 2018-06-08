@@ -495,6 +495,12 @@ namespace PrimeApps.App.Controllers
                 if (quoteProduct["discount_amount"] != null)
                     orderProduct["discount_amount"] = quoteProduct["discount_amount"];
 
+                if (quoteProduct["currency"] != null)
+                    orderProduct["currency"] = quoteProduct["currency"];
+
+                if (quoteProduct["vat_percent"] != null)
+                    orderProduct["vat_percent"] = quoteProduct["vat_percent"];
+
                 if (quoteProduct["discount_type"] != null)
                     orderProduct["discount_type"] = quoteProduct["discount_type"];
 

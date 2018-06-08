@@ -10,11 +10,14 @@ using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
 using PrimeApps.App.Jobs.Messaging;
+using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -273,6 +276,34 @@ namespace PrimeApps.App.Jobs.Email
 
                             }
 
+                        }
+                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
+                        {
+                            var userDataObj = new JObject();
+                            var findRequest = new FindRequest();
+                            switch ((int)record["process_status_order"])
+                            {
+                                case 2:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                                case 3:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_2"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                                case 4:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_3"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                                case 5:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_4"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                            }
+
+                            var userData = recordRepository.Find("users", findRequest, false);
+                            userDataObj = (JObject)userData.First();
+
+                            if (subscriber.culture.Contains("tr"))
+                                recordTable += recordRow.Replace("{label}", "Önceki Onaylayan").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
+                            else
+                                recordTable += recordRow.Replace("{label}", "Previous Approver").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
                         }
 
                         content = content.Replace("[[recordTable]]", recordTable);

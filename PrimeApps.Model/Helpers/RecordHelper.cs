@@ -244,9 +244,9 @@ namespace PrimeApps.Model.Helpers
 
                 //Approval Processes
                 if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products")
-                     fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.updated_by AS \"process.process_requests.updated_by\", process_requests_process.updated_at AS \"process.process_requests.updated_at\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
-                    //fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
-              }
+                    fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.updated_by AS \"process.process_requests.updated_by\", process_requests_process.updated_at AS \"process.process_requests.updated_at\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
+                //fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
+            }
 
             var filtersSql = $"\"{tableName}\".\"deleted\" IS NOT TRUE";
 
@@ -841,6 +841,8 @@ namespace PrimeApps.Model.Helpers
                     }
                     break;
                 case "quotes":
+                case "sales_invoices":
+                case "purchase_invoices":
                 case "sales_orders":
                 case "purchase_orders":
                     if (!record["exchange_rate_try_usd"].IsNullOrEmpty())
@@ -1022,6 +1024,8 @@ namespace PrimeApps.Model.Helpers
                     }
                     break;
                 case "quotes":
+                case "sales_invoices":
+                case "purchase_invoices":
                 case "sales_orders":
                 case "purchase_orders":
                     if (!record["exchange_rate_try_usd"].IsNullOrEmpty())
@@ -1153,19 +1157,19 @@ namespace PrimeApps.Model.Helpers
             var tenant = user.TenantsAsUser.Single();
 
             if (tenant.Tenant.AppId == 1)
-            {   
+            {
                 //sql += "UPDATE sales_orders_d SET onay_tarihi=now() WHERE id=19281;\n";
                 sql += "UPDATE sales_orders_d SET onay_tarihi=now(), created_at=now(), updated_at=now() WHERE id=19281;\n";
                 sql += "UPDATE quotes_d SET created_at=now(), updated_at=now()";
             }
-            
+
 
             if (tenant.Tenant.AppId == 4 && !string.IsNullOrEmpty(user.Email))
-            {             
+            {
                 sql += $"UPDATE calisanlar_d SET ad='{user.firstName}', soyad='{user.lastName}', ad_soyad='{user.firstName + " " + user.lastName}', e_posta='{user.email}', cep_telefonu={user.PhoneNumber}, yoneticisi=1 WHERE id=1;\n";
                 sql += $"UPDATE rehber_d SET ad='{user.firstName}', soyad='{user.lastName}', ad_soyad='{user.firstName + " " + user.lastName}', e_posta='{user.email}', cep_telefonu={user.PhoneNumber} WHERE id=20;\n";
             }
-            
+
             return sql;
         }
 
@@ -1502,6 +1506,8 @@ namespace PrimeApps.Model.Helpers
             Module moduleQuote = null;
             Module moduleSalesOrder = null;
             Module modulePurchaseOrder = null;
+            Module modulePurchaseInvoice = null;
+            Module moduleSalesInvoice = null;
 
             foreach (var property in record)
             {
@@ -1591,6 +1597,18 @@ namespace PrimeApps.Model.Helpers
                                             modulePurchaseOrder = await moduleRepository.GetByName("purchase_orders");
 
                                         currencyField = modulePurchaseOrder.Fields.FirstOrDefault(x => x.Name == "currency");
+                                        break;
+                                    case "purchase_invoices_products":
+                                        if (modulePurchaseInvoice == null)
+                                            modulePurchaseInvoice = await moduleRepository.GetByName("purchase_invoices");
+
+                                        currencyField = modulePurchaseInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
+                                        break;
+                                    case "sales_invoices_products":
+                                        if (moduleSalesInvoice == null)
+                                            moduleSalesInvoice = await moduleRepository.GetByName("sales_invoices");
+
+                                        currencyField = moduleSalesInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
                                         break;
                                 }
                             }
