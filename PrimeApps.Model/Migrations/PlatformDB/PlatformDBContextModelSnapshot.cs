@@ -674,6 +674,12 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<bool>("HasSampleData")
                         .HasColumnName("has_sample_data");
 
+                    b.Property<string>("IntegrationEmail")
+                        .HasColumnName("integration_email");
+
+                    b.Property<string>("IntegrationPassword")
+                        .HasColumnName("integration_password");
+
                     b.Property<string>("Language")
                         .HasColumnName("language");
 

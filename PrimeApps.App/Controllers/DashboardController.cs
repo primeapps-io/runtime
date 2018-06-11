@@ -35,6 +35,7 @@ namespace PrimeApps.App.Controllers
 			SetCurrentUser(_settingRepository);
 			SetCurrentUser(_dashboardRepository);
 			SetCurrentUser(_dashletRepository);
+			SetCurrentUser(_reportRepository);
 			base.OnActionExecuting(context);
 		}
 

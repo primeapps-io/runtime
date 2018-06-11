@@ -6,8 +6,8 @@ using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IReportRepository
-    {
+    public interface IReportRepository : IRepositoryBaseTenant
+	{
         Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true);
         Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true);
         ICollection<Report> GetAllBasic();
