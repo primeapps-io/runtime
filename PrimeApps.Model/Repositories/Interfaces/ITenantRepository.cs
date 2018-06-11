@@ -13,7 +13,10 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<IList<Tenant>> GetAllActive();
         Task<IList<TenantInfo>> GetTenantInfo(int tenantId);
         Task UpdateAsync(Tenant tenant);
-        Task<Tenant> GetByCustomDomain(string customDomain);
+		Task<int> CreateAsync(Tenant tenant);
+		Task<int> DeleteAsync(Tenant tenant);
+
+		Task<Tenant> GetByCustomDomain(string customDomain);
         Task<Tenant> GetWithOwnerAsync(int tenantId);
         Task<IList<Tenant>> GetExpiredTenants();
         Task<IList<int>> GetExpiredTenantIdsToDelete();

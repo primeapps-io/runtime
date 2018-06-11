@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,11 +15,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
@@ -25,10 +30,12 @@ namespace PrimeApps.App.Controllers
 	{
 		//private ApplicationSignInManager _signInManager;
 		private readonly IStringLocalizer<AuthController> _localizer;
+		private IPlatformRepository _platformRepository;
 
-		public AuthController(IStringLocalizer<AuthController> localizer)
+		public AuthController(IStringLocalizer<AuthController> localizer, IPlatformRepository platformRepository)
 		{
 			_localizer = localizer;
+			_platformRepository = platformRepository;
 		}
 
 		public async Task<ActionResult> Authorize()
@@ -403,6 +410,31 @@ namespace PrimeApps.App.Controllers
 				}
 			}
 			return View();
+		}
+
+		[HttpPost]
+		[Route("send_activation")]
+		public IActionResult SendActivation([FromBody] SendActivationBindingModels sendActivationBindingModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			var app = _platformRepository.GetAppTemplate(sendActivationBindingModel.AppId, AppTemplateType.Email, "verification", sendActivationBindingModel.Culture);
+			var template = app.Templates.FirstOrDefault();
+
+			template.Content.Replace("{{:FirstName}}", sendActivationBindingModel.FirstName);
+			template.Content.Replace("{{:LastName}}", sendActivationBindingModel.LastName);
+			template.Content.Replace("{{:Email}}",sendActivationBindingModel.Email);
+			template.Content.Replace("{{:URL}}",sendActivationBindingModel.Email);
+
+			Email notification = new Email(template.Subject, template.Content);
+
+			notification.AddRecipient(template.MailSenderEmail);
+			notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
+
+			return Ok();
 		}
 
 		[Route("Activation"), HttpPost, AllowAnonymous, ValidateAntiForgeryToken]

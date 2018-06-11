@@ -61,7 +61,19 @@ namespace PrimeApps.Model.Repositories
             await DbContext.SaveChangesAsync();
         }
 
-        public async Task<IList<TenantInfo>> GetTenantInfo(int tenantId)
+		public async Task<int> CreateAsync(Tenant tenant)
+		{
+			DbContext.Tenants.Add(tenant);
+			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<int> DeleteAsync(Tenant tenant)
+		{
+			DbContext.Tenants.Remove(tenant);
+			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<IList<TenantInfo>> GetTenantInfo(int tenantId)
         {
 			var a = await DbContext.Tenants.Where(x => x.Id == tenantId)
 				 .Select(t => new TenantInfo() //get instances of this user.

@@ -183,8 +183,8 @@ namespace PrimeApps.App
 			}
 
 			app.UseHangfireDashboard();
-			//app.UseHttpsRedirection();
 			app.UseWebOptimizer();
+			//app.UseHttpsRedirection();
 
 
 

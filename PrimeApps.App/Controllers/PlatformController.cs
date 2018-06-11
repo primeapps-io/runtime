@@ -10,15 +10,16 @@ using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
+using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/platform"), Authorize/*, SnakeCase*/]
-    public class PlatformController : BaseController
+    [Route("api/platform")]
+    public class PlatformController : Controller
     {
-        /*
+        
         private IPlatformRepository _platformRepository;
         private IUserRepository _userRepository;
         private IProfileRepository _profileRepository;
@@ -31,15 +32,24 @@ namespace PrimeApps.App.Controllers
         public PlatformController(IPlatformRepository platformRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse)
         {
             _platformRepository = platformRepository;
-            _userRepository = userRepository;
+           /* _userRepository = userRepository;
             _profileRepository = profileRepository;
             _roleRepository = roleRepository;
             _warehouse = warehouse;
             _recordRepository = recordRepository;
             _tenantRepository = tenantRepository;
-            _platformUserRepository = platformUserRepository;
+            _platformUserRepository = platformUserRepository;*/
         }
 
+		[Route("get_domain_info"), HttpGet]
+		public JsonResult GetApp([FromQuery(Name = "domain")] string domain)
+		{
+			var appEntity = _platformRepository.GetAppInfo(domain);
+
+			return Json(appEntity);
+		}
+
+		/*
         [Route("app_get_by_id/{id:int}"), HttpGet]
         public async Task<IActionResult> GetApp(int id)
         {
@@ -247,5 +257,5 @@ namespace PrimeApps.App.Controllers
 			return Ok();
         }
         */
-    }
+	}
 }

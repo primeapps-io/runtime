@@ -838,6 +838,7 @@ angular.module('ofisim')
                     var picklistIds = [];
                     var that = this;
 
+
                     for (var i = 0; i < picklistTypes.length; i++) {
                         var picklistType = picklistTypes[i];
 

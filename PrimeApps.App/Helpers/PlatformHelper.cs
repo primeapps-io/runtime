@@ -9,12 +9,101 @@ using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Common.Cache;
 using Hangfire;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PrimeApps.App.Helpers
 {
-	public static class PlatformHelper
+	public class PlatformHelper
+	{
+		public static string GenerateRandomToken(TokenOptions opts = null)
+		{
+			if (opts == null) opts = new TokenOptions()
+			{
+				RequiredLength = 16,
+				RequiredUniqueChars = 4,
+				RequireDigit = true,
+				RequireLowercase = true,
+				RequireNonAlphanumeric = true,
+				RequireUppercase = true
+			};
+
+			string[] randomChars = new[] {
+				"ABCDEFGHJKLMNOPQRSTUVWXYZ",    // uppercase 
+				"abcdefghijkmnopqrstuvwxyz",    // lowercase
+				"0123456789",                   // digits
+				"!@$?_-"                        // non-alphanumeric
+			};
+			Random rand = new Random(Environment.TickCount);
+			List<char> chars = new List<char>();
+
+			if (opts.RequireUppercase)
+				chars.Insert(rand.Next(0, chars.Count),
+					randomChars[0][rand.Next(0, randomChars[0].Length)]);
+
+			if (opts.RequireLowercase)
+				chars.Insert(rand.Next(0, chars.Count),
+					randomChars[1][rand.Next(0, randomChars[1].Length)]);
+
+			if (opts.RequireDigit)
+				chars.Insert(rand.Next(0, chars.Count),
+					randomChars[2][rand.Next(0, randomChars[2].Length)]);
+
+			if (opts.RequireNonAlphanumeric)
+				chars.Insert(rand.Next(0, chars.Count),
+					randomChars[3][rand.Next(0, randomChars[3].Length)]);
+
+			for (int i = chars.Count; i < opts.RequiredLength
+				|| chars.Distinct().Count() < opts.RequiredUniqueChars; i++)
+			{
+				string rcs = randomChars[rand.Next(0, randomChars.Length)];
+				chars.Insert(rand.Next(0, chars.Count),
+					rcs[rand.Next(0, rcs.Length)]);
+			}
+
+			return new string(chars.ToArray());
+		}
+	}
+
+	//
+	// Summary:
+	//     Specifies options for password requirements.
+	public class TokenOptions
+	{
+		//
+		// Summary:
+		//     Gets or sets the minimum length a password must be. Defaults to 6.
+		public int RequiredLength { get; set; }
+		//
+		// Summary:
+		//     Gets or sets the minimum number of unique chars a password must comprised of.
+		//     Defaults to 1.
+		public int RequiredUniqueChars { get; set; }
+		//
+		// Summary:
+		//     Gets or sets a flag indicating if passwords must contain a non-alphanumeric character.
+		//     Defaults to true.
+		public bool RequireNonAlphanumeric { get; set; }
+		//
+		// Summary:
+		//     Gets or sets a flag indicating if passwords must contain a lower case ASCII character.
+		//     Defaults to true.
+		public bool RequireLowercase { get; set; }
+		//
+		// Summary:
+		//     Gets or sets a flag indicating if passwords must contain a upper case ASCII character.
+		//     Defaults to true.
+		public bool RequireUppercase { get; set; }
+		//
+		// Summary:
+		//     Gets or sets a flag indicating if passwords must contain a digit. Defaults to
+		//     true.
+		public bool RequireDigit { get; set; }
+	}
+
+	/*public static class PlatformHelper
     {
-        /*
+       
 		public static async Task<Model.Entities.Platform.App> CreateEntity(AppBindingModel appModel, IUserRepository userRepository)
 		{
 			var app = new Model.Entities.Platform.App
@@ -239,6 +328,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-		*/
-    }
+		
+	}*/
+
 }

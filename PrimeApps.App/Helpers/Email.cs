@@ -324,10 +324,32 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        /// <summary>
-        /// Writes email(s) into the database in a stateless session context.
-        /// </summary>
-        public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
+		public void AddToQueue(string from, string fromName, string cc = "", string bcc = "")
+		{
+			foreach (string to in toList)
+			{
+				var queue = new EmailEntry()
+				{
+					EmailTo = to,
+					EmailFrom = from,
+					ReplyTo = from,
+					FromName = fromName,
+					CC = cc,
+					Bcc = bcc,
+					Subject = Subject,
+					Body = Template,
+					UniqueID = null,
+					QueueTime = DateTime.UtcNow,
+					SendOn = SendOn
+				};
+				BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
+			}
+		}
+
+		/// <summary>
+		/// Writes email(s) into the database in a stateless session context.
+		/// </summary>
+		public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
         {
             from = "destek@ofisim.com";
             fromName = "Ofisim.com";

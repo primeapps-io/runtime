@@ -6,6 +6,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using PrimeApps.Model.Entities.Platform;
 using Microsoft.EntityFrameworkCore;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -13,7 +14,48 @@ namespace PrimeApps.Model.Repositories
     {
         public PlatformRepository(PlatformDBContext dbContext) : base(dbContext) { }
 
-        public async Task<App> AppGetById(int id, int userId)
+		public App GetAppInfo(string domain)
+		{
+			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Setting.Domain == domain);
+
+			return app;
+		}
+
+		public App GetAppInfo(int id)
+		{
+			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Id == id);
+
+			return app;
+		}
+
+		public TeamApp GetAppInfo(string organizationName, string appName)
+		{
+			var app = DbContext.TeamApps
+				.Include(y => y.App).ThenInclude(x => x.Setting)
+				.Include(y => y.Team).ThenInclude(x => x.Organization)
+				.SingleOrDefault(x => x.Team.Organization.Name == organizationName && x.App.Name == appName);
+
+			return app == null ? null : app;
+		}
+
+		public Tenant GetTenant(int tenantId)
+		{
+			var tenant = DbContext.Tenants
+				.Include(x => x.License)
+				.Include(x => x.Setting)
+				.Include(x => x.TenantUsers)
+				.SingleOrDefault(x => x.Id == tenantId);
+
+			return tenant;
+		}
+
+		public App GetAppTemplate(int appId, AppTemplateType type, string systemCode, string language)
+		{
+			var template = DbContext.Apps.Include(x => x.Templates).SingleOrDefault(x => x.Id== appId && ((AppTemplate)x.Templates).SystemCode == systemCode && ((AppTemplate)x.Templates).Language == language && ((AppTemplate)x.Templates).Type == type && ((AppTemplate)x.Templates).Active == true);
+
+			return template;
+		}
+		public async Task<App> AppGetById(int id, int userId)
         {
             //var note = await DbContext.Apps
             //    .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id && x.UserId == userId);
@@ -32,7 +74,9 @@ namespace PrimeApps.Model.Repositories
             return null;
         }
 
-        public async Task<int> AppCreate(App app)
+		
+
+		public async Task<int> AppCreate(App app)
         {
             //app.UserId = CurrentUser.UserId;
             //DbContext.Apps.Add(app);

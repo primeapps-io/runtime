@@ -27,33 +27,36 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
-        public TenantDBContext DbContext
-        {
-            get
-            {
+		public TenantDBContext DbContext
+		{
+			get
+			{
 				var con = _dbContext.Database.GetDbConnection();
 
 				if (con.State != System.Data.ConnectionState.Open)
-                {
-                    if (TenantId.HasValue)
-                    {
+				{
+					if (TenantId.HasValue)
+					{
 						con.ConnectionString = Postgres.GetConnectionString(TenantId.Value);
-                    }
-                    else if (CurrentUser.TenantId != -1)
-                    {
+					}
+					else if (CurrentUser.TenantId != -1)
+					{
 						con.ConnectionString = Postgres.GetConnectionString(CurrentUser.TenantId);
-                    }
-                    else
-                    {
-                        throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
-                    }
-                }
-                return _dbContext;
-            }
-        }
+					}
+					else
+					{
+						throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
+					}
+				}
+
+				_dbContext.UserId = CurrentUser.UserId;
+
+				return _dbContext;
+			}
+		}
 
 
-        public void Dispose()
+		public void Dispose()
         {
         }
     }

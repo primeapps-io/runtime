@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -55,7 +54,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     created_at = table.Column<DateTime>(nullable: false),
                     updated_at = table.Column<DateTime>(nullable: true),
                     deleted = table.Column<bool>(nullable: false),
-                    name = table.Column<string>(maxLength: 400, nullable: true),
+                    name = table.Column<string>(maxLength: 50, nullable: true),
+                    label = table.Column<string>(maxLength: 400, nullable: true),
                     description = table.Column<string>(maxLength: 4000, nullable: true),
                     logo = table.Column<string>(nullable: true),
                     template_id = table.Column<int>(nullable: true),
@@ -90,7 +90,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     updated_at = table.Column<DateTime>(nullable: true),
                     deleted = table.Column<bool>(nullable: false),
                     name = table.Column<string>(maxLength: 700, nullable: true),
-                    owner = table.Column<int>(nullable: false)
+                    label = table.Column<string>(maxLength: 50, nullable: true),
+                    owner_id = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,8 +103,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_organizations_users_owner",
-                        column: x => x.owner,
+                        name: "FK_organizations_users_owner_id",
+                        column: x => x.owner_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -182,18 +183,47 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     color = table.Column<string>(nullable: true),
                     image = table.Column<string>(nullable: true),
                     domain = table.Column<string>(nullable: true),
+                    auth_domain = table.Column<string>(nullable: true),
                     mail_sender_name = table.Column<string>(nullable: true),
                     mail_sender_email = table.Column<string>(nullable: true),
                     currency = table.Column<string>(nullable: true),
                     culture = table.Column<string>(nullable: true),
                     time_zone = table.Column<string>(nullable: true),
-                    language = table.Column<string>(nullable: true)
+                    language = table.Column<string>(nullable: true),
+                    banner = table.Column<string>(type: "jsonb", nullable: true),
+                    google_analytics_code = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_app_settings", x => x.app_id);
                     table.ForeignKey(
                         name: "FK_app_settings_apps_app_id",
+                        column: x => x.app_id,
+                        principalTable: "apps",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "app_template",
+                columns: table => new
+                {
+                    app_id = table.Column<int>(nullable: false),
+                    name = table.Column<string>(maxLength: 200, nullable: true),
+                    subject = table.Column<string>(maxLength: 200, nullable: true),
+                    content = table.Column<string>(nullable: true),
+                    language = table.Column<string>(nullable: true),
+                    type = table.Column<int>(nullable: false),
+                    system_code = table.Column<string>(nullable: true),
+                    active = table.Column<bool>(nullable: false),
+                    mail_sender_name = table.Column<string>(nullable: true),
+                    mail_sender_email = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_app_template", x => x.app_id);
+                    table.ForeignKey(
+                        name: "FK_app_template_apps_app_id",
                         column: x => x.app_id,
                         principalTable: "apps",
                         principalColumn: "id",
@@ -477,6 +507,51 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "time_zone");
 
             migrationBuilder.CreateIndex(
+                name: "IX_app_template_active",
+                table: "app_template",
+                column: "active");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_app_id",
+                table: "app_template",
+                column: "app_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_language",
+                table: "app_template",
+                column: "language");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_mail_sender_email",
+                table: "app_template",
+                column: "mail_sender_email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_mail_sender_name",
+                table: "app_template",
+                column: "mail_sender_name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_name",
+                table: "app_template",
+                column: "name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_subject",
+                table: "app_template",
+                column: "subject");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_system_code",
+                table: "app_template",
+                column: "system_code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_template_type",
+                table: "app_template",
+                column: "type");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_apps_created_at",
                 table: "apps",
                 column: "created_at");
@@ -495,6 +570,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 name: "IX_apps_description",
                 table: "apps",
                 column: "description");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_apps_label",
+                table: "apps",
+                column: "label");
 
             migrationBuilder.CreateIndex(
                 name: "IX_apps_name",
@@ -572,14 +652,19 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_organizations_label",
+                table: "organizations",
+                column: "label");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_organizations_name",
                 table: "organizations",
                 column: "name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_organizations_owner",
+                name: "IX_organizations_owner_id",
                 table: "organizations",
-                column: "owner");
+                column: "owner_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_organizations_updated_at",
@@ -861,6 +946,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
         {
             migrationBuilder.DropTable(
                 name: "app_settings");
+
+            migrationBuilder.DropTable(
+                name: "app_template");
 
             migrationBuilder.DropTable(
                 name: "exchange_rates");

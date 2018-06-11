@@ -207,7 +207,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				noAddress = 0,
 				notAllowed = 0;
 
-			var subscriber = await platformUserRepository.GetWithSettings(userId);
+			var subscriber = await platformUserRepository.GetSettings(userId);
 			var tenant = await tenantRepository.GetWithSettingsAsync(messageDto.TenantId);
 
 			string culture = subscriber.Setting.Culture;

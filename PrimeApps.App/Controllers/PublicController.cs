@@ -45,10 +45,10 @@ namespace PrimeApps.App.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         //[ResponseType(typeof(bool))]
         [HttpGet]
-        public IActionResult IsUniqueEmail(string email)
+        public IActionResult IsUniqueEmail(string email, int appId)
         {
             //check it in the entity layer and return the result.
-            var result = _platformUserRepository.IsEmailAvailable(email);
+            var result = _platformUserRepository.IsEmailAvailable(email, appId);
             return Ok(result);
         }
 

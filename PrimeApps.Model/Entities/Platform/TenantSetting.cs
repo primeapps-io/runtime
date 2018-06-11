@@ -89,6 +89,11 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("has_sample_data")]
 		public bool HasSampleData { get; set; }
 
+		[Column("integration_email")]
+		public string IntegrationEmail { get; set; }
+
+		[Column("integration_password")]
+		public string IntegrationPassword { get; set; }
 		//Tenant One to One
 		public virtual Tenant Tenant { get; set; }
 	}

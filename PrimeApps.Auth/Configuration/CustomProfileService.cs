@@ -31,6 +31,7 @@ namespace PrimeApps.Auth
 				new Claim("foo", "bar")
 			};*/
 			context.IssuedClaims.Add(new Claim("email", user.Email));
+			context.IssuedClaims.Add(new Claim("email_confirmed", user.EmailConfirmed.ToString()));
 			return Task.CompletedTask;
 			/*context.AddRequestedClaims(claims);*/
 		}

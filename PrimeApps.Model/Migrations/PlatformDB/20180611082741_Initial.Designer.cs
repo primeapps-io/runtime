@@ -2,16 +2,15 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrimeApps.Model.Context;
 
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180528084120_Initial")]
+    [Migration("20180611082741_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,7 +18,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.0-preview2-30571");
+                .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.App", b =>
                 {
@@ -40,12 +40,16 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasColumnName("description")
                         .HasMaxLength(4000);
 
+                    b.Property<string>("Label")
+                        .HasColumnName("label")
+                        .HasMaxLength(400);
+
                     b.Property<string>("Logo")
                         .HasColumnName("logo");
 
                     b.Property<string>("Name")
                         .HasColumnName("name")
-                        .HasMaxLength(400);
+                        .HasMaxLength(50);
 
                     b.Property<int?>("TemplateId")
                         .HasColumnName("template_id");
@@ -69,6 +73,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Description");
 
+                    b.HasIndex("Label");
+
                     b.HasIndex("Name");
 
                     b.HasIndex("TemplateId");
@@ -87,6 +93,13 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<int>("AppId")
                         .HasColumnName("app_id");
 
+                    b.Property<string>("AuthDomain")
+                        .HasColumnName("auth_domain");
+
+                    b.Property<string>("Banner")
+                        .HasColumnName("banner")
+                        .HasColumnType("jsonb");
+
                     b.Property<string>("Color")
                         .HasColumnName("color");
 
@@ -104,6 +117,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.Property<string>("Favicon")
                         .HasColumnName("favicon");
+
+                    b.Property<string>("GoogleAnalyticsCode")
+                        .HasColumnName("google_analytics_code");
 
                     b.Property<string>("Image")
                         .HasColumnName("image");
@@ -142,6 +158,63 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("TimeZone");
 
                     b.ToTable("app_settings");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppTemplate", b =>
+                {
+                    b.Property<int>("AppId")
+                        .HasColumnName("app_id");
+
+                    b.Property<bool>("Active")
+                        .HasColumnName("active");
+
+                    b.Property<string>("Content")
+                        .HasColumnName("content");
+
+                    b.Property<string>("Language")
+                        .HasColumnName("language");
+
+                    b.Property<string>("MailSenderEmail")
+                        .HasColumnName("mail_sender_email");
+
+                    b.Property<string>("MailSenderName")
+                        .HasColumnName("mail_sender_name");
+
+                    b.Property<string>("Name")
+                        .HasColumnName("name")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Subject")
+                        .HasColumnName("subject")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("SystemCode")
+                        .HasColumnName("system_code");
+
+                    b.Property<int>("Type")
+                        .HasColumnName("type");
+
+                    b.HasKey("AppId");
+
+                    b.HasIndex("Active");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("Language");
+
+                    b.HasIndex("MailSenderEmail");
+
+                    b.HasIndex("MailSenderName");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("Subject");
+
+                    b.HasIndex("SystemCode");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("app_template");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
@@ -196,12 +269,16 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
+                    b.Property<string>("Label")
+                        .HasColumnName("label")
+                        .HasMaxLength(50);
+
                     b.Property<string>("Name")
                         .HasColumnName("name")
                         .HasMaxLength(700);
 
                     b.Property<int>("OwnerId")
-                        .HasColumnName("owner");
+                        .HasColumnName("owner_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -218,6 +295,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("Deleted");
 
                     b.HasIndex("Id");
+
+                    b.HasIndex("Label");
 
                     b.HasIndex("Name");
 
@@ -667,6 +746,14 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
                         .WithOne("Setting")
                         .HasForeignKey("PrimeApps.Model.Entities.Platform.AppSetting", "AppId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppTemplate", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
+                        .WithMany("Templates")
+                        .HasForeignKey("AppId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

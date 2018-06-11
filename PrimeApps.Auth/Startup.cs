@@ -20,6 +20,14 @@ using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.Extensions.Options;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Repositories;
 
 namespace PrimeApps.Auth
 {
@@ -27,7 +35,7 @@ namespace PrimeApps.Auth
 	{
 		public IConfiguration Configuration { get; }
 		public IHostingEnvironment Environment { get; }
-	
+
 
 		public Startup(IConfiguration configuration, IHostingEnvironment environment)
 		{
@@ -40,6 +48,9 @@ namespace PrimeApps.Auth
 			services.AddDbContext<ApplicationDbContext>(options =>
 				options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
+			services.AddDbContext<PlatformDBContext>(options =>
+				options.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")));
+
 			services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 			{
 				config.Password.RequiredLength = 6;
@@ -49,12 +60,35 @@ namespace PrimeApps.Auth
 				config.Password.RequireDigit = false;
 
 				config.User.RequireUniqueEmail = false;
-				config.SignIn.RequireConfirmedEmail = true;
+				config.SignIn.RequireConfirmedEmail = false;
 			})
 				.AddEntityFrameworkStores<ApplicationDbContext>()
 				.AddDefaultTokenProviders();
 
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+			services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+			services.AddWebOptimizer(pipeline =>
+			{
+				pipeline.AddJavaScriptBundle("/scripts/bundles-js/auth.js",
+					"scripts/vendor/jquery.js",
+					"scripts/vendor/jquery-maskedinput.js",
+					"scripts/vendor/sweetalert.js",
+					"scripts/vendor/spin.js",
+					"scripts/vendor/ladda.js");
+
+				pipeline.AddCssBundle("/styles/bundles-css/auth.css",
+					"styles/vendor/bootstrap.css",
+					"styles/vendor/flaticon.css",
+					"styles/vendor/ladda-themeless.css",
+					"styles/vendor/font-awesome.css");
+			});
+
+			services.AddMvc()
+				.AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+				.AddDataAnnotationsLocalization()
+				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+
 			var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
 			services.AddSingleton<IProfileService, CustomProfileService>();
@@ -63,6 +97,22 @@ namespace PrimeApps.Auth
 			{
 				iis.AuthenticationDisplayName = "Windows";
 				iis.AutomaticAuthentication = false;
+			});
+
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+			services.AddTransient<IPlatformRepository, PlatformRepository>();
+
+			services.Configure<RequestLocalizationOptions>(options =>
+			{
+				var supportedCultures = new[]
+				{
+					new CultureInfo("en-US"),
+					new CultureInfo("tr-TR")
+				};
+
+				options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
+				options.SupportedCultures = supportedCultures;
+				options.SupportedUICultures = supportedCultures;
 			});
 
 			var builder = services.AddIdentityServer(options =>
@@ -94,7 +144,8 @@ namespace PrimeApps.Auth
 					options.TokenCleanupInterval = 3600; //3600 (1 hour)
 				})
 				.AddAspNetIdentity<ApplicationUser>()
-				.AddProfileService<CustomProfileService>();
+				.AddProfileService<CustomProfileService>()
+				.AddRedirectUriValidator<CustomRedirectUriValidator>();
 
 			if (Environment.IsDevelopment())
 			{
@@ -114,7 +165,7 @@ namespace PrimeApps.Auth
 					options.TokenValidationParameters = new TokenValidationParameters
 					{
 						ValidateIssuer = false,
-						
+
 					};
 
 					options.Events = new OpenIdConnectEvents
@@ -159,12 +210,38 @@ namespace PrimeApps.Auth
 			else
 			{
 				app.UseExceptionHandler("/Home/Error");
+				app.UseHttpsRedirection();
 				app.UseHsts();
 			}
+			var supportedCultures = new[]
+			{
+				new CultureInfo("en-US"),
+				new CultureInfo("tr-TR"),
+				new CultureInfo("en"),
+				new CultureInfo("tr"),
+			};
 
+			app.UseRequestLocalization(new RequestLocalizationOptions
+			{
+				DefaultRequestCulture = new RequestCulture("en-US"),
+				// Formatting numbers, dates, etc.
+				SupportedCultures = supportedCultures,
+				// UI strings that we have localized.
+				SupportedUICultures = supportedCultures
+			});
+			
+
+
+			app.Use(async (ctx, next) =>
+			{
+				ctx.Response.Headers.Add("Content-Security-Policy",
+										 "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
+				await next();
+			});
+
+			app.UseWebOptimizer();
 			//InitializeDatabase(app);
 
-			//app.UseHttpsRedirection();
 			app.UseStaticFiles();
 			app.UseIdentityServer();
 			app.UseMvcWithDefaultRoute();

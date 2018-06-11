@@ -8,10 +8,13 @@ namespace PrimeApps.Model.Entities.Platform
     [Table("apps")]
     public class App : BaseEntity
     {
-        [Column("name"), MaxLength(400)]
+        [Column("name"), MaxLength(50)]
         public string Name { get; set; }
 
-        [Column("description"), MaxLength(4000)]
+		[Column("label"), MaxLength(400)]
+		public string Label { get; set; }
+
+		[Column("description"), MaxLength(4000)]
         public string Description { get; set; }
 		
         [Column("logo")]
@@ -25,6 +28,9 @@ namespace PrimeApps.Model.Entities.Platform
 
 		//AppInfo One to One
 		public virtual AppSetting Setting { get; set; }
+
+		[JsonIgnore]
+		public virtual ICollection<AppTemplate> Templates { get; set; }
 
 		//Apps and Tenants One to Many 
 		[JsonIgnore]

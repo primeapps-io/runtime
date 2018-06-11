@@ -14,10 +14,18 @@ namespace PrimeApps.Model.Context
 	{
 		private int? _tenantId;
 
+		private int? _userId;
+
 		public int? TenantId
 		{
 			get { return _tenantId; }
 			set { _tenantId = value; }
+		}
+
+		public int? UserId
+		{
+			get { return _userId; }
+			set { _userId = value; }
 		}
 
 		/// <summary>

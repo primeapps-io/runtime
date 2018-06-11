@@ -34,6 +34,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Common.Resources;
 using PrimeApps.App.Storage;
 using PrimeApps.App.Services;
+using System.Net.Http;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
@@ -46,11 +48,12 @@ namespace PrimeApps.App.Controllers
         private IRoleRepository _roleRepository;
         private IRecordRepository _recordRepository;
         private IPlatformUserRepository _platformUserRepository;
+        private IPlatformRepository _platformRepository;
         private ITenantRepository _tenantRepository;
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
 
-		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
+		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -59,7 +62,8 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
             _recordRepository = recordRepository;
             _platformUserRepository = platformUserRepository;
-            _tenantRepository = tenantRepository;
+			_platformRepository = platformRepository;
+			_tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
 			
 			/*SetCurrentUser(_userRepository, _userContextServices);
@@ -117,7 +121,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Edit(UserDTO user)
         {
             //get user to start modification.
-            PlatformUser userToEdit = await _platformUserRepository.GetWithSettings(AppUser.Id);
+            PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
             User tenantUserToEdit = await _userRepository.GetById(AppUser.Id);
 
             if (user.picture != tenantUserToEdit.Picture && user.picture != null)
@@ -204,7 +208,7 @@ namespace PrimeApps.App.Controllers
             if (!Helpers.Constants.CULTURES.Contains(culture)) { return NotFound(); }
 
             /// get user
-            PlatformUser user = await _platformUserRepository.GetWithSettings(AppUser.Id);
+            PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
 
             /// change culture and save it.
             user.Setting.Culture = culture;
@@ -227,7 +231,7 @@ namespace PrimeApps.App.Controllers
             if (!Helpers.Constants.CURRENCIES.Contains(currency)) { return NotFound(); }
 
             ///get user
-            PlatformUser user = await _platformUserRepository.GetWithSettings(AppUser.Id);
+            PlatformUser user = await _platformUserRepository.GetSettings(AppUser.Id);
             //change culture and save it.
             user.Setting.Currency = currency;
             await _platformUserRepository.UpdateAsync(user);
@@ -407,154 +411,184 @@ namespace PrimeApps.App.Controllers
         [Route("add_user"), HttpPost]
         public async Task<IActionResult> AddUser(AddUserBindingModel request)
         {
-			return NotFound();
+			var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email, request.AppId);
+
+			if (resultControl == false)
+				return StatusCode(HttpStatusCode.Status409Conflict);
+
+			//Set warehouse database name
+			//_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+			var tenantId = AppUser.TenantId;
+			var adminUserLocalId = AppUser.Id;
+			var adminUserGlobalId = AppUser.Id;
+			var adminUserEmail = AppUser.Email;
+			var culture = AppUser.Culture;
+			var currency = AppUser.Currency;
+			var picklistLanguage = AppUser.TenantLanguage;
+			var appId = AppUser.AppId;
+			var createdBy = AppUser.Email;
+
+			if (request.TenantId.HasValue)
+			{
+				if (!AppUser.Email.EndsWith("@ofisim.com"))
+					return StatusCode(HttpStatusCode.Status403Forbidden);
+
+				var tenant = await _platformUserRepository.GetTenantWithOwner(request.TenantId.Value);
+
+				tenantId = request.TenantId.Value;
+				adminUserLocalId = tenant.OwnerId;
+				adminUserGlobalId = tenant.OwnerId;
+				adminUserEmail = tenant.Owner.Email;
+				culture = tenant.Owner.Setting.Culture;
+				currency = tenant.Owner.Setting.Currency;
+				appId = tenant.AppId;
+				createdBy = tenant.Owner.Email;
+
+				_userRepository.TenantId = tenantId;
+				_profileRepository.TenantId = tenantId;
+				_roleRepository.TenantId = tenantId;
+				_recordRepository.TenantId = tenantId;
+			}
+
 			//TODO Removed
-            /*var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email);
+			/*if (!request.notCheckIsAdmin)
+			{
+				//get the instance that invitation request will be created on.
+				var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(tenantId, adminUserLocalId);
 
-            if (resultControl == false)
-                return StatusCode(HttpStatusCode.Status409Conflict);
+				if (!isOperationAllowed)
+				{
+					//if current user is not the admin of the instance then reject that request and send a forbidden http request.
+					return StatusCode(HttpStatusCode.Forbidden);
+				}
+				
+			}*/
 
-            //Set warehouse database name
-            //_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			//if (!crmLicenseUsage.HasUserCapacity(tenantId))
+			//         {
+			//             //if capacity is exceeded, return payment required status code and cancel process.
+			//             return StatusCode(HttpStatusCode.PaymentRequired);
+			//         }
 
-            var tenantId = AppUser.TenantId;
-            var adminUserLocalId = AppUser.Id;
-            var adminUserGlobalId = AppUser.Id;
-            var adminUserEmail = AppUser.Email;
-            var culture = AppUser.Culture;
-            var currency = AppUser.Currency;
-            var picklistLanguage = AppUser.TenantLanguage;
-            var appId = AppUser.AppId;
-            var createdBy = AppUser.Email;
+			//var hasAccount = crmPendingShareRequests.Invite(request.Email, instanceId, adminUserGlobalId, request.ProfileId, request.RoleId, createdBy);
 
-            if (request.TenantId.HasValue)
-            {
-                if (!AppUser.Email.EndsWith("@ofisim.com"))
-                    return StatusCode(HttpStatusCode.Status403Forbidden);
+			//if (hasAccount)
+			//    return StatusCode(HttpStatusCode.Conflict);
 
-                var subscriberUser = await _platformUserRepository.GetUserByAutoId(request.TenantId.Value);
-                tenantId = request.TenantId.Value;
-                adminUserLocalId = subscriberUser.Id;
-                adminUserGlobalId = subscriberUser.Id;
-                adminUserEmail = subscriberUser.Email;
-                culture = subscriberUser.Culture;
-                currency = subscriberUser.Currency;
-                appId = subscriberUser.TenantsAsUser.Where(x => x.Id == request.TenantId.Value).FirstOrDefault().AppId;
-                createdBy = subscriberUser.Email;
+			//Register
+			var randomPassword = Utils.GenerateRandomUnique(8);
 
-                _userRepository.TenantId = tenantId;
-                _profileRepository.TenantId = tenantId;
-                _roleRepository.TenantId = tenantId;
-                _recordRepository.TenantId = tenantId;
-            }
+			
 
+			var applicationUser = new PlatformUser
+			{
+				Email = request.Email,
+				FirstName = request.FirstName,
+				LastName = request.LastName,
+				Setting = new PlatformUserSetting()
+			};
 
-            if (!request.notCheckIsAdmin)
-            {
-                //get the instance that invitation request will be created on.
-                var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(tenantId, adminUserLocalId);
+			applicationUser.Setting.Culture = culture;
+			applicationUser.Setting.Language = culture.Substring(0, 2);
+			//tenant.Setting.TimeZone = 
+			applicationUser.Setting.Currency = currency;
+			
 
-                if (!isOperationAllowed)
-                {
-                    //if current user is not the admin of the instance then reject that request and send a forbidden http request.
-                    return StatusCode(HttpStatusCode.Status403Forbidden);
-                }
+			var result = _platformUserRepository.CreateUser(applicationUser).Result;
 
-            }
+			if (result == 0)
+			{
+				ModelState.AddModelError("", "user not created");
+				return BadRequest(ModelState);
+			}
 
-            //if (!crmLicenseUsage.HasUserCapacity(tenantId))
-            //         {
-            //             //if capacity is exceeded, return payment required status code and cancel process.
-            //             return StatusCode(HttpStatusCode.PaymentRequired);
-            //         }
+			var appInfo = _platformRepository.GetAppInfo(appId);
 
-            //var hasAccount = crmPendingShareRequests.Invite(request.Email, instanceId, adminUserGlobalId, request.ProfileId, request.RoleId, createdBy);
+			using (var httpClient = new HttpClient())
+			{
+				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user?email=" + request.Email + "&password=" + randomPassword + "&firstName=" + request.FirstName + "&lastName=" + request.LastName;
+				httpClient.BaseAddress = new Uri(url);
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+				
+				var response = await httpClient.GetAsync(url);
 
-            //if (hasAccount)
-            //    return StatusCode(HttpStatusCode.Status409Conflict);
+				if (!response.IsSuccessStatusCode)
+					return BadRequest(response);
 
-            //Register
-            var randomPassword = Utils.GenerateRandomUnique(8);
+				using (var content = response.Content)
+				{
+					var stringResult = content.ReadAsStringAsync().Result;
+					if (!string.IsNullOrEmpty(stringResult))
+					{
+						var jsonResult = JObject.Parse(stringResult);
 
-            var applicationUser = new PlatformUser
-            {
-                //Id = Guid.NewGuid(),
-                //UserName = request.Email,
-                Email = request.Email,
-                Phone = request.Phone,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Culture = culture,
-                Currency = currency,
-                CreatedAt = DateTime.Now,
-                //AppId = appId
-            };
+						var appTemplates = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "invate_user", culture.Substring(0, 2));
+						var template = appTemplates.Templates.FirstOrDefault();
 
-            var userManager = Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var result = await userManager.CreateAsync(applicationUser, randomPassword);
+						template.Content.Replace("{{:FIRSTNAME}}", request.FirstName);
+						template.Content.Replace("{{:LASTNAME}}", request.LastName);
+						template.Content.Replace("{{:EMAIL}}", request.Email);
+						template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/activate?token=" + jsonResult["token"]);
 
-            if (!result.Succeeded)
-                throw new Exception();
+						Email notification = new Email(template.Subject, template.Content);
 
-            var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser.Id);
-            var confirmResponse = await userManager.ConfirmEmailAsync(applicationUser.Id, confirmationToken);
+						notification.AddRecipient(template.MailSenderEmail);
+						notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
+					}
+				}
+			}
 
-            if (!confirmResponse.Succeeded)
-                throw new Exception();
+			var registerModel = new RegisterBindingModel();
+			registerModel.Email = request.Email;
+			registerModel.FirstName = request.FirstName;
+			registerModel.LastName = request.LastName;
+			registerModel.Password = randomPassword;
+			registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
 
-            var registerModel = new RegisterBindingModel();
-            registerModel.Email = request.Email;
-            registerModel.FirstName = request.FirstName;
-            registerModel.LastName = request.LastName;
-            registerModel.Password = randomPassword;
-            registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
-
-			BackgroundJob.Enqueue(() => Integration.InsertUser(registerModel, _warehouse));
 			//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertUser(registerModel, _warehouse));
+			BackgroundJob.Enqueue(() => Integration.InsertUser(registerModel, _warehouse));
 
-            var user = await _platformUserRepository.Get(applicationUser.Id);
-            var adminUser = await _platformUserRepository.GetUserByAutoId(tenantId);
-            if (request.IsOfficeUser && adminUser.ActiveDirectoryTenantId > 0)
-            {
-                user.ActiveDirectoryEmail = request.Email;
-                user.ActiveDirectoryTenantId = adminUser.ActiveDirectoryTenantId;
-            }
+			var user = await _platformUserRepository.Get(applicationUser.Id);
+			var adminUser = await _platformUserRepository.GetTenantWithOwner(tenantId);
 
-            var tenantUser = new User
-            {
-                Id = user.Id,
-                Email = request.Email,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                FullName = $"{request.FirstName} {request.LastName}",
-                Picture = "",
-                IsActive = true,
-                IsSubscriber = false,
-                Culture = culture,
-                Currency = currency,
-                CreatedAt = DateTime.UtcNow,
-                CreatedByEmail = adminUserEmail
-            };
 
-            //Set warehouse database name
-            var warehouseInfo = await _platformWarehouseRepository.GetByTenantId(tenantId);
+			var tenantUser = new User
+			{
+				Id = user.Id,
+				Email = request.Email,
+				FirstName = request.FirstName,
+				LastName = request.LastName,
+				FullName = $"{request.FirstName} {request.LastName}",
+				Picture = "",
+				IsActive = true,
+				IsSubscriber = false,
+				Culture = culture,
+				Currency = currency,
+				CreatedAt = DateTime.UtcNow,
+				CreatedByEmail = adminUserEmail
+			};
 
-            _warehouse.DatabaseName = warehouseInfo != null ? warehouseInfo.DatabaseName : "0";
+			var currentTenant = _platformRepository.GetTenant(tenantId);
 
-            await _userRepository.CreateAsync(tenantUser);
-            await _profileRepository.AddUserAsync(user.Id, request.ProfileId);
-            await _roleRepository.AddUserAsync(user.Id, request.RoleId);
+			user.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = user });
 
-            user.TenantId = tenantId;
+			await _platformUserRepository.UpdateAsync(user);
 
-            await _platformUserRepository.UpdateAsync(user);
-            await Cache.Tenant.UpdateRoles(user.TenantId.Value);
-            await Cache.Tenant.UpdateProfiles(user.TenantId.Value);
-            await Cache.ApplicationUser.Add(user.Email, user.Id);
-            await Cache.User.Get(user.Id);
+			//Set warehouse database name
+			var warehouseInfo = await _platformWarehouseRepository.GetByTenantId(tenantId);
 
-            return Ok(randomPassword);*/
-        }
+			_warehouse.DatabaseName = warehouseInfo != null ? warehouseInfo.DatabaseName : "0";
+
+			await _userRepository.CreateAsync(tenantUser);
+			await _profileRepository.AddUserAsync(user.Id, request.ProfileId);
+			await _roleRepository.AddUserAsync(user.Id, request.RoleId);
+
+			await _platformUserRepository.UpdateAsync(user);
+
+			return Ok(randomPassword);
+		}
 
 		//TODO TenantId
         [Route("get_user"), HttpGet]

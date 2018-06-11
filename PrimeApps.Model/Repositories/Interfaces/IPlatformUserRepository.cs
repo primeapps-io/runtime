@@ -11,13 +11,17 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IPlatformUserRepository : IRepositoryBasePlatform
     {
         Task<PlatformUser> Get(int platformUserId);
-        Task<PlatformUser> GetWithSettings(int platformUserId);
+        Task<PlatformUser> GetSettings(int platformUserId);
         Task<PlatformUser> Get(string email);
+		Task<PlatformUser> GetWithTenants(string email);
+		Task<int> CreateUser(PlatformUser user);
 
-        Task UpdateAsync(PlatformUser userToEdit);
+		Task UpdateAsync(PlatformUser userToEdit);
         Task<PlatformUser> GetUserByAutoId(int tenantID);
-        Task<bool> IsEmailAvailable(string email);
-        Task<bool> IsActiveDirectoryEmailAvailable(string email);
+		Task<bool> IsEmailAvailable(string email, int appId);
+		Task<Tenant> GetTenantWithOwner(int tenantId);
+
+		Task<bool> IsActiveDirectoryEmailAvailable(string email);
         Task<int> GetIdByEmail(string email);
         Task<List<PlatformUser>> GetAllByTenant(int tenantId);
 		//TODO Removed

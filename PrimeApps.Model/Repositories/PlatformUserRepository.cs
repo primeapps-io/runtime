@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.User;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -25,13 +26,19 @@ namespace PrimeApps.Model.Repositories
 			return await DbContext.Users.Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
 		}
 
-		public async Task<PlatformUser> GetWithSettings(int platformUserId)
+		public async Task<PlatformUser> Get(string email)
+		{
+			return await DbContext.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
+		}
+
+		public async Task<PlatformUser> GetSettings(int platformUserId)
 		{
 			return await DbContext.Users
 				.Include(x=> x.Setting)
 				.Where(x => x.Id == platformUserId)
 				.SingleOrDefaultAsync();
 		}
+
 		
 		public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
 		{
@@ -68,23 +75,84 @@ namespace PrimeApps.Model.Repositories
 			return await DbContext.Users.Where(x => x.Email == email).Select(x => x.Id).SingleOrDefaultAsync();
 		}
 
+		public async Task<PlatformUser> GetWithTenants(string email)
+		{
+			return await DbContext.Users
+				.Include(x => x.Setting)
+				.Include(x => x.TenantsAsUser)
+				.Include(x => x.TenantsAsOwner)
+				.Where(x => x.Email == email)
+				.SingleOrDefaultAsync();
+		}
+
+		public async Task<Tenant> GetTenantWithOwner(int tenantId)
+		{
+			return await DbContext.Tenants
+				.Include(x=> x.Owner).ThenInclude(x=> x.Setting)
+				.Where(x => x.Id == tenantId).SingleOrDefaultAsync();
+		}
+
+		public async Task<int> CreateUser(PlatformUser user)
+		{
+			DbContext.Users.Add(user);
+			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<int> CreateTenant(Tenant tenant)
+		{
+			DbContext.Tenants.Add(tenant);
+			return await DbContext.SaveChangesAsync();
+		}
+
+		public PlatformUser GetByEmailAndTenantId(string email, int tenantId)
+		{
+			var user = DbContext.UserTenants
+				.Include(x => x.Tenant)
+				.Include(x => x.Tenant).ThenInclude(z => z.Setting)
+				.Include(x => x.Tenant).ThenInclude(z => z.License)
+				.Include(x => x.Tenant).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
+				.Include(x => x.PlatformUser).ThenInclude(z => z.Setting)
+				/*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
+				.SingleOrDefault(x => x.PlatformUser.Email == email && x.TenantId == tenantId);
+
+
+			return user?.PlatformUser;
+		}
+
+		public Tenant GetTenantByEmailAndAppId(string email, int appId)
+		{
+			var userTenant = DbContext.UserTenants
+				.Include(x => x.PlatformUser)
+				.Include(x => x.Tenant).ThenInclude(z => z.App)
+				/*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
+				.SingleOrDefault(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
+
+
+			return userTenant?.Tenant;
+		}
+
 		/// <summary>
 		/// Checks if that email address is available.
 		/// </summary>
 		/// <param name="email"></param>
 		/// <returns></returns>
-		public async Task<bool> IsEmailAvailable(string email)
+		public async Task<bool> IsEmailAvailable(string email, int appId)
 		{
 			bool status = true;
 
 			//get session and check the email address
 			//TODO Removed
-			//var result = await DbContext.Users.Where(x => x.Email == email || x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
-			var result = false;
-			if (result != null)
+			var user = await DbContext.Users.Include(x => x.TenantsAsUser).Include(x => x.TenantsAsOwner).Where(x => x.Email == email).SingleOrDefaultAsync();
+			if (user != null)
 			{
-				//the email address exists so set the variable to false.
-				status = false;
+				var appTenant = user.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == appId);
+
+				if (appTenant != null)
+					status = false;
 			}
 
 			//return status.
@@ -112,11 +180,6 @@ namespace PrimeApps.Model.Repositories
 
 			//return status.
 			return status;
-		}
-
-		public async Task<PlatformUser> Get(string email)
-		{
-			return await DbContext.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
 		}
 
 		public async Task<List<PlatformUser>> GetAllByTenant(int tenantId)
@@ -171,43 +234,6 @@ namespace PrimeApps.Model.Repositories
 
 			//return workgroup object.
 			return result;
-		}
-
-		public PlatformUser GetByEmailAndTenantId(string email, int tenantId)
-		{
-			var user = DbContext.UserTenants
-				.Include(x => x.Tenant)
-				.Include(x => x.Tenant).ThenInclude(z => z.Setting)
-				.Include(x => x.Tenant).ThenInclude(z => z.License)
-				.Include(x => x.Tenant).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
-				.Include(x => x.PlatformUser).ThenInclude(z => z.Setting)
-				/*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
-				.SingleOrDefault(x => x.PlatformUser.Email == email && x.TenantId == tenantId);
-
-
-			if (user == null)
-				return null;
-
-			return user.PlatformUser;
-		}
-
-		public Tenant GetTenantByEmailAndAppId(string email, int appId)
-		{
-			var userTenant = DbContext.UserTenants
-				.Include(x => x.Tenant)
-				.Include(x => x.Tenant).ThenInclude(z => z.App)
-				/*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
-				.SingleOrDefault(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
-
-
-			if (userTenant == null)
-				return null;
-
-			return userTenant.Tenant;
 		}
 
 		public int GetAppIdByDomain(string domain)

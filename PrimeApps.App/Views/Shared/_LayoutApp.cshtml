@@ -29,8 +29,8 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	@*<link rel="stylesheet" href="/styles/bundles-css/auth.css" inline />*@
-	<link rel="stylesheet" href="/styles/bundles-css/vendor.css" inline />
-	<link rel="stylesheet" href="/styles/bundles-css/app.css" inline />
+	<link rel="stylesheet" href="/styles/bundles-css/vendor.css" />
+	<link rel="stylesheet" href="/styles/bundles-css/app.css" />
 </head>
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
 	@RenderBody()
@@ -110,6 +110,7 @@
 		loaderDiv.style.display = 'block';
 
 	</script>
+
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
@@ -121,21 +122,10 @@
 	<script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
 	<script src="/scripts/vendor/sip.min.js"></script>
 	<script src="/scripts/vendor/xlsx.core.min.js"></script>
-	<script src="/scripts/bundles-js/vendor.js"></script>
-	<script src="/scripts/bundles-js/apps1.js"></script>
 
-	@*Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.min.js")
-		@Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.charts.min.js")
-		@Scripts.Render("~/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js")
-		@Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js")
-		@Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js")
-		@Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js")
-		@Scripts.Render("~/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js")
-		@Scripts.Render("~/scripts/vendor/tinymce/tinymce.min.js")
-		@Scripts.Render("~/scripts/vendor/sip.min.js")
-		@Scripts.Render("~/scripts/vendor/xlsx.core.min.js")
-		@Scripts.Render("~/bundles-js/vendor")
-		@Scripts.Render("~/bundles-js/app")*@
+
+	<script src="/scripts/bundles-js/vendor.js"></script>
+	<script src="/scripts/bundles-js/app.js"></script>
 
 	@RenderSection("scripts", required: false)
 </body>

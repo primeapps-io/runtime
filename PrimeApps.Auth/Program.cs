@@ -15,9 +15,16 @@ namespace PrimeApps.Auth
 {
     public class Program
     {
-        public static void Main(string[] args)
+		public static IConfiguration Configuration { get; set; }
+		public static void Main(string[] args)
         {
-            Console.Title = "PrimeApps.Auth";
+			var builder = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json");
+
+			Configuration = builder.Build();
+
+			Console.Title = "PrimeApps.Auth";
 
             var seed = args.Any(x => x == "/seed");
             if (seed) args = args.Except(new[] { "/seed" }).ToArray();

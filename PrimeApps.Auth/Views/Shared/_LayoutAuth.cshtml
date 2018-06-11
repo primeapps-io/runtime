@@ -1,0 +1,320 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Reflection;
+
+@inject IViewLocalizer Localizer
+@{
+	var app = "";
+	var desc = "";
+	var color = "";
+	if (ViewBag.AppInfo != null)
+	{
+		app = ViewBag.AppInfo["app"].Value;
+		desc = ViewBag.AppInfo["desc_" + ViewBag.Lang].Value;
+		color = ViewBag.AppInfo["color"].Value;
+	}
+	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
+	var cdnUrlStatic = ViewBag.AppInfo["cdnUrl"].Value;
+	var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
+	var customImage = ViewBag.AppInfo["customImage"] != null ? ViewBag.AppInfo["customImage"].Value.ToString() : "";
+	var favicon = ViewBag.AppInfo["favicon"].Value;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true"/>
+	@*Styles.Render("~/bundles-css/auth")*@
+	<style>
+		.login-block {
+			float: left;
+			width: 100%;
+		}
+
+		.swal-text, .swal-title {
+			text-align: center;
+		}
+
+		.error {
+			text-align: center;
+			color: red;
+			font-weight: 500;
+			font-size: 12px;
+			padding-top: 6px;
+		}
+
+		.fa-4x {
+			padding-bottom: 10px;
+		}
+
+		.fa-pulse {
+			-webkit-animation: fa-spin 1s infinite steps(8);
+			animation: fa-spin 1s infinite steps(8);
+		}
+
+		.login-form {
+			max-width: 400px;
+			width: 350px;
+		}
+
+		.row {
+			height: 100vh;
+		}
+
+		.form-group {
+			margin-bottom: 0 !important;
+		}
+
+		.free-info {
+			max-width: 400px;
+			width: 350px;
+			font-size: 12px;
+		}
+
+		.free-info-header {
+			text-align: center;
+			max-width: 400px;
+			width: 350px;
+			font-size: 14px;
+			padding-bottom: 20px;
+		}
+
+		.banner-sec {
+			background: url(@Url.Content(cdnUrlStatic + String.Format("/images/login/banner/{0}-background.jpg", app))) no-repeat center center;
+			background-size: cover;
+			min-height: 500px;
+			padding: 0;
+		}
+
+		.container {
+			background: #fff;
+			box-shadow: 15px 20px 0px rgba(0,0,0,0.1);
+			width: 100% !important;
+			height: 100vh;
+		}
+
+		.carousel-inner {
+			border-radius: 0 10px 10px 0;
+			height: 100vh;
+		}
+
+		.carousel-item {
+			height: 100vh;
+		}
+
+		.carousel-caption {
+			text-align: left;
+			left: 5%;
+		}
+
+		.login-sec {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+		}
+
+		.form-check {
+			margin-top: .8em;
+		}
+
+		.logo-img {
+			margin-bottom: 20px;
+			max-width: 60%;
+		}
+
+		.language {
+			float: left;
+			margin-bottom: 15px;
+			margin-top: 15px;
+			font-size: 13px;
+		}
+
+		.login-sec h2 {
+			margin-bottom: 30px;
+			font-weight: 800;
+			font-size: 30px;
+		}
+
+		.lang-text {
+			text-transform: uppercase;
+		}
+
+		.login-sec h2:after {
+			content: " ";
+			width: 100px;
+			height: 5px;
+			display: block;
+			margin-top: 20px;
+			border-radius: 3px;
+			margin-left: auto;
+			margin-right: auto
+		}
+
+		.col-md-8 {
+			padding-left: 0px !important;
+			padding-right: 0px !important;
+		}
+
+		hr {
+			border-top: 1px solid #e6e6e6 !important;
+		}
+
+		.office-button {
+			position: relative;
+			background-color: #f4f4f4;
+			border: 1px solid #e6e6e6 !important;
+			cursor: pointer;
+		}
+
+		.office-button:before {
+			content: '';
+			position: absolute;
+			top: -1px;
+			background: url(@Url.Content(cdnUrlStatic + "/images/login/office-login-logo.png")) center center no-repeat;
+			background-size: contain;
+			width: 23px;
+			height: 100%;
+			left: 10px;
+		}
+
+		.swal-button {
+			background-color: @color;
+		}
+
+		.btn-login {
+			background: @color;
+			color: #fff;
+			font-weight: 600;
+			cursor: pointer;
+		}
+
+		.banner-text {
+			position: absolute;
+			bottom: 40px;
+			padding-left: 20px;
+			font-size: 30px;
+			font-weight: 700;
+			font-style: italic;
+			text-align: center;
+		}
+
+		.input-group {
+			border-bottom: 1px solid rgba(0,0,0,.15) !important;
+		}
+
+		.input-group-first {
+			border-top: 1px solid rgba(0,0,0,.15) !important;
+		}
+
+		.input-group-firstname {
+			border-right: 1px solid rgba(0,0,0,.15) !important;
+		}
+
+		.input-group.input-focus {
+			border-bottom: 1px solid @color !important;
+		}
+
+		.input-group input {
+			border: none;
+		}
+
+		.input-group-addon {
+			color: @color !important;
+			background: 0 0 !important;
+			border: 0 !important;
+			font-size: 24px !important;
+		}
+
+		.banner-text h2 {
+			color: #fff;
+			font-weight: 600;
+		}
+
+			.banner-text h2:after {
+				content: " ";
+				width: 100px;
+				height: 5px;
+				background: #FFF;
+				display: block;
+				margin-top: 20px;
+				border-radius: 3px;
+			}
+
+		.banner-text p {
+			color: #fff;
+		}
+
+		.form-check-label {
+			margin-bottom: 15px !important;
+		}
+
+		@@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+			.office-button:before {
+				margin-left: 0 !important;
+			}
+
+			.logo-img {
+				max-width: 100%;
+				margin-bottom: 0 !important;
+				transform: scale(0.5, 0.5);
+			}
+		}
+
+		@@media screen and (max-width: 500px) {
+			.banner-sec {
+				display: none;
+			}
+		}
+
+		@@media (max-height: 551px) and (max-width: 601px) {
+			.banner-sec {
+				display: none;
+			}
+		}
+
+		@@media (min-width: 620px) and (max-width: 1024px) {
+			.login-sec {
+				flex: 0 0 50% !important;
+				max-width: 50%;
+			}
+
+			.banner-sec {
+				flex: 0 0 50% !important;
+				max-width: 50%;
+			}
+		}
+
+	</style>
+</head>
+<body>
+	<section class="login-block">
+		<div class="container">
+			<div class="row">
+				@RenderBody()
+				<div class="col-md-8 banner-sec">
+					<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+						<div class="carousel-inner" role="listbox">
+							<div class="carousel-item active">
+								<div class="carousel-caption d-none d-md-block">
+									<div class="banner-text">
+										<p>@desc</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
+	@*Scripts.Render("~/bundles-js/auth")*@
+	@RenderSection("scripts", required: false)
+</body>
+</html>

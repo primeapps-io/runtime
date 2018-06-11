@@ -52,6 +52,13 @@ namespace PrimeApps.Model.Entities.Platform
 		public string Domain { get; set; }
 
 		/// <summary>
+		/// Auth Domain
+		/// </summary>
+		/// 
+		[Column("auth_domain")]//]//, Index]
+		public string AuthDomain { get; set; }
+
+		/// <summary>
 		/// Custom Title
 		/// </summary>
 		[Column("mail_sender_name")]//]//, Index]
@@ -77,6 +84,11 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("language")]//]//, Index]
 		public string Language { get; set; }
 
+		[Column("banner", TypeName = "jsonb")]//]//, Index]
+		public string Banner { get; set; }
+
+		[Column("google_analytics_code")]//]//, Index]
+		public string GoogleAnalyticsCode { get; set; }
 		//App One to One
 		public virtual App App { get; set; }
 	}

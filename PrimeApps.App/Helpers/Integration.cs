@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
@@ -15,7 +16,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class Integration
     {
-        public static async void InsertSubscriber(RegisterBindingModel model, Warehouse warehouse)
+        public static async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse)
         {
             try
             {
@@ -182,7 +183,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async void InsertUser(RegisterBindingModel model, Warehouse warehouse)
+        public static async Task InsertUser(RegisterBindingModel model, Warehouse warehouse)
         {
             //warehouse.DatabaseName = "Ofisim";
             //var appUser = GetAppUser();
@@ -316,7 +317,7 @@ namespace PrimeApps.App.Helpers
             //}
         }
 
-        public static async void UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse)
+        public static async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse)
         {
             try
             {
@@ -436,7 +437,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async void UpdateUser(string userEmail, Warehouse warehouse)
+        public static async Task UpdateUser(string userEmail, Warehouse warehouse)
         {
             try
             {

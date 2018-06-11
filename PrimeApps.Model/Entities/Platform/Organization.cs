@@ -14,7 +14,10 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("name"), MaxLength(700)]
 		public string Name { get; set; }
 
-		[Column("owner"), ForeignKey("Owner")]
+		[Column("label"), MaxLength(50)]
+		public string Label { get; set; }
+
+		[Column("owner_id"), ForeignKey("Owner")]
 		public int OwnerId { get; set; }
 
 		public virtual PlatformUser Owner { get; set; }

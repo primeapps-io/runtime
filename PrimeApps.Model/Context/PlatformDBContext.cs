@@ -94,6 +94,7 @@ namespace PrimeApps.Model.Context
 
 			//App
 			modelBuilder.Entity<App>().HasIndex(x => x.Name);
+			modelBuilder.Entity<App>().HasIndex(x => x.Label);
 			modelBuilder.Entity<App>().HasIndex(x => x.Description);
 			modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
 			modelBuilder.Entity<App>().HasIndex(x => x.UseTenantSettings);
@@ -115,6 +116,18 @@ namespace PrimeApps.Model.Context
 			modelBuilder.Entity<AppSetting>().HasIndex(x => x.Language);
 			modelBuilder.Entity<AppSetting>().HasIndex(x => x.TimeZone);
 
+
+			//AppTemplates
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.AppId);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Subject);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Type);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Language);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Name);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.SystemCode);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.MailSenderEmail);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.MailSenderName);
+			modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Active);
+			
 			//ApiLog
 			//App
 			//ExchangeRate
@@ -172,6 +185,7 @@ namespace PrimeApps.Model.Context
 			//Organization
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Id);
 			modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
+			modelBuilder.Entity<Organization>().HasIndex(x => x.Label);
 			/*modelBuilder.Entity<Organization>().HasIndex(x => x.Owner);*/
 
 			modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedById);
@@ -300,6 +314,12 @@ namespace PrimeApps.Model.Context
 			   .WithOne(i => i.App)
 			   .HasForeignKey(b => b.AppId);
 
+			//Apps and EmailTemplates One to Many 
+			modelBuilder.Entity<App>()
+			   .HasMany(p => p.Templates)
+			   .WithOne(i => i.App)
+			   .HasForeignKey(b => b.AppId);
+
 			//Organization and Team One to Many
 			modelBuilder.Entity<Team>()
 				.HasOne(p => p.Organization)
@@ -330,6 +350,7 @@ namespace PrimeApps.Model.Context
 		public DbSet<PlatformUserSetting> UserSettings { get; set; }
 		public DbSet<App> Apps { get; set; }
 		public DbSet<AppSetting> AppSettings { get; set; }
+		public DbSet<AppTemplate> AppTemplates { get; set; }
 		/*public DbSet<ActiveDirectoryTenant> ActiveDirectoryTenants { get; set; }
         public DbSet<ActiveDirectoryCache> ActiveDirectoryCache { get; set; }*/
         public DbSet<Tenant> Tenants { get; set; }

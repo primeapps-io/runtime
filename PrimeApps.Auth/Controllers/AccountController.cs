@@ -18,6 +18,14 @@ using System;
 using System.Collections.Generic;
 using PrimeApps.Auth.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Web;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.Globalization;
+using System.Threading;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Configuration;
+using PrimeApps.Auth.Helpers;
 
 namespace PrimeApps.Auth.UI
 {
@@ -30,6 +38,7 @@ namespace PrimeApps.Auth.UI
 		private readonly IClientStore _clientStore;
 		private readonly IAuthenticationSchemeProvider _schemeProvider;
 		private readonly IEventService _events;
+		public IConfiguration Configuration { get; }
 
 		public AccountController(
 			UserManager<ApplicationUser> userManager,
@@ -37,7 +46,8 @@ namespace PrimeApps.Auth.UI
 			IIdentityServerInteractionService interaction,
 			IClientStore clientStore,
 			IAuthenticationSchemeProvider schemeProvider,
-			IEventService events)
+			IEventService events,
+			IConfiguration configuration)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
@@ -45,6 +55,7 @@ namespace PrimeApps.Auth.UI
 			_clientStore = clientStore;
 			_schemeProvider = schemeProvider;
 			_events = events;
+			Configuration = configuration;
 		}
 
 		[HttpGet]
@@ -61,7 +72,7 @@ namespace PrimeApps.Auth.UI
 			if (ModelState.IsValid)
 			{
 				var user = new ApplicationUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
-				var result = await _userManager.CreateAsync(user, model.Password);
+				var result = await _userManager.CreateAsync(user, "0f!s!mTestPass");
 				if (result.Succeeded)
 				{
 					//var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -175,17 +186,33 @@ namespace PrimeApps.Auth.UI
 		/// Show login page
 		/// </summary>
 		[HttpGet]
-		public async Task<IActionResult> Login(string returnUrl)
+		public async Task<IActionResult> Login(string returnUrl, string language = null, string success = "")
 		{
+			/*Response.Cookies.Append(
+				CookieRequestCultureProvider.DefaultCookieName,
+				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture("en-US")),
+				new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+			);*/
+			var lang = AuthHelper.GetLanguage(Request);
+			if (language != null)
+			{
+				lang = language;
+				AuthHelper.SetLanguae(Request, lang);
+			}
+			ViewBag.Success = success;
+			ViewBag.Lang = lang;
+
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Configuration, Request, returnUrl, "tr");
+
 			// build a model so we know what to show on the login page
 			var vm = await BuildLoginViewModelAsync(returnUrl);
-
+			
 			if (vm.IsExternalLoginOnly)
 			{
 				// we only have one option for logging in and it's an external provider
 				return await ExternalLogin(vm.ExternalLoginScheme, returnUrl);
 			}
-
+			
 			return View(vm);
 		}
 
