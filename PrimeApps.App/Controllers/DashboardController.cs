@@ -39,7 +39,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get_dashlets"), HttpGet]
-        public async Task<IActionResult> GetDashlets([FromRoute]int dashboard, [FromRoute]string locale = "", [FromRoute]int? timezoneOffset = 180)
+        public async Task<IActionResult> GetDashlets([FromQuery(Name = "dashboard")]int dashboard, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, locale, timezoneOffset.Value);
             return Ok(dashlets);
@@ -68,7 +68,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(DashboardBindingModel dashboard)
+        public async Task<IActionResult> Create([FromBody]DashboardBindingModel dashboard)
         {
             var dashboardEntity = await DashboardHelper.CreateEntity(dashboard, AppUser);
             var create = await _dashboardRepository.Create(dashboardEntity);
@@ -76,7 +76,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_dashlet"), HttpPost]
-        public async Task<IActionResult> DashletCreate(DashletBindingModel dashlet)
+        public async Task<IActionResult> DashletCreate([FromBody]DashletBindingModel dashlet)
         {
 
             var dashletEntity = await DashboardHelper.CreateEntityDashlet(dashlet, _dashboardRepository, _reportRepository);
@@ -113,7 +113,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_dashlet/{id:int}"), HttpDelete]
-        public async Task<IActionResult> DeleteDashlet([FromRoute]int id)
+        public async Task<IActionResult> DeleteDashlet([FromQuery(Name = "id")]int id)
         {
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 
@@ -144,7 +144,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_dashlet/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateDashlet([FromRoute]int id, [FromBody]DashletBindingModel dashlet)
+        public async Task<IActionResult> UpdateDashlet([FromQuery(Name = "id")]int id, [FromBody]DashletBindingModel dashlet)
         {
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 

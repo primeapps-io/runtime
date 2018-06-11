@@ -44,7 +44,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("create_warehouse"), HttpPost]
-        public async Task<IActionResult> CreateWarehouse(WarehouseCreateRequest request)
+        public async Task<IActionResult> CreateWarehouse([FromBody]WarehouseCreateRequest request)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("change_warehouse_password"), HttpPut]
-        public async Task<IActionResult> ChangeWarehousePassword(WarehousePasswordRequest request)
+        public async Task<IActionResult> ChangeWarehousePassword([FromBody]WarehousePasswordRequest request)
         {
             var isPasswordComplex = Utils.IsComplexPassword(request.DatabasePassword);
 
@@ -111,7 +111,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var analytic = await _analyticRepository.GetById(id);
 
@@ -157,7 +157,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(AnalyticBindingModel analytic)
+        public async Task<IActionResult> Create([FromBody]AnalyticBindingModel analytic)
         {
             var analyticEntity = await AnalyticsHelper.CreateEntity(analytic, _userRepository);
             var result = await _analyticRepository.Create(analyticEntity);
@@ -197,7 +197,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]AnalyticBindingModel analytic)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]AnalyticBindingModel analytic)
         {
             var analyticEntity = await _analyticRepository.GetById(id);
 
@@ -244,7 +244,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var analyticEntity = await _analyticRepository.GetById(id);
 

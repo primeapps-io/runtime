@@ -44,7 +44,7 @@ namespace PrimeApps.App.Controllers
 		/// <param name="request"></param>
 		/// <returns></returns>
 		[Route("send_sms")]
-        public async Task<IActionResult> SendSMS(SMSRequest request)
+        public async Task<IActionResult> SendSMS([FromBody]SMSRequest request)
         {
             var randomRevNumber = Helpers.Utils.CreateRandomString(20);
 
@@ -99,7 +99,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [Route("send_email")]
-        public async Task<IActionResult> SendEMail(EMailRequest request)
+        public async Task<IActionResult> SendEMail([FromBody]EMailRequest request)
         {
             var randomRevNumber = Helpers.Utils.CreateRandomString(20);
 
@@ -159,7 +159,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <returns></returns>
         [Route("send_external_email")]
-        public async Task<IActionResult> SendExternalEmail(ExternalEmail emailRequest)
+        public async Task<IActionResult> SendExternalEmail([FromBody]ExternalEmail emailRequest)
         {
             if (emailRequest.Subject != null && emailRequest.TemplateWithBody != null && emailRequest.ToAddresses.Length > 0)
             {
@@ -189,7 +189,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="newSettings"></param>
         /// <returns></returns>
         [Route("update_sms_settings")]
-        public async Task<IActionResult> UpdateSMSSettings(JObject newSettings)
+        public async Task<IActionResult> UpdateSMSSettings([FromBody]JObject newSettings)
         {
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
@@ -220,7 +220,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="newSettings"></param>
         /// <returns></returns>
         [Route("update_email_settings")]
-        public async Task<IActionResult> UpdateEMailSettings(JObject newSettings)
+        public async Task<IActionResult> UpdateEMailSettings([FromBody]JObject newSettings)
         {
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)
@@ -251,7 +251,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="newSettings"></param>
         /// <returns></returns>
         [Route("update_personal_email_settings")]
-        public async Task<IActionResult> UpdatePersonalEMailSettings(JObject newSettings)
+        public async Task<IActionResult> UpdatePersonalEMailSettings([FromBody]JObject newSettings)
         {
             IList<Setting> settings = new List<Setting>();
             foreach (var data in newSettings)

@@ -94,7 +94,7 @@ namespace PrimeApps.App.Controllers
 		/// <param name="fileName">File name of the avatar</param>
 		/// <returns>Stream.</returns>
 		[Route("Avatar"), HttpPost]
-        public async Task<IActionResult> Avatar(string fileName)
+        public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
         {
             //get uploaded file from storage
             var file = AzureStorage.GetBlob("user-images", fileName);
@@ -118,7 +118,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="user">The user.</param>
         [Route("Edit"), HttpPost]
-        public async Task<IActionResult> Edit(UserDTO user)
+        public async Task<IActionResult> Edit([FromBody]UserDTO user)
         {
             //get user to start modification.
             PlatformUser userToEdit = await _platformUserRepository.GetSettings(AppUser.Id);
@@ -409,7 +409,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("add_user"), HttpPost]
-        public async Task<IActionResult> AddUser(AddUserBindingModel request)
+        public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel request)
         {
 			var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email, request.AppId);
 
@@ -592,7 +592,7 @@ namespace PrimeApps.App.Controllers
 
 		//TODO TenantId
         [Route("get_user"), HttpGet]
-        public async Task<IActionResult> GetUser(string email, int tenantId)
+        public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")] int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -630,7 +630,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_users_by_profile_ids"), HttpPost]
-        public async Task<IActionResult> GetUserByProfileIds(List<int> ids)
+        public async Task<IActionResult> GetUserByProfileIds([FromBody]List<int> ids)
         {
             var users = await _userRepository.GetByProfileIds(ids);
 

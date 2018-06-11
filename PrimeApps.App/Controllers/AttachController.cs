@@ -30,7 +30,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("download"), HttpGet]
-        public async Task<FileStreamResult> Download(int FileId)
+        public async Task<FileStreamResult> Download([FromQuery(Name = "FileId")]int FileId)
         {
             var tenant = await _tenantRepository.GetAsync(AppUser.TenantId);
 

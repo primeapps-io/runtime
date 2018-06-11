@@ -61,7 +61,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var noteEntity = await _noteRepository.GetById(id);
 
@@ -84,7 +84,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpPost]
-        public async Task<ICollection<Note>> Find(NoteRequest request, [FromRoute]string locale = "", [FromRoute]int? timezoneOffset = 180)
+        public async Task<ICollection<Note>> Find([FromBody]NoteRequest request, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             var notes = await _noteRepository.Find(request);
             var moduleRecordIds = new Dictionary<string, List<int>>();
@@ -194,13 +194,13 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("count"), HttpPost]
-        public async Task<int> Count(NoteRequest request)
+        public async Task<int> Count([FromBody]NoteRequest request)
         {
             return await _noteRepository.Count(request);
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(NoteBindingModel note)
+        public async Task<IActionResult> Create([FromBody]NoteBindingModel note)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -221,7 +221,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]NoteBindingModel note)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]NoteBindingModel note)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -238,7 +238,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var noteEntity = await _noteRepository.GetByIdBasic(id);
 
@@ -251,7 +251,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("like"), HttpPost]
-        public async Task<IActionResult> Like(LikedNoteBindingModel note)
+        public async Task<IActionResult> Like([FromBody]LikedNoteBindingModel note)
 
         {
             var noteEntity = await _noteRepository.GetByIdBasic(note.NoteId);

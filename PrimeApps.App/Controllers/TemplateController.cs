@@ -36,7 +36,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var template = await _templateRepostory.GetById(id);
 
@@ -47,7 +47,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAll(TemplateType type = TemplateType.NotSet, string moduleName = "")
+        public async Task<IActionResult> GetAll([FromQuery(Name = "type")]TemplateType type = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")
         {
             var templates = await _templateRepostory.GetAll(type, moduleName);
 
@@ -55,7 +55,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(TemplateBindingModel template)
+        public async Task<IActionResult> Create([FromBody]TemplateBindingModel template)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -76,7 +76,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]TemplateBindingModel template)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]TemplateBindingModel template)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -96,7 +96,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var templateEntity = await _templateRepostory.GetById(id);
 

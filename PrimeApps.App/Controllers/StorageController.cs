@@ -331,7 +331,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("download"), HttpGet]
-        public async Task<IActionResult> Download([FromRoute] int fileID)
+        public async Task<IActionResult> Download([FromQuery(Name = "fileID")] int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -392,7 +392,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("download_module_document"), HttpGet]
-        public async Task<IActionResult> DownloadModuleDocument([FromRoute] string module, [FromRoute] string fileName, [FromRoute] string fileNameExt, [FromRoute] string fieldName, [FromRoute] string recordId)
+        public async Task<IActionResult> DownloadModuleDocument([FromQuery(Name = "module")] string module, [FromQuery(Name = "fileName")] string fileName, [FromQuery(Name = "fileNameExt")] string fileNameExt, [FromQuery(Name = "fieldName")] string fieldName, [FromQuery(Name = "recordId")] string recordId)
         {
             var publicName = "";
 
@@ -436,7 +436,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="DocID">The document identifier.</param>
         [Route("Remove"), HttpPost]
-        public async Task<IActionResult> Remove(DocumentDTO doc)
+        public async Task<IActionResult> Remove([FromBody]DocumentDTO doc)
         {
             //if the document is not null open a new session and transaction
             var result = await _documentRepository.RemoveAsync(doc.ID);
@@ -451,7 +451,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("download_template"), HttpGet]
-        public async Task<IActionResult> DownloadTemplate([FromRoute]int templateId)
+        public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "templateId")]int templateId)
         {
             //get the document record from database
             var template = await _templateRepository.GetById(templateId);

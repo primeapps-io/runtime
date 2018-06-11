@@ -56,7 +56,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("create_mapping"), HttpPost]
-        public async Task<IActionResult> CreateLeadConversionMapping(ConversionMapping conversionMapping)
+        public async Task<IActionResult> CreateLeadConversionMapping([FromBody]ConversionMapping conversionMapping)
         {
             if (ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace PrimeApps.App.Controllers
 
         }
         [Route("delete_mapping"), HttpPost]
-        public async Task<IActionResult> Delete(ConversionMapping conversionMapping)
+        public async Task<IActionResult> Delete([FromBody]ConversionMapping conversionMapping)
         {
 
             var mappedObject = await _conversionMappingRepository.GetByFields(conversionMapping);
@@ -84,13 +84,13 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("get_mappings/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetModuleMappings(int moduleId)
+        public async Task<IActionResult> GetModuleMappings([FromQuery(Name = "moduleId")]int moduleId)
         {
             var results = await _conversionMappingRepository.GetAll(moduleId);
             return Ok(results);
         }
         [Route("delete_fields_mappings"), HttpPost]
-        public async Task<IActionResult> DeleteFieldsMappings(List<int> fieldsId)
+        public async Task<IActionResult> DeleteFieldsMappings([FromBody]List<int> fieldsId)
         {
             foreach (var field in fieldsId)
             {
@@ -104,7 +104,7 @@ namespace PrimeApps.App.Controllers
         }
         [Route("convert_lead")]
         [HttpPost]
-        public async Task<IActionResult> ConvertLead(JObject request)
+        public async Task<IActionResult> ConvertLead([FromBody]JObject request)
         {
             var leadModule = await _moduleRepository.GetByName("leads");
             var accountModule = await _moduleRepository.GetByName("accounts");
@@ -380,7 +380,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("convert_quote")]
         [HttpPost]
-        public async Task<dynamic> ConvertQuote(JObject request)
+        public async Task<dynamic> ConvertQuote([FromBody]JObject request)
         {
             var quoteModule = await _moduleRepository.GetByName("quotes");
             var salesOrderModule = await _moduleRepository.GetByName("sales_orders");
@@ -572,7 +572,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("convert_candidate")]
         [HttpPost]
-        public async Task<IActionResult> ConvertPersonal(JObject request)
+        public async Task<IActionResult> ConvertPersonal([FromBody]JObject request)
         {
             var candidateModule = await _moduleRepository.GetByName("adaylar");
             var employeeModule = await _moduleRepository.GetByName("calisanlar");

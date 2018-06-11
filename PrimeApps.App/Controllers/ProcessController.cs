@@ -43,7 +43,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var processEntity = await _processRepository.GetAllById(id);
 
@@ -64,7 +64,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(ProcessBindingModel process)
+        public async Task<IActionResult> Create([FromBody]ProcessBindingModel process)
         {
             if (process.Approvers == null)
                 ModelState.AddModelError("request._actions", "At least one action required.");
@@ -105,7 +105,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<dynamic> Update([FromRoute]int id, [FromBody]ProcessBindingModel process)
+        public async Task<dynamic> Update([FromQuery(Name = "id")]int id, [FromBody]ProcessBindingModel process)
         {
             var processEntity = await _processRepository.GetById(id);
 
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var processEntity = await _processRepository.GetById(id);
 

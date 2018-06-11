@@ -76,7 +76,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("save_settings"), HttpPost]
-        public async Task<IActionResult> SaveSettings(OutlookBindingModel outlookSetting)
+        public async Task<IActionResult> SaveSettings([FromBody]OutlookBindingModel outlookSetting)
         {
             var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
             var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");
@@ -430,7 +430,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(JObject mail)
+        public async Task<IActionResult> Create([FromBody]JObject mail)
         {
             var outlookModuleSetting = await _settingRepository.GetByKeyAsync("outlook_module");
             var outlookEmailFieldSetting = await _settingRepository.GetByKeyAsync("outlook_email_field");

@@ -32,7 +32,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
         {
             var picklistEntity = await _picklistRepository.GetById(id);
 
@@ -53,7 +53,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find"), HttpPost]
-        public async Task<IActionResult> Find(List<int> ids)
+        public async Task<IActionResult> Find([FromBody]List<int> ids)
         {
             var picklistEntities = await _picklistRepository.Find(ids);
             var picklistsViewModel = PicklistHelper.MapToViewModel(picklistEntities);
@@ -62,7 +62,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create(PicklistBindingModel picklist)
+        public async Task<IActionResult> Create([FromBody]PicklistBindingModel picklist)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -80,7 +80,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromRoute]int id, [FromBody]PicklistBindingModel picklist)
+        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]PicklistBindingModel picklist)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -97,7 +97,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromRoute]int id)
+        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
         {
             var picklistEntity = await _picklistRepository.GetById(id);
 

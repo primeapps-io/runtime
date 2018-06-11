@@ -35,7 +35,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("save_provider"), HttpPost]
-        public async Task<IActionResult> SaveProvider(SipProvider sipProvider)
+        public async Task<IActionResult> SaveProvider([FromBody]SipProvider sipProvider)
         {
             //Delete provider if exists
             await _settingRepository.DeleteAsync(Model.Enums.SettingType.Phone, "provider");
@@ -79,13 +79,13 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("delete_sip_account/{userId:int}"), HttpDelete]
-        public async Task<IActionResult> DeleteSipAccount([FromRoute]int userId)
+        public async Task<IActionResult> DeleteSipAccount([FromQuery(Name = "userId")]int userId)
         {
             await _settingRepository.DeleteAsync(Model.Enums.SettingType.Phone, userId);
             return Ok();
         }
         [Route("save_sip_account"), HttpPost]
-        public async Task<IActionResult> SaveSipAccount(NewSipAccount sipAccount)
+        public async Task<IActionResult> SaveSipAccount([FromBody]NewSipAccount sipAccount)
         {
             await _settingRepository.DeleteAsync(SettingType.Phone, sipAccount.UserId);
             List<Setting> settings = new List<Setting>();

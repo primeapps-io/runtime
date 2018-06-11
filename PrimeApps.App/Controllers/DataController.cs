@@ -55,7 +55,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> Import([FromRoute]string module, [FromBody]JArray records)
+        public async Task<IActionResult> Import([FromQuery(Name = "module")]string module, [FromBody]JArray records)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
 
@@ -112,7 +112,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import_save_excel"), HttpPost]
-        public async Task<IActionResult> ImportSaveExcel([FromRoute]int importId)
+        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "importId")]int importId)
         {
             var import = await _importRepository.GetById(importId);
 
@@ -135,13 +135,13 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import_find"), HttpPost]
-        public async Task<ICollection<Import>> ImportFind(ImportRequest request)
+        public async Task<ICollection<Import>> ImportFind([FromBody]ImportRequest request)
         {
             return await _importRepository.Find(request);
         }
 
         [Route("import_revert/{importId:int}"), HttpDelete]
-        public async Task<IActionResult> RevertImport([FromRoute]int importId)
+        public async Task<IActionResult> RevertImport([FromQuery(Name = "importId")]int importId)
         {
             var import = await _importRepository.GetById(importId);
 
@@ -173,7 +173,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find_audit_logs"), HttpPost]
-        public async Task<ICollection<AuditLog>> FindAuditLogs(AuditLogRequest request)
+        public async Task<ICollection<AuditLog>> FindAuditLogs([FromBody]AuditLogRequest request)
         {
             return await _auditLogRepository.Find(request);
         }

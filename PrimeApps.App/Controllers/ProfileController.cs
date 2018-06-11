@@ -32,7 +32,7 @@ namespace PrimeApps.App.Controllers
 		/// </summary>
 		/// <param name="NewProfile"></param>
 		[Route("Create"), HttpPost]
-        public async Task<IActionResult> Create(ProfileDTO NewProfile)
+        public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
         {
             await _profileRepository.CreateAsync(NewProfile);
 
@@ -45,7 +45,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="UpdatedProfile"></param>
         [Route("Update"), HttpPost]
-        public async Task<IActionResult> Update(ProfileDTO UpdatedProfile)
+        public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
         {
             await _profileRepository.UpdateAsync(UpdatedProfile);
             return Ok();
@@ -56,7 +56,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="RemovalRequest"></param>
         [Route("Remove"), HttpPost]
-        public async Task<IActionResult> Remove(ProfileRemovalDTO RemovalRequest)
+        public async Task<IActionResult> Remove([FromBody]ProfileRemovalDTO RemovalRequest)
         {
             await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
 
@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="transfer"></param>
         [Route("ChangeUserProfile"), HttpPost]
-        public async Task<IActionResult> ChangeUserProfile(ProfileTransferDTO transfer)
+        public async Task<IActionResult> ChangeUserProfile([FromBody]ProfileTransferDTO transfer)
         {
             await _profileRepository.AddUserAsync(transfer.UserID, transfer.TransferedProfileID);
             /// update session cache
