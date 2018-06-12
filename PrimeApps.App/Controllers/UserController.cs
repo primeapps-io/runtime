@@ -65,35 +65,35 @@ namespace PrimeApps.App.Controllers
 			_platformRepository = platformRepository;
 			_tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-			
-			/*SetCurrentUser(_userRepository, _userContextServices);
+
+            /*SetCurrentUser(_userRepository, _userContextServices);
 			SetCurrentUser(_settingRepository, _userContextServices);
 			SetCurrentUser(_profileRepository, _userContextServices);
 			SetCurrentUser(_roleRepository, _userContextServices);
 			SetCurrentUser(_recordRepository, _userContextServices);*/
 
-			//Set warehouse database name Ofisim to integration
-			//_warehouse.DatabaseName = "Ofisim";
-		}
+            //Set warehouse database name Ofisim to integration
+            //_warehouse.DatabaseName = "Ofisim";
+        }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_settingRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_roleRepository);
-			SetCurrentUser(_recordRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_settingRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_roleRepository);
+            SetCurrentUser(_recordRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		/// <summary>
-		/// Gets avatar from blob storage by the file id.
-		/// </summary>
-		/// <param name="fileName">File name of the avatar</param>
-		/// <returns>Stream.</returns>
-		[Route("Avatar"), HttpPost]
+        /// <summary>
+        /// Gets avatar from blob storage by the file id.
+        /// </summary>
+        /// <param name="fileName">File name of the avatar</param>
+        /// <returns>Stream.</returns>
+        [Route("Avatar"), HttpPost]
         public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
         {
             //get uploaded file from storage
@@ -290,7 +290,7 @@ namespace PrimeApps.App.Controllers
                     apps.Add(mainApp);
                 }*/
 
-				acc.user.tenantLanguage = AppUser.TenantLanguage;
+                acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
                 acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
@@ -602,12 +602,12 @@ namespace PrimeApps.App.Controllers
             if (userEntity == null)
                 return NotFound();
 
-			var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
+            var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
 
-			if (userTenant == null)
-				return NotFound();
+            if (userTenant == null)
+                return NotFound();
 
-			_userRepository.TenantId = tenantId;
+            _userRepository.TenantId = tenantId;
             var user = await _userRepository.GetById(userEntity.Id);
 
             var userModel = new
@@ -660,6 +660,20 @@ namespace PrimeApps.App.Controllers
 
                 //var users = await graphClient.Users.Where(x => x.ObjectId.Equals(userObjectID)).ExecuteAsync();
                 var users = graphClient.Users.ExecuteAsync().Result.CurrentPage.ToList();
+
+                //Core merge
+                var userResponse = await graphClient.Users.ExecuteAsync();
+                var users = userResponse.CurrentPage.ToList();
+
+                while (userResponse.MorePagesAvailable)
+                {
+                    userResponse = await userResponse.GetNextPageAsync();
+
+                    var newUsers = userResponse.CurrentPage.ToList();
+                    users.AddRange(newUsers);
+                }
+
+                users = users.OrderBy(x => x.Mail).ToList();
 
                 List<PlatformUser> systemUsers = await _platformUserRepository.GetAllByTenant(AppUser.TenantId);
                 var availableUsers = new JArray();
@@ -723,5 +737,5 @@ namespace PrimeApps.App.Controllers
             AuthenticationResult result = await authContext.AcquireTokenSilentAsync(graphResourceID, clientcred, new UserIdentifier(userObjectID, UserIdentifierType.UniqueId));
             return result.AccessToken;
         }*/
-	}
+    }
 }

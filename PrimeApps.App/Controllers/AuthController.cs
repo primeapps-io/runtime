@@ -642,33 +642,41 @@ namespace PrimeApps.App.Controllers
 			return "tr";
 		}
 
-		public int GetAppId(string url)
-		{
-			if (url.Contains("kobi.ofisim.com") || url.Contains("kobi-test.ofisim.com"))
-			{
-				return 2;
-			}
-			if (url.Contains("asistan.ofisim.com") || url.Contains("asistan-test.ofisim.com"))
-			{
-				return 3;
-			}
-			if (url.Contains("ik.ofisim.com") || url.Equals("ik-test.ofisim.com") || url.Contains("ik-dev.ofisim.com"))
-			{
-				return 4;
-			}
-			if (url.Contains("cagri.ofisim.com") || url.Contains("cagri-test.ofisim.com"))
-			{
-				return 5;
-			}
-			if (url.Contains("crm.ofisim.com") || url.Contains("test.ofisim.com") || url.Contains("dev.ofisim.com"))
-			{
-				return 1;
-			}
-			if (url.Contains("crm.livasmart.com"))
-			{
-				return 6;
-			}
-			return 1;
-		}
-	}
+        public int GetAppId(string url)
+        {
+            if (url.Contains("kobi.ofisim.com") || url.Contains("kobi-test.ofisim.com"))
+            {
+                return 2;
+            }
+            if (url.Contains("asistan.ofisim.com") || url.Contains("asistan-test.ofisim.com"))
+            {
+                return 3;
+            }
+            if (url.Contains("ik.ofisim.com") || url.Equals("ik-test.ofisim.com") || url.Contains("ik-dev.ofisim.com"))
+            {
+                return 4;
+            }
+            if (url.Contains("cagri.ofisim.com") || url.Contains("cagri-test.ofisim.com"))
+            {
+                return 5;
+            }
+            if (url.Contains("crm.ofisim.com") || url.Contains("test.ofisim.com") || url.Contains("dev.ofisim.com"))
+            {
+                return 1;
+            }
+            if (url.Contains("crm.livasmart.com"))
+            {
+                return 6;
+            }
+            if (url.Contains("crm.appsila.com"))
+            {
+                return 7;
+            }
+            if (url.Contains("hr.ofisim.com") || url.Equals("hr-test.ofisim.com") || url.Contains("hr-dev.ofisim.com"))
+            {
+                return 8;
+            }
+            return 1;
+        }
+    }
 }

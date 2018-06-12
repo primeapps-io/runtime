@@ -30,9 +30,10 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IPicklistRepository _picklistRepository;
         private IRecordRepository _recordRepository;
+        private IMenuRepository _menuRepository;
         private Model.Helpers.Warehouse _warehouse;
 
-        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse)
+        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository)
         {
             _settingRepository = settingRepository;
             _moduleRepository = moduleRepository;
@@ -41,6 +42,7 @@ namespace PrimeApps.App.Controllers
             _picklistRepository = picklistRepository;
             _recordRepository = recordRepository;
             _warehouse = warehouse;
+            _menuRepository = menuRepository;
         }
 		
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -414,8 +416,8 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
-			//TODO Change
-			var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse)
+            //TODO Change
+            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse, _menuRepository)
             {
                 /*Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))*/
             };

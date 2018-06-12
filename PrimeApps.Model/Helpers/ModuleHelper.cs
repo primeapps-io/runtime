@@ -60,7 +60,8 @@ namespace PrimeApps.Model.Helpers
             DataType.TextMulti,
             DataType.Email,
             DataType.Picklist,
-            DataType.Multiselect
+            DataType.Multiselect,
+            DataType.Tag
         };
 
         public static List<string> ModuleSpecificFields(Module module)
@@ -70,6 +71,8 @@ namespace PrimeApps.Model.Helpers
             switch (module.Name)
             {
                 case "quotes":
+                case "sales_invoices":
+                case "purchase_invoices":
                 case "sales_orders":
                 case "purchase_orders":
                     var hasCurrencyField = module.Fields.Any(x => x.Name == "currency");
@@ -446,6 +449,8 @@ namespace PrimeApps.Model.Helpers
                     return "VARCHAR (100)";
                 case DataType.Multiselect:
                     return "VARCHAR (100) ARRAY";
+                case DataType.Tag:
+                    return "VARCHAR (400) ARRAY";
                 case DataType.Lookup:
                     return "INTEGER";
                 case DataType.Checkbox:
@@ -472,7 +477,7 @@ namespace PrimeApps.Model.Helpers
                     }
                     else
                     {
-                        if (field.DataType == DataType.Multiselect)
+                        if (field.DataType == DataType.Multiselect || field.DataType == DataType.Tag)
                             indexes.Add(string.Format(IndexCreateArrayLowerTemplate, moduleName + "_ix_" + field.Name, moduleName, field.Name));
                         else
                             indexes.Add(string.Format(IndexCreateLowerTemplate, moduleName + "_ix_" + field.Name, moduleName, field.Name));

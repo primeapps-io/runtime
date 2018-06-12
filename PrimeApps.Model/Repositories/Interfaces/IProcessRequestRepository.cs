@@ -1,18 +1,16 @@
-﻿using PrimeApps.Model.Entities.Application;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using PrimeApps.Model.Enums;
+using OfisimCRM.Model.Entities;
 
-namespace PrimeApps.Model.Repositories.Interfaces
+namespace OfisimCRM.Model.Repositories.Interfaces
 {
-    public interface IProcessRequestRepository : IRepositoryBaseTenant
+    public interface IMenuRepository : IRepositoryBaseTenant
     {
-        Task<ICollection<ProcessRequest>> GetByProcessId(int id);
-        Task<ProcessRequest> GetByIdBasic(int id);
-        Task<ProcessRequest> GetByRecordId(int id, OperationType operationType);
-        Task<int> Update(ProcessRequest request);
+        Task<Menu> GetByProfileId(int id);
+        Task<Menu> GetDefault();
+        Task<ICollection<Menu>> GetAll();
+        Task<ICollection<MenuItem>> GetItems(int id);
+        Task AddModuleToMenuAsync(Module module);
+        Task DeleteModuleFromMenu(int id);
     }
 }

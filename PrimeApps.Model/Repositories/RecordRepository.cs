@@ -346,6 +346,11 @@ namespace PrimeApps.Model.Repositories
             RecordHelper.MultiselectsToString(module, record);
         }
 
+        public void ArrayToString(Module module, JObject record)
+        {
+            RecordHelper.TagToString(module, record);
+        }
+
         public async Task<int> UpdateSystemData(int createdBy, DateTime createdAt, string tenantLanguage, int appId)
         {
             var sql = RecordHelper.GenerateSystemDataUpdateSql(createdBy, createdAt);

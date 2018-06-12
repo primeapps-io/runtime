@@ -13,6 +13,9 @@ namespace PrimeApps.App.Models
         public int RecordId { get; set; }
 
         [Required]
+        public string ModuleName { get; set; }
+
+        [Required]
         public OperationType OperationType { get; set; }
     }
 

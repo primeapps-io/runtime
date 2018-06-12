@@ -961,7 +961,15 @@ namespace PrimeApps.Model.Helpers
                         values.Add(string.Join(", ", recordValues));
                     }
 
-                    var sql = $"INSERT INTO [{module.Name}_d] \n({string.Join(",", columns)}) \nVALUES ({string.Join("),(", values)})";
+                    var sql = "";
+
+                    foreach (var value in values)
+                    {
+                        sql += $"INSERT INTO [{module.Name}_d] \n({string.Join(",", columns)}) \nVALUES ({value})";
+                    }
+
+                    //var sql = $"INSERT INTO [{module.Name}_d] \n({string.Join(",", columns)}) \nVALUES ({string.Join("),(", values)})";
+
 
                     command.CommandText = sql;
                     command.CommandType = CommandType.Text;
@@ -1103,7 +1111,7 @@ namespace PrimeApps.Model.Helpers
             columnLabel.Nullable = false;
             tableRoles.Columns.Add(columnLabel);
 
-            var columnOwners = new Column(tableRoles, "owners", DataType.VarChar(2000));
+            var columnOwners = new Column(tableRoles, "owners", DataType.VarCharMax);
             columnOwners.Nullable = false;
             tableRoles.Columns.Add(columnOwners);
 

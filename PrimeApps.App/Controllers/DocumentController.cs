@@ -9,6 +9,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,6 +26,10 @@ using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using Aspose.Words;
+using Aspose.Cells;
+using PrimeApps.DTO.Cache;
+using SaveFormat = Aspose.Words.SaveFormat;
+using Constants = PrimeApps.DTO.Common.Constants;
 using MimeMapping;
 using Aspose.Words.MailMerging;
 using PrimeApps.App.Extensions;
@@ -51,30 +56,30 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _templateRepository = templateRepository;
             _noteRepository = noteRepository;
-			_picklistRepository = picklistRepository;
+            _picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_documentRepository);
-			SetCurrentUser(_recordRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_templateRepository);
-			SetCurrentUser(_noteRepository);
-			SetCurrentUser(_picklistRepository);
-			SetCurrentUser(_settingRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_documentRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_templateRepository);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_picklistRepository);
+            SetCurrentUser(_settingRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		/// <summary>
-		/// Uploads files by the chucks as a stream.
-		/// </summary>
-		/// <param name="fileContents">The file contents.</param>
-		/// <returns>System.String.</returns>
-		[Route("Upload"), HttpPost]
+        /// <summary>
+        /// Uploads files by the chucks as a stream.
+        /// </summary>
+        /// <param name="fileContents">The file contents.</param>
+        /// <returns>System.String.</returns>
+        [Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
         {
             var requestStream = await Request.ReadAsStreamAsync();
@@ -89,6 +94,22 @@ namespace PrimeApps.App.Controllers
 
             return Ok(result);
         }
+        [Route("Upload_Excel"), HttpPost]
+        public async Task<IHttpActionResult> UploadExcel()
+        {
+            var requestStream = await Request.Content.ReadAsStreamAsync();
+            DocumentUploadResult result;
+            var isUploaded = DocumentHelper.UploadExcel(requestStream, out result);
+
+            if (!isUploaded && result == null)
+                return NotFound();
+
+            if (!isUploaded)
+                return BadRequest();
+
+            return Ok(result);
+        }
+
         /// <summary>
         /// Using at email attachments and on module 
         /// </summary>
@@ -834,7 +855,7 @@ namespace PrimeApps.App.Controllers
                 publicName = template.Name;
 
                 string[] splittedFileName = template.Content.Split('.');
-                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
+                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
 
                 return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
 
@@ -1153,7 +1174,47 @@ namespace PrimeApps.App.Controllers
 
                 relatedModuleRecords.Add("order_products", productsFormatted);
             }
+            if (module == "purchase_orders" && doc.Range.Text.Contains("{{#foreach purchase_order_products}}"))
+            {
+                var orderFields = await Helpers.RecordHelper.GetAllFieldsForFindRequest("purchase_order_products", _moduleRepository);
 
+                var products = _recordRepository.Find("purchase_order_products", new FindRequest()
+                {
+                    Fields = orderFields,
+                    Filters = new List<Filter>
+                    {
+                        new Filter
+                        {
+                            Field = "purchase_order",
+                            Operator = Operator.Equals,
+                            No = 0,
+                            Value = recordId.ToString()
+                        }
+                    },
+                    SortField = "order",
+                    SortDirection = SortDirection.Asc,
+                    Limit = 1000,
+                    Offset = 0
+                });
+
+                var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("purchase_order_products");
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var productsFormatted = new JArray();
+
+                foreach (var product in products)
+                {
+                    if (!record["currency"].IsNullOrEmpty())
+                        product["currency"] = (string)record["currency"];
+
+                    if (!product["product.products.currency"].IsNullOrEmpty())
+                        product["currency"] = (string)product["product.products.currency"];
+
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.PicklistLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    productsFormatted.Add(productFormatted);
+                }
+
+                relatedModuleRecords.Add("purchase_order_products", productsFormatted);
+            }
             return true;
         }
 

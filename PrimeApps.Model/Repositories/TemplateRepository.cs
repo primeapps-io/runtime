@@ -16,7 +16,6 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<Template> GetById(int id)
         {
-
             var template = await DbContext.Templates.Include(x => x.Permissions).FirstOrDefaultAsync(x => x.Id == id);
 
             return template;
@@ -50,7 +49,34 @@ namespace PrimeApps.Model.Repositories
             return await templates.ToListAsync();
         }
 
+        public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelTemplateType = TemplateType.NotSet, string moduleName = "")
+        {
+
+            var templates = DbContext.Templates
+                .Include(x => x.Shares)
+                .Include(x => x.Permissions)
+                .Where(x => x.Deleted == false);
+
+            if (templateType != TemplateType.NotSet && excelTemplateType != TemplateType.NotSet)
+                templates = templates.Where(x => x.TemplateType == templateType)
+                    .Where(x => x.TemplateType == excelTemplateType);
+
+            if (!string.IsNullOrEmpty(moduleName))
+                templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
+
+            templates = templates.OrderByDescending(x => x.CreatedAt);
+
+            return await templates.ToListAsync();
+        }
+
         public async Task<int> Create(Template template)
+        {
+            DbContext.Templates.Add(template);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> CreateExcel(Template template)
         {
             DbContext.Templates.Add(template);
 

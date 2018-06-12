@@ -839,5 +839,8 @@ namespace PrimeApps.Model.Context
         public DbSet<FieldFilter> FieldFilters { get; set; }
         public DbSet<ViewShares> ViewShares { get; set; }
         public DbSet<TenantUserGroup> UsersUserGroups { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Menu> Menus { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
     }
 }

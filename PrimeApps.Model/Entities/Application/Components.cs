@@ -45,6 +45,7 @@ namespace PrimeApps.Model.Entities.Application
 		BeforeUpdate = 4,
 		AfterUpdate = 5,
 		BeforeDelete = 6,
-		AfterDelete = 7
-	}
+		AfterDelete = 7,
+        AfterRecordLoaded = 8
+    }
 }

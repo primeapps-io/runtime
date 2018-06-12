@@ -17,11 +17,13 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System;
+
 
 namespace PrimeApps.App.Controllers
 {
     [Route("api/convert"), Authorize/*, SnakeCase*/]
-	public class ConvertController : BaseController
+    public class ConvertController : BaseController
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
@@ -42,20 +44,20 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_recordRepository);
-			SetCurrentUser(_picklistRepository);
-			SetCurrentUser(_documentRepository);
-			SetCurrentUser(_noteRepository);
-			SetCurrentUser(_conversionMappingRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_picklistRepository);
+            SetCurrentUser(_documentRepository);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_conversionMappingRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("create_mapping"), HttpPost]
+        [Route("create_mapping"), HttpPost]
         public async Task<IActionResult> CreateLeadConversionMapping([FromBody]ConversionMapping conversionMapping)
         {
             if (ModelState.IsValid)
@@ -287,7 +289,13 @@ namespace PrimeApps.App.Controllers
 
             // Update lead as converted
             lead["is_converted"] = true;
-            lead["deleted"] = true;
+            var convertedField = leadModule.Fields.FirstOrDefault(x => x.Name == "converted" && !x.Deleted);
+
+            if (convertedField != null)
+                lead["converted"] = true;
+
+            if ((bool)request["deleted"])
+                lead["deleted"] = true;
             var leadModel = new JObject();
             int resultUpdate;
 
@@ -299,7 +307,7 @@ namespace PrimeApps.App.Controllers
 
             try
             {
-                resultUpdate = await _recordRepository.Update(leadModel, leadModule, true);
+                resultUpdate = await _recordRepository.Update(leadModel, leadModule, (bool)request["deleted"]);
             }
             catch (PostgresException ex)
             {
@@ -487,6 +495,12 @@ namespace PrimeApps.App.Controllers
                 if (quoteProduct["discount_amount"] != null)
                     orderProduct["discount_amount"] = quoteProduct["discount_amount"];
 
+                if (quoteProduct["currency"] != null)
+                    orderProduct["currency"] = quoteProduct["currency"];
+
+                if (quoteProduct["vat_percent"] != null)
+                    orderProduct["vat_percent"] = quoteProduct["vat_percent"];
+
                 if (quoteProduct["discount_type"] != null)
                     orderProduct["discount_type"] = quoteProduct["discount_type"];
 
@@ -529,7 +543,6 @@ namespace PrimeApps.App.Controllers
             var convertedStagePicklist = await _picklistRepository.GetItemBySystemCode("converted_quote_stage");
             quote["quote_stage"] = AppUser.TenantLanguage == "tr" ? convertedStagePicklist.LabelTr : convertedStagePicklist.LabelEn;
             quote["is_converted"] = true;
-            quote["deleted"] = true;
             var quoteModel = new JObject();
             int resultUpdate;
 
@@ -643,6 +656,11 @@ namespace PrimeApps.App.Controllers
             // Update lead as converted
             candidate["is_converted"] = true;
 
+            var convertedField = candidateModule.Fields.FirstOrDefault(x => x.Name == "converted" && !x.Deleted);
+
+            if (convertedField != null)
+                candidate["converted"] = true;
+
             if ((bool)request["deleted"] == true)
                 candidate["deleted"] = true;
 
@@ -749,6 +767,404 @@ namespace PrimeApps.App.Controllers
 
             var result = new JObject();
             result["account_id"] = employee["id"];
+
+            return Ok(result);
+        }
+        [Route("convert_sales_orders")]
+        [HttpPost]
+        public async Task<IHttpActionResult> ConvertSalesOrders(JObject request)
+        {
+            var salesOrderModule = await _moduleRepository.GetByName("sales_orders");
+            var salesInvoiceModule = await _moduleRepository.GetByName("sales_invoices");
+            var activityModule = await _moduleRepository.GetByName("activities");
+            var salesOrder = _recordRepository.GetById(salesOrderModule, (int)request["sales_order_id"], false);
+            var conversionMappings = await _conversionMappingRepository.GetAll(salesOrderModule.Id);
+            var salesInvoice = new JObject();
+
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+            if (conversionMappings == null || conversionMappings.Count < 1)
+                return BadRequest("Conversion mappings not found.");
+
+            // Prepare new records
+            foreach (var conversionMapping in conversionMappings)
+            {
+                var field = salesOrderModule.Fields.FirstOrDefault(x => x.Id == conversionMapping.FieldId);
+                var mappingField = conversionMapping.MappingModule.Fields.FirstOrDefault(x => x.Id == conversionMapping.MappingFieldId);
+
+                switch (conversionMapping.MappingModule.Name)
+                {
+                    case "sales_invoices":
+                        if (field != null && mappingField != null && !salesOrder[field.Name].IsNullOrEmpty())
+                            salesInvoice[mappingField.Name] = salesOrder[field.Name];
+                        break;
+                }
+            }
+
+            // Create new records
+            // account
+            if (salesInvoice.HasValues)
+            {
+                salesInvoice["owner"] = salesOrder["owner"];
+                salesInvoice["master_id"] = salesOrder["id"];
+                salesInvoice["siparis"] = salesOrder["id"];
+                salesInvoice["fatura_tarihi"] = DateTime.UtcNow;
+                salesInvoice["vade_tarihi"] = DateTime.UtcNow;
+
+                var asamaField = salesInvoiceModule.Fields.Single(x => x.Name == "asama");
+                var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
+                salesInvoice["asama"] = AppUser.PicklistLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
+
+                var resultBefore = await RecordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.PicklistLanguage, _moduleRepository, _picklistRepository, false);
+
+                if (resultBefore < 0 && !ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                int resultCreate;
+
+                try
+                {
+                    resultCreate = await _recordRepository.Create(salesInvoice, salesInvoiceModule);
+                }
+                catch (PostgresException ex)
+                {
+                    if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+
+                    if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+
+                    if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+
+                    throw;
+                }
+
+                if (resultCreate < 1)
+                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+                RecordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
+            }
+
+            //Update order stage
+            var orderStageTypeField = salesOrderModule.Fields.Single(x => x.Name == "order_stage");
+            var orderStageTypes = await _picklistRepository.GetById(orderStageTypeField.PicklistId.Value);
+            salesOrder["order_stage"] = AppUser.PicklistLanguage == "tr" ? orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_sales_invoice").LabelTr : orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_sales_invoice").LabelEn;
+
+            // Update lead as converted
+            salesOrder["is_converted"] = true;
+
+            var convertedField = salesOrderModule.Fields.FirstOrDefault(x => x.Name == "converted" && !x.Deleted);
+
+            if (convertedField != null)
+                salesOrder["converted"] = true;
+
+            if ((bool)request["deleted"] == true)
+                salesOrder["deleted"] = true;
+
+            var leadModel = new JObject();
+            int resultUpdate;
+
+            foreach (var pair in salesOrder)
+            {
+                if (!pair.Value.IsNullOrEmpty())
+                    leadModel[pair.Key] = salesOrder[pair.Key];
+            }
+
+            try
+            {
+                resultUpdate = await _recordRepository.Update(leadModel, salesOrderModule, (bool)request["deleted"]);
+            }
+            catch (PostgresException ex)
+            {
+                if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+
+                if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+
+                if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+
+                throw;
+            }
+
+            if (resultUpdate < 1)
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+            RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
+
+            // Move documents
+            var documents = await _documentRepository.GetAll(salesOrderModule.Id, (int)salesOrder["id"]);
+
+            foreach (var document in documents)
+            {
+                document.ModuleId = salesInvoiceModule.Id;
+                document.RecordId = (int)salesInvoice["id"];
+
+                await _documentRepository.Update(document);
+            }
+
+            // Move activities
+            var findRequestActivity = new FindRequest
+            {
+                Fields = new List<string> { "related_to" },
+                Filters = new List<Filter> { new Filter { Field = "related_to", Operator = Operator.Equals, Value = (int)salesOrder["id"], No = 1 } },
+                Limit = 1000,
+                Offset = 0
+            };
+
+            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+
+            foreach (JObject activity in activities)
+            {
+                activity["related_to"] = (int)salesInvoice["id"];
+                await _recordRepository.Update(activity, activityModule);
+            }
+
+            // Move notes
+            var noteRequest = new NoteRequest
+            {
+                ModuleId = salesOrderModule.Id,
+                RecordId = (int)salesOrder["id"],
+                Limit = 1000,
+                Offset = 0
+            };
+
+            var notes = await _noteRepository.Find(noteRequest);
+
+            foreach (var note in notes)
+            {
+                note.ModuleId = salesInvoiceModule.Id;
+                note.RecordId = (int)salesInvoice["id"];
+                await _noteRepository.Update(note);
+            }
+
+            //Move dynamic sub modules
+            var conversionsubModules = await _conversionMappingRepository.GetSubConversions(salesOrderModule.Id);
+            foreach (var conversion in conversionsubModules)
+            {
+                var subModule = await _moduleRepository.GetByName(conversion.MappingSubModule.Name);
+                var findRequest = new FindRequest
+                {
+                    Filters = new List<Filter> { new Filter { Field = conversion.SubModuleSourceField, Operator = Operator.Equals, Value = (int)salesOrder["id"], No = 1 } },
+                    Limit = 1000,
+                    Offset = 0
+                };
+
+                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+
+                foreach (JObject subRecord in subModuleRecords)
+                {
+                    subRecord[conversion.SubModuleDestinationField] = (int)salesInvoice["id"];
+                    await _recordRepository.Update(subRecord, conversion.MappingSubModule);
+                }
+            }
+
+
+            var result = new JObject();
+            result["sales_invoice_id"] = salesInvoice["id"];
+
+            return Ok(result);
+        }
+
+
+        [Route("convert_purchase_orders")]
+        [HttpPost]
+        public async Task<IHttpActionResult> PurchaseSalesOrders(JObject request)
+        {
+            var purchaseOrderModule = await _moduleRepository.GetByName("purchase_orders");
+            var purchaseInvoiceModule = await _moduleRepository.GetByName("purchase_invoices");
+            var activityModule = await _moduleRepository.GetByName("activities");
+            var purchaseOrder = _recordRepository.GetById(purchaseOrderModule, (int)request["purchase_order_id"], false);
+            var conversionMappings = await _conversionMappingRepository.GetAll(purchaseOrderModule.Id);
+            var purchaseInvoice = new JObject();
+
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+            if (conversionMappings == null || conversionMappings.Count < 1)
+                return BadRequest("Conversion mappings not found.");
+
+            // Prepare new records
+            foreach (var conversionMapping in conversionMappings)
+            {
+                var field = purchaseOrderModule.Fields.FirstOrDefault(x => x.Id == conversionMapping.FieldId);
+                var mappingField = conversionMapping.MappingModule.Fields.FirstOrDefault(x => x.Id == conversionMapping.MappingFieldId);
+
+                switch (conversionMapping.MappingModule.Name)
+                {
+                    case "purchase_invoices":
+                        if (field != null && mappingField != null && !purchaseOrder[field.Name].IsNullOrEmpty())
+                            purchaseInvoice[mappingField.Name] = purchaseOrder[field.Name];
+                        break;
+                }
+            }
+
+            // Create new records
+            // account
+            if (purchaseInvoice.HasValues)
+            {
+                purchaseInvoice["owner"] = purchaseOrder["owner"];
+                purchaseInvoice["master_id"] = purchaseOrder["id"];
+                purchaseInvoice["tedarikci_siparis"] = purchaseOrder["id"];
+                purchaseInvoice["fatura_tarihi"] = DateTime.UtcNow;
+                purchaseInvoice["vade_tarihi"] = DateTime.UtcNow;
+
+                var asamaField = purchaseInvoiceModule.Fields.Single(x => x.Name == "asama");
+                var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
+                purchaseInvoice["asama"] = AppUser.PicklistLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
+
+                var resultBefore = await RecordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.PicklistLanguage, _moduleRepository, _picklistRepository, false);
+
+                if (resultBefore < 0 && !ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                int resultCreate;
+
+                try
+                {
+                    resultCreate = await _recordRepository.Create(purchaseInvoice, purchaseInvoiceModule);
+                }
+                catch (PostgresException ex)
+                {
+                    if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+
+                    if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+
+                    if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+
+                    throw;
+                }
+
+                if (resultCreate < 1)
+                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+                RecordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
+            }
+
+            //Update order stage
+            var orderStageTypeField = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
+            var orderStageTypes = await _picklistRepository.GetById(orderStageTypeField.PicklistId.Value);
+            purchaseOrder["order_stage"] = AppUser.PicklistLanguage == "tr" ? orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_purchase_invoice").LabelTr : orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_purchase_invoice").LabelEn;
+
+            // Update lead as converted
+            purchaseOrder["is_converted"] = true;
+
+            var convertedField = purchaseOrderModule.Fields.FirstOrDefault(x => x.Name == "converted" && !x.Deleted);
+
+            if (convertedField != null)
+                purchaseOrder["converted"] = true;
+
+            if ((bool)request["deleted"] == true)
+                purchaseOrder["deleted"] = true;
+
+            var leadModel = new JObject();
+            int resultUpdate;
+
+            foreach (var pair in purchaseOrder)
+            {
+                if (!pair.Value.IsNullOrEmpty())
+                    leadModel[pair.Key] = purchaseOrder[pair.Key];
+            }
+
+            try
+            {
+                resultUpdate = await _recordRepository.Update(leadModel, purchaseOrderModule, (bool)request["deleted"]);
+            }
+            catch (PostgresException ex)
+            {
+                if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+
+                if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+
+                if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+
+                throw;
+            }
+
+            if (resultUpdate < 1)
+                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+
+            RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
+
+            // Move documents
+            var documents = await _documentRepository.GetAll(purchaseOrderModule.Id, (int)purchaseOrder["id"]);
+
+            foreach (var document in documents)
+            {
+                document.ModuleId = purchaseInvoiceModule.Id;
+                document.RecordId = (int)purchaseInvoice["id"];
+
+                await _documentRepository.Update(document);
+            }
+
+            // Move activities
+            var findRequestActivity = new FindRequest
+            {
+                Fields = new List<string> { "related_to" },
+                Filters = new List<Filter> { new Filter { Field = "related_to", Operator = Operator.Equals, Value = (int)purchaseOrder["id"], No = 1 } },
+                Limit = 1000,
+                Offset = 0
+            };
+
+            var activities = _recordRepository.Find("activities", findRequestActivity, false);
+
+            foreach (JObject activity in activities)
+            {
+                activity["related_to"] = (int)purchaseInvoice["id"];
+                await _recordRepository.Update(activity, activityModule);
+            }
+
+            // Move notes
+            var noteRequest = new NoteRequest
+            {
+                ModuleId = purchaseOrderModule.Id,
+                RecordId = (int)purchaseOrder["id"],
+                Limit = 1000,
+                Offset = 0
+            };
+
+            var notes = await _noteRepository.Find(noteRequest);
+
+            foreach (var note in notes)
+            {
+                note.ModuleId = purchaseInvoiceModule.Id;
+                note.RecordId = (int)purchaseInvoice["id"];
+                await _noteRepository.Update(note);
+            }
+
+            //Move dynamic sub modules
+            var conversionsubModules = await _conversionMappingRepository.GetSubConversions(purchaseOrderModule.Id);
+            foreach (var conversion in conversionsubModules)
+            {
+                var subModule = await _moduleRepository.GetByName(conversion.MappingSubModule.Name);
+                var findRequest = new FindRequest
+                {
+                    Filters = new List<Filter> { new Filter { Field = conversion.SubModuleSourceField, Operator = Operator.Equals, Value = (int)purchaseOrder["id"], No = 1 } },
+                    Limit = 1000,
+                    Offset = 0
+                };
+
+                var subModuleRecords = _recordRepository.Find(conversion.MappingSubModule.Name, findRequest, false);
+
+                foreach (JObject subRecord in subModuleRecords)
+                {
+                    subRecord[conversion.SubModuleDestinationField] = (int)purchaseInvoice["id"];
+                    await _recordRepository.Update(subRecord, conversion.MappingSubModule);
+                }
+            }
+
+
+            var result = new JObject();
+            result["purchase_invoice_id"] = purchaseInvoice["id"];
 
             return Ok(result);
         }

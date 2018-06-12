@@ -96,7 +96,8 @@ namespace PrimeApps.Model.Helpers
 
             var sql = "PREPARE SelectQuery AS\n" +
                       $"SELECT {fieldsSql}\n" +
-                      ", pr.process_id, pr.process_status, pr.operation_type, pr.process_status_order\n" +//Approval Processes
+                      // ", pr.process_id, pr.process_status, pr.operation_type, pr.process_status_order\n" +//Approval Processes
+                      ", pr.process_id, pr.process_status, pr.operation_type, pr.updated_by AS \"process_request.updated_by\", pr.updated_at AS \"process_request.updated_at\", pr.process_status_order\n" +//Approval Processes
                       $"FROM {tableName} AS \"{moduleName}\"\n" +
                       $"LEFT OUTER JOIN process_requests AS pr ON pr.record_id = \"{moduleName}\".\"id\" AND pr.\"module\" = '{moduleName}'" +//Approval Processes
                       $"{joinSql}";
@@ -243,7 +244,8 @@ namespace PrimeApps.Model.Helpers
 
                 //Approval Processes
                 if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products")
-                    fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
+                    fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.updated_by AS \"process.process_requests.updated_by\", process_requests_process.updated_at AS \"process.process_requests.updated_at\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
+                //fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
             }
 
             var filtersSql = $"\"{tableName}\".\"deleted\" IS NOT TRUE";
@@ -344,9 +346,14 @@ namespace PrimeApps.Model.Helpers
                 if (findRequest.SortDirection != SortDirection.NotSet)
                     sortDirection = findRequest.SortDirection.ToString().ToUpper();
 
-                if (!findRequest.SortField.Contains("."))
+                if (!findRequest.SortField.Contains(".") && !findRequest.SortField.Contains(","))
                 {
                     sortSql = $"\"{tableName}\".\"{findRequest.SortField}\" {sortDirection}";
+                }
+                else if (findRequest.SortField.Contains(",") && !findRequest.SortField.Contains("."))
+                {
+                    var sortFieldParts = findRequest.SortField.Split(',');
+                    sortSql = $"\"{tableName}\".\"{sortFieldParts[0]}\" {sortDirection}," + $"\"{tableName}\".\"{sortFieldParts[1]}\" {sortDirection}";
                 }
                 else
                 {
@@ -651,6 +658,7 @@ namespace PrimeApps.Model.Helpers
                         else
                             command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Varchar });
                         break;
+                    case DataType.Tag:
                     case DataType.Multiselect:
                         if (!string.IsNullOrWhiteSpace(value))
                             command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = value.Split('|'), NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Varchar });
@@ -833,6 +841,8 @@ namespace PrimeApps.Model.Helpers
                     }
                     break;
                 case "quotes":
+                case "sales_invoices":
+                case "purchase_invoices":
                 case "sales_orders":
                 case "purchase_orders":
                     if (!record["exchange_rate_try_usd"].IsNullOrEmpty())
@@ -1014,6 +1024,8 @@ namespace PrimeApps.Model.Helpers
                     }
                     break;
                 case "quotes":
+                case "sales_invoices":
+                case "purchase_invoices":
                 case "sales_orders":
                 case "purchase_orders":
                     if (!record["exchange_rate_try_usd"].IsNullOrEmpty())
@@ -1145,10 +1157,18 @@ namespace PrimeApps.Model.Helpers
             var tenant = user.TenantsAsUser.Single();
 
             if (tenant.Tenant.AppId == 1)
-                sql += "UPDATE sales_orders_d SET onay_tarihi=now() WHERE id=19281;\n";
+            {
+                //sql += "UPDATE sales_orders_d SET onay_tarihi=now() WHERE id=19281;\n";
+                sql += "UPDATE sales_orders_d SET onay_tarihi=now(), created_at=now(), updated_at=now() WHERE id=19281;\n";
+                sql += "UPDATE quotes_d SET created_at=now(), updated_at=now()";
+            }
+
 
             if (tenant.Tenant.AppId == 4 && !string.IsNullOrEmpty(user.Email))
-                sql += $"UPDATE calisanlar_d SET ad='{user.FirstName}', soyad='{user.LastName}', ad_soyad='{user.FirstName + " " + user.LastName}', e_posta='{user.Email}', yoneticisi=1 WHERE id=1;\n";
+            {
+                sql += $"UPDATE calisanlar_d SET ad='{user.firstName}', soyad='{user.lastName}', ad_soyad='{user.firstName + " " + user.lastName}', e_posta='{user.email}', cep_telefonu={user.PhoneNumber}, yoneticisi=1 WHERE id=1;\n";
+                sql += $"UPDATE rehber_d SET ad='{user.firstName}', soyad='{user.lastName}', ad_soyad='{user.firstName + " " + user.lastName}', e_posta='{user.email}', cep_telefonu={user.PhoneNumber} WHERE id=20;\n";
+            }
 
             return sql;
         }
@@ -1239,7 +1259,18 @@ namespace PrimeApps.Model.Helpers
         {
             foreach (var field in module.Fields)
             {
-                if (field.DataType != DataType.Multiselect || record[field.Name].IsNullOrEmpty())
+                if (field.DataType != DataType.Multiselect || field.DataType != DataType.Tag || record[field.Name].IsNullOrEmpty())
+                    continue;
+
+                var picklistLabels = ((JArray)record[field.Name]).ToObject<string[]>();
+                record[field.Name] = string.Join("|", picklistLabels);
+            }
+        }
+        public static void TagToString(Module module, JObject record)
+        {
+            foreach (var field in module.Fields)
+            {
+                if (field.DataType != DataType.Tag || record[field.Name].IsNullOrEmpty())
                     continue;
 
                 var picklistLabels = ((JArray)record[field.Name]).ToObject<string[]>();
@@ -1475,6 +1506,8 @@ namespace PrimeApps.Model.Helpers
             Module moduleQuote = null;
             Module moduleSalesOrder = null;
             Module modulePurchaseOrder = null;
+            Module modulePurchaseInvoice = null;
+            Module moduleSalesInvoice = null;
 
             foreach (var property in record)
             {
@@ -1565,6 +1598,18 @@ namespace PrimeApps.Model.Helpers
 
                                         currencyField = modulePurchaseOrder.Fields.FirstOrDefault(x => x.Name == "currency");
                                         break;
+                                    case "purchase_invoices_products":
+                                        if (modulePurchaseInvoice == null)
+                                            modulePurchaseInvoice = await moduleRepository.GetByName("purchase_invoices");
+
+                                        currencyField = modulePurchaseInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
+                                        break;
+                                    case "sales_invoices_products":
+                                        if (moduleSalesInvoice == null)
+                                            moduleSalesInvoice = await moduleRepository.GetByName("sales_invoices");
+
+                                        currencyField = moduleSalesInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
+                                        break;
                                 }
                             }
 
@@ -1592,6 +1637,7 @@ namespace PrimeApps.Model.Helpers
                         var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
                         recordNew[property.Key] = ((DateTime)property.Value).AddMinutes(timezoneMinutesFromUtc).ToString(formatTime);
                         break;
+                    case DataType.Tag:
                     case DataType.Multiselect:
                         var valueArray = (JArray)property.Value;
 
@@ -1600,6 +1646,7 @@ namespace PrimeApps.Model.Helpers
                             recordNew[property.Key] += value + "; ";
                         }
                         break;
+
                     case DataType.Checkbox:
                         var yesValue = picklistLanguage == "tr" ? "Evet" : "Yes";
                         var noValue = picklistLanguage == "tr" ? "Hayır" : "No";
@@ -1752,9 +1799,11 @@ namespace PrimeApps.Model.Helpers
                     case Operator.IsNot:
                         return isString ? $"ARRAY_LOWERCASE({field}) <> ${filterIndex}" : $"{field} <> ${filterIndex}";
                     case Operator.Contains:
-                        return isString ? $"ARRAY_LOWERCASE({field}) @> ${filterIndex}" : $"{field} @> ${filterIndex}";
+                        //return isString ? $"ARRAY_LOWERCASE({field}) @> ${filterIndex}" : $"{field} @> ${filterIndex}";
+                        return isString ? $"ARRAY_LOWERCASE({field}) && ${filterIndex}" : $"{field} && ${filterIndex}";
                     case Operator.NotContain:
-                        return isString ? $"NOT(ARRAY_LOWERCASE({field}) @> ${filterIndex})" : $"NOT({field} @> ${filterIndex})";
+                        //return isString ? $"NOT(ARRAY_LOWERCASE({field}) @> ${filterIndex})" : $"NOT({field} @> ${filterIndex})";
+                        return isString ? $"NOT(ARRAY_LOWERCASE({field}) && ${filterIndex})" : $"NOT({field} && ${filterIndex})";
                     case Operator.NotIn:
                         var ids = new List<int>();
                         foreach (var value in values)

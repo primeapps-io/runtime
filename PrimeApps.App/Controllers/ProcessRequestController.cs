@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using static PrimeApps.App.Helpers.ProcessHelper;
 
 namespace PrimeApps.App.Controllers
 {
@@ -49,14 +50,14 @@ namespace PrimeApps.App.Controllers
         }
 
 	    [Route("approve_multiple_request"), HttpPut]
-	    public async Task<IActionResult> ApproveMultipleRequest([FromBody]int[] RecordIds)
+	    public async Task<IHttpActionResult> ApproveMultipleRequest(int[] RecordIds, string moduleName)
 	    {
-		    if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
 			    return BadRequest(ModelState);
 
 		    for (int i = 0; i < RecordIds.Length; i++)
 		    {
-			    var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], 0);
+		        var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 				if (requestEntity == null)
 					continue;
 			    await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
@@ -75,7 +76,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
+            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
             if (requestEntity == null)
                 return NotFound();
@@ -92,7 +93,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> RejectRequest([FromBody]ProcessRequestRejectModel request)
         {
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
+            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
             if (requestEntity == null)
                 return NotFound();
@@ -121,7 +122,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
+            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
             if (requestEntity == null)
                 return NotFound();
@@ -142,7 +143,15 @@ namespace PrimeApps.App.Controllers
 
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Manuel);
+            try
+            {
+                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel);
+            }
+            catch (ProcessFilterNotMatchException ex)
+            {
+                ModelState.AddModelError("FiltersNotMatch", "Filters don't matched");
+                return BadRequest(ModelState);
+            }
 
             return Ok();
         }

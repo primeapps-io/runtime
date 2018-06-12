@@ -28,15 +28,17 @@ namespace PrimeApps.App.Controllers
         private IViewRepository _viewRepository;
         private IProfileRepository _profileRepository;
         private ISettingRepository _settingRepository;
-		private Model.Helpers.Warehouse _warehouse;
+        private IMenuRepository _menuRepository;
+        private Model.Helpers.Warehouse _warehouse;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Model.Helpers.Warehouse warehouse)
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
             _profileRepository = profileRepository;
             _settingRepository = settingRepository;
             _warehouse = warehouse;
+            _menuRepository = menuRepository;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -171,6 +173,7 @@ namespace PrimeApps.App.Controllers
 
             //Create default permissions for the new module.
             await _profileRepository.AddModuleAsync(moduleEntity.Id);
+            await _menuRepository.AddModuleToMenuAsync(moduleEntity);
 
             ModuleHelper.AfterCreate(AppUser, moduleEntity);
 
@@ -259,7 +262,10 @@ namespace PrimeApps.App.Controllers
             var result = await _moduleRepository.DeleteSoft(moduleEntity);
 
             if (result > 0)
+            {
                 ModuleHelper.AfterDelete(AppUser, moduleEntity);
+                await _menuRepository.DeleteModuleFromMenu(id);
+            }
 
             return Ok();
         }
