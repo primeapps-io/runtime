@@ -1,11 +1,14 @@
 <div class="popover">
     <div class="arrow"></div>
-    <div class="popover-content" style="max-width: 140px; text-align: center;">
+    <div class="popover-content" style="text-align: center;">
         <a ng-if="user.profile.ImportData" href="#/app/crm/import/{{type}}" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)">
             <i class="fa fa-download"></i> {{'Module.Import' | translate }}
         </a>
-        <a ng-if="user.profile.ExportData" ng-click="export()" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.read)" data-spinner-color="#666" ladda="exporting">
+        <a ng-if="user.profile.ExportData" ng-click="getDownloadViewUrlExcel()" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.read)" data-spinner-color="#666" ladda="exporting">
             <i class="fa fa-upload"></i> {{'Module.Export' | translate }}
+        </a>
+        <a ng-if="user.profile.ExportData" ng-click="openExcelTemplate()" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.read)" data-spinner-color="#666" ladda="exporting">
+            <i class="fa fa-upload"></i> {{'Module.ExportExcel' | translate }}
         </a>
     </div>
 </div>

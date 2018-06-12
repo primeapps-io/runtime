@@ -21,7 +21,7 @@
                                     <tr ng-show="contactModule.display">
                                         <th style="border: none;width: 100px;">{{contactModule['label_' + language + '_singular']}}:</th>
                                         <td style="border: none;">
-                                            <span ng-hide="converted">{{lead.full_name || lead[leadModulePrimaryField.name]}}</span>
+                                            <span ng-hide="converted">{{ lead[leadModulePrimaryField.name || lead.full_name]}}</span>
                                             <a href="#/app/crm/module/contacts?id={{ converted.contact_id }}" ng-show="converted" id="ConvertContactLink">{{lead.full_name || lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
                                         </td>
                                     </tr>
@@ -38,6 +38,14 @@
                                                 {{('Convert.Lead.AddOpportunity' | translate)}}
                                             </label>
                                         </th>
+                                    </tr>
+                                </table>
+                                <table class="table" style="border: none;">
+                                    <tr ng-show="!converted">
+                                        <th style="border: none; width: 285px">{{'Convert.DeleteConverted' | translate:{type:module['label_' + language + '_singular']} }}</th>
+                                        <td style=" border: none;">
+                                            <input type="checkbox" ng-model="deleted" class="cell-handle">
+                                        </td>
                                     </tr>
                                 </table>
                             </div>

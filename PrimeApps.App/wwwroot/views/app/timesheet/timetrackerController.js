@@ -23,7 +23,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
         $scope.timetrackerItemModule = $filter('filter')($rootScope.modules, { name: 'timetracker_items' }, true)[0];
         $scope.relationModule = $filter('filter')($scope.module.relations, { related_module: 'timetracker_items' }, true)[0];
         $scope.lookupTypes = $filter('filter')($scope.timetrackerItemModule.fields, { data_type: 'lookup' }, true);
-        $scope.hasAdminRights = angular.copy($rootScope.user.profile.HasAdminRights);
+        $scope.hasAdminRights = angular.copy($rootScope.user.profile.has_admin_rights);
         $scope.firstConditionOfMonth = false;
         $scope.secondConditionOfMonth = false;
         $scope.showFullName = $location.search().user ? true : false;
@@ -80,7 +80,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                     'full_date': fullDate,
                     'week': week,
                     'timetracker_items': [],
-                    'description': 'Bu güne ait kayıt bulunmamaktadır.',
+                    'description': $filter('translate')('Common.NoRecordFoundForToday'),
                     'totalHour': null,
                     'holiday': false,
                     'notDayOfCurrentMonth': false,
@@ -211,6 +211,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                                     timetrackerRequest.owner = $scope.owner.Id;
                                     timetrackerRequest.date_range = days[0].date + '-' + days[6].date;
                                     timetrackerRequest.tarih = moment(days[0].full_date).format('YYYY-MM-DD[T]HH:mm:ss');
+                                    timetrackerRequest['toplam_saat'] = 0;
                                     ModuleService.insertRecord('timetrackers', timetrackerRequest)
                                         .then(function (responseTimetracker) {
                                             $scope.currentTimetracker = responseTimetracker.data;
@@ -317,7 +318,6 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                         });
                         for (var j = 0; j < days.length; j++) {
                             var dayItem = days[j];
-
                             if (dayItem.date_formatted === moment.utc(timetrackerItem.tarih).format('YYYY-MM-DD')) {
                                 days[j].timetracker_items.push(timetrackerItem);
                                 dayItem.totalHour += timetrackerItem.saat;
@@ -333,7 +333,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                             var holiday = $rootScope.holidays[t];
                             if (moment(moment(holiday, 'DD-MM-YYYY')).format('YYYY-MM-DD') === dayItemForHoliday.date_formatted) {
                                 dayItemForHoliday.holiday = true;
-                                dayItemForHoliday.description = 'Resmi tatil günü.'
+                                dayItemForHoliday.description = $filter('translate')('Common.PublicHoliday')
                             }
                         }
                     }
@@ -355,12 +355,38 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                     if (!totalWeekHour)
                         totalWeekHour = 0;
 
-                    timetrackerRecord['tamamlanan_saat'] = totalWeekHour + '/' + $scope.settings.weekHour;
+                    var workDay = 0;
+                    for (var d = 0; d < days.length; d++) {
+                        var day = days[d];
+                        if (!day.holiday && (day.dayOrder !== 0 && day.dayOrder !== 6 && !$scope.settings.includeWeekend && !day.notDayOfCurrentMonth))
+                            workDay++;
+                    }
+
+                    var workHourForWeek = workDay * $scope.settings.dayStandartHour;
+                    timetrackerRecord['tamamlanan_saat'] = totalWeekHour + '/' + workHourForWeek;
+                    timetrackerRecord['hafta_toplami'] = workHourForWeek;
+
+                    var timetrackerDone = false;
+                    if (totalWeekHour === workHourForWeek)
+                        timetrackerDone = true;
+
+                    timetrackerRecord['tamamlandi'] = timetrackerDone;
 
                     if (!timetrackerRecord.tarih)
                         timetrackerRecord["tarih"] = moment(days[0].full_date).format('YYYY-MM-DD[T]HH:mm:ss');
+
+                    if (!timetrackerRecord.date_range)
+                        timetrackerRecord["date_range"] = days[0].date + '-' + days[6].date;
+
+                    if (!timetrackerRecord.toplam_saat)
+                        timetrackerRecord['toplam_saat'] = 0;
+
+                    timetrackerRecord['kalan'] = totalWeekHour - workHourForWeek;
+                    timetrackerRecord['ilgili_ay'] = $filter('titleCase')($scope.currentMonth);
+
                     ModuleService.updateRecord('timetrackers', timetrackerRecord)
-                        .then(function (response) { })
+                        .then(function (response) {
+                        })
                 });
         };
 
@@ -376,13 +402,13 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
             $scope.timetrackerSettings = $scope.settings;
 
             $scope.formModal = $scope.formModal || $modal({
-                scope: $scope,
-                templateUrl: 'views/app/timesheet/timetrackerModal.html',
-                animation: '',
-                backdrop: 'static',
-                show: false,
-                tag: 'createModal'
-            });
+                    scope: $scope,
+                    templateUrl: 'views/app/timesheet/timetrackerModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
             $scope.formModal.$promise.then($scope.formModal.show);
         };
@@ -398,13 +424,13 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
             $scope.timetrackerSettings = $scope.settings;
 
             $scope.formModal = $scope.formModal || $modal({
-                scope: $scope,
-                templateUrl: 'views/app/timesheet/timetrackerModal.html',
-                animation: '',
-                backdrop: 'static',
-                show: false,
-                tag: 'createModal'
-            });
+                    scope: $scope,
+                    templateUrl: 'views/app/timesheet/timetrackerModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
             $scope.formModal.$promise.then($scope.formModal.show);
         };
@@ -419,13 +445,13 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
         $scope.settingsModal = function () {
 
             $scope.settingsFormModal = $scope.settingsFormModal || $modal({
-                scope: $scope,
-                templateUrl: 'views/app/timesheet/timetrackerSettingsModal.html',
-                animation: '',
-                backdrop: 'static',
-                show: false,
-                tag: 'createModal'
-            });
+                    scope: $scope,
+                    templateUrl: 'views/app/timesheet/timetrackerSettingsModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
             $scope.settingsFormModal.$promise.then($scope.settingsFormModal.show);
         };
@@ -460,28 +486,45 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
 
         $scope.sendToProcessApproval = function () {
             $scope.manuelApproveRequest = true;
-            var request = {
-                "record_id": $scope.currentTimetracker.id,
-                "module_id": $scope.module.id
-            };
+            var isValid = true;
+            for (var i = 0; i < $scope.days.length; i++) {
+                var day = $scope.days[i];
+                if (!day.holiday && (day.dayOrder !== 0 && day.dayOrder !== 6 && !$scope.settings.includeWeekend && !day.notDayOfCurrentMonth)) {
+                    if (day.totalHour < $scope.settings.dayMinHour)
+                        isValid = false;
+                }
 
-            ModuleService.sendApprovalManuel(request)
-                .then(function () {
-                    $scope.hasManuelProcess = false;
-                    $scope.waitingForApproval = true;
-                    $scope.freeze = true;
-                    $scope.manuelApproveRequest = false;
-                    $scope.currentTimetracker.process_status = 1;
-                    $scope.currentTimetracker.process_status_order++;
-                }).catch(function onError() {
+            }
+
+            if (isValid) {
+                var request = {
+                    "record_id": $scope.currentTimetracker.id,
+                    "module_id": $scope.module.id
+                };
+
+                ModuleService.sendApprovalManuel(request)
+                    .then(function () {
+                        $scope.hasManuelProcess = false;
+                        $scope.waitingForApproval = true;
+                        $scope.freeze = true;
+                        $scope.manuelApproveRequest = false;
+                        $scope.currentTimetracker.process_status = 1;
+                        $scope.currentTimetracker.process_status_order++;
+                    }).catch(function onError() {
                     $scope.manuelApproveRequest = false;
                 });
+            } else {
+                ngToast.create({ content: $filter('translate')('Common.CanNotSendToProcess', { minSaat: $scope.settings.dayMinHour }), className: 'warning' });
+                $scope.manuelApproveRequest = false;
+            }
+
+
         };
 
         $scope.approveProcess = function () {
             $scope.approving = true;
 
-            ModuleService.approveProcessRequest($scope.currentTimetracker.operation_type, $scope.currentTimetracker.id)
+            ModuleService.approveProcessRequest($scope.currentTimetracker.operation_type, $scope.module.name, $scope.currentTimetracker.id)
                 .then(function () {
                     $scope.isApproved = true;
                     $scope.freeze = true;
@@ -489,48 +532,62 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                     $scope.currentTimetracker.process_status = 2;
                     $scope.waitingForApproval = true;
                 }).catch(function onError() {
-                    $scope.approving = false;
-                });
+                $scope.approving = false;
+            });
         };
 
         $scope.rejectProcess = function (message) {
             $scope.rejecting = true;
 
-            ModuleService.rejectProcessRequest($scope.currentTimetracker.operation_type, message, $scope.currentTimetracker.id)
+            ModuleService.rejectProcessRequest($scope.currentTimetracker.operation_type, $scope.module.name, message, $scope.currentTimetracker.id)
                 .then(function () {
                     $scope.isRejectedRequest = true;
                     $scope.rejecting = false;
                     $scope.currentTimetracker.process_status = 3;
                     $scope.rejectModal.hide();
                 }).catch(function onError() {
-                    $scope.rejecting = false;
-                });
+                $scope.rejecting = false;
+            });
         };
 
         $scope.reApproveProcess = function () {
             $scope.reapproving = true;
+            var isValid = true;
+            for (var i = 0; i < $scope.days.length; i++) {
+                var day = $scope.days[i];
+                if (!day.holiday && (day.dayOrder !== 0 && day.dayOrder !== 6 && !$scope.settings.includeWeekend && !day.notDayOfCurrentMonth)) {
+                    if (day.totalHour < $scope.settings.dayMinHour)
+                        isValid = false;
+                }
 
-            ModuleService.send_approval($scope.currentTimetracker.operation_type, $scope.currentTimetracker.id)
-                .then(function () {
-                    $scope.waitingForApproval = true;
-                    $scope.freeze = true;
-                    $scope.reapproving = false;
-                    $scope.currentTimetracker.process_status = 1;
-                    $scope.currentTimetracker.process_status_order++;
-                }).catch(function onError() {
+            }
+            if (isValid) {
+                ModuleService.send_approval($scope.currentTimetracker.operation_type, $scope.module.name, $scope.currentTimetracker.id)
+                    .then(function () {
+                        $scope.waitingForApproval = true;
+                        $scope.freeze = true;
+                        $scope.reapproving = false;
+                        $scope.currentTimetracker.process_status = 1;
+                        $scope.currentTimetracker.process_status_order++;
+                    }).catch(function onError() {
                     $scope.reapproving = false;
                 });
+            } else {
+                ngToast.create({ content: $filter('translate')('Common.CanNotSendToProcess', { minSaat: $scope.settings.dayMinHour }), className: 'warning' });
+                $scope.reapproving = false;
+            }
+
         };
 
         $scope.openRejectApprovalModal = function () {
             $scope.rejectModal = $scope.rejectModal || $modal({
-                scope: $scope,
-                templateUrl: 'views/app/module/rejectProcessModal.html',
-                animation: '',
-                backdrop: 'static',
-                show: false,
-                tag: 'createModal'
-            });
+                    scope: $scope,
+                    templateUrl: 'views/app/module/rejectProcessModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
             $scope.rejectModal.$promise.then($scope.rejectModal.show);
         };
@@ -539,5 +596,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
 ]);
 
 app.filter('makePositive', function () {
-    return function (num) { return Math.abs(num); }
+    return function (num) {
+        return Math.abs(num);
+    }
 });

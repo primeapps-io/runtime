@@ -69,6 +69,19 @@ angular.module('ofisim')
                     });
             };
 
+
+            $scope.fullScreenIcon = true;
+            $scope.fullScreen = function () {
+                $scope.fullScreenIcon = false;
+                $scope.FullScreenShow = "width: 100% !important"
+            };
+            $scope.exitFullScreen = function () {
+                $scope.fullScreenIcon = true;
+                $scope.FullScreenShow = "width: 800px !important"
+
+            };
+
+
             $scope.openCreateModal = function (module) {
                 $scope.currentLookupField = { lookup_type: module };
 
@@ -78,7 +91,8 @@ angular.module('ofisim')
                         animation: '',
                         backdrop: 'static',
                         show: false,
-                        tag: 'createModal'
+                        tag: 'createModal',
+                        size: 'lg'
                     });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
@@ -92,5 +106,7 @@ angular.module('ofisim')
             $scope.formModalSuccess = function () {
                 $scope.refresh();
             };
+
+
         }
     ]);

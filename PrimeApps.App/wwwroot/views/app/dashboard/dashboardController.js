@@ -25,7 +25,7 @@ angular.module('ofisim')
             // $scope.openRejectApprovalModal = function () {
             //     $scope.rejectModal = $scope.rejectModal || $modal({
             //             scope: $scope,
-            //             templateUrl: 'web/views/setup/help/helpPageModal.html',
+            //             templateUrl: 'views/setup/help/helpPageModal.html',
             //             animation: '',
             //             backdrop: 'static',
             //             show: false,
@@ -364,7 +364,7 @@ angular.module('ofisim')
 
                     if (!$scope.activeDashboard) {
 
-                        if ($rootScope.user.profile.HasAdminRights) {
+                        if ($rootScope.user.profile.has_admin_rights) {
                             $scope.activeDashboard = $filter('filter')($scope.dashboards, {
                                 sharing_type: 'everybody'
                             }, true)[0];
@@ -372,7 +372,7 @@ angular.module('ofisim')
                         else {
                             $scope.activeDashboard = $filter('filter')($scope.dashboards, {
                                 sharing_type: 'profile',
-                                profile_id: $rootScope.user.profile.ID
+                                profile_id: $rootScope.user.profile.id
                             }, true)[0];
                         }
 

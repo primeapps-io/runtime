@@ -32,14 +32,14 @@ $theme-8-color: #2196F3;
 .ofisim-crm {
     #sidebar-wrapper {
         background: $ofisim-crm-background;
-        .sidebar-nav li a.active i {
+        .sidebar-nav a.active i {
             color: #8ce097;
         }
-        .sidebar-nav li a.active {
+        .sidebar-nav a.active {
             background: $ofisim-crm-color !important;
         }
 
-        .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
             background-color: $ofisim-crm-color;
         }
         &::-webkit-scrollbar-track {
@@ -54,7 +54,7 @@ $theme-8-color: #2196F3;
             background: darken($ofisim-crm-color, 20%) !important;
         }
     }
-       
+
     .ring {
         div {
             border-color: $ofisim-crm-color transparent;
@@ -94,11 +94,11 @@ $theme-8-color: #2196F3;
 }
 
 .green-theme {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $green-theme-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $green-theme-color;
     }
 
@@ -141,11 +141,11 @@ $theme-8-color: #2196F3;
 }
 
 .green-dark-theme {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $green-dark-theme-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $green-dark-theme-color;
     }
 
@@ -188,11 +188,11 @@ $theme-8-color: #2196F3;
     }
 
 .blue-theme {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $blue-theme-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $blue-theme-color;
     }
 
@@ -235,11 +235,11 @@ $theme-8-color: #2196F3;
 }
 
 .orange-theme {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $orange-theme-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $orange-theme-color;
     }
 
@@ -282,11 +282,11 @@ $theme-8-color: #2196F3;
 }
 
 .pink-theme {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $pink-theme-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $pink-theme-color;
     }
 
@@ -329,11 +329,11 @@ $theme-8-color: #2196F3;
 }
 
 .purple-theme {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $purple-theme-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $purple-theme-color;
     }
 
@@ -376,11 +376,11 @@ $theme-8-color: #2196F3;
 }
 
 .theme-1 {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $theme-1-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $theme-1-color;
     }
 
@@ -423,11 +423,11 @@ $theme-8-color: #2196F3;
 }
 
 .primeapps {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $primeapps-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $primeapps-color;
     }
 
@@ -470,11 +470,11 @@ $theme-8-color: #2196F3;
 }
 
 .theme-3 {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $theme-3-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $theme-3-color;
     }
 
@@ -519,14 +519,14 @@ $theme-8-color: #2196F3;
 .ofisim-kobi {
     #sidebar-wrapper {
         background: $ofisim-kobi-background;
-        .sidebar-nav li a.active i {
+        .sidebar-nav a.active i {
             color: #e4ff00;
         }
-        .sidebar-nav li a.active {
+        .sidebar-nav a.active {
             background: $ofisim-kobi-color !important;
         }
 
-        .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
             background-color: $ofisim-kobi-color;
         }
         &::-webkit-scrollbar-track {
@@ -580,11 +580,11 @@ $theme-8-color: #2196F3;
 }
 
 .theme-5 {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $theme-5-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $theme-5-color;
     }
 
@@ -627,11 +627,11 @@ $theme-8-color: #2196F3;
 }
 
 .theme-6 {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $theme-6-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $theme-6-color;
     }
 
@@ -678,11 +678,11 @@ $theme-8-color: #2196F3;
 }
 
 .theme-7 {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $theme-7-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $theme-7-color;
     }
 
@@ -725,11 +725,11 @@ $theme-8-color: #2196F3;
 }
 
 .theme-8 {
-    .sidebar-nav li a.active i {
+    .sidebar-nav a.active i {
         color: $theme-8-color;
     }
 
-    .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: $theme-8-color;
     }
 
@@ -768,13 +768,13 @@ $theme-8-color: #2196F3;
 .ofisim-asistan {
     #sidebar-wrapper {
         background: $ofisim-asistan-background;
-        .sidebar-nav li a.active i {
+        .sidebar-nav a.active i {
             color: #c7ef4e;
         }
-        .sidebar-nav li a.active {
+        .sidebar-nav a.active {
             background-color: $ofisim-asistan-color !important;
         }
-        .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
             background-color: $ofisim-asistan-color;
         }
         &::-webkit-scrollbar-track {
@@ -831,13 +831,13 @@ $theme-8-color: #2196F3;
 .ofisim-ik {
     #sidebar-wrapper {
         background: $ofisim-ik-background;
-        .sidebar-nav li a.active i {
+        .sidebar-nav a.active i {
             color: #ec558a;
         }
-        .sidebar-nav li a.active {
+        .sidebar-nav a.active {
             background-color: $ofisim-ik-color !important;
         }
-        .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
             background-color: $ofisim-ik-color;
         }
         &::-webkit-scrollbar-track {
@@ -894,13 +894,13 @@ $theme-8-color: #2196F3;
 .ofisim-cagri {
     #sidebar-wrapper {
         background: $ofisim-cagri-background;
-        .sidebar-nav li a.active i {
+        .sidebar-nav a.active i {
             color: #f2614f;
         }
-        .sidebar-nav li a.active {
+        .sidebar-nav a.active {
             background-color: $ofisim-cagri-color !important;
         }
-        .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
             background-color: $ofisim-cagri-color;
         }
         &::-webkit-scrollbar-track {
@@ -955,18 +955,18 @@ $theme-8-color: #2196F3;
 }
 
     //Override for Analytics menu
-    .analytics .sidebar-nav li a.focus {
+    .analytics .sidebar-nav a.focus {
         background-color: #fff !important;
     }
 
-    .analytics .sidebar-nav li a.active {
+    .analytics .sidebar-nav a.active {
         background-color: #1f774d !important;
     }
 
-    .analytics .sidebar-nav li a.active i {
+    .analytics .sidebar-nav a.active i {
         color: #fff !important;
     }
 
-    .analytics .sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+    .analytics .sidebar-nav a:hover:not(.sidebar-brand-logo) {
         background-color: #53af84 !important;
     }

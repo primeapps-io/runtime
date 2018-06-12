@@ -655,6 +655,8 @@
 
   <ItemGroup>
 
+    <PackageReference Include="Aspose.Cells" Version="18.5.1" />
+
     <PackageReference Include="Aspose.Words" Version="18.5.0" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.5" />
     <PackageReference Include="AWSSDK.S3" Version="3.3.18.2" />

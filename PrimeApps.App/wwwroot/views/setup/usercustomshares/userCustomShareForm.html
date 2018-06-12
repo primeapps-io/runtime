@@ -42,29 +42,29 @@
                             </div>
                         </div>
                         <!--<div class="row form-group" ng-class="{'has-error': userOwnerForm.$submitted  && (userOwnerForm.$error.minTags || userOwnerForm.$error.maxTags)}">-->
-                            <!--<label class="col-sm-3 control-label">{{'Setup.UserCustomShares.UsersAndGroupsForPermissions' | translate}}</label>-->
-                            <!--<div class="col-sm-9">-->
-                                <!--<tags-input name="shared"-->
-                                            <!--tabindex="2"-->
-                                            <!--style="width: 300px"-->
-                                            <!--ng-model="userOwner.owners"-->
-                                            <!--display-property="name"-->
-                                            <!--key-property="id"-->
-                                            <!--min-tags="1"-->
-                                            <!--max-tags="20"-->
-                                            <!--on-tag-added="setFormValid()"-->
-                                            <!--on-tag-removed="setFormValid()"-->
-                                            <!--placeholder="{{'Common.Search' | translate}}"-->
-                                            <!--replace-spaces-with-dashes="false"-->
-                                            <!--add-from-autocomplete-only="true">-->
-                                    <!--<auto-complete source="lookupUserAndGroup(0, true, $query)"-->
-                                                   <!--min-length="0"-->
-                                                   <!--load-on-focus="true"-->
-                                                   <!--load-on-empty="true"-->
-                                                   <!--max-results-to-show="9999"-->
-                                                   <!--template="views/common/taginput-autocomplete.html"></auto-complete>-->
-                                <!--</tags-input>-->
-                            <!--</div>-->
+                        <!--<label class="col-sm-3 control-label">{{'Setup.UserCustomShares.UsersAndGroupsForPermissions' | translate}}</label>-->
+                        <!--<div class="col-sm-9">-->
+                        <!--<tags-input name="shared"-->
+                        <!--tabindex="2"-->
+                        <!--style="width: 300px"-->
+                        <!--ng-model="userOwner.owners"-->
+                        <!--display-property="name"-->
+                        <!--key-property="id"-->
+                        <!--min-tags="1"-->
+                        <!--max-tags="20"-->
+                        <!--on-tag-added="setFormValid()"-->
+                        <!--on-tag-removed="setFormValid()"-->
+                        <!--placeholder="{{'Common.Search' | translate}}"-->
+                        <!--replace-spaces-with-dashes="false"-->
+                        <!--add-from-autocomplete-only="true">-->
+                        <!--<auto-complete source="lookupUserAndGroup(0, true, $query)"-->
+                        <!--min-length="0"-->
+                        <!--load-on-focus="true"-->
+                        <!--load-on-empty="true"-->
+                        <!--max-results-to-show="9999"-->
+                        <!--template="views/common/taginput-autocomplete.html"></auto-complete>-->
+                        <!--</tags-input>-->
+                        <!--</div>-->
                         <!--</div>-->
                         <div class="row form-group" ng-class="{'has-error': userOwnerForm.$submitted && userOwnerForm.modules.$invalid}">
                             <label class="col-sm-3 control-label">{{'Setup.UserCustomShares.ModulePermission' | translate}}</label>
@@ -74,7 +74,7 @@
                                             ng-model="userOwner.modules"
                                             display-property="label_{{language}}_plural"
                                             key-property="id"
-                                            max-tags="20"
+                                            max-tags="50"
                                             placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                                             replace-spaces-with-dashes="false"
                                             add-from-autocomplete-only="true"

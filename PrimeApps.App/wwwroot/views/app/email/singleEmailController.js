@@ -77,7 +77,9 @@ angular.module('ofisim')
                     resize: false,
                     width: '99,9%',
                     toolbar_items_size: 'small',
-                    statusbar: false
+                    statusbar: false,
+                    convert_urls: false,
+                    remove_script_host: false
                 };
             };
 
@@ -482,7 +484,9 @@ angular.module('ofisim')
                 resize: false,
                 width: '99,9%',
                 toolbar_items_size: 'small',
-                statusbar: false
+                statusbar: false,
+                convert_urls: false,
+                remove_script_host: false
 
             };
 
@@ -507,7 +511,7 @@ angular.module('ofisim')
                     }
                     else {
                         $scope.attachmentLink = quoteTemplate.link.fileurl;
-                        $scope.attachmentName = fileName;
+                        $scope.attachmentName = fileName.substring(0,50);
                         $scope.quoteTemplateName = " ( " + quoteTemplate.name + " ) ";
                     }
 
@@ -526,7 +530,7 @@ angular.module('ofisim')
                         }
                         else {
                             $scope.attachmentLink = response.data.fileurl;
-                            $scope.attachmentName = fileName;
+                            $scope.attachmentName = fileName.substring(0,50);
                             $scope.quoteTemplateName = " ( " + quoteTemplate.name + " ) ";
                         }
 

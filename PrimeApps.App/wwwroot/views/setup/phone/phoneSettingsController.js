@@ -7,7 +7,7 @@ angular.module('ofisim')
             $scope.sipSettings = $rootScope.phoneSettings;
             $scope.sipLicenseAvailable = false;
             $scope.users = $rootScope.users;
-            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { Id: $rootScope.user.role.RoleId }, true)[0].HasAdminRights;
+            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { Id: $rootScope.user.role.RoleId }, true)[0].has_admin_rights;
 
             if ($scope.sipSettings) {
                 renewSipUsers(false);

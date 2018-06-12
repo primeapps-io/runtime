@@ -38,7 +38,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Get(int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -51,7 +51,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery(Name = "moduleId")]int moduleId)
+        public async Task<IActionResult> GetAll(int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");
@@ -136,7 +136,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_view_state/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetViewState([FromQuery(Name = "moduleId")]int moduleId)
+        public async Task<IActionResult> GetViewState(int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");

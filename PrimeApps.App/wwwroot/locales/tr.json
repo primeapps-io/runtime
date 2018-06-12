@@ -46,6 +46,7 @@
     "Multiselect": "Çoklu Seçim -->",
     "Multiselected": " adet seçili",
     "MultiselectPlaceholder": "Çoklu Seçim",
+    "TagPlaceholder": "Etiket Ekle",
     "Date": "Tarih",
     "Time": "Saat",
     "CreatedBy": "Oluşturan",
@@ -56,6 +57,8 @@
     "SelectCityFirst": "Önce İl Seçiniz -->",
     "Paging": "{{from}} &ndash; {{to}} arası",
     "Refresh": "Yenile",
+    "FullScreen": "Ekranı Büyüt",
+    "ExitFullScreen": "Ekranı Küçült",
     "Attachments": "Eklentiler",
     "Attachment": "Eklenti",
     "AttachmentNew": "Yeni Eklenti",
@@ -118,7 +121,13 @@
     "Left": "Sol",
     "Right": "Sağ",
     "Homepage": "Ana Sayfa",
-    "TimetrackerNotFound": "Çalışan kaydınız bulunmamaktadır. Lütfen sistem yöneticinize başvurunuz."
+    "TimetrackerNotFound": "Çalışan kaydınız bulunmamaktadır. Lütfen sistem yöneticinize başvurunuz.",
+    "PublicHoliday": "Resmi tatil günü.",
+    "NoRecordFoundForToday": "Bu güne ait kayıt bulunmamaktadır.",
+    "FiltersNotMatched": "Uygun bir onay akışı bulunamadığından onaya gönderilemiyor, lütfen sistem yöneticinizle temasa geçin.",
+    "CanNotSendToProcess": "Günlük minimum çalışma süresinin ({{minSaat}} saat) altında saatlik girişi yaptınız. Lütfen ilgili gün için en az {{minSaat}} saatlik giriş yapınız.",
+    "BankAndCaseChosen" : "Lütfen banka veya kasadan yalnızca bir tanesini seçiniz.",
+    "ChooseBankOrCase" : "Lütfen banka veya kasa seçiniz."
   },
   "Auth": {
     "Email": "E-posta",
@@ -278,6 +287,20 @@
     "DataTransfer": "Veri Transferi",
     "Import": "İçeri Aktar",
     "Export": "Dışarı Aktar",
+    "ExportExcel": "Şablonu Dışarı Aktar",
+    "SourceDataExcluded": "Kaynak Veri Dahil",
+    "SourceDataIncluded": "Kaynak Veri Hariç",
+    "DetailWord": "Kayıt Detay Sayfası İçin",
+    "ListExcel": "Kayıt Liste Sayfası İçin",
+    "TemplateType": "Şablon Türü",
+    "DownloadExcelButton": "Şablonu indirmek için sol taraftaki Excel butonuna tıklayın.",
+    "OtherReport": " Şablonunuzu hazırladıktan sonra,Şablonlar liste ekranında yer alan <a href=\"#/app/setup/template\">Şablon Yükle</a> butonu yardımıyla sisteme yükleyebilirsiniz.",
+    "ChooseFilesExcel": "Dosya Seçiniz (.xls, .xlsx)",
+    "WordUpload": "Detay İçin  Word Yükle",
+    "ExcelUploadTemplate": "Liste İçin Excel Yükle",
+    "ExcelDesktop": "Excel şablonunuz masaüstüne başarılı bir şekilde indirildi.",
+    "ExcelType": "Tip",
+    "DownloadExcelTemplate": "Excel Şablonu İndir",
     "ExportWarning": "Maksimum 3000 adet kaydı dışarı aktarabilirsiniz.<br>Lütfen öncelikle filtreleme yaparak kayıt sayısını azaltınız ve tekrar deneyiniz.",
     "ExportUnsupported": "Kullandığınız internet tarayıcısı çok eski olduğu için bu teknolojiyi desteklememektedir. <br/> Lütfen daha modern bir tarayıcı ile deneyiniz.<br/> Daha modern bir tarayıcı edinmek için <a href='http://browsehappy.com/?locale=tr'>buraya</a> tıklayın.",
     "EditForm": "Form Düzenle",
@@ -295,7 +318,7 @@
     "QuoteEmail": "{{module}} E-Posta",
     "SalesOrderEmail": "Sipariş E-Posta",
     "ModuleEmail": "E-Posta",
-    "ChooseTemplate": "{{module}} şablonu seçiniz",
+    "ChooseTemplate": "{{module}} modulü için şablonunuzu seçiniz",
     "TemplateModule": "{{module}} Şablonu",
     "Download": "PDF / Word",
     "DownloadPdf": "PDF İndir",
@@ -654,7 +677,6 @@
       "UpdateSuccessGeneralSettings": "Ayar başarılı şekilde kaydedilmiştir.",
       "ThemeSettings": "Tema Ayarları",
       "RemoveProfileImage": "Profil Resmini Kaldır"
-
     },
     "GeneralSettings": {
       "DetailViewType": "Detay Sayfası Görünümü",
@@ -1022,6 +1044,7 @@
       "MaxError2000": "Maksimum/Minimum Uzunluk değeri en fazla 2000 olabilir.",
       "MaxError32000": "Maksimum/Minimum Uzunluk değeri en fazla 32000 olabilir.",
       "MaxError27": "Maksimum/Minimum Uzunluk değeri en fazla 27 olabilir.",
+      "MaxTagUser": "En fazla bir adet kullanıcı seçebilirsiniz.",
       "PicklistMinimumError": "En az iki adet seçenek girmeniz gerekmektedir.",
       "PicklistUniqueError": "Aynı isimde seçim listesi mevcuttur.",
       "DeleteModule": "Modül Silme",
@@ -1239,7 +1262,6 @@
       "HelpScreenInsert": "Yardım Ekranı Ekle",
       "Status": "Durum",
       "ShowHelpModal": "Yardım Penceresini Görüntüle"
-
     },
     "Phone": {
       "Settings": "Bulut Santral Ayarları",
@@ -1267,7 +1289,7 @@
       "RelatedModuleAutoOpen": "Kayıt Detayında Açılacak Olan Modül",
       "NoNumber": "Lütfen Aranacak Numarayı Belirtiniz",
       "PhoneField": "Gelen Arama Eşleşmelerinde Kullanılacak Telefon Alanı",
-      "CompanyKey": "Firma  Anahtarı",
+      "CompanyKey": "Santral Adı",
       "Ringing": "Aranıyor...",
       "Connecting": "Bağlandıldı.",
       "Unregistered": "Kayıtlı Değil",
@@ -1425,7 +1447,10 @@
         "ApproverEmailField": "İlişkili E-Posta Alanı",
         "Approver": "Onaycı",
         "GoToRecordDetail": "İlgili Kayda Git",
-        "GoToRecordApprove": "İlgili Zaman Çizelgesi’ni görüntülemek ve onaylamak için tıklayınız"
+        "GoToRecordApprove": "İlgili Zaman Çizelgesi’ni görüntülemek ve onaylamak için tıklayınız",
+        "LevelWaiting": "Seviye Onay Bekliyor",
+        "ApproverForInform": "Onaylayan",
+        "RejectApprover" : "Reddeden"
       },
       "ExecutionFrequency": "Çalıştırılma Sıklığı",
       "ProcessCanNotDelete": "Bu onay sürecine bağlı henüz onaylanmamış işlemler olduğu için silemezsiniz.",
@@ -1670,7 +1695,9 @@
     "ProfitPercent": "Karlılık Yüzde",
     "ProfitAmount": "Toplam Karlılık",
     "DiscountPercent": "Yüzde İndirim",
-    "TotalDiscountAmount": "Toplam İndirim Tutarı"
+    "TotalDiscountAmount": "Toplam İndirim Tutarı",
+    "Currency": "Para Birimi",
+    "Vat": "KDV"
   },
   "Data": {
     "Import": {
@@ -1869,7 +1896,8 @@
     "EditCategory": " Kategoriyi Düzenle",
     "CategoryName": "Kategori Adı",
     "ExportImage": "Resim Olarak indir",
-    "ExportPdf": "Pdf Olarak indir"
+    "ExportPdf": "Pdf Olarak indir",
+    "RemoveSelection": "Seçimi Kaldır"
   },
   "Directory": {
     "ShowAll": "Tümünü Göster",
@@ -1888,6 +1916,23 @@
     "RequestedDays": "Talep Edilen İzin Gün Sayısı",
     "NotFoundUser": "Kullanıcılar bulunamadı.",
     "UnassignedEmployees": "İzin Hakları Sebebiyle İzin Atanamayan Çalışanlar",
-    "NotHaveLeave": "İzin hakkınız bulunmamaktadır."
+    "NotHaveLeave": "İzin hakkınız bulunmamaktadır.",
+    "Validations": {
+      "Requested0OfDaysNot": "Talep Edilen İzin 0 Olmamalıdır.",
+      "AlreadyHave": "Seçmiş olduğunuz tarihler arasında izin talebiniz bulunmaktadır.",
+      "NotHaveLeave": "Çalışanın onaylanacak izin hakkı kalmamıştır. Talebi reddederek geri gönderebilirsiniz.",
+      "SameDate": "İzin Başlangıç Tarihi ve İzin Bitiş tarihi farklı olmalıdır.",
+      "FirstLeaveUse": "Şirketimizde {{month}} ayını doldurduktan sonra bu izni kullanmaya hak kazanırsın.",
+      "LeaveEnd": "Bu izin türünü kullanmak için hakkınız kalmamıştır.",
+      "NotHaveLimitHour": "Bir yıl içinde toplam {{total_hour}} saat izin girişi yapabilirsin. Kalan süren {{remaining_hour}} saat olduğu için izin türünü veya izin süreni değiştirerek tekrar deneyebilirsin.",
+      "NotHaveLimitDay": "Bir yıl içinde toplam {{total_hour}} gün izin girişi yapabilirsin. Kalan süren {{remaining_hour}} gün olduğu için izin türünü veya izin süreni değiştirerek tekrar deneyebilirsin.",
+      "NotHaveLimitHourMonth": "Bir ay içinde toplam {{total_hour}} saat izin girişi yapabilirsin. Kalan süren {{remaining_hour}} saat olduğu için izin türünü veya izin süreni değiştirerek tekrar deneyebilirsin.",
+      "NotHaveLimitDayMonth": "Bir ay içinde toplam {{total_hour}} gün izin girişi yapabilirsin. Kalan süren {{remaining_hour}} gün olduğu için izin türünü veya izin süreni değiştirerek tekrar deneyebilirsin.",
+      "OneGoHour": "Bu izin türü tek seferde en fazla {{total_hour}} saat alınabilir.",
+      "OneGoDay": "Bu izin türü tek seferde en fazla {{total_hour}} gün alınabilir.",
+      "InfusibleWithHolidays": "Resmi tatil öncesi veya sonrasındaki günlere bu tip izin girişi yapılamamaktadır. İzin tarihini veya izin türünü değiştirerek tekrar deneyebilirsin ya da nedenini İK ile görüşebilirsin.",
+      "BirthDayLimitDay": "Mutlu Yıllar! Doğum gününden itibaren 15 gün öncesi ya da 15 gün sonrasını içeren zamanlarda izin girişi yapabilirsin. İzin tarihini değiştirerek tekrar denemelisin.",
+      "BirthDayLimitMonth": "Mutlu Yıllar! Doğum gününün olduğu ay içerisinde izin girişi yapabilirsin. İzin tarihini değiştirerek tekrar denemelisin."
+    }
   }
 }

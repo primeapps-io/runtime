@@ -124,7 +124,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("find/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> Find([FromQuery(Name = "module")]string module, [FromBody]FindRequest request, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
+        public async Task<IActionResult> Find(string module, [FromBody]FindRequest request, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             if (request == null)
                 request = new FindRequest();

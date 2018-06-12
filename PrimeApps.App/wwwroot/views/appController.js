@@ -49,6 +49,8 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                     return true;
                 else if ((host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1) && tenant.AppId === 4)
                     return true;
+                else if ((host.indexOf('hr.ofisim.com') > -1 || host.indexOf('hr-test.ofisim.com') > -1 || host.indexOf('hr-dev.ofisim.com') > -1) && tenant.AppId === 8)
+                    return true;
                 else
                     return false;
             }
@@ -96,8 +98,14 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 $scope.appLogo = 'asistan';
             else if (host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1)
                 $scope.appLogo = 'ik';
+            else if (host.indexOf('hr.ofisim.com') > -1 || host.indexOf('hr-test.ofisim.com') > -1 || host.indexOf('hr-dev.ofisim.com') > -1)
+                $scope.appLogo = 'ik';
             else if (host.indexOf('cagri.ofisim.com') > -1 || host.indexOf('cagri-test.ofisim.com') > -1)
                 $scope.appLogo = 'cagri';
+            else if (host.indexOf('crm.appsila.com') > -1 || host.indexOf('appsila-test.ofisim.com') > -1)
+                $scope.appLogo = 'appsila';
+            else if (host.indexOf('crm.livasmart.com') > -1 || host.indexOf('livasmart-test.ofisim.com') > -1)
+                $scope.appLogo = 'livasmart';
             else
                 $scope.appLogo = 'crm';
         }
@@ -190,6 +198,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
 
             $scope.isAvailableForSmallDevice();
 
+            $scope.toggled = !$scope.toggled;
         };
 
         $scope.toggleFullLeftMenu = function () {
@@ -353,46 +362,49 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                     if (isModuleList) {
                         HelpService.getModuleType('sidemodal', 'modulelist', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                     else if (isModuleDetail) {
                         HelpService.getModuleType('sidemodal', 'moduledetail', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                     else {
                         HelpService.getModuleType('sidemodal', 'moduleform', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                 }
@@ -406,6 +418,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                             if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
                                 $scope.noneHelpTemplate = false;
                                 $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
                             }
                             else {
                                 $scope.helpTemplateSideModal = null;
@@ -422,6 +435,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                         if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
                             $scope.noneHelpTemplate = false;
                             $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
                         }
                         else {
                             $scope.helpTemplateSideModal = null;
@@ -495,24 +509,24 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 if (isModuleList) {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                            $scope.helpTemplatesSide = response.data;
-                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                $scope.openHelpModal();
-                            }
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.openHelpModal();
+                                }
 
-                        }
+                            }
                         );
                 }
                 else {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                            $scope.helpTemplatesSide = response.data;
-                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                $scope.openHelpModal();
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.openHelpModal();
+                                }
                             }
-                        }
                         );
                 }
             }

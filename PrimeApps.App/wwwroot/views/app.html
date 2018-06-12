@@ -92,99 +92,141 @@
                     <i class="fa fa-bars fa-2x"></i>
                 </a>
             </li>
-            <li ng-if="user.profile.Home">
-                <a href="#/app/crm/home" ng-click="routingPrism('#/app/crm/home')"
-                   ng-class="{'active': currentPath === '/app/crm/home'}">
-                    <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Homepage' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-home"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Homepage' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="user.profile.Dashboard">
-                <a href="#/app/crm/dashboard" ng-click="routingPrism('#/app/crm/dashboard')"
-                   ng-class="{'active': currentPath === '/app/crm/dashboard'}">
-                    <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Dashboard' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-pie-chart"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Dashboard' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="user.profile.Newsfeed">
-                <a href="#/app/crm/newsfeed" ng-click="routingPrism('#/app/crm/newsfeed')"
-                   ng-class="{'active': currentPath === '/app/crm/newsfeed'}">
-                    <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Newsfeed' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-comments"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Newsfeed' | translate}}</span>
-                </a>
-            </li>
-            <li ng-repeat="module in modules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(module.name, operations.read) && module.display">
-                <a href="#/app/crm/modules/{{module.name}}" ng-click="routingPrism('#/app/crm/modules/' + module.name)"
-                   ng-class="{'active': (currentPath=='/app/crm/modules/' + module.name  && currentPath.indexOf('/setup') < 0)}">
-                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{module['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{module.menu_icon}}"></i></div>
-                    <span class="sidebar-menu-label">{{module['label_' + language + '_plural']}}</span>
-                </a>
-            </li>
-            <li ng-show="showTimesheetMenu">
-                <a href="#/app/crm/timesheet" ng-click="routingPrism('#/app/crm/timesheet')"
-                   ng-class="{'active': currentPath === '/app/timesheet'}">
-                    <div data-container="body" data-delay="300" data-placement="right"
-                         data-title="{{'Layout.Menu.Timesheet' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i
-                            class="fa-sidebar-icon fa fa-calendar-o"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Timesheet' | translate}}</span>
-                </a>
-            </li>
-            <li ng-show="isTimetrackerExist">
-                <a href="#/app/crm/timetracker" ng-click="routingPrism('#/app/crm/timetracker')"
-                   ng-class="{'active': currentPath === '/app/timetracker'}">
-                    <div data-container="body" data-delay="300" data-placement="right"
-                         data-title="{{'Layout.Menu.Timetracker' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i
-                            class="fa-sidebar-icon fa fa-calendar-o"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Timetracker' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="advancedDocumentSearch">
-                <a href="#/app/crm/documentSearch" ng-click="routingPrism('#/app/crm/documentSearch')"
-                   ng-class="{'active': currentPath === '/app/crm/documentSearch'}">
-                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.AdvancedDocumentSearch' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-search"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.AdvancedDocumentSearch' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="permissionsReport.Read">
-                <a href="#/app/crm/reports" ng-click="routingPrism('#/app/crm/reports')" class="text-uppercase"
-                   ng-class="{'active': currentPath === '/app/crm/reports'}">
-                    <div data-container="body" data-delay="300" data-placement="right"
-                         data-title="{{'Layout.Menu.Reports' | translate}}" bs-tooltip
-                         class="fa-sidebar-icon-background ng-scope"><i class="fa-sidebar-icon fa fa-bar-chart"></i>
+            <div ng-show="customMenu" class="panel-group collapse-menu" ng-model="multiplePanels.activePanels" bs-collapse>
+                <div class="panel-group">
+                    <div class="panel panel-default" ng-repeat="item in menu">
+                        <div ng-hide="item.hide" ng-if="!item.route" class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="menu-category clearfix" style="text-decoration: none !important;" bs-collapse-toggle>
+                                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
+                                    <div><span class="sidebar-menu-label">{{item['label_' + language]}}</span> <i class="pull-right glyphicon" style="margin-top:14px;padding-right: 20px;font-size:13px" ng-class="{'glyphicon-chevron-down': panels.activePanel === $index, 'glyphicon-chevron-right': panels.activePanel !== $index}"></i></div>
+                                </a>
+                            </h4>
+                        </div>
+                        <div ng-if="item.route" class="panel-heading" role="tab">
+                            <h4 class="panel-title">
+                                <a ng-if="item.is_dynamic" href="#/app/crm/modules/{{item.route}}" ng-click="routingPrism('#/app/crm/modules/{{item.route}}')" ng-class="{'active': currentPath === '/app/crm/modules/{{item.route}}'}" style="text-decoration: none !important;">
+                                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
+                                    <span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
+                                </a>
+                                <a ng-if="!item.is_dynamic" href="#/app/crm/{{item.route}}" ng-click="routingPrism('#/app/crm/{{item.route}}')" ng-class="{'active': currentPath === '/app/crm/{{item.route}}'}">
+                                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
+                                    <span  ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
+                                </a>
+                            </h4>
+                        </div>
+                        <div ng-if="!item.route" style="position: relative;" class="panel-collapse" role="tabpanel" bs-collapse-target>
+                            <div class="panel-body"  ng-class="{'toggled-menu':toggled}">
+                                <li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
+                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/crm/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/crm/modules/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/crm/modules/{{subMenu.route}}'}">
+                                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
+                                        <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
+                                    </a>
+                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/crm/{{subMenu.route}}" ng-click="routingPrism('#/app/crm/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/crm/{{subMenu.route}}'}">
+                                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
+                                        <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
+                                    </a>
+                                </li>
+                            </div>
+                        </div>
                     </div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Reports' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="workgroup.hasAnalytics && user.hasAnalytics">
-                <a href="#/app/crm/analytics" ng-click="routingPrism('#/app/crm/analytics')" class="text-uppercase"
-                   ng-class="{'active': currentPath === '/app/crm/analytics'}">
-                    <div data-container="body" data-delay="300" data-placement="right"
-                         data-title="{{'Layout.Menu.Analytics' | translate}}" bs-tooltip
-                         class="fa-sidebar-icon-background ng-scope"><i class="fa fa-line-chart" aria-hidden="true"></i>
-                    </div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Analytics' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="user.profile.Tasks">
-                <a href="#/app/crm/tasks" ng-click="routingPrism('#/app/crm/tasks')" class="text-uppercase"
-                   ng-class="{'active': currentPath === '/app/crm/tasks'}">
-                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Tasks' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-check-square-o"></i></div>
-                    <span class="sidebar-menu-label">{{tasksNamePlural ? tasksNamePlural.value : ('Layout.Menu.Tasks' | translate)}}</span>
-                </a>
-            </li>
-            <li ng-if="user.profile.Calendar">
-                <a href="#/app/crm/calendar" ng-click="routingPrism('#/app/crm/calendar')"
-                   ng-class="{'active': currentPath === '/app/crm/calendar'}">
-                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Calendar' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-calendar"></i></div>
-                    <span class="sidebar-menu-label">{{'Layout.Menu.Calendar' | translate}}</span>
-                </a>
-            </li>
-            <li ng-if="isAvailableForSmallDevice()">
-                <a href ng-click="logout()">
-                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Auth.Logout' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-sign-out"></i></div>
-                    <span class="sidebar-menu-label">{{'Auth.Logout' | translate}}</span>
-                </a>
-            </li>
+                </div>
+            </div>
+            <div ng-show="!customMenu">
+                <li ng-if="user.profile.home">
+                    <a href="#/app/crm/home" ng-click="routingPrism('#/app/crm/home')"
+                       ng-class="{'active': currentPath === '/app/crm/home'}">
+                        <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Homepage' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-home"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Homepage' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="user.profile.dashboard">
+                    <a href="#/app/crm/dashboard" ng-click="routingPrism('#/app/crm/dashboard')"
+                       ng-class="{'active': currentPath === '/app/crm/dashboard'}">
+                        <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Dashboard' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-pie-chart"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Dashboard' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="user.profile.newsfeed">
+                    <a href="#/app/crm/newsfeed" ng-click="routingPrism('#/app/crm/newsfeed')"
+                       ng-class="{'active': currentPath === '/app/crm/newsfeed'}">
+                        <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Newsfeed' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-comments"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Newsfeed' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-repeat="module in modules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(module.name, operations.read) && module.display">
+                    <a href="#/app/crm/modules/{{module.name}}" ng-click="routingPrism('#/app/crm/modules/' + module.name)"
+                       ng-class="{'active': ((currentPath=='/app/crm/modules/' + module.name  || currentPath=='/app/crm/module/' + module.name) && currentPath.indexOf('/setup') < 0)}">
+                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{module['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{module.menu_icon}}"></i></div>
+                        <span class="sidebar-menu-label">{{module['label_' + language + '_plural']}}</span>
+                    </a>
+                </li>
+                <li ng-show="showTimesheetMenu">
+                    <a href="#/app/crm/timesheet" ng-click="routingPrism('#/app/crm/timesheet')"
+                       ng-class="{'active': currentPath === '/app/timesheet'}">
+                        <div data-container="body" data-delay="300" data-placement="right"
+                             data-title="{{'Layout.Menu.Timesheet' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i
+                                class="fa-sidebar-icon fa fa-calendar-o"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Timesheet' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-show="isTimetrackerExist && hasPermission('timetrackers', operations.read)">
+                    <a href="#/app/crm/timetracker" ng-click="routingPrism('#/app/crm/timetracker')"
+                       ng-class="{'active': currentPath === '/app/timetracker'}">
+                        <div data-container="body" data-delay="300" data-placement="right"
+                             data-title="{{'Layout.Menu.Timetracker' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i
+                                class="fa-sidebar-icon fa fa-calendar-o"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Timetracker' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="advancedDocumentSearch">
+                    <a href="#/app/crm/documentSearch" ng-click="routingPrism('#/app/crm/documentSearch')"
+                       ng-class="{'active': currentPath === '/app/crm/documentSearch'}">
+                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.AdvancedDocumentSearch' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-search"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.AdvancedDocumentSearch' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="permissionsReport.Read">
+                    <a href="#/app/crm/reports" ng-click="routingPrism('#/app/crm/reports')" class="text-uppercase"
+                       ng-class="{'active': currentPath === '/app/crm/reports'}">
+                        <div data-container="body" data-delay="300" data-placement="right"
+                             data-title="{{'Layout.Menu.Reports' | translate}}" bs-tooltip
+                             class="fa-sidebar-icon-background ng-scope"><i class="fa-sidebar-icon fa fa-bar-chart"></i>
+                        </div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Reports' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="workgroup.hasAnalytics && user.hasAnalytics">
+                    <a href="#/app/crm/analytics" ng-click="routingPrism('#/app/crm/analytics')" class="text-uppercase"
+                       ng-class="{'active': currentPath === '/app/crm/analytics'}">
+                        <div data-container="body" data-delay="300" data-placement="right"
+                             data-title="{{'Layout.Menu.Analytics' | translate}}" bs-tooltip
+                             class="fa-sidebar-icon-background ng-scope"><i class="fa fa-line-chart" aria-hidden="true"></i>
+                        </div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Analytics' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="user.profile.Tasks">
+                    <a href="#/app/crm/tasks" ng-click="routingPrism('#/app/crm/tasks')" class="text-uppercase"
+                       ng-class="{'active': currentPath === '/app/crm/tasks'}">
+                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Tasks' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-check-square-o"></i></div>
+                        <span class="sidebar-menu-label">{{tasksNamePlural ? tasksNamePlural.value : ('Layout.Menu.Tasks' | translate)}}</span>
+                    </a>
+                </li>
+                <li ng-if="user.profile.calendar">
+                    <a href="#/app/crm/calendar" ng-click="routingPrism('#/app/crm/calendar')"
+                       ng-class="{'active': currentPath === '/app/crm/calendar'}">
+                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Calendar' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-calendar"></i></div>
+                        <span class="sidebar-menu-label">{{'Layout.Menu.Calendar' | translate}}</span>
+                    </a>
+                </li>
+                <li ng-if="isAvailableForSmallDevice()">
+                    <a href ng-click="logout()">
+                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Auth.Logout' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-sign-out"></i></div>
+                        <span class="sidebar-menu-label">{{'Auth.Logout' | translate}}</span>
+                    </a>
+                </li>
+            </div>
         </ul>
     </div>
     <div id="page-content-wrapper" class="container">

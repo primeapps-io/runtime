@@ -15,12 +15,12 @@ namespace PrimeApps.App
 	    {
 			services.AddWebOptimizer(pipeline =>
 			{
-				pipeline.AddJavaScriptBundle("/scripts/bundles-js/auth.js",
-					"/scripts/vendor/jquery.js",
-					"/scripts/vendor/jquery-maskedinput.js",
-					"/scripts/vendor/sweetalert.js",
-					"/scripts/vendor/spin.js",
-					"/scripts/vendor/ladda.js");
+				pipeline.AddJavaScriptBundle("scripts/bundles-js/auth.js",
+					"scripts/vendor/jquery.js",
+					"scripts/vendor/jquery-maskedinput.js",
+					"scripts/vendor/sweetalert.js",
+					"scripts/vendor/spin.js",
+					"scripts/vendor/ladda.js");
 
 				/*pipeline.AddBundle("/scripts/bundles-js/app.js", "text/javascript; charset=UTF-8",*/
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/app.js",
@@ -33,9 +33,9 @@ namespace PrimeApps.App
 					"scripts/directives.js",
 					"scripts/filters.js",
 					"views/authService.js",
-					"views/appController.js",
-					"views/appService.js",
 					"views/app/crmController.js",
+					"views/appService.js",
+					"views/appController.js",
 					"views/app/note/noteService.js",
 					"views/app/note/noteDirective.js",
 					"views/app/documents/documentService.js",
@@ -104,7 +104,8 @@ namespace PrimeApps.App
 					"scripts/vendor/angucomplete-alt-custom.js",
 					"scripts/vendor/ngclipboard.js",
 					"scripts/vendor/moment-business-days.js",
-					"scripts/vendor/moment-weekdaysin.js");
+                    "scripts/vendor/angular-filter.js",
+                    "scripts/vendor/moment-weekdaysin.js");
 
 				pipeline.AddCssBundle("/styles/bundles-css/auth.css",
 					"styles/vendor/bootstrap.css",

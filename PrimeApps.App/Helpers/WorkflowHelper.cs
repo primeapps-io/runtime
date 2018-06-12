@@ -591,7 +591,7 @@ namespace PrimeApps.App.Helpers
 
 
                                             var modelState = new ModelStateDictionary();
-                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.PicklistLanguage, moduleRepository, picklistRepository, false, currentRecordFieldUpdate, appUser: appUser);
+                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                             if (resultBefore < 0 && !modelState.IsValid)
                                             {
@@ -676,11 +676,11 @@ namespace PrimeApps.App.Helpers
                                         task["created_by"] = workflow.CreatedById;
 
                                         var modelState = new ModelStateDictionary();
-                                        var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.PicklistLanguage, moduleRepository, picklistRepository);
+                                        var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
 
                                         if (resultBefore < 0 && !modelState.IsValid)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
+                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
                                             return;
                                         }
 
@@ -690,7 +690,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (resultCreate < 1)
                                             {
-                                                ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
                                                 return;
                                             }
 
@@ -698,7 +698,7 @@ namespace PrimeApps.App.Helpers
                                         }
                                         catch (Exception ex)
                                         {
-                                            ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             return;
                                         }
                                     }
@@ -885,7 +885,7 @@ namespace PrimeApps.App.Helpers
                                             domain = "https://{0}.ofisim.com/";
                                             var appDomain = "crm";
 
-                                            switch (appUser.AppID)
+                                            switch (appUser.AppId)
                                             {
                                                 case 2:
                                                     appDomain = "kobi";
@@ -914,13 +914,15 @@ namespace PrimeApps.App.Helpers
                                             emailData.Add("Content", sendNotification.Message);
                                             emailData.Add("Url", url);
 
-                                            var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppID, appUser);
+                                            //TODO Removed
+                                            /*var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
                                             email.AddRecipient(recipient);
 
                                             if (sendNotification.Schedule.HasValue)
                                                 email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                                            email.AddToQueue(appUser.TenantID, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                        */
                                         }
                                     }
 

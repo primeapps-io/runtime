@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using OfisimCRM.Model.Context;
-using OfisimCRM.Model.Entities;
-using OfisimCRM.Model.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Repositories.Interfaces;
 
-namespace OfisimCRM.Model.Repositories
+namespace PrimeApps.Model.Repositories
 {
     public class MenuRepository : RepositoryBaseTenant, IMenuRepository
     {

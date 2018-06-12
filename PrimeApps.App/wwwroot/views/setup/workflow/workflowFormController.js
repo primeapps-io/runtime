@@ -389,7 +389,9 @@ angular.module('ofisim')
                 resize: false,
                 width: '99,9%',
                 toolbar_items_size: 'small',
-                statusbar: false
+                statusbar: false,
+                convert_urls: false,
+                remove_script_host: false
             };
 
             var getFilterValue = function (filter) {
@@ -412,6 +414,13 @@ angular.module('ofisim')
                     });
 
                     filterValue = filterValue.slice(0, -2);
+                }
+                else if (filter.field.data_type === 'tag') {
+                    filterValue = '';
+
+                    angular.forEach(filter.value, function (item) {
+                        filterValue += item.text + '; ';
+                    });
                 }
                 else if (filter.field.data_type === 'checkbox') {
                     filterValue = filter.value.label[$rootScope.language];
@@ -895,7 +904,14 @@ angular.module('ofisim')
 
                 return picklistItems;
             };
-
+            $scope.tags = function (searchTerm, field) {
+                return $http.get(config.apiUrl + "tag/get_tag/" + field.id).then(function (response) {
+                    var tags = response.data;
+                    return tags.filter(function (tag) {
+                        return tag.text.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1;
+                    });
+                });
+            };
             $scope.setCurrentLookupField = function (field) {
                 $scope.currentLookupField = field;
             };
@@ -1123,6 +1139,18 @@ angular.module('ofisim')
                                         var label = picklistItem.label[$rootScope.language];
                                         $scope.updateFieldValue += label + '|';
                                         value += label + '; ';
+                                    });
+
+                                    $scope.updateFieldValue = $scope.updateFieldValue.slice(0, -1);
+                                    value = value.slice(0, -2);
+                                    break;
+                                case 'tag':
+                                    $scope.updateFieldValue = '';
+
+                                    angular.forEach($scope.workflowModel.field_update.value, function (item) {
+
+                                        $scope.updateFieldValue += item.text + '|';
+                                        value += item.text + '; ';
                                     });
 
                                     $scope.updateFieldValue = $scope.updateFieldValue.slice(0, -1);

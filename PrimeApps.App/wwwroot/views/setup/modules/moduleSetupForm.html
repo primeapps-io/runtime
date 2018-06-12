@@ -267,7 +267,7 @@
                                                         data-max-length-html="{{'Common.Multiselected' | translate}}"
                                                         bs-options="o as o['label_' + language] for o in picklistsModule[cell.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
                                                         bs-select
-                                                        ng-if="cell.field.data_type === 'multiselect'">
+                                                        ng-if="cell.field.data_type === 'multiselect' || cell.field.data_type === 'tag'">
                                                 </button>
 
                                                 <input type="checkbox"

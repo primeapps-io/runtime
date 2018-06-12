@@ -26,11 +26,12 @@
                             <label class="col-sm-3 control-label">{{'Setup.Messaging.SMS.Provider' | translate}}</label>
                             <div class="col-sm-9">
                                 <select name="provider" class="form-control" required ng-model="smsModel.provider">
-                                <option value="">{{'Common.Select' | translate}}</option>
-                                <option value="ajanssms">AjansSMS</option>
-                                <option value="ttmesaj">TTMesaj</option>
-                                <option value="verimorsms">Verimor</option>
-                            </select>
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                    <option value="ajanssms">AjansSMS</option>
+                                    <option value="ttmesaj">TTMesaj</option>
+                                    <option value="verimorsms">Verimor</option>
+                                    <option value="netgsmsms">Netgsm</option>
+                                </select>
                             </div>
                         </div>
                         <div ng-show="smsModel.provider || smsModel">

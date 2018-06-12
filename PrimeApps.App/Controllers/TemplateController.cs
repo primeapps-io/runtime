@@ -6,22 +6,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.App.ActionFilters;
-using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.DTO.Record;
-using PrimeApps.Model.Context;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using System.Data.Entity;
-using System.Linq;
-using System.Collections.Generic;
-using System.IO;
-using System;
-using Constants = PrimeApps.DTO.Common.Constants;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/template"), Authorize/*, SnakeCase*/]
@@ -32,7 +23,7 @@ namespace PrimeApps.App.Controllers
         private readonly IRecordRepository _recordRepository;
         private readonly IModuleRepository _moduleRepository;
 
-        public TemplateController(ITemplateRepostory templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository)
+        public TemplateController(TemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository)
         {
             _templateRepostory = templateRepostory;
             _userRepository = userRepository;
@@ -69,7 +60,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all_list"), HttpGet]
-        public async Task<IHttpActionResult> GetAllList(TemplateType type = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
+        public async Task<IActionResult> GetAllList(TemplateType type = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
         {
             var templates = await _templateRepostory.GetAllList(type, excelType, moduleName);
 
@@ -98,7 +89,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_excel"), HttpPost]
-        public async Task<IHttpActionResult> CreateExcel(TemplateBindingModel template)
+        public async Task<IActionResult> CreateExcel(TemplateBindingModel template)
         {
 
             if (!ModelState.IsValid)
@@ -108,13 +99,13 @@ namespace PrimeApps.App.Controllers
             var result = await _templateRepostory.Create(templateEntity);
 
             if (result < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            if (template.Chunks > 0)
-                Storage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.InstanceId), template.Chunks);
-
-            var uri = Request.RequestUri;
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
+            //TODO Removed
+            /*if (template.Chunks > 0)
+                Storage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.InstanceId), template.Chunks);*/
+            
+            return Created(Request.Scheme + "://" + Request.Host + "/api/template/get/" + templateEntity.Id, templateEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

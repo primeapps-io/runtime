@@ -5,7 +5,8 @@ angular.module('ofisim')
     .controller('TemplateFormController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$location', 'helper', 'config', '$localStorage', 'TemplateService',
         function ($rootScope, $scope, $filter, $state, ngToast, $location, helper, config, $localStorage, TemplateService) {
             $scope.id = $location.search().id;
-
+            $scope.documentexcel = true;
+            $scope.documentword = true;
 
             var template = {};
             $scope.addNewPermissions = function (template) {
@@ -49,8 +50,17 @@ angular.module('ofisim')
                 TemplateService.get($scope.id)
                     .then(function (template) {
                         $scope.template = template.data;
-                        $scope.template.module = $filter('filter')($rootScope.modules, { name: template.data.module }, true)[0];
+                        if ($scope.template.template_type === 'excel') {
+                            $scope.documentword = false;
+                            $scope.document = "excel";
+                        }
+                        else {
+                            $scope.documentexcel = false;
+                            $scope.document = "word";
 
+                        }
+
+                        $scope.template.module = $filter('filter')($rootScope.modules, { name: template.data.module }, true)[0];
 
                         if ($scope.template.permissions == 0) {
                             $scope.template.permissions = $scope.temp;
@@ -132,6 +142,64 @@ angular.module('ofisim')
                 }
             };
 
+            $scope.fileUploadExcel = {
+                settings: {
+                    runtimes: 'html5',
+                    url: config.apiUrl + 'Document/Upload_Excel',
+                    chunk_size: '256kb',
+                    multipart: true,
+                    unique_names: true,
+                    headers: {
+                        'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'Accept': 'application/json'
+                    },
+                    filters: {
+                        mime_types: [
+                            { title: 'Template Files', extensions: 'xls,xlsx' }
+                        ],
+                        max_file_size: '10mb'
+                    }
+                },
+                events: {
+                    fileUploaded: function (uploader, file, response) {
+                        var resp = JSON.parse(response.response);
+                        var template = {
+                            name: $scope.template.name,
+                            module: $scope.template.module.name,
+                            template_type: 'excel',
+                            content: resp.UniqueName,
+                            content_type: resp.ContentType,
+                            chunks: resp.Chunks,
+                            subject: "Excel",
+                            active: $scope.template.active,
+                            permissions: $scope.template.permissions
+                        };
+
+
+                        if (!$scope.id) {
+                            TemplateService.create(template)
+                                .then(function () {
+                                    success();
+                                })
+                                .catch(function () {
+                                    $scope.saving = false;
+                                });
+                        }
+                        else {
+                            template.id = $scope.template.id;
+
+                            TemplateService.update(template)
+                                .then(function () {
+                                    success();
+                                })
+                                .catch(function () {
+                                    $scope.saving = false;
+                                });
+                        }
+                    }
+                }
+            };
+
 
             $scope.save = function () {
                 if (!$scope.uploadForm.$valid)
@@ -160,6 +228,32 @@ angular.module('ofisim')
                 }
             };
 
+            $scope.saveExcel = function () {
+                if (!$scope.uploadForm.$valid)
+                    return;
+
+                $scope.saving = true;
+
+                if (!$scope.id) {
+                    $scope.fileUploadExcel.uploader.start();
+                }
+                else {
+                    if ($scope.templateFileCleared) {
+                        $scope.fileUploadExcel.uploader.start();
+                    }
+                    else {
+                        $scope.template.module = $scope.template.module.name;
+
+                        TemplateService.update($scope.template)
+                            .then(function () {
+                                success();
+                            })
+                            .catch(function () {
+                                $scope.saving = false;
+                            });
+                    }
+                }
+            };
 
             $scope.getDownloadUrl = function () {
                 if (!$scope.template || !$scope.template.id)

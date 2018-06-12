@@ -26,10 +26,7 @@ using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using Aspose.Words;
-using Aspose.Cells;
-using PrimeApps.DTO.Cache;
 using SaveFormat = Aspose.Words.SaveFormat;
-using Constants = PrimeApps.DTO.Common.Constants;
 using MimeMapping;
 using Aspose.Words.MailMerging;
 using PrimeApps.App.Extensions;
@@ -95,9 +92,9 @@ namespace PrimeApps.App.Controllers
             return Ok(result);
         }
         [Route("Upload_Excel"), HttpPost]
-        public async Task<IHttpActionResult> UploadExcel()
+        public async Task<IActionResult> UploadExcel()
         {
-            var requestStream = await Request.Content.ReadAsStreamAsync();
+            var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
             var isUploaded = DocumentHelper.UploadExcel(requestStream, out result);
 
@@ -1209,7 +1206,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.PicklistLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
                     productsFormatted.Add(productFormatted);
                 }
 

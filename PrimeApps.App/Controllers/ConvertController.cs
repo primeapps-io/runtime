@@ -772,7 +772,7 @@ namespace PrimeApps.App.Controllers
         }
         [Route("convert_sales_orders")]
         [HttpPost]
-        public async Task<IHttpActionResult> ConvertSalesOrders(JObject request)
+        public async Task<IActionResult> ConvertSalesOrders(JObject request)
         {
             var salesOrderModule = await _moduleRepository.GetByName("sales_orders");
             var salesInvoiceModule = await _moduleRepository.GetByName("sales_invoices");
@@ -814,9 +814,9 @@ namespace PrimeApps.App.Controllers
 
                 var asamaField = salesInvoiceModule.Fields.Single(x => x.Name == "asama");
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
-                salesInvoice["asama"] = AppUser.PicklistLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
+                salesInvoice["asama"] = AppUser.TenantLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.PicklistLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await RecordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -830,19 +830,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
                 RecordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
             }
@@ -850,7 +850,7 @@ namespace PrimeApps.App.Controllers
             //Update order stage
             var orderStageTypeField = salesOrderModule.Fields.Single(x => x.Name == "order_stage");
             var orderStageTypes = await _picklistRepository.GetById(orderStageTypeField.PicklistId.Value);
-            salesOrder["order_stage"] = AppUser.PicklistLanguage == "tr" ? orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_sales_invoice").LabelTr : orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_sales_invoice").LabelEn;
+            salesOrder["order_stage"] = AppUser.TenantLanguage == "tr" ? orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_sales_invoice").LabelTr : orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_sales_invoice").LabelEn;
 
             // Update lead as converted
             salesOrder["is_converted"] = true;
@@ -879,19 +879,19 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString()); 
 
             RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
 
@@ -972,7 +972,7 @@ namespace PrimeApps.App.Controllers
 
         [Route("convert_purchase_orders")]
         [HttpPost]
-        public async Task<IHttpActionResult> PurchaseSalesOrders(JObject request)
+        public async Task<IActionResult> PurchaseSalesOrders(JObject request)
         {
             var purchaseOrderModule = await _moduleRepository.GetByName("purchase_orders");
             var purchaseInvoiceModule = await _moduleRepository.GetByName("purchase_invoices");
@@ -1014,9 +1014,9 @@ namespace PrimeApps.App.Controllers
 
                 var asamaField = purchaseInvoiceModule.Fields.Single(x => x.Name == "asama");
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
-                purchaseInvoice["asama"] = AppUser.PicklistLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
+                purchaseInvoice["asama"] = AppUser.TenantLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.PicklistLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await RecordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -1030,19 +1030,19 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                     if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                        return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                        return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                     throw;
                 }
 
                 if (resultCreate < 1)
-                    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
                 RecordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
             }
@@ -1050,7 +1050,7 @@ namespace PrimeApps.App.Controllers
             //Update order stage
             var orderStageTypeField = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
             var orderStageTypes = await _picklistRepository.GetById(orderStageTypeField.PicklistId.Value);
-            purchaseOrder["order_stage"] = AppUser.PicklistLanguage == "tr" ? orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_purchase_invoice").LabelTr : orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_purchase_invoice").LabelEn;
+            purchaseOrder["order_stage"] = AppUser.TenantLanguage == "tr" ? orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_purchase_invoice").LabelTr : orderStageTypes.Items.Single(x => x.SystemCode == "converted_to_purchase_invoice").LabelEn;
 
             // Update lead as converted
             purchaseOrder["is_converted"] = true;
@@ -1079,19 +1079,19 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return Content(HttpStatusCode.Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.Detail });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
                 if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return Content(HttpStatusCode.BadRequest, new { message = ex.MessageText });
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
                 throw;
             }
 
             if (resultUpdate < 1)
-                throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
 

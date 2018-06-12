@@ -21,21 +21,19 @@ angular.module('ofisim')
 
                     $http.post(config.apiUrl + 'User/MyAccount', {})
                         .then(function (responseAccount) {
-							if (responseAccount.status != 200 || !responseAccount.data) {
-								clearAuthCache();
-								if (responseAccount.data === null) {
-									deferred.resolve(401);
-								}
-								else {
-									deferred.resolve(false);
-								}
+                            if (responseAccount.status != 200 || !responseAccount.data) {
+                                clearAuthCache();
+                                if (responseAccount.data === null) {
+                                    deferred.resolve(401);
+                                }
+                                else {
+                                    deferred.resolve(false);
+                                }
 
-								$window.location.href = '/Auth/SignOut';
+                                $window.location.href = '/Auth/SignOut';
 
-								return deferred.promise;
-							} else if (responseAccount === undefined) {
-								deferred.resolve(401);
-							}
+                                return deferred.promise;
+                            }
 
                             //Check app domain and user app
                             var host = window.location.hostname;
@@ -73,6 +71,15 @@ angular.module('ofisim')
                                 else if (host.indexOf('ik-dev.ofisim.com') > -1 && userAppId != 4) {
                                     validApp = false;
                                 }
+                                else if (host.indexOf('hr.ofisim.com') > -1 && userAppId != 8) {
+                                    validApp = false;
+                                }
+                                else if (host.indexOf('hr-test.ofisim.com') > -1 && userAppId != 8) {
+                                    validApp = false;
+                                }
+                                else if (host.indexOf('hr-dev.ofisim.com') > -1 && userAppId != 8) {
+                                    validApp = false;
+                                }
                                 else if (host.indexOf('cagri.ofisim.com') > -1 && userAppId != 5) {
                                     validApp = false;
                                 }
@@ -100,7 +107,7 @@ angular.module('ofisim')
                             promises.push($http.get(config.apiUrl + 'module_profile_settings/get_all'));
                             promises.push($http.get(config.apiUrl + 'help/get_all'));
                             promises.push($http.get(config.apiUrl + 'help/get_first_screen?templateType=' + 'modal' + '&firstscreen=' + true));
-
+                            promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
 
                             $q.all(promises)
                                 .then(function (response) {
@@ -235,6 +242,13 @@ angular.module('ofisim')
                                         }
                                     }
 
+                                    //custom menü
+                                    $rootScope.customMenu = false;
+                                    var menu = response[10].data;
+                                    if(menu){
+                                        $rootScope.customMenu = true;
+                                        $rootScope.menu = $filter('orderBy')(menu, 'order', false);
+                                    }
 
                                     //module profile settings
                                     var profileSettings = response[7].data;
@@ -246,17 +260,49 @@ angular.module('ofisim')
                                                 if (parseInt(profile) === $rootScope.user.profile.ID) {
                                                     var moduleSetting = $filter('filter')($rootScope.modules, { id: profileSetting.module_id }, true)[0];
                                                     if (moduleSetting) {
-                                                        moduleSetting.label_en_plural = profileSetting.label_en_plural;
-                                                        moduleSetting.label_en_singular = profileSetting.label_en_singular;
-                                                        moduleSetting.label_tr_plural = profileSetting.label_tr_plural;
-                                                        moduleSetting.label_tr_singular = profileSetting.label_tr_singular;
-                                                        moduleSetting.menu_icon = profileSetting.menu_icon;
-                                                        moduleSetting.display = profileSetting.display;
+                                                        if($rootScope.customMenu){
+                                                            var customMenuItem;
+                                                            customMenuItem = $filter('filter')($rootScope.menu, { route: moduleSetting.name }, true)[0];
+                                                            if(!customMenuItem){
+                                                                for(var z = 0; z<$rootScope.menu.length; z++){
+                                                                    if(!customMenuItem){
+                                                                        var menuItem = $rootScope.menu[z];
+                                                                        customMenuItem = $filter('filter')(menuItem.menu_items, { route: moduleSetting.name }, true)[0];
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            if(!customMenuItem)
+                                                                var customMenuItem = {};
+
+                                                            customMenuItem.label_tr = profileSetting.label_tr_plural;
+                                                            customMenuItem.label_en = profileSetting.label_en_plural;
+                                                            customMenuItem.menu_icon = profileSetting.menu_icon;
+                                                            if(!profileSetting.display)
+                                                                customMenuItem.hide = true;
+                                                        }
+                                                        else{
+                                                            moduleSetting.label_en_plural = profileSetting.label_en_plural;
+                                                            moduleSetting.label_en_singular = profileSetting.label_en_singular;
+                                                            moduleSetting.label_tr_plural = profileSetting.label_tr_plural;
+                                                            moduleSetting.label_tr_singular = profileSetting.label_tr_singular;
+                                                            moduleSetting.menu_icon = profileSetting.menu_icon;
+                                                            moduleSetting.display = profileSetting.display;
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
+
+                                    if($rootScope.customMenu){
+                                        for(var a = 0; a < $rootScope.menu.length; a++){
+                                            var mainMenuItem = $rootScope.menu[a];
+                                            if($filter('filter')(mainMenuItem.menu_items, { hide: true }, true).length === mainMenuItem.menu_items.length)
+                                                mainMenuItem.hide = true;
+                                        }
+                                    }
+
 
                                     //holidays
                                     var holidaysModule = $filter('filter')($rootScope.modules, { name: 'holidays' }, true)[0];
@@ -283,6 +329,7 @@ angular.module('ofisim')
                                                         var date = moment(data[i].date).format('DD-MM-YYYY');
                                                         holidays.push(date);
                                                     }
+                                                    $rootScope.holidaysData = data;
                                                     $rootScope.holidays = holidays;
                                                 });
                                             });
@@ -303,7 +350,7 @@ angular.module('ofisim')
 
                                         //getUserSpecific sipAccount Info
                                         if (phoneSettings.sipUsers) {
-                                            var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.id.toString(), isActive: 'true' }, true)[0];
+                                            var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.ID.toString(), isActive: 'true' }, true)[0];
                                             if (sipData) {
                                                 var sipPromises = [];
                                                 sipPromises.push($http.get(config.apiUrl + 'phone/get_sip_password'));
@@ -381,13 +428,15 @@ angular.module('ofisim')
                                     $rootScope.detailViewType = $filter('filter')($rootScope.moduleSettings, { key: 'detail_view_type' }, true)[0];
                                     $rootScope.detailViewType = $rootScope.detailViewType ? $rootScope.detailViewType.value : 'tab';
                                     $rootScope.advancedDocumentSearch = $filter('filter')($rootScope.moduleSettings, { key: 'advanced_document_search' }, true)[0];
-									$rootScope.advancedDocumentSearch = $rootScope.advancedDocumentSearch ? ($rootScope.advancedDocumentSearch && $rootScope.user.profile.document_search) : false;
+                                    $rootScope.advancedDocumentSearch = $rootScope.advancedDocumentSearch ? ($rootScope.advancedDocumentSearch.value && $rootScope.user.profile.document_search) : false;
                                     $rootScope.showNotes = $filter('filter')($rootScope.moduleSettings, { key: 'show_notes' }, true)[0];
                                     $rootScope.showNotes = $rootScope.showNotes ? $rootScope.showNotes.value : true;
                                     $rootScope.calendarFields = $filter('filter')($rootScope.moduleSettings, { key: 'calendar_fields' }, true)[0];
                                     $rootScope.showSaveAndNew = $filter('filter')($rootScope.moduleSettings, { key: 'show_save_and_new' }, true)[0];
-                                    $rootScope.showSaveAndNew = $rootScope.showSaveAndNew ? $rootScope.showSaveAndNew : true;
-                                    $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, { type : 2 }, true)[0];
+                                    $rootScope.showSaveAndNew = $rootScope.showSaveAndNew ? $rootScope.showSaveAndNew.value : true;
+                                    $rootScope.personalConvertShow = $filter('filter')($rootScope.moduleSettings, { key: 'personal_convert_show' }, true)[0];
+                                    $rootScope.personalConvertShow = $rootScope.personalConvertShow ? $rootScope.personalConvertShow.value : false;
+                                    $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, { type: 2 }, true)[0];
                                     that.setCustomActivityTypes(activityTypes);
 
                                     helper.hideLoader();
@@ -798,1217 +847,1217 @@ angular.module('ofisim')
 
 angular.module('ofisim')
     .constant('helps',
-    {
-        maps: [
-            {
-                "route": "default",
-                "help": "https://help.ofisim.com/",
-                "language": "en",
-                "appId": 1
-            },
-            {
-                "route": "default",
-                "help": "https://help.ofisim.com/",
-                "language": "en",
-                "appId": 2
-            },
-            {
-                "route": "default",
-                "help": "https://help.ofisim.com/",
-                "language": "en",
-                "appId": 3
-            },
-            {
-                "route": "default",
-                "help": "https://help.ofisim.com/",
-                "language": "en",
-                "appId": 4
-            },
-            {
-                "route": "default",
-                "help": "https://help.ofisim.com/",
-                "language": "en",
-                "appId": 5
-            },
-            {
-                "route": "default",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "default",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "default",
-                "help": "https://yardim.ofisim.com/category/asistan/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "default",
-                "help": "https://yardim.ofisim.com/category/ik/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "default",
-                "help": "https://yardim.ofisim.com/category/cagri/",
-                "language": "tr",
-                "appId": 5
-            },
+        {
+            maps: [
+                {
+                    "route": "default",
+                    "help": "https://help.ofisim.com/",
+                    "language": "en",
+                    "appId": 1
+                },
+                {
+                    "route": "default",
+                    "help": "https://help.ofisim.com/",
+                    "language": "en",
+                    "appId": 2
+                },
+                {
+                    "route": "default",
+                    "help": "https://help.ofisim.com/",
+                    "language": "en",
+                    "appId": 3
+                },
+                {
+                    "route": "default",
+                    "help": "https://help.ofisim.com/",
+                    "language": "en",
+                    "appId": 4
+                },
+                {
+                    "route": "default",
+                    "help": "https://help.ofisim.com/",
+                    "language": "en",
+                    "appId": 5
+                },
+                {
+                    "route": "default",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "default",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "default",
+                    "help": "https://yardim.ofisim.com/category/asistan/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "default",
+                    "help": "https://yardim.ofisim.com/category/ik/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "default",
+                    "help": "https://yardim.ofisim.com/category/cagri/",
+                    "language": "tr",
+                    "appId": 5
+                },
 
-            {
-                "route": "default-setup",
-                "help": "https://yardim.ofisim.com/category/ayarlar/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "default-setup",
-                "help": "https://yardim.ofisim.com/category/ayarlar/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "default-setup",
-                "help": "https://yardim.ofisim.com/category/asistan-10/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "default-setup",
-                "help": "https://yardim.ofisim.com/category/ik-13/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "default-setup",
-                "help": "https://yardim.ofisim.com/category/cagri-9",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/dashboard",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/dashboard",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/dashboard",
-                "help": "https://yardim.ofisim.com/category/asistan/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/dashboard",
-                "help": "https://yardim.ofisim.com/category/ik/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/dashboard",
-                "help": "https://yardim.ofisim.com/category/cagri/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/import/",
-                "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/import/",
-                "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/import/",
-                "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/import/",
-                "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/import/",
-                "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "https://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "https://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "https://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "https://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "https://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/module/accounts",
-                "help": "https://yardim.ofisim.com/firma-detaylari/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/module/accounts",
-                "help": "https://yardim.ofisim.com/firma-detaylari/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/module/accounts",
-                "help": "https://yardim.ofisim.com/firma-detaylari/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/module/accounts",
-                "help": "https://yardim.ofisim.com/firma-detaylari/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/module/accounts",
-                "help": "https://yardim.ofisim.com/firma-detaylari/",
-                "language": "tr",
-                "appId": 5
-            },
+                {
+                    "route": "default-setup",
+                    "help": "https://yardim.ofisim.com/category/ayarlar/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "default-setup",
+                    "help": "https://yardim.ofisim.com/category/ayarlar/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "default-setup",
+                    "help": "https://yardim.ofisim.com/category/asistan-10/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "default-setup",
+                    "help": "https://yardim.ofisim.com/category/ik-13/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "default-setup",
+                    "help": "https://yardim.ofisim.com/category/cagri-9",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/dashboard",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/dashboard",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/dashboard",
+                    "help": "https://yardim.ofisim.com/category/asistan/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/dashboard",
+                    "help": "https://yardim.ofisim.com/category/ik/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/dashboard",
+                    "help": "https://yardim.ofisim.com/category/cagri/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/import/",
+                    "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/import/",
+                    "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/import/",
+                    "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/import/",
+                    "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/import/",
+                    "help": "https://yardim.ofisim.com/genel-kullanim-iceri-veri-aktarimi/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "https://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "https://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "https://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "https://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "https://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "https://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/module/accounts",
+                    "help": "https://yardim.ofisim.com/firma-detaylari/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/module/accounts",
+                    "help": "https://yardim.ofisim.com/firma-detaylari/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/module/accounts",
+                    "help": "https://yardim.ofisim.com/firma-detaylari/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/module/accounts",
+                    "help": "https://yardim.ofisim.com/firma-detaylari/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/module/accounts",
+                    "help": "https://yardim.ofisim.com/firma-detaylari/",
+                    "language": "tr",
+                    "appId": 5
+                },
 
-            {
-                "route": "#/app/crm/modules/contacts",
-                "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/contacts",
-                "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/contacts",
-                "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/contacts",
-                "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/contacts",
-                "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
+                {
+                    "route": "#/app/crm/modules/contacts",
+                    "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/contacts",
+                    "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/contacts",
+                    "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/contacts",
+                    "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/contacts",
+                    "help": "https://yardim.ofisim.com/kontak-kisi-yonetimi/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
 
-                "route": "#/app/crm/modules/opportunities",
-                "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
+                    "route": "#/app/crm/modules/opportunities",
+                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
 
-                "route": "#/app/crm/modules/opportunities",
-                "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
+                    "route": "#/app/crm/modules/opportunities",
+                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
 
-                "route": "#/app/crm/modules/opportunities",
-                "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
+                    "route": "#/app/crm/modules/opportunities",
+                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
 
-                "route": "#/app/crm/modules/opportunities",
-                "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
+                    "route": "#/app/crm/modules/opportunities",
+                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
 
-                "route": "#/app/crm/modules/opportunities",
-                "help": "https://yardim.ofisim.com/firsat-yonetimi/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/products",
-                "help": "https://yardim.ofisim.com/urunler-modulu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/products",
-                "help": "https://yardim.ofisim.com/urunler-modulu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/products",
-                "help": "https://yardim.ofisim.com/urunler-modulu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/products",
-                "help": "https://yardim.ofisim.com/urunler-modulu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/products",
-                "help": "https://yardim.ofisim.com/urunler-modulu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/quotes",
-                "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/quotes",
-                "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/quotes",
-                "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/quotes",
-                "help": "https://yardim.ofisim.com/teklif-yonetimi/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/quotes",
-                "help": "http://yardim.ofisim.com/teklif-hazirlama-ve-yonetimi/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/sales_orders",
-                "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/sales_orders",
-                "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/sales_orders",
-                "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/sales_orders",
-                "help": "https://yardim.ofisim.com/siparis-yonetimi/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/sales_orders",
-                "help": "http://yardim.ofisim.com/satis-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/calendar",
-                "help": "https://yardim.ofisim.com/takvim-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/calendar",
-                "help": "https://yardim.ofisim.com/takvim-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/calendar",
-                "help": "http://yardim.ofisim.com/takvim-gorunumu-3/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/calendar",
-                "help": "http://yardim.ofisim.com/takvim-gorunumu-2/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/calendar",
-                "help": "http://yardim.ofisim.com/takvim-gorunumu-4/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/setup/messaging",
-                "help": "https://yardim.ofisim.com/kisisel-ayarlar-2/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/messaging",
-                "help": "https://yardim.ofisim.com/kisisel-ayarlar-2/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/messaging",
-                "help": "https://yardim.ofisim.com/kisisel-ayarlar-4/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/setup/messaging",
-                "help": "http://yardim.ofisim.com/kisisel-ayarlar/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/messaging",
-                "help": "https://yardim.ofisim.com/kisisel-ayarlar-3/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/setup/users",
-                "help": "https://yardim.ofisim.com/kullanici-yonetimi-kullanicilar/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/users",
-                "help": "https://yardim.ofisim.com/kullanici-yonetimi-kullanicilar/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/users",
-                "help": "https://yardim.ofisim.com/kullanici-yonetimi-kullanicilar/",
-                "language": "tr",
-                "appId": 3
-            },
+                    "route": "#/app/crm/modules/opportunities",
+                    "help": "https://yardim.ofisim.com/firsat-yonetimi/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "https://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/products",
+                    "help": "https://yardim.ofisim.com/urunler-modulu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/products",
+                    "help": "https://yardim.ofisim.com/urunler-modulu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/products",
+                    "help": "https://yardim.ofisim.com/urunler-modulu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/products",
+                    "help": "https://yardim.ofisim.com/urunler-modulu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/products",
+                    "help": "https://yardim.ofisim.com/urunler-modulu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/quotes",
+                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/quotes",
+                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/quotes",
+                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/quotes",
+                    "help": "https://yardim.ofisim.com/teklif-yonetimi/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/quotes",
+                    "help": "http://yardim.ofisim.com/teklif-hazirlama-ve-yonetimi/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/sales_orders",
+                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/sales_orders",
+                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/sales_orders",
+                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/sales_orders",
+                    "help": "https://yardim.ofisim.com/siparis-yonetimi/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/sales_orders",
+                    "help": "http://yardim.ofisim.com/satis-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/calendar",
+                    "help": "https://yardim.ofisim.com/takvim-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/calendar",
+                    "help": "https://yardim.ofisim.com/takvim-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/calendar",
+                    "help": "http://yardim.ofisim.com/takvim-gorunumu-3/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/calendar",
+                    "help": "http://yardim.ofisim.com/takvim-gorunumu-2/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/calendar",
+                    "help": "http://yardim.ofisim.com/takvim-gorunumu-4/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/setup/messaging",
+                    "help": "https://yardim.ofisim.com/kisisel-ayarlar-2/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/messaging",
+                    "help": "https://yardim.ofisim.com/kisisel-ayarlar-2/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/messaging",
+                    "help": "https://yardim.ofisim.com/kisisel-ayarlar-4/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/setup/messaging",
+                    "help": "http://yardim.ofisim.com/kisisel-ayarlar/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/messaging",
+                    "help": "https://yardim.ofisim.com/kisisel-ayarlar-3/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/setup/users",
+                    "help": "https://yardim.ofisim.com/kullanici-yonetimi-kullanicilar/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/users",
+                    "help": "https://yardim.ofisim.com/kullanici-yonetimi-kullanicilar/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/users",
+                    "help": "https://yardim.ofisim.com/kullanici-yonetimi-kullanicilar/",
+                    "language": "tr",
+                    "appId": 3
+                },
 
-            {
-                "route": "#/app/setup/users",
-                "help": "http://yardim.ofisim.com/kullanici-yonetimi-kullanicilar-2/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/users",
-                "help": "http://yardim.ofisim.com/kullanici-yonetimi-kullanicilar-3/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/setup/profiles",
-                "help": "https://yardim.ofisim.com/kullanici-yonetimi-profiller/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/profiles",
-                "help": "https://yardim.ofisim.com/kullanici-yonetimi-profiller/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/profiles",
-                "help": "https://yardim.ofisim.com/kullanici-yonetimi-profiller/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/setup/profiles",
-                "help": "http://yardim.ofisim.com/kullanici-yonetimi-profiller-2/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/profiles",
-                "help": "http://yardim.ofisim.com/kullanici-yonetimi-profiller-3/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/setup/organization",
-                "help": "https://yardim.ofisim.com/firma-ayarlari/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/organization",
-                "help": "https://yardim.ofisim.com/firma-ayarlari/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/organization",
-                "help": "https://yardim.ofisim.com/firma-ayarlari-4/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/setup/organization",
-                "help": "http://yardim.ofisim.com/kullanici-yonetimi-kullanicilar-2/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/organization",
-                "help": "https://yardim.ofisim.com/firma-ayarlari-3/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/setup/license",
-                "help": "https://yardim.ofisim.com/lisans-ayarlari/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/license",
-                "help": "https://yardim.ofisim.com/lisans-ayarlari/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/license",
-                "help": "https://yardim.ofisim.com/lisans-ayarlari/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/setup/license",
-                "help": "https://yardim.ofisim.com/lisans-ayarlari/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/license",
-                "help": "https://yardim.ofisim.com/lisans-ayarlari/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/",
-                "help": "https://yardim.ofisim.com/category/asistan/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/",
-                "help": "https://yardim.ofisim.com/category/ik/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/",
-                "help": "https://yardim.ofisim.com/category/cagri/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/module/",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/module/",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/module/",
-                "help": "https://yardim.ofisim.com/category/asistan/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/module/",
-                "help": "https://yardim.ofisim.com/category/ik/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/module/",
-                "help": "https://yardim.ofisim.com/category/cagri/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/moduleForm/",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/moduleForm/",
-                "help": "https://yardim.ofisim.com/category/genel/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/moduleForm/",
-                "help": "https://yardim.ofisim.com/category/asistan/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/moduleForm/",
-                "help": "https://yardim.ofisim.com/category/ik/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/moduleForm/",
-                "help": "https://yardim.ofisim.com/category/cagri/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "http://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "http://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "http://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "http://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/leads",
-                "help": "http://yardim.ofisim.com/musteri-adaylari/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "http://yardim.ofisim.com/firma-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/accounts",
-                "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/izinler",
-                "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/izinler",
-                "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/izinler",
-                "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/izinler",
-                "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/izinler",
-                "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/harcamalar",
-                "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/harcamalar",
-                "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/harcamalar",
-                "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/harcamalar",
-                "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/harcamalar",
-                "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/zimmetler",
-                "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/zimmetler",
-                "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/zimmetler",
-                "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/zimmetler",
-                "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/zimmetler",
-                "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/talepler",
-                "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/talepler",
-                "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/talepler",
-                "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/talepler",
-                "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/talepler",
-                "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/odemeler",
-                "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/odemeler",
-                "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/odemeler",
-                "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/odemeler",
-                "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/odemeler",
-                "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/egitimler",
-                "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/egitimler",
-                "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/egitimler",
-                "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/egitimler",
-                "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/egitimler",
-                "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/vize_islemleri",
-                "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/vize_islemleri",
-                "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/vize_islemleri",
-                "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/vize_islemleri",
-                "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/vize_islemleri",
-                "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/module/activities",
-                "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/module/activities",
-                "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/module/activities",
-                "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/module/activities",
-                "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/module/activities",
-                "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/module/seyahatler",
-                "help": "http://yardim.ofisim.com/seyahat-detaylari/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/module/seyahatler",
-                "help": "http://yardim.ofisim.com/seyahat-detaylari/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/module/seyahatler",
-                "help": "http://yardim.ofisim.com/seyahat-detaylari/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/module/seyahatler",
-                "help": "http://yardim.ofisim.com/seyahat-detaylari/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/module/seyahatler",
-                "help": "http://yardim.ofisim.com/seyahat-detaylari/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/personel",
-                "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/personel",
-                "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/personel",
-                "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/personel",
-                "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/personel",
-                "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/aramalar",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/aramalar",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/aramalar",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/aramalar",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/aramalar",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/crm/modules/arama_detaylari",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/arama_detaylari",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/arama_detaylari",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/arama_detaylari",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/arama_detaylari",
-                "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
+                {
+                    "route": "#/app/setup/users",
+                    "help": "http://yardim.ofisim.com/kullanici-yonetimi-kullanicilar-2/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/users",
+                    "help": "http://yardim.ofisim.com/kullanici-yonetimi-kullanicilar-3/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/setup/profiles",
+                    "help": "https://yardim.ofisim.com/kullanici-yonetimi-profiller/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/profiles",
+                    "help": "https://yardim.ofisim.com/kullanici-yonetimi-profiller/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/profiles",
+                    "help": "https://yardim.ofisim.com/kullanici-yonetimi-profiller/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/setup/profiles",
+                    "help": "http://yardim.ofisim.com/kullanici-yonetimi-profiller-2/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/profiles",
+                    "help": "http://yardim.ofisim.com/kullanici-yonetimi-profiller-3/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/setup/organization",
+                    "help": "https://yardim.ofisim.com/firma-ayarlari/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/organization",
+                    "help": "https://yardim.ofisim.com/firma-ayarlari/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/organization",
+                    "help": "https://yardim.ofisim.com/firma-ayarlari-4/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/setup/organization",
+                    "help": "http://yardim.ofisim.com/kullanici-yonetimi-kullanicilar-2/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/organization",
+                    "help": "https://yardim.ofisim.com/firma-ayarlari-3/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/setup/license",
+                    "help": "https://yardim.ofisim.com/lisans-ayarlari/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/license",
+                    "help": "https://yardim.ofisim.com/lisans-ayarlari/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/license",
+                    "help": "https://yardim.ofisim.com/lisans-ayarlari/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/setup/license",
+                    "help": "https://yardim.ofisim.com/lisans-ayarlari/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/license",
+                    "help": "https://yardim.ofisim.com/lisans-ayarlari/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/",
+                    "help": "https://yardim.ofisim.com/category/asistan/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/",
+                    "help": "https://yardim.ofisim.com/category/ik/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/",
+                    "help": "https://yardim.ofisim.com/category/cagri/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/module/",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/module/",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/module/",
+                    "help": "https://yardim.ofisim.com/category/asistan/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/module/",
+                    "help": "https://yardim.ofisim.com/category/ik/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/module/",
+                    "help": "https://yardim.ofisim.com/category/cagri/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/moduleForm/",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/moduleForm/",
+                    "help": "https://yardim.ofisim.com/category/genel/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/moduleForm/",
+                    "help": "https://yardim.ofisim.com/category/asistan/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/moduleForm/",
+                    "help": "https://yardim.ofisim.com/category/ik/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/moduleForm/",
+                    "help": "https://yardim.ofisim.com/category/cagri/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "http://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "http://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "http://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "http://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/leads",
+                    "help": "http://yardim.ofisim.com/musteri-adaylari/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "http://yardim.ofisim.com/firma-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/accounts",
+                    "help": "http://yardim.ofisim.com/firma-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/izinler",
+                    "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/izinler",
+                    "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/izinler",
+                    "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/izinler",
+                    "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/izinler",
+                    "help": "http://yardim.ofisim.com/izin-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/harcamalar",
+                    "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/harcamalar",
+                    "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/harcamalar",
+                    "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/harcamalar",
+                    "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/harcamalar",
+                    "help": "https://yardim.ofisim.com/harcama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/zimmetler",
+                    "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/zimmetler",
+                    "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/zimmetler",
+                    "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/zimmetler",
+                    "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/zimmetler",
+                    "help": "http://yardim.ofisim.com/zimmet-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/talepler",
+                    "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/talepler",
+                    "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/talepler",
+                    "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/talepler",
+                    "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/talepler",
+                    "help": "http://yardim.ofisim.com/talep-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/odemeler",
+                    "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/odemeler",
+                    "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/odemeler",
+                    "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/odemeler",
+                    "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/odemeler",
+                    "help": "http://yardim.ofisim.com/odemeler-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/egitimler",
+                    "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/egitimler",
+                    "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/egitimler",
+                    "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/egitimler",
+                    "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/egitimler",
+                    "help": "http://yardim.ofisim.com/egitim-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/vize_islemleri",
+                    "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/vize_islemleri",
+                    "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/vize_islemleri",
+                    "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/vize_islemleri",
+                    "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/vize_islemleri",
+                    "help": "http://yardim.ofisim.com/vize-detay-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/module/activities",
+                    "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/module/activities",
+                    "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/module/activities",
+                    "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/module/activities",
+                    "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/module/activities",
+                    "help": "http://yardim.ofisim.com/etkinlikler-ve-gorev-olusturma/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/module/seyahatler",
+                    "help": "http://yardim.ofisim.com/seyahat-detaylari/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/module/seyahatler",
+                    "help": "http://yardim.ofisim.com/seyahat-detaylari/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/module/seyahatler",
+                    "help": "http://yardim.ofisim.com/seyahat-detaylari/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/module/seyahatler",
+                    "help": "http://yardim.ofisim.com/seyahat-detaylari/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/module/seyahatler",
+                    "help": "http://yardim.ofisim.com/seyahat-detaylari/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/personel",
+                    "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/personel",
+                    "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/personel",
+                    "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/personel",
+                    "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/personel",
+                    "help": "http://yardim.ofisim.com/personel-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/aramalar",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/aramalar",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/aramalar",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/aramalar",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/aramalar",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/crm/modules/arama_detaylari",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/arama_detaylari",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/arama_detaylari",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/arama_detaylari",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/arama_detaylari",
+                    "help": "http://yardim.ofisim.com/arama-detaylari-ve-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
 
-            {
-                "route": "#/app/setup/templates",
-                "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/templates",
-                "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/templates",
-                "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/setup/templates",
-                "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/templates",
-                "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
-                "language": "tr",
-                "appId": 5
-            },
-            {
-                "route": "#/app/setup/templateguide",
-                "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/setup/templateguide",
-                "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/setup/templateguide",
-                "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/setup/templateguide",
-                "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/setup/templateguide",
-                "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
-                "language": "tr",
-                "appId": 5
-            },
+                {
+                    "route": "#/app/setup/templates",
+                    "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/templates",
+                    "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/templates",
+                    "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/setup/templates",
+                    "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/templates",
+                    "help": "http://yardim.ofisim.com/yeni-bir-teklif-olusturma/",
+                    "language": "tr",
+                    "appId": 5
+                },
+                {
+                    "route": "#/app/setup/templateguide",
+                    "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/setup/templateguide",
+                    "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/setup/templateguide",
+                    "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/setup/templateguide",
+                    "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/setup/templateguide",
+                    "help": "http://yardim.ofisim.com/teklif-sablonu-hazirlama/",
+                    "language": "tr",
+                    "appId": 5
+                },
 
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 1
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 2
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 3
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 4
-            },
-            {
-                "route": "#/app/crm/modules/activities",
-                "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
-                "language": "tr",
-                "appId": 5
-            },
-        ]
-    });
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 1
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 2
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 3
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 4
+                },
+                {
+                    "route": "#/app/crm/modules/activities",
+                    "help": "http://yardim.ofisim.com/aktivite-liste-gorunumu/",
+                    "language": "tr",
+                    "appId": 5
+                },
+            ]
+        });

@@ -4,7 +4,7 @@ angular.module('ofisim')
 
     .controller('MessagingController', ['$rootScope', '$scope', '$translate', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'MessagingService', 'ngTableParams', '$popover', 'AppService',
         function ($rootScope, $scope, $translate, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, MessagingService, ngTableParams, $popover, AppService) {
-            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { Id: $rootScope.user.profile.ID }, true)[0].HasAdminRights;
+            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { Id: $rootScope.user.profile.ID }, true)[0].has_admin_rights;
             $scope.smsModel = angular.copy($rootScope.system.messaging.SMS);
             $scope.emailModel = angular.copy($rootScope.system.messaging.SystemEMail);
             $scope.newSender = {};
@@ -60,12 +60,12 @@ angular.module('ofisim')
 
             $scope.showNewSenderForm = function () {
                 $scope.senderPopover = $scope.senderPopover || $popover(angular.element(document.getElementsByName('addSender')), {
-                        templateUrl: 'views/setup/messaging/senderAdd.html',
-                        placement: 'left',
-                        scope: $scope,
-                        autoClose: true,
-                        show: true
-                    });
+                    templateUrl: 'views/setup/messaging/senderAdd.html',
+                    placement: 'left',
+                    scope: $scope,
+                    autoClose: true,
+                    show: true
+                });
             };
 
             $scope.addNewSender = function (alias, email) {
@@ -99,6 +99,12 @@ angular.module('ofisim')
 
                 if ($scope.emailForm.$valid) {
                     $scope.emailUpdating = true;
+
+                    if ($scope.emailModel.host.indexOf("yandex") > -1) {
+                        $scope.emailModel.host = "smtp.yandex.ru";
+                        $scope.emailModel.port = "587";
+                        $scope.emailModel.enable_ssl = true;
+                    }
 
                     MessagingService.updateEMailSettings($scope.emailModel).then(function () {
                         ngToast.create({ content: $filter('translate')('Setup.Settings.UpdateSuccess'), className: 'success' });

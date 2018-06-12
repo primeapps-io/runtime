@@ -2,8 +2,8 @@
 
 angular.module('ofisim')
 
-    .controller('TemplateGuideController', ['$rootScope', '$scope', '$filter',
-        function ($rootScope, $scope, $filter) {
+    .controller('TemplateGuideController', ['$rootScope', '$scope', '$filter', 'ngToast', 'ModuleService', '$window',
+        function ($rootScope, $scope, $filter, ngToast, ModuleService, $window) {
             $scope.templateModules = [];
             $scope.$parent.collapsed = true;
 
@@ -63,6 +63,14 @@ angular.module('ofisim')
                 module.relatedModules.push(noteModule);
             };
 
+
+            $scope.getDownloadUrlExcel = function (module) {
+                var module = $scope.selectedModuleExcel.name;
+                $window.open("/attach/ExportExcel?module=" + module, "_blank");
+                ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
+
+            };
+
             $scope.moduleChanged = function () {
                 $scope.lookupModules = getLookupModules($scope.selectedModule);
                 $scope.getModuleRelations($scope.selectedModule);
@@ -116,12 +124,12 @@ angular.module('ofisim')
                 addNoteModuleRelation(module);
             };
 
-            $scope.filterReferences = function (field) {
-                if ($scope.selectedSubModule && ($scope.selectedSubModule.name === 'quote_products' || $scope.selectedModule.name === 'order_products') && field.name === 'usage_unit')
-                    return;
-
-                return field.data_type != 'relation' && field.data_type != 'lookup';
-            };
+            // $scope.filterReferences = function (field) {
+            //     if ($scope.selectedSubModule && ($scope.selectedSubModule.name === 'quote_products' || $scope.selectedModule.name === 'order_products') && field.name === 'usage_unit')
+            //         return;
+            //
+            //     return field.data_type != 'relation' && field.data_type != 'lookup';
+            // };
 
             $scope.filterUsers = function (field) {
                 return field.data_type != 'users';

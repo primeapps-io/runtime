@@ -2,15 +2,16 @@
 
 angular.module('ofisim')
 
-    .controller('ModuleFormSetupController', ['$rootScope', '$scope', '$filter', '$location', '$state', 'ngToast', 'guidEmpty', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'AppService',
-        function ($rootScope, $scope, $filter, $location, $state, ngToast, guidEmpty, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, AppService) {
+    .controller('ModuleFormSetupController', ['$rootScope', '$scope', '$filter', '$location', '$state', 'ngToast', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'AppService',
+        function ($rootScope, $scope, $filter, $location, $state, ngToast, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, AppService) {
             $scope.id = $location.search().id;
             $scope.clone = $location.search().clone;
             $scope.redirect = $location.search().redirect;
             $scope.record = {};
             $scope.currentDeletedFields = [];
-            $scope.documentSearch = $rootScope.user.profile.DocumentSearch;
+            $scope.documentSearch = $rootScope.user.profile.document_search;
             $scope.dataTypes = ModuleSetupService.getDataTypes();
+            $scope.lookupUser = helper.lookupUser;
             $scope.calendarColors = [
                 { dark: '#b8c110', light: '#e9ebb9' },
                 { dark: '#01a0e4', light: '#b3e2f5' },
@@ -137,6 +138,7 @@ angular.module('ofisim')
                     $scope.picklists = picklists.data;
                 });
 
+
             var getMultilineTypes = function () {
                 var multilineType1 = { value: 'small', label: $filter('translate')('Setup.Modules.MultilineTypeSmall') };
                 var multilineType2 = { value: 'large', label: $filter('translate')('Setup.Modules.MultilineTypeLarge') };
@@ -167,6 +169,7 @@ angular.module('ofisim')
                         }
                     });
             };
+
 
             var getRoundingTypes = function () {
                 var roundingType1 = { value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff') };
@@ -209,6 +212,12 @@ angular.module('ofisim')
                 });
 
             $scope.lookup = function (searchTerm) {
+                if (!$scope.currentLookupField.lookupType) {
+                    var deferred = $q.defer();
+                    deferred.resolve([]);
+                    return deferred.promise;
+                }
+
                 if ($scope.currentLookupField.lookup_type === 'users' && !$scope.currentLookupField.lookupModulePrimaryField) {
                     var userModulePrimaryField = {};
                     userModulePrimaryField.data_type = 'text_single';
@@ -221,11 +230,14 @@ angular.module('ofisim')
                     return $q.defer().promise;
                 }
 
+                $scope.currentLookupField.data_type = $scope.currentLookupField.dataType.name;
+                $scope.currentLookupField.lookup_type = $scope.currentLookupField.lookupType.value;
+
                 return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
             };
 
             $scope.setCurrentLookupField = function (field) {
-                $scope.currentLookupField = field;
+                $scope.currentLookupField = angular.copy(field);
             };
 
             $scope.calculate = function (field) {
@@ -331,16 +343,40 @@ angular.module('ofisim')
                     $scope.currentFieldState = angular.copy(field);
 
                     if (field.default_value && field.data_type === 'lookup') {
-                        var lookupId = parseInt(field.default_value);
+                        if (field.lookup_type !== 'users') {
+                            var lookupId = parseInt(field.default_value);
 
-                        ModuleService.getRecord(field.lookup_type, lookupId, true)
-                            .then(function (response) {
+                            ModuleService.getRecord(field.lookup_type, lookupId, true)
+                                .then(function (response) {
+                                    var lookupObject = {};
+                                    lookupObject.id = response.data.id;
+                                    lookupObject.primary_value = response.data[field.lookupModulePrimaryField.name];
+                                    field.temporary_default_value = lookupObject;
+                                });
+                        }
+                        else {
+                            if (field.default_value === '[me]') {
                                 var lookupObject = {};
-                                lookupObject.id = response.data.id;
-                                lookupObject.primary_value = response.data[field.lookupModulePrimaryField.name];
-                                field.temporary_default_value = lookupObject;
-                            });
+                                lookupObject.id = 0;
+                                lookupObject.email = '[me]';
+                                lookupObject.full_name = $filter('translate')('Common.LoggedInUser');
+                                field.default_value = [lookupObject];
+                            }
+                            else {
+                                ModuleService.getRecord(field.lookup_type, lookupId, true)
+                                    .then(function (response) {
+                                        var lookupObject = {};
+                                        lookupObject.id = response.data.id;
+                                        lookupObject.email = response.data.email;
+                                        lookupObject.full_name = response.data[field.lookupModulePrimaryField.name];
+                                        field.default_value = [lookupObject];
+                                    });
+                            }
+                        }
                     }
+
+                    if (field.default_value && (field.data_type === 'date_time' || field.data_type === 'date' || field.data_type === 'time') && field.default_value === '[now]')
+                        field.default_value_now = true;
 
                     if (field.data_type === 'picklist' || field.data_type === 'multiselect') {
                         ModuleSetupService.getPicklist(field.picklist_id)
@@ -393,6 +429,20 @@ angular.module('ofisim')
                 });
             };
 
+
+            $scope.changeShowLabel = function () {
+                if (!$scope.currentField.show_label) {
+                    $scope.currentField.editable = false;
+                }
+            };
+
+            $scope.changeDefaultValue = function () {
+                if ($scope.currentField.default_value) {
+                    $scope.currentField.show_label = true;
+                }
+            };
+
+
             $scope.dataTypeChanged = function () {
                 if (!$scope.currentField.dataType)
                     return;
@@ -420,6 +470,9 @@ angular.module('ofisim')
                         case 'multiselect':
                             $scope.currentField.picklist_sortorder = 'order';
                             break;
+                        case 'tag':
+                            $scope.currentField.picklist_sortorder = 'order';
+                            break;
                         case 'rating':
                             $scope.currentField.validation.min_length = 5;
                             break;
@@ -443,20 +496,15 @@ angular.module('ofisim')
             };
 
             $scope.lookupTypeChanged = function (asd) {
-                $scope.asd = asd;
                 if (!$scope.currentField.lookupType)
                     return;
 
+                $scope.currentField.default_value = null;
+                $scope.currentField.temporary_default_value = null;
+                $scope.$broadcast('angucomplete-alt:clearInput', 'lookupDefaultValue');
+
                 var lookupModule = $filter('filter')($rootScope.modules, { name: $scope.currentField.lookupType.value }, true)[0];
-                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
-
-                if (lookupModulePrimaryField.data_type != 'text_single' && lookupModulePrimaryField.data_type != 'picklist' && lookupModulePrimaryField.data_type != 'email' &&
-                    lookupModulePrimaryField.data_type != 'number' && lookupModulePrimaryField.data_type != 'number_auto') {
-                    ngToast.create({ content: $filter('translate')('Setup.Modules.NotApplicablePrimaryField'), className: 'warning' });
-                    $scope.currentField.lookupType = null;
-                }
-
-
+                $scope.currentField.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
             };
 
             $scope.calendarDateTypeChanged = function () {
@@ -469,6 +517,11 @@ angular.module('ofisim')
                 else {
                     $scope.currentField.validation.required = $scope.currentFieldState.validation.required;
                 }
+            };
+
+            $scope.defaultValueNowChanged = function () {
+                if ($scope.currentField.default_value_now)
+                    $scope.currentField.default_value = null;
             };
 
             $scope.setMultilineDataType = function () {
@@ -685,6 +738,13 @@ angular.module('ofisim')
                 if ($scope.currentField.dataType.name === 'picklist' && $scope.currentField.default_value && $scope.currentField.default_value.id)
                     $scope.currentField.default_value = $scope.currentField.default_value.id;
 
+                if ($scope.currentField.default_value_now !== undefined && $scope.currentField.default_value_now != null && ($scope.currentField.dataType.name === 'date_time' || $scope.currentField.dataType.name === 'date' || $scope.currentField.dataType.name === 'time')) {
+                    if ($scope.currentField.default_value_now === true)
+                        $scope.currentField.default_value = '[now]';
+                    else
+                        $scope.currentField.default_value = null;
+                }
+
                 //model settings for tags-input dataType
                 if ($scope.currentField.defaultValueMultiselect) {
                     $scope.currentField.default_value = '';
@@ -714,8 +774,17 @@ angular.module('ofisim')
                     $scope.fieldModal.hide();
                 }
 
-                if ($scope.currentField.dataType.name === 'lookup' && $scope.currentField.default_value)
+                if ($scope.currentField.dataType.name === 'lookup' && $scope.currentField.lookup_type !== 'users' && $scope.currentField.default_value)
                     $scope.currentField.default_value = $scope.currentField.default_value.id;
+
+                if ($scope.currentField.dataType.name === 'lookup' && $scope.currentField.lookup_type === 'users' && $scope.currentField.default_value) {
+                    var defaultValue = $scope.currentField.default_value[0];
+
+                    if (defaultValue.id === 0)
+                        $scope.currentField.default_value = '[me]';
+                    else
+                        $scope.currentField.default_value = defaultValue.id;
+                }
 
                 if ($scope.currentField.calendar_date_type) {
                     for (var i = 0; i < module.fields.length; i++) {
@@ -807,6 +876,7 @@ angular.module('ofisim')
                 $scope.moduleChange = new Date();
             };
 
+
             $scope.cancelField = function () {
                 if ($scope.currentField.isNew) {
                     if ($scope.picklistsModule)
@@ -871,6 +941,12 @@ angular.module('ofisim')
             $scope.newPicklist = function () {
                 $scope.picklistModel = {};
                 $scope.showPicklistForm = true;
+            };
+
+            $scope.MinMaxValue = function () {
+                if ($scope.currentField.validation.min_length && !$scope.currentField.validation.max_length || parseInt($scope.currentField.validation.min_length) > parseInt($scope.currentField.validation.max_length)) {
+                    $scope.currentField.validation.max_length = $scope.currentField.validation.min_length;
+                }
             };
 
             $scope.editPicklist = function () {

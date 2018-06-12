@@ -31,6 +31,11 @@ angular.module('ofisim')
                             offset: 0
                         };
 
+                        var ozelCepTelefonuField = $filter('filter')($scope.module.fields, { name: 'ozel_cep_telefonu' }, true)[0];
+
+                        if (ozelCepTelefonuField)
+                            findRequest.fields.push('ozel_cep_telefonu');
+
                         if ($scope.id) {
                             findRequest.filters = [{ field: 'id', operator: 'equals', value: $scope.id, no: 1 }];
                             $scope.showInfo = false;

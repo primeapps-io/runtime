@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfisimCRM.Model.Entities
+namespace PrimeApps.Model.Entities.Application
 {
     [Table("menu")]
     public class Menu : BaseEntity
@@ -14,7 +14,7 @@ namespace OfisimCRM.Model.Entities
         [Column("name"), Required]
         public string Name { get; set; }
         
-        [Column("profile_id"), ForeignKey("Profile"), Index]
+        [Column("profile_id"), ForeignKey("Profile"), /*Index*/]
         public int ProfileId { get; set; }
 
         [Column("default")]

@@ -10,7 +10,7 @@ angular.module('ofisim')
             $scope.showPromotionModal = function () {
                 $scope.promotionModal = $scope.promotionModal || $modal({
                         scope: $scope,
-                        templateUrl: 'views/app/trial/promotionFormModal.html',
+                        templateUrl: '/views/app/trial/promotionFormModal.html',
                         size: 'modal-sm',
                         backdrop: 'static',
                         show: false

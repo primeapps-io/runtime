@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfisimCRM.Model.Entities
+namespace PrimeApps.Model.Entities.Application
 {
     [Table("menu_items")]
     public class MenuItem : BaseEntity
     {
-        [Column("menu_id"), ForeignKey("Menu"), Index]
+        [Column("menu_id"), ForeignKey("Menu"), /*Index*/]
         public int MenuId { get; set; }
 
-        [Column("module_id"), ForeignKey("Module"), Index]
+        [Column("module_id"), ForeignKey("Module"), /*Index*/]
         public int? ModuleId { get; set; }
 
         [Column("parent_id")]

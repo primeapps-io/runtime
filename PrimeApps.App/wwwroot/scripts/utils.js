@@ -609,7 +609,7 @@ angular.module('ofisim')
 
                     if (!module) return false;
 
-					var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
 
                     if (!permission)
                         return false;
@@ -617,11 +617,11 @@ angular.module('ofisim')
                     return permission[operation];
                 },
                 hasRecordEditPermission: function (record) {
-                    if ($rootScope.user.profile.HasAdminRights)
+                    if ($rootScope.user.profile.has_admin_rights)
                         return true;
 
                     if (record.shared_users && record.shared_users.indexOf($rootScope.user.ID) > -1) {
-                        if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.ID) > -1)
+                        if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.id) > -1)
                             return true;
 
                         if (record.shared_user_groups_edit && $rootScope.user.groups.length) {
@@ -654,7 +654,7 @@ angular.module('ofisim')
                     return true;
                 },
                 hasDocumentsPermission: function (operation) {
-                    var permission = $filter('filter')($rootScope.user.profile.permissions, { type: 1 })[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, { Type: 1 })[0];
 
                     if (!permission)
                         return false;
@@ -662,7 +662,7 @@ angular.module('ofisim')
                     return permission[operation];
                 },
                 hasAdminRights: function () {
-                    return $rootScope.user.profile.HasAdminRights;
+                    return $rootScope.user.profile.has_admin_rights;
                 },
                 getCulture: function () {
                     var language = $localStorage.read('NG_TRANSLATE_LANG_KEY') || 'tr';
@@ -837,7 +837,6 @@ angular.module('ofisim')
                     var picklists = {};
                     var picklistIds = [];
                     var that = this;
-
 
                     for (var i = 0; i < picklistTypes.length; i++) {
                         var picklistType = picklistTypes[i];
@@ -1353,7 +1352,7 @@ angular.module('ofisim')
         }
     })
 
-    .factory('officeHelper', ['$http','config', function ($http, config) {
+    .factory('officeHelper', ['$http', 'config', function ($http, config) {
         return {
             officeTenantInfo: function () {
                 return $http.get(config.apiUrl + 'User/ActiveDirectoryInfo');
@@ -1362,11 +1361,11 @@ angular.module('ofisim')
     }])
 
     .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', 'ModuleService',
-        function($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, ModuleService){
+        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, ModuleService) {
             return {
-                run: function(place, type, scope, record) {
-                    var components = $filter('orderBy')($filter('filter')(scope.module.components, function(component){
-                        return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0)
+                run: function (place, type, scope, record, field) {
+                    var components = $filter('orderBy')($filter('filter')(scope.module.components, function (component) {
+                        return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
                     }, true), 'order');
                     for (var i = 0; i < components.length; i++) {
                         var component = components[i];
@@ -1374,7 +1373,7 @@ angular.module('ofisim')
                     }
                 }
             }
-    }]);
+        }]);
 
 //Extension methods
 String.prototype.toUpperCaseTurkish = function () {

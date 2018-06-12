@@ -90,6 +90,7 @@ namespace PrimeApps.Model.Repositories
 				notes = notes
                     .Include(x => (x as Note).CreatedBy)
                     .Include(x => (x as Note).Likes)
+                    .Include(x => x.Notes)
                     .Include(x => x.Likes).ThenInclude(y => y.TenantUser)
                     .Include(x => x.Module)
 					.Include(x => x.Module).ThenInclude(y => y.Fields)

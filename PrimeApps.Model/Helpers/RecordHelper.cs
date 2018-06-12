@@ -1166,8 +1166,8 @@ namespace PrimeApps.Model.Helpers
 
             if (tenant.Tenant.AppId == 4 && !string.IsNullOrEmpty(user.Email))
             {
-                sql += $"UPDATE calisanlar_d SET ad='{user.firstName}', soyad='{user.lastName}', ad_soyad='{user.firstName + " " + user.lastName}', e_posta='{user.email}', cep_telefonu={user.PhoneNumber}, yoneticisi=1 WHERE id=1;\n";
-                sql += $"UPDATE rehber_d SET ad='{user.firstName}', soyad='{user.lastName}', ad_soyad='{user.firstName + " " + user.lastName}', e_posta='{user.email}', cep_telefonu={user.PhoneNumber} WHERE id=20;\n";
+                sql += $"UPDATE calisanlar_d SET ad='{user.FirstName}', soyad='{user.LastName}', ad_soyad='{user.FirstName + " " + user.LastName}', e_posta='{user.Email}', cep_telefonu={user.Setting.Phone}, yoneticisi=1 WHERE id=1;\n";
+                sql += $"UPDATE rehber_d SET ad='{user.FirstName}', soyad='{user.LastName}', ad_soyad='{user.FirstName + " " + user.LastName}', e_posta='{user.Email}', cep_telefonu={user.Setting.Phone} WHERE id=20;\n";
             }
 
             return sql;

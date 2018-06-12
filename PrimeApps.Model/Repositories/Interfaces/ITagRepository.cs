@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using OfisimCRM.Model.Entities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using OfisimCRM.DTO.Cache;
+using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace OfisimCRM.Model.Repositories.Interfaces
 {
-    public interface ITagRepository
+    public interface ITagRepository : IRepositoryBaseTenant
     {
         Task<ICollection<Tag>> GetAllBasic();
         Task<ICollection<Tag>> GetByFieldId(int id);

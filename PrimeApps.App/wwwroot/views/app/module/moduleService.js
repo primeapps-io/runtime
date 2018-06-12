@@ -45,6 +45,15 @@ angular.module('ofisim')
                 },
 
                 findRecords: function (module, request) {
+                    if (module === 'current_accounts' || module === 'kasa_hareketleri' || module === 'banka_hareketleri' || module === 'stock_transactions') {
+                        if (module === 'stock_transactions' && request.sort_field) {
+                            request.sort_field = 'transaction_date,id';
+                        }
+                        else if (module !== 'stock_transactions' && request.sort_field) {
+                            request.sort_field += ',id';
+                        }
+                    }
+
                     return $http.post(config.apiUrl + 'record/find/' + module, request);
                 },
 
@@ -59,6 +68,8 @@ angular.module('ofisim')
                     delete record.process_status;
                     delete record.process_status_order;
                     delete record.operation_type;
+                    delete record['process_request.updated_by'];
+                    delete record['process_request.updated_at'];
                     delete record.freeze;
 
                     return $http.put(config.apiUrl + 'record/update/' + module + '?timezone_offset=' + new Date().getTimezoneOffset() * -1, record);
@@ -82,6 +93,9 @@ angular.module('ofisim')
                 },
 
                 insertRecordBulk: function (module, records) {
+                    for (var i = 0; i < records.length; i++) {
+                        var record = records[i];
+                    }
                     return $http.post(config.apiUrl + 'record/create_bulk/' + module, records);
                 },
 
@@ -120,24 +134,24 @@ angular.module('ofisim')
                     return $http.delete(config.apiUrl + 'view/delete/' + id);
                 },
 
-                approveMultipleProcessRequest: function (record_ids) {
-                    return $http.put(config.apiUrl + 'process_request/approve_multiple_request', record_ids);
+                approveMultipleProcessRequest: function (record_ids, moduleName) {
+                    return $http.put(config.apiUrl + 'process_request/approve_multiple_request', { record_ids: record_ids, module_name: moduleName });
                 },
 
-                approveProcessRequest: function (operation_type, id) {
-                    return $http.put(config.apiUrl + 'process_request/approve', { record_id: id, operation_type: operation_type });
+                approveProcessRequest: function (operation_type, moduleName, id) {
+                    return $http.put(config.apiUrl + 'process_request/approve', { record_id: id, module_name: moduleName, operation_type: operation_type });
                 },
 
-                rejectProcessRequest: function (operation_type, message, id) {
-                    return $http.put(config.apiUrl + 'process_request/reject', { record_id: id, operation_type: operation_type, message: message });
+                rejectProcessRequest: function (operation_type, moduleName, message, id) {
+                    return $http.put(config.apiUrl + 'process_request/reject', { record_id: id, module_name: moduleName, operation_type: operation_type, message: message });
                 },
 
                 deleteProcessRequest: function (moduleId, id) {
                     return $http.put(config.apiUrl + 'process_request/delete', { record_id: id, module_id: moduleId });
                 },
 
-                send_approval: function (operation_type, id) {
-                    return $http.put(config.apiUrl + 'process_request/send_approval', { record_id: id, operation_type: operation_type });
+                send_approval: function (operation_type, moduleName, id) {
+                    return $http.put(config.apiUrl + 'process_request/send_approval', { record_id: id, module_name: moduleName, operation_type: operation_type });
                 },
 
                 sendApprovalManuel: function (request) {
@@ -150,6 +164,14 @@ angular.module('ofisim')
 
                 getAllProcess: function (id) {
                     return $http.get(config.apiUrl + 'process/get_all');
+                },
+
+                convertSalesInvoice: function (query) {
+                    return $http.post(config.apiUrl + 'convert/convert_sales_orders', query);
+                },
+
+                convertPurchaseInvoice: function (query) {
+                    return $http.post(config.apiUrl + 'convert/convert_purchase_orders', query);
                 },
 
                 sendSMS: function (moduleId, ids, query, isAllSelected, message, phoneField) {
@@ -283,6 +305,7 @@ angular.module('ofisim')
                                 break;
                             case 'picklist':
                             case 'multiselect':
+                            case 'tag':
                             case 'checkbox':
                                 recordProcessedField.value = field.valueFormatted;
                                 recordProcessedField.valueFormatted = field.valueFormatted;
@@ -495,7 +518,7 @@ angular.module('ofisim')
 
                 processUser: function (user) {
                     var lookupUser = {};
-                    lookupUser.id = user.ID;
+                    lookupUser.id = user.id;
                     lookupUser.primary_value = user.first_name + ' ' + user.last_name;
                     lookupUser.email = user.email;
 
@@ -594,6 +617,21 @@ angular.module('ofisim')
                             }
 
                             field.valueFormatted = field.valueFormatted.slice(0, -2);
+                            break;
+                        case 'tag':
+                            for (var i = 0; i < value.length; i++) {
+                                var item = value[i];
+
+                                if (!angular.isObject(item)) {
+
+                                    field.valueFormatted += " " + item + ";";
+                                }
+                                else {
+                                    field.valueFormatted += " " + item;
+                                }
+                            }
+
+                            // field.valueFormatted = field.valueFormatted.slice(0, -2);
                             break;
                         case 'checkbox':
                             field.valueFormatted = $filter('filter')(picklists['yes_no'], { system_code: value.toString() })[0].label[$rootScope.language];
@@ -701,7 +739,7 @@ angular.module('ofisim')
                             else {
                                 picklistCache = $filter('orderByLabel')(picklistCache, $rootScope.language);
 
-                                if (fieldItem.picklist_sortorder)
+                                if (fieldItem.picklist_sortorder && !fieldItem.deleted)
                                     picklistCache = $filter('orderBy')(picklistCache, fieldItem.picklist_sortorder);
 
                                 setDependency(picklistCache, fieldItem);
@@ -765,7 +803,7 @@ angular.module('ofisim')
                                 picklists[field.picklist_id] = $filter('filter')(picklistItems, { type: field.picklist_id }, true);
                                 picklists[field.picklist_id] = $filter('orderByLabel')(picklists[field.picklist_id], $rootScope.language);
 
-                                if (field.picklist_sortorder)
+                                if (field.picklist_sortorder && !field.deleted)
                                     picklists[field.picklist_id] = $filter('orderBy')(picklists[field.picklist_id], field.picklist_sortorder);
 
                                 if (module.dependencies && module.dependencies.length > 0) {
@@ -993,6 +1031,9 @@ angular.module('ofisim')
                             continue;
                         }
 
+                        if (field.data_type == 'checkbox' && newRecord[field.name] === null && currentRecord[field.name])
+                            newRecord[field.name] = false;
+
                         if (newRecord[field.name] !== undefined && newRecord[field.name] !== null) {
                             if (!newCurrentRecord)
                                 newCurrentRecord = {};
@@ -1050,6 +1091,14 @@ angular.module('ofisim')
                                     else
                                         newCurrentRecord[field.name] = null;
                                     break;
+                                case  "tag":
+                                    var tags = [];
+                                    angular.forEach(newRecord[field.name], function (item) {
+                                        tags.push(item["text"]);
+                                    });
+                                    newRecord[field.name] = tags.toString();
+                                    break;
+
                             }
 
                             if (currentRecord && angular.equals(newCurrentRecord[field.name], newRecord[field.name]))
@@ -1163,6 +1212,10 @@ angular.module('ofisim')
                 setDefaultValues: function (module, record, picklists) {
                     for (var i = 0; i < module.fields.length; i++) {
                         var field = module.fields[i];
+
+                        if (field.deleted)
+                            continue;
+
                         var fieldName = field.name;
 
                         if (field.default_value === undefined || field.default_value === null)
@@ -1177,13 +1230,19 @@ angular.module('ofisim')
                             case 'number':
                             case 'number_decimal':
                             case 'currency':
-                            case 'date':
-                            case 'time':
-                            case 'date_time':
                             case 'url':
                             case 'email':
                             case 'image':
                                 record[fieldName] = field.default_value;
+                                break;
+                            case 'date':
+                            case 'time':
+                            case 'date_time':
+                                if (field.default_value === '[now]') {
+                                    record[fieldName] = new Date().toISOString();
+                                }
+                                else {
+                                }
                                 break;
                             case 'picklist':
                                 var picklistRecord = $filter('filter')(picklists[field.picklist_id], { id: parseInt(field.default_value) }, true)[0];
@@ -1205,7 +1264,7 @@ angular.module('ofisim')
                                 record[field.name] = picklistRecord;
                                 break;
                             case 'lookup':
-                                var lookupId = parseInt(field.default_value);
+                                var lookupId = field.default_value !== '[me]' ? parseInt(field.default_value) : $rootScope.user.ID;
                                 var fieldCurrent = angular.copy(field);
 
                                 this.getRecord(field.lookup_type, lookupId, true)
@@ -1594,45 +1653,80 @@ angular.module('ofisim')
                     //if ($rootScope.user.appId === 4) {//Ofisim IK
                     if (module.name === 'izinler') {
                         var calculate = function (that) {
-                            if (record['calisan'] && record['izin_turu'] && record['izin_turu_data'] && !record['izin_turu_data']["yillik_izin"]) {
-                                var startOf = moment().date(1).month(1).year(moment().year()).format('YYYY-MM-DD');
+                            if (record['calisan'] && record['izin_turu'] && record['izin_turu_data']) {
+                                var startOf = moment().date(1).month(0).year(moment().year()).format('YYYY-MM-DD');
+                                if(record['izin_turu_data']['her_ay_yenilenir']) {
+                                    startOf = moment().date(1).month(moment().month()).year(moment().year()).format('YYYY-MM-DD');
+                                }
+
+                                /*var filterRequest = {
+                                 fields: ["hesaplanan_alinacak_toplam_izin", "baslangic_tarihi", "process.process_requests.process_status"],
+                                 filters: [
+                                 { field: 'calisan', operator: 'equals', value: record['calisan'].id, no: 1 },
+                                 { field: 'izin_turu', operator: 'equals', value: record['izin_turu'].id, no: 2 },
+                                 { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 3 },
+                                 { field: 'deleted', operator: 'equals', value: false, no: 4 },
+                                 { field: 'process.process_requests.process_status', operator: 'not_equal', value: 3, no: 5 }
+                                 ],
+                                 limit: 999999
+                                 };*/
+
                                 var filterRequest = {
-                                    fields: ["hesaplanan_alinacak_toplam_izin", "process.process_requests.process_status"],
+                                    fields: ["hesaplanan_alinacak_toplam_izin", "baslangic_tarihi", "bitis_tarihi", "izin_turu", "process.process_requests.process_status"],
                                     filters: [
                                         { field: 'calisan', operator: 'equals', value: record['calisan'].id, no: 1 },
-                                        { field: 'izin_turu', operator: 'equals', value: record['izin_turu'].id, no: 2 },
-                                        { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 3 },
-                                        { field: 'deleted', operator: 'equals', value: false, no: 4 },
-                                        { field: 'process.process_requests.process_status', operator: 'equals', value: 2, no: 5 }
+                                        { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2 },
+                                        { field: 'deleted', operator: 'equals', value: false, no: 3 },
+                                        { field: 'process.process_requests.process_status', operator: 'not_equal', value: 3, no: 4 }
                                     ],
                                     limit: 999999
                                 };
+
+
                                 that.findRecords('izinler', filterRequest)
                                     .then(function (response) {
                                         var totalUsed = 0;
-                                        if (response.data.length > 0) {
-                                            record["alinan_izinler"] = response.data;
-                                            if (record['izin_turu_data']) {
-                                                angular.forEach(response.data, function (izin) {
+                                        record['alinan_izinler'] = response.data;
+
+                                        if (record['izin_turu_data'] && !record['izin_turu_data']['yillik_izin']) {
+                                            if (response.data.length > 0) {
+                                                var filteredLeaves = $filter('filter')(response.data, { izin_turu: record['izin_turu'].id }, true);
+                                                angular.forEach(filteredLeaves, function (izin) {
                                                     if (izin["hesaplanan_alinacak_toplam_izin"]) {
                                                         totalUsed += izin["hesaplanan_alinacak_toplam_izin"];
                                                     }
                                                 });
-                                            }
-                                        }
-                                        else {
-                                            delete record["alinan_izinler"];
-                                            if (record['izin_turu_data'])
+                                            } else {
+                                                delete record['alinan_izinler'];
                                                 record['mevcut_kullanilabilir_izin'] = record['izin_turu_data']['yillik_hakedilen_limit_gun'];
-                                        }
+                                            }
 
-                                        if (record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
-                                            var calismaSaati = record['izin_turu_data']["toplam_calisma_saati"];
-                                            var hakedilen = record['izin_turu_data']['yillik_hakedilen_limit_gun'];
-                                            var kalan = hakedilen * calismaSaati - totalUsed;
-                                            record['mevcut_kullanilabilir_izin'] = kalan;
-                                        } else {
-                                            record['mevcut_kullanilabilir_izin'] = record['izin_turu_data']['yillik_hakedilen_limit_gun'] - totalUsed;
+                                            if (record['izin_turu_data']['saatlik_kullanim_yapilir']) {
+                                                var calismaSaati = record['izin_turu_data']['toplam_calisma_saati'];
+                                                var hakedilen = record['izin_turu_data']['yillik_hakedilen_limit_gun'];
+                                                if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
+                                                    var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
+                                                    calismaSaati = calismaSaati - ogleTatili;
+                                                }
+                                                var kalan = hakedilen * calismaSaati - totalUsed;
+                                                record['mevcut_kullanilabilir_izin'] = kalan;
+                                            } else {
+                                                record['mevcut_kullanilabilir_izin'] = record['izin_turu_data']['yillik_hakedilen_limit_gun'] - totalUsed;
+                                            }
+                                        } else if (record['izin_turu'] && record['izin_turu_data'] && record['calisan_data'] && record['izin_turu_data']['yillik_izin'] && record['calisan']['e_posta'] === record['calisan_data']['e_posta']) {
+                                            var checkUsedCount = 0;
+
+                                            var filteredLeaves = $filter('filter')(record["alinan_izinler"], function (izin) {
+                                                return izin['izin_turu'] === record['izin_turu'].id && izin['process.process_requests.process_status'] === 1;
+                                            }, true);
+
+                                            angular.forEach(filteredLeaves, function (izin) {
+                                                if (izin["hesaplanan_alinacak_toplam_izin"]) {
+                                                    checkUsedCount += izin["hesaplanan_alinacak_toplam_izin"];
+                                                }
+                                            });
+
+                                            record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] ? record['calisan_data']['kalan_izin_hakki'] - checkUsedCount : 0.0;
                                         }
                                     });
                             }
@@ -1648,10 +1742,8 @@ angular.module('ofisim')
                             this.getRecord(calisalarModuleName, record['calisan'].id)
                                 .then(function (response) {
                                     var account = response.data;
-                                    if (record['izin_turu'] && record['izin_turu_data'] && record['izin_turu_data']["yillik_izin"] && record['calisan']['e_posta'] === account['e_posta']) {
-                                        record['mevcut_kullanilabilir_izin'] = account['kalan_izin_hakki'] || 0.0;
-                                    }
 
+                                    record['calisan_data'] = account;
                                     record['goreve_baslama_tarihi'] = account['ise_baslama_tarihi'];
                                     record['dogum_tarihi'] = account['dogum_tarihi'];
                                     calculate(that);
@@ -1674,12 +1766,137 @@ angular.module('ofisim')
                         }
                     }
 
+                    if(module.name === 'current_accounts'){
+                        if (scope.subtype === 'collection') {
+                            switch (record.currency.system_code) {
+                                case 'try':
+                                    $filter('filter')(scope.module.fields, { name: 'alacak' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = false;
+
+                                    if(record.alacak_euro)
+                                        delete record.alacak_euro;
+
+                                    if(record.alacak_usd)
+                                        delete record.alacak_usd;
+                                    break;
+                                case 'usd':
+                                    $filter('filter')(scope.module.fields, { name: 'alacak' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = false;
+
+                                    if(record.alacak)
+                                        delete record.alacak;
+
+                                    if(record.alacak_euro)
+                                        delete record.alacak_euro;
+                                    break;
+                                case 'eur':
+                                    $filter('filter')(scope.module.fields, { name: 'alacak' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = true;
+
+                                    if(record.alacak)
+                                        delete record.alacak;
+
+                                    if(record.alacak_usd)
+                                        delete record.alacak_usd;
+                                    break;
+                            }
+                        }else if(scope.subtype === 'payment'){
+                            switch (record.currency.system_code){
+                                case 'try':
+                                    $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'borc_euro' }, true)[0].display_form = false;
+                                    break;
+                                case 'usd':
+                                    $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'borc_euro' }, true)[0].display_form = false;
+                                    break;
+                                case 'eur':
+                                    $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'borc_euro' }, true)[0].display_form = true;
+                                    break;
+                            }
+                        }
+
+
+                        $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
+                        $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
+                        $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
+                        $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
+                        if(record.payment_method){
+                            switch (record.payment_method.system_code)
+                            {
+                                case 'cash':
+                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].validation.required = true;
+                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
+                                    if(record.banka)
+                                        delete record.banka;
+                                    break;
+                                case 'bank_transfer':
+                                case 'credit_card':
+                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].validation.required = true;
+                                    if(record.kasa)
+                                        delete record.kasa;
+                                    break;
+                                case 'cheque':
+                                case 'bill':
+                                    $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
+                                    $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = true;
+                                    $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = true;
+                                    if(record.odendi){
+                                        $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = true;
+                                        $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = true;
+                                        $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].validation.required = false;
+                                        $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].validation.required = false;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+
                     //}
                 },
-                customValidations: function (module, record) {
+
+                customValidations: function (module, record, checkUsed) {
                     //if ($rootScope.user.appId === 4) {//Ofisim IK
                     if (module.name === 'izinler') {
                         var izin_turu = record['izin_turu_data'];
+                        /*
+                         * İzin tarihlerinin aynı olup olmadığı kontrol ediliyor. Aynı ise uyarı veriliyor.
+                         * */
+
+                        if (moment(record["baslangic_tarihi"]).isSame(record["bitis_tarihi"])) {
+                            return $filter('translate')('Leave.Validations.SameDate');
+                        }
+
+                        if (record['talep_edilen_izin'] <= 0) {
+                            return $filter('translate')('Leave.Validations.Requested0OfDaysNot')
+                        }
+
+                        //Aynı Tarihlerde Başka izin varmı diye kontrol ediliyor.
+                        if (record["alinan_izinler"] && record["alinan_izinler"].length > 0) {
+                            for (var i = 0; i < record["alinan_izinler"].length; i++) {
+                                if (moment(record['baslangic_tarihi']).isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '[)') ||
+                                    moment(record['bitis_tarihi']).isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
+                                    (moment(record['baslangic_tarihi']).isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && moment(record['bitis_tarihi']).isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
+                                ) {
+                                    return $filter('translate')('Leave.Validations.AlreadyHave');
+                                }
+                            }
+                        }
 
                         /*
                          * İLK İZİN KULLANIMI HAKEDİŞ ZAMANI KONTROLÜ
@@ -1687,10 +1904,10 @@ angular.module('ofisim')
                          * Yıllık izin ve diğer izin türleri için ortak kullanılır.
                          * */
                         if (izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] && izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] != null && izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"] != 0) {
-                            var start_day_month = moment(record["goreve_baslama_tarihi"]).daysInMonth();
+                            var start_day_month = moment().diff(record["goreve_baslama_tarihi"], "months");
                             var rule_day_month = izin_turu["ilk_izin_kullanimi_hakedis_zamani_ay"];
                             if (start_day_month < rule_day_month) {
-                                return "alamaz";
+                                return $filter('translate')('Leave.Validations.FirstLeaveUse', { month: rule_day_month });
                             }
                         }
 
@@ -1701,13 +1918,30 @@ angular.module('ofisim')
                              * */
 
                             if (record['mevcut_kullanilabilir_izin'] === null)
-                                return "alamaz";
+                                return $filter('translate')('Leave.Validations.LeaveEnd');
 
-                            if (record['mevcut_kullanilabilir_izin'] === 0 || (record['mevcut_kullanilabilir_izin'] < record['hesaplanan_alinacak_toplam_izin'])) {
-                                if (!izin_turu["izin_borclanma_yapilabilir"])
-                                    return "alamaz";
+                            var checkUsedCount = 0;
+                            if (checkUsed) {
+                                var filteredLeaves = $filter('filter')(record["alinan_izinler"], function (izin) {
+                                    return izin['izin_turu'] === record['izin_turu'].id && izin['process.process_requests.process_status'] === 1;
+                                }, true);
+
+                                angular.forEach(filteredLeaves, function (izin) {
+                                    if (izin["hesaplanan_alinacak_toplam_izin"]) {
+                                        checkUsedCount += izin["hesaplanan_alinacak_toplam_izin"];
+                                    }
+                                });
                             }
+
+                            if (record['mevcut_kullanilabilir_izin'] === 0 || (record['mevcut_kullanilabilir_izin'] - checkUsedCount < record['hesaplanan_alinacak_toplam_izin'])) {
+                                if (!izin_turu["izin_borclanma_yapilabilir"]) {
+                                    return $filter('translate')('Leave.Validations.LeaveEnd');
+                                }
+                            }
+                            record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] || 0.0;
+
                             delete record["goreve_baslama_tarihi"];
+                            delete record['calisan_data'];
                             delete record["izin_turu_data"];
                             delete record["dogum_tarihi"];
                             delete record["alinan_izinler"];
@@ -1718,15 +1952,38 @@ angular.module('ofisim')
                              * İzin tipinin yıllık hakedilen limiti doldurup doldurmadığı kontrol ediliyor.
                              * Bu yıl aynı türden aldığı(örneğin mazeret izni) izinler yıllık hakedilen izin miktarını (yıllık hakedilen mazeret izni) geçiyor mu diye kontrol edilecek.
                              * */
-                            if (izin_turu["yillik_hakedilen_limit_gun"] && izin_turu["yillik_hakedilen_limit_gun"] != 0 && record["alinan_izinler"]) {
-                                var totalUsed = 0;
-                                angular.forEach(record["alinan_izinler"], function (izin) {
-                                    if (izin["hesaplanan_alinacak_toplam_izin"])
-                                        totalUsed += izin["hesaplanan_alinacak_toplam_izin"];
-                                });
+                            var filteredLeaves = $filter('filter')(record["alinan_izinler"], { izin_turu: record['izin_turu'].id }, true);
 
-                                if (totalUsed + record['hesaplanan_alinacak_toplam_izin'] > izin_turu["yillik_hakedilen_limit_gun"]) {
-                                    return "alamaz";
+                            if (izin_turu["yillik_hakedilen_limit_gun"] && izin_turu["yillik_hakedilen_limit_gun"] != 0) {
+                                var totalUsed = 0;
+                                if (filteredLeaves && filteredLeaves.length > 0) {
+                                    angular.forEach(filteredLeaves, function (izin) {
+                                        if (izin["hesaplanan_alinacak_toplam_izin"])
+                                            totalUsed += izin["hesaplanan_alinacak_toplam_izin"];
+                                    });
+                                }
+
+                                if (record['izin_turu_data'] && record['izin_turu_data']['saatlik_kullanim_yapilir']) {
+                                    var workHour = record['izin_turu_data']['toplam_calisma_saati'];
+
+                                    if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
+                                        var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
+                                        workHour = workHour - ogleTatili;
+                                    }
+
+                                    var maxLimit = workHour * izin_turu['yillik_hakedilen_limit_gun'];
+
+                                    if (maxLimit < totalUsed + record['hesaplanan_alinacak_toplam_izin']) {
+                                        if(record['izin_turu_data']['her_ay_yenilenir']) {
+                                            return $filter('translate')('Leave.Validations.NotHaveLimitHourMonth', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
+                                        }
+                                        return $filter('translate')('Leave.Validations.NotHaveLimitHour', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
+                                    }
+                                } else if (totalUsed + record['hesaplanan_alinacak_toplam_izin'] > izin_turu["yillik_hakedilen_limit_gun"]) {
+                                    if(record['izin_turu_data']['her_ay_yenilenir']) {
+                                        return $filter('translate')('Leave.Validations.NotHaveLimitDayMonth', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
+                                    }
+                                    return $filter('translate')('Leave.Validations.NotHaveLimitDay', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
                                 }
                             }
 
@@ -1737,13 +1994,17 @@ angular.module('ofisim')
                             if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != null && izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != 0) {
 
                                 if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
-                                    var workHour = record['izin_turu_data']["gunluk_toplam_calisma_saati"];
-                                    var maxLimit = workHour * izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"];
-                                    if (maxLimit < record["hesaplanan_alinacak_toplam_izin"]) {
-                                        return "alamaz";
+                                    var workHour = record['izin_turu_data']["toplam_calisma_saati"];
+                                    if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
+                                        var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
+                                        workHour = workHour - ogleTatili;
                                     }
-                                } else if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] < record["hesaplanan_alinacak_toplam_izin"]) {
-                                    return "alamaz";
+                                    var maxLimit = workHour * izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"];
+                                    if (maxLimit < record["talep_edilen_izin"]) {
+                                        return $filter('translate')('Leave.Validations.OneGoHour', { total_hour: izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] * maxLimit });
+                                    }
+                                } else if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] < record["talep_edilen_izin"]) {
+                                    return $filter('translate')('Leave.Validations.OneGoDay', { total_hour: izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] });
                                 }
                             }
 
@@ -1756,7 +2017,7 @@ angular.module('ofisim')
                                 var start_day = moment(record["baslangic_tarihi"]);
                                 var finish_day = moment(record["bitis_tarihi"]);
                                 var start_day_added = start_day.add(-1, 'days')
-                                var day = moment(start_day_added).format('dddd');
+                                //var day = moment(start_day_added).format('dddd');
 
                                 var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
                                 if (workSaturdays.length > 0 && workSaturdays[0].value === 't') {
@@ -1765,56 +2026,163 @@ angular.module('ofisim')
                                     workSaturdays = false;
                                 }
 
-                                var isWeekend = (day == 'Pazar' || day == 'Sunday');
+                                var isWeekend = moment(start_day_added).isoWeekday() === 7;
 
-                                if (!isWeekend && workSaturdays) {
-                                    isWeekend = (day == 'Cumartesi' || day == 'Saturday');
+                                if (!isWeekend && !workSaturdays) {
+                                    isWeekend = moment(start_day_added).isoWeekday() === 6;
                                 }
 
                                 var isBusinessDay = moment(moment(start_day_added).format('YYYY-MM-DD')).isBusinessDay();
 
-                                if (!isWeekend && !isBusinessDay) {
-                                    return "alamaz"
+                                if (isBusinessDay) {
+                                    for (var i = 0; i < $rootScope.holidaysData.length; i++) {
+                                        var holiday = $rootScope.holidaysData[i];
+                                        if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(start_day_added.format("YYYY-MM-DD")).isSame(moment(holiday.date).format("YYYY-MM-DD"))) {
+                                            isBusinessDay = false;
+                                        }
+                                    }
                                 }
-                                var finish_day_added = finish_day.add(1, 'days');
-                                day = moment(finish_day_added).weekday();
-                                isWeekend = (day == 'Pazar' || day == 'Sunday');
-                                if (!isWeekend && workSaturdays) {
-                                    isWeekend = (day == 'Cumartesi' || day == 'Saturday');
+
+                                if (!isWeekend && !isBusinessDay) {
+                                    return $filter('translate')('Leave.Validations.InfusibleWithHolidays');
+                                }
+                                var finish_day_added = finish_day;
+
+                                if (izin_turu["saatlik_kullanim_yapilir"]) {
+                                    finish_day_added = finish_day.add(1, 'days');
+                                }
+
+                                //var finish_day_added = finish_day.add(1, 'days');
+                                //day = moment(finish_day_added).weekday();
+                                isWeekend = moment(finish_day_added).isoWeekday() === 7;
+                                if (!isWeekend && !workSaturdays) {
+                                    isWeekend = moment(finish_day_added).isoWeekday() === 6;
                                 }
 
                                 isBusinessDay = moment(moment(finish_day_added).format('YYYY-MM-DD')).isBusinessDay();
+
+                                if (isBusinessDay) {
+                                    for (var i = 0; i < $rootScope.holidaysData.length; i++) {
+                                        var holiday = $rootScope.holidaysData[i];
+                                        if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(finish_day_added.format("YYYY-MM-DD")).isSame(moment(holiday.date).format("YYYY-MM-DD"))) {
+                                            isBusinessDay = false;
+                                        }
+                                    }
+                                }
+
                                 if (!isWeekend && !isBusinessDay) {
-                                    return "alamaz"
+                                    return $filter('translate')('Leave.Validations.InfusibleWithHolidays');
                                 }
                             }
 
                             /*
-                            * Doğum günü izni için kurallar kontrol ediliyor.
-                            *
-                            * */
+                             * Doğum günü izni için kurallar kontrol ediliyor.
+                             *
+                             * */
 
                             if (izin_turu["dogum_gunu_izni"]) {
-                                var dogum_tarihi = moment(record["dogum_tarihi"]);
-                                var start_day = moment(record["baslangic_tarihi"]);
-                                dogum_tarihi = moment(dogum_tarihi.year(start_day.year()).toISOString());
+                                //Etiya Özel Doğum Günü izni 1 hafta önce veya 3 hafta sonra kullanılması durumu
+                                if (izin_turu['1_hafta_once_ve_3_hafta_sonra_arasinda_kullanilir']) {
+                                    var current = moment(record["baslangic_tarihi"]);
+                                    var first = moment(record["dogum_tarihi"]).set('year', moment().get('year')).subtract(1, 'weeks');
+                                    var end = moment(record["dogum_tarihi"]).set('year', moment().get('year')).add(3, 'weeks');
 
-                                if (izin_turu["dogum_gunu_izni_kullanimi"].includes("15")) {
-                                    var calculatedField = start_day.diff(dogum_tarihi, 'days');
+                                    var dateChecker = moment(current.format('YYYY-MM-DD')).isBetween(first.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), null, '[]');
+                                    if (!dateChecker) {
+                                        return 'Mutlu Yıllar! Doğumgünü iznini doğum gününün 1 hafta öncesinden başlayarak 3 hafta sonrasına kadar olan 4 haftalık süre diliminde kullanabilirsin. İzin tarihini değiştirerek tekrar denemelisin.';
+                                    }
 
-                                    if (calculatedField < 0)
-                                        calculatedField = calculatedField * -1;
+                                } else {
+                                    var dogum_tarihi = moment(record["dogum_tarihi"]);
+                                    var start_day = moment(record["baslangic_tarihi"]);
+                                    dogum_tarihi = moment(dogum_tarihi.year(start_day.year()).toISOString());
 
-                                    if (calculatedField > 15) {
-                                        return "alamaz";
+                                    if (izin_turu["dogum_gunu_izni_kullanimi"].includes("15")) {
+                                        var calculatedField = start_day.diff(dogum_tarihi, 'days');
+
+                                        if (calculatedField < 0)
+                                            calculatedField = calculatedField * -1;
+
+                                        if (calculatedField > 15) {
+                                            return $filter('translate')('Leave.Validations.BirthDayLimitDay');
+                                        }
+                                    }
+                                    else if (dogum_tarihi.month() !== start_day.month()) {
+                                        return $filter('translate')('Leave.Validations.BirthDayLimitMonth');
                                     }
                                 }
-                                else if (dogum_tarihi.month() !== start_day.month()) {
-                                    return "alamaz";
+
+                            }
+
+                            //Etiya Özel Mazeret İzni Arka Arkaya 3 gün Alınamaz.
+                            if (izin_turu['3_gun_arka_arkaya_kullanilamasin'] && filteredLeaves && filteredLeaves.length > 0) {
+                                if (filteredLeaves.length > 0) {
+                                    function calculateDate(date, operation) {
+                                        var isSaturday = moment(date).isoWeekday() === 6;
+                                        var isSunday = moment(date).isoWeekday() === 7;
+
+                                        if (isSaturday || isSunday || !moment(date).isBusinessDay()) {
+                                            if (operation == 'subtract') {
+                                                return calculateDate(moment(date).subtract(1, 'days'), operation);
+                                            } else if (operation == 'add') {
+                                                return calculateDate(moment(date).add(1, 'days'), operation);
+                                            }
+                                        } else
+                                            return date;
+                                    }
+
+                                    var current = moment(record['baslangic_tarihi']).format('YYYY-MM-DD');
+                                    var st1 = calculateDate(moment(current).subtract(1, 'days'), 'subtract').format('YYYY-MM-DD');
+                                    var st2 = calculateDate(moment(st1).subtract(1, 'days'), 'subtract').format('YYYY-MM-DD');
+
+                                    var st3 = calculateDate(moment(current).add(1, 'days'), 'add').format('YYYY-MM-DD');
+                                    var st4 = calculateDate(moment(st3).add(1, 'days'), 'add').format('YYYY-MM-DD');
+
+                                    var check1 = false;
+                                    var check2 = false;
+                                    var check3 = false;
+                                    var check4 = false;
+
+                                    var calDateCheck1 = 0;
+                                    var calDateCheck2 = 0;
+                                    var calDateCheck3 = 0;
+                                    var calDateCheck4 = 0;
+
+                                    for (var i = 0; i < filteredLeaves.length; i++) {
+                                        if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st1) {
+                                            calDateCheck1 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check1 = true;
+                                        }
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st2) {
+                                            calDateCheck2 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check2 = true;
+                                        }
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st3) {
+                                            calDateCheck3 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check3 = true;
+                                        }
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st4) {
+                                            calDateCheck4 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check4 = true;
+                                        }
+
+                                        /*if (moment(record['baslangic_tarihi']).isBetween(moment(mazeretIzinleri[i].baslangic_tarihi), moment(mazeretIzinleri[i].bitis_tarihi), null, '[)') ||
+                                         moment(record['bitis_tarihi']).isBetween(moment(mazeretIzinleri[i].baslangic_tarihi), moment(mazeretIzinleri[i].bitis_tarihi), null, '(}') ||
+                                         (moment(record['baslangic_tarihi']).isSameOrBefore(moment(mazeretIzinleri[i].baslangic_tarihi)) && moment(record['bitis_tarihi']).isSameOrAfter(moment(mazeretIzinleri[i].bitis_tarihi)))
+                                         ) {
+                                         return $filter('translate')('Leave.Validations.AlreadyHave');
+                                         }*/
+
+
+                                    }
+
+                                    if ((check1 && check2 && calDateCheck1 + calDateCheck2 >= 16) || (check3 && check4 && calDateCheck3 + calDateCheck4 >= 16) || (check1 && check3 && calDateCheck1 + calDateCheck3 >= 16))
+                                        return 'Üst üste 16 saatlik mazeret izni girişi yaptığın için, 16 saati takiben mazeret izni girişi yapamazsın.';
                                 }
                             }
 
                             delete record["goreve_baslama_tarihi"];
+                            delete record['calisan_data']
                             delete record["dogum_tarihi"];
                             delete record["izin_turu_data"];
                             delete record["alinan_izinler"];
@@ -1837,39 +2205,47 @@ angular.module('ofisim')
                     }
 
                     if (module.name === 'izinler') {
+
+                        if (record['baslangic_tarihi'] && !record['bitis_tarihi'] && record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
+                            var defaultDate = new Date(record['baslangic_tarihi']);
+                            defaultDate.setHours(8, 0, 0, 0);
+                            record['bitis_tarihi'] = new Date(defaultDate).toISOString();
+                            record['baslangic_tarihi'] = new Date(defaultDate).toISOString();
+                        }
+
                         if (record['baslangic_tarihi'] && record['bitis_tarihi']) {
                             var baslangicTarihi = new Date(record['baslangic_tarihi']);
                             var bitisTarihi = new Date(record['bitis_tarihi']);
 
                             /*
-                            * Bitiş tarihi başlama tarihinde önceyse bitiş tarihi başlangıç tarihine eşitleniyor.
-                            * Saatlik kullanım yapılıyor ise saat setleniyor.
-                            * */
+                             * Bitiş tarihi başlama tarihinde önceyse bitiş tarihi başlangıç tarihine eşitleniyor.
+                             * Saatlik kullanım yapılıyor ise saat setleniyor.
+                             * */
                             if (bitisTarihi < baslangicTarihi) {
                                 bitisTarihi = angular.copy(baslangicTarihi);
                                 record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
                                 record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
                             }
 
-                            //if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"] &&
-                            //    ((baslangicTarihi.getMonth() !== bitisTarihi.getMonth() ||
-                            //        baslangicTarihi.getDate() !== bitisTarihi.getDate() ||
-                            //        baslangicTarihi.getYear() !== bitisTarihi.getYear()) ||
-                            //        bitisTarihi.getHours() === baslangicTarihi.getHours())) {
+                            /*if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"] &&
+                             ((baslangicTarihi.getMonth() !== bitisTarihi.getMonth() ||
+                             baslangicTarihi.getDate() !== bitisTarihi.getDate() ||
+                             baslangicTarihi.getYear() !== bitisTarihi.getYear()) ||
+                             (bitisTarihi.getHours() === baslangicTarihi.getHours() && bitisTarihi.getMinutes() === baslangicTarihi.getMinutes()))) {
 
-                            //    baslangicTarihi = angular.copy(baslangicTarihi);
-                            //    baslangicTarihi.setHours(8, 0, 0, 0);
-                            //    record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
+                             baslangicTarihi = angular.copy(baslangicTarihi);
+                             baslangicTarihi.setHours(8, 0, 0, 0);
+                             record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
 
-                            //    bitisTarihi = angular.copy(baslangicTarihi);
-                            //    bitisTarihi.setHours(17, 0, 0, 0);
-                            //    record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
-                            //}
+                             bitisTarihi = angular.copy(baslangicTarihi);
+                             bitisTarihi.setHours(17, 0, 0, 0);
+                             record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                             }*/
                         }
 
                         if (record['izin_turu_data'] && record['baslangic_tarihi'] && record['bitis_tarihi']) {
 
-                            if (record['izin_turu_data']["yillik_izin"] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
+                            if (!record['izin_turu_data']["saatlik_kullanim_yapilir"] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
                                 var bitisTarihi = new Date(record['bitis_tarihi']);
                                 var baslangicTarihi = new Date(record['baslangic_tarihi']);
                                 bitisTarihi.setHours(0, 0, 0, 0);
@@ -1908,44 +2284,90 @@ angular.module('ofisim')
                             var toDate = moment(record["bitis_tarihi"]);
 
                             if (record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
-                                var calismaSaati = record['izin_turu_data']["toplam_calisma_saati"];
-                                if (toDate.diff(fromDate, "days") > 0) {
+                                var calismaSaati = record['izin_turu_data']['toplam_calisma_saati'];
+
+                                if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
+                                    var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
+                                    calismaSaati = calismaSaati - ogleTatili;
+                                }
+
+                                if (!moment(fromDate.format("YYYY-MM-DD")).isSame(toDate.format("YYYY-MM-DD"))) {
                                     var bitisTarihi = new Date(record['baslangic_tarihi']);
                                     bitisTarihi = angular.copy(bitisTarihi);
-                                    bitisTarihi.setHours(17, 0, 0, 0);
+                                    record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                                    toDate = moment(record["bitis_tarihi"]);
+                                }
+
+                                var duration = moment.duration(moment(record['bitis_tarihi']).diff(moment(record["baslangic_tarihi"])))._data;
+                                if (duration.hours < 0 || duration.minutes < 0) {
+                                    bitisTarihi.setHours(moment(record["baslangic_tarihi"]).hour(), moment(record["baslangic_tarihi"]).minute(), 0, 0);
+                                    record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                                    toDate = moment(record["bitis_tarihi"]);
+                                }
+
+                                var differenceAsHours = moment.duration(toDate.diff(fromDate)).asHours();
+                                var workHour = record['izin_turu_data']["toplam_calisma_saati"];
+
+                                /*if(record['izin_turu_data']['ogle_tatilini_dikkate_al']){
+                                 var ogleTatili = moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2);
+                                 workHour = workHour - ogleTatili;
+                                 }*/
+
+                                if (differenceAsHours > workHour) {
+                                    var diff = differenceAsHours - workHour;
+                                    bitisTarihi = moment(bitisTarihi).add(-diff, 'hours');
                                     record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
                                     toDate = moment(record["bitis_tarihi"]);
                                 }
 
                                 var calculatedField = toDate.diff(fromDate, 'minutes') / 60;
 
-                                if (record['izin_turu_data']["saatlik_kullanimi_yukari_yuvarla"]) {
-                                    if (calismaSaati <= calculatedField) {
-                                        record['hesaplanan_alinacak_toplam_izin'] = calismaSaati;
-                                    } else {
-                                        if (calismaSaati / 2 >= calculatedField) {
-                                            record['hesaplanan_alinacak_toplam_izin'] = calismaSaati / 2;
+                                if (record['izin_turu_data']["ogle_tatilini_dikkate_al"]) {
+                                    var format = "HH:mm:ss";
+                                    var oBaslangic = moment(record['izin_turu_data']["ogle_tatili_baslangic"]).format(format),
+                                        oBitis = moment(record['izin_turu_data']["ogle_tatili_bitis"]).format(format),
+                                        sBaslangic = moment(fromDate).format(format),
+                                        sBitis = moment(toDate).format(format);
+
+                                    var di = 0;
+                                    if (moment(oBaslangic, format).isBefore(moment(sBaslangic, format)) || moment(oBaslangic, format).isSame(moment(sBaslangic, format))) {
+                                        if (moment(oBitis, format).isBefore(moment(sBaslangic, format))) {
+                                            //console.log("t1 t2 ba bi")
+                                            di = 0;
+                                        } else if (moment(oBitis, format).isBefore(moment(sBitis, format))) {
+                                            di = moment(oBitis, format).diff(moment(sBaslangic, format), 'minutes') / 60;
+                                            //console.log("t1 ba t2 bi");
                                         } else {
-                                            record['hesaplanan_alinacak_toplam_izin'] = calismaSaati;
+                                            di = calculatedField;
+                                            //console.log("t1 ba bi t2");
+                                        }
+                                    } else if (moment(oBaslangic, format).isBefore(moment(sBitis, format)) || moment(oBaslangic, format).isSame(moment(sBitis, format))) {
+                                        // t1 bi
+                                        if (moment(oBitis, format).isBefore(moment(sBitis, format))) {
+                                            //console.log("ba t1 t2 bi");
+                                            di = moment(oBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
+                                        } else if (moment(oBitis, format).isAfter(moment(sBitis, format))) {
+                                            //console.log("ba t1 bi t2");
+                                            di = moment(sBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
                                         }
                                     }
-
-                                } else {
-                                    if (calismaSaati <= calculatedField) {
-                                        record['hesaplanan_alinacak_toplam_izin'] = calismaSaati;
-                                    } else {
-                                        record['hesaplanan_alinacak_toplam_izin'] = calculatedField;
-                                    }
+                                    /*else if(moment(oBaslangictime, format).isAfter(moment(sBitis, format))){
+                                     console.log("ba bi t1 t2");
+                                     } else {
+                                     console.log("else");
+                                     }*/
+                                    calculatedField -= di;
                                 }
+
                             } else {
                                 if (record['izin_turu_data']["izin_hakkindan_takvim_gunu_olarak_dusulsun"]) {
-                                    calculatedField = fromDate.diff(toDate, 'days');
+                                    calculatedField = toDate.diff(fromDate, 'days');
                                 }
                                 else {
                                     calculatedField = fromDate.businessDiff(toDate);
                                 }
 
-                                if (record['izin_turu_data'] && record['izin_turu_data']["yillik_izin"] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
+                                if (record['izin_turu_data'] && !record['izin_turu_data']["saatlik_kullanim_yapilir"] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
                                     var checker = calculatedField;
                                     if (fromDate.format("YYYY.MM.DD") !== toDate.format("YYYY.MM.DD")) {
                                         if (record['from_entry_type'].id != record['to_entry_type'].id) {
@@ -1967,23 +2389,6 @@ angular.module('ofisim')
                                     if (checker >= 0)
                                         calculatedField = checker;
 
-                                    var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
-                                    if (workSaturdays.length > 0)
-                                        workSaturdays = workSaturdays[0];
-                                    else
-                                        workSaturdays.value = 'f';
-
-                                    if (record['izin_turu_data']["cuma_gunu_alinan_izinlere_cumartesiyi_de_ekle"] && calculatedField > 1 && workSaturdays.value !== 't') {
-                                        var fridays = moment(fromDate).weekdaysInBetween(toDate, [5]);
-
-                                        if (fridays) {
-                                            if (fridays.length) {
-                                                calculatedField += fridays.length;
-                                            } else {
-                                                calculatedField += 1;
-                                            }
-                                        }
-                                    }
                                 } else {
                                     var bitisTarihi = new Date(record['bitis_tarihi']);
                                     bitisTarihi.setHours(0, 0, 0, 0);
@@ -1996,12 +2401,95 @@ angular.module('ofisim')
                                     fromDate = moment(record["baslangic_tarihi"]);
                                     toDate = moment(record["bitis_tarihi"]);
                                     if (record['izin_turu_data']["izin_hakkindan_takvim_gunu_olarak_dusulsun"]) {
-                                        calculatedField = fromDate.diff(toDate, 'days');
+                                        calculatedField = toDate.diff(fromDate, 'days');
                                     }
                                     else {
                                         calculatedField = fromDate.businessDiff(toDate);
                                     }
                                 }
+                            }
+
+                            var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
+                            if (workSaturdays.length > 0)
+                                workSaturdays = workSaturdays[0];
+                            else
+                                workSaturdays.value = 'f';
+
+                            if (record['izin_turu_data']["cuma_gunu_alinan_izinlere_cumartesiyi_de_ekle"] &&
+                                calculatedField >= 1 &&
+                                workSaturdays.value !== 't' &&
+                                !record['izin_turu_data']["saatlik_kullanim_yapilir"] &&
+                                !record['izin_turu_data']["izin_hakkindan_takvim_gunu_olarak_dusulsun"]
+                            ) {
+                                var fridays = moment(fromDate).weekdaysInBetween(toDate, [5]);
+
+                                //Kütüphane 1 gün varsa yanlış hesaplıyor. Extra hesaplama yapılıyor.
+
+                                //var isDayFriday = moment(fromDate).format('dddd');
+
+                                //İzin başlangıç günü cuma ise weekdaysInBetween metodu başlangıç tarihini işin içine katmadığı için bu tarihi kendimiz ekliyoruz.
+                                /*
+                                 * Başlangıç Cuma öğleden sonra ise Cumayı her zaman 0.5 gün sayıyoruz.
+                                 * Bağlangıç Cuma Sabah ve Bitiş Pazartesi Öğleden Sonra ise ve Cuma alınan izinleri 2 gün say seçiliyse Cumayı 2 gün sayıyoruz.
+                                 * Bağlangıç Cuma Sabah ve Bitiş Pazartesi Sabah ise ve Cuma alınan izinleri 2 gün say seçiliyse ama Tek Başına Cumaları 1 gün say seçili ise Cumayı 1 gün sayıyoruz diğer türlü 2 gün sayıyoruz.
+                                 * */
+                                var isFromDateFriday = moment(fromDate).isoWeekday() === 5;
+                                if (isFromDateFriday && moment(fromDate).isBusinessDay()) {
+                                    //Alınan izin sadece cuma yı mı kapsıyor diye kontrol ediliyor. Yarım gün kuralları tarih değişikliği yaratmadığı için onlarda 1 gün üzerinden değerlendiriliyor.
+                                    if (toDate.diff(fromDate, 'days') <= 3) {
+                                        if (record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] ||
+                                            (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code != 'entry_type_afternoon' && record['to_entry_type'].system_code == 'entry_type_afternoon' && moment(toDate).isBusinessDay()) ||
+                                            (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code != 'entry_type_afternoon' && !record['izin_turu_data']['sadece_cuma_ise_tek_gun_say'])
+                                        ) {
+                                            calculatedField += 1;
+                                        }
+                                    } else if (calculatedField >= 2 && record['from_entry_type'].system_code != 'entry_type_afternoon') {
+                                        //Ağustos 10 Öğleden Sonra - 14 sabah record['from_entry_type'].system_code != 'entry_type_afternoon' kontrolü burda gerekli oluyor.
+                                        calculatedField += 1;
+                                    } else if (record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] ||
+                                        (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir'] && record['from_entry_type'].system_code != 'entry_type_afternoon')
+                                    ) {
+                                        //Cuma gününün tatillerle birleştirilmiş halinde tarihler arasında ki diff 3 den fazla olduğu için extra kontrol ediliyor.
+                                        if (calculatedField == 1 && !record['izin_turu_data']['sadece_cuma_ise_tek_gun_say'])
+                                            calculatedField += 1;
+                                    }
+                                }
+
+                                if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && calculatedField < 2)
+                                    calculatedField -= 1;
+
+                                //Bitiş tarihini işe tekrar başlama olarak gördüğümüz için ve aşşağıdaki kontrol bunu bize sagladığı için bu tarihi manuel çıkarıyoruz.
+                                /*var isToDateFriday = moment(toDate).isoWeekday() === 5;
+                                 if(isToDateFriday && moment(toDate).isBusinessDay())
+                                 calculatedField -= 1;*/
+
+
+                                if (fridays) {
+                                    if (fridays.length) {
+                                        for (var x = 0; x < fridays.length; x++) {
+                                            if (moment(fridays.length[x]).isBusinessDay()) {
+                                                calculatedField += 1;
+                                            }
+                                        }
+                                    } else {
+                                        if (fridays.isBusinessDay())
+                                            calculatedField += 1;
+                                    }
+                                }
+                            }
+
+                            //Yarım gün tatiller alınan izinden çıkarılıyor
+                            for (var i = 0; i < $rootScope.holidaysData.length; i++) {
+                                var holiday = $rootScope.holidaysData[i];
+                                if (holiday.half_day && moment(holiday.date).isBusinessDay()
+                                    && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')
+                                ) {
+                                    calculatedField -= 0.5;
+                                }
+                            }
+
+                            if (record['izin_turu_data']["saatlik_kullanim_yapilir"] && record['izin_turu_data']['saatlik_kullanimi_yukari_yuvarla']) {
+                                calculatedField = Math.ceil(calculatedField);
                             }
 
                             var requestLeave = calculatedField;
@@ -2103,22 +2591,7 @@ angular.module('ofisim')
 
                                 view.fields = viewFields;
 
-                                if (view.system_type === 'system') {
-                                    if (view.filters.length === 1) {
-                                        if (view.filters[0].field.indexOf('process.') < 0)
-                                            view.label = $filter('translate')('Module.My', { title: module['label_' + $rootScope.language + '_plural'] });
-                                        else
-                                            view.label = view['label_' + $rootScope.language];
-                                    }
-                                    else if (view.filters.length === 0) {
-                                        view.label = $filter('translate')('Module.All', { title: module['label_' + $rootScope.language + '_plural'] });
-                                    }
-                                    else {
-                                        view.label = view['label_' + $rootScope.language];
-                                    }
-                                } else {
-                                    view.label = view['label_' + $rootScope.language];
-                                }
+                                view.label = view['label_' + $rootScope.language];
 
                                 views.push(view);
                             }
@@ -2392,9 +2865,11 @@ angular.module('ofisim')
                                                 continue;
 
                                             if (field.data_type === 'lookup' && field.lookup_type === 'users' && viewFilter.value === '0')
-                                                viewFilter.value = $rootScope.user.ID;
+                                                viewFilter.value = $rootScope.user.id;
 
                                             if (field.data_type === 'multiselect')
+                                                viewFilter.value = viewFilter.value.split('|');
+                                            if (field.data_type === 'tag')
                                                 viewFilter.value = viewFilter.value.split('|');
 
                                             filters = that.setFilters(filters, field, fieldName, viewFilter.value, viewFilter.operator, viewFilter.no, true)
@@ -2461,15 +2936,44 @@ angular.module('ofisim')
                                                                     sortDirection = viewState.sort_direction;
                                                                 }
                                                                 else {
-                                                                    sortField = 'created_at';
-                                                                    sortDirection = 'desc';
+                                                                    if(scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri'){
+                                                                        sortField = 'islem_tarihi,id';
+                                                                        sortDirection = 'desc';
+                                                                    }
+                                                                    else if(scope.module.name === 'current_accounts'){
+                                                                        sortField = 'date,id';
+                                                                        sortDirection = 'desc';
+                                                                    }
+                                                                    else if (scope.module.name === 'stock_transactions') {
+                                                                        sortField = 'transaction_date,id';
+                                                                        sortDirection = 'desc';
+                                                                    } 
+                                                                    else{
+                                                                        sortField = 'created_at';
+                                                                        sortDirection = 'desc';
+                                                                    }
+
                                                                     newViewState(sortField, sortDirection, viewId);
                                                                 }
                                                             }
                                                             else {
                                                                 if (viewState) {
-                                                                    viewState.sort_field = sortField;
-                                                                    viewState.sort_direction = sortDirection;
+                                                                    if(scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri'){
+                                                                        sortField = 'islem_tarihi,id';
+                                                                        sortDirection = 'desc';
+                                                                    }
+                                                                    else if(scope.module.name === 'current_accounts'){
+                                                                        sortField = 'date,id';
+                                                                        sortDirection = 'desc';
+                                                                    }
+                                                                    else if (scope.module.name === 'stock_transactions') {
+                                                                        sortField = 'transaction_date,id';
+                                                                        sortDirection = 'desc';
+                                                                    } 
+                                                                    else{
+                                                                        viewState.sort_field = sortField;
+                                                                        viewState.sort_direction = sortDirection;
+                                                                    }
 
                                                                     that.setViewState(viewState, scope.module.id, viewState.id);
                                                                 }
@@ -2557,6 +3061,15 @@ angular.module('ofisim')
                                                                                         valueArray.push(val.label[$rootScope.user.tenantLanguage]);
                                                                                     }
 
+                                                                                    search.value = valueArray;
+                                                                                }
+                                                                                if (field.data_type === 'tag') {
+                                                                                    var valueArray = [];
+
+                                                                                    for (var m = 0; m < search.value.length; m++) {
+                                                                                        var val = search.value[m];
+                                                                                        valueArray.push(val.text);
+                                                                                    }
                                                                                     search.value = valueArray;
                                                                                 }
 

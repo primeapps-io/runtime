@@ -1,9 +1,8 @@
 'use strict';
 
 angular.module('ofisim')
-    .controller('PurchaseProductsController', ['$rootScope', '$scope', '$state', 'config', 'ngToast', '$localStorage', '$filter', 'ngTableParams', '$stateParams', 'PurchaseProductsService', 'ModuleService',
-        function ($rootScope, $scope, $state, config, ngToast, $localStorage, $filter, ngTableParams, $stateParams, PurchaseProductsService, ModuleService) {
-
+    .controller('PurchaseProductsController', ['$rootScope', '$scope', '$state', 'config', 'ngToast', '$localStorage', '$filter', 'ngTableParams', '$stateParams', 'helper', 'PurchaseProductsService', 'ModuleService', '$popover',
+        function ($rootScope, $scope, $state, config, ngToast, $localStorage, $filter, ngTableParams, $stateParams, helper, PurchaseProductsService, ModuleService, $popover) {
             if ($scope.$parent.$parent.type != 'purchase_orders')
                 return;
 
@@ -20,39 +19,72 @@ angular.module('ofisim')
                 $state.go('app.crm.dashboard');
                 return;
             }
+            $scope.fields = [];
+
+            $scope.purchaseProductModule.fields.forEach(function (field) {
+                $scope.fields[field.name] = field;
+            });
 
             $scope.productField = $filter('filter')($scope.purchaseProductModule.fields, { name: 'product' }, true)[0];
             $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
             $scope.productField.lookupModulePrimaryField = $filter('filter')($scope.productModule.fields, { name: 'name' }, true)[0];
 
+            $scope.productFields = [];
+            angular.forEach($scope.productModule.fields, function (productField) {
+                $scope.productFields[productField.name] = productField;
+            });
+
             ModuleService.getPicklists($scope.purchaseProductModule)
                 .then(function (picklists) {
-                    $scope.picklistsModule = picklists;
+                    $scope.picklistsModule = picklists
+                    $scope.usageUnitList = $scope.picklistsModule[$scope.fields['usage_unit'].picklist_id];
+                    $scope.currencyList = $scope.picklistsModule[$scope.fields['currency'].picklist_id];
+                });
+            ModuleService.getPicklists($scope.productModule)
+                .then(function (picklists) {
+                    $scope.productModulePicklists = picklists;
                 });
 
             $scope.setCurrentLookupProduct = function (product, field) {
                 $scope.currentLookupProduct = product;
                 $scope.productSelected = true;
-
-                field.special_type = "purchase_products";
+                field.special_type = "quate_products";
                 field.currentproduct = product;
                 field.selectProduct = $scope.selectProduct;
+                if (field.currentproduct.defaultCurrency || field.currentproduct.currencyConvertList) {
+                    delete field.currentproduct.defaultCurrency;
+                    delete field.currentproduct.currencyConvertList;
+                }
                 $scope.$parent.setCurrentLookupField(field);
             };
-
+            var isExtraField = true;
+            var additionalFields = ['unit_price', 'usage_unit', 'vat_percent'];
+            var extraadditionalFields = ['purchase_price'];
             $scope.lookup = function (searchTerm) {
-                var additionalFields = ['unit_price', 'usage_unit', 'vat_percent'];
-
-                if ($scope.$parent.$parent.currencyField)
-                    additionalFields.push('currency');
-
+                if (isExtraField) {
+                    for (var i = 0; extraadditionalFields.length > i; i++) {
+                        var field = $filter('filter')($scope.purchaseProductModule.fields, { name: extraadditionalFields[i] }, true);
+                        if (field.length > 0) {
+                            additionalFields.push(extraadditionalFields[i])
+                        }
+                    }
+                    if ($scope.$parent.$parent.currencyField)
+                        additionalFields.push('currency');
+                    isExtraField = false;
+                }
                 return ModuleService.lookup(searchTerm, $scope.productField, $scope.currentLookupProduct, additionalFields);
             };
 
-            $scope.addPurchaseProduct = function () {
+            $scope.addPurchaseProduct = function (separator) {
+
                 var purchaseProduct = {};
                 purchaseProduct.id = 0;
                 purchaseProduct.discount_type = 'percent';
+                if (separator) {
+                    purchaseProduct.separator = "";
+                    purchaseProduct.product = {};
+                }
+
                 var sortOrders = [];
 
                 angular.forEach($scope.$parent.$parent.purchaseProducts, function (purchaseProduct) {
@@ -67,22 +99,61 @@ angular.module('ofisim')
                 $scope.$parent.$parent.purchaseProducts.push(purchaseProduct);
             };
 
+            $scope.currencyConvert = function (purchaseProduct, value) {
+
+                var currencyConvertList = [];
+                switch (purchaseProduct.defaultCurrency) {
+                    case '₺':
+                        currencyConvertList['$'] = value * $scope.$parent.$parent.record.exchange_rate_usd_try;
+                        currencyConvertList['€'] = value * $scope.$parent.$parent.record.exchange_rate_eur_try;
+                        currencyConvertList['₺'] = value;
+                        break;
+                    case '$':
+
+                        currencyConvertList['₺'] = value * $scope.$parent.$parent.record.exchange_rate_try_usd;
+                        currencyConvertList['€'] = value * $scope.$parent.$parent.record.exchange_rate_eur_usd;
+                        currencyConvertList['$'] = value;
+                        break;
+                    case '€':
+                        currencyConvertList['₺'] = value * $scope.$parent.$parent.record.exchange_rate_try_eur;
+                        currencyConvertList['$'] = value * $scope.$parent.$parent.record.exchange_rate_usd_eur;
+                        currencyConvertList['€'] = value;
+                        break;
+                }
+                return currencyConvertList;
+
+            };
+
+            $scope.setVat = function (purchaseProduct) {
+                if (purchaseProduct.product.vat_percent) {
+                    purchaseProduct.vat_percent = purchaseProduct.product.vat_percent;
+                }
+            };
             $scope.selectProduct = function (purchaseProduct) {
                 if (!purchaseProduct.product)
                     return;
 
-                var unitPrice = 0;
+                if (!purchaseProduct.defaultCurrency) {
+                    purchaseProduct.defaultCurrency = purchaseProduct.product.currency.value;
+                    //purchaseProduct.currencyConvertList = $scope.currencyConvert(purchaseProduct, purchaseProduct.product.unit_price);
+                    purchaseProduct.currencyConvertList = $scope.currencyConvert(purchaseProduct, purchaseProduct.product.purchase_price);
+                } else {
+                    purchaseProduct.product.purchase_price = purchaseProduct.currencyConvertList[purchaseProduct.product.currency.value];
+                }
+
+                var purchasePrice = parseFloat(purchaseProduct.product.purchase_price);
 
                 if (!purchaseProduct.quantity)
                     purchaseProduct.quantity = 1;
+                purchaseProduct.purchase_price = purchasePrice;
+                purchaseProduct.amount = purchasePrice;
 
-                if ($scope.productSelected) {
-                    purchaseProduct.unit_price = unitPrice;
-                    purchaseProduct.amount = unitPrice;
+                if (purchaseProduct.product.usage_unit) {
+                    purchaseProduct.usage_unit = purchaseProduct.product.usage_unit;
+                }
 
-                    if (purchaseProduct.product.usage_unit) {
-                        purchaseProduct.usage_unit = purchaseProduct.product.usage_unit.label[$rootScope.language];
-                    }
+                if (purchaseProduct.product.currency) {
+                    purchaseProduct.currency = purchaseProduct.product.currency;
                 }
 
                 $scope.calculate(purchaseProduct);
@@ -102,16 +173,20 @@ angular.module('ofisim')
 
             $scope.calculate = function (purchaseProduct) {
                 var quantity = 0;
-                var unitPrice = 0;
+                var purchasePrice = 0;
 
                 if (!isNaN(purchaseProduct.quantity))
                     quantity = angular.copy(purchaseProduct.quantity);
 
-                if (!isNaN(purchaseProduct.unit_price))
-                    unitPrice = angular.copy(purchaseProduct.unit_price);
+                if (!isNaN(purchaseProduct.purchase_price))
+                    purchasePrice = angular.copy(purchaseProduct.purchase_price);
 
-                purchaseProduct.amount = quantity * unitPrice;
 
+                if ($scope.fields['no']) {
+                    purchaseProduct.no = 0;
+                }
+
+                purchaseProduct.amount = quantity * purchasePrice;
                 switch (purchaseProduct.discount_type) {
                     case 'percent':
                         if ($scope.$parent.$parent.record.contact && $scope.$parent.$parent.record.contact.discount && purchaseProduct.discount_percent === undefined && purchaseProduct.discount_percent !== null) {
@@ -138,20 +213,37 @@ angular.module('ofisim')
                             }
 
                             purchaseProduct.amount -= (purchaseProduct.amount * purchaseProduct.discount_percent) / 100;
+
+
                         }
-                        purchaseProduct.discount_amount = null;
+                        purchaseProduct.discount_amount = ((purchasePrice * quantity) * purchaseProduct.discount_percent) / 100;
+                        if ($scope.fields['unit_amount']) {
+                            purchaseProduct.unit_amount = purchaseProduct.amount / quantity;
+                        }
                         break;
                     case 'amount':
                         if (purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null && !isNaN(purchaseProduct.discount_amount)) {
-                            if (purchaseProduct.discount_amount > purchaseProduct.unit_price) {
-                                purchaseProduct.discount_amount = purchaseProduct.unit_price;
-                            }
+                            // if (purchaseProduct.discount_amount > purchaseProduct.unit_price) {
+                            //purchaseProduct.discount_amount = purchaseProduct.unit_price * purchaseProduct.quantity;
+                            // }
 
                             purchaseProduct.amount -= purchaseProduct.discount_amount;
-                        }
 
-                        purchaseProduct.discount_percent = null;
+                            purchaseProduct.discount_percent = (100 / (purchasePrice * quantity)) * purchaseProduct.discount_amount;
+                        }
+                        if ($scope.fields['unit_amount']) {
+                            purchaseProduct.unit_amount = purchaseProduct.amount / quantity;
+                        }
                         break;
+                }
+                if (purchaseProduct.product.purchase_price && (purchaseProduct.purchase_price === undefined || purchaseProduct.purchase_price === null)) {
+                    // purchaseProduct.purchase_price = $scope.currencyConvert(purchaseProduct, purchaseProduct.product.purchase_price)[purchaseProduct.product.currency.value];
+                } else {
+                    // purchaseProduct.purchase_price = $scope.currencyConvert(purchaseProduct, purchaseProduct.product.purchase_price)[purchaseProduct.product.currency.value];
+                }
+                if (purchaseProduct.purchase_price != undefined || purchaseProduct.purchase_price != null) {
+                    purchaseProduct.profit_amount = purchaseProduct.amount - purchaseProduct.purchase_price * quantity;
+                    purchaseProduct.profit_percent = ((purchaseProduct.amount - (quantity * purchaseProduct.purchase_price)) / (quantity * purchaseProduct.purchase_price)) * 100;
                 }
 
                 var vat = parseFloat(purchaseProduct.product.vat_percent || 0);
@@ -160,6 +252,7 @@ angular.module('ofisim')
             };
 
             $scope.calculateAll = function () {
+
                 var total = 0;
                 var vatTotal = 0;
                 var discount = 0;
@@ -167,24 +260,27 @@ angular.module('ofisim')
                 if ($scope.$parent.$parent.currencyField && $scope.$parent.$parent.record['currency']) {
                     $scope.$parent.$parent.currencyField.validation.readonly = true;
                 }
+                var counter = 0;
                 angular.forEach($scope.$parent.$parent.purchaseProducts, function (purchaseProduct) {
                     if (!purchaseProduct.amount || purchaseProduct.deleted)
                         return;
 
+                    counter++;
                     if (purchaseProduct.quantity < 0) {
                         purchaseProduct.quantity = 0;
                     }
 
-                    if (purchaseProduct.unit_price < 0) {
-                        purchaseProduct.unit_price = 0;
+                    if (purchaseProduct.purchase_price < 0) {
+                        purchaseProduct.purchase_price = 0;
                     }
 
-                    if (purchaseProduct.unit_price > 1000000000000) {
-                        purchaseProduct.unit_price = 1000000000000;
+                    if (purchaseProduct.purchase_price > 1000000000000) {
+                        purchaseProduct.purchase_price = 1000000000000;
                     }
 
                     var amount = angular.copy(purchaseProduct.amount);
                     var vat = angular.copy(purchaseProduct.vat) || 0;
+
                     if (purchaseProduct.product.currency && $scope.$parent.$parent.record.currency && purchaseProduct.product.currency.value && $scope.$parent.$parent.record.currency.value && purchaseProduct.product.currency.value != $scope.$parent.$parent.record.currency.value) {
                         switch ($scope.$parent.$parent.record.currency.value) {
                             case '₺':
@@ -228,16 +324,18 @@ angular.module('ofisim')
                     if (!vatItem) {
                         vatItem = {};
                         vatItem.percent = parseFloat(purchaseProduct.product.vat_percent || 0);
-                        vatItem.total = purchaseProduct.vat;
+                        vatItem.total = vat;
 
                         if (vat)
                             vatList.push(vatItem);
                     }
                     else {
-                        vatItem.total += purchaseProduct.vat || 0;
+                        vatItem.total += vat || 0;
                     }
                 });
-
+                if ($scope.$parent.$parent.currencyField && $scope.$parent.$parent.record['currency'] && counter < 1) {
+                    $scope.$parent.$parent.currencyField.validation.readonly = false;
+                }
                 if ($scope.$parent.$parent.record.discount_percent || $scope.$parent.$parent.record.discount_amount) {
                     switch ($scope.$parent.$parent.record.discount_type) {
                         case 'percent':
@@ -295,5 +393,25 @@ angular.module('ofisim')
 
                 return vatListStr.slice(0, -1);
             };
+
+            $scope.up = function (index, order) {
+                var purchaseProducts = $filter('filter')($scope.$parent.$parent.purchaseProducts, { deleted: false });
+                purchaseProducts = $filter('orderBy')($scope.$parent.$parent.purchaseProducts, 'order');
+
+                var prev = angular.copy(purchaseProducts[index - 1]);
+                purchaseProducts[index].order = prev.order;
+                purchaseProducts[index - 1].order = angular.copy(order);
+            };
+            $scope.down = function (index, order) {
+                var purchaseProducts = $filter('filter')($scope.$parent.$parent.purchaseProducts, { deleted: false });
+                purchaseProducts = $filter('orderBy')($scope.$parent.$parent.purchaseProducts, 'order');
+
+                var prev = angular.copy(purchaseProducts[index + 1]);
+                purchaseProducts[index].order = prev.order;
+                purchaseProducts[index + 1].order = angular.copy(order);
+            };
+            $scope.productInfo = function (purchaseProduct) {
+                $scope.currentProduct = purchaseProduct;
+            }
         }
     ]);

@@ -22,6 +22,7 @@
                             <tr>
                                 <th>{{'Setup.Templates.TemplateName' | translate}}</th>
                                 <th>{{'Setup.Templates.Module' | translate}}</th>
+                                <th> {{'Module.ExcelType' | translate }}</th>
                                 <th>{{'Setup.Templates.Status' | translate}}</th>
                                 <th>{{'Setup.Templates.TemplateFile' | translate}}</th>
                                 <th></th>
@@ -31,6 +32,7 @@
                             <tr ng-repeat="template in templates">
                                 <td>{{template.name}}</td>
                                 <td>{{template.module['label_'+language+'_plural']}}</td>
+                                <td>{{template.subject}}</td>
                                 <td>{{template.active ? ('Setup.Modules.Active' | translate) : ('Setup.Modules.Passive' | translate)}}</td>
                                 <td><a href="{{getDownloadUrl(template)}}" target="_blank">{{'Common.Download' | translate}}</a></td>
                                 <td class="text-right">

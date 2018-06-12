@@ -8,6 +8,7 @@ angular.module('ofisim')
             $scope.module = $filter('filter')($rootScope.modules, { name: 'leads' }, true)[0];
             $scope.currentDayMin = helper.getCurrentDateMin().toISOString();
             $scope.currentDayMax = helper.getCurrentDateMax().toISOString();
+            $scope.deleted = false;
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -76,6 +77,7 @@ angular.module('ofisim')
 
                 var convertRequest = {};
                 convertRequest.lead_id = $scope.lead.id;
+                convertRequest.deleted = $scope.deleted;
 
                 if ($scope.opportunity) {
                     convertRequest.opportunity = $scope.opportunity;

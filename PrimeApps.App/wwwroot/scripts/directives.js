@@ -642,8 +642,8 @@ angular.module('ofisim')
 
                         $scope.isRowSelected = function (id) {
                             return $scope.$parent['selectedRows' + $scope.type].filter(function (selectedItem) {
-                                    return selectedItem.id == id;
-                                }).length > 0;
+                                return selectedItem.id == id;
+                            }).length > 0;
                         };
 
                         $scope.$parent.$parent.$parent.isManyToMany = isManyToMany;
@@ -1075,8 +1075,8 @@ angular.module('ofisim')
             });
         }])
 
-    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal',
-        function ($timeout, ngToast, ModuleService, $modal) {
+    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config',
+        function ($timeout, ngToast, ModuleService, $modal, $http, config) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {
@@ -1201,12 +1201,12 @@ angular.module('ofisim')
                     style_formats: [
                         {
                             title: ($rootScope.language === 'tr' ? 'Yazı Boyutu' : 'Font Size'), items: [
-                            { title: ($rootScope.language === 'tr' ? 'Çok Büyük' : 'Very Big'), block: 'h2', styles: { fontWeight: 'normal' } },
-                            { title: ($rootScope.language === 'tr' ? 'Büyük' : 'Big'), block: 'h3', styles: { fontWeight: 'normal' } },
-                            { title: ($rootScope.language === 'tr' ? 'Normal' : 'Normal'), block: 'h4', styles: { fontWeight: 'normal' } },
-                            { title: ($rootScope.language === 'tr' ? 'Küçük' : 'Small'), block: 'h5', styles: { fontWeight: 'normal' } },
-                            { title: ($rootScope.language === 'tr' ? 'Çok Küçük' : 'Very Small'), block: 'h6', styles: { fontWeight: 'normal' } }
-                        ]
+                                { title: ($rootScope.language === 'tr' ? 'Çok Büyük' : 'Very Big'), block: 'h2', styles: { fontWeight: 'normal' } },
+                                { title: ($rootScope.language === 'tr' ? 'Büyük' : 'Big'), block: 'h3', styles: { fontWeight: 'normal' } },
+                                { title: ($rootScope.language === 'tr' ? 'Normal' : 'Normal'), block: 'h4', styles: { fontWeight: 'normal' } },
+                                { title: ($rootScope.language === 'tr' ? 'Küçük' : 'Small'), block: 'h5', styles: { fontWeight: 'normal' } },
+                                { title: ($rootScope.language === 'tr' ? 'Çok Küçük' : 'Very Small'), block: 'h6', styles: { fontWeight: 'normal' } }
+                            ]
                         }
                     ],
                     mode: 'exact',
@@ -1346,165 +1346,166 @@ angular.module('ofisim')
                 templateUrl: 'views/app/trial/trial-box.html?v=' + version,
                 controller: ['$scope',
                     function ($scope) {
-                        $scope.promotion = {
-                            fullName: $rootScope.user.fullName,
-                            phoneNumber: $rootScope.user.phone,
-                            email: $rootScope.user.email,
-                            useCount: "",
-                            sector: ""
-                        };
+                        if (window.host.indexOf("ofisim.com") > -1 || window.host.indexOf("localhost") > -1) {
+                            $scope.promotion = {
+                                fullName: $rootScope.user.fullName,
+                                phoneNumber: $rootScope.user.phone,
+                                email: $rootScope.user.email,
+                                useCount: "",
+                                sector: ""
+                            };
 
-                        var toDay = new Date();
-                        var userCreateDate = new Date($rootScope.user.createdAt);
-                        var diff = (toDay - userCreateDate) / 1000;
-                        var diff = Math.abs(Math.floor(diff));
-                        $scope.day = 15 - Math.floor(diff / (24 * 60 * 60));
-                        $scope.isPaid = $rootScope.user.isPaidCustomer;
-                        $scope.trailMessage = $filter('translate')('Trial.DaysRemainingForYourTrial', { remaining: $scope.day });
+                            var toDay = new Date();
+                            var userCreateDate = new Date($rootScope.user.createdAt);
+                            var diff = (toDay - userCreateDate) / 1000;
+                            var diff = Math.abs(Math.floor(diff));
+                            $scope.day = 15 - Math.floor(diff / (24 * 60 * 60));
+                            $scope.isPaid = $rootScope.user.isPaidCustomer;
+                            $scope.trailMessage = $filter('translate')('Trial.DaysRemainingForYourTrial', { remaining: $scope.day });
 
-                        $scope.sector = [
-                            {
-                                label_tr: "Ağaç İşleri, Kağıt ve Kağıt Ürünleri",
-                                label_en: "Woodworking Industry",
-                                value: "Ağaç İşleri, Kağıt ve Kağıt Ürünleri"
-                            },
-                            {
-                                label_tr: "Banka, Finans",
-                                label_en: "Banking & Finance",
-                                value: "Banka, Finans"
-                            },
-                            {
-                                label_tr: "Bilişim Teknolojileri",
-                                label_en: "Information Technology",
-                                value: "Bilişim Teknolojileri"
-                            },
-                            {
-                                label_tr: "Çevre",
-                                label_en: "Environmental",
-                                value: "Çevre"
-                            },
-                            {
-                                label_tr: "Diğer",
-                                label_en: "Çevre",
-                                value: "Diğer"
-                            },
-                            {
-                                label_tr: "Eğitim",
-                                label_en: "Education",
-                                value: "Eğitim"
-                            },
-                            {
-                                label_tr: "Elektrik, Elektronik",
-                                label_en: "Electronics",
-                                value: "Elektrik, Elektronik"
-                            },
-                            {
-                                label_tr: "Enerji",
-                                label_en: "Energy",
-                                value: "Enerji"
-                            },
-                            {
-                                label_tr: "Gıda",
-                                label_en: "Food & Beverage",
-                                value: "Gıda"
-                            },
-                            {
-                                label_tr: "Hukuk Firmaları",
-                                label_en: "Law Firms",
-                                value: "Hukuk Firmaları"
-                            },
-                            {
-                                label_tr: "İnşaat",
-                                label_en: "Construction",
-                                value: "İnşaat"
-                            },
-                            {
-                                label_tr: "Kamu Kurumları",
-                                label_en: "Government",
-                                value: "Kamu Kurumları"
-                            },
-                            {
-                                label_tr: "Kar Amacı Gütmeyen Kurumlar",
-                                label_en: "Non Profit Organizations",
-                                value: "Kar Amacı Gütmeyen Kurumlar"
-                            },
-                            {
-                                label_tr: "Kimya, Petrol, Lastik ve Plastik",
-                                label_en: "Chemicals",
-                                value: "Enerji"
-                            },
-                            {
-                                label_tr: "Kültür, Sanat",
-                                label_en: "Çevre",
-                                value: "Kültür, Sanat"
-                            },
-                            {
-                                label_tr: "Madencilik",
-                                label_en: "Mining",
-                                value: "Madencilik"
-                            },
-                            {
-                                label_tr: "Medya, İletişim",
-                                label_en: "Media & Press",
-                                value: "Medya, İletişim"
-                            },
-                            {
-                                label_tr: "Otomotiv",
-                                label_en: "Automotive",
-                                value: "Otomotiv"
-                            },
-                            {
-                                label_tr: "Perakende",
-                                label_en: "Retail",
-                                value: "Perakende"
-                            },
-                            {
-                                label_tr: "Sağlık ve Sosyal Hizmetler",
-                                label_en: "Healthcare",
-                                value: "Sağlık ve Sosyal Hizmetler"
-                            },
-                            {
-                                label_tr: "Tarım, Avcılık, Balıkçılık",
-                                label_en: "Agriculture",
-                                value: "Tarım, Avcılık, Balıkçılık"
-                            },
-                            {
-                                label_tr: "Tekstil, Hazır Giyim, Deri",
-                                label_en: "Textile",
-                                value: "Tekstil, Hazır Giyim, Deri"
-                            },
-                            {
-                                label_tr: "Telekomünikasyon",
-                                label_en: "Telecommunication",
-                                value: "Telekomünikasyon"
-                            },
-                            {
-                                label_tr: "Ticaret (Satış ve Pazarlama)",
-                                label_en: "Sales & Marketing",
-                                value: "Ticaret (Satış ve Pazarlama)"
-                            },
-                            {
-                                label_tr: "Turizm, Konaklama",
-                                label_en: "Hospitality",
-                                value: "Turizm, Konaklama"
-                            },
-                            {
-                                label_tr: "Ulaştırma, Lojistik ve Haberleşme",
-                                label_en: "Transportation & Logistics",
-                                value: "Ulaştırma, Lojistik ve Haberleşme"
-                            },
-                            {
-                                label_tr: "Üretim",
-                                label_en: "Manufacturing",
-                                value: "Üretim"
-                            }
-                        ];
-                        $scope.language = $rootScope.language;
-                        $scope.showPromotionModal = function (type) {
-                            $scope.trailType = type;
-                            $scope.promotionModal = $scope.promotionModal || $modal({
+                            $scope.sector = [
+                                {
+                                    label_tr: "Ağaç İşleri, Kağıt ve Kağıt Ürünleri",
+                                    label_en: "Woodworking Industry",
+                                    value: "Ağaç İşleri, Kağıt ve Kağıt Ürünleri"
+                                },
+                                {
+                                    label_tr: "Banka, Finans",
+                                    label_en: "Banking & Finance",
+                                    value: "Banka, Finans"
+                                },
+                                {
+                                    label_tr: "Bilişim Teknolojileri",
+                                    label_en: "Information Technology",
+                                    value: "Bilişim Teknolojileri"
+                                },
+                                {
+                                    label_tr: "Çevre",
+                                    label_en: "Environmental",
+                                    value: "Çevre"
+                                },
+                                {
+                                    label_tr: "Diğer",
+                                    label_en: "Çevre",
+                                    value: "Diğer"
+                                },
+                                {
+                                    label_tr: "Eğitim",
+                                    label_en: "Education",
+                                    value: "Eğitim"
+                                },
+                                {
+                                    label_tr: "Elektrik, Elektronik",
+                                    label_en: "Electronics",
+                                    value: "Elektrik, Elektronik"
+                                },
+                                {
+                                    label_tr: "Enerji",
+                                    label_en: "Energy",
+                                    value: "Enerji"
+                                },
+                                {
+                                    label_tr: "Gıda",
+                                    label_en: "Food & Beverage",
+                                    value: "Gıda"
+                                },
+                                {
+                                    label_tr: "Hukuk Firmaları",
+                                    label_en: "Law Firms",
+                                    value: "Hukuk Firmaları"
+                                },
+                                {
+                                    label_tr: "İnşaat",
+                                    label_en: "Construction",
+                                    value: "İnşaat"
+                                },
+                                {
+                                    label_tr: "Kamu Kurumları",
+                                    label_en: "Government",
+                                    value: "Kamu Kurumları"
+                                },
+                                {
+                                    label_tr: "Kar Amacı Gütmeyen Kurumlar",
+                                    label_en: "Non Profit Organizations",
+                                    value: "Kar Amacı Gütmeyen Kurumlar"
+                                },
+                                {
+                                    label_tr: "Kimya, Petrol, Lastik ve Plastik",
+                                    label_en: "Chemicals",
+                                    value: "Enerji"
+                                },
+                                {
+                                    label_tr: "Kültür, Sanat",
+                                    label_en: "Çevre",
+                                    value: "Kültür, Sanat"
+                                },
+                                {
+                                    label_tr: "Madencilik",
+                                    label_en: "Mining",
+                                    value: "Madencilik"
+                                },
+                                {
+                                    label_tr: "Medya, İletişim",
+                                    label_en: "Media & Press",
+                                    value: "Medya, İletişim"
+                                },
+                                {
+                                    label_tr: "Otomotiv",
+                                    label_en: "Automotive",
+                                    value: "Otomotiv"
+                                },
+                                {
+                                    label_tr: "Perakende",
+                                    label_en: "Retail",
+                                    value: "Perakende"
+                                },
+                                {
+                                    label_tr: "Sağlık ve Sosyal Hizmetler",
+                                    label_en: "Healthcare",
+                                    value: "Sağlık ve Sosyal Hizmetler"
+                                },
+                                {
+                                    label_tr: "Tarım, Avcılık, Balıkçılık",
+                                    label_en: "Agriculture",
+                                    value: "Tarım, Avcılık, Balıkçılık"
+                                },
+                                {
+                                    label_tr: "Tekstil, Hazır Giyim, Deri",
+                                    label_en: "Textile",
+                                    value: "Tekstil, Hazır Giyim, Deri"
+                                },
+                                {
+                                    label_tr: "Telekomünikasyon",
+                                    label_en: "Telecommunication",
+                                    value: "Telekomünikasyon"
+                                },
+                                {
+                                    label_tr: "Ticaret (Satış ve Pazarlama)",
+                                    label_en: "Sales & Marketing",
+                                    value: "Ticaret (Satış ve Pazarlama)"
+                                },
+                                {
+                                    label_tr: "Turizm, Konaklama",
+                                    label_en: "Hospitality",
+                                    value: "Turizm, Konaklama"
+                                },
+                                {
+                                    label_tr: "Ulaştırma, Lojistik ve Haberleşme",
+                                    label_en: "Transportation & Logistics",
+                                    value: "Ulaştırma, Lojistik ve Haberleşme"
+                                },
+                                {
+                                    label_tr: "Üretim",
+                                    label_en: "Manufacturing",
+                                    value: "Üretim"
+                                }
+                            ];
+                            $scope.language = $rootScope.language;
+                            $scope.showPromotionModal = function (type) {
+                                $scope.trailType = type;
+                                $scope.promotionModal = $scope.promotionModal || $modal({
                                     scope: $scope,
-                                    templateUrl: 'views/app/trial/promotionFormModal.html',
+                                    templateUrl: '/views/app/trial/promotionFormModal.html',
                                     size: 'modal-sm',
                                     controller: function () {
 
@@ -1533,11 +1534,13 @@ angular.module('ofisim')
                                     backdrop: 'static',
                                     show: false
                                 });
-                            $scope.promotionModal.$promise.then($scope.promotionModal.show);
-                        };
-                        if ($scope.day >= 0 && $scope.day <= 15 && $rootScope.user.ID === $rootScope.user.tenantId && !$scope.isPaid && !$rootScope.preview) {
-                            $rootScope.trial = true;
+                                $scope.promotionModal.$promise.then($scope.promotionModal.show);
+                            };
+                            if ($scope.day >= 0 && $scope.day <= 15 && $rootScope.user.ID === $rootScope.user.tenantId && !$scope.isPaid && !$rootScope.preview) {
+                                $rootScope.trial = true;
+                            }
                         }
+
                     }]
             };
         }])
@@ -1556,14 +1559,14 @@ angular.module('ofisim')
                         }
                         $scope.openHelpModal = function () {
                             $scope.helpModal = $scope.helpModal || $modal({
-                                    scope: $scope,
-                                    templateUrl: 'views/setup/help/helpPageModal.html',
-                                    animation: 'am-fade',
-                                    backdrop: true,
-                                    show: false,
-                                    tag: 'helpModal',
-                                    container: 'body'
-                                });
+                                scope: $scope,
+                                templateUrl: 'views/setup/help/helpPageModal.html',
+                                animation: 'am-fade',
+                                backdrop: true,
+                                show: false,
+                                tag: 'helpModal',
+                                container: 'body'
+                            });
 
                             $scope.helpModal.$promise.then($scope.helpModal.show);
                         };

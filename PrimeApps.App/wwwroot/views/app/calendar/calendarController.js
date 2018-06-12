@@ -7,7 +7,7 @@ angular.module('ofisim')
             var language = window.localStorage['NG_TRANSLATE_LANG_KEY'] || 'tr';
             var locale = window.localStorage['locale_key'] || language;
 
-            if (!$rootScope.user.profile.HasAdminRights) {
+            if (!$rootScope.user.profile.has_admin_rights) {
                 $http.get(config.apiUrl + 'settings/get_by_key/custom/calendar_delete_show').then(function (result) {
                     $scope.calendarDeleteShow = result.data.value;
                 });
@@ -46,7 +46,7 @@ angular.module('ofisim')
             $scope.calendarDay = new Date();
             $scope.calendarTitle = '';
             $scope.events = [];
-			$scope.activityPermissions = $filter('filter')($rootScope.user.profile.permissions, { module_id: $scope.moduleActivity.id}, true)[0];
+            $scope.activityPermissions = $filter('filter')($rootScope.user.profile.permissions, {module_id: $scope.moduleActivity.id}, true)[0];
 
             $templateCache.put('views/app/calendar/templates/calendarMonthCell.html', "<div mwl-droppable on-drop=\"vm.handleEventDrop(dropData.event, day.date, dropData.draggedFromDate)\" mwl-drag-select=\"!!vm.onDateRangeSelect\" on-drag-select-start=\"vm.onDragSelectStart(day)\" on-drag-select-move=\"vm.onDragSelectMove(day)\" on-drag-select-end=\"vm.onDragSelectEnd(day)\" class=\"cal-month-day {{ day.cssClass }}\" ng-class=\"{ 'cal-day-outmonth': !day.inMonth, 'cal-day-inmonth': day.inMonth, 'cal-day-weekend': day.isWeekend, 'cal-day-past': day.isPast, 'cal-day-today': day.isToday, 'cal-day-future': day.isFuture, 'cal-day-selected': vm.dateRangeSelect && vm.dateRangeSelect.startDate <= day.date && day.date <= vm.dateRangeSelect.endDate, 'cal-day-open': dayIndex === vm.openDayIndex }\">  <span class=\"pull-right\" data-cal-date ng-click=\"vm.calendarCtrl.dateClicked(day.date)\" ng-bind=\"day.label\"> </span>  <div class=\"add-button\"> <a href class=\"btn btn-xs btn-default\" ng-click=\"vm.templateScope.openCreateModal($event, day)\">+</a> </div>  <div class=\"counts\"> <span ng-repeat=\"(type, group) in day.groups track by type\" data-title=\"{{group.module}}\" data-trigger=\"hover\" data-placement=\"top\" bs-tooltip> <span class=\"label\" ng-style=\"{'background-color': group.color}\"> {{ group.events.length }} </span>&nbsp; </span> </div>  <div class=\"cal-day-tick\" ng-show=\"dayIndex === vm.openDayIndex && (vm.cellAutoOpenDisabled || vm.view[vm.openDayIndex].events.length > 0) && !vm.slideBoxDisabled\"> <i class=\"glyphicon glyphicon-chevron-up\"></i> <i class=\"fa fa-chevron-up\"></i> </div>  <ng-include src=\"vm.customTemplateUrls.calendarMonthCellEvents || vm.calendarConfig.templates.calendarMonthCellEvents\"></ng-include>  <div id=\"cal-week-box\" ng-if=\"$first && rowHovered\"> <span ng-bind=\"vm.getWeekNumberLabel(day)\"></span> </div>  </div>");
             $templateCache.put('views/app/calendar/templates/calendarSlideBox.html', "<div   class=\"cal-slide-box\" uib-collapse=\"vm.isCollapsed\" mwl-collapse-fallback=\"vm.isCollapsed\"> <div class=\"cal-slide-content cal-event-list\"> <ul class=\"unstyled list-unstyled\"> <li ng-repeat=\"event in vm.events | orderBy:'startsAt' track by event.calendarEventId\"  class=\"event-line\" ng-class=\"event.cssClass\" mwl-draggable=\"event.draggable === true\" drop-data=\"{event: event}\"> <span class=\"event-bullet\" ng-style=\"{backgroundColor: event.color.primary}\" data-title=\"{{event.module}}\" data-trigger=\"hover\" data-placement=\"right\" bs-tooltip></span>  <a href=\"#/app/crm/module/{{event.type}}{{'?id=' + event.id + '&back=calendar'}}\" class=\"event-item\"> <span ng-bind-html=\"isMonthView ? vm.calendarEventTitle.monthView(event) : vm.calendarEventTitle.yearView(event) | calendarTrustAsHtml\"></span> </a>  <span class=\"action-buttons\"> <a  href=\"#/app/crm/moduleForm/{{event.type}}{{'?id=' + event.id + '&back=calendar'}}\"  ng-show=\"event.permissions.Modify\" class=\"action-icon\" title=\"{{'Common.Edit' | translate}}\"><i class=\"flaticon-pencil124\"></i></a> <i ng-show=\"event.permissions.Remove && event.calendardeleteshow !='active'\"  class=\"action-icon flaticon-bin9\" confirm-click action=\"vm.templateScope.delete(event)\" placement=\"left\" confirm-message=\"{{'Common.AreYouSure' | translate}}\" confirm-yes=\"{{'Common.Yes' | translate}}\" confirm-no=\"{{'Common.No' | translate}}\" title=\"{{'Common.Delete' | translate}}\"></i> </span> </li> </ul> </div> </div>");
@@ -90,7 +90,7 @@ angular.module('ofisim')
                         if (!primaryField || !startDateField || !endDateField)
                             return;
                         if (!$scope.permissions[module.name])
-							$scope.permissions[module.name] = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id}, true)[0];
+                            $scope.permissions[module.name] = $filter('filter')($rootScope.user.profile.permissions, {module_id: module.id}, true)[0];
 
 
                         if (!$scope.permissions[module.name].Read)

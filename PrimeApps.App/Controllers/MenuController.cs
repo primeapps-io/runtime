@@ -2,25 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Hangfire.Dashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OfisimCRM.App.ActionFilters;
-using OfisimCRM.App.Cache;
-using OfisimCRM.DTO.Cache;
-using OfisimCRM.DTO.Profile;
-using OfisimCRM.Model.Entities;
-using OfisimCRM.Model.Enums;
-using OfisimCRM.Model.Repositories.Interfaces;
+using PrimeApps.Model.Enums;
+using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.Controllers;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Common.Profile;
-using PrimeApps.Model.Enums;
+using PrimeApps.Model.Entities.Application;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OfisimCRM.App.Controllers
 {
-    [RoutePrefix("api/menu"), Authorize, SnakeCase]
+    [Route("api/menu"), Authorize]
     public class MenuController : BaseController
     {
         private IMenuRepository _menuRepository;
@@ -29,8 +23,16 @@ namespace OfisimCRM.App.Controllers
             _menuRepository = menuRepository;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_menuRepository);
+
+            base.OnActionExecuting(context);
+        }
+
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var menuEntity = await _menuRepository.GetByProfileId(id);
 
@@ -41,8 +43,10 @@ namespace OfisimCRM.App.Controllers
                 return Ok();
 
             var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
-            var instance = await Workgroup.Get(AppUser.InstanceId);
-            var profile = instance.Profiles.Single(x => x.UserIDs.Contains(AppUser.LocalId));
+            //TODO Removed
+            //var instance = await Workgroup.Get(AppUser.InstanceId);
+            var instance = new InstanceItem();
+            var profile = instance.Profiles.Single(x => x.UserIDs.Contains(AppUser.Id));
             var menuItems = new List<MenuItem>();
 
             foreach (var menuItem in menuItemsData)
@@ -117,27 +121,30 @@ namespace OfisimCRM.App.Controllers
                             return true;
                         break;
                     case "timesheet":
-                        var hasTimesheetPermission = await Workgroup.CheckPermission(PermissionEnum.Write, 29, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);//29 is timesheet module id
+                        //TODO Removed
+                        //var hasTimesheetPermission = await Workgroup.CheckPermission(PermissionEnum.Write, 29, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);//29 is timesheet module id
 
-                        if (hasTimesheetPermission)
+                        //if (hasTimesheetPermission)
                             return true;
                         break;
                     case "timetrackers":
-                        var hasTimetrackersPermission = await Workgroup.CheckPermission(PermissionEnum.Write, 35, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);//35 is timetrackers module id
+                        //TODO Removed
+                        //var hasTimetrackersPermission = await Workgroup.CheckPermission(PermissionEnum.Write, 35, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);//35 is timetrackers module id
 
-                        if (hasTimetrackersPermission)
+                        //if (hasTimetrackersPermission)
                             return true;
                         break;
                     case "analytics":
-                        if (instance.HasAnalytics.HasValue && instance.HasAnalytics.Value && AppUser.HasAnalyticsLicense)
+                        //TODO Removed
+                        if (instance.HasAnalytics.HasValue && instance.HasAnalytics.Value /*&& AppUser.HasAnalyticsLicense*/)
                             return true;
                         break;
                 }
 
                 return false;
             }
-
-            var hasPermission = await Workgroup.CheckPermission(PermissionEnum.Read, menuItem.ModuleId, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);
+            //TODO Removed
+            var hasPermission = true;//await Workgroup.CheckPermission(PermissionEnum.Read, menuItem.ModuleId, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);
 
             return hasPermission;
         }

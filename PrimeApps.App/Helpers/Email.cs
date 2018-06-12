@@ -164,10 +164,11 @@ namespace PrimeApps.App.Helpers
                         appName = instance.Setting.MailSenderName;
                         socialMediaIcons = "none";
                         footer = instance.Setting.MailSenderName;
-                        if (instance.MailSenderEmail.Contains("@etiya.com"))
+                        //TODO Removed
+                        /*if (instance.MailSenderEmail.Contains("@etiya.com"))
                         {
                             appLogo = "none";
-                        }
+                        }*/
                     }
                 }
             }
@@ -374,9 +375,10 @@ namespace PrimeApps.App.Helpers
                     var instance = tRepo.Get(appUser.TenantId);
                     if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
                     {
-                        if (!string.IsNullOrEmpty(fromEmail))
+                        //TODO Removed
+                        /*if (!string.IsNullOrEmpty(fromEmail))
                             from = fromEmail;
-                        else
+                        else*/
                             from = instance.Setting.MailSenderEmail;
                         fromName = instance.Setting.MailSenderName;
                     }

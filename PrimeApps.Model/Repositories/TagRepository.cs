@@ -1,17 +1,11 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using OfisimCRM.Model.Context;
 using OfisimCRM.Model.Repositories.Interfaces;
 using System.Linq;
-using OfisimCRM.Model.Helpers;
-using System.Data.Entity;
-using Npgsql;
-using NpgsqlTypes;
 using System.Threading.Tasks;
-using OfisimCRM.DTO.Cache;
-using OfisimCRM.DTO.Record;
-using OfisimCRM.Model.Entities;
-using OfisimCRM.Model.Enums;
+using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Application;
+using Microsoft.EntityFrameworkCore;
 
 namespace OfisimCRM.Model.Repositories
 {

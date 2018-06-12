@@ -54,6 +54,8 @@ angular.module('ofisim')
                                 break;
                             case 'rating':
                                 break;
+                            case 'tag':
+                                break;
                         }
 
                         dataTypeList.push(dataType);

@@ -272,15 +272,13 @@ angular.module('ofisim')
                 $scope.editModel.activeDirectoryEmail = user.activeDirectoryEmail;
                 $scope.userHaveActiveDirectoryEmail = user.activeDirectoryEmail !== null && user.activeDirectoryEmail !== "null" && user.activeDirectoryEmail !== '';
                 $scope.editModelState = angular.copy($scope.editModel);
-                $scope.popover = $popover(angular.element(document.getElementById('editButton' + user.Id)), {
+                $scope['editPopover' + user.Id] = $scope['editPopover' + user.Id] || $popover(angular.element(document.getElementById('editButton' + user.Id)), {
                     templateUrl: 'views/setup/users/userEdit.html',
                     placement: 'left',
                     scope: $scope,
                     autoClose: true,
                     show: true
                 });
-                if (!$scope['editPopover' + user.Id])
-                    $scope['editPopover' + user.Id] = $scope['editPopover' + user.Id] || $scope.popover;
 
             };
 

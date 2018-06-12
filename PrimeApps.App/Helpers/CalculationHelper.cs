@@ -111,17 +111,18 @@ namespace PrimeApps.App.Helpers
                                         if (!calisan["gmy.e_posta"].IsNullOrEmpty() && !ccList.Contains((string)calisan["gmy.e_posta"]))
                                             ccList.Add((string)calisan["gmy.e_posta"]);
 
-                                        using (var session = Provider.SessionFactory.OpenSession())
+                                        //TODO Removed
+                                        /*using (var session = Provider.SessionFactory.OpenSession())
                                         {
                                             using (var transaction = session.BeginTransaction())
                                             {
                                                 var externalEmail = new Email(mailSubject, mailBody);
                                                 externalEmail.AddRecipient("finans@etiya.com");
-                                                externalEmail.AddToQueue(appUser.TenantID, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
+                                                externalEmail.AddToQueue(appUser.TenantId, appUser: appUser, cc: string.Join(",", ccList), moduleId: module.Id, recordId: (int)record["id"], addRecordSummary: false);
 
                                                 transaction.Commit();
                                             }
-                                        }
+                                        }*/
                                         break;
                                     case "ise_alim_talepleri":
                                         var iseAlimTalebiModule = await moduleRepository.GetByName("ise_alim_talepleri");
@@ -137,7 +138,7 @@ namespace PrimeApps.App.Helpers
                                             calisanObj = (JObject)calisanData.First();
                                             var moduleCalisan = await moduleRepository.GetByName("calisanlar");
                                             var departmanPicklist = moduleCalisan.Fields.Single(x => x.Name == "departman");
-                                            var departmanPicklistItem = await picklistRepository.FindItemByLabel(departmanPicklist.PicklistId.Value, (string)record["bolum"], appUser.PicklistLanguage);
+                                            var departmanPicklistItem = await picklistRepository.FindItemByLabel(departmanPicklist.PicklistId.Value, (string)record["bolum"], appUser.TenantLanguage);
 
                                             if (!calisanObj["yoneticisi.calisanlar.e_posta"].IsNullOrEmpty())
                                             {
@@ -158,7 +159,7 @@ namespace PrimeApps.App.Helpers
                                                             j--;
                                                     }
                                                 }
-                                                if (departmanPicklistItem != null && departmanPicklistItem.Value != "ceo_approve")
+                                                if (departmanPicklistItem != null && departmanPicklistItem?.Value != "ceo_approve")
                                                     record["custom_approver_" + j] = null;
                                             }
                                         }
@@ -168,7 +169,7 @@ namespace PrimeApps.App.Helpers
                                         var salesInvoiceModule = await moduleRepository.GetByName("sales_invoices");
                                         var accountModule = await moduleRepository.GetByName("accounts");
                                         var salesInvoiceStagePicklist = salesInvoiceModule.Fields.Single(x => x.Name == "asama");
-                                        var salesInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(salesInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.PicklistLanguage);
+                                        var salesInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(salesInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.TenantLanguage);
                                         var currentAccountModule = await moduleRepository.GetByName("current_accounts");
                                         var findRequestCurrentAccountRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "satis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
                                         var currentAccountRecord = recordRepository.Find("current_accounts", findRequestCurrentAccountRecord);
@@ -180,7 +181,7 @@ namespace PrimeApps.App.Helpers
                                         //para birimini bulma
                                         var currencyFieldSalesInvoice = salesInvoiceModule.Fields.Single(x => x.Name == "currency");
                                         var currencyPicklistSalesInvoice = await picklistRepository.GetById(currencyFieldSalesInvoice.PicklistId.Value);
-                                        var currencySalesInvoice = currencyPicklistSalesInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
+                                        var currencySalesInvoice = currencyPicklistSalesInvoice.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
 
                                         //Sipariş dönüştürmede otomaik oluşturulan veya manuel eklenen satış faturası
                                         if (salesInvoiceStagePicklistItem.SystemCode == "onaylandi" && operationType != OperationType.delete)
@@ -195,7 +196,7 @@ namespace PrimeApps.App.Helpers
                                             recordCurrentAccount["date"] = record["fatura_tarihi"];
                                             var transactionField = currentAccountModule.Fields.Single(x => x.Name == "transaction_type");
                                             var transactionTypes = await picklistRepository.GetById(transactionField.PicklistId.Value);
-                                            recordCurrentAccount["transaction_type"] = appUser.PicklistLanguage == "tr" ? transactionTypes.Items.Single(x => x.SystemCode == "sales_invoice").LabelTr : transactionTypes.Items.Single(x => x.SystemCode == "sales_invoice").LabelEn;
+                                            recordCurrentAccount["transaction_type"] = appUser.TenantLanguage == "tr" ? transactionTypes.Items.Single(x => x.SystemCode == "sales_invoice").LabelTr : transactionTypes.Items.Single(x => x.SystemCode == "sales_invoice").LabelEn;
                                             recordCurrentAccount["transaction_type_system"] = "sales_invoice";
 
                                             //para birimine göre satış faturasını oluşturma
@@ -285,7 +286,7 @@ namespace PrimeApps.App.Helpers
                                         var purchaseInvoiceModule = await moduleRepository.GetByName("purchase_invoices");
                                         var supplierModule = await moduleRepository.GetByName("suppliers");
                                         var purchaseInvoiceStagePicklist = purchaseInvoiceModule.Fields.Single(x => x.Name == "asama");
-                                        var purchaseInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(purchaseInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.PicklistLanguage);
+                                        var purchaseInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(purchaseInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.TenantLanguage);
                                         var currentSupplierModule = await moduleRepository.GetByName("current_accounts");
                                         var findRequestCurrentAccountRecordForPurchase = new FindRequest { Filters = new List<Filter> { new Filter { Field = "alis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
                                         var currentAccountRecordForPurchase = recordRepository.Find("current_accounts", findRequestCurrentAccountRecordForPurchase);
@@ -297,7 +298,7 @@ namespace PrimeApps.App.Helpers
                                         //para birimini bulma
                                         var currencyFieldPurchaseInvoice = purchaseInvoiceModule.Fields.Single(x => x.Name == "currency");
                                         var currencyPicklistPurchaseInvoice = await picklistRepository.GetById(currencyFieldPurchaseInvoice.PicklistId.Value);
-                                        var currencyPurchaseInvoice = currencyPicklistPurchaseInvoice.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
+                                        var currencyPurchaseInvoice = currencyPicklistPurchaseInvoice.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
 
                                         //Sipariş dönüştürmede otomaik oluşturulan veya manuel eklenen satış faturası
                                         if (purchaseInvoiceStagePicklistItem.SystemCode == "onaylandi" && operationType != OperationType.delete)
@@ -312,7 +313,7 @@ namespace PrimeApps.App.Helpers
                                             recordCurrentAccount["date"] = record["fatura_tarihi"];
                                             var transactionField = currentSupplierModule.Fields.Single(x => x.Name == "transaction_type");
                                             var transactionTypes = await picklistRepository.GetById(transactionField.PicklistId.Value);
-                                            recordCurrentAccount["transaction_type"] = appUser.PicklistLanguage == "tr" ? transactionTypes.Items.Single(x => x.SystemCode == "purchase_invoice").LabelTr : transactionTypes.Items.Single(x => x.SystemCode == "purchase_invoice").LabelEn;
+                                            recordCurrentAccount["transaction_type"] = appUser.TenantLanguage == "tr" ? transactionTypes.Items.Single(x => x.SystemCode == "purchase_invoice").LabelTr : transactionTypes.Items.Single(x => x.SystemCode == "purchase_invoice").LabelEn;
                                             recordCurrentAccount["transaction_type_system"] = "purchase_invoice";
 
                                             //para birimine göre satış faturasını oluşturma
@@ -403,7 +404,7 @@ namespace PrimeApps.App.Helpers
                                         var currentAccountModuleObj = await moduleRepository.GetByName("current_accounts");
                                         var currencyFieldCurrentAccount = currentAccountModuleObj.Fields.Single(x => x.Name == "currency");
                                         var currencyPicklistCurrentAccount = await picklistRepository.GetById(currencyFieldCurrentAccount.PicklistId.Value);
-                                        var currencyCurrentAccount = currencyPicklistCurrentAccount.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
+                                        var currencyCurrentAccount = currencyPicklistCurrentAccount.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
 
                                         //tahsilat
                                         if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
@@ -507,9 +508,9 @@ namespace PrimeApps.App.Helpers
                                                 var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
 
                                                 if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                    kasaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
+                                                    kasaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
                                                 else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                    kasaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
+                                                    kasaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
 
 
                                                 if (!currentKasaHareketiRecord.IsNullOrEmpty())
@@ -564,9 +565,9 @@ namespace PrimeApps.App.Helpers
                                                 var hareketTipiField = bankaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
                                                 var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
                                                 if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                    bankaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
+                                                    bankaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
                                                 else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                    bankaHareketiRecord["hareket_tipi"] = appUser.PicklistLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
+                                                    bankaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
 
                                                 if (!currentBankaHareketiRecord.IsNullOrEmpty())
                                                 {
@@ -701,11 +702,11 @@ namespace PrimeApps.App.Helpers
                                     case "procurement_requisition":
                                         var procurementRequisitionModule = await moduleRepository.GetByName("procurement_requisition");
                                         var stepPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "procurement_step");
-                                        var stepPicklistItem = await picklistRepository.FindItemByLabel(stepPicklist.PicklistId.Value, (string)record["procurement_step"], appUser.PicklistLanguage);
+                                        var stepPicklistItem = await picklistRepository.FindItemByLabel(stepPicklist.PicklistId.Value, (string)record["procurement_step"], appUser.TenantLanguage);
                                         if (stepPicklistItem.Value == "requisition")
                                         {
                                             var requestTypePicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "request_type");
-                                            var requestTypePicklistItem = await picklistRepository.FindItemByLabel(requestTypePicklist.PicklistId.Value, (string)record["request_type"], appUser.PicklistLanguage);
+                                            var requestTypePicklistItem = await picklistRepository.FindItemByLabel(requestTypePicklist.PicklistId.Value, (string)record["request_type"], appUser.TenantLanguage);
                                             var sharedUsetFindRequest = new FindRequest();
 
                                             if (requestTypePicklistItem != null)
@@ -749,7 +750,7 @@ namespace PrimeApps.App.Helpers
                                         if (!record["approver"].IsNullOrEmpty())
                                         {
                                             var approverPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "approver");
-                                            var approverPicklistItem = await picklistRepository.FindItemByLabel(approverPicklist.PicklistId.Value, (string)record["approver"], appUser.PicklistLanguage);
+                                            var approverPicklistItem = await picklistRepository.FindItemByLabel(approverPicklist.PicklistId.Value, (string)record["approver"], appUser.TenantLanguage);
                                             var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
                                             var recordOwner = recordRepository.Find("users", recordOwnerRequest);
                                             var recordOwnerObj = (JObject)recordOwner.First();
@@ -778,11 +779,11 @@ namespace PrimeApps.App.Helpers
                                             else
                                             {
                                                 var projectOverheadPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "projectoverhead");
-                                                var projectOverheadPicklistItem = await picklistRepository.FindItemByLabel(projectOverheadPicklist.PicklistId.Value, (string)record["projectoverhead"], appUser.PicklistLanguage);
+                                                var projectOverheadPicklistItem = await picklistRepository.FindItemByLabel(projectOverheadPicklist.PicklistId.Value, (string)record["projectoverhead"], appUser.TenantLanguage);
                                                 if (projectOverheadPicklistItem.Value == "project_expense")
                                                 {
                                                     var bdpmPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "bdpm");
-                                                    var bdpmPicklistItem = await picklistRepository.FindItemByLabel(bdpmPicklist.PicklistId.Value, (string)record["bdpm"], appUser.PicklistLanguage);
+                                                    var bdpmPicklistItem = await picklistRepository.FindItemByLabel(bdpmPicklist.PicklistId.Value, (string)record["bdpm"], appUser.TenantLanguage);
                                                     var approvalModule = await moduleRepository.GetByName("approval_workflow");
                                                     var approvalPicklistId = approvalModule.Fields.Single(x => x.Name == "approval_type").PicklistId.Value;
                                                     var approvalPicklist = await picklistRepository.GetById(approvalPicklistId);
@@ -790,7 +791,7 @@ namespace PrimeApps.App.Helpers
                                                     if (bdpmPicklistItem.Value == "bd_stage")
                                                     {
                                                         var approvalPicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "business");
-                                                        var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                        var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
                                                         var approvalRecord = recordRepository.Find("approval_workflow", findRequestApproval);
                                                         FindRequest approverRequest = null;
                                                         JArray approverRecord = null;
@@ -947,7 +948,7 @@ namespace PrimeApps.App.Helpers
                                                     else if (bdpmPicklistItem.Value == "pm_stage")
                                                     {
                                                         var approvalPicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "nonbillable");
-                                                        var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                        var findRequestApproval = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalPicklistItem.LabelTr : approvalPicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
                                                         var approvalRecord = recordRepository.Find("approval_workflow", findRequestApproval);
                                                         FindRequest approverRequest = null;
                                                         JArray approverRecord = null;
@@ -1111,7 +1112,7 @@ namespace PrimeApps.App.Helpers
                                                     var approvalPicklistId = approvalModule.Fields.Single(x => x.Name == "approval_type").PicklistId.Value;
                                                     var approvalPicklist = await picklistRepository.GetById(approvalPicklistId);
                                                     var approvalTypePicklistItem = approvalPicklist.Items.Single(x => x.SystemCode == "management");
-                                                    var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "staff", Operator = Operator.Equals, Value = (int)humanResourcesRecord.First()["id"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                    var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "staff", Operator = Operator.Equals, Value = (int)humanResourcesRecord.First()["id"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
                                                     var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
                                                     var findApproverRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
                                                     var approverRecord = recordRepository.Find("human_resources", findApproverRecord);
@@ -1430,11 +1431,11 @@ namespace PrimeApps.App.Helpers
                                             var invoiceApproverPicklistItem = await picklistRepository.FindItemByLabel(invoiceApproverPicklist.PicklistId.Value, (string)record["approver"], appUser.TenantLanguage);
                                             var recordOwnerRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["owner"], No = 1 } }, Limit = 9999 };
                                             var recordOwner = recordRepository.Find("users", recordOwnerRequest);
-                                            var recordOwnerObj = recordOwner.First(); findRequestApprovalWorkflow
+                                            var recordOwnerObj = recordOwner.First();
                                             if (invoiceTypePicklistItem.SystemCode == "project_expense")
                                             {
                                                 var approvalTypePicklistItem = approvalTypePicklist.Items.Single(x => x.SystemCode == "nonbillable");
-                                                var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.PicklistLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
+                                                var findRequestApprovalWorkflow = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_project", Operator = Operator.Equals, Value = (int)record["project"], No = 1 }, new Filter { Field = "approval_type", Operator = Operator.Equals, Value = appUser.TenantLanguage == "tr" ? approvalTypePicklistItem.LabelTr : approvalTypePicklistItem.LabelEn, No = 2 } }, Limit = 9999 };
                                                 var approvalWorkflowRecord = recordRepository.Find("approval_workflow", findRequestApprovalWorkflow);
 
                                                 if (invoiceApproverPicklistItem.SystemCode == "project_director")
@@ -1508,16 +1509,7 @@ namespace PrimeApps.App.Helpers
 
                                                 if (!humanResourcesRecord.IsNullOrEmpty())
                                                 {
-                                                    if (recordOwnerObj["email"] == approverRecordObj["e_mail1"])
-                                                    {
-                                                        var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["first_approver"], No = 1 } }, Limit = 9999 };
-                                                        var approverHumanRecord = recordRepository.Find("human_resources", approverRequest);
-                                                        record["custom_approver"] = approverHumanRecord.First()["e_mail1"];
-                                                    }
-                                                    else
-                                                    {
-                                                        record["custom_approver"] = approverRecordObj["e_mail1"];
-                                                    }
+                                                    record["custom_approver"] = humanResourcesRecord.First()["e_mail1"];
                                                     if (!record["shared_users_edit"].IsNullOrEmpty())
                                                     {
                                                         var sharedUsers = (JArray)record["shared_users_edit"];
@@ -1560,7 +1552,7 @@ namespace PrimeApps.App.Helpers
                                         var prodModObj = await moduleRepository.GetByName("products");
                                         var salesOrderPicklist = salesOrderModuleObj.Fields.Single(x => x.Name == "order_stage");
                                         var stockModObj = await moduleRepository.GetByName("stock_transactions");
-                                        var salesOrderModulePicklist = await picklistRepository.FindItemByLabel(salesOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.PicklistLanguage);
+                                        var salesOrderModulePicklist = await picklistRepository.FindItemByLabel(salesOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                         var findRequestCurrentStockRecordObj = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
                                         var currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj);
                                         if ((operationType == OperationType.delete && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice") || (salesOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && salesOrderModulePicklist.SystemCode != "confirmed_order_stage" && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice"))
@@ -1584,7 +1576,7 @@ namespace PrimeApps.App.Helpers
                                         var prodModObj2 = await moduleRepository.GetByName("products");
                                         var purchaseOrderPicklist = purchaseOrderModuleObj.Fields.Single(x => x.Name == "order_stage");
                                         var stockModObj2 = await moduleRepository.GetByName("stock_transactions");
-                                        var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.PicklistLanguage);
+                                        var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                         var findRequestCurrentStockRecordObj2 = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
                                         var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2);
                                         if (operationType == OperationType.delete || (purchaseOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && purchaseOrderModulePicklist.SystemCode != "confirmed_order_stage"))
@@ -1615,16 +1607,15 @@ namespace PrimeApps.App.Helpers
                                             var salesOrderModule = await moduleRepository.GetByName("sales_orders");
                                             var salesOrderItem = recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
                                             var salesStagePicklist = salesOrderModule.Fields.Single(x => x.Name == "order_stage");
-                                            currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.PicklistLanguage);
-                                         
+                                            currentModulePicklist = await picklistRepository.FindItemByLabel(salesStagePicklist.PicklistId.Value, (string)salesOrderItem["order_stage"], appUser.TenantLanguage);
                                         }
                                         else if (module.Name == "purchase_order_products")
                                         {
-                                            findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["purchase_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 }
+                                            findRequestCurrentStockRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["purchase_order"], No = 1 }, new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 2 } }, Limit = 9999 };
                                             var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
                                             var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
                                             var purchaseStagePicklist = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
-                                            currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.PicklistLanguage);
+                                            currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.TenantLanguage);
                                            
                                         }
 
@@ -1978,7 +1969,7 @@ namespace PrimeApps.App.Helpers
                                                 if (!tpManagerRecords.IsNullOrEmpty())
                                                     projectsUpdateRecord["tp_manager_and_strategy"] = tpManagerRecords[0]["id"];
 
-                                                var resultBeforeProjects = await RecordHelper.BeforeCreateUpdate(projectsModule, projectsUpdateRecord, modelStateprojects, appUser.PicklistLanguage, moduleRepository, picklistRepository);
+                                                var resultBeforeProjects = await RecordHelper.BeforeCreateUpdate(projectsModule, projectsUpdateRecord, modelStateprojects, appUser.TenantLanguage, moduleRepository, picklistRepository);
 
                                                 if (resultBeforeProjects < 0 && !modelStateprojects.IsValid)
                                                 {
@@ -2140,7 +2131,7 @@ namespace PrimeApps.App.Helpers
                                         var calismaDurumuPicklist = await picklistRepository.GetById(calismaDurumuField.PicklistId.Value);
                                         var calismaDurumuPicklistItem = calismaDurumuPicklist.Items.SingleOrDefault(x => x.Value == "active");
                                         var calismaDurumu = (string)record["calisma_durumu"];
-                                        var isActive = !string.IsNullOrEmpty(calismaDurumu) && calismaDurumuPicklistItem != null && calismaDurumu == (appUser.PicklistLanguage == "tr" ? calismaDurumuPicklistItem.LabelTr : calismaDurumuPicklistItem.LabelEn);
+                                        var isActive = !string.IsNullOrEmpty(calismaDurumu) && calismaDurumuPicklistItem != null && calismaDurumu == (appUser.TenantLanguage == "tr" ? calismaDurumuPicklistItem.LabelTr : calismaDurumuPicklistItem.LabelEn);
 
                                         if (operationType != OperationType.delete)
                                         {
@@ -2349,19 +2340,19 @@ namespace PrimeApps.App.Helpers
                                             if (odenecekTutarField != null && (masrafRecord["process_status"].IsNullOrEmpty() || (int)masrafRecord["process_status"] == 3))
                                             {
                                                 masrafKalemiCalculate = true;
-                                                var masrafTuruPicklistItem = await picklistRepository.FindItemByLabel(masrafTuruPicklist.PicklistId.Value, (string)record["masraf_turu"], appUser.PicklistLanguage);
+                                                var masrafTuruPicklistItem = await picklistRepository.FindItemByLabel(masrafTuruPicklist.PicklistId.Value, (string)record["masraf_turu"], appUser.TenantLanguage);
                                                 if (masrafTuruPicklistItem.SystemCode == "yemek")
                                                 {
                                                     var yurtIcıDisiPicklist = masrafKalemiModule.Fields.Single(x => x.Name == "yurticiyurtdisi");
-                                                    var yurtIcıDisiPicklistItem = await picklistRepository.FindItemByLabel(yurtIcıDisiPicklist.PicklistId.Value, (string)record["yurticiyurtdisi"], appUser.PicklistLanguage);
+                                                    var yurtIcıDisiPicklistItem = await picklistRepository.FindItemByLabel(yurtIcıDisiPicklist.PicklistId.Value, (string)record["yurticiyurtdisi"], appUser.TenantLanguage);
                                                     if (yurtIcıDisiPicklistItem.SystemCode == "yurt_ici")
                                                     {
                                                         var findRequestMasrafCalisan = new FindRequest { Filters = new List<Filter> { new Filter { Field = "owner", Operator = Operator.Equals, Value = record["owner"], No = 1 } }, Limit = 1 };
                                                         var recordsMasrafCalisan = recordRepository.Find("calisanlar", findRequestMasrafCalisan);
                                                         var lokasyonPicklist = masrafCalisanModule.Fields.Single(x => x.Name == "lokasyon");
-                                                        var lokasyonPicklistItem = await picklistRepository.FindItemByLabel(lokasyonPicklist.PicklistId.Value, (string)recordsMasrafCalisan.First()["lokasyon"], appUser.PicklistLanguage);
+                                                        var lokasyonPicklistItem = await picklistRepository.FindItemByLabel(lokasyonPicklist.PicklistId.Value, (string)recordsMasrafCalisan.First()["lokasyon"], appUser.TenantLanguage);
                                                         var illerPicklist = masrafKalemiModule.Fields.Single(x => x.Name == "iller");
-                                                        var illerPicklistItem = await picklistRepository.FindItemByLabel(illerPicklist.PicklistId.Value, (string)record["iller"], appUser.PicklistLanguage);
+                                                        var illerPicklistItem = await picklistRepository.FindItemByLabel(illerPicklist.PicklistId.Value, (string)record["iller"], appUser.TenantLanguage);
                                                         if (lokasyonPicklistItem.Value == illerPicklistItem.SystemCode)
                                                         {
                                                             record["odenecek_tutar"] = 24;
@@ -2816,7 +2807,7 @@ namespace PrimeApps.App.Helpers
             switch (currency)
             {
                 case "try":
-                    var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
                     var accountCurrentAccountsTry = recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
                     if (accountCurrentAccountsTry.Count > 0)
                     {
@@ -2835,7 +2826,7 @@ namespace PrimeApps.App.Helpers
                     break;
 
                 case "eur":
-                    var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
                     var accountCurrentAccountsEuro = recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
                     if (accountCurrentAccountsEuro.Count > 0)
                     {
@@ -2853,7 +2844,7 @@ namespace PrimeApps.App.Helpers
                     break;
 
                 case "usd":
-                    var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
                     var accountCurrentAccountsUsd = recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
                     if (accountCurrentAccountsUsd.Count > 0)
                     {
@@ -2880,7 +2871,7 @@ namespace PrimeApps.App.Helpers
             switch (currency)
             {
                 case "try":
-                    var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
                     var accountCurrentAccountsTry = recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
                     if (accountCurrentAccountsTry.Count > 0)
                     {
@@ -2899,7 +2890,7 @@ namespace PrimeApps.App.Helpers
                     break;
 
                 case "eur":
-                    var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
                     var accountCurrentAccountsEuro = recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
                     if (accountCurrentAccountsEuro.Count > 0)
                     {
@@ -2917,7 +2908,7 @@ namespace PrimeApps.App.Helpers
                     break;
 
                 case "usd":
-                    var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.PicklistLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
+                    var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
                     var accountCurrentAccountsUsd = recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
                     if (accountCurrentAccountsUsd.Count > 0)
                     {
@@ -2947,7 +2938,7 @@ namespace PrimeApps.App.Helpers
             {
                 foreach (JObject kasaHareketi in kasaHareketleri)
                 {
-                    var hareketTipi = hareketTipleri.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)kasaHareketi["hareket_tipi"] : x.LabelEn == (string)kasaHareketi["hareket_tipi"]).SystemCode;
+                    var hareketTipi = hareketTipleri.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)kasaHareketi["hareket_tipi"] : x.LabelEn == (string)kasaHareketi["hareket_tipi"]).SystemCode;
 
                     if (hareketTipi == "para_cikisi")
                         balance -= (decimal)kasaHareketi["alacak"];
@@ -2972,7 +2963,7 @@ namespace PrimeApps.App.Helpers
             {
                 foreach (JObject bankaHareketi in bankaHareketleri)
                 {
-                    var hareketTipi = hareketTipleri.Items.Single(x => appUser.PicklistLanguage == "tr" ? x.LabelTr == (string)bankaHareketi["hareket_tipi"] : x.LabelEn == (string)bankaHareketi["hareket_tipi"]).SystemCode;
+                    var hareketTipi = hareketTipleri.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)bankaHareketi["hareket_tipi"] : x.LabelEn == (string)bankaHareketi["hareket_tipi"]).SystemCode;
 
                     if (hareketTipi == "para_cikisi")
                         balance -= (decimal)bankaHareketi["alacak"];
@@ -3000,7 +2991,7 @@ namespace PrimeApps.App.Helpers
 
                 foreach (JObject stockTransaction in stockTransactions)
                 {
-                    var transactionTypePicklistItem = await picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.PicklistLanguage);
+                    var transactionTypePicklistItem = await picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
                     if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
                     {
                         balance += (decimal)stockTransaction["quantity"];

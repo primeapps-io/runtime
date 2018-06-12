@@ -347,8 +347,24 @@ angular.module('ofisim')
                 'empty',
                 'not_empty'
             ],
-            order: 7
+            order: 19
         },
+        tag: {
+            name: 'tag',
+            label: {
+                en: 'Tag',
+                tr: 'Tag'
+            },
+            operators: [
+                'contains',
+                'not_contain',
+                'is',
+                'is_not',
+                'empty',
+                'not_empty'
+            ],
+            order: 20
+        }
     })
 
     .constant('operators', {
@@ -527,29 +543,30 @@ angular.module('ofisim')
             system_code: 'payment',
             value: 'payment',
             order: 2
-        },
-        {
-            type: 1,
-            id: 352,
-            label: {
-                en: 'Sales Invoice',
-                tr: 'Satış Faturası'
-            },
-            system_code: 'sales_invoice',
-            value: 'sales_invoice',
-            order: 3
-        },
-        {
-            type: 2,
-            id: 353,
-            label: {
-                en: 'Purchase Invoice',
-                tr: 'Alış Faturası'
-            },
-            system_code: 'purchase_invoice',
-            value: 'purchase_invoice',
-            order: 4
         }
+        // ,
+        // {
+        //     type: 1,
+        //     id: 352,
+        //     label: {
+        //         en: 'Sales Invoice',
+        //         tr: 'Satış Faturası'
+        //     },
+        //     system_code: 'sales_invoice',
+        //     value: 'sales_invoice',
+        //     order: 3
+        // },
+        // {
+        //     type: 2,
+        //     id: 353,
+        //     label: {
+        //         en: 'Purchase Invoice',
+        //         tr: 'Alış Faturası'
+        //     },
+        //     system_code: 'purchase_invoice',
+        //     value: 'purchase_invoice',
+        //     order: 4
+        // }
     ])
 
     .constant('yesNo', [
@@ -724,7 +741,6 @@ angular.module('ofisim')
         current_accounts: [
             'transaction_type',
             'date',
-            'amount',
             'customer',
             'supplier'
         ],

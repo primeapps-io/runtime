@@ -281,7 +281,9 @@ angular.module('ofisim')
                     resize: false,
                     width: '99,9%',
                     toolbar_items_size: 'small',
-                    statusbar: false
+                    statusbar: false,
+                    convert_urls: false,
+                    remove_script_host: false
                 };
             };
 
@@ -404,7 +406,7 @@ angular.module('ofisim')
                 $scope.newtemplate.template_subject = $scope.Subject;
                 $scope.newtemplate.tinymce_content = $scope.tinymceModel;
                 $scope.newtemplate.sharing_type = $scope.currentTemplate.sharing_type;
-                $scope.newtemplate.shares =  $scope.currentTemplate.shares;
+                $scope.newtemplate.shares = $scope.currentTemplate.shares;
             };
 
 
@@ -414,10 +416,9 @@ angular.module('ofisim')
             };
 
 
-
             $scope.templateDelete = function () {
                 var templates;
-                templates=$scope.template;
+                templates = $scope.template;
                 TemplateService.delete(templates)
                     .then(function () {
                         TemplateService.getAll('email', $scope.module.name)
@@ -449,7 +450,7 @@ angular.module('ofisim')
                     $scope.newtemplate.template_subject = null;
                     $scope.newtemplate.tinymce_content = null;
                     $scope.newtemplate.sharing_type = null;
-                    $scope.newtemplate.shares =  null;
+                    $scope.newtemplate.shares = null;
                 }
             };
 
@@ -480,13 +481,14 @@ angular.module('ofisim')
                 else {
                     result = TemplateService.create(template);
                 }
-                
+
                 result.then(function (saveResponse) {
                     TemplateService.getAll('email', $scope.module.name)
                         .then(function (listResponse) {
                             $scope.templates = listResponse.data;
                             $scope.template = saveResponse.data.id;
                             ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
+                            $scope.currentTemplate = $scope.templates[0];
                         });
                 });
             }

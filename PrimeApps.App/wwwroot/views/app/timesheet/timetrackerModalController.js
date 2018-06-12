@@ -23,18 +23,19 @@ angular.module('ofisim')
 
             $scope.dropdownFields = $filter('filter')($scope.moduleModal.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
             $scope.dropdownFieldDatas = {};
-            for (var i = 0; i < $scope.dropdownFields.length; i++) {
+            for(var i = 0; i < $scope.dropdownFields.length; i++) {
                 $scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
             }
 
-            $scope.setDropdownData = function (field) {
+            $scope.setDropdownData = function(field){
                 if (field.filters && field.filters.length > 0)
                     $scope.dropdownFieldDatas[field.name] = null;
                 else if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
                     return;
+
                 $scope.currentLookupFieldModal = field;
                 $scope.lookupModal()
-                    .then(function (response) {
+                    .then(function(response){
                         $scope.dropdownFieldDatas[field.name] = response;
                     });
 
@@ -187,7 +188,7 @@ angular.module('ofisim')
                 var timetrackerItemModule = $filter('filter')($rootScope.modules, { name: 'timetracker_items' }, true)[0];
                 var faaliyetPicklist = $filter('filter')(timetrackerItemModule.fields, { name: 'gorev' }, true)[0].picklist_id;
                 var faaliyetItem = $filter('filter')($scope.picklistsModuleModal[faaliyetPicklist], { id: recordModal.gorev }, true)[0];
-                if (faaliyetItem.value === 'izindir')
+                if(faaliyetItem.value === 'izindir')
                     recordModal['izindir'] = true;
 
                 if ($scope.$parent.$parent.$parent.requestType === 'create') {
@@ -236,7 +237,7 @@ angular.module('ofisim')
                                     warnMessage = 'Günlük maksimum saat limitini aşıyor.'
                                 }
 
-                                if (recordModal.saat === 0) {
+                                if(recordModal.saat === 0){
                                     isDayFull = true;
                                     warnMessage = 'Lütfen geçerli bir saat giriniz.'
                                 }
@@ -299,7 +300,7 @@ angular.module('ofisim')
                                     warnMessage = 'Günlük maksimum saat limitini aşıyor.'
                                 }
 
-                                if (recordModal.saat === 0) {
+                                if(recordModal.saat === 0){
                                     isDayFull = true;
                                     warnMessage = 'Lütfen geçerli bir saat giriniz.'
                                 }
@@ -352,7 +353,7 @@ angular.module('ofisim')
                     var warnMessage = '';
 
                     //SAAT KONTROLÜ
-                    if (!recordModal.saat)
+                    if(!recordModal.saat)
                         recordModal.saat = $scope.$parent.$parent.$parent.editData.saat;
 
                     if ($scope.$parent.$parent.$parent.dayObj.totalHour + recordModal.saat - $scope.$parent.$parent.$parent.editData.saat <= $scope.$parent.$parent.$parent.settings.dayMaxHour) {

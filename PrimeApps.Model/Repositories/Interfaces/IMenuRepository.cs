@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public interface IModuleProfileSettingRepository : IRepositoryBaseTenant
+    public interface IMenuRepository : IRepositoryBaseTenant
     {
-        Task<ICollection<ModuleProfileSetting>> GetAllBasic();
-        Task<int> Create(ModuleProfileSetting moduleProfileSetting);
-        Task<ModuleProfileSetting> GetByIdBasic(int id);
-        Task<int> Update(ModuleProfileSetting moduleProfileSetting);
-        Task<int> DeleteSoft(ModuleProfileSetting moduleProfileSetting);
+        Task<Menu> GetByProfileId(int id);
+        Task<Menu> GetDefault();
+        Task<ICollection<Menu>> GetAll();
+        Task<ICollection<MenuItem>> GetItems(int id);
+        Task AddModuleToMenuAsync(Module module);
+        Task DeleteModuleFromMenu(int id);
     }
 }

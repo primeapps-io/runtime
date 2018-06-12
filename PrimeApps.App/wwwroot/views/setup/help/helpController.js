@@ -276,7 +276,9 @@ angular.module('ofisim')
                     uploadFailedCallback = failure;
                     $scope.imgUpload.uploader.addFile(blob);
                     ///TODO: in future will be implemented to upload pasted data images into server.
-                }
+                },
+                convert_urls: false,
+                remove_script_host: false
             };
 
             $scope.tinymceOptionsSide = {
@@ -341,7 +343,9 @@ angular.module('ofisim')
                     uploadFailedCallback = failure;
                     $scope.imgUpload.uploader.addFile(blob);
                     ///TODO: in future will be implemented to upload pasted data images into server.
-                }
+                },
+                convert_urls: false,
+                remove_script_host: false
             };
 
             if ($filter('filter')($rootScope.modules, { name: 'timetrackers' }, true).length > 0)
@@ -360,7 +364,9 @@ angular.module('ofisim')
             }
 
             if ($scope.id) {
+
                 $scope.editDisable = true;
+
                 HelpService.getById($scope.id)
                     .then(function (response) {
                         $scope.helpTemplatesSide = response.data;
@@ -504,7 +510,6 @@ angular.module('ofisim')
                     help.id = $scope.helpTemplates.id;
                     HelpService.update(help);
                     $cache.removeAll();
-                    $state.go('app.setup.helpsides');
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
                 else {
@@ -656,6 +661,7 @@ angular.module('ofisim')
                     }
                     HelpService.update(help);
                     $cache.removeAll();
+                    $state.go('app.setup.helpsides');
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
                 else {
@@ -677,6 +683,7 @@ angular.module('ofisim')
                                     // $state.reload();
                                     $state.go('app.setup.helpsides');
                                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
+
                                 });
                         });
                     }

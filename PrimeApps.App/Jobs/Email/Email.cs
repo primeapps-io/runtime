@@ -235,7 +235,7 @@ namespace PrimeApps.App.Jobs.Email
 
                 if (!record.IsNullOrEmpty())
                 {
-                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Tenant.Language, subscriber.Culture, 180, lookupModules, true);
+                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
 
                     if (contentFields.Count > 0)
                     {
@@ -300,7 +300,7 @@ namespace PrimeApps.App.Jobs.Email
                             var userData = recordRepository.Find("users", findRequest, false);
                             userDataObj = (JObject)userData.First();
 
-                            if (subscriber.culture.Contains("tr"))
+                            if (subscriber.Setting.Culture.Contains("tr"))
                                 recordTable += recordRow.Replace("{label}", "Önceki Onaylayan").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
                             else
                                 recordTable += recordRow.Replace("{label}", "Previous Approver").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");

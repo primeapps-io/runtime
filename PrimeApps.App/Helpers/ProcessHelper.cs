@@ -16,7 +16,6 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Common.Resources;
-using OfisimCRM.Entity.Classes;
 
 namespace PrimeApps.App.Helpers
 {
@@ -347,7 +346,8 @@ namespace PrimeApps.App.Helpers
                                 //domain = "http://localhost:5554/";
 
                                 //checks custom domain 
-                                var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                //TODO Removed
+                                /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                                 if (!string.IsNullOrEmpty(instance.CustomDomain))
                                 {
                                     domain = "https://" + instance.CustomDomain + "/";
@@ -448,7 +448,7 @@ namespace PrimeApps.App.Helpers
                                 catch (Exception ex)
                                 {
                                     //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                }
+                                }*/
                             }
 
                             var processLog = new ProcessLog
@@ -685,7 +685,7 @@ namespace PrimeApps.App.Helpers
                     using (var processRepository = new ProcessRepository(databaseContext))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
-                        request.UpdatedById = appUser.LocalId;
+                        request.UpdatedById = appUser.Id;
                         request.UpdatedAt = DateTime.Now;
 
                         if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1))
@@ -758,7 +758,9 @@ namespace PrimeApps.App.Helpers
                                 //domain = "http://localhost:5554/";
 
                                 //checks custom domain 
-                                var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                
+                                //TODO Removed
+                                /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                                 if (!string.IsNullOrEmpty(instance.CustomDomain))
                                 {
                                     domain = "https://" + instance.CustomDomain + "/";
@@ -813,7 +815,7 @@ namespace PrimeApps.App.Helpers
                                 else if (request.OperationType == OperationType.delete)
                                 {
 
-                                }
+                                }*/
                             }
                         }
                         else
@@ -875,7 +877,7 @@ namespace PrimeApps.App.Helpers
                                 if (!record["custom_approver_" + processOrder].IsNullOrEmpty())
                                 {
                                     request.ProcessStatusOrder++;
-                                    var user = new User();
+                                    var user = new TenantUser();
                                     var approverMail = (string)record["custom_approver_" + processOrder];
                                     user = await userRepository.GetByEmail(approverMail);
                                     var emailData = new Dictionary<string, string>();
@@ -884,7 +886,7 @@ namespace PrimeApps.App.Helpers
                                     domain = "https://{0}.ofisim.com/";
                                     var appDomain = "crm";
 
-                                    switch (appUser.AppID)
+                                    switch (appUser.AppId)
                                     {
                                         case 2:
                                             appDomain = "kobi";
@@ -904,9 +906,9 @@ namespace PrimeApps.App.Helpers
                                     domain = string.Format(domain, subdomain);
 
                                     //domain = "http://localhost:5554/";
-
+                                    //TODO Removed
                                     //checks custom domain 
-                                    var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                    /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                                     if (!string.IsNullOrEmpty(instance.CustomDomain))
                                     {
                                         domain = "https://" + instance.CustomDomain + "/";
@@ -947,20 +949,20 @@ namespace PrimeApps.App.Helpers
 
                                     if (request.OperationType == OperationType.insert)
                                     {
-                                        var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppID, appUser);
+                                        var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                         notification.AddRecipient(user.Email);
-                                        notification.AddToQueue(appUser.TenantID, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
+                                        notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                                     }
                                     else if (request.OperationType == OperationType.update)
                                     {
-                                        var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppID, appUser);
+                                        var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                         notification.AddRecipient(user.Email);
-                                        notification.AddToQueue(appUser.TenantID, process.Module.Id, request.RecordId, appUser: appUser);
+                                        notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                                     }
                                     else if (request.OperationType == OperationType.delete)
                                     {
 
-                                    }
+                                    }*/
                                 }
                                 else
                                 {
@@ -993,7 +995,8 @@ namespace PrimeApps.App.Helpers
                                     domain = string.Format(domain, subdomain);
 
                                     //checks custom domain 
-                                    var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                    //TODO Removed
+                                    /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                                     if (!string.IsNullOrEmpty(instance.CustomDomain))
                                     {
                                         domain = "https://" + instance.CustomDomain + "/";
@@ -1027,6 +1030,7 @@ namespace PrimeApps.App.Helpers
                                     var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                     notification.AddRecipient(user.Email);
                                     notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+                                    */
                                 }
                             }
                         }
@@ -1073,7 +1077,7 @@ namespace PrimeApps.App.Helpers
                             var user = await userRepository.GetById(request.CreatedById);
                             request.Status = Model.Enums.ProcessStatus.Rejected;
                             request.ProcessStatusOrder = 0;
-                            request.UpdatedById = appUser.LocalId;
+                            request.UpdatedById = appUser.Id;
                             request.UpdatedAt = DateTime.Now;
                             var emailData = new Dictionary<string, string>();
                             string domain;
@@ -1101,7 +1105,8 @@ namespace PrimeApps.App.Helpers
                             domain = string.Format(domain, subdomain);
 
                             //checks custom domain 
-                            var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                            //TODO Removed
+                            /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                             if (!string.IsNullOrEmpty(instance.CustomDomain))
                             {
                                 domain = "https://" + instance.CustomDomain + "/";
@@ -1138,7 +1143,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 var notification = new Email(EmailResource.ApprovalProcessRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
-                                notification.AddToQueue(appUser.TenantID, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
+                                notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                             }
                             else if (request.OperationType == OperationType.update)
                             {
@@ -1146,7 +1151,7 @@ namespace PrimeApps.App.Helpers
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
-
+                            */
                         }
                     }
                 }
@@ -1233,7 +1238,8 @@ namespace PrimeApps.App.Helpers
                             domain = string.Format(domain, subdomain);
 
                             //checks custom domain 
-                            var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                            //TODO Removed
+                            /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                             if (!string.IsNullOrEmpty(instance.CustomDomain))
                             {
                                 domain = "https://" + instance.CustomDomain + "/";
@@ -1287,7 +1293,7 @@ namespace PrimeApps.App.Helpers
                             else if (request.OperationType == OperationType.delete)
                             {
 
-                            }
+                            }*/
                         }
                     }
                 }

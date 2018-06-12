@@ -365,6 +365,12 @@ angular.module('ofisim')
         }
     })
 
+    .filter('titleCase', function () {
+        return function (token) {
+            return token.charAt(0).toUpperCase() + token.slice(1);
+        }
+    })
+
     .filter('trustUrl', ['$sce', function ($sce) {
         return function (url) {
             return $sce.trustAsResourceUrl(url);

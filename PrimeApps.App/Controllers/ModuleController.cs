@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Jobs;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Application;

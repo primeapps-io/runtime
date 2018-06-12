@@ -1,20 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http;
-using Newtonsoft.Json.Linq;
-using OfisimCRM.App.ActionFilters;
-using OfisimCRM.Model.Enums;
 using OfisimCRM.Model.Repositories.Interfaces;
-using OfisimCRM.App.Models;
-using OfisimCRM.App.Helpers;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OfisimCRM.App.Controllers
 {
-    [RoutePrefix("api/tag"), Authorize, SnakeCase]
+    [Route("api/tag"), Authorize]
     public class TagController : BaseController
     {
         private ITagRepository _tagRepository;
@@ -26,8 +21,16 @@ namespace OfisimCRM.App.Controllers
 
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_tagRepository);
+
+            base.OnActionExecuting(context);
+        }
+
         [Route("get_tag/{id:int}"), HttpGet]
-        public async Task<IHttpActionResult> GetTag(int id)
+        public async Task<IActionResult> GetTag(int id)
         {
             var tags = await _tagRepository.GetByFieldId(id);
 
