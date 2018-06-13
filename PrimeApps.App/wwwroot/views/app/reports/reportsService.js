@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('ReportsService', ['$rootScope', '$http', '$filter', 'config', '$q', 'ModuleService',
         function ($rootScope, $http, $filter, config, $q, ModuleService) {
 

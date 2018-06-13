@@ -1,7 +1,7 @@
 <div class="popover">
     <div class="arrow"></div>
     <div class="popover-content" style="text-align: center;">
-        <a ng-if="user.profile.ImportData" href="#/app/crm/import/{{type}}" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)">
+        <a ng-if="user.profile.ImportData" href="#/app/import/{{type}}" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)">
             <i class="fa fa-download"></i> {{'Module.Import' | translate }}
         </a>
         <a ng-if="user.profile.ExportData" ng-click="getDownloadViewUrlExcel()" class="btn btn-sm btn-custom" style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.read)" data-spinner-color="#666" ladda="exporting">

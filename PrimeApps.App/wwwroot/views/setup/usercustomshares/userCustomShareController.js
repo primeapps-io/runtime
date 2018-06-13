@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('UserCustomShareController', ['$rootScope', '$scope', '$filter', 'ngToast', '$popover', 'helper', 'UserCustomShareService',
         function ($rootScope, $scope, $filter, ngToast, $popover, helper, UserCustomShareService) {

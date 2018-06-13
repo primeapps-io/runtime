@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', 'ngToast', '$cookies',
         function ($q, $injector, $window, $localStorage, $filter, ngToast, $cookies) {
@@ -51,14 +51,14 @@ angular.module('ofisim')
                     }
 
                     if (rejection.status === 403) {
-                        $window.location.href = '#/app/crm/dashboard';
+                        $window.location.href = '#/app/dashboard';
                         ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'danger' });
                         return $q.reject(rejection);
                     }
 
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
-                            $window.location.href = '#/app/crm/dashboard';
+                            $window.location.href = '#/app/dashboard';
                             ngToast.create({ content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning' });
                         }
 

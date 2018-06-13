@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('PhoneSettingsService', ['$http', 'config',
         function ($http, config) {
             return {

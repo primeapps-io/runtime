@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('NewsfeedController', ['$rootScope', '$scope', 'NoteService', 'ngToast', '$filter', '$window', '$modal',
         function ($rootScope, $scope, NoteService, ngToast, $filter, $window, $modal) {

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('GeneralSettingsController', ['$rootScope', '$scope', '$filter', 'ngToast', 'GeneralSettingsService', '$localStorage',
         function ($rootScope, $scope, $filter, ngToast, GeneralSettingsService, $localStorage) {

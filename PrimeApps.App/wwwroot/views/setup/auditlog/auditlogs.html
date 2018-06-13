@@ -92,7 +92,7 @@
                         <span class="audit-date">{{auditLog.created_at | date:'short'}}</span>
                         <span ng-if="auditLog.audit_type === 'record'">{{'Setup.AuditLog.record.' + auditLog.record_action_type | translate:{userName:auditLog.created_by.full_name} }}</span>
                         <span ng-if="auditLog.audit_type === 'setup'">{{'Setup.AuditLog.setup.' + auditLog.setup_action_type | translate:{userName:auditLog.created_by.full_name} }}</span>
-                        <a href="#/app/crm/module/{{auditLog.module.name}}?id={{auditLog.record_id}}" ng-if="auditLog.audit_type==='record' && auditLog.record_action_type != 'deleted'">{{ auditLog.record_name }}</a>
+                        <a href="#/app/module/{{auditLog.module.name}}?id={{auditLog.record_id}}" ng-if="auditLog.audit_type==='record' && auditLog.record_action_type != 'deleted'">{{ auditLog.record_name }}</a>
                         <span ng-if="auditLog.audit_type === 'record' && auditLog.record_action_type === 'deleted'">{{ auditLog.record_name }}</span>
                         <span ng-if="auditLog.audit_type === 'setup'">{{ auditLog.module['label_' + language + '_plural'] }}</span>
                     </li>

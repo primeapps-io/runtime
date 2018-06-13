@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('SetupController', ['$rootScope', '$scope', '$filter', '$location', 'helper',
         function ($rootScope, $scope, $filter, $location, helper) {

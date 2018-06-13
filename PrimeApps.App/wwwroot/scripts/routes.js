@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .config(['$stateProvider', '$urlRouterProvider',
         function ($stateProvider, $urlRouterProvider) {
@@ -49,20 +49,7 @@ angular.module('ofisim')
                     url: '/app',
                     abstract: true,
                     templateUrl: 'views/app.html',
-                    controller: 'AppController'
-                });
-
-            //app.crm
-            $stateProvider
-                .state('app.crm', {
-                    url: '/crm',
-                    abstract: true,
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'views/app.html',
-                            controller: 'CrmController'
-                        }
-                    },
+                    controller: 'AppController',
                     resolve: {
                         AppService: 'AppService',
                         start: ['$rootScope', 'AppService',
@@ -71,9 +58,11 @@ angular.module('ofisim')
                                     return AppService.getMyAccount();
                             }]
                     }
-                })
+                });
 
-                .state('app.crm.home', {
+            //app.crm
+            $stateProvider
+                .state('app.home', {
                     url: '/home',
                     views: {
                         'app': {
@@ -91,7 +80,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.dashboard', {
+                .state('app.dashboard', {
                     url: '/dashboard',
                     views: {
                         'app': {
@@ -110,7 +99,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.moduleList', {
+                .state('app.moduleList', {
                     url: '/modules/:type?viewid',
                     views: {
                         'app': {
@@ -132,7 +121,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.moduleDetail', {
+                .state('app.moduleDetail', {
                     url: '/module/:type?id?ptype?pid?rptype?rtab?pptype?ppid?prtab?rpptype?rppid?rprtab?back?freeze',
                     views: {
                         'app': {
@@ -167,7 +156,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.moduleForm', {
+                .state('app.moduleForm', {
                     url: '/moduleForm/:type?stype?id?ptype?pid?rtab?pptype?ppid?prtab?back?clone?revise?many?field?value',
                     views: {
                         'app': {
@@ -201,7 +190,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.viewForm', {
+                .state('app.viewForm', {
                     url: '/viewForm/:type?id',
                     views: {
                         'app': {
@@ -219,7 +208,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.tasks', {
+                .state('app.tasks', {
                     url: '/tasks',
                     views: {
                         'app': {
@@ -238,7 +227,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.documents', {
+                .state('app.documents', {
                     url: '/documents/:type?id',
                     views: {
                         'app': {
@@ -256,7 +245,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.calendar', {
+                .state('app.calendar', {
                     url: '/calendar',
                     views: {
                         'app': {
@@ -274,7 +263,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.documentSearch', {
+                .state('app.documentSearch', {
                     url: '/documentSearch',
                     views: {
                         'app': {
@@ -292,7 +281,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.timesheet', {
+                .state('app.timesheet', {
                     url: '/timesheet?user?project?month?ctype',
                     views: {
                         'app': {
@@ -312,7 +301,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.timesheetList', {
+                .state('app.timesheetList', {
                     url: '/timesheetList',
                     views: {
                         'app': {
@@ -329,7 +318,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.newsfeed', {
+                .state('app.newsfeed', {
                     url: '/newsfeed',
                     views: {
                         'app': {
@@ -347,7 +336,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.import', {
+                .state('app.import', {
                     url: '/import/:type',
                     views: {
                         'app': {
@@ -367,7 +356,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.importCsv', {
+                .state('app.importCsv', {
                     url: '/importcsv/:type',
                     views: {
                         'app': {
@@ -386,7 +375,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.leadconvert', {
+                .state('app.leadconvert', {
                     url: '/leadconvert?id',
                     views: {
                         'app': {
@@ -405,7 +394,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.personalconvert', {
+                .state('app.personalconvert', {
                     url: '/personalconvert?id',
                     views: {
                         'app': {
@@ -424,7 +413,7 @@ angular.module('ofisim')
 
                 })
 
-                .state('app.crm.quoteconvert', {
+                .state('app.quoteconvert', {
                     url: '/quoteconvert?id',
                     views: {
                         'app': {
@@ -442,7 +431,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.analytics', {
+                .state('app.analytics', {
                     url: '/analytics?id',
                     views: {
                         'app': {
@@ -460,7 +449,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.analyticsForm', {
+                .state('app.analyticsForm', {
                     url: '/analyticsForm?id',
                     views: {
                         'app': {
@@ -478,7 +467,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.reports', {
+                .state('app.reports', {
                     url: '/reports?categoryId?id',
                     views: {
                         'app': {
@@ -497,7 +486,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.timetracker', {
+                .state('app.timetracker', {
                     url: '/timetracker?user?year?month?week',
                     views: {
                         'app': {
@@ -516,7 +505,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.report', {
+                .state('app.report', {
                     url: '/report',
                     views: {
                         'app': {
@@ -534,7 +523,7 @@ angular.module('ofisim')
                     }
                 })
 
-                .state('app.crm.directory', {
+                .state('app.directory', {
                     url: '/directory?id',
                     views: {
                         'app': {
@@ -569,7 +558,7 @@ angular.module('ofisim')
                                 var deferred = $q.defer();
 
                                 if ($rootScope.preview) {
-                                    $state.go('app.crm.dashboard');
+                                    $state.go('app.dashboard');
                                     deferred.resolve();
                                     return deferred.promise;
                                 }
@@ -1170,7 +1159,6 @@ angular.module('ofisim')
                     }
                 })
 
-
                 .state('app.setup.approvel', {
                     url: '/approvel?id',
                     views: {
@@ -1304,13 +1292,7 @@ angular.module('ofisim')
                     url: '/paymentform',
                     templateUrl: cdnUrl + 'views/app/payment/paymentForm.html',
                     controller: 'PaymentFormController'
-                })
-
-                .state('join', {
-                    url: '/join',
-                    templateUrl: cdnUrl + 'views/app/join/join.html',
-                    controller: 'JoinController'
                 });
 
-            $urlRouterProvider.otherwise('/app/crm/dashboard');
+            $urlRouterProvider.otherwise('/app/dashboard');
         }]);

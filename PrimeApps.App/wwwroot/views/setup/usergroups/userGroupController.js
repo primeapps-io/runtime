@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('UserGroupController', ['$rootScope', '$scope', '$filter', 'ngToast', '$popover', 'helper', 'UserGroupService',
         function ($rootScope, $scope, $filter, ngToast, $popover, helper, UserGroupService) {

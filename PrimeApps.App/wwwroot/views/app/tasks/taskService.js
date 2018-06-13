@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('TaskService', ['$rootScope', '$filter', 'taskDate',
         function ($rootScope, $filter, taskDate) {

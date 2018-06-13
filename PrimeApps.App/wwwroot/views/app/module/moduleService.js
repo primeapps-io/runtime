@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo',
         function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo) {
@@ -227,10 +227,10 @@ angular.module('ofisim')
                     var recordsProcessed = [];
 
                     var setLink = function (field, record, type, parentType, parentId, returnTab, previousParentType, previousParentId, previousReturnTab, parentScope) {
-                        var linkPrefix = '#/app/crm/module/';
+                        var linkPrefix = '#/app/module/';
 
                         if (type === 'rehber') {
-                            linkPrefix = '#/app/crm/';
+                            linkPrefix = '#/app/';
                             type = 'directory';
                         }
 
@@ -3641,7 +3641,7 @@ angular.module('ofisim')
             };
         }]);
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .constant('icons', {
         icons: [

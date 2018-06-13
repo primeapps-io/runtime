@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleFormSetupController', ['$rootScope', '$scope', '$filter', '$location', '$state', 'ngToast', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'AppService',
         function ($rootScope, $scope, $filter, $location, $state, ngToast, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, AppService) {
@@ -50,7 +50,7 @@ angular.module('ofisim')
 
                 if (!module) {
                     ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                    $state.go('app.crm.dashboard');
+                    $state.go('app.dashboard');
                     return;
                 }
 
@@ -59,7 +59,7 @@ angular.module('ofisim')
                 if ($scope.clone) {
                     if ($scope.clone === 'opportunity' || $scope.clone === 'activity') {
                         ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                        $state.go('app.crm.dashboard');
+                        $state.go('app.dashboard');
                         return;
                     }
 
@@ -1234,7 +1234,7 @@ angular.module('ofisim')
                                 if (!$scope.redirect)
                                     $state.go('app.setup.modules');
                                 else
-                                    $state.go('app.crm.moduleForm', { type: $scope.module.name });
+                                    $state.go('app.moduleForm', { type: $scope.module.name });
 
                                 ngToast.create({
                                     content: $filter('translate')('Setup.Modules.SaveSuccess'),

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .directive('noteList', ['convert', '$localStorage', 'NoteService', 'FileUploader', 'config', 'ngToast', '$filter', 'helper', '$modal',
         function (convert, $localStorage, NoteService, FileUploader, config, ngToast, $filter, helper, $modal) {

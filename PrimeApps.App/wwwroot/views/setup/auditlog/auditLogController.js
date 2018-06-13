@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('AuditLogController', ['$rootScope', '$scope', 'config', 'ngToast', '$localStorage', '$filter', 'ngTableParams', '$stateParams', 'AuditLogService',
         function ($rootScope, $scope, config, ngToast, $localStorage, $filter, ngTableParams, $stateParams, AuditLogService) {
             $scope.actionTypes = AuditLogService.getActionsTypes();

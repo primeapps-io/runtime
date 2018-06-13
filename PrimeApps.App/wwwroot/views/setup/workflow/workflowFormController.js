@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('WorkflowFormController', ['$rootScope', '$location', '$scope', '$filter', 'ngToast', 'helper', 'blockUI', '$state', 'operators', '$q', 'WorkflowService', 'ModuleService', 'config', '$localStorage', 'FileUploader', '$http',
         function ($rootScope, $location, $scope, $filter, ngToast, helper, blockUI, $state, operators, $q, WorkflowService, ModuleService, config, $localStorage, FileUploader, $http) {

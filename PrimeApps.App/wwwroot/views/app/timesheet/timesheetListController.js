@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('ofisim', []);
+var app = angular.module('primeapps', []);
 
 app.controller('TimesheetListController', ['$rootScope', '$scope', '$filter', 'ngToast', '$popover', 'helper', 'ModuleService',
         function ($rootScope, $scope, $filter, ngToast, $popover, helper, ModuleService) {

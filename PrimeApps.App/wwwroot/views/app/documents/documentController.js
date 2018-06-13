@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('DocumentController', ['$rootScope', '$scope', '$location', 'guidEmpty', '$filter', '$popover', 'DocumentService', 'entityTypes', 'helper', 'operations','$stateParams','ModuleService',
         function ($rootScope, $scope, $location, guidEmpty, $filter, $popover, DocumentService, entityTypes, helper, operations,$stateParams,ModuleService) {

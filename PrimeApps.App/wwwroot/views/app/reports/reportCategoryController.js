@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ReportsController', ['$rootScope', '$scope', '$location', '$filter', '$popover', 'ModuleService', 'ReportsService', 'blockUI', '$stateParams', '$modal', '$state', 'moment',
         function ($rootScope, $scope, $location, $filter, $popover, ModuleService, ReportsService, blockUI, $stateParams, $modal, $state, moment) {

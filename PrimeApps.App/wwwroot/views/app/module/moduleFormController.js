@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components) {
@@ -33,7 +33,7 @@ angular.module('ofisim')
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -43,7 +43,7 @@ angular.module('ofisim')
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -55,7 +55,7 @@ angular.module('ofisim')
 
             if ((!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) || ($scope.id && !$scope.hasPermission($scope.type, $scope.operations.modify))) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -404,7 +404,7 @@ angular.module('ofisim')
                                     content: $filter('translate')('Common.Forbidden'),
                                     className: 'warning'
                                 });
-                                $state.go('app.crm.dashboard');
+                                $state.go('app.dashboard');
                                 return;
                             }
 
@@ -1395,10 +1395,10 @@ angular.module('ofisim')
                         else {
                             if ($scope.module.name === 'stock_transactions') {
                                 setTimeout(function () {
-                                    $state.go('app.crm.moduleDetail', params);
+                                    $state.go('app.moduleDetail', params);
                                 }, 500);
                             } else
-                                $state.go('app.crm.moduleDetail', params);
+                                $state.go('app.moduleDetail', params);
 
                         }
                         $scope.izinTuruData = null;

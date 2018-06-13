@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('$localStorage', ['$window', function ($window) {
         return {
@@ -56,7 +56,7 @@ angular.module('ofisim')
     }])
 
     .factory('$cache', ['$cacheFactory', function ($cacheFactory) {
-        return $cacheFactory('ofisim');
+        return $cacheFactory('primeapps');
     }])
 
     .factory('sipHelper', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', '$state', '$window', '$popover',
@@ -516,8 +516,8 @@ angular.module('ofisim')
                 },
                 goRecordDetail: function (moduleName, recordId) {
                     if ($rootScope.sipUser.IsAutoRecordDetail === 'true') {
-                        //$state.go('app.crm.module',{type:moduleName,id: recordId});
-                        $window.location.href = '#/app/crm/module/' + moduleName + '?id=' + recordId;
+                        //$state.go('app.module',{type:moduleName,id: recordId});
+                        $window.location.href = '#/app/module/' + moduleName + '?id=' + recordId;
                     }
                 },
                 findRecordGoDetail: function (moduleName, fieldName, searchValue) {

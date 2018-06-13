@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .directive('directory', ['$rootScope', '$state', '$filter', 'ModuleService',
         function ($rootScope, $state, $filter, ModuleService) {
             return {
@@ -18,7 +18,7 @@ angular.module('ofisim')
 
                         if (!$scope.module) {
                             ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                            $state.go('app.crm.dashboard');
+                            $state.go('app.dashboard');
                             return;
                         }
 
@@ -108,9 +108,9 @@ angular.module('ofisim')
 
                         $scope.goto = function (id) {
                             if (id)
-                                $state.go('app.crm.directory', { id: id });
+                                $state.go('app.directory', { id: id });
                             else if (!$scope.id)
-                                $state.go('app.crm.moduleDetail', { type: 'calisanlar', id: $scope.record['calisan_id'] });
+                                $state.go('app.moduleDetail', { type: 'calisanlar', id: $scope.record['calisan_id'] });
                         };
 
                         $scope.getField = function (fieldName) {
@@ -124,7 +124,7 @@ angular.module('ofisim')
 
                             if (!field) {
                                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                                $state.go('app.crm.dashboard');
+                                $state.go('app.dashboard');
                                 return;
                             }
 

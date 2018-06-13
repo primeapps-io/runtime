@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('LeadConvertService', ['$rootScope', '$http', 'config', '$filter', 'helper',
         function ($rootScope, $http, config, $filter, helper) {

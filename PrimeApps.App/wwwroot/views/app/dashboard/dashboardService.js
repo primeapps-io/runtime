@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('DashboardService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {

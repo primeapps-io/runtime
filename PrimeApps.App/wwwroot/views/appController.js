@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$location', '$state', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', '$location', '$state', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
     function ($rootScope, $scope, $location, $state, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, sipHelper, operations, blockUI, $cache, helps, AppService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
@@ -171,7 +171,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                     $scope.sampleRemoving = false;
                     ngToast.create({ content: $filter('translate')('Layout.SampleDataRemoveSuccess'), className: 'success' });
                     $rootScope.$broadcast('sample-data-removed');
-                    $window.location.href = '#/app/crm/dashboard';
+                    $window.location.href = '#/app/dashboard';
                 });
         };
 
@@ -224,7 +224,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
 
             switch (app) {
                 case 'crm':
-                    $state.go('app.crm.dashboard');
+                    $state.go('app.dashboard');
                     break;
                 case 'analytics':
                     $state.go('app.analytics.report');
@@ -261,24 +261,24 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 return help.help;
             }
             else {
-                if (hash.indexOf('#/app/crm/modules/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/modules/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/modules/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/modules/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
-                if (hash.indexOf('#/app/crm/module/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/module/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/module/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/module/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
-                if (hash.indexOf('#/app/crm/moduleForm/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/moduleForm/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
                 if (hash.indexOf('#/app/setup/') > -1) {
                     help = $filter('filter')(helps.maps, { route: 'default-setup', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
-                if (hash.indexOf('#/app/crm/import/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/import/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/import/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/import/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
                 if (help) {
@@ -303,8 +303,8 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 .then(function () {
                     $scope.reloading = false;
 
-                    if ($state.current.name != 'app.crm.dashboard')
-                        $state.go('app.crm.dashboard');
+                    if ($state.current.name != 'app.dashboard')
+                        $state.go('app.dashboard');
                     else
                         $rootScope.$broadcast('sample-data-removed');
 
@@ -340,16 +340,16 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 var isModuleDetail;
                 var isModuleList;
 
-                if (hash.indexOf('/app/crm/modules/') > -1)
+                if (hash.indexOf('/app/modules/') > -1)
                     isModuleList = true;
                 moduleName = hash.split('/')[4];
 
-                if (hash.indexOf('/app/crm/module/') > -1) {
+                if (hash.indexOf('/app/module/') > -1) {
                     isModuleDetail = true;
                     moduleName = hash.split('/')[4].split('?')[0];
                 }
 
-                if (hash.indexOf('/app/crm/moduleForm/') > -1) {
+                if (hash.indexOf('/app/moduleForm/') > -1) {
                     moduleName = hash.split('/')[4].split('?')[0];
                 }
 
@@ -490,16 +490,16 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
             var isModuleDetail;
             var isModuleList;
 
-            if (hash.indexOf('/app/crm/modules/') > -1)
+            if (hash.indexOf('/app/modules/') > -1)
                 isModuleList = true;
             moduleName = hash.split('/')[4];
 
-            if (hash.indexOf('/app/crm/module/') > -1) {
+            if (hash.indexOf('/app/module/') > -1) {
                 isModuleDetail = true;
                 moduleName = hash.split('/')[4].split('?')[0];
             }
 
-            if (hash.indexOf('/app/crm/moduleForm/') > -1) {
+            if (hash.indexOf('/app/moduleForm/') > -1) {
                 moduleName = hash.split('/')[4].split('?')[0];
             }
 

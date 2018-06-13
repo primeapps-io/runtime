@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('CandidateConvertMapController', ['$rootScope', '$scope', '$filter', '$cache', 'helper', 'ConvertMapService',
         function ($rootScope, $scope, $filter, $cache, helper, ConvertMapService) {
             $scope.$parent.collapsed = true;

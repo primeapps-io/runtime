@@ -15,7 +15,7 @@
                                         <th style="border-color: #f7f7f7 !important;border: none; width: 130px">{{accountModule['label_' + language + '_singular']}}:</th>
                                         <td style=" border: none;">
                                             <span ng-hide="converted">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}</span>
-                                            <a href="#/app/crm/module/calisanlar?id={{ converted.account_id }}" ng-show="converted" id="ConvertAccountLink">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                            <a href="#/app/module/calisanlar?id={{ converted.account_id }}" ng-show="converted" id="ConvertAccountLink">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
                                         </td>
                                     </tr>
                                 </table>

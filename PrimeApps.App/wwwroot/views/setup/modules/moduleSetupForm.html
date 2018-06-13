@@ -7,7 +7,7 @@
             </span>
         </h4>
         <div class="pull-right">
-            <a ng-href="{{!redirect ? '#app/setup/modules' : '#/app/crm/moduleForm/' + module.name}}" class="btn btn-sm btn-custom" ng-disabled="saving">{{'Common.Cancel' | translate}}</a>
+            <a ng-href="{{!redirect ? '#app/setup/modules' : '#/app/moduleForm/' + module.name}}" class="btn btn-sm btn-custom" ng-disabled="saving">{{'Common.Cancel' | translate}}</a>
             <button type="button" class="btn btn-sm btn-primary" ng-class="{'btn-w-sm':!redirect, 'btn-w-xxlg':(redirect && language === 'tr'), 'btn-w-xlg':(redirect && language === 'en')}" ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving"><i class="fa fa-check pull-left"></i> {{!redirect ? ('Common.Save' | translate) : ('Setup.Modules.SaveFormChanges' | translate)}}</button>
         </div>
     </div>

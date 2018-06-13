@@ -353,7 +353,7 @@ namespace PrimeApps.App.Helpers
 
                                     //        //domain = "http://localhost:5554/";
 
-                                    //        var url = domain + "#/app/crm/module/" + module.Name + "?id=" + record["id"];
+                                    //        var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
                                     //        var emailData = new Dictionary<string, string>();
                                     //        emailData.Add("Subject", sendNotification.Subject);
@@ -907,7 +907,7 @@ namespace PrimeApps.App.Helpers
 
                                             //domain = "http://localhost:5554/";
 
-                                            var url = domain + "#/app/crm/module/" + module.Name + "?id=" + record["id"];
+                                            var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
                                             var emailData = new Dictionary<string, string>();
                                             emailData.Add("Subject", sendNotification.Subject);

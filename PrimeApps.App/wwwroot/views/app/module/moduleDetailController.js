@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleDetailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', 'sipHelper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'entityTypes', 'operations', 'config', 'guidEmpty', '$popover', '$timeout', '$modal', '$sce', 'pdfLabels', 'yesNo', 'activityTypes', 'transactionTypes', '$anchorScroll', 'FileUploader', 'DocumentService', 'ModuleService', '$http', 'components',
         function ($rootScope, $scope, ngToast, $filter, helper, sipHelper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, entityTypes, operations, config, guidEmpty, $popover, $timeout, $modal, $sce, pdfLabels, yesNo, activityTypes, transactionTypes, $anchorScroll, FileUploader, DocumentService, ModuleService, $http, components) {
@@ -50,7 +50,7 @@ angular.module('ofisim')
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -104,7 +104,7 @@ angular.module('ofisim')
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -198,7 +198,7 @@ angular.module('ofisim')
 
             if (!$scope.id) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -834,11 +834,11 @@ angular.module('ofisim')
                         clearCache();
 
                         if ($scope.parentId) {
-                            $state.go('app.crm.moduleDetail', { type: $scope.parentModule, id: $scope.parentId });
+                            $state.go('app.moduleDetail', { type: $scope.parentModule, id: $scope.parentId });
                             return;
                         }
 
-                        $state.go('app.crm.moduleList', { type: $scope.type });
+                        $state.go('app.moduleList', { type: $scope.type });
                     });
             };
 
@@ -1902,7 +1902,7 @@ angular.module('ofisim')
                         $scope.converted = converted.data;
                         $scope.convertDisable = true;
                         ngToast.create({ content: $filter('translate')('Convert.Success', { type: $scope.module['label_' + $rootScope.language + '_singular'] }), className: 'success' });
-                        $window.location.href = '#/app/crm/module/sales_invoices?id=' + converted.data['sales_invoice_id'] + '&back=sales_orders';
+                        $window.location.href = '#/app/module/sales_invoices?id=' + converted.data['sales_invoice_id'] + '&back=sales_orders';
                     })
                     .catch(function (data) {
                         if (data.status === 409) {
@@ -1925,7 +1925,7 @@ angular.module('ofisim')
                         $scope.converted = converted.data;
                         $scope.convertDisable = true;
                         ngToast.create({ content: $filter('translate')('Convert.Success', { type: $scope.module['label_' + $rootScope.language + '_singular'] }), className: 'success' });
-                        $window.location.href = '#/app/crm/module/purchase_invoices?id=' + converted.data['purchase_invoice_id'] + '&back=purchase_orders';
+                        $window.location.href = '#/app/module/purchase_invoices?id=' + converted.data['purchase_invoice_id'] + '&back=purchase_orders';
                     })
                     .catch(function (data) {
                         if (data.status === 409) {

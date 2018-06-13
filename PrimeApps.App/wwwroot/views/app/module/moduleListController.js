@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleListController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ngTableParams', 'blockUI', 'exportFile', '$popover', '$modal', 'operations', 'activityTypes', 'transactionTypes', 'ModuleService', '$http',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ngTableParams, blockUI, exportFile, $popover, $modal, operations, activityTypes, transactionTypes, ModuleService, $http) {
@@ -17,7 +17,7 @@ angular.module('ofisim')
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -26,7 +26,7 @@ angular.module('ofisim')
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 

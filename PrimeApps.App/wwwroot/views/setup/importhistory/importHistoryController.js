@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('ImportHistoryController', ['$rootScope', '$scope', '$cache', 'helper', 'ImportHistoryService',
         function ($rootScope, $scope, $cache, helper, ImportHistoryService) {
             $scope.currentPage = 1;

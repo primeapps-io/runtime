@@ -1774,7 +1774,7 @@
     }
   },
   "Analytics": {
-    "NewReport": "Kayıtlı rapor bulunmamaktadır.İlk raporunuzu oluşturabilmek için <a href=\"#/app/crm/analyticsForm\">tıklayınız</a>",
+    "NewReport": "Kayıtlı rapor bulunmamaktadır.İlk raporunuzu oluşturabilmek için <a href=\"#/app/analyticsForm\">tıklayınız</a>",
     "DemoDisabled": "Demoda bu işlem gerçekleştirilemez.",
     "DemoMessage": "Örnek raporları incelemektesiniz. İş zekası uygulaması ve veri ambarı için lütfen bizi arayanız: 0850 532 28 00"
   },

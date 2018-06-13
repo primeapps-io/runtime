@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('LicenseController', ['$rootScope', '$scope', '$filter', '$popover', '$state', 'ngToast', 'config', 'LicenseService', 'WorkgroupService', 'AuthService', 'PaymentService',
         function ($rootScope, $scope, $filter, $popover, $state, ngToast, config, LicenseService, WorkgroupService, AuthService, PaymentService) {

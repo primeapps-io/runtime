@@ -356,11 +356,11 @@ namespace PrimeApps.App.Helpers
                                 string url = "";
                                 if (module.Name == "timetrackers")
                                 {
-                                    url = domain + "#/app/crm/timetracker?user=" + (int)record["created_by.id"] + "&year=" + (int)record["year"] + "&month=" + (int)record["month"] + "&week=" + (int)record["week"];
+                                    url = domain + "#/app/timetracker?user=" + (int)record["created_by.id"] + "&year=" + (int)record["year"] + "&month=" + (int)record["month"] + "&week=" + (int)record["week"];
                                 }
                                 else
                                 {
-                                    url = domain + "#/app/crm/module/" + module.Name + "?id=" + (int)record["id"];
+                                    url = domain + "#/app/module/" + module.Name + "?id=" + (int)record["id"];
                                 }
 
 
@@ -771,11 +771,11 @@ namespace PrimeApps.App.Helpers
                                 {
                                     var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                     var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                    url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
+                                    url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                                 }
                                 else
                                 {
-                                    url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                    url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                                 }
 
                                 if (appUser.TenantLanguage == "tr")
@@ -919,11 +919,11 @@ namespace PrimeApps.App.Helpers
                                     {
                                         var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                         var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                        url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
+                                        url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                                     }
                                     else
                                     {
-                                        url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                        url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                                     }
 
                                     if (appUser.Culture.Contains("tr"))
@@ -1008,11 +1008,11 @@ namespace PrimeApps.App.Helpers
                                     {
                                         var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                         var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                        url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                        url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                                     }
                                     else
                                     {
-                                        url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                        url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                                     }
 
                                     if (appUser.TenantLanguage == "tr")
@@ -1118,11 +1118,11 @@ namespace PrimeApps.App.Helpers
                             {
                                 var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                 var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                             }
                             else
                             {
-                                url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                             }
 
                             if (appUser.TenantLanguage == "tr")
@@ -1251,11 +1251,11 @@ namespace PrimeApps.App.Helpers
                             {
                                 var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                 var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                             }
                             else
                             {
-                                url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                             }
 
                             if (appUser.TenantLanguage == "tr")
@@ -1355,11 +1355,11 @@ namespace PrimeApps.App.Helpers
         //                        {
         //                            var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)requestEntity.RecordId, No = 1 } }, Limit = 9999 };
         //                            var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-        //                            url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+        //                            url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
         //                        }
         //                        else
         //                        {
-        //                            url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + requestEntity.RecordId;
+        //                            url = domain + "#/app/module/" + process.Module.Name + "?id=" + requestEntity.RecordId;
         //                        }
 
         //                        if (appUser.TenantLanguage == "tr")

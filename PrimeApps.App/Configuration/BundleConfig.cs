@@ -33,7 +33,6 @@ namespace PrimeApps.App
 					"scripts/directives.js",
 					"scripts/filters.js",
 					"views/authService.js",
-					"views/app/crmController.js",
 					"views/appService.js",
 					"views/appController.js",
 					"views/app/note/noteService.js",
@@ -48,7 +47,6 @@ namespace PrimeApps.App
 					"views/setup/workgroups/workgroupService.js",
 					"views/setup/messaging/messagingService.js",
 					"views/app/payment/paymentFormController.js",
-					"views/app/join/joinController.js",
 					"views/app/phone/sipPhoneController.js");
 
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/vendor.js",

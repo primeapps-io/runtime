@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('AnalyticsFormController', ['$rootScope', '$scope', '$state', '$location', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'helper', 'FileUploader', 'AnalyticsService', 'ModuleService',
         function ($rootScope, $scope, $state, $location, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, helper, FileUploader, AnalyticsService, ModuleService) {
@@ -13,7 +13,7 @@ angular.module('ofisim')
 
             if (!$rootScope.user.hasAnalytics) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -41,7 +41,7 @@ angular.module('ofisim')
 
             var success = function (id) {
                 $scope.saving = false;
-                $state.go('app.crm.analytics', { id: id });
+                $state.go('app.analytics', { id: id });
             };
 
             var uploader = $scope.uploader = new FileUploader({
@@ -141,7 +141,7 @@ angular.module('ofisim')
             };
 
             $scope.cancel = function () {
-                $state.go('app.crm.analytics');
+                $state.go('app.analytics');
             };
         }
     ]);

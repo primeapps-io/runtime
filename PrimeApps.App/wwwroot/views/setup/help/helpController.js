@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('HelpController', ['$rootScope', '$scope', 'HelpService', 'ngToast', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state',
         function ($rootScope, $scope, HelpService, ngToast, $filter, $window, $modal, config, $localStorage, $location, $cache, $state) {
@@ -41,46 +41,46 @@ angular.module('ofisim')
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Dashboard'),
-                    "value": "/app/crm/dashboard"
+                    "value": "/app/dashboard"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Newsfeed'),
-                    "value": "/app/crm/newsfeed"
+                    "value": "/app/newsfeed"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Report'),
-                    "value": "/app/crm/reports"
+                    "value": "/app/reports"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Tasks'),
-                    "value": "/app/crm/tasks"
+                    "value": "/app/tasks"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Calendar'),
-                    "value": "/app/crm/calendar"
+                    "value": "/app/calendar"
                 }
             ];
 
             $scope.routeModuleSide = [
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Dashboard'),
-                    "value": "/app/crm/dashboard"
+                    "value": "/app/dashboard"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Newsfeed'),
-                    "value": "/app/crm/newsfeed"
+                    "value": "/app/newsfeed"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Report'),
-                    "value": "/app/crm/reports"
+                    "value": "/app/reports"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Tasks'),
-                    "value": "/app/crm/tasks"
+                    "value": "/app/tasks"
                 },
                 {
                     "name": $filter('translate')('Setup.HelpGuide.Calendar'),
-                    "value": "/app/crm/calendar"
+                    "value": "/app/calendar"
                 },
                 {
                     "name": $filter('translate')('Setup.Nav.PersonalSettings'),
@@ -352,8 +352,8 @@ angular.module('ofisim')
                 $scope.isTimetrackerExist = true;
 
             if ($scope.isTimetrackerExist) {
-                $scope.routeModule.push({ 'name': $filter('translate')('Timetracker.Timetracker'), 'value': "/app/crm/timetracker" });
-                $scope.routeModuleSide.push({ 'name': $filter('translate')('Timetracker.Timetracker'), 'value': "/app/crm/timetracker" });
+                $scope.routeModule.push({ 'name': $filter('translate')('Timetracker.Timetracker'), 'value': "/app/timetracker" });
+                $scope.routeModuleSide.push({ 'name': $filter('translate')('Timetracker.Timetracker'), 'value': "/app/timetracker" });
             }
 
             if (location === "helpside") {

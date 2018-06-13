@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('CreateReportController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'ngToast', 'helper', 'ModuleService', 'dragularService', 'ReportsService', 'operators',
         function ($rootScope, $scope, $location, $filter, $timeout, $state, ngToast, helper, ModuleService, dragularService, ReportsService, operators) {
@@ -714,13 +714,13 @@ angular.module('ofisim')
                     report.id = $scope.ReportId;
                     ReportsService.updateReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/crm/reports?id=" + result.data.id;
+                        window.location = "#/app/reports?id=" + result.data.id;
                     });
                 }
                 else {
                     ReportsService.createReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/crm/reports?id=" + result.data.id;
+                        window.location = "#/app/reports?id=" + result.data.id;
 
                     });
                 }

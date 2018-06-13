@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('PurchaseProductsController', ['$rootScope', '$scope', '$state', 'config', 'ngToast', '$localStorage', '$filter', 'ngTableParams', '$stateParams', 'helper', 'PurchaseProductsService', 'ModuleService', '$popover',
         function ($rootScope, $scope, $state, config, ngToast, $localStorage, $filter, ngTableParams, $stateParams, helper, PurchaseProductsService, ModuleService, $popover) {
             if ($scope.$parent.$parent.type != 'purchase_orders')
@@ -16,7 +16,7 @@ angular.module('ofisim')
 
             if (!$scope.purchaseProductModule) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
             $scope.fields = [];

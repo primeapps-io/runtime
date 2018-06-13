@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('UserCustomShareFormController', ['$rootScope', '$location', '$scope', '$filter', 'ngToast', 'guidEmpty', 'blockUI', '$state', 'UserCustomShareService', 'helper',
         function ($rootScope, $location, $scope, $filter, ngToast, guidEmpty, blockUI, $state, UserCustomShareService, helper) {

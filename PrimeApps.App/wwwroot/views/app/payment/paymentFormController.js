@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('PaymentFormController', ['$rootScope', '$scope', '$state', 'helper', '$http', 'config', 'ngToast', '$filter', 'AuthService', '$window',
         function ($rootScope, $scope, $state, helper, $http, config, ngToast, $filter, AuthService, $window) {

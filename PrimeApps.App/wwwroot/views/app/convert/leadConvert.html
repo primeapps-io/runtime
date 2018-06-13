@@ -15,20 +15,20 @@
                                         <th style="border-color: #f7f7f7 !important;border: none;">{{accountModule['label_' + language + '_singular']}}:</th>
                                         <td style=" border: none;">
                                             <span ng-hide="converted">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}</span>
-                                            <a href="#/app/crm/module/accounts?id={{ converted.account_id }}" ng-show="converted" id="ConvertAccountLink">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                            <a href="#/app/module/accounts?id={{ converted.account_id }}" ng-show="converted" id="ConvertAccountLink">{{lead.company ? lead.company : lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
                                         </td>
                                     </tr>
                                     <tr ng-show="contactModule.display">
                                         <th style="border: none;width: 100px;">{{contactModule['label_' + language + '_singular']}}:</th>
                                         <td style="border: none;">
                                             <span ng-hide="converted">{{ lead[leadModulePrimaryField.name || lead.full_name]}}</span>
-                                            <a href="#/app/crm/module/contacts?id={{ converted.contact_id }}" ng-show="converted" id="ConvertContactLink">{{lead.full_name || lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                            <a href="#/app/module/contacts?id={{ converted.contact_id }}" ng-show="converted" id="ConvertContactLink">{{lead.full_name || lead[leadModulePrimaryField.name]}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
                                         </td>
                                     </tr>
                                     <tr ng-show="converted && opportunityModule.display && createOpportunity">
                                         <th style="border-color: #f7f7f7 !important; border: none;">{{opportunityModule['label_' + language + '_singular']}}:</th>
                                         <td style="border: none;">
-                                            <a href="#/app/crm/module/opportunities?id={{ converted.opportunity_id }}" id="ConvertOpportunityLink">{{opportunity.name}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
+                                            <a href="#/app/module/opportunities?id={{ converted.opportunity_id }}" id="ConvertOpportunityLink">{{opportunity.name}}<i class="fa fa-caret-right" style="margin-left: 5px;"></i></a>
                                         </td>
                                     </tr>
                                     <tr ng-show="!converted && !convertDisable && hasPermission('opportunities', operations.write) && opportunityModule.display">

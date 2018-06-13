@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('UserController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', 'guidEmpty', '$popover', 'helper', 'UserService', 'WorkgroupService', 'AppService', 'ProfileService', 'RoleService', 'LicenseService', '$q', 'officeHelper',
         function ($rootScope, $scope, $filter, $state, ngToast, guidEmpty, $popover, helper, UserService, WorkgroupService, AppService, ProfileService, RoleService, LicenseService, $q, officeHelper) {

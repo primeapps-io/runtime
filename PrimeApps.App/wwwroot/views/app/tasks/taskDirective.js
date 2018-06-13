@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .directive('taskList', ['$filter', 'entityTypes', 'helper', 'operations', 'TaskService', 'ModuleService', 'activityTypes','$cache',
         function ($filter, entityTypes, helper, operations, TaskService, ModuleService, activityTypes,$cache) {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim',
+angular.module('primeapps',
     [
         'ngAnimate',
         'ui.router',
@@ -41,14 +41,14 @@ angular.module('ofisim',
 
     .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'ngToastProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',
         function ($locationProvider, $compileProvider, $filterProvider, $controllerProvider, $provide, $httpProvider, $qProvider, $sceDelegateProvider, $translateProvider, tmhDynamicLocaleProvider, $datepickerProvider, ngToastProvider, blockUIConfig, $animateProvider, pluploadOptionProvider, config, uiSelectConfig) {
-            angular.module('ofisim').controller = $controllerProvider.register;
-            angular.module('ofisim').service = $provide.service;
-            angular.module('ofisim').factory = $provide.factory;
-            angular.module('ofisim').directive = $compileProvider.directive;
-            angular.module('ofisim').filter = $filterProvider.register;
-            angular.module('ofisim').value = $provide.value;
-            angular.module('ofisim').constant = $provide.constant;
-            angular.module('ofisim').provider = $provide.provider;
+            angular.module('primeapps').controller = $controllerProvider.register;
+            angular.module('primeapps').service = $provide.service;
+            angular.module('primeapps').factory = $provide.factory;
+            angular.module('primeapps').directive = $compileProvider.directive;
+            angular.module('primeapps').filter = $filterProvider.register;
+            angular.module('primeapps').value = $provide.value;
+            angular.module('primeapps').constant = $provide.constant;
+            angular.module('primeapps').provider = $provide.provider;
 
 
             $locationProvider.hashPrefix('');

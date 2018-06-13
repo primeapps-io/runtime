@@ -54,12 +54,12 @@
 
                     <div class="contact-info" ng-if="sipUser.lineInfo.TalkingRecordInfo !=null">
                         <div class="talkingRecord" ng-show="sipUser.lineInfo.RecordId">
-                            <a href="#/app/crm/module/{{sipUser.lineInfo.ModuleName}}?id={{sipUser.lineInfo.RecordId}}">
+                            <a href="#/app/module/{{sipUser.lineInfo.ModuleName}}?id={{sipUser.lineInfo.RecordId}}">
                                 {{sipUser.lineInfo.TalkingRecordInfo}}
                             </a>
                         </div>
                         <div class="talkingRecord" ng-show="!sipUser.lineInfo.RecordId">
-                            <a href="#/app/crm/moduleForm/{{sipUser.lineInfo.ModuleName}}?field={{sipUser.lineInfo.Field}}&value={{sipUser.lineInfo.Value}}">
+                            <a href="#/app/moduleForm/{{sipUser.lineInfo.ModuleName}}?field={{sipUser.lineInfo.Field}}&value={{sipUser.lineInfo.Value}}">
                                 {{sipUser.lineInfo.TalkingRecordInfo}}
                             </a>
                         </div>
@@ -120,7 +120,7 @@
                 </div>
                 <div class="digits">
                     <a data-placement="top" data-type="info" data-trigger="hover" bs-tooltip="{ 'title': ('Setup.Phone.NewRecord' | translate)}"
-                       href="{{ sipUser.numberToDial.length >=11 ? '#/app/crm/moduleForm/'+sipUser.lineInfo.ModuleName+'?field='+sipUser.lineInfo.Field +'&value='+sipUser.lineInfo.Value:'#'+currentPath }} "
+                       href="{{ sipUser.numberToDial.length >=11 ? '#/app/moduleForm/'+sipUser.lineInfo.ModuleName+'?field='+sipUser.lineInfo.Field +'&value='+sipUser.lineInfo.Value:'#'+currentPath }} "
                        class="dig addPerson action-dig">
                         <i class="fa fa-user-plus" aria-hidden="true"
                            style=" font-size: 21px; margin-top: 3px; margin-left: 4px;"></i>
@@ -174,12 +174,12 @@
                      style="background-image: url(images/user-image.png);"></div>
                 <div class="ca-name">
                     <div class="talkingRecord" ng-show="sipUser.lineInfo.RecordId">
-                        <a href="#/app/crm/module/{{sipUser.lineInfo.ModuleName}}?id={{sipUser.lineInfo.RecordId}}">
+                        <a href="#/app/module/{{sipUser.lineInfo.ModuleName}}?id={{sipUser.lineInfo.RecordId}}">
                             {{sipUser.lineInfo.TalkingRecordInfo}}
                         </a>
                     </div>
                     <div class="talkingRecord" ng-show="!sipUser.lineInfo.RecordId">
-                        <a href="#/app/crm/moduleForm/{{sipUser.lineInfo.ModuleName}}?field={{sipUser.lineInfo.Field}}&value={{sipUser.lineInfo.Value}}">
+                        <a href="#/app/moduleForm/{{sipUser.lineInfo.ModuleName}}?field={{sipUser.lineInfo.Field}}&value={{sipUser.lineInfo.Value}}">
                             {{sipUser.lineInfo.TalkingRecordInfo}}
                         </a>
                     </div>
@@ -245,7 +245,7 @@
                     </div>
                 </div>
                 <div class="digits">
-                    <a href="#/app/crm/moduleForm/{{sipUser.lineInfo.ModuleName}}?field={{sipUser.lineInfo.Field}}&value={{sipUser.lineInfo.Value}}"
+                    <a href="#/app/moduleForm/{{sipUser.lineInfo.ModuleName}}?field={{sipUser.lineInfo.Field}}&value={{sipUser.lineInfo.Value}}"
                        class="dig addPerson action-dig">
                         <i class="fa fa-address-book-o" aria-hidden="true"></i>
                     </a>

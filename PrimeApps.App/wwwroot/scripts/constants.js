@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .constant('taskDate', {
         today: new Date().setHours(23, 59, 59, 0),

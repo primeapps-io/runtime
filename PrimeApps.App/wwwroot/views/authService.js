@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('AuthService', ['$http', 'config', '$localStorage', '$window', '$location', '$timeout', '$rootScope', '$q', '$sessionStorage', '$cache',
         function ($http, config, $localStorage, $window, $location, $timeout, $rootScope, $q, $sessionStorage, $cache) {

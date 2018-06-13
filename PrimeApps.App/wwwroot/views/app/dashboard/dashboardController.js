@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('DashboardController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'DashboardService', 'ModuleService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, DashboardService, ModuleService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
@@ -15,7 +15,7 @@ angular.module('ofisim')
             var startPageLower = $rootScope.user.profile.start_page.toLowerCase();
 
             if (startPageLower != 'dashboard') {
-                window.location = '#/app/crm/' + startPageLower;
+                window.location = '#/app/' + startPageLower;
                 return;
             };
 
@@ -321,18 +321,18 @@ angular.module('ofisim')
 
                 $scope.widgetDetail = function (widget) {
                     if (widget.view_id != 0) {
-                        //$state.go('app.crm.moduleList', {type: widget.widget_data.modulename, viewid: widget.view_id});
-                        window.location = "#/app/crm/modules/" + widget.widget_data.modulename + "?viewid=" + widget.view_id;
+                        //$state.go('app.moduleList', {type: widget.widget_data.modulename, viewid: widget.view_id});
+                        window.location = "#/app/modules/" + widget.widget_data.modulename + "?viewid=" + widget.view_id;
                     } else {
-                        // $state.go('app.crm.reports', {id: widget.report_id});
-                        window.location = "#/app/crm/reports?id=" + widget.report_id;
+                        // $state.go('app.reports', {id: widget.report_id});
+                        window.location = "#/app/reports?id=" + widget.report_id;
 
                     }
 
                 };
                 $scope.chartDetail = function (reportid) {
                     if (reportid) {
-                        window.location = "#/app/crm/reports?id=" + reportid;
+                        window.location = "#/app/reports?id=" + reportid;
                     }
                 };
 

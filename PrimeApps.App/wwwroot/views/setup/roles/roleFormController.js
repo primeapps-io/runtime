@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('RoleFormController', ['$rootScope', '$location', '$scope', '$filter', 'ngToast', 'guidEmpty', 'blockUI', '$state', 'RoleService',
         function ($rootScope, $location, $scope, $filter, ngToast, guidEmpty, blockUI, $state, RoleService) {

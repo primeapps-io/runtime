@@ -71,7 +71,7 @@
               on-resize-end="vm.weekResized(eventRow.event, edge, x / vm.dayColumnDimensions.width)">
               <strong ng-bind="(eventRow.event.tempStartsAt || eventRow.event.startsAt) | calendarDate:'time':true" ng-show="vm.showTimes"></strong>
               <a
-                href="#/app/crm/module/{{eventRow.event.type}}{{'?id=' + eventRow.event.id + '&back=calendar'}}"
+                href="#/app/module/{{eventRow.event.type}}{{'?id=' + eventRow.event.id + '&back=calendar'}}"
                 ng-click="vm.onEventClick({calendarEvent: eventRow.event})"
                 class="event-item"
                 ng-bind-html="vm.calendarEventTitle.weekView(eventRow.event) | calendarTrustAsHtml"

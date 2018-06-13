@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleLayoutController', ['$timeout', '$scope', '$filter', '$element', 'dragularService',
         function ($timeout, $scope, $filter, $element, dragularService) {

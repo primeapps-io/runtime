@@ -39,7 +39,7 @@
                 </span>
             </h5>
             <div class="note-text">
-                <a ng-show="note.record_id && newsfeed" href="/#/app/crm/module/{{(modules | filter: {id:note.module_id})[0].name}}?id={{note.record_id}}">{{note.record_primary_value}} <i class="fa fa-external-link "></i></a>
+                <a ng-show="note.record_id && newsfeed" href="/#/app/module/{{(modules | filter: {id:note.module_id})[0].name}}?id={{note.record_id}}">{{note.record_primary_value}} <i class="fa fa-external-link "></i></a>
                 <pre class="note-pre" ng-if="!note.showFormEdit" compile="note.text"></pre>
                 <div class="btn-group">
                     <a ng-show="(note.likes | filter: {id:user.ID}).length < 1" class="btn btn-link btn-xs" ng-click="like(note, 'main')"><i class="fa fa-thumbs-up"></i>  <span class="note-action-buttons">{{'Note.Like' | translate}}</span></a>

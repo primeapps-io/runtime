@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('PhoneSettingsController', ['$rootScope', '$scope', '$translate', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'PhoneSettingsService', 'ngTableParams', '$popover',
         function ($rootScope, $scope, $translate, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, PhoneSettingsService, ngTableParams, $popover) {

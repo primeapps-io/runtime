@@ -10,7 +10,7 @@
                 </h4>
                 <div class="pull-right">
                     <a href="#/app/setup/module?id={{module.name}}&redirect" class="btn btn-sm btn-custom" ng-if="hasAdminRights() && !id && !isAvailableForSmallDevice() && !preview">{{'Module.EditForm' | translate}}</a>
-                    <a href="{{!back ? (!parentId ? (!id ? '#/app/crm/modules/' + type : '#/app/crm/module/' + type + '?id=' + id) : ('#/app/crm/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/crm/modules/' + back : '#/app/crm/calendar')}}" class="btn btn-sm btn-custom" ng-disabled="submitting || loading">{{'Common.Cancel' | translate}}</a>
+                    <a href="{{!back ? (!parentId ? (!id ? '#/app/modules/' + type : '#/app/module/' + type + '?id=' + id) : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/modules/' + back : '#/app/calendar')}}" class="btn btn-sm btn-custom" ng-disabled="submitting || loading">{{'Common.Cancel' | translate}}</a>
                     <button type="submit" class="btn btn-sm btn-primary" ladda="submitting && saveAndNew"
                             ng-mouseup="saveAndNew = true"
                             ng-show="showSaveAndNew != 'false'"
@@ -746,7 +746,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-12 text-center buttons">
-                            <a href="{{!back ? (!parentId ? (!id ? '#/app/crm/modules/' + type : '#/app/crm/module/' + type + '?id=' + id) : ('#/app/crm/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/crm/modules/' + back : '#/app/crm/calendar')}}" class="btn btn-custom" ng-disabled="submitting" tabindex="9999">{{'Common.Cancel' | translate}}</a>
+                            <a href="{{!back ? (!parentId ? (!id ? '#/app/modules/' + type : '#/app/module/' + type + '?id=' + id) : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab)) : (back != 'calendar' ? '#/app/modules/' + back : '#/app/calendar')}}" class="btn btn-custom" ng-disabled="submitting" tabindex="9999">{{'Common.Cancel' | translate}}</a>
                             <button type="submit" class="btn btn-primary" ladda="submitting && saveAndNew" ng-mouseup="saveAndNew = true" ng-disabled="submitting && !saveAndNew" ng-show="showSaveAndNew != 'false'" tabindex="9998">{{'Common.SaveAndNew' | translate}}</button>
                             <button type="submit" class="btn btn-primary" ladda="submitting && !saveAndNew"
                                     ng-mouseup="saveAndNew = false" id="RecordSaveButton"

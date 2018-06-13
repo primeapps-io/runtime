@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('UserGroupService', ['$rootScope', '$http', 'config', '$filter',
         function ($rootScope, $http, config, $filter) {

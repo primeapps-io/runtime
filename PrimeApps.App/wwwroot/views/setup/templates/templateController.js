@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('TemplateController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', '$localStorage', 'config', 'TemplateService',
         function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, $localStorage, config, TemplateService) {

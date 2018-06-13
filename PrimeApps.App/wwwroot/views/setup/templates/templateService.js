@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('TemplateService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {

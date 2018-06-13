@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('ofisim', []);
+var app = angular.module('primeapps', []);
 
 app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$modal', '$filter', '$location', 'ModuleService', 'config', '$http', '$state', 'helper', 'ngToast',
     function ($rootScope, $scope, moment, $modal, $filter, $location, ModuleService, config, $http, $state, helper, ngToast) {
@@ -186,7 +186,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                     if (response.data.length < 1) {
                         if ($scope.userWeek && $scope.userYear) {
                             ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                            $state.go('app.crm.dashboard');
+                            $state.go('app.dashboard');
                             return;
                         }
 
@@ -201,7 +201,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                             .then(function (responseCalisan) {
                                 if (responseCalisan.data.length < 1) {
                                     ngToast.create({ content: $filter('translate')('Common.TimetrackerNotFound'), className: 'warning' });
-                                    $state.go('app.crm.dashboard');
+                                    $state.go('app.dashboard');
                                 } else {
                                     var timetrackerRequest = {};
                                     timetrackerRequest.week = week;
@@ -219,7 +219,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                                                 ModuleService.deleteRecord('timetrackers', responseTimetracker.data.id)
                                                     .then(function () {
                                                         ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                                                        $state.go('app.crm.dashboard');
+                                                        $state.go('app.dashboard');
                                                     });
                                             }
                                             $scope.getItems(week, year, month, days);
@@ -230,7 +230,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                         $scope.currentTimetracker = response.data[0];
                         if ($scope.owner.Id !== $scope.currentUser.id && ($scope.currentTimetracker.custom_approver === null || $scope.currentTimetracker.custom_approver !== $scope.currentUser.email)) {
                             ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                            $state.go('app.crm.dashboard');
+                            $state.go('app.dashboard');
                             return;
                         }
                         $scope.getItems(week, year, month, days);

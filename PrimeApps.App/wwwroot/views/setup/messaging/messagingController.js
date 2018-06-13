@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('MessagingController', ['$rootScope', '$scope', '$translate', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'MessagingService', 'ngTableParams', '$popover', 'AppService',
         function ($rootScope, $scope, $translate, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, MessagingService, ngTableParams, $popover, AppService) {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('WorkflowService', ['$rootScope', '$http', 'config', '$filter', 'operators', 'helper', 'ModuleService',
         function ($rootScope, $http, config, $filter, operators, helper, ModuleService) {

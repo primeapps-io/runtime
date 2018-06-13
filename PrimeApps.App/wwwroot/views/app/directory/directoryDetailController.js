@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('DirectoryDetailController', ['$rootScope', '$scope', '$location',
         function ($rootScope, $scope, $location) {

@@ -2,6 +2,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="wwwroot\views\app\join\**" />
+    <Content Remove="wwwroot\views\app\join\**" />
+    <EmbeddedResource Remove="wwwroot\views\app\join\**" />
+    <None Remove="wwwroot\views\app\join\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="wwwroot\scripts\app.js" />
@@ -530,7 +536,6 @@
     <None Include="wwwroot\views\app\convert\personalConvertService.js" />
     <None Include="wwwroot\views\app\convert\quoteConvertController.js" />
     <None Include="wwwroot\views\app\convert\quoteConvertService.js" />
-    <None Include="wwwroot\views\app\crmController.js" />
     <None Include="wwwroot\views\app\dashboard\dashboardController.js" />
     <None Include="wwwroot\views\app\dashboard\dashboardService.js" />
     <None Include="wwwroot\views\app\data\importController.js" />
@@ -547,7 +552,6 @@
     <None Include="wwwroot\views\app\feed\feedDirective.js" />
     <None Include="wwwroot\views\app\feed\feedService.js" />
     <None Include="wwwroot\views\app\home\homeController.js" />
-    <None Include="wwwroot\views\app\join\joinController.js" />
     <None Include="wwwroot\views\app\leave\collectiveLeaveController.js" />
     <None Include="wwwroot\views\app\location\locationFormModalController.js" />
     <None Include="wwwroot\views\app\module\moduleAddModalController.js" />

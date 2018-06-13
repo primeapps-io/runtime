@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('OfficeController', ['$rootScope', '$scope', '$filter', 'ngToast', 'OfficeService', '$localStorage', '$window', '$interval', 'officeHelper',
         function ($rootScope, $scope, $filter, ngToast, OfficeService, $localStorage, $window, $interval, officeHelper) {

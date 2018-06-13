@@ -18,7 +18,7 @@
                                 <span class="label label-xs label-info-alt">{{'Documents.Score' | translate}}: {{document.score}}</span>
                                 <span class="label label-xs label-info">{{'Common.Module' | translate}}: {{(modulesList | filter:{name:document.meta.module})[0]["label_" + language + "_plural"]}}</span>
                                 <button ng-click="downloadDocument(document.meta.fullfilename,document.meta.viewfilename,document.meta.module,document.meta.recordid)" class="btn btn-xs btn-warning"><i class="fa fa-download"></i> {{'Common.Download' | translate}}</button>
-                                <a href="#/app/crm/module/{{document.meta.module}}?id={{document.meta.recordid}}" target="_blank" class="btn btn-xs btn-info"><i class="fa fa-external-link"></i> {{'Documents.OpenRecord' | translate}}</a>
+                                <a href="#/app/module/{{document.meta.module}}?id={{document.meta.recordid}}" target="_blank" class="btn btn-xs btn-info"><i class="fa fa-external-link"></i> {{'Documents.OpenRecord' | translate}}</a>
                             </span>
                         </div>
                     </div>

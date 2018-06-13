@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('LeadConvertController', ['$rootScope', '$scope', '$location', '$state', '$filter', '$q', 'ngToast', 'helper', 'LeadConvertService', 'ModuleService', '$cache',
         function ($rootScope, $scope, $location, $state, $filter, $q, ngToast, helper, LeadConvertService, ModuleService, $cache) {
@@ -12,13 +12,13 @@ angular.module('ofisim')
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
             if (!$scope.id) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 

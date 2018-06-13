@@ -58,7 +58,7 @@
                                         <ul class="dropdown-menu" role="menu">
                                             <li>
                                                 <a ng-show="permissionsReport.write"
-                                                   href="#/app/crm/report?categoryId={{item.id}}">
+                                                   href="#/app/report?categoryId={{item.id}}">
                                                     {{'Report.Create' | translate}}
                                                 </a>
                                                 <a ng-show="user.profile.has_admin_rights" href
@@ -121,19 +121,19 @@
                            ng-if="currentReport.created_by_id === user.ID  || user.profile.HasAdminRights">
                             {{'Common.Delete' |
                             translate}}</a>
-                        <a href="#/app/crm/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id+'&clone=true' }}"
+                        <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id+'&clone=true' }}"
                            class="btn btn-sm btn-custom pull-right col-md-offset-0"
                            role="button" style="margin-left: 5px" ng-if="permissionsReport.write">
                             {{'Report.Copy' | translate}}
                         </a>
 
-                        <a href="#/app/crm/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id }}"
+                        <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id }}"
                            class="btn btn-sm btn-custom pull-right col-md-offset-0"
                            role="button" style="margin-left: 5px"
                            ng-if="currentReport.created_by_id === user.ID  || user.profile.HasAdminRights">
                             {{'Report.Edit' | translate}}
                         </a>
-                        <a href="#/app/crm/report?categoryId={{currentReport.category_id }}"
+                        <a href="#/app/report?categoryId={{currentReport.category_id }}"
                            class="btn btn-sm btn-custom pull-right col-md-offset-0"
                            role="button" style="margin-right: 5px" ng-if="permissionsReport.write">
                             {{'Report.Create' | translate}}

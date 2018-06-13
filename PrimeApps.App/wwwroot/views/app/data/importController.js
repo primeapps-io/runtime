@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService',
         function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService) {
             $scope.type = $stateParams.type;
@@ -11,7 +11,7 @@ angular.module('ofisim')
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -787,7 +787,7 @@ angular.module('ofisim')
                             $scope.saving = false;
                             $scope.longProcessing = false;
                             ngToast.create({ content: $filter('translate')('Data.Import.Success'), className: 'success', timeout: 6000 });
-                            $state.go('app.crm.moduleList', { type: $scope.type });
+                            $state.go('app.moduleList', { type: $scope.type });
                         }, 500);
                     })
                     .catch(function (data) {

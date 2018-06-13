@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('TemplateGuideController', ['$rootScope', '$scope', '$filter', 'ngToast', 'ModuleService', '$window',
         function ($rootScope, $scope, $filter, ngToast, ModuleService, $window) {

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('OfficeService', ['$http', 'config',
         function ($http, config) {
             return {

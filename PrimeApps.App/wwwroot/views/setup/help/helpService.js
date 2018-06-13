@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('HelpService', ['$http', 'config', '$filter', '$rootScope',
         function ($http, config, $filter, $rootScope) {
             return {

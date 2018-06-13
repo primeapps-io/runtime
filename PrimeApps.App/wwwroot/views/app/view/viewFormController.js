@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ViewFormController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ModuleService', 'ViewService', '$http', 'config',
         function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ModuleService, ViewService, $http, config) {
@@ -155,7 +155,7 @@ angular.module('ofisim')
             };
             if (!module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -165,7 +165,7 @@ angular.module('ofisim')
             var cache = $cache.get(cacheKey);
 
             if (!cache || !cache['views'] || cache['views'].length < 1) {
-                $state.go('app.crm.moduleList', { type: module.name });
+                $state.go('app.moduleList', { type: module.name });
                 return;
             }
 
@@ -176,7 +176,7 @@ angular.module('ofisim')
                 $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
 
                 if (!$scope.view) {
-                    $state.go('app.crm.moduleList', { type: module.name });
+                    $state.go('app.moduleList', { type: module.name });
                     return;
                 }
 
@@ -709,7 +709,7 @@ angular.module('ofisim')
 
                 function success() {
                     $cache.remove(cacheKey);
-                    $state.go('app.crm.moduleList', { type: module.name });
+                    $state.go('app.moduleList', { type: module.name });
                 }
 
                 function error(data, status) {

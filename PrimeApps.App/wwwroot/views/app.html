@@ -2,7 +2,7 @@
     <div id="navbar-wrapper">
         <nav class="navbar navbar-upper">
             <div class="navbar-header">
-                <a class="navbar-brand" ng-href="{{app === 'crm' ? '#/app/crm/dashboard' : '#/app/analytics/report'}}">
+                <a class="navbar-brand" ng-href="{{app === 'crm' ? '#/app/dashboard' : '#/app/analytics/report'}}">
                     <img ng-src="{{workgroup.logo_url ? workgroup.logo_url : 'images/logo-header-'+ appLogo +'.jpg'}}"
                          border="0" class="logo" ng-class="{'ofisim-logo':!workgroup.logo_url}">
                 </a>
@@ -75,7 +75,7 @@
                 </li>
                 <li ng-show="!preview">
                     <a href class="nav-link ng-scope"
-                       ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/crm/reports' : '#/app/analytics/report'))"
+                       ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/reports' : '#/app/analytics/report'))"
                        data-title="{{'Layout.SettingsTooltip' | translate}}" data-trigger="hover"
                        data-placement="bottom" bs-tooltip=""><span class="flaticon-cogwheel22"></span></a>
                 </li>
@@ -105,11 +105,11 @@
                         </div>
                         <div ng-if="item.route" class="panel-heading" role="tab">
                             <h4 class="panel-title">
-                                <a ng-if="item.is_dynamic" href="#/app/crm/modules/{{item.route}}" ng-click="routingPrism('#/app/crm/modules/{{item.route}}')" ng-class="{'active': currentPath === '/app/crm/modules/{{item.route}}'}" style="text-decoration: none !important;">
+                                <a ng-if="item.is_dynamic" href="#/app/modules/{{item.route}}" ng-click="routingPrism('#/app/modules/{{item.route}}')" ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}" style="text-decoration: none !important;">
                                     <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
                                     <span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
                                 </a>
-                                <a ng-if="!item.is_dynamic" href="#/app/crm/{{item.route}}" ng-click="routingPrism('#/app/crm/{{item.route}}')" ng-class="{'active': currentPath === '/app/crm/{{item.route}}'}">
+                                <a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
                                     <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
                                     <span  ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
                                 </a>
@@ -118,11 +118,11 @@
                         <div ng-if="!item.route" style="position: relative;" class="panel-collapse" role="tabpanel" bs-collapse-target>
                             <div class="panel-body"  ng-class="{'toggled-menu':toggled}">
                                 <li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
-                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/crm/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/crm/modules/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/crm/modules/{{subMenu.route}}'}">
+                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/modules/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}">
                                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
                                         <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
                                     </a>
-                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/crm/{{subMenu.route}}" ng-click="routingPrism('#/app/crm/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/crm/{{subMenu.route}}'}">
+                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/{{subMenu.route}}" ng-click="routingPrism('#/app/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/{{subMenu.route}}'}">
                                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
                                         <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
                                     </a>
@@ -134,35 +134,35 @@
             </div>
             <div ng-show="!customMenu">
                 <li ng-if="user.profile.home">
-                    <a href="#/app/crm/home" ng-click="routingPrism('#/app/crm/home')"
-                       ng-class="{'active': currentPath === '/app/crm/home'}">
+                    <a href="#/app/home" ng-click="routingPrism('#/app/home')"
+                       ng-class="{'active': currentPath === '/app/home'}">
                         <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Homepage' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-home"></i></div>
                         <span class="sidebar-menu-label">{{'Layout.Menu.Homepage' | translate}}</span>
                     </a>
                 </li>
                 <li ng-if="user.profile.dashboard">
-                    <a href="#/app/crm/dashboard" ng-click="routingPrism('#/app/crm/dashboard')"
-                       ng-class="{'active': currentPath === '/app/crm/dashboard'}">
+                    <a href="#/app/dashboard" ng-click="routingPrism('#/app/dashboard')"
+                       ng-class="{'active': currentPath === '/app/dashboard'}">
                         <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Dashboard' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-pie-chart"></i></div>
                         <span class="sidebar-menu-label">{{'Layout.Menu.Dashboard' | translate}}</span>
                     </a>
                 </li>
                 <li ng-if="user.profile.newsfeed">
-                    <a href="#/app/crm/newsfeed" ng-click="routingPrism('#/app/crm/newsfeed')"
-                       ng-class="{'active': currentPath === '/app/crm/newsfeed'}">
+                    <a href="#/app/newsfeed" ng-click="routingPrism('#/app/newsfeed')"
+                       ng-class="{'active': currentPath === '/app/newsfeed'}">
                         <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Newsfeed' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-comments"></i></div>
                         <span class="sidebar-menu-label">{{'Layout.Menu.Newsfeed' | translate}}</span>
                     </a>
                 </li>
                 <li ng-repeat="module in modules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(module.name, operations.read) && module.display">
-                    <a href="#/app/crm/modules/{{module.name}}" ng-click="routingPrism('#/app/crm/modules/' + module.name)"
-                       ng-class="{'active': ((currentPath=='/app/crm/modules/' + module.name  || currentPath=='/app/crm/module/' + module.name) && currentPath.indexOf('/setup') < 0)}">
+                    <a href="#/app/modules/{{module.name}}" ng-click="routingPrism('#/app/modules/' + module.name)"
+                       ng-class="{'active': ((currentPath=='/app/modules/' + module.name  || currentPath=='/app/module/' + module.name) && currentPath.indexOf('/setup') < 0)}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{module['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{module.menu_icon}}"></i></div>
                         <span class="sidebar-menu-label">{{module['label_' + language + '_plural']}}</span>
                     </a>
                 </li>
                 <li ng-show="showTimesheetMenu">
-                    <a href="#/app/crm/timesheet" ng-click="routingPrism('#/app/crm/timesheet')"
+                    <a href="#/app/timesheet" ng-click="routingPrism('#/app/timesheet')"
                        ng-class="{'active': currentPath === '/app/timesheet'}">
                         <div data-container="body" data-delay="300" data-placement="right"
                              data-title="{{'Layout.Menu.Timesheet' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i
@@ -171,7 +171,7 @@
                     </a>
                 </li>
                 <li ng-show="isTimetrackerExist && hasPermission('timetrackers', operations.read)">
-                    <a href="#/app/crm/timetracker" ng-click="routingPrism('#/app/crm/timetracker')"
+                    <a href="#/app/timetracker" ng-click="routingPrism('#/app/timetracker')"
                        ng-class="{'active': currentPath === '/app/timetracker'}">
                         <div data-container="body" data-delay="300" data-placement="right"
                              data-title="{{'Layout.Menu.Timetracker' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i
@@ -180,15 +180,15 @@
                     </a>
                 </li>
                 <li ng-if="advancedDocumentSearch">
-                    <a href="#/app/crm/documentSearch" ng-click="routingPrism('#/app/crm/documentSearch')"
-                       ng-class="{'active': currentPath === '/app/crm/documentSearch'}">
+                    <a href="#/app/documentSearch" ng-click="routingPrism('#/app/documentSearch')"
+                       ng-class="{'active': currentPath === '/app/documentSearch'}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.AdvancedDocumentSearch' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-search"></i></div>
                         <span class="sidebar-menu-label">{{'Layout.Menu.AdvancedDocumentSearch' | translate}}</span>
                     </a>
                 </li>
                 <li ng-if="permissionsReport.read">
-                    <a href="#/app/crm/reports" ng-click="routingPrism('#/app/crm/reports')" class="text-uppercase"
-                       ng-class="{'active': currentPath === '/app/crm/reports'}">
+                    <a href="#/app/reports" ng-click="routingPrism('#/app/reports')" class="text-uppercase"
+                       ng-class="{'active': currentPath === '/app/reports'}">
                         <div data-container="body" data-delay="300" data-placement="right"
                              data-title="{{'Layout.Menu.Reports' | translate}}" bs-tooltip
                              class="fa-sidebar-icon-background ng-scope"><i class="fa-sidebar-icon fa fa-bar-chart"></i>
@@ -197,8 +197,8 @@
                     </a>
                 </li>
                 <li ng-if="workgroup.has_analytics && user.has_analytics">
-                    <a href="#/app/crm/analytics" ng-click="routingPrism('#/app/crm/analytics')" class="text-uppercase"
-                       ng-class="{'active': currentPath === '/app/crm/analytics'}">
+                    <a href="#/app/analytics" ng-click="routingPrism('#/app/analytics')" class="text-uppercase"
+                       ng-class="{'active': currentPath === '/app/analytics'}">
                         <div data-container="body" data-delay="300" data-placement="right"
                              data-title="{{'Layout.Menu.Analytics' | translate}}" bs-tooltip
                              class="fa-sidebar-icon-background ng-scope"><i class="fa fa-line-chart" aria-hidden="true"></i>
@@ -207,15 +207,15 @@
                     </a>
                 </li>
                 <li ng-if="user.profile.tasks">
-                    <a href="#/app/crm/tasks" ng-click="routingPrism('#/app/crm/tasks')" class="text-uppercase"
-                       ng-class="{'active': currentPath === '/app/crm/tasks'}">
+                    <a href="#/app/tasks" ng-click="routingPrism('#/app/tasks')" class="text-uppercase"
+                       ng-class="{'active': currentPath === '/app/tasks'}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Tasks' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-check-square-o"></i></div>
                         <span class="sidebar-menu-label">{{tasksNamePlural ? tasksNamePlural.value : ('Layout.Menu.Tasks' | translate)}}</span>
                     </a>
                 </li>
                 <li ng-if="user.profile.calendar">
-                    <a href="#/app/crm/calendar" ng-click="routingPrism('#/app/crm/calendar')"
-                       ng-class="{'active': currentPath === '/app/crm/calendar'}">
+                    <a href="#/app/calendar" ng-click="routingPrism('#/app/calendar')"
+                       ng-class="{'active': currentPath === '/app/calendar'}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Layout.Menu.Calendar' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-calendar"></i></div>
                         <span class="sidebar-menu-label">{{'Layout.Menu.Calendar' | translate}}</span>
                     </a>

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('OutlookController', ['$rootScope', '$scope', '$filter', 'ngToast', 'OutlookService', 'AppService',
         function ($rootScope, $scope, $filter, ngToast, OutlookService, AppService) {
