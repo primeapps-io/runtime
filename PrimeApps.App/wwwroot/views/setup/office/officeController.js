@@ -5,7 +5,7 @@ angular.module('ofisim')
     .controller('OfficeController', ['$rootScope', '$scope', '$filter', 'ngToast', 'OfficeService', '$localStorage', '$window', '$interval', 'officeHelper',
         function ($rootScope, $scope, $filter, ngToast, OfficeService, $localStorage, $window, $interval, officeHelper) {
 
-            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { Id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
+            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
             $scope.officeConnectionOpening = false;
             $scope.isConnected = false;
             $scope.loading = true;

@@ -1,7 +1,7 @@
 <trial></trial>
 <help-page ng-if="!loading" route="currentPath"></help-page>
 <div class="dashboard-wrapper" ng-style="trial ? {'margin-top':'0'}: ''">
-    <button ng-if="user.profile.HasAdminRights" type="button" ng-click="changeDashletMode()" class="dashlet-edit-btn">
+    <button ng-if="user.profile.has_admin_rights" type="button" ng-click="changeDashletMode()" class="dashlet-edit-btn">
         <i ng-show="!dashletMode" ng-class="{'animation-2':!dashletMode}" class="fa fa-pencil" style="font-size: 20px;"
            aria-hidden="true"></i>
         <i ng-show="dashletMode" ng-class="{'animation':dashletMode}" class="fa fa-check" style="font-size: 20px;"
@@ -19,17 +19,17 @@
     <div class="dashboard clearfix" ng-show="showNewDashboard">
         <div class="row" style="margin-top: 10px" ng-show="dashletMode">
             <div class="col-sm-12" style="padding: 10px;     background: #f6f3f36e;border-radius: 4px;">
-                <button ng-show="dashboardprofile.length >0 && user.profile.HasAdminRights" type="button" class="btn"
+                <button ng-show="dashboardprofile.length >0 && user.profile.has_admin_rights" type="button" class="btn"
                         ng-click="dashboardformModal()">
                     {{ 'Dashboard.NewDashboard' | translate}}
                 </button>
                 <button type="button"
-                        ng-if="(activeDashboard.sharing_type=='profile' && activeDashboard.sharing_type !='everybody') && user.profile.HasAdminRights"
+                        ng-if="(activeDashboard.sharing_type=='profile' && activeDashboard.sharing_type !='everybody') && user.profile.has_admin_rights"
                         ng-click="dashboardformModal(activeDashboard)" class="btn">
                     {{ 'Dashboard.EditDashboard' | translate}}
                 </button>
 
-                <button type="button" class="btn" ng-if="user.profile.HasAdminRights"
+                <button type="button" class="btn" ng-if="user.profile.has_admin_rights"
                         ng-click="dashboardOrderChangeModal()">
                     {{ 'Dashboard.DashletOrders' | translate}}
                 </button>

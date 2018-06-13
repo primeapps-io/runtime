@@ -359,7 +359,7 @@ angular.module('ofisim')
 
                     $scope.activeDashboard = $filter('filter')($scope.dashboards, {
                         sharing_type: 'me',
-                        user_id: $rootScope.user.ID
+                        user_id: $rootScope.user.id
                     }, true)[0];
 
                     if (!$scope.activeDashboard) {
@@ -653,7 +653,7 @@ angular.module('ofisim')
 
             if (typeof Tawk_API !== 'undefined') {
                 Tawk_API.visitor = {
-                    name: $rootScope.user.fullName,
+                    name: $rootScope.user.full_name,
                     email: $rootScope.user.email
                 };
             }

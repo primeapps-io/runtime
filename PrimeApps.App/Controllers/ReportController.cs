@@ -37,12 +37,12 @@ namespace PrimeApps.App.Controllers
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
-			SetCurrentUser(_userRepository);
+            SetCurrentUser(_reportRepository);
+            SetCurrentUser(_userRepository);
 			SetCurrentUser(_picklistRepository);
 			SetCurrentUser(_moduleRepository);
 			SetCurrentUser(_recordRepository);
-
-			base.OnActionExecuting(context);
+            base.OnActionExecuting(context);
 		}
 
 		[Route("get_all"), HttpGet]
@@ -61,7 +61,7 @@ namespace PrimeApps.App.Controllers
             return Ok(report);
         }
         [Route("get_chart/{report:int}"), HttpGet]
-        public async Task<IActionResult> GetChart([FromQuery(Name = "id")]int report)
+        public async Task<IActionResult> GetChart(int report)
         {
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
@@ -90,7 +90,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_widget/{report:int}"), HttpGet]
-        public async Task<IActionResult> GetWidget([FromQuery(Name = "id")]int report)
+        public async Task<IActionResult> GetWidget(int report)
         {
             var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser);
             var widget = await _reportRepository.GetWidgetByReportId(report);
