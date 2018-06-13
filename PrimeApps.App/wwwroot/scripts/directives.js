@@ -1348,7 +1348,7 @@ angular.module('ofisim')
                     function ($scope) {
                         if (window.host.indexOf("ofisim.com") > -1 || window.host.indexOf("localhost") > -1) {
                             $scope.promotion = {
-                                fullName: $rootScope.user.fullName,
+                                fullName: $rootScope.user.full_name,
                                 phoneNumber: $rootScope.user.phone,
                                 email: $rootScope.user.email,
                                 useCount: "",
@@ -1356,11 +1356,11 @@ angular.module('ofisim')
                             };
 
                             var toDay = new Date();
-                            var userCreateDate = new Date($rootScope.user.createdAt);
+                            var userCreateDate = new Date($rootScope.user.created_at);
                             var diff = (toDay - userCreateDate) / 1000;
                             var diff = Math.abs(Math.floor(diff));
                             $scope.day = 15 - Math.floor(diff / (24 * 60 * 60));
-                            $scope.isPaid = $rootScope.user.isPaidCustomer;
+                            $scope.isPaid = $rootScope.user.is_paid_customer;
                             $scope.trailMessage = $filter('translate')('Trial.DaysRemainingForYourTrial', { remaining: $scope.day });
 
                             $scope.sector = [
@@ -1536,7 +1536,7 @@ angular.module('ofisim')
                                 });
                                 $scope.promotionModal.$promise.then($scope.promotionModal.show);
                             };
-                            if ($scope.day >= 0 && $scope.day <= 15 && $rootScope.user.ID === $rootScope.user.tenantId && !$scope.isPaid && !$rootScope.preview) {
+                            if ($scope.day >= 0 && $scope.day <= 15 && $rootScope.user.id === $rootScope.user.tenant_id && !$scope.isPaid && !$rootScope.preview) {
                                 $rootScope.trial = true;
                             }
                         }

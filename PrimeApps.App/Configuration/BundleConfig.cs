@@ -53,7 +53,8 @@ namespace PrimeApps.App
 
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/vendor.js",
 					"scripts/vendor/angular.js",
-					"scripts/vendor/angular-ui-router.js",
+                    "scripts/vendor/angular-filter.js",
+                    "scripts/vendor/angular-ui-router.js",
 					"scripts/vendor/ocLazyLoad.js",
 					"scripts/vendor/angular-cookies.js",
 					"scripts/vendor/angular-translate.js",

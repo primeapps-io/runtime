@@ -36,7 +36,7 @@ angular.module('ofisim',
         'ngclipboard',
         'mentio',
         'mwl.calendar',
-
+        'angular.filter'
     ])
 
     .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'ngToastProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',
