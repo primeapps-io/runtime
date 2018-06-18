@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleFormModalController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'operations', 'activityTypes', 'ModuleService',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, operations, activityTypes, ModuleService) {
@@ -21,24 +21,25 @@ angular.module('ofisim')
             if (!$scope.moduleModal) {
                 $scope.formModal.hide();
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
             $scope.dropdownFields = $filter('filter')($scope.moduleModal.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
             $scope.dropdownFieldDatas = {};
-            for (var i = 0; i < $scope.dropdownFields.length; i++) {
+            for(var i = 0; i < $scope.dropdownFields.length; i++) {
                 $scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
             }
 
-            $scope.setDropdownData = function (field) {
+            $scope.setDropdownData = function(field){
                 if (field.filters && field.filters.length > 0)
                     $scope.dropdownFieldDatas[field.name] = null;
                 else if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
                     return;
+
                 $scope.currentLookupFieldModal = field;
                 $scope.lookupModal()
-                    .then(function (response) {
+                    .then(function(response){
                         $scope.dropdownFieldDatas[field.name] = response;
                     });
 

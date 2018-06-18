@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('BulkSMSController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService) {
 

@@ -45,6 +45,41 @@ namespace PrimeApps.App.Helpers
             return template;
         }
 
+        public static async Task<Template> CreateEntityExcel(TemplateBindingModel templateModel, IUserRepository userRepository)
+        {
+            var template = new Template
+            {
+                Module = templateModel.Module,
+                TemplateType = templateModel.TemplateType,
+                Name = templateModel.Name,
+                Subject = templateModel.Subject,
+                Content = templateModel.Content,
+                Language = templateModel.Language,
+                Active = templateModel.Active,
+                SharingType = templateModel.SharingType
+            };
+
+            if (templateModel.Permissions != null && templateModel.Permissions.Count > 0)
+            {
+                template.Permissions = new List<TemplatePermission>();
+
+                foreach (var permissionModel in templateModel.Permissions)
+                {
+                    var permissionEntity = new TemplatePermission
+                    {
+                        ProfileId = permissionModel.ProfileId,
+                        Type = permissionModel.Type
+                    };
+
+                    template.Permissions.Add(permissionEntity);
+                }
+            }
+
+            await CreateTemplateRelations(templateModel, template, userRepository);
+
+            return template;
+        }
+
         public static async Task UpdateEntity(TemplateBindingModel templateModel, Template template, IUserRepository userRepository)
         {
             template.Name = templateModel.Name;

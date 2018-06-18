@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ApprovelProcessFormController', ['$rootScope', '$location', '$scope', '$filter', 'ngToast', 'helper', 'blockUI', '$state', 'operators', '$q', 'ModuleService', 'ApprovelProcessService',
         function ($rootScope, $location, $scope, $filter, ngToast, helper, blockUI, $state, operators, $q, ModuleService, ApprovelProcessService) {

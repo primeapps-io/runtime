@@ -63,6 +63,9 @@ namespace PrimeApps.Model.Enums
 
         [EnumMember(Value = "rating")]
         Rating = 19,
-        
+
+        [EnumMember(Value = "tag")]
+        Tag = 20,
+
     }
 }

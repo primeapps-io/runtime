@@ -14,35 +14,54 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/dashboard"), Authorize/*, SnakeCase*/]
-	public class DashboardController : BaseController
+    public class DashboardController : BaseController
     {
         private IDashletRepository _dashletRepository;
         private ISettingRepository _settingRepository;
         private IDashboardRepository _dashboardRepository;
         private IReportRepository _reportRepository;
+        private IRecordRepository _recordRepository;
+        private IModuleRepository _moduleRepository;
+        private IPicklistRepository _picklistRepository;
+        private IViewRepository _viewRepository;
 
-        public DashboardController(ISettingRepository settingRepository, IDashletRepository dashletRepository, IDashboardRepository dashboardRepository, IReportRepository reportRepository)
+
+
+        public DashboardController(ISettingRepository settingRepository, IDashletRepository dashletRepository, IDashboardRepository dashboardRepository, IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository)
         {
             _settingRepository = settingRepository;
             _dashletRepository = dashletRepository;
             _dashboardRepository = dashboardRepository;
             _reportRepository = reportRepository;
+            _recordRepository = recordRepository;
+            _moduleRepository = moduleRepository;
+            _picklistRepository = picklistRepository;
+            _viewRepository = viewRepository;
+
+
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_settingRepository);
-			SetCurrentUser(_dashboardRepository);
-			SetCurrentUser(_dashletRepository);
-			SetCurrentUser(_reportRepository);
-			base.OnActionExecuting(context);
-		}
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_settingRepository);
+            SetCurrentUser(_dashboardRepository);
+            SetCurrentUser(_dashletRepository);
+            SetCurrentUser(_reportRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_picklistRepository);
+            SetCurrentUser(_viewRepository);
+            base.OnActionExecuting(context);
 
-		[Route("get_dashlets"), HttpGet]
+
+
+        }
+
+        [Route("get_dashlets"), HttpGet]
         public async Task<IActionResult> GetDashlets([FromQuery(Name = "dashboard")]int dashboard, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
-            var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, locale, timezoneOffset.Value);
+            var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, _reportRepository, _recordRepository, _moduleRepository, _picklistRepository, _viewRepository, locale, timezoneOffset.Value);
             return Ok(dashlets);
         }
 

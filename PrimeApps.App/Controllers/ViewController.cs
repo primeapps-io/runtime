@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -36,7 +38,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Get(int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -49,7 +51,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery(Name = "moduleId")]int moduleId)
+        public async Task<IActionResult> GetAll(int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");
@@ -99,7 +101,10 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             var currentFieldIds = viewEntity.Fields.Select(x => x.Id).ToList();
-            var currentFilterIds = viewEntity.Filters.Select(x => x.Id).ToList();
+            var currentFilterIds = new List<int>();
+
+            if (viewEntity.SystemType == SystemType.Custom)
+                currentFilterIds = viewEntity.Filters.Select(x => x.Id).ToList();
 
             if (viewEntity.Shares != null && viewEntity.Shares.Count > 0)
             {
@@ -131,7 +136,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_view_state/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetViewState([FromQuery(Name = "moduleId")]int moduleId)
+        public async Task<IActionResult> GetViewState(int moduleId)
         {
             if (moduleId < 1)
                 return BadRequest("Module id is required!");

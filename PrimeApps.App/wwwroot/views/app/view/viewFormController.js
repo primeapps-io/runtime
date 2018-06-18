@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
-    .controller('ViewFormController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ModuleService', 'ViewService',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ModuleService, ViewService) {
+    .controller('ViewFormController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ModuleService', 'ViewService', '$http', 'config',
+        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ModuleService, ViewService, $http, config) {
             var id = $location.search().id;
             var module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
             $scope.costumeDate = "this_day()";
@@ -155,7 +155,7 @@ angular.module('ofisim')
             };
             if (!module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -165,7 +165,7 @@ angular.module('ofisim')
             var cache = $cache.get(cacheKey);
 
             if (!cache || !cache['views'] || cache['views'].length < 1) {
-                $state.go('app.crm.moduleList', { type: module.name });
+                $state.go('app.moduleList', { type: module.name });
                 return;
             }
 
@@ -176,7 +176,7 @@ angular.module('ofisim')
                 $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
 
                 if (!$scope.view) {
-                    $state.go('app.crm.moduleList', { type: module.name });
+                    $state.go('app.moduleList', { type: module.name });
                     return;
                 }
 
@@ -189,13 +189,13 @@ angular.module('ofisim')
                 $scope.view.sharing_type = 'me';
             }
 
-            if ($filter('filter')($rootScope.approvalProcesses, {module_id: module.id}, true)[0]) {
+            if ($filter('filter')($rootScope.approvalProcesses, { module_id: module.id }, true)[0]) {
                 $scope.showProcessFilter = true;
                 $scope.currenProcessField = {
                     field: "process.process_requests.process_status",
                     order: $scope.view.fields ? $scope.view.fields.length : 0
                 };
-                $scope.currenProcessFilter = $filter('filter')($scope.view.filters, {field: "process.process_requests.process_status"}, true);
+                $scope.currenProcessFilter = $filter('filter')($scope.view.filters, { field: "process.process_requests.process_status" }, true);
                 if (!$scope.currenProcessFilter || $scope.currenProcessFilter.length < 1) {
                     $scope.currenProcessFilter = {
                         field: "process.process_requests.process_status",
@@ -301,6 +301,14 @@ angular.module('ofisim')
                                             fieldValue.push(picklist);
                                     });
                                     break;
+                                case 'tag':
+                                    fieldValue = [];
+                                    var tagValue = value.split('|');
+
+                                    angular.forEach(tagValue, function (label) {
+                                        fieldValue.push(label);
+                                    });
+                                    break;
                                 case 'lookup':
                                     if (field.lookup_type === 'users') {
                                         var user = {};
@@ -314,7 +322,7 @@ angular.module('ofisim')
                                             if (value != '-') {
                                                 var userItem =
                                                     $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
-                                                    ];
+                                                        ];
                                                 user.id = userItem.Id;
                                                 user.email = userItem.Email;
                                                 user.full_name = userItem.FullName;
@@ -380,6 +388,15 @@ angular.module('ofisim')
                 });
 
                 return picklistItems;
+            };
+
+            $scope.tags = function (searchTerm, field) {
+                return $http.get(config.apiUrl + "tag/get_tag/" + field.id).then(function (response) {
+                    var tags = response.data;
+                    return tags.filter(function (tag) {
+                        return tag.text.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1;
+                    });
+                });
             };
 
             $scope.lookupUser = helper.lookupUser;
@@ -564,7 +581,7 @@ angular.module('ofisim')
                         var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
                         var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                         fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
-                        
+
                         var filterFieldName = fieldName + '.primary';
                         if (!$filter('filter')(view.fields, { field: filterFieldName }, true)[0]) {
                             var lookupField = {};
@@ -579,7 +596,7 @@ angular.module('ofisim')
 
                             view.fields.push(lookupFieldPrimary);
                         }
-                        
+
                     }
 
                     var filter = {};
@@ -599,6 +616,16 @@ angular.module('ofisim')
 
                             angular.forEach(filter.value, function (picklistItem) {
                                 value += picklistItem.label[$rootScope.user.tenantLanguage] + '|';
+                            });
+
+                            filter.value = value.slice(0, -1);
+                        }
+
+                        if (field.data_type === 'tag') {
+                            var value = '';
+
+                            angular.forEach(filter.value, function (item) {
+                                value += item.text + '|';
                             });
 
                             filter.value = value.slice(0, -1);
@@ -682,7 +709,7 @@ angular.module('ofisim')
 
                 function success() {
                     $cache.remove(cacheKey);
-                    $state.go('app.crm.moduleList', { type: module.name });
+                    $state.go('app.moduleList', { type: module.name });
                 }
 
                 function error(data, status) {

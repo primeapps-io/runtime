@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('AdvDocumentSearchController', ['$rootScope', '$scope','config', '$location', 'guidEmpty', '$filter', 'ngToast', 'DocumentService', 'entityTypes', 'helper', '$localStorage','$window',
         function ($rootScope, $scope, config,$location, guidEmpty, $filter, ngToast, DocumentService, entityTypes, helper, $localStorage,$window) {

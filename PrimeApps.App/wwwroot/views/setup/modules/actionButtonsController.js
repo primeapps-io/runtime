@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ActionButtonsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'AppService',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, AppService) {
@@ -8,7 +8,7 @@ angular.module('ofisim')
 
             if (!module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 

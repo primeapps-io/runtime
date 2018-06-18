@@ -2,9 +2,9 @@
     <th class="th-custom" style="min-width: inherit; text-align: left; padding-left: 8px !important;"
         ng-show="params.isSelectable && !isManyToMany">
         <input ng-if="!isManyToManyModal" type="checkbox" ng-click="selectAll($event, $data)" ng-checked="isAllSelected"
-               ng-show="!params.disableSelectAll"/>
+               ng-show="!params.disableSelectAll" />
         <input ng-if="isManyToManyModal" type="checkbox" ng-click="selectAllModal($event, $data)"
-               ng-checked="isAllSelectedModal"/>
+               ng-checked="isAllSelectedModal" />
     </th>
     <th class="filter-button" style="min-width: 1px !important;"></th>
     <th class="sortable th-custom"
@@ -57,10 +57,10 @@
                 type="text"
                 class="form-control"
                 ng-model="params.filters[field.fieldName].value"
-            ng-disabled="params.filters[field.fieldName].disabled || field.data_type === 'image'"
+                ng-disabled="params.filters[field.fieldName].disabled || field.data_type === 'image'"
                 maxlength="100"
                 ng-enter="params.reloading = true; params.renew = true; params.reload();"
-                ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'text_single' || field.data_type === 'text_multi' || field.data_type === 'email' || field.data_type === 'document' || field.data_type === 'url' || field.data_type === 'location' || field.data_type === 'image') : (field.lookupModulePrimaryField.data_type === 'text_single' || field.lookupModulePrimaryField.data_type === 'text_multi' || field.lookupModulePrimaryField.data_type === 'email' || field.lookupModulePrimaryField.data_type === 'document') && field.lookup_type !='users'"/>
+                ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'text_single' || field.data_type === 'text_multi' || field.data_type === 'email' || field.data_type === 'document' || field.data_type === 'url' || field.data_type === 'location' || field.data_type === 'image') : (field.lookupModulePrimaryField.data_type === 'text_single' || field.lookupModulePrimaryField.data_type === 'text_multi' || field.lookupModulePrimaryField.data_type === 'email' || field.lookupModulePrimaryField.data_type === 'document') && field.lookup_type !='users'" />
 
         <input
                 type="text"
@@ -193,6 +193,17 @@
                     ng-if="!field.lookupModulePrimaryField ? field.data_type === 'multiselect' : field.lookupModulePrimaryField.data_type === 'multiselect'">
             <auto-complete source="multiselect($query, field)"
                            min-length="0"
+                           load-on-focus="true"
+                           load-on-empty="true"
+                           max-results-to-show="9999"></auto-complete>
+        </tags-input>
+
+        <tags-input ng-model="params.filters[field.fieldName].value"
+                    display-property="text"
+                    placeholder="{{'Common.TagPlaceholder' | translate}}"
+                    replace-spaces-with-dashes="false"
+                    ng-if="!field.lookupModulePrimaryField ? field.data_type === 'tag' : field.lookupModulePrimaryField.data_type === 'tag'">
+            <auto-complete source="tags($query, field)"
                            load-on-focus="true"
                            load-on-empty="true"
                            max-results-to-show="9999"></auto-complete>

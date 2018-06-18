@@ -42,6 +42,30 @@ namespace PrimeApps.App.Helpers
 
                     foreach (var workflow in workflows)
                     {
+                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        {
+                            using (var recordRepository = new RecordRepository(databaseContext))
+                            {
+                                var lookupModuleNames = new List<string>();
+                                ICollection<Module> lookupModules = null;
+
+                                foreach (var field in module.Fields)
+                                {
+                                    if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                                        lookupModuleNames.Add(field.LookupType);
+                                }
+
+
+                                if (lookupModuleNames.Count > 0)
+                                    lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
+                                else
+                                    lookupModules = new List<Module>();
+
+                                lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                                record = recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                            }
+                        }
+
                         bool hasProcessFilter = true;
                         if (workflow.ProcessFilter != WorkflowProcessFilter.None)
                         {
@@ -79,29 +103,29 @@ namespace PrimeApps.App.Helpers
                                 continue;
                         }
 
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
-                        {
-                            using (var recordRepository = new RecordRepository(databaseContext))
-                            {
-                                var lookupModuleNames = new List<string>();
-                                ICollection<Module> lookupModules = null;
+                        //using (var moduleRepository = new ModuleRepository(databaseContext))
+                        //{
+                        //    using (var recordRepository = new RecordRepository(databaseContext))
+                        //    {
+                        //        var lookupModuleNames = new List<string>();
+                        //        ICollection<Module> lookupModules = null;
 
-                                foreach (var field in module.Fields)
-                                {
-                                    if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
-                                        lookupModuleNames.Add(field.LookupType);
-                                }
+                        //        foreach (var field in module.Fields)
+                        //        {
+                        //            if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                        //                lookupModuleNames.Add(field.LookupType);
+                        //        }
 
 
-                                if (lookupModuleNames.Count > 0)
-                                    lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
-                                else
-                                    lookupModules = new List<Module>();
+                        //        if (lookupModuleNames.Count > 0)
+                        //            lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
+                        //        else
+                        //            lookupModules = new List<Module>();
 
-                                lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                                record = recordRepository.GetById(module, (int)record["id"], false, lookupModules);
-                            }
-                        }
+                        //        lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                        //        record = recordRepository.GetById(module, (int)record["id"], false, lookupModules);
+                        //    }
+                        //}
 
 
                         if (workflow.Filters != null && workflow.Filters.Count > 0)
@@ -256,172 +280,172 @@ namespace PrimeApps.App.Helpers
                                     //Set warehouse database name
                                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                                    if (workflow.SendNotification != null)
-                                    {
-                                        var sendNotification = workflow.SendNotification;
-                                        var recipients = sendNotification.RecipientsArray;
+                                    //if (workflow.SendNotification != null)
+                                    //{
+                                    //    var sendNotification = workflow.SendNotification;
+                                    //    var recipients = sendNotification.RecipientsArray;
 
-                                        foreach (var recipientItem in recipients)
-                                        {
-                                            var recipient = recipientItem;
+                                    //    foreach (var recipientItem in recipients)
+                                    //    {
+                                    //        var recipient = recipientItem;
 
-                                            if (recipient == "[owner]")
-                                            {
-                                                using (var userRepository = new UserRepository(databaseContext))
-                                                {
-                                                    var recipientUser = await userRepository.GetById((int)record["owner.id"]);
+                                    //        if (recipient == "[owner]")
+                                    //        {
+                                    //            using (var userRepository = new UserRepository(databaseContext))
+                                    //            {
+                                    //                var recipientUser = await userRepository.GetById((int)record["owner.id"]);
 
-                                                    if (recipientUser == null)
-                                                        continue;
+                                    //                if (recipientUser == null)
+                                    //                    continue;
 
-                                                    recipient = recipientUser.Email;
-                                                }
+                                    //                recipient = recipientUser.Email;
+                                    //            }
 
-                                                if (recipients.Contains(recipient))
-                                                    continue;
-                                            }
+                                    //            if (recipients.Contains(recipient))
+                                    //                continue;
+                                    //        }
 
-                                            if (!recipient.Contains("@"))
-                                            {
-                                                if (!record[recipient].IsNullOrEmpty())
-                                                {
-                                                    recipient = (string)record[recipient];
-                                                }
-                                            }
+                                    //        if (!recipient.Contains("@"))
+                                    //        {
+                                    //            if (!record[recipient].IsNullOrEmpty())
+                                    //            {
+                                    //                recipient = (string)record[recipient];
+                                    //            }
+                                    //        }
 
-                                            var sendNotificationCC = "";
-                                            var sendNotificationBCC = "";
+                                    //        var sendNotificationCC = "";
+                                    //        var sendNotificationBCC = "";
 
-                                            if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
-                                            {
-                                                sendNotificationCC = (string)record[sendNotification.CC];
-                                            }
+                                    //        if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
+                                    //        {
+                                    //            sendNotificationCC = (string)record[sendNotification.CC];
+                                    //        }
 
-                                            if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 && !sendNotification.Bcc.Contains("@"))
-                                            {
-                                                sendNotificationBCC = (string)record[sendNotification.Bcc];
-                                            }
+                                    //        if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 && !sendNotification.Bcc.Contains("@"))
+                                    //        {
+                                    //            sendNotificationBCC = (string)record[sendNotification.Bcc];
+                                    //        }
 
-                                            string domain;
+                                    //        string domain;
 
-                                            domain = "https://{0}.ofisim.com/";
-                                            var appDomain = "crm";
+                                    //        domain = "https://{0}.ofisim.com/";
+                                    //        var appDomain = "crm";
 
-                                            switch (appUser.AppId)
-                                            {
-                                                case 2:
-                                                    appDomain = "kobi";
-                                                    break;
-                                                case 3:
-                                                    appDomain = "asistan";
-                                                    break;
-                                                case 4:
-                                                    appDomain = "ik";
-                                                    break;
-                                                case 5:
-                                                    appDomain = "cagri";
-                                                    break;
-                                            }
+                                    //        switch (appUser.AppId)
+                                    //        {
+                                    //            case 2:
+                                    //                appDomain = "kobi";
+                                    //                break;
+                                    //            case 3:
+                                    //                appDomain = "asistan";
+                                    //                break;
+                                    //            case 4:
+                                    //                appDomain = "ik";
+                                    //                break;
+                                    //            case 5:
+                                    //                appDomain = "cagri";
+                                    //                break;
+                                    //        }
 
-                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                    //        var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
 
-                                            domain = string.Format(domain, subdomain);
+                                    //        domain = string.Format(domain, subdomain);
 
-                                            //domain = "http://localhost:5554/";
+                                    //        //domain = "http://localhost:5554/";
 
-                                            var url = domain + "#/app/crm/module/" + module.Name + "?id=" + record["id"];
+                                    //        var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
-                                            var emailData = new Dictionary<string, string>();
-                                            emailData.Add("Subject", sendNotification.Subject);
-                                            emailData.Add("Content", sendNotification.Message);
-                                            emailData.Add("Url", url);
+                                    //        var emailData = new Dictionary<string, string>();
+                                    //        emailData.Add("Subject", sendNotification.Subject);
+                                    //        emailData.Add("Content", sendNotification.Message);
+                                    //        emailData.Add("Url", url);
 
-                                            var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, appUser.AppId, appUser);
-                                            email.AddRecipient(recipient);
+                                    //        var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, appUser.AppId, appUser);
+                                    //        email.AddRecipient(recipient);
 
-                                            if (sendNotification.Schedule.HasValue)
-                                                email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
+                                    //        if (sendNotification.Schedule.HasValue)
+                                    //            email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
-                                        }
-                                    }
+                                    //        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                    //    }
+                                    //}
 
-                                    if (workflow.CreateTask != null)
-                                    {
-                                        var moduleActivity = await moduleRepository.GetByName("activities");
+                                    //if (workflow.CreateTask != null)
+                                    //{
+                                    //    var moduleActivity = await moduleRepository.GetByName("activities");
 
-                                        var task = new JObject();
-                                        task["activity_type"] = "1";
-                                        task["owner"] = workflow.CreateTask.Owner;
-                                        task["subject"] = workflow.CreateTask.Subject;
+                                    //    var task = new JObject();
+                                    //    task["activity_type"] = "1";
+                                    //    task["owner"] = workflow.CreateTask.Owner;
+                                    //    task["subject"] = workflow.CreateTask.Subject;
 
-                                        if (module.Name != "activities")
-                                        {
-                                            task["related_module"] = 900000 + module.Id;
-                                            task["related_to"] = (int)record["id"];
-                                        }
-                                        else if (!record["related_module"].IsNullOrEmpty())
-                                        {
-                                            var moduleCurrent = await moduleRepository.GetByLabel((string)record["related_module"]);
+                                    //    if (module.Name != "activities")
+                                    //    {
+                                    //        task["related_module"] = 900000 + module.Id;
+                                    //        task["related_to"] = (int)record["id"];
+                                    //    }
+                                    //    else if (!record["related_module"].IsNullOrEmpty())
+                                    //    {
+                                    //        var moduleCurrent = await moduleRepository.GetByLabel((string)record["related_module"]);
 
-                                            if (moduleCurrent == null) return;
+                                    //        if (moduleCurrent == null) return;
 
-                                            task["related_module"] = 900000 + moduleCurrent.Id;
-                                            task["related_to"] = record["related_to"];
-                                        }
+                                    //        task["related_module"] = 900000 + moduleCurrent.Id;
+                                    //        task["related_to"] = record["related_to"];
+                                    //    }
 
-                                        task["task_due_date"] = DateTime.UtcNow.AddDays(workflow.CreateTask.TaskDueDate);
+                                    //    task["task_due_date"] = DateTime.UtcNow.AddDays(workflow.CreateTask.TaskDueDate);
 
-                                        if (workflow.CreateTask.TaskStatus.HasValue)
-                                            task["task_status"] = workflow.CreateTask.TaskStatus;
+                                    //    if (workflow.CreateTask.TaskStatus.HasValue)
+                                    //        task["task_status"] = workflow.CreateTask.TaskStatus;
 
-                                        if (workflow.CreateTask.TaskPriority.HasValue)
-                                            task["task_priority"] = workflow.CreateTask.TaskPriority;
+                                    //    if (workflow.CreateTask.TaskPriority.HasValue)
+                                    //        task["task_priority"] = workflow.CreateTask.TaskPriority;
 
-                                        if (workflow.CreateTask.TaskNotification.HasValue)
-                                            task["task_notification"] = workflow.CreateTask.TaskNotification;
+                                    //    if (workflow.CreateTask.TaskNotification.HasValue)
+                                    //        task["task_notification"] = workflow.CreateTask.TaskNotification;
 
-                                        if (workflow.CreateTask.TaskReminder.HasValue)
-                                            task["task_reminder"] = workflow.CreateTask.TaskReminder;
+                                    //    if (workflow.CreateTask.TaskReminder.HasValue)
+                                    //        task["task_reminder"] = workflow.CreateTask.TaskReminder;
 
-                                        if (workflow.CreateTask.ReminderRecurrence.HasValue)
-                                            task["reminder_recurrence"] = workflow.CreateTask.ReminderRecurrence;
+                                    //    if (workflow.CreateTask.ReminderRecurrence.HasValue)
+                                    //        task["reminder_recurrence"] = workflow.CreateTask.ReminderRecurrence;
 
-                                        if (!string.IsNullOrWhiteSpace(workflow.CreateTask.Description))
-                                            task["description"] = workflow.CreateTask.Description;
+                                    //    if (!string.IsNullOrWhiteSpace(workflow.CreateTask.Description))
+                                    //        task["description"] = workflow.CreateTask.Description;
 
-                                        if (workflow.CreateTask.Owner == 0)
-                                            task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
+                                    //    if (workflow.CreateTask.Owner == 0)
+                                    //        task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
 
-                                        task["created_by"] = workflow.CreatedById;
+                                    //    task["created_by"] = workflow.CreatedById;
 
-                                        var modelState = new ModelStateDictionary();
-                                        var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                    //    var modelState = new ModelStateDictionary();
+                                    //    var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
 
-                                        if (resultBefore < 0 && !modelState.IsValid)
-                                        {
-                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
-                                            return;
-                                        }
+                                    //    if (resultBefore < 0 && !modelState.IsValid)
+                                    //    {
+                                    //        //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
+                                    //        return;
+                                    //    }
 
-                                        try
-                                        {
-                                            var resultCreate = await recordRepository.Create(task, moduleActivity);
+                                    //    try
+                                    //    {
+                                    //        var resultCreate = await recordRepository.Create(task, moduleActivity);
 
-                                            if (resultCreate < 1)
-                                            {
-                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
-                                                return;
-                                            }
+                                    //        if (resultCreate < 1)
+                                    //        {
+                                    //            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
+                                    //            return;
+                                    //        }
 
-                                            RecordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                            return;
-                                        }
-                                    }
+                                    //        RecordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
+                                    //    }
+                                    //    catch (Exception ex)
+                                    //    {
+                                    //        //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                    //        return;
+                                    //    }
+                                    //}
 
                                     if (workflow.FieldUpdate != null)
                                     {
@@ -533,7 +557,33 @@ namespace PrimeApps.App.Helpers
                                             else
                                             {
                                                 if (type == 0 || type == 1 || type == 2)
-                                                    recordFieldUpdate[fieldUpdate.Field] = record[fieldUpdate.Value];
+                                                {
+                                                    bool isLookup = false;
+                                                    foreach (var field in module.Fields)
+                                                    {
+                                                        if (field.Name == fieldUpdate.Value && field.LookupType != null)
+                                                            isLookup = true;
+                                                    }
+
+                                                    if (isLookup)
+                                                        recordFieldUpdate[fieldUpdate.Field] = record[fieldUpdate.Value + ".id"];
+                                                    else
+                                                    {
+                                                        bool isTag = false;
+                                                        foreach (var field in module.Fields)
+                                                        {
+                                                            if (field.Name == fieldUpdate.Value && field.DataType == DataType.Tag)
+                                                                isTag = true;
+                                                        }
+
+                                                        if (isTag)
+                                                            recordFieldUpdate[fieldUpdate.Field] = string.Join(",", record[fieldUpdate.Value]);
+                                                        else
+                                                            recordFieldUpdate[fieldUpdate.Field] = record[fieldUpdate.Value];
+                                                    }
+
+                                                }
+
                                                 else if (type == 3 || type == 4)
                                                     recordFieldUpdate[fieldUpdate.Field] = record[firstModule + "." + fieldUpdate.Value];
                                             }
@@ -541,7 +591,7 @@ namespace PrimeApps.App.Helpers
 
 
                                             var modelState = new ModelStateDictionary();
-                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, false, currentRecordFieldUpdate);
+                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                             if (resultBefore < 0 && !modelState.IsValid)
                                             {
@@ -549,7 +599,8 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
+                                            if (isDynamicUpdate)
+                                                recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
 
                                             try
                                             {
@@ -572,6 +623,83 @@ namespace PrimeApps.App.Helpers
                                             }
 
                                             RecordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
+                                        }
+                                    }
+
+                                    if (workflow.CreateTask != null)
+                                    {
+                                        var moduleActivity = await moduleRepository.GetByName("activities");
+
+                                        var task = new JObject();
+                                        task["activity_type"] = "1";
+                                        task["owner"] = workflow.CreateTask.Owner;
+                                        task["subject"] = workflow.CreateTask.Subject;
+
+                                        if (module.Name != "activities")
+                                        {
+                                            task["related_module"] = 900000 + module.Id;
+                                            task["related_to"] = (int)record["id"];
+                                        }
+                                        else if (!record["related_module"].IsNullOrEmpty())
+                                        {
+                                            var moduleCurrent = await moduleRepository.GetByLabel((string)record["related_module"]);
+
+                                            if (moduleCurrent == null) return;
+
+                                            task["related_module"] = 900000 + moduleCurrent.Id;
+                                            task["related_to"] = record["related_to"];
+                                        }
+
+                                        task["task_due_date"] = DateTime.UtcNow.AddDays(workflow.CreateTask.TaskDueDate);
+
+                                        if (workflow.CreateTask.TaskStatus.HasValue)
+                                            task["task_status"] = workflow.CreateTask.TaskStatus;
+
+                                        if (workflow.CreateTask.TaskPriority.HasValue)
+                                            task["task_priority"] = workflow.CreateTask.TaskPriority;
+
+                                        if (workflow.CreateTask.TaskNotification.HasValue)
+                                            task["task_notification"] = workflow.CreateTask.TaskNotification;
+
+                                        if (workflow.CreateTask.TaskReminder.HasValue)
+                                            task["task_reminder"] = workflow.CreateTask.TaskReminder;
+
+                                        if (workflow.CreateTask.ReminderRecurrence.HasValue)
+                                            task["reminder_recurrence"] = workflow.CreateTask.ReminderRecurrence;
+
+                                        if (!string.IsNullOrWhiteSpace(workflow.CreateTask.Description))
+                                            task["description"] = workflow.CreateTask.Description;
+
+                                        if (workflow.CreateTask.Owner == 0)
+                                            task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
+
+                                        task["created_by"] = workflow.CreatedById;
+
+                                        var modelState = new ModelStateDictionary();
+                                        var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
+
+                                        if (resultBefore < 0 && !modelState.IsValid)
+                                        {
+                                            //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
+                                            return;
+                                        }
+
+                                        try
+                                        {
+                                            var resultCreate = await recordRepository.Create(task, moduleActivity);
+
+                                            if (resultCreate < 1)
+                                            {
+                                                //ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
+                                                return;
+                                            }
+
+                                            RecordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            return;
                                         }
                                     }
 
@@ -615,7 +743,7 @@ namespace PrimeApps.App.Helpers
                                                         }
                                                     }
 
-                                                    var recordData = recordRepository.GetById(module, recordId, false, lookupModules);
+                                                    var recordData = recordRepository.GetById(module, recordId, false, lookupModules, true);
                                                     var tenant = subscriber.TenantsAsUser.Single();
                                                     recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, tenant.Tenant.Setting.Language, subscriber.Setting.Culture, 180, lookupModules);
 
@@ -683,6 +811,118 @@ namespace PrimeApps.App.Helpers
                                         catch (Exception ex)
                                         {
                                             //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                        }
+                                    }
+
+                                    if (workflow.SendNotification != null)
+                                    {
+                                        if (workflow.FieldUpdate != null)
+                                        {
+                                            var lookupModuleNames = new List<string>();
+                                            ICollection<Module> lookupModules = null;
+
+                                            foreach (var field in module.Fields)
+                                            {
+                                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                                                    lookupModuleNames.Add(field.LookupType);
+                                            }
+
+                                            if (lookupModuleNames.Count > 0)
+                                                lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
+                                            else
+                                                lookupModules = new List<Module>();
+
+                                            lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                                            record = recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                                        }
+
+                                        var sendNotification = workflow.SendNotification;
+                                        var recipients = sendNotification.RecipientsArray;
+
+                                        foreach (var recipientItem in recipients)
+                                        {
+                                            var recipient = recipientItem;
+
+                                            if (recipient == "[owner]")
+                                            {
+                                                using (var userRepository = new UserRepository(databaseContext))
+                                                {
+                                                    var recipientUser = await userRepository.GetById((int)record["owner.id"]);
+
+                                                    if (recipientUser == null)
+                                                        continue;
+
+                                                    recipient = recipientUser.Email;
+                                                }
+
+                                                if (recipients.Contains(recipient))
+                                                    continue;
+                                            }
+
+                                            if (!recipient.Contains("@"))
+                                            {
+                                                if (!record[recipient].IsNullOrEmpty())
+                                                {
+                                                    recipient = (string)record[recipient];
+                                                }
+                                            }
+
+                                            var sendNotificationCC = "";
+                                            var sendNotificationBCC = "";
+
+                                            if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
+                                            {
+                                                sendNotificationCC = (string)record[sendNotification.CC];
+                                            }
+
+                                            if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 && !sendNotification.Bcc.Contains("@"))
+                                            {
+                                                sendNotificationBCC = (string)record[sendNotification.Bcc];
+                                            }
+
+                                            string domain;
+
+                                            domain = "https://{0}.ofisim.com/";
+                                            var appDomain = "crm";
+
+                                            switch (appUser.AppId)
+                                            {
+                                                case 2:
+                                                    appDomain = "kobi";
+                                                    break;
+                                                case 3:
+                                                    appDomain = "asistan";
+                                                    break;
+                                                case 4:
+                                                    appDomain = "ik";
+                                                    break;
+                                                case 5:
+                                                    appDomain = "cagri";
+                                                    break;
+                                            }
+
+                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+
+                                            domain = string.Format(domain, subdomain);
+
+                                            //domain = "http://localhost:5554/";
+
+                                            var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
+
+                                            var emailData = new Dictionary<string, string>();
+                                            emailData.Add("Subject", sendNotification.Subject);
+                                            emailData.Add("Content", sendNotification.Message);
+                                            emailData.Add("Url", url);
+
+                                            //TODO Removed
+                                            /*var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
+                                            email.AddRecipient(recipient);
+
+                                            if (sendNotification.Schedule.HasValue)
+                                                email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
+
+                                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                        */
                                         }
                                     }
 
@@ -788,6 +1028,11 @@ namespace PrimeApps.App.Helpers
                             }
 
                             value = string.Join("|", picklistLabels);
+                        }
+
+                        else if (field.DataType == DataType.Tag)
+                        {
+
                         }
                     }
 

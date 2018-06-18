@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('SipPhoneController', ['$rootScope', '$scope', 'ngToast', '$filter', '$timeout', 'helper', 'sipHelper', '$popover', '$location', '$state', '$stateParams', '$q', '$window', '$interval', '$localStorage', '$cache', 'config',
         function ($rootScope, $scope, ngToast, $filter, $timeout, helper, sipHelper, $popover, $location, $state, $stateParams, $q, $window, $interval, $localStorage, $cache, config) {
             $scope.isInbound = false;

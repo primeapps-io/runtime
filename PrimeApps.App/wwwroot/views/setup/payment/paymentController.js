@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('PaymentController', ['$scope', 'PaymentService',
         function ($scope, PaymentService) {
             PaymentService.getPayment()

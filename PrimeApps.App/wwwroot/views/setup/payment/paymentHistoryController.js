@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('PaymentHistoryController', ['$scope', 'PaymentService',
         function ($scope, PaymentService) {

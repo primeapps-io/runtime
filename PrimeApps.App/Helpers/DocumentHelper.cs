@@ -61,6 +61,58 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
+        public static bool UploadExcel(Stream stream, out DocumentUploadResult result)
+        {
+            var parser = new HttpMultipartParser(stream, "file");
+            result = null;
+
+            //if it is not successfully parsed return.
+            if (!parser.Success)
+                return false;
+
+            //check the file size if it is 0 bytes then return.
+            if (parser.FileContents.Length <= 0)
+            {
+                result = new DocumentUploadResult();
+                return false;
+            }
+
+            //declare chunk variables
+            var chunk = 0;//current chunk
+            var chunks = 1;//total chunk count
+
+            var uniqueName = string.Empty;
+
+            //if parser has more then 1 parameters, it means that request is chunked.
+            if (parser.Parameters.Count > 1)
+            {
+                //calculate chunk variables.
+                chunk = int.Parse(parser.Parameters["chunk"]);
+                chunks = int.Parse(parser.Parameters["chunks"]);
+
+                //get the file name from parser
+                if (parser.Parameters.ContainsKey("name"))
+                    uniqueName = parser.Parameters["name"];
+            }
+
+            if (string.IsNullOrEmpty(uniqueName))
+                uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
+
+            //send stream and parameters to storage upload helper method for temporary upload.
+            //TODO Removed
+            //Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+
+            result = new DocumentUploadResult
+            {
+                UniqueName = uniqueName,
+                FileName = parser.Filename,
+                ContentType = parser.ContentType,
+                Chunks = chunks
+            };
+
+            return true;
+        }
+
         public static string Save(DocumentUploadResult result, string containerName)
         {
             var blob = AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks);

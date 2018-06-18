@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state',
         function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies, $state) {
@@ -28,9 +28,9 @@ angular.module('ofisim')
             }
 
             $scope.tableParams = new ngTableParams({
-                page: 1,            // show first page
-                count: 10           // count per page
-            },
+                    page: 1,            // show first page
+                    count: 10           // count per page
+                },
                 {
                     total: 0, // length of data
                     getData: function ($defer, params) {
@@ -220,6 +220,13 @@ angular.module('ofisim')
                 if ($scope.emailForm.$valid) {
                     $scope.emailUpdating = true;
 
+                    if ($scope.emailModel.host.indexOf("yandex") > -1) {
+                        $scope.emailModel.host = "smtp.yandex.ru";
+                        $scope.emailModel.port = "587";
+                        $scope.emailModel.enable_ssl = true;
+
+                    }
+
                     MessagingService.updatePersonalEMailSettings($scope.emailModel).then(function () {
                         ngToast.create({ content: $filter('translate')('Setup.Settings.UpdateSuccess'), className: 'success' });
 
@@ -336,6 +343,17 @@ angular.module('ofisim')
                 $scope.selectedTheme = theme.name;
                 $rootScope.theme = theme.name;
 
+            };
+
+            $scope.removeProfileImage = function () {
+                var userModel = $scope.userModel;
+                userModel.ID = $rootScope.user.ID;
+                userModel.picture = "";
+
+                SettingService.editUser(userModel).then(function () {
+                    $rootScope.user.picture = null;
+                    $state.reload();
+                });
             };
 
 

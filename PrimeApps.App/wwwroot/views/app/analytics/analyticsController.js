@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('AnalyticsController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'ngToast', 'AnalyticsService',
         function ($rootScope, $scope, $location, $filter, $timeout, $state, ngToast, AnalyticsService) {
@@ -10,7 +10,7 @@ angular.module('ofisim')
 
             if (!$rootScope.user.hasAnalytics) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 

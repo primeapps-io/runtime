@@ -29,21 +29,21 @@ namespace PrimeApps.App.Controllers
             _settingRepository = settingRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_messagingRepository);
-			SetCurrentUser(_settingRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_messagingRepository);
+            SetCurrentUser(_settingRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		/// <summary>
-		/// Sends bulk short message
-		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		[Route("send_sms")]
+        /// <summary>
+        /// Sends bulk short message
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [Route("send_sms")]
         public async Task<IActionResult> SendSMS([FromBody]SMSRequest request)
         {
             var randomRevNumber = Helpers.Utils.CreateRandomString(20);
@@ -169,14 +169,14 @@ namespace PrimeApps.App.Controllers
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
 
-           
-                foreach (var emailRecipient in emailRequest.ToAddresses)
+                //TODO Removed
+                /*foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
                     var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
                     externalEmail.AddRecipient(emailRecipient);
-                    externalEmail.AddToQueue(appUser: AppUser);
-                }                    
-                
+                    externalEmail.AddToQueue(session, appUser: AppUser, cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail);
+                }*/
+
                 return Ok(emailRequest.ToAddresses.Count());
             }
 
@@ -265,6 +265,11 @@ namespace PrimeApps.App.Controllers
                     Type = Model.Enums.SettingType.Email,
                     UserId = AppUser.Id
                 };
+
+                if (data.Key == "host" && data.Value.ToString().Contains("yandex"))
+                {
+                    setting.Value = "smtp.yandex.ru";
+                }
 
                 settings.Add(setting);
             }

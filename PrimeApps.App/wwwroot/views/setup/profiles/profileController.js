@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ProfileController', ['$rootScope', '$scope', '$filter', 'ngToast', '$popover', 'helper', 'ProfileService',
         function ($rootScope, $scope, $filter, ngToast, $popover, helper, ProfileService) {

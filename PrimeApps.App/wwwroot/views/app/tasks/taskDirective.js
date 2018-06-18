@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
-    .directive('taskList', ['$filter', 'entityTypes', 'helper', 'operations', 'TaskService', 'ModuleService', 'activityTypes',
-        function ($filter, entityTypes, helper, operations, TaskService, ModuleService, activityTypes) {
+    .directive('taskList', ['$filter', 'entityTypes', 'helper', 'operations', 'TaskService', 'ModuleService', 'activityTypes','$cache',
+        function ($filter, entityTypes, helper, operations, TaskService, ModuleService, activityTypes,$cache) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -40,6 +40,11 @@ angular.module('ofisim')
                         var findRequest = {};
                         findRequest.limit = 20;
                         findRequest.offset = 0;
+                        var assignToCache = $cache.get('assignTo');
+
+                        if (assignToCache) {
+                            $scope.filter.assignedTo = assignToCache;
+                        }
 
                         $scope.getTasks = function () {
                             ModuleService.getPicklists($scope.module)
@@ -225,6 +230,9 @@ angular.module('ofisim')
                             $scope.allTasksLoaded = false;
 
                             $scope.getTasks();
+
+                            $cache.put('assignTo',$scope.filter.assignedTo);
+
                         };
 
 

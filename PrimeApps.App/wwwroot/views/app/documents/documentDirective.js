@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .directive('documentList', ['$filter', 'guidEmpty', 'entityTypes', 'helper', 'operations', 'DocumentService', '$localStorage', 'config', '$stateParams', '$window', 'ngToast',
         function ($filter, guidEmpty, entityTypes, helper, operations, DocumentService, $localStorage, config, $stateParams, $window, ngToast) {

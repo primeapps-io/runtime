@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('QuoteProductsController', ['$rootScope', '$scope', '$state', 'config', 'ngToast', '$localStorage', '$filter', 'ngTableParams', '$stateParams', 'helper', 'QuoteProductsService', 'ModuleService', '$popover',
         function ($rootScope, $scope, $state, config, ngToast, $localStorage, $filter, ngTableParams, $stateParams, helper, QuoteProductsService, ModuleService, $popover) {
             if ($scope.$parent.$parent.type != 'quotes')
@@ -16,7 +16,7 @@ angular.module('ofisim')
 
             if (!$scope.quoteProductModule) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
             $scope.fields = [];
@@ -29,9 +29,20 @@ angular.module('ofisim')
             $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
             $scope.productField.lookupModulePrimaryField = $filter('filter')($scope.productModule.fields, { name: 'name' }, true)[0];
 
+            $scope.productFields = [];
+            angular.forEach($scope.productModule.fields, function (productField) {
+                $scope.productFields[productField.name] = productField;
+            });
+
             ModuleService.getPicklists($scope.quoteProductModule)
                 .then(function (picklists) {
-                    $scope.picklistsModule = picklists;
+                    $scope.picklistsModule = picklists
+                    $scope.usageUnitList = $scope.picklistsModule[$scope.fields['usage_unit'].picklist_id];
+                    $scope.currencyList = $scope.picklistsModule[$scope.fields['currency'].picklist_id];
+                });
+            ModuleService.getPicklists($scope.productModule)
+                .then(function (picklists) {
+                    $scope.productModulePicklists = picklists;
                 });
 
             $scope.setCurrentLookupProduct = function (product, field) {
@@ -40,6 +51,10 @@ angular.module('ofisim')
                 field.special_type = "quate_products";
                 field.currentproduct = product;
                 field.selectProduct = $scope.selectProduct;
+                if (field.currentproduct.defaultCurrency || field.currentproduct.currencyConvertList) {
+                    delete field.currentproduct.defaultCurrency;
+                    delete field.currentproduct.currencyConvertList;
+                }
                 $scope.$parent.setCurrentLookupField(field);
             };
             var isExtraField = true;
@@ -48,7 +63,7 @@ angular.module('ofisim')
             $scope.lookup = function (searchTerm) {
                 if (isExtraField) {
                     for (var i = 0; extraadditionalFields.length > i; i++) {
-                        var field = $filter('filter')($scope.quoteProductModule.fields, {name: extraadditionalFields[i]}, true);
+                        var field = $filter('filter')($scope.quoteProductModule.fields, { name: extraadditionalFields[i] }, true);
                         if (field.length > 0) {
                             additionalFields.push(extraadditionalFields[i])
                         }
@@ -84,22 +99,60 @@ angular.module('ofisim')
                 $scope.$parent.$parent.quoteProducts.push(quoteProduct);
             };
 
+            $scope.currencyConvert = function (quoteProduct, value) {
+
+                var currencyConvertList = [];
+                switch (quoteProduct.defaultCurrency) {
+                    case '₺':
+                        currencyConvertList['$'] = value * $scope.$parent.$parent.record.exchange_rate_usd_try;
+                        currencyConvertList['€'] = value * $scope.$parent.$parent.record.exchange_rate_eur_try;
+                        currencyConvertList['₺'] = value;
+                        break;
+                    case '$':
+
+                        currencyConvertList['₺'] = value * $scope.$parent.$parent.record.exchange_rate_try_usd;
+                        currencyConvertList['€'] = value * $scope.$parent.$parent.record.exchange_rate_eur_usd;
+                        currencyConvertList['$'] = value;
+                        break;
+                    case '€':
+                        currencyConvertList['₺'] = value * $scope.$parent.$parent.record.exchange_rate_try_eur;
+                        currencyConvertList['$'] = value * $scope.$parent.$parent.record.exchange_rate_usd_eur;
+                        currencyConvertList['€'] = value;
+                        break;
+                }
+                return currencyConvertList;
+
+            };
+
+            $scope.setVat = function (quoteProduct) {
+                if (quoteProduct.product.vat_percent) {
+                    quoteProduct.vat_percent = quoteProduct.product.vat_percent;
+                }
+            };
             $scope.selectProduct = function (quoteProduct) {
                 if (!quoteProduct.product)
                     return;
+
+                if (!quoteProduct.defaultCurrency) {
+                    quoteProduct.defaultCurrency = quoteProduct.product.currency.value;
+                    quoteProduct.currencyConvertList = $scope.currencyConvert(quoteProduct, quoteProduct.product.unit_price);
+                } else {
+                    quoteProduct.product.unit_price = quoteProduct.currencyConvertList[quoteProduct.product.currency.value];
+                }
 
                 var unitPrice = parseFloat(quoteProduct.product.unit_price);
 
                 if (!quoteProduct.quantity)
                     quoteProduct.quantity = 1;
+                quoteProduct.unit_price = unitPrice;
+                quoteProduct.amount = unitPrice;
 
-                if ($scope.productSelected) {
-                    quoteProduct.unit_price = unitPrice;
-                    quoteProduct.amount = unitPrice;
+                if (quoteProduct.product.usage_unit) {
+                    quoteProduct.usage_unit = quoteProduct.product.usage_unit;
+                }
 
-                    if (quoteProduct.product.usage_unit) {
-                        quoteProduct.usage_unit = quoteProduct.product.usage_unit.label[$rootScope.language];
-                    }
+                if (quoteProduct.product.currency) {
+                    quoteProduct.currency = quoteProduct.product.currency;
                 }
 
                 $scope.calculate(quoteProduct);
@@ -183,7 +236,9 @@ angular.module('ofisim')
                         break;
                 }
                 if (quoteProduct.product.purchase_price && (quoteProduct.purchase_price === undefined || quoteProduct.purchase_price === null)) {
-                    quoteProduct.purchase_price = quoteProduct.product.purchase_price;
+                    quoteProduct.purchase_price = $scope.currencyConvert(quoteProduct, quoteProduct.product.purchase_price)[quoteProduct.product.currency.value];
+                } else {
+                    quoteProduct.purchase_price = $scope.currencyConvert(quoteProduct, quoteProduct.product.purchase_price)[quoteProduct.product.currency.value];
                 }
                 if (quoteProduct.purchase_price != undefined || quoteProduct.purchase_price != null) {
                     quoteProduct.profit_amount = quoteProduct.amount - quoteProduct.purchase_price * quantity;
@@ -204,10 +259,12 @@ angular.module('ofisim')
                 if ($scope.$parent.$parent.currencyField && $scope.$parent.$parent.record['currency']) {
                     $scope.$parent.$parent.currencyField.validation.readonly = true;
                 }
+                var counter = 0;
                 angular.forEach($scope.$parent.$parent.quoteProducts, function (quoteProduct) {
                     if (!quoteProduct.amount || quoteProduct.deleted)
                         return;
 
+                    counter++;
                     if (quoteProduct.quantity < 0) {
                         quoteProduct.quantity = 0;
                     }
@@ -275,7 +332,9 @@ angular.module('ofisim')
                         vatItem.total += vat || 0;
                     }
                 });
-
+                if ($scope.$parent.$parent.currencyField && $scope.$parent.$parent.record['currency'] && counter < 1) {
+                    $scope.$parent.$parent.currencyField.validation.readonly = false;
+                }
                 if ($scope.$parent.$parent.record.discount_percent || $scope.$parent.$parent.record.discount_amount) {
                     switch ($scope.$parent.$parent.record.discount_type) {
                         case 'percent':
@@ -335,7 +394,7 @@ angular.module('ofisim')
             };
 
             $scope.up = function (index, order) {
-                var quoteProducts = $filter('filter')($scope.$parent.$parent.quoteProducts, {deleted: false});
+                var quoteProducts = $filter('filter')($scope.$parent.$parent.quoteProducts, { deleted: false });
                 quoteProducts = $filter('orderBy')($scope.$parent.$parent.quoteProducts, 'order');
 
                 var prev = angular.copy(quoteProducts[index - 1]);
@@ -343,7 +402,7 @@ angular.module('ofisim')
                 quoteProducts[index - 1].order = angular.copy(order);
             };
             $scope.down = function (index, order) {
-                var quoteProducts = $filter('filter')($scope.$parent.$parent.quoteProducts, {deleted: false});
+                var quoteProducts = $filter('filter')($scope.$parent.$parent.quoteProducts, { deleted: false });
                 quoteProducts = $filter('orderBy')($scope.$parent.$parent.quoteProducts, 'order');
 
                 var prev = angular.copy(quoteProducts[index + 1]);

@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('AuditLogService', ['$rootScope', '$http', '$filter', 'config',
         function ($rootScope, $http, $filter, config) {
             return {

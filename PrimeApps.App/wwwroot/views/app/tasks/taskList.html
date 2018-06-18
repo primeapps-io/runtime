@@ -51,7 +51,7 @@
                                 <label class="ui-checkbox ui-checkbox-task" ng-show="!task.marking" ng-if="hasPermission('activities', operations.modify)"><input type="checkbox" ng-click="mark(task)" ng-model="task.isCompleted" ng-disabled="task.isCompleted"><span></span></label>
                                 <span class="spinner" ng-show="task.marking"><i class="fa-li fa fa-spinner fa-spin"></i></span>
                                 <span class="assigned-to" ng-hide="hideUser">{{task['owner.users.full_name'] + ':'}}</span>
-                                <a href="#/app/crm/module/activities?id={{task.id}}&back=tasks" class="task-text">{{task.subject}}</a>
+                                <a href="#/app/module/activities?id={{task.id}}&back=tasks" class="task-text">{{task.subject}}</a>
                                 <span class="info" ng-if="!task.isCompleted || task.marking">({{'Tasks.CreatedBy' | translate}}: {{task['created_by.users.full_name']}})</span>
                                 <span class="info" ng-if="task.isCompleted && !task.marking">({{'Tasks.FinishDate' | translate}}: {{task.completeDate | date:'shortDate'}})</span>
                                 <span class="task-buttons">

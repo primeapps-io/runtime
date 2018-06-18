@@ -50,13 +50,13 @@
                         <li role="separator" class="divider"></li>
                         <li ng-show="hasPermission(type, operations.write)"
                             ng-if="module.name != 'activities' && module.name != 'current_accounts'">
-                            <a href="#/app/crm/moduleForm/{{type}}">
+                            <a href="#/app/moduleForm/{{type}}">
                                 <i class="fa fa-plus"></i>{{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
                             </a>
                         </li>
                         <li ng-show="hasPermission(type, operations.write)"
                             ng-if="module.name === 'activities'">
-                            <a href="#/app/crm/moduleForm/{{type}}?stype={{activityType.value}}"
+                            <a href="#/app/moduleForm/{{type}}?stype={{activityType.value}}"
                                ng-show="hasPermission(type, operations.write)"
                                ng-repeat="activityType in activityTypes | filter:{hidden:'!true'}">
                                 <i class="fa fa-plus"></i> {{'Module.New' |
@@ -81,7 +81,7 @@
                     <i class="fa fa-plus"></i> {{'Leave.CollectiveAnnualLeave' | translate }}
                 </a>
 
-                <a href="#/app/crm/moduleForm/{{type}}" class="btn btn-sm btn-custom"
+                <a href="#/app/moduleForm/{{type}}" class="btn btn-sm btn-custom"
                    ng-show="hasPermission(type, operations.write)"
                    ng-if="module.name != 'activities' && module.name != 'current_accounts'">
                     <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
@@ -90,7 +90,7 @@
                 <a href id="activityButtons" class="btn btn-sm btn-custom" ng-click="showActivityButtons()" ng-if="module.name === 'activities' && !activityTypeActive">
                     <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:module['label_' + language + '_singular']} }}
                 </a>
-                <a href="#/app/crm/moduleForm/{{type}}?stype={{activityTypeActive.value}}" id="activityButton" class="btn btn-sm btn-custom" ng-if="activityTypeActive">
+                <a href="#/app/moduleForm/{{type}}?stype={{activityTypeActive.value}}" id="activityButton" class="btn btn-sm btn-custom" ng-if="activityTypeActive">
                     <i class="fa fa-plus"></i> {{'Module.New' | translate:{title:activityTypeActive.label[language]} }}
                 </a>
                 <a href id="transactionButtons" class="btn btn-sm btn-custom" ng-click="showTransactionButtons()"
@@ -102,12 +102,12 @@
                       ng-show="hasPermission(type, operations.remove) || user.profile.SendEmail || user.profile.SendSMS">
                     <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
-                       <li ng-show="hasPermission(type, operations.remove)">
-                           <a href ng-click="showDeleteModal()">
+                       <li ng-show="hasPermission(type, operations.remove) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
+                            <a href ng-click="showDeleteModal()">
                                 <i class="fa fa-trash pull-left"></i> {{'Module.DeleteSelecteds' | translate }}
                             </a>
                         </li>
-                        <li ng-show="hasPermission(type, operations.modify)">
+                        <li ng-show="hasPermission(type, operations.modify) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
                             <a href ng-click="showUpdateModal()">
                                 <i class="fa fa-pencil-square-o pull-left"></i> {{'Module.UpdateSelecteds' | translate }}
                             </a>
@@ -142,14 +142,14 @@
                             </td>
                             <td class="text-right">
                                 <span style="display:block; width: 40px"></span>
-                                <span class="action-buttons" ng-show="!record.isProcessItem || isAdmin">
-                                    <a href="#/app/crm/moduleForm/{{type}}{{'?id=' + record.id + '&back=' + type}}" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
+                                <span class="action-buttons" ng-show="(!record.isProcessItem || isAdmin) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
+                                    <a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + '&back=' + type}}" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
                                     <i class="action-icon flaticon-bin9" confirm-click action="delete(record.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove)"></i>
                                 </span>
-                                <span ng-show="record.isProcessItem && !isAdmin">
-                                    <i ng-if="record['process.process_requests.process_status'] == 1" class="fa fa-hourglass-half" aria-hidden="true" style="color:darkorange" data-placement="left" bs-tooltip data-title="{{'Setup.Workflow.ApprovelProcess.Waiting' | translate}}"></i>
-                                    <i ng-if="record['process.process_requests.process_status'] == 2" class="fa fa-check-circle-o" aria-hidden="true" style="color:green" data-placement="left" bs-tooltip data-title="{{'Setup.Workflow.ApprovelProcess.Approved' | translate}}"></i>
-                                    <i ng-if="record['process.process_requests.process_status'] == 3" class="fa fa-times-circle-o" aria-hidden="true" style="color:red" data-placement="left" bs-tooltip data-title="{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}}"></i>
+                                <span ng-show="record.isProcessItem" style="cursor:pointer">
+                                    <a ng-if="record['process.process_requests.process_status'] == 1" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-hourglass-half" aria-hidden="true" style="color:darkorange"></i></a>
+                                    <a ng-if="record['process.process_requests.process_status'] == 2" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-check-circle-o" aria-hidden="true" style="color:green"></i></a>
+                                    <a ng-if="record['process.process_requests.process_status'] == 3" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-times-circle-o" aria-hidden="true" style="color:red"></i></a>
                                 </span>
                             </td>
                         </tr>

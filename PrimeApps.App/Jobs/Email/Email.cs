@@ -10,11 +10,14 @@ using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
 using PrimeApps.App.Jobs.Messaging;
+using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -36,6 +39,7 @@ namespace PrimeApps.App.Jobs.Email
         /// <returns></returns>
         [EmailQueue, AutomaticRetry(Attempts = 0)]
         public bool TransmitMail(EmailEntry mail)
+        // public bool TransmitMail(EmailEntry mail)
         {
             bool status = false;
 
@@ -192,6 +196,7 @@ namespace PrimeApps.App.Jobs.Email
             var pattern = new Regex(@"{(.*?)}");
             var contentFields = new List<string>();
             var matches = pattern.Matches(content);
+            
             Tenant subscriber = null;
 
             using (var platformDBContext = new PlatformDBContext())
@@ -199,7 +204,15 @@ namespace PrimeApps.App.Jobs.Email
             {
 				subscriber = await tenantRepository.GetAsync(tenantId);
             }
+            /*
+            PlatformUser subscriber = null;
 
+            using (var platformDBContext = new PlatformDBContext())
+            using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
+            {
+                subscriber = await platformUserRepository.GetWithTenant(tenantId);
+            }
+            */
             foreach (object match in matches)
             {
                 string fieldName = match.ToString().Replace("{", "").Replace("}", "");
@@ -222,7 +235,7 @@ namespace PrimeApps.App.Jobs.Email
 
                 if (!record.IsNullOrEmpty())
                 {
-                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Setting.Language, subscriber.Setting.Language, 180, lookupModules, true);
+                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
 
                     if (contentFields.Count > 0)
                     {
@@ -263,6 +276,34 @@ namespace PrimeApps.App.Jobs.Email
 
                             }
 
+                        }
+                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
+                        {
+                            var userDataObj = new JObject();
+                            var findRequest = new FindRequest();
+                            switch ((int)record["process_status_order"])
+                            {
+                                case 2:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                                case 3:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_2"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                                case 4:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_3"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                                case 5:
+                                    findRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = record["custom_approver_4"].ToString(), No = 1 } }, Limit = 1 };
+                                    break;
+                            }
+
+                            var userData = recordRepository.Find("users", findRequest, false);
+                            userDataObj = (JObject)userData.First();
+
+                            if (subscriber.Setting.Culture.Contains("tr"))
+                                recordTable += recordRow.Replace("{label}", "Önceki Onaylayan").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
+                            else
+                                recordTable += recordRow.Replace("{label}", "Previous Approver").Replace("{value}", !userDataObj["full_name"].IsNullOrEmpty() ? userDataObj["full_name"].ToString() : "");
                         }
 
                         content = content.Replace("[[recordTable]]", recordTable);

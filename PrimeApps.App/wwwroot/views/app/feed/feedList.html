@@ -17,7 +17,7 @@
                 <span ng-if="activity.entityID == guidEmpty && activity.entityName && activity.entityType != entityTypes.user && activity.entityType != entityTypes.note">{{activity.entityName}}</span>
                 <span ng-if="activity.entityType == entityTypes.entity">{{activity.entityName}}</span>
                 <span ng-if="activity.entityID != guidEmpty && activity.entityName && activity.entityType == entityTypes.document">{{activity.entityName}}</span>
-                <a href="#/app/crm/entity/{{activity.entityTypeName}}/{{activity.entityID}}" ng-if="activity.entityID != guidEmpty && activity.entityTypeName && activity.parentEntityID != entityId">{{activity.entityName}}</a>
+                <a href="#/app/entity/{{activity.entityTypeName}}/{{activity.entityID}}" ng-if="activity.entityID != guidEmpty && activity.entityTypeName && activity.parentEntityID != entityId">{{activity.entityName}}</a>
                 <a ng-href="{{activity.parentEntityID != guidEmpty ? '#/app/entity/' + activity.parentEntityType + '/' + activity.parentEntityID : ''}}" ng-if="activity.parentEntityName && activity.action != 3 && (activity.parentEntityID == guidEmpty || activity.parentEntityID != entityId)">{{activity.parentEntityName}}</a>
             </p>
             <div class="media comment clearfix" ng-repeat="comment in activity.activities | orderBy:'timeStamp':true | limitTo:(activity.commentLimit || 2)" ng-show="activity.activities">

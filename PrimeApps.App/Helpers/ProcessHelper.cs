@@ -28,8 +28,9 @@ namespace PrimeApps.App.Helpers
 
                 using (var processRequestRepository = new ProcessRequestRepository(databaseContext))
                 {
-                    var requestInsert = await processRequestRepository.GetByRecordId((int)record["id"], OperationType.insert);
-                    var requestUpdate = await processRequestRepository.GetByRecordId((int)record["id"], OperationType.update);
+                    var requestInsert = await processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.insert);
+                    var requestUpdate = await processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.update);
+
                     if ((requestInsert != null && requestInsert.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected))
                         return;
                 }
@@ -202,7 +203,11 @@ namespace PrimeApps.App.Helpers
                             }
 
                             if (mismatchedCount > 0)
-                                continue;
+                            {
+                                if (process.TriggerTime == ProcessTriggerTime.Manuel)
+                                    throw new ProcessFilterNotMatchException("Filters don't matched");
+                                else continue;
+                            }
                         }
 
                         using (var recordRepository = new RecordRepository(databaseContext, warehouse))
@@ -223,58 +228,82 @@ namespace PrimeApps.App.Helpers
                                     {
                                         var approverFields = process.ApproverField.Split(',');
                                         var firstApprover = approverFields[0];
-                                        var approverModuleName = firstApprover.Split('.')[0];
+                                        var approverFieldName = firstApprover.Split('.')[0];
                                         var approverLookupName = firstApprover.Split('.')[1];
-                                        var approverFieldName = firstApprover.Split('.')[2];
+                                        var approverLookupFieldName = firstApprover.Split('.')[2];
 
-                                        foreach (var field in module.Fields)
-                                        {
-                                            if (!field.Deleted && field.DataType == DataType.Lookup && field.Name == approverModuleName)
-                                                approverModuleName = field.LookupType;
-                                        }
+                                        var approverField = process.Module.Fields.Single(x => !x.Deleted && x.DataType == DataType.Lookup && x.Name == approverFieldName);
+                                        Module approverModule;
 
-                                        Module approverLookupFieldModule;
-
-                                        if (approverModuleName == process.Module.Name)
-                                            approverLookupFieldModule = process.Module;
+                                        if (approverField.LookupType == process.Module.Name)
+                                            approverModule = process.Module;
                                         else
                                         {
                                             using (var moduleRepository = new ModuleRepository(databaseContext))
                                             {
-                                                var approverModule = await moduleRepository.GetByNameBasic(approverModuleName);
-                                                var approverLookupField = approverModule.Fields.FirstOrDefault(x => x.Name == approverLookupName);
-                                                approverLookupFieldModule = await moduleRepository.GetByNameBasic(approverLookupField.LookupType);
+                                                approverModule = await moduleRepository.GetByNameBasic(approverField.LookupType);
                                             }
                                         }
 
-                                        var approverUserRecord = recordRepository.GetById(approverLookupFieldModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false);
-                                        var userMail = (string)approverUserRecord[approverFieldName];
+                                        var approverLookupField = approverModule.Fields.Single(x => !x.Deleted && x.Name == approverLookupName);
+                                        Module approverLookupModule;
+
+                                        if (approverLookupField.LookupType != "users")
+                                        {
+                                            using (var moduleRepository = new ModuleRepository(databaseContext))
+                                            {
+                                                approverLookupModule = await moduleRepository.GetByNameBasic(approverLookupField.LookupType);
+                                            }
+                                        }
+
+                                        else
+                                        {
+                                            approverLookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                                        }
+
+                                        var approverUserRecord = recordRepository.GetById(approverLookupModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false);
+                                        var userMail = (string)approverUserRecord[approverLookupFieldName];
                                         record["custom_approver"] = userMail;
 
                                         if (approverFields.Length > 1)
                                         {
                                             var secondApprover = approverFields[1];
-                                            var secondApproverModuleName = secondApprover.Split('.')[0];
+                                            var secondApproverFieldName =  secondApprover.Split('.')[0];
                                             var secondApproverLookupName = secondApprover.Split('.')[1];
-                                            var secondApproverFieldName = secondApprover.Split('.')[2];
-                                            foreach (var field in process.Module.Fields)
-                                            {
-                                                if (!field.Deleted && field.DataType == DataType.Lookup && field.Name == secondApproverModuleName)
-                                                    secondApproverModuleName = field.LookupType;
-                                            }
+                                            var secondApproverLookupFieldName = secondApprover.Split('.')[2];
 
-                                            var secondApproverModule = new Module();
-                                            if (secondApproverModuleName == process.Module.Name)
+
+                                            var secondApproverField = process.Module.Fields.Single(x => !x.Deleted && x.DataType == DataType.Lookup && x.Name == secondApproverFieldName);
+                                            Module secondApproverModule;
+
+                                            if (secondApproverField.LookupType == process.Module.Name)
                                                 secondApproverModule = process.Module;
                                             else
                                             {
                                                 using (var moduleRepository = new ModuleRepository(databaseContext))
                                                 {
-                                                    secondApproverModule = await moduleRepository.GetByNameBasic(secondApproverModuleName);
+                                                    secondApproverModule = await moduleRepository.GetByNameBasic(secondApproverField.LookupType);
                                                 }
                                             }
-                                            var secondApproverUserRecord = recordRepository.GetById(secondApproverModule, (int)record[secondApprover.Split('.')[0] + "." + secondApproverLookupName], false);
-                                            var secondUserMail = (string)secondApproverUserRecord[secondApproverFieldName];
+
+                                            var secondApproverLookupField = secondApproverModule.Fields.Single(x => !x.Deleted && x.Name == secondApproverLookupName);
+                                            Module secondApproverLookupModule;
+
+                                            if (secondApproverLookupField.LookupType != "users")
+                                            {
+                                                using (var moduleRepository = new ModuleRepository(databaseContext))
+                                                {
+                                                    secondApproverLookupModule = await moduleRepository.GetByNameBasic(secondApproverLookupField.LookupType);
+                                                }
+                                            }
+
+                                            else
+                                            {
+                                                secondApproverLookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                                            }
+
+                                            var secondApproverUserRecord = recordRepository.GetById(secondApproverLookupModule, (int)record[secondApproverFieldName + "." + secondApproverLookupName], false);
+                                            var secondUserMail = (string)secondApproverUserRecord[secondApproverLookupFieldName];
                                             record["custom_approver_2"] = secondUserMail;
                                         }
 
@@ -292,6 +321,7 @@ namespace PrimeApps.App.Helpers
                                 string domain;
 
                                 domain = "https://{0}.ofisim.com/";
+
                                 var appDomain = "crm";
 
                                 switch (appUser.AppId)
@@ -315,14 +345,22 @@ namespace PrimeApps.App.Helpers
 
                                 //domain = "http://localhost:5554/";
 
+                                //checks custom domain 
+                                //TODO Removed
+                                /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                if (!string.IsNullOrEmpty(instance.CustomDomain))
+                                {
+                                    domain = "https://" + instance.CustomDomain + "/";
+                                }
+
                                 string url = "";
                                 if (module.Name == "timetrackers")
                                 {
-                                    url = domain + "#/app/crm/timetracker?user=" + (int)record["created_by.id"] + "&year=" + (int)record["year"] + "&month=" + (int)record["month"] + "&week=" + (int)record["week"];
+                                    url = domain + "#/app/timetracker?user=" + (int)record["created_by.id"] + "&year=" + (int)record["year"] + "&month=" + (int)record["month"] + "&week=" + (int)record["week"];
                                 }
                                 else
                                 {
-                                    url = domain + "#/app/crm/module/" + module.Name + "?id=" + (int)record["id"];
+                                    url = domain + "#/app/module/" + module.Name + "?id=" + (int)record["id"];
                                 }
 
 
@@ -342,6 +380,7 @@ namespace PrimeApps.App.Helpers
                                         (int)record["hesaplanan_alinacak_toplam_izin"] < 0)
                                     {
                                         if (appUser.TenantLanguage == "tr")
+                                            // if (appUser.Culture.Contains("tr"))
                                             emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışan izin borçlanma talep etmektedir.İzin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
                                         else
                                             emailData.Add("ExtraLeave", "Employee" + " " + (string)record["calisan.ad_soyad"] + ", with the details below requests leave of absence. It has been submitted for your approval as the manager.");
@@ -349,6 +388,7 @@ namespace PrimeApps.App.Helpers
                                     else
                                     {
                                         if (appUser.TenantLanguage == "tr")
+                                            //if (appUser.Culture.Contains("tr"))
                                             emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışana ait izin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
                                         else
                                         {
@@ -408,7 +448,7 @@ namespace PrimeApps.App.Helpers
                                 catch (Exception ex)
                                 {
                                     //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                }
+                                }*/
                             }
 
                             var processLog = new ProcessLog
@@ -645,6 +685,8 @@ namespace PrimeApps.App.Helpers
                     using (var processRepository = new ProcessRepository(databaseContext))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
+                        request.UpdatedById = appUser.Id;
+                        request.UpdatedAt = DateTime.Now;
 
                         if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1))
                         {
@@ -715,19 +757,29 @@ namespace PrimeApps.App.Helpers
 
                                 //domain = "http://localhost:5554/";
 
+                                //checks custom domain 
+                                
+                                //TODO Removed
+                                /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                if (!string.IsNullOrEmpty(instance.CustomDomain))
+                                {
+                                    domain = "https://" + instance.CustomDomain + "/";
+                                }
+
                                 string url = "";
                                 if (process.Module.Name == "timetrackers")
                                 {
                                     var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                     var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                    url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
+                                    url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                                 }
                                 else
                                 {
-                                    url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                    url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                                 }
 
                                 if (appUser.TenantLanguage == "tr")
+                                    // if (appUser.Culture.Contains("tr"))
                                     emailData.Add("ModuleName", process.Module.LabelTrSingular);
                                 else
                                     emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -763,7 +815,7 @@ namespace PrimeApps.App.Helpers
                                 else if (request.OperationType == OperationType.delete)
                                 {
 
-                                }
+                                }*/
                             }
                         }
                         else
@@ -776,61 +828,210 @@ namespace PrimeApps.App.Helpers
 
                             using (var userRepository = new UserRepository(databaseContext))
                             {
-                                var user = await userRepository.GetById(request.CreatedById);
-                                request.Status = Model.Enums.ProcessStatus.Approved;
-                                request.Active = false;
-                                var emailData = new Dictionary<string, string>();
-                                string domain;
-
-                                domain = "https://{0}.ofisim.com/";
-                                var appDomain = "crm";
-
-                                switch (appUser.AppId)
+                                var record = new JObject();
+                                int processOrder = request.ProcessStatusOrder + 1;
+                                if (process.ApproverType == ProcessApproverType.DynamicApprover)
                                 {
-                                    case 2:
-                                        appDomain = "kobi";
-                                        break;
-                                    case 3:
-                                        appDomain = "asistan";
-                                        break;
-                                    case 4:
-                                        appDomain = "ik";
-                                        break;
-                                    case 5:
-                                        appDomain = "cagri";
-                                        break;
+                                    var lookupModuleNames = new List<string>();
+                                    ICollection<Module> lookupModules = null;
+
+                                    foreach (var field in process.Module.Fields)
+                                    {
+                                        if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                                            lookupModuleNames.Add(field.LookupType);
+                                    }
+
+                                    using (var moduleRepository = new ModuleRepository(databaseContext))
+                                    {
+                                        if (lookupModuleNames.Count > 0)
+                                            lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
+                                        else
+                                            lookupModules = new List<Module>();
+
+                                        lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                                        if (process.ApproverType == ProcessApproverType.DynamicApprover)
+                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+
+                                        record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
+                                    }
                                 }
-
-                                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
-                                domain = string.Format(domain, subdomain);
-
-                                //domain = "http://localhost:5554/";
-                                string url = "";
-                                if (process.Module.Name == "timetrackers")
+                                string beforeCc = "";
+                                if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
                                 {
-                                    var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-                                    var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                    url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                    switch ((int)record["process_status_order"])
+                                    {
+                                        case 2:
+                                            beforeCc = (string)record["custom_approver"] + "," + "hr@etiya.com";
+                                            break;
+                                        case 3:
+                                            beforeCc = record["custom_approver_2"] + "," + record["custom_approver"] + "," + "hr@etiya.com";
+                                            break;
+                                        case 4:
+                                            beforeCc = record["custom_approver_3"] + "," + record["custom_approver_2"] + "," + record["custom_approver"] + "," + "hr@etiya.com";
+                                            break;
+                                        case 5:
+                                            beforeCc = record["custom_approver_4"] + "" + record["custom_approver_3"] + "," + record["custom_approver_2"] + "," + record["custom_approver"] + "," + "hr@etiya.com";
+                                            break;
+                                    }
+                                }
+                                if (!record["custom_approver_" + processOrder].IsNullOrEmpty())
+                                {
+                                    request.ProcessStatusOrder++;
+                                    var user = new TenantUser();
+                                    var approverMail = (string)record["custom_approver_" + processOrder];
+                                    user = await userRepository.GetByEmail(approverMail);
+                                    var emailData = new Dictionary<string, string>();
+                                    string domain;
+
+                                    domain = "https://{0}.ofisim.com/";
+                                    var appDomain = "crm";
+
+                                    switch (appUser.AppId)
+                                    {
+                                        case 2:
+                                            appDomain = "kobi";
+                                            break;
+                                        case 3:
+                                            appDomain = "asistan";
+                                            break;
+                                        case 4:
+                                            appDomain = "ik";
+                                            break;
+                                        case 5:
+                                            appDomain = "cagri";
+                                            break;
+                                    }
+
+                                    var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                    domain = string.Format(domain, subdomain);
+
+                                    //domain = "http://localhost:5554/";
+                                    //TODO Removed
+                                    //checks custom domain 
+                                    /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                    if (!string.IsNullOrEmpty(instance.CustomDomain))
+                                    {
+                                        domain = "https://" + instance.CustomDomain + "/";
+                                    }
+
+                                    string url = "";
+                                    if (process.Module.Name == "timetrackers")
+                                    {
+                                        var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                                        var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+                                        url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
+                                    }
+                                    else
+                                    {
+                                        url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                    }
+
+                                    if (appUser.Culture.Contains("tr"))
+                                        emailData.Add("ModuleName", process.Module.LabelTrSingular);
+                                    else
+                                        emailData.Add("ModuleName", process.Module.LabelEnSingular);
+
+                                    emailData.Add("Url", url);
+                                    emailData.Add("ApproverName", user.FullName);
+
+                                    if (process.ApproverType == ProcessApproverType.StaticApprover)
+                                    {
+                                        emailData.Add("UserName", appUser.UserName);
+                                    }
+                                    else
+                                    {
+                                        emailData.Add("UserName", (string)record["owner.full_name"]);
+                                    }
+
+
+                                    if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
+                                        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
+
+                                    if (request.OperationType == OperationType.insert)
+                                    {
+                                        var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                        notification.AddRecipient(user.Email);
+                                        notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
+                                    }
+                                    else if (request.OperationType == OperationType.update)
+                                    {
+                                        var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                        notification.AddRecipient(user.Email);
+                                        notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+                                    }
+                                    else if (request.OperationType == OperationType.delete)
+                                    {
+
+                                    }*/
                                 }
                                 else
                                 {
-                                    url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                    var user = await userRepository.GetById(request.CreatedById);
+                                    request.Status = Model.Enums.ProcessStatus.Approved;
+                                    request.Active = false;
+                                    var emailData = new Dictionary<string, string>();
+                                    string domain;
+
+                                    domain = "https://{0}.ofisim.com/";
+                                    var appDomain = "crm";
+
+                                    switch (appUser.AppId)
+                                    {
+                                        case 2:
+                                            appDomain = "kobi";
+                                            break;
+                                        case 3:
+                                            appDomain = "asistan";
+                                            break;
+                                        case 4:
+                                            appDomain = "ik";
+                                            break;
+                                        case 5:
+                                            appDomain = "cagri";
+                                            break;
+                                    }
+
+                                    var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                    domain = string.Format(domain, subdomain);
+
+                                    //checks custom domain 
+                                    //TODO Removed
+                                    /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                    if (!string.IsNullOrEmpty(instance.CustomDomain))
+                                    {
+                                        domain = "https://" + instance.CustomDomain + "/";
+                                    }
+
+                                    //domain = "http://localhost:5554/";
+                                    string url = "";
+                                    if (process.Module.Name == "timetrackers")
+                                    {
+                                        var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                                        var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+                                        url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                    }
+                                    else
+                                    {
+                                        url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                    }
+
+                                    if (appUser.TenantLanguage == "tr")
+                                        // if (appUser.Culture.Contains("tr"))
+                                        emailData.Add("ModuleName", process.Module.LabelTrSingular);
+                                    else
+                                        emailData.Add("ModuleName", process.Module.LabelEnSingular);
+
+                                    emailData.Add("Url", url);
+                                    emailData.Add("UserName", user.FullName);
+
+                                    if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
+                                        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
+
+                                    var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+                                    notification.AddRecipient(user.Email);
+                                    notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+                                    */
                                 }
-
-                                if (appUser.TenantLanguage == "tr")
-                                    emailData.Add("ModuleName", process.Module.LabelTrSingular);
-                                else
-                                    emailData.Add("ModuleName", process.Module.LabelEnSingular);
-
-                                emailData.Add("Url", url);
-                                emailData.Add("UserName", user.FullName);
-
-                                if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
-                                    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
-
-                                var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-                                notification.AddRecipient(user.Email);
-                                notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
                         }
                     }
@@ -849,12 +1050,35 @@ namespace PrimeApps.App.Helpers
                     using (var processRepository = new ProcessRepository(databaseContext))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
+                        var record = recordRepository.GetById(process.Module, request.RecordId);
+
+                        string beforeCc = "";
+                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
+                        {
+                            switch ((int)record["process_status_order"])
+                            {
+                                case 2:
+                                    beforeCc = (string)record["custom_approver"] + "," + "hr@etiya.com";
+                                    break;
+                                case 3:
+                                    beforeCc = record["custom_approver_2"] + "," + record["custom_approver"] + "," + "hr@etiya.com";
+                                    break;
+                                case 4:
+                                    beforeCc = record["custom_approver_3"] + "," + record["custom_approver_2"] + "," + record["custom_approver"] + "," + "hr@etiya.com";
+                                    break;
+                                case 5:
+                                    beforeCc = record["custom_approver_4"] + "" + record["custom_approver_3"] + "," + record["custom_approver_2"] + "," + record["custom_approver"] + "," + "hr@etiya.com";
+                                    break;
+                            }
+                        }
 
                         using (var userRepository = new UserRepository(databaseContext))
                         {
                             var user = await userRepository.GetById(request.CreatedById);
                             request.Status = Model.Enums.ProcessStatus.Rejected;
                             request.ProcessStatusOrder = 0;
+                            request.UpdatedById = appUser.Id;
+                            request.UpdatedAt = DateTime.Now;
                             var emailData = new Dictionary<string, string>();
                             string domain;
 
@@ -880,20 +1104,29 @@ namespace PrimeApps.App.Helpers
                             var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                             domain = string.Format(domain, subdomain);
 
+                            //checks custom domain 
+                            //TODO Removed
+                            /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                            if (!string.IsNullOrEmpty(instance.CustomDomain))
+                            {
+                                domain = "https://" + instance.CustomDomain + "/";
+                            }
+
                             //domain = "http://localhost:5554/";
                             string url = "";
                             if (process.Module.Name == "timetrackers")
                             {
                                 var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                 var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                             }
                             else
                             {
-                                url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                             }
 
                             if (appUser.TenantLanguage == "tr")
+                                // if (appUser.Culture.Contains("tr"))
                                 emailData.Add("ModuleName", process.Module.LabelTrSingular);
                             else
                                 emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -910,7 +1143,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 var notification = new Email(EmailResource.ApprovalProcessRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
-                                notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+                                notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                             }
                             else if (request.OperationType == OperationType.update)
                             {
@@ -918,7 +1151,7 @@ namespace PrimeApps.App.Helpers
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                             }
-
+                            */
                         }
                     }
                 }
@@ -1004,20 +1237,29 @@ namespace PrimeApps.App.Helpers
                             var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                             domain = string.Format(domain, subdomain);
 
+                            //checks custom domain 
+                            //TODO Removed
+                            /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                            if (!string.IsNullOrEmpty(instance.CustomDomain))
+                            {
+                                domain = "https://" + instance.CustomDomain + "/";
+                            }
+
                             //domain = "http://localhost:5554/";
                             string url = "";
                             if (process.Module.Name == "timetrackers")
                             {
                                 var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                 var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                                url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                             }
                             else
                             {
-                                url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + request.RecordId;
+                                url = domain + "#/app/module/" + process.Module.Name + "?id=" + request.RecordId;
                             }
 
                             if (appUser.TenantLanguage == "tr")
+                                //if (appUser.Culture.Contains("tr"))
                                 emailData.Add("ModuleName", process.Module.LabelTrSingular);
                             else
                                 emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -1051,99 +1293,99 @@ namespace PrimeApps.App.Helpers
                             else if (request.OperationType == OperationType.delete)
                             {
 
-                            }
+                            }*/
                         }
                     }
                 }
             }
         }
 
-        public static async Task SendToApprovalApprovedRequest(OperationType operationType, JObject record, UserItem appUser, Warehouse warehouse)
-        {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
-            {
-                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
-                {
-                    warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+        //public static async Task SendToApprovalApprovedRequest(OperationType operationType, JObject record, UserItem appUser, Warehouse warehouse)
+        //{
+        //    using (var databaseContext = new TenantDBContext(appUser.TenantId))
+        //    {
+        //        using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+        //        {
+        //            warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                    using (var processRequestRepository = new ProcessRequestRepository(databaseContext))
-                    {
-                        var requestEntity = await processRequestRepository.GetByRecordId((int)record["id"], operationType);
-                        using (var processRepository = new ProcessRepository(databaseContext))
-                        {
-                            var process = await processRepository.GetById(requestEntity.ProcessId);
+        //            using (var processRequestRepository = new ProcessRequestRepository(databaseContext))
+        //            {
+        //                var requestEntity = await processRequestRepository.GetByRecordId((int)record["id"], operationType);
+        //                using (var processRepository = new ProcessRepository(databaseContext))
+        //                {
+        //                    var process = await processRepository.GetById(requestEntity.ProcessId);
 
-                            requestEntity.ProcessStatusOrder = 1;
-                            requestEntity.Status = Model.Enums.ProcessStatus.Waiting;
+        //                    requestEntity.ProcessStatusOrder = 1;
+        //                    requestEntity.Status = Model.Enums.ProcessStatus.Waiting;
 
-                            using (var userRepository = new UserRepository(databaseContext))
-                            {
-                                var nextApproverOrder = requestEntity.ProcessStatusOrder;
-                                var nextApprover = process.Approvers.FirstOrDefault(x => x.Order == nextApproverOrder);
-                                var user = await userRepository.GetById(nextApprover.UserId);
+        //                    using (var userRepository = new UserRepository(databaseContext))
+        //                    {
+        //                        var nextApproverOrder = requestEntity.ProcessStatusOrder;
+        //                        var nextApprover = process.Approvers.FirstOrDefault(x => x.Order == nextApproverOrder);
+        //                        var user = await userRepository.GetById(nextApprover.UserId);
 
-                                var emailData = new Dictionary<string, string>();
-                                string domain;
+        //                        var emailData = new Dictionary<string, string>();
+        //                        string domain;
 
-                                domain = "https://{0}.ofisim.com/";
-                                var appDomain = "crm";
+        //                        domain = "https://{0}.ofisim.com/";
+        //                        var appDomain = "crm";
 
-                                switch (appUser.AppId)
-                                {
-                                    case 2:
-                                        appDomain = "kobi";
-                                        break;
-                                    case 3:
-                                        appDomain = "asistan";
-                                        break;
-                                    case 4:
-                                        appDomain = "ik";
-                                        break;
-                                    case 5:
-                                        appDomain = "cagri";
-                                        break;
-                                }
+        //                        switch (appUser.AppId)
+        //                        {
+        //                            case 2:
+        //                                appDomain = "kobi";
+        //                                break;
+        //                            case 3:
+        //                                appDomain = "asistan";
+        //                                break;
+        //                            case 4:
+        //                                appDomain = "ik";
+        //                                break;
+        //                            case 5:
+        //                                appDomain = "cagri";
+        //                                break;
+        //                        }
 
-                                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
-                                domain = string.Format(domain, subdomain);
+        //                        var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+        //                        domain = string.Format(domain, subdomain);
 
-                                //domain = "http://localhost:5554/";
-                                string url = "";
-                                if (process.Module.Name == "timetrackers")
-                                {
-                                    var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)requestEntity.RecordId, No = 1 } }, Limit = 9999 };
-                                    var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-                                    url = domain + "#/app/crm/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
-                                }
-                                else
-                                {
-                                    url = domain + "#/app/crm/module/" + process.Module.Name + "?id=" + requestEntity.RecordId;
-                                }
+        //                        //domain = "http://localhost:5554/";
+        //                        string url = "";
+        //                        if (process.Module.Name == "timetrackers")
+        //                        {
+        //                            var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)requestEntity.RecordId, No = 1 } }, Limit = 9999 };
+        //                            var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+        //                            url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+        //                        }
+        //                        else
+        //                        {
+        //                            url = domain + "#/app/module/" + process.Module.Name + "?id=" + requestEntity.RecordId;
+        //                        }
 
-                                if (appUser.TenantLanguage == "tr")
-                                    emailData.Add("ModuleName", process.Module.LabelTrSingular);
-                                else
-                                    emailData.Add("ModuleName", process.Module.LabelEnSingular);
+        //                        if (appUser.TenantLanguage == "tr")
+        //                            emailData.Add("ModuleName", process.Module.LabelTrSingular);
+        //                        else
+        //                            emailData.Add("ModuleName", process.Module.LabelEnSingular);
 
-                                emailData.Add("Url", url);
-                                emailData.Add("ApproverName", user.FullName);
-                                emailData.Add("UserName", appUser.UserName);
+        //                        emailData.Add("Url", url);
+        //                        emailData.Add("ApproverName", user.FullName);
+        //                        emailData.Add("UserName", appUser.UserName);
 
-                                if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
-                                    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
+        //                        if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
+        //                            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
-                                var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-                                notification.AddRecipient(user.Email);
-                                notification.AddToQueue(appUser.TenantId, process.Module.Id, (int)record["id"], appUser: appUser);
-                            }
+        //                        var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+        //                        notification.AddRecipient(user.Email);
+        //                        notification.AddToQueue(appUser.TenantId, process.Module.Id, (int)record["id"], appUser: appUser);
+        //                    }
 
-                            await processRequestRepository.Update(requestEntity);
-                        }
+        //                    await processRequestRepository.Update(requestEntity);
+        //                }
 
-                    }
-                }
-            }
-        }
+        //            }
+        //        }
+        //    }
+        //}
 
         public static async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse)
         {
@@ -1166,6 +1408,17 @@ namespace PrimeApps.App.Helpers
                     }
                 }
             }
+        }
+
+        [Serializable]
+        public class ProcessFilterNotMatchException : Exception
+        {
+            public ProcessFilterNotMatchException() { }
+            public ProcessFilterNotMatchException(string message) : base(message) { }
+            public ProcessFilterNotMatchException(string message, Exception inner) : base(message, inner) { }
+            protected ProcessFilterNotMatchException(
+                System.Runtime.Serialization.SerializationInfo info,
+                System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
         }
     }
 }

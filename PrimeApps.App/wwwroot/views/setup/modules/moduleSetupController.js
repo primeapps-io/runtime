@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ModuleSetupController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'AppService',
         function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, AppService) {
@@ -38,7 +38,7 @@ angular.module('ofisim')
                     menuItems.push(
                         {
                             'text': $filter('translate')('Common.Copy'),
-                            'href': '#app/setup/module?clone=' + moduleItem.name
+                            'click': 'moduleLicenseCopyCountLimit(\'' + moduleItem.name + '\')'
                         }
                     );
                 }
@@ -119,6 +119,33 @@ angular.module('ofisim')
                 });
             };
 
+            $scope.moduleLicenseCopyCountLimit = function (moduleItem) {
+                $scope.moduleLicenseCount = 0;
+
+                if ($rootScope.user.moduleLicenseCount && $rootScope.user.moduleLicenseCount > 0) {
+                    $scope.moduleLicenseCount = $rootScope.user.moduleLicenseCount;
+                }
+                else {
+                    switch ($rootScope.user.appId) {
+                        case 1:
+                        case 5:
+                            $scope.moduleLicenseCount = 2;
+                            break;
+                        default:
+                            $scope.moduleLicenseCount = 1;
+                            break;
+                    }
+                }
+
+                if ($scope.customModules.length >= $scope.moduleLicenseCount) {
+                    ngToast.create({ content: $filter('translate')('Setup.License.ModuleLicanse', { count: $scope.moduleLicenseCount }), className: 'warning' });
+                }
+                else {
+                    window.location = "#app/setup/module?clone=" + moduleItem
+                }
+            };
+
+
             $scope.moduleLicenseCountLimit = function () {
                 $scope.moduleLicenseCount = 0;
 
@@ -138,7 +165,7 @@ angular.module('ofisim')
                 }
 
                 if ($scope.customModules.length >= $scope.moduleLicenseCount) {
-                    ngToast.create({ content: $filter('translate')('Setup.License.ModuleLicanse',{count:$scope.moduleLicenseCount}), className: 'warning' });
+                    ngToast.create({ content: $filter('translate')('Setup.License.ModuleLicanse', { count: $scope.moduleLicenseCount }), className: 'warning' });
                 }
                 else {
                     $state.go('app.setup.module');

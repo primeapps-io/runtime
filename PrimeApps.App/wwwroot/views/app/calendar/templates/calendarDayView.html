@@ -10,7 +10,7 @@
             ng-repeat="event in vm.allDayEvents track by event.calendarEventId">
             <strong>{{'Calendar.AllDay' | translate}}</strong>
             <a
-              href="#/app/crm/module/{{event.type}}{{'?id=' + event.id + '&back=calendar'}}"
+              href="#/app/module/{{event.type}}{{'?id=' + event.id + '&back=calendar'}}"
               class="event-item"
               ng-bind-html="vm.calendarEventTitle.dayView(event) | calendarTrustAsHtml">
             </a>
@@ -66,7 +66,7 @@
         <span ng-bind="(dayEvent.event.tempStartsAt || dayEvent.event.startsAt) | calendarDate:'time':true"></span>
       </span>
       <a
-        href="#/app/crm/module/{{dayEvent.event.type}}{{'?id=' + dayEvent.event.id + '&back=calendar'}}"
+        href="#/app/module/{{dayEvent.event.type}}{{'?id=' + dayEvent.event.id + '&back=calendar'}}"
         class="event-item"
         ng-click="vm.onEventClick({calendarEvent: dayEvent.event})">
         <span ng-bind-html="vm.calendarEventTitle.dayView(dayEvent.event) | calendarTrustAsHtml"></span>

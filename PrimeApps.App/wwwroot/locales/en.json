@@ -46,6 +46,7 @@
     "Multiselect": "Multi select -->",
     "Multiselected": " item selected",
     "MultiselectPlaceholder": "Multi select",
+    "TagPlaceholder": "Add a Tag",
     "Date": "Date",
     "Time": "Time",
     "CreatedBy": "Created by",
@@ -56,6 +57,8 @@
     "SelectCityFirst": "Select City First -->",
     "Paging": "{{from}} to {{to}}",
     "Refresh": "Refresh",
+    "FullScreen": "Full Screen",
+    "ExitFullScreen": "Exit Full Screen",
     "Attachments": "Attachments",
     "Attachment": "Attachment",
     "AttachmentNew": "New Attachment",
@@ -118,7 +121,13 @@
     "Left": "Left",
     "Right": "Right",
     "Homepage": "Home Page",
-    "TimetrackerNotFound": "You do not have a employee record. Please contact your system administrator."
+    "TimetrackerNotFound": "You do not have a employee record. Please contact your system administrator.",
+    "PublicHoliday": "Public holiday.",
+    "NoRecordFoundForToday": "No record found for today.",
+    "FiltersNotMatched": "Approval workflow could not be processed for this record. Please contact with your system administrator.",
+    "CanNotSendToProcess": "One of your entry is under the minimum daily working time ({{minSaat}} hours). Please submit at least {{minSaat}} hours per day.",
+    "BankAndCaseChosen" : "Please select only one of the bank and the cash.",
+    "ChooseBankOrCase" : "Please select a bank or cash."
   },
   "Auth": {
     "Email": "E-Mail",
@@ -278,6 +287,20 @@
     "DataTransfer": "Data Transfer",
     "Import": "Import",
     "Export": "Export",
+    "ExportExcel": "Export To Template",
+    "SourceDataExcluded": "Source Data Included",
+    "SourceDataIncluded": "Source Data Excluded",
+    "DetailWord": "For Record Details Page",
+    "ListExcel": "For Record List Page",
+    "TemplateType": "Template Type",
+    "DownloadExcelButton": "To download template please click on Excel button on left side.",
+    "OtherReport": "After you prepare your template, you can upload it in <a href=\"#/app/setup/template\"> “Templates”</a> list page.",
+    "ChooseFilesExcel": "Choose File (.xls, .xlsx)",
+    "WordUpload": "Upload Word for detailed",
+    "ExcelUploadTemplate": "Upload Excel for listed",
+    "ExcelDesktop": "Your Excel template is succesfully downloaded to your desktop..",
+    "ExcelType": "Type",
+    "DownloadExcelTemplate": "Download Excel Template",
     "ExportWarning": "Maximum 3000 records can be exported.<br>Please filter your data first and try again.",
     "ExportUnsupported": "Your browser is too old.<br/> Please try it with a modern browser.<br/> To update your browser please click <a href='http://browsehappy.com/'>here</a>.",
     "EditForm": "Edit Form",
@@ -295,7 +318,7 @@
     "QuoteEmail": "Quote Email",
     "SalesOrderEmail": "Sales Order Email",
     "ModuleEmail": "Email",
-    "ChooseTemplate": "Choose a {{module}} Template",
+    "ChooseTemplate": "Choose template to use for {{module}} module",
     "Download": "PDF / Word",
     "DownloadPdf": "Download PDF",
     "DownloadWord": "Download Word",
@@ -367,10 +390,10 @@
     "CustomDate": "Custom Date",
     "After": "After",
     "Before": "Before",
-    "NowYear":"Now Year",
-    "NowYear":"Now Year",
-    "NowMonth":"Now Month",
-    "NowDay":"Now Day"
+    "NowYear": "Now Year",
+    "NowYear": "Now Year",
+    "NowMonth": "Now Month",
+    "NowDay": "Now Day"
   },
   "Note": {
     "Notes": "Notes",
@@ -652,7 +675,8 @@
       "AsList": "List",
       "AdvancedDocumentSearch": "Advanced Document Search",
       "UpdateSuccessGeneralSettings": "Setting is saved successfully.",
-      "ThemeSettings": "Theme Setings"
+      "ThemeSettings": "Theme Setings",
+      "RemoveProfileImage": "RemoveProfileImage"
     },
     "GeneralSettings": {
       "DetailViewType": "Details Page View Type",
@@ -1019,6 +1043,7 @@
       "MaxError2000": "Maximum/Minimum Length value cannot be greater than 2000.",
       "MaxError32000": "Maximum/Minimum Length value cannot be greater than 32000.",
       "MaxError27": "Maximum/Minimum Length value cannot be greater than 27.",
+      "MaxTagUser": "You can select maximum one user.",
       "PicklistMinimumError": "You must add at least two option.",
       "PicklistUniqueError": "This picklist already exists.",
       "DeleteModule": "Delete Module",
@@ -1218,7 +1243,7 @@
       "Tasks": "Tasks",
       "Calendar": "Calender",
       "Report": "Report",
-      "DontShowAgain" : "Don't show this window again",
+      "DontShowAgain": "Don't show this window again",
       "List": "List",
       "Detail": "Detail",
       "Form": "Form",
@@ -1418,12 +1443,15 @@
         "Instant": "Instant",
         "DynamicApprover": "Dynamic Approver",
         "ProfileAuthorization": "Profile Authorization",
-        "ApproverModule" : "at Which Module",
-        "ApproverLookup" : "at Which Field",
-        "ApproverEmailField" : "Relational Email Field",
-        "Approver" : "Approver",
-        "GoToRecordDetail":"Go To Record Detail",
-        "GoToRecordApprove":"To view Timesheet record and approve it, click here"
+        "ApproverModule": "at Which Module",
+        "ApproverLookup": "at Which Field",
+        "ApproverEmailField": "Relational Email Field",
+        "Approver": "Approver",
+        "GoToRecordDetail": "Go To Record Detail",
+        "GoToRecordApprove": "To view Timesheet record and approve it, click here",
+        "LevelWaiting": "Level Witing For Approval",
+        "ApproverForInform": "Approver",
+        "RejectApprover": "Rejected by"
       },
       "ExecutionFrequency": "Execution Frequency",
       "ProcessCanNotDelete": "There are some records that not approved yet for this approval process. You can not delete this approval process",
@@ -1667,7 +1695,11 @@
     "ExchangeRates": "Exchange Rates",
     "PurchasePrice": "Purchase Price",
     "ProfitPercent": "Profit Percent",
-    "ProfitAmount": "Profit Amount"
+    "ProfitAmount": "Profit Amount",
+    "DiscountPercent": "Discount Percent",
+    "TotalDiscountAmount": "Total Discount Amount",
+    "Currency": "Currency",
+    "Vat": "Vat"
   },
   "Data": {
     "Import": {
@@ -1861,12 +1893,13 @@
     "Next30Day": "Next 30 Day",
     "Next60Day": "Next 60 Day",
     "Next90Day": "Next 9 0Day",
-    "Costume": "Costume",
+    "Costume": "Custom ",
     "NewCategory": "New Category",
     "EditCategory": " Edit Category",
     "CategoryName": "Category Name",
     "ExportImage": "Export Image",
-    "ExportPdf": "Export Pdf"
+    "ExportPdf": "Export Pdf",
+    "RemoveSelection": "Remove Selection"
   },
   "Directory": {
     "ShowAll": "Show All",
@@ -1885,6 +1918,23 @@
     "RequestedDays": "Requested # Of Days",
     "NotFoundUser": "Users not found",
     "UnassignedEmployees": "Unassigned Employees Because of Leave Rights",
-    "NotHaveLeave": "You don’t have right to request leave."
+    "NotHaveLeave": "You don’t have right to request leave.",
+    "Validations": {
+      "Requested0OfDaysNot": "Requested # of days can not be 0.",
+      "AlreadyHave": "You already have leave request for the selected days.",
+      "NotHaveLeave": "The employee has no leave right for approval. You can refuse the request and send it back.",
+      "SameDate": "Leave Start Date and End Date must be different.",
+      "FirstLeaveUse": "Employees gain the permission to use this leave type after {{month}} months in our company.",
+      "LeaveEnd": "You don’t have any right to use this leave type.",
+      "NotHaveLimitHour": "You can use totally {{total_hour}} hours for this leave type per year. You have {{remaining_hour}} hours left. You can change the leave type or duration of leave and try again. ",
+      "NotHaveLimitDay": "You can use totally {{total_hour}} days for this leave type per year. You have {{remaining_hour}} days left. You can change the leave type or duration of leave and try again. ",
+      "NotHaveLimitHourMonth": "You can use totally {{total_hour}} hours for this leave type per month. You have {{remaining_hour}} hours left. You can change the leave type or duration of leave and try again. ",
+      "NotHaveLimitDayMonth": "You can use totally {{total_hour}} days for this leave type per month. You have {{remaining_hour}} days left. You can change the leave type or duration of leave and try again. ",
+      "OneGoHour": "This leave type can be used for max {{total_hour}} hours for each leave. You can change the leave type or duration of leave and try again.",
+      "OneGoDay": "This leave type can be used for max {{total_hour}} days for each leave. You can change the leave type or duration of leave and try again.",
+      "InfusibleWithHolidays": "This leave type can not be used after or before public holidays. You can change the leave type or dates of leave and try again.",
+      "BirthDayLimitDay": "Happy Birthday! You can submit a Birthday Leave, 15 days before or 15 days after your birthday. Try changing the date and submit again.",
+      "BirthDayLimitMonth": "Happy Birthday! You can submit a Birthday Leave within the month that your birthday is. Try changing the date and submit again."
+    }
   }
 }

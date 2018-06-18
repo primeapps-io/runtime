@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('WorkgroupService', ['$http', 'config', '$filter', 'entityTypes',
         function ($http, config, $filter, entityTypes) {

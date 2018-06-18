@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$location', '$state', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', '$location', '$state', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
     function ($rootScope, $scope, $location, $state, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, sipHelper, operations, blockUI, $cache, helps, AppService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
@@ -49,6 +49,8 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                     return true;
                 else if ((host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1) && tenant.AppId === 4)
                     return true;
+                else if ((host.indexOf('hr.ofisim.com') > -1 || host.indexOf('hr-test.ofisim.com') > -1 || host.indexOf('hr-dev.ofisim.com') > -1) && tenant.AppId === 8)
+                    return true;
                 else
                     return false;
             }
@@ -96,8 +98,14 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 $scope.appLogo = 'asistan';
             else if (host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1)
                 $scope.appLogo = 'ik';
+            else if (host.indexOf('hr.ofisim.com') > -1 || host.indexOf('hr-test.ofisim.com') > -1 || host.indexOf('hr-dev.ofisim.com') > -1)
+                $scope.appLogo = 'ik';
             else if (host.indexOf('cagri.ofisim.com') > -1 || host.indexOf('cagri-test.ofisim.com') > -1)
                 $scope.appLogo = 'cagri';
+            else if (host.indexOf('crm.appsila.com') > -1 || host.indexOf('appsila-test.ofisim.com') > -1)
+                $scope.appLogo = 'appsila';
+            else if (host.indexOf('crm.livasmart.com') > -1 || host.indexOf('livasmart-test.ofisim.com') > -1)
+                $scope.appLogo = 'livasmart';
             else
                 $scope.appLogo = 'crm';
         }
@@ -163,7 +171,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                     $scope.sampleRemoving = false;
                     ngToast.create({ content: $filter('translate')('Layout.SampleDataRemoveSuccess'), className: 'success' });
                     $rootScope.$broadcast('sample-data-removed');
-                    $window.location.href = '#/app/crm/dashboard';
+                    $window.location.href = '#/app/dashboard';
                 });
         };
 
@@ -190,6 +198,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
 
             $scope.isAvailableForSmallDevice();
 
+            $scope.toggled = !$scope.toggled;
         };
 
         $scope.toggleFullLeftMenu = function () {
@@ -215,7 +224,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
 
             switch (app) {
                 case 'crm':
-                    $state.go('app.crm.dashboard');
+                    $state.go('app.dashboard');
                     break;
                 case 'analytics':
                     $state.go('app.analytics.report');
@@ -252,24 +261,24 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 return help.help;
             }
             else {
-                if (hash.indexOf('#/app/crm/modules/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/modules/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/modules/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/modules/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
-                if (hash.indexOf('#/app/crm/module/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/module/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/module/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/module/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
-                if (hash.indexOf('#/app/crm/moduleForm/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/moduleForm/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
                 if (hash.indexOf('#/app/setup/') > -1) {
                     help = $filter('filter')(helps.maps, { route: 'default-setup', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
-                if (hash.indexOf('#/app/crm/import/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/crm/import/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
+                if (hash.indexOf('#/app/import/') > -1) {
+                    help = $filter('filter')(helps.maps, { route: '#/app/import/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
                 }
 
                 if (help) {
@@ -294,8 +303,8 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 .then(function () {
                     $scope.reloading = false;
 
-                    if ($state.current.name != 'app.crm.dashboard')
-                        $state.go('app.crm.dashboard');
+                    if ($state.current.name != 'app.dashboard')
+                        $state.go('app.dashboard');
                     else
                         $rootScope.$broadcast('sample-data-removed');
 
@@ -331,16 +340,16 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 var isModuleDetail;
                 var isModuleList;
 
-                if (hash.indexOf('/app/crm/modules/') > -1)
+                if (hash.indexOf('/app/modules/') > -1)
                     isModuleList = true;
                 moduleName = hash.split('/')[4];
 
-                if (hash.indexOf('/app/crm/module/') > -1) {
+                if (hash.indexOf('/app/module/') > -1) {
                     isModuleDetail = true;
                     moduleName = hash.split('/')[4].split('?')[0];
                 }
 
-                if (hash.indexOf('/app/crm/moduleForm/') > -1) {
+                if (hash.indexOf('/app/moduleForm/') > -1) {
                     moduleName = hash.split('/')[4].split('?')[0];
                 }
 
@@ -353,46 +362,49 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                     if (isModuleList) {
                         HelpService.getModuleType('sidemodal', 'modulelist', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                     else if (isModuleDetail) {
                         HelpService.getModuleType('sidemodal', 'moduledetail', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                     else {
                         HelpService.getModuleType('sidemodal', 'moduleform', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                 }
@@ -406,6 +418,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                             if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
                                 $scope.noneHelpTemplate = false;
                                 $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
                             }
                             else {
                                 $scope.helpTemplateSideModal = null;
@@ -422,6 +435,7 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                         if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
                             $scope.noneHelpTemplate = false;
                             $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+
                         }
                         else {
                             $scope.helpTemplateSideModal = null;
@@ -476,16 +490,16 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
             var isModuleDetail;
             var isModuleList;
 
-            if (hash.indexOf('/app/crm/modules/') > -1)
+            if (hash.indexOf('/app/modules/') > -1)
                 isModuleList = true;
             moduleName = hash.split('/')[4];
 
-            if (hash.indexOf('/app/crm/module/') > -1) {
+            if (hash.indexOf('/app/module/') > -1) {
                 isModuleDetail = true;
                 moduleName = hash.split('/')[4].split('?')[0];
             }
 
-            if (hash.indexOf('/app/crm/moduleForm/') > -1) {
+            if (hash.indexOf('/app/moduleForm/') > -1) {
                 moduleName = hash.split('/')[4].split('?')[0];
             }
 
@@ -495,24 +509,24 @@ angular.module('ofisim').controller('AppController', ['$rootScope', '$scope', '$
                 if (isModuleList) {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                            $scope.helpTemplatesSide = response.data;
-                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                $scope.openHelpModal();
-                            }
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.openHelpModal();
+                                }
 
-                        }
+                            }
                         );
                 }
                 else {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                            $scope.helpTemplatesSide = response.data;
-                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                $scope.openHelpModal();
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.openHelpModal();
+                                }
                             }
-                        }
                         );
                 }
             }

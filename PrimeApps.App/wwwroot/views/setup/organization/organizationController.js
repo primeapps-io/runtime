@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService',
         function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService) {

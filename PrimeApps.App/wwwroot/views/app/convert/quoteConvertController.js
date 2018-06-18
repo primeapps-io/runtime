@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('QuoteConvertController', ['$rootScope', '$scope', '$location', '$state', '$filter', '$q', '$window', 'ngToast', 'QuoteConvertService', 'ModuleService', '$cache',
         function ($rootScope, $scope, $location, $state, $filter, $q, $window, ngToast, QuoteConvertService, ModuleService, $cache) {
@@ -10,13 +10,13 @@ angular.module('ofisim')
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
             if (!$scope.id) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -65,7 +65,7 @@ angular.module('ofisim')
                         $cache.remove('sales_orders_sales_orders');
 
                         ngToast.create({ content: $filter('translate')('Convert.Quote.Success'), className: 'success' });
-                        $window.location.href = '#/app/crm/module/sales_orders?id=' + converted.data.sales_order_id + '&back=quotes';
+                        $window.location.href = '#/app/module/sales_orders?id=' + converted.data.sales_order_id + '&back=quotes';
                     })
                     .catch(function () {
                         $scope.converting = false;

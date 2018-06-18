@@ -3,6 +3,7 @@
         <div class="panel-heading clearfix">
             <h4 class="pull-left">{{'Timesheet.Timesheet' | translate}}</h4>
             <div ng-if="!loading" class="pull-right calendar-filter">
+                <a style="background-color:#c1591fc2 !important; border-bottom-color: #807866 !important; " class="btn btn-sm btn-primary" type="button" href="#/app/timesheetList">Timesheet List</a>
                 <span style="font-size: 12px;" ng-if="submitting">Please wait this might take some time...</span>
                 <h4 ng-if="currentTimesheet.owner === user.ID" style="display: inline-block;">
                     <span class="label label-info" ng-if="currentTimesheet.statusValue.indexOf('waiting') > -1">WAITING FOR APPROVAL</span>
@@ -70,7 +71,7 @@
                                 view-date="$parent.calendarDay"
                                 on-event-click="eventClicked(calendarEvent)"
                                 cell-modifier="groupEvents(calendarCell)"
-                                custom-template-urls="{calendarMonthCell:'views/app/calendar/templates/calendarMonthCell.html', calendarSlideBox:'views/app/calendar/templates/calendarSlideBox.html', calendarYearView:'views/app/calendar/templates/calendarYearView.html', calendarDayView: 'views/app/calendar/templates/calendarDayView.html', calendarWeekView: 'views/app/calendar/templates/calendarWeekView.html'}"
+                                custom-template-urls="{calendarMonthCell:'views/app/timesheet/templates/calendarMonthCell.html', calendarSlideBox:'views/app/timesheet/templates/calendarSlideBox.html', calendarYearView:'views/app/timesheet/templates/calendarYearView.html', calendarDayView: 'views/app/timesheet/templates/calendarDayView.html', calendarWeekView: 'views/app/timesheet/templates/calendarWeekView.html'}"
                                 template-scope="$parent">
                         </mwl-calendar>
                     </div>

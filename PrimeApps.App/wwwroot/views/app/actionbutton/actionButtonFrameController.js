@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('ActionButtonFrameController', ['$rootScope', '$scope', '$location','$sce',
         function ($rootScope, $scope, $location,$sce) {
 

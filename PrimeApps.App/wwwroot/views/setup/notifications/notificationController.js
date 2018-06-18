@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('NotificationController', ['$rootScope', '$scope', 'NotificationService',
         function ($rootScope, $scope, NotificationService) {
             $scope.toggleTaskReminder = function () {

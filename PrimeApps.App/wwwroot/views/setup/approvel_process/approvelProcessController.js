@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ApprovelProcessController', ['$rootScope', '$scope', '$window', '$filter', 'ngToast', 'guidEmpty', '$modal', 'ApprovelProcessService',
         function ($rootScope, $scope,$window, $filter, ngToast, guidEmpty, $modal, ApprovelProcessService) {

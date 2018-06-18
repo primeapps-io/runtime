@@ -49,7 +49,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetById([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var helpEntity = await _helpRepository.GetById(id);
 
@@ -113,7 +113,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]HelpBindingModel help)
+        public async Task<IActionResult> Update(int id, [FromBody]HelpBindingModel help)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -130,7 +130,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var helpEntity = await _helpRepository.GetByIdBasic(id);
 

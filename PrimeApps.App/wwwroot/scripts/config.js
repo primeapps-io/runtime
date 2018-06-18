@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .constant('config', {
         apiUrl: 'api/',

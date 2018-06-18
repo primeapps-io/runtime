@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .directive('feedList', ['convert', 'entityTypes', 'guidEmpty', '$localStorage', 'FeedService',
         function (convert, entityTypes, guidEmpty, $localStorage, FeedService) {

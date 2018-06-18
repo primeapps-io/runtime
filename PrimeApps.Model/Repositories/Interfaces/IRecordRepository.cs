@@ -19,6 +19,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> DeleteRelation(JObject record, string moduleName, string relatedModuleName, int relationId = 0, bool twoway = false);
         void SetPicklists(Module module, JObject record, string picklistLanguage);
         void MultiselectsToString(Module module, JObject record);
+        void ArrayToString(Module module, JObject record);
         Task<int> UpdateSystemData(int createdBy, DateTime createdAt, string tenantLanguage, int appId);
         Task<int> UpdateSampleData(PlatformUser user);
         Task<int> DeleteSampleData(List<Module> modules);

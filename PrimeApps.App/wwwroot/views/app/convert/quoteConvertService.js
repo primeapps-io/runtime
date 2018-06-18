@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('QuoteConvertService', ['$rootScope', '$http', 'config', '$filter', 'helper',
         function ($rootScope, $http, config, $filter, helper) {

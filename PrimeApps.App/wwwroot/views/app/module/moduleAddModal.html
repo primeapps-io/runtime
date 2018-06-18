@@ -1,13 +1,15 @@
 <div class="modal module-modal module-add-modal" tabindex="-1" role="dialog" ng-controller="ModuleAddModalController">
-    <div class="modal-dialog">
+    <div style="{{FullScreenShow}}" class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header clearfix">
                 <h4 class="modal-title pull-left">{{'Module.Add' | translate:{title: selectedRelatedModule['label_' + language + '_singular']} }}</h4>
                 <div class="pull-right">
                     <a href ng-click="openCreateModal(selectedRelatedModule.related_module)" class="btn btn-sm btn-custom" ng-show="hasPermission(selectedRelatedModule.related_module, operations.write)"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:selectedRelatedModule['label_' + language + '_singular']} }}</a>
                     <a href ng-click="refresh()" class="btn btn-sm btn-custom" title="{{'Common.Refresh' | translate}}"><i class="fa fa-refresh"></i></a>
+                    <a href ng-show="fullScreenIcon" ng-click="fullScreen()" class="btn btn-sm btn-custom" title="{{'Common.FullScreen' | translate}}"><i class="fa fa-arrows-alt"></i></a>
+                    <a href ng-show="!fullScreenIcon" ng-click="exitFullScreen()" class="btn btn-sm btn-custom" title="{{'Common.ExitFullScreen' | translate}}"><i class="fa fa fa-compress"></i></a>
                     <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true"
-                        style="margin-left:30px;margin-top: 3px;"    ng-click="$hide()"><i class="fa fa-close"></i></button>
+                            style="margin-left:30px;margin-top: 3px;" ng-click="$hide()"><i class="fa fa-close"></i></button>
                 </div>
             </div>
             <div class="modal-body">

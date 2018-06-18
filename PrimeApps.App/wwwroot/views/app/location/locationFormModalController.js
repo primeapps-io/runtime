@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('locationFormModalController', ['$rootScope', '$scope',
         function ($rootScope, $scope) {
 

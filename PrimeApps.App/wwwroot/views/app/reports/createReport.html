@@ -168,7 +168,7 @@
                                 </div>
                             </div>
                             <div class="wizard-buttons text-right">
-                                <a href="#/app/crm/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
+                                <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                                 <button type="button" class="btn btn-primary btn-w-sm"
                                         ng-click="step1();">{{'Common.Next' | translate}} <i
                                         class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
@@ -423,7 +423,7 @@
                                 </table>
                             </div>
                             <div class="wizard-buttons text-right">
-                                <a href="#/app/crm/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
+                                <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                                 <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
                                 <button type="button" class="btn btn-primary btn-w-sm"
                                         ng-click="step2()">{{'Common.Next' | translate}} <i
@@ -452,7 +452,7 @@
                                                         </div>
                                                         <div class="fields clearfix">
                                                             <div id="availableFields" class="container-left">
-                                                                <div ng-repeat="field in fields.availableFields"
+                                                                <div ng-repeat="field in fields.availableFields | filter :{deleted:false}"
                                                                      ng-class="{'dragable':!field.seperator, 'seperator':field.seperator, 'seperator-main':field.name === 'seperator-main'}">
                                                                     {{field.label}} <i class="fa fa-arrows" ng-if="!field.seperator"></i></div>
                                                             </div>
@@ -550,6 +550,9 @@
                                                                     <th style="text-align: center;">
                                                                         {{'Report.max' | translate }}
                                                                     </th>
+                                                                    <th style="text-align: center;">
+                                                                         
+                                                                    </th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -583,14 +586,16 @@
                                                                                name="{{ reportModel.report_type ===  'summary' || reportModel.report_type ===  'single' ? module.id : field.name }}"
                                                                                style="">
                                                                     </td>
-                                                                    <td class="text-center" ng-click="removeSelectAggregation(field)">Seçimi Kaldır</td>
+                                                                    <td class="text-center" ng-click="removeSelectAggregation(field)">
+                                                                        <input type="button" class="btn btn-custom" ng-click="removeSelectAggregation(field)" value="{{'Report.RemoveSelection' | translate }}"/>
+                                                                    </td>
 
                                                                 </tr>
                                                                 <tr ng-if="reportModel.report_type !=  'tabular'">
                                                                     <td class="text-center">
                                                                         {{'Report.count' | translate}}
                                                                     </td>
-                                                                    <td colspan="4" class="text-center">
+                                                                    <td colspan="5" class="text-center">
                                                                         <input type="radio"
                                                                                ng-model="countField.Aggregation"
                                                                                ng-click="aggregationChange({field:'created_by',aggregation_type:'count'})"
@@ -720,7 +725,7 @@
 
                     </div>
                     <div class="wizard-buttons text-right">
-                        <a href="#/app/crm/reports" class="btn btn-custom">{{'Common.Cancel' |
+                        <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' |
                             translate}}</a>
                         <button type="button" class="btn btn-primary btn-w-sm" ng-click="stepBack(1)">
                             {{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left"
@@ -764,7 +769,7 @@
                         </div>
                     </div>
                     <div class="wizard-buttons text-right">
-                        <a href="#/app/crm/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
+                        <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                         <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 2"><i
                                 class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous'
                             | translate}}

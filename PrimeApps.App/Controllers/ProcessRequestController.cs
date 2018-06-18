@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using static PrimeApps.App.Helpers.ProcessHelper;
 
 namespace PrimeApps.App.Controllers
 {
@@ -40,42 +41,42 @@ namespace PrimeApps.App.Controllers
 			base.OnActionExecuting(context);
 		}
 
-		[Route("get_requests/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery(Name = "id")]int id)
+        [Route("get_requests/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAll(int id)
         {
             var processRequestEntities = await _processRequestRepository.GetByProcessId(id);
 
             return Ok(processRequestEntities);
         }
 
-	    [Route("approve_multiple_request"), HttpPut]
-	    public async Task<IActionResult> ApproveMultipleRequest([FromBody]int[] RecordIds)
-	    {
-		    if (!ModelState.IsValid)
-			    return BadRequest(ModelState);
-
-		    for (int i = 0; i < RecordIds.Length; i++)
-		    {
-			    var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], 0);
-				if (requestEntity == null)
-					continue;
-			    await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
-			    await _processRequestRepository.Update(requestEntity);
-
-			    await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
-
-			}
-
-			return Ok();
-	    }
-
-		[Route("approve"), HttpPut]
-        public async Task<IActionResult> ApproveRequest([FromBody]ProcessRequestModel request)
+        [Route("approve_multiple_request"), HttpPut]
+        public async Task<IActionResult> ApproveMultipleRequest(int[] RecordIds, string moduleName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
+            for (int i = 0; i < RecordIds.Length; i++)
+            {
+                var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], moduleName, 0);
+                if (requestEntity == null)
+                    continue;
+                await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+                await _processRequestRepository.Update(requestEntity);
+
+                await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+
+            }
+
+            return Ok();
+        }
+
+        [Route("approve"), HttpPut]
+        public async Task<IActionResult> ApproveRequest(ProcessRequestModel request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
             if (requestEntity == null)
                 return NotFound();
@@ -89,10 +90,10 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("reject"), HttpPut]
-        public async Task<IActionResult> RejectRequest([FromBody]ProcessRequestRejectModel request)
+        public async Task<IActionResult> RejectRequest(ProcessRequestRejectModel request)
         {
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
+            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
             if (requestEntity == null)
                 return NotFound();
@@ -106,7 +107,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete"), HttpPut]
-        public async Task<IActionResult> DeleteRequest([FromBody]ProcessRequestDeleteModel request)
+        public async Task<IActionResult> DeleteRequest(ProcessRequestDeleteModel request)
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
@@ -116,12 +117,12 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval"), HttpPut]
-        public async Task<IActionResult> ReApprovalRequest([FromBody]ProcessRequestModel request)
+        public async Task<IActionResult> ReApprovalRequest(ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.OperationType);
+            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
             if (requestEntity == null)
                 return NotFound();
@@ -135,14 +136,22 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval_manuel"), HttpPost]
-        public async Task<IActionResult> ManuelApprovalRequest([FromBody]ProcessRequestManuelModel request)
+        public async Task<IActionResult> ManuelApprovalRequest(ProcessRequestManuelModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Manuel);
+            try
+            {
+                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel);
+            }
+            catch (ProcessFilterNotMatchException ex)
+            {
+                ModelState.AddModelError("FiltersNotMatch", "Filters don't matched");
+                return BadRequest(ModelState);
+            }
 
             return Ok();
         }

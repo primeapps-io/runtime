@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('ModuleSetupService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
@@ -53,6 +53,8 @@ angular.module('ofisim')
                                 dataType.max = 27;
                                 break;
                             case 'rating':
+                                break;
+                            case 'tag':
                                 break;
                         }
 
@@ -930,7 +932,7 @@ angular.module('ofisim')
             };
         }]);
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .constant('defaultLabels', {
         DefaultModuleNameEn: 'Module',

@@ -577,6 +577,15 @@
         overflow-x: hidden;
         overflow-y: auto;
       }
+
+      tags-input .tags,
+       .autocomplete {
+         width: 300px;
+       }
+
+      .angucomplete-holder .fa-search {
+        right: 108px;
+      }
     }
   }
 
@@ -609,7 +618,6 @@
 }
 
 .gu-mirror-module {
-  width: z-index 9999 !important;
   max-height: 200px !important;
   position: fixed !important;
   margin: 0 !important;
@@ -652,7 +660,6 @@
 }
 
 .gu-mirror-field {
-  width: z-index 9999 !important;
   position: fixed !important;
   margin: 0 !important;
   opacity: 0.8;
@@ -675,7 +682,6 @@
 }
 
 .gu-mirror-option {
-  width: z-index 9999 !important;
   position: fixed !important;
   margin: 0 !important;
   opacity: 0.8;

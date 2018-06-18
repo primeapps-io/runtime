@@ -524,7 +524,7 @@ body.aside-open {
     line-height: 45px;
 }
 
-.sidebar-nav li a {
+.sidebar-nav a {
     display: block;
     text-decoration: none;
     color: #fefefe;
@@ -533,7 +533,7 @@ body.aside-open {
 }
 
 
-.sidebar-nav li a:hover:not(.sidebar-brand-logo) {
+.sidebar-nav a:hover:not(.sidebar-brand-logo) {
     text-decoration: none;
     color: #fff;
     border-radius: 10px;
@@ -551,25 +551,25 @@ body.aside-open {
     transition-timing-function: cubic-bezier(0.25, 1, .25, 1);
 }
 
-.sidebar-nav li a.focus {
+.sidebar-nav a.focus {
     background-color: #f36f21 !important;
 }
 
-.sidebar-nav li a.active {
+.sidebar-nav a.active {
     background-color: #222 !important;
     border-radius: 10px;
 }
 
-.analytics .sidebar-nav li a.focus {
+.analytics .sidebar-nav a.focus {
     background-color: #fff !important;
 }
 
-.analytics .sidebar-nav li a.active {
+.analytics .sidebar-nav a.active {
     background-color: #1f774d !important;
     border-radius: 10px;
 }
 
-.analytics .sidebar-nav li a.active i {
+.analytics .sidebar-nav a.active i {
     color: #fff;
 }
 
@@ -591,6 +591,10 @@ body.aside-open {
 
 .sidebar-nav li .sidebar-menu-label {
     margin-left: 38px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .fa-sidebar-icon-background {

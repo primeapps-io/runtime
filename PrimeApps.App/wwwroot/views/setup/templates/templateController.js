@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('TemplateController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', '$localStorage', 'config', 'TemplateService',
         function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, $localStorage, config, TemplateService) {
             $scope.loading = true;
 
-            TemplateService.getAll('module')
+            TemplateService.getAllList('module', 'excel')
                 .then(function (templates) {
                     angular.forEach(templates.data, function (template) {
                         template.module = $filter('filter')($rootScope.modules, { name: template.module }, true)[0];

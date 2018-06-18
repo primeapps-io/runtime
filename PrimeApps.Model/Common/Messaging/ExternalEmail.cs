@@ -7,6 +7,7 @@
         public string[] ToAddresses { get; set; }
         public string Cc { get; set; }
         public string Bcc { get; set; }
+        public string FromEmail { get; set; }
 
     }
 }

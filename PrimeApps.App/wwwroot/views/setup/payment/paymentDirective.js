@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .directive('paymentForm', ['$filter', 'ngToast', 'PaymentService', 'AppService',
         function ($filter, ngToast, PaymentService, AppService) {

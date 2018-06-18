@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .filter('msDate', ['convert',
         function (convert) {
@@ -362,6 +362,12 @@ angular.module('ofisim')
             });
 
             return filteredItems;
+        }
+    })
+
+    .filter('titleCase', function () {
+        return function (token) {
+            return token.charAt(0).toUpperCase() + token.slice(1);
         }
     })
 

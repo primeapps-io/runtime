@@ -1130,6 +1130,18 @@
                                                                load-on-empty="true"
                                                                max-results-to-show="9999"></auto-complete>
                                             </tags-input>
+
+                                            <tags-input ng-model="workflowModel.field_update.value"
+                                                        display-property="text"
+                                                        placeholder="{{'Common.TagPlaceholder' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        ng-if="!workflowModel.field_update.field.lookupModulePrimaryField ? workflowModel.field_update.field.data_type === 'tag' : workflowModel.field_update.field.lookupModulePrimaryField.data_type === 'tag'">
+                                                <auto-complete source="tags($query, workflowModel.field_update.field)"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
+                                            </tags-input>
+
                                             <!--Doküman için || workflowModel.field_update.field.data_type ==='document' ekelendiğinde direk çalışacak-->
                                             <div ng-if="workflowModel.field_update.field.data_type === 'image'"
                                                  class="image-type">

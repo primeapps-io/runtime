@@ -35,5 +35,6 @@
   </ItemGroup>
 <ItemGroup>
   <Folder Include="Migrations\PlatformDB\" />
+  <Folder Include="Migrations\TenantDB\" />
 </ItemGroup>
 </Project>

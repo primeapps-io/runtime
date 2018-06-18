@@ -1,4 +1,4 @@
-angular.module('ofisim')
+angular.module('primeapps')
 
     .factory('ViewService', ['$rootScope', '$http', 'config', '$q', '$filter', 'ModuleService',
         function ($rootScope, $http, config, $q, $filter, ModuleService) {

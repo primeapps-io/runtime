@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('ConvertMapService', ['$http', '$filter', 'config',
         function ($http, $filter, config) {
             return {

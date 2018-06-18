@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
-    .controller('ModuleListController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ngTableParams', 'blockUI', 'exportFile', '$popover', '$modal', 'operations', 'activityTypes', 'transactionTypes', 'ModuleService',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ngTableParams, blockUI, exportFile, $popover, $modal, operations, activityTypes, transactionTypes, ModuleService) {
+    .controller('ModuleListController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ngTableParams', 'blockUI', 'exportFile', '$popover', '$modal', 'operations', 'activityTypes', 'transactionTypes', 'ModuleService', '$http',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ngTableParams, blockUI, exportFile, $popover, $modal, operations, activityTypes, transactionTypes, ModuleService, $http) {
             $scope.type = $stateParams.type;
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
@@ -17,7 +17,7 @@ angular.module('ofisim')
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -26,7 +26,7 @@ angular.module('ofisim')
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -103,8 +103,10 @@ angular.module('ofisim')
                                         var data = response.data;
                                         var holidays = [];
                                         for (var i = 0; i < data.length; i++) {
-                                            var date = moment(data[i].date).format('DD-MM-YYYY');
-                                            holidays.push(date);
+                                            if (!data[i].half_day) {
+                                                var date = moment(data[i].date).format('DD-MM-YYYY');
+                                                holidays.push(date);
+                                            }
                                         }
                                         var workingWeekdays = [1, 2, 3, 4, 5];
 
@@ -112,6 +114,7 @@ angular.module('ofisim')
                                         if (workSaturdays.length > 0 && workSaturdays[0].value === 't') {
                                             workingWeekdays.push(6);
                                         }
+                                        $rootScope.holidaysData = data;
 
                                         moment.locale(language, {
                                             week: { dow: 1 }, // Monday is the first day of the week.
@@ -133,11 +136,11 @@ angular.module('ofisim')
                 }
 
                 $scope.mailModal = $scope.mailModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/leave/collectiveLeave.html',
-                    backdrop: 'static',
-                    show: true
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/leave/collectiveLeave.html',
+                        backdrop: 'static',
+                        show: true
+                    });
             };
 
             $scope.delete = function (id) {
@@ -152,6 +155,7 @@ angular.module('ofisim')
                             .then(function () {
                                 $cache.remove(cacheKey);
                                 $scope.tableParams.reload();
+
                             });
                     });
             };
@@ -172,13 +176,22 @@ angular.module('ofisim')
                     var picklistItem = $scope.tableParams.picklists[field.picklist_id][i];
 
                     if (picklistItem.inactive)
-                        return;
+                        continue;
 
                     if (picklistItem.labelStr.toLowerCase().indexOf(searchTerm) > -1)
                         picklistItems.push(picklistItem);
                 }
 
                 return picklistItems;
+            };
+
+            $scope.tags = function (searchTerm, field) {
+                return $http.get(config.apiUrl + "tag/get_tag/" + field.id).then(function (response) {
+                    var tags = response.data;
+                    return tags.filter(function (tag) {
+                        return tag.text.toLowerCase().indexOf(searchTerm.toLowerCase()) != -1;
+                    });
+                });
             };
 
             $scope.changeView = function () {
@@ -203,6 +216,7 @@ angular.module('ofisim')
                         $scope.changeView();
                     });
             };
+
 
             $scope.export = function () {
                 if ($scope.tableParams.total() < 1)
@@ -233,6 +247,7 @@ angular.module('ofisim')
                     return;
                 }
 
+
                 var fileName = $scope.module['label_' + $rootScope.language + '_plural'] + '-' + $filter('date')(new Date(), 'dd-MM-yyyy') + '.xls';
                 $scope.exporting = true;
 
@@ -250,32 +265,32 @@ angular.module('ofisim')
 
             $scope.showActivityButtons = function () {
                 $scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
-                    templateUrl: 'views/common/newactivity.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'views/common/newactivity.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                    templateUrl: 'views/common/newtransaction.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'views/common/newtransaction.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.showDataTransferButtons = function () {
                 $scope.dataTransferButtonsPopover = $scope.dataTransferButtonsPopover || $popover(angular.element(document.getElementById('dataTransferButtons')), {
-                    template: 'views/common/datatransfer.html',
-                    placement: 'bottom',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        template: 'views/common/datatransfer.html',
+                        placement: 'bottom',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.selectRow = function ($event, record) {
@@ -309,8 +324,8 @@ angular.module('ofisim')
 
             $scope.isRowSelected = function (id) {
                 return $scope.selectedRows.filter(function (selectedItem) {
-                    return selectedItem == id;
-                }).length > 0;
+                        return selectedItem == id;
+                    }).length > 0;
             };
 
             $scope.selectAll = function ($event, data) {
@@ -368,11 +383,11 @@ angular.module('ofisim')
                 }
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/email/bulkEMailModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/email/bulkEMailModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.mailModal.$promise.then($scope.mailModal.show);
             };
@@ -390,11 +405,11 @@ angular.module('ofisim')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.smsModal = $scope.smsModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/sms/bulkSMSModal.html',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/sms/bulkSMSModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.smsModal.$promise.then($scope.smsModal.show);
             };
@@ -474,6 +489,91 @@ angular.module('ofisim')
                         $scope.bulkUpdate.value = null;
                     });
             };
+
+
+            $scope.getDownloadViewUrlExcel = function () {
+                var module = $scope.module.name;
+                $window.open("/attach/ExportExcelView?module=" + module, "_blank");
+                ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
+            };
+
+            $scope.openExcelTemplate = function () {
+                $scope.excelCreating = true;
+                $scope.hasQuoteTemplateDisplayPermission = ModuleService.hasQuoteTemplateDisplayPermission;
+
+                var openExcelModal = function () {
+                    $scope.excelModal = $scope.excelModal || $modal({
+                            scope: $scope,
+                            templateUrl: 'views/app/module/moduleExcelModal.html',
+                            animation: '',
+                            backdrop: 'static',
+                            show: false
+                        });
+
+                    $scope.excelModal.$promise.then($scope.excelModal.show);
+                };
+
+                $scope.excelNoData = function () {
+                    var module = $scope.module.name;
+                    var templateId = $scope.quoteTemplate.id;
+                    var templateName = $scope.quoteTemplate.name;
+                    $window.open("/attach/ExportExcelNoData?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
+                    ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
+                };
+
+                $scope.excelData = function () {
+                    var module = $scope.module.name;
+                    var templateId = $scope.quoteTemplate.id;
+                    var templateName = $scope.quoteTemplate.name;
+                    $window.open("/attach/ExportExcelData?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
+                    ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
+                };
+
+                if ($scope.quoteTemplates) {
+                    openExcelModal();
+                    $scope.quoteTemplate = $scope.quoteTemplates[0];
+                }
+
+                ModuleService.getTemplates($scope.module.name, 'excel')
+                    .then(function (templateResponse) {
+                        if (templateResponse.data.length == 0) {
+                            ngToast.create({ content: $filter('translate')('Setup.Templates.TemplateNotFound'), className: 'warning' });
+                            $scope.excelCreating = false;
+                        }
+                        else {
+                            var templateExcel = templateResponse.data;
+                            $scope.quoteTemplates = $filter('filter')(templateExcel, { active: true }, true);
+                            $scope.isShownWarning = true;
+                            for (var i = 0; i < $scope.quoteTemplates.length; i++) {
+                                var quoteTemplate = $scope.quoteTemplates[i];
+                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                                if (currentQuoteTemplate.type === 'none') {
+                                    quoteTemplate.isShown = false;
+                                } else {
+                                    quoteTemplate.isShown = true;
+                                }
+                                if (quoteTemplate.isShown == true) {
+                                    $scope.isShownWarning = false;
+                                }
+                            }
+
+                            $scope.quoteTemplate = $scope.quoteTemplates[0];
+                            $scope.excelModal = $scope.excelModal || $modal({
+                                    scope: $scope,
+                                    templateUrl: 'views/app/module/moduleExcelModal.html',
+                                    animation: '',
+                                    backdrop: 'static',
+                                    show: false
+                                });
+
+                            openExcelModal();
+                        }
+                    })
+                    .catch(function () {
+                        $scope.excelCreating = false;
+                    });
+            };
+
 
             $scope.UpdateMultiselect = function (searchTerm, field) {
                 var picklistItems = [];
@@ -562,7 +662,7 @@ angular.module('ofisim')
                         case 'checkbox':
                             fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
                             break;
-                        default:
+                        default :
                             fieldValue = value;
                             break;
                     }
@@ -594,13 +694,13 @@ angular.module('ofisim')
                 $scope.selected = $scope.selectedRows.length;
 
                 $scope.updateModal = $scope.updateModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/module/bulkUpdateModal.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'createModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/module/bulkUpdateModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                 $scope.updateModal.$promise.then($scope.updateModal.show);
             };
@@ -610,16 +710,76 @@ angular.module('ofisim')
                 $scope.selected = $scope.selectedRows.length;
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'views/app/module/bulkDelete.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false,
-                    tag: 'createModal'
-                });
+                        scope: $scope,
+                        templateUrl: 'views/app/module/bulkDelete.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                 $scope.deleteModal.$promise.then($scope.deleteModal.show);
             };
 
+            //kaydın process detaylarını gösterme
+            $scope.recordProcessDetail = function (record) {
+                var currentModuleProcess;
+                for (var j = 0; j < $rootScope.approvalProcesses.length; j++) {
+                    var currentProcess = $rootScope.approvalProcesses[j];
+                    if (currentProcess.module_id === $scope.module.id)
+                        currentModuleProcess = currentProcess;
+                }
+
+                if (currentModuleProcess.approver_type === 'dynamicApprover') {
+                    $scope.loadingProcessPopup = true;
+                    $scope.processStatusParam = record["process.process_requests.process_status"];
+                    $scope['processInformPopover' + record.id] = $scope['processInformPopover' + record.id] || $popover(angular.element(document.getElementById('processPopover' + record.id)), {
+                        templateUrl: 'views/common/processInform.html',
+                        placement: 'left',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
+                    
+                    ModuleService.getRecord($scope.module.name, record.id)
+                        .then(function (recordData) {
+                            var processOrderParam, currentApprover, updateTime, rejectApprover;
+                            var record = recordData.data;
+                            var previousApprovers = [];
+                            if (record.process_status === 1) {
+                                processOrderParam = record.process_status_order;
+                                if (record.process_status_order === 1) {
+                                    currentApprover = $filter('filter')($rootScope.users, { Email: record.custom_approver }, true)[0].FullName;
+                                } else {
+                                    currentApprover = $filter('filter')($rootScope.users, { Email: record['custom_approver_' + record.process_status_order] }, true)[0].FullName;
+                                    var firstApprover = $filter('filter')($rootScope.users, { Email: record.custom_approver }, true)[0].FullName;
+                                    previousApprovers.push(firstApprover)
+                                    for (var i = 2; i < record.process_status_order; i++) {
+                                        previousApprovers.push($filter('filter')($rootScope.users, { Email: record['custom_approver_' + i] }, true)[0].FullName);
+                                    }
+                                    $scope.previousApprovers = previousApprovers;
+                                }
+                                $scope.processOrderParam = processOrderParam;
+                                $scope.currentApprover = currentApprover;
+                            } else if (record.process_status === 2) {
+                                updateTime = record["process_request.updated_at"];
+                                var firstApprover = $filter('filter')($rootScope.users, { Email: record.custom_approver }, true)[0].FullName;
+                                previousApprovers.push(firstApprover)
+                                for (var i = 2; i < record.process_status_order + 1; i++) {
+                                    previousApprovers.push($filter('filter')($rootScope.users, { Email: record['custom_approver_' + i] }, true)[0].FullName);
+                                }
+                                $scope.previousApprovers = previousApprovers;
+                                $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
+                            } else if (record.process_status === 3) {
+                                updateTime = record["process_request.updated_at"];
+                                rejectApprover = $filter('filter')($rootScope.users, { Id: record["process_request.updated_by"] }, true)[0].FullName;
+                                $scope.rejectApprover = rejectApprover;
+                                $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
+                            }
+                            $scope.loadingProcessPopup = false;
+                        })
+                }
+                
+            }
         }
     ]);

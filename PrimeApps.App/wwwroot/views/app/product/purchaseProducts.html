@@ -1,28 +1,70 @@
 <div class="subpanel" ng-controller="PurchaseProductsController">
     <h5 class="subpanel-heading">{{productModule['label_' + language + '_plural']}}</h5>
     <div class="subpanel-body" style="padding-right: 5px;">
-        <div ng-if="$parent.$parent.purchaseProductsLoading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-        <div class="empty-message" ng-if="!$parent.$parent.purchaseProducts.length && !$parent.$parent.purchaseProductsLoading && readonly">{{'Common.EmptyMessage' | translate}}</div>
-        <div class="quote-products" ng-if="(readonly ? $parent.$parent.purchaseProducts.length : true) && !$parent.$parent.purchaseProductsLoading">
-            <table class="product-list"
-                   ng-class="{'product-list-readonly':readonly}" ng-show="$parent.$parent.purchaseProducts.length">
+        <div ng-if="$parent.$parent.purchaseProductsLoading" class="page-loading"><i
+                class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div class="empty-message"
+             ng-if="!$parent.$parent.purchaseProducts.length && !$parent.$parent.purchaseProductsLoading && readonly">
+            {{'Common.EmptyMessage' | translate}}
+        </div>
+
+        <div class="quote-products"
+             ng-if="(readonly ? $parent.$parent.purchaseProducts.length : true) && !$parent.$parent.purchaseProductsLoading">
+            <table class="product-list" ng-class="{'product-list-readonly':readonly}"
+                   ng-show="$parent.$parent.purchaseProducts.length" ng-if="readonly || !isMobile">
                 <thead>
                     <tr>
+                        <th style="width: 20px"></th>
                         <th class="product-name">{{productModule['label_' + language + '_singular']}}</th>
                         <th class="product-quantity">{{'Product.Quantity' | translate}}</th>
                         <th class="product-unit">{{'Product.Unit' | translate}}</th>
-                        <th class="product-price">{{'Product.PurchasePrice' | translate}}</th>
+                        <th class="product-currency">{{'Product.Currency' | translate}}</th>
+                        <th class="product-price">{{'Product.ListPrice' | translate}}</th>
+                        <th class="product-vat">{{'Product.Vat' | translate}}</th>
                         <th class="product-discount">{{'Product.Discount' | translate}}</th>
                         <th class="product-total">{{'Product.Amount' | translate}}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="product" ng-repeat="purchaseProduct in $parent.$parent.purchaseProducts | filter:{deleted:'!true'} | orderBy:'order'">
-                        <td class="form-group product-name">
+                    <tr class="product "
+                        ng-repeat="purchaseProduct in $parent.$parent.purchaseProducts | filter:{deleted:'!true'} | orderBy:'order'">
+                        <td class="form-group up-down">
+                        <span ng-show="!readonly" ng-if="!$first" class="" ng-click="up($index,purchaseProduct.order)">
+                                <i class="fa fa-angle-up" aria-hidden="true"></i>
+                          </span>
+                            <span ng-show="!readonly" ng-if="!$last" class="" ng-click="down($index,purchaseProduct.order)"
+                                  ng-if="$parent.$parent.purchaseProducts.length >1 && !$last">
+                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                          </span>
+                        </td>
+                        <td colspan="8" ng-if="purchaseProduct.separator != undefined" style="padding-right: 20px"
+                            class="purchaseProduct separator">
+                            <input ng-if="!readonly"
+                                   ng-model="purchaseProduct.separator"
+                                   class="form-control col-sm-12" name="separator" />
+                            <span ng-if="readonly">{{ purchaseProduct.separator }}</span>
+                            <span class="delete-button"
+                                  ng-show="$parent.$parent.purchaseProducts.length > 1 && !readonly"
+                                  ng-click="delete(purchaseProduct)">
+                               <i class="action-icon flaticon-bin9" title="{{'Common.Delete' | translate}}"></i>
+                        </span>
+                        </td>
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null" class="form-group product-name">
                             <span class="label-readonly" ng-if="readonly">{{purchaseProduct.product.name}}</span>
+                            <!--<span class="product-info" ng-if="!readonly && purchaseProduct.product"-->
+                            <!--ng-click="productInfo(purchaseProduct)">-->
+                            <!--<i class="fa fa-info-circle" aria-hidden="true" id="purchaseProduct.order"-->
+
+                            <!--data-title="{{purchaseProduct.product.name}}"-->
+                            <!--data-template-url="views/app/product/productInfo.html"-->
+                            <!--data-animation="am-flip-x"-->
+                            <!--data-auto-close="1"-->
+                            <!--data-placement="bottom"-->
+                            <!--bs-popover></i>-->
+                            <!--</span>-->
                             <angucomplete-alt input-name="{{purchaseProduct.id}}"
                                               id="{{purchaseProduct.id}}"
-                                              input-class="form-control ng-animate-disabled quoteProduct-name"
+                                              input-class="form-control ng-animate-disabled purchaseProduct-name"
                                               match-class="highlight-angucomplete"
                                               field-tabindex="{{$index + 1 }}000"
                                               pause="200"
@@ -38,12 +80,12 @@
                                               text-no-results="{{'Common.NoResults' | translate}}"
                                               use-original-object="true"
                                               value-changed="selectProduct(purchaseProduct);"
-                                              placeholder="{{'Product.ProductName' | translate}}"
-                                              hide-create-new="false"
+                                              placeholder="{{productModule['label_' + language + '_singular']}}"
                                               create-new="openFormModal"
+                                              hide-create-new="false"
                                               ng-if="!readonly" />
                         </td>
-                        <td class="form-group product-quantity">
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null" class="form-group product-quantity">
                             <span class="label-readonly" ng-if="readonly">{{purchaseProduct.quantity != undefined && purchaseProduct.quantity != null ? (purchaseProduct.quantity | number:2) : ''}}</span>
                             <input type="text"
                                    class="form-control"
@@ -58,117 +100,303 @@
                                    number-decimal
                                    ng-if="!readonly" />
                         </td>
-                        <td class="form-group product-unit">
-                            <span ng-class="{'readonly':!readonly, 'form-control':!readonly, 'label-readonly':readonly}">{{purchaseProduct.usage_unit}}</span>
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null" class="form-group product-unit">
+                            <select name="selectedUnit"
+                                    ng-if="!readonly"
+                                    class="ng-animate-disabled col-sm-6 form-control"
+                                    ng-model="purchaseProduct.product.usage_unit"
+                                    ng-change="selectProduct(purchaseProduct)"
+                                    ng-options="unit as unit['label_' + language]  for unit in usageUnitList | filter:{inactive:'!true', hidden:'!true'} track by unit.id">
+                            </select>
+                            <span ng-if="readonly" ng-class="{'readonly':!readonly, 'form-control':!readonly, 'label-readonly':readonly}">{{ purchaseProduct.usage_unit }}</span>
                         </td>
-                        <td class="form-group product-price">
-                            <span class="label-readonly" ng-if="readonly">{{purchaseProduct.unit_price != undefined && purchaseProduct.unit_price != null ? (purchaseProduct.unit_price | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ''}}</span>
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null"
+                            class="form-group product-currency">
+                            <select name="selectedCurrency" ng-if="!readonly"
+                                    class="ng-animate-disabled col-sm-6 form-control"
+                                    ng-change="selectProduct(purchaseProduct)"
+                                    ng-model="purchaseProduct.product.currency"
+                                    ng-options="currency as currency['label_' + language]  for currency in currencyList | filter:{inactive:'!true', hidden:'!true'} track by currency.id">
+                            </select>
+
+                            <span ng-if="readonly" ng-class="{'readonly':!readonly, 'form-control':!readonly, 'label-readonly':readonly}">{{ purchaseProduct. currency['label_' + language] }}</span>
+                        </td>
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null"
+                            class="form-group product-price">
+                            <span class="label-readonly" ng-if="readonly">{{purchaseProduct.purchase_price != undefined && purchaseProduct.purchase_price != null ? (purchaseProduct.purchase_price | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ''}}</span>
+                            <input
+                                    type="text"
+                                    class="form-control"
+                                    ng-class="{'text-right':purchaseProduct.purchase_price != undefined && purchaseProduct.purchase_price != null}"
+                                    ng-model="purchaseProduct.purchase_price"
+                                    ng-readonly="!purchaseProduct.product"
+                                    ng-change="calculate(purchaseProduct)"
+                                    placeholder="{{'Product.UnitPrice' | translate}}"
+                                    tabindex="{{$index + 1 }}002"
+                                    places="2"
+                                    rounding="2"
+                                    currency-symbol="purchaseProduct.product.currency.value || currencySymbol"
+                                    number-currency
+                                    ng-if="!readonly" />
+                        </td>
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null"
+                            class="form-group product-quantity">
+                            <span class="label-readonly" ng-if="readonly">{{purchaseProduct.vat_percent != undefined && purchaseProduct.vat_percent != null ? (purchaseProduct.vat_percent | number:2) +' %' : ''}}</span>
                             <input type="text"
                                    class="form-control"
-                                   ng-class="{'text-right':purchaseProduct.unit_price != undefined && purchaseProduct.unit_price != null}"
-                                   ng-model="purchaseProduct.unit_price"
+                                   ng-class="{'text-right':purchaseProduct.vat != undefined && purchaseProduct.vat != null}"
+                                   ng-model="purchaseProduct.product.vat_percent"
                                    ng-readonly="!purchaseProduct.product"
-                                   ng-change="calculate(purchaseProduct)"
-                                   placeholder="{{'Product.UnitPrice' | translate}}"
-                                   tabindex="{{$index + 1 }}002"
-                                   places="2"
-                                   rounding="2"
-                                   currency-symbol="purchaseProduct.product.currency.value || currencySymbol"
-                                   number-currency
+                                   ng-change="calculate(purchaseProduct);setVat(purchaseProduct);"
+                                   placeholder="{{'Product.Vat' | translate}}"
+                                   tabindex="{{$index + 1 }}001"
+                                   currency-symbol="%"
+                                   number-decimal
                                    ng-if="!readonly" />
                         </td>
-                        <td class="form-group product-discount">
-                            <span class="label-readonly" ng-if="purchaseProduct.discount_type === 'percent' && readonly">{{purchaseProduct.discount_percent != undefined && purchaseProduct.discount_percent != null ? (purchaseProduct.discount_percent | number:2) + ' %' : ''}}</span>
-                            <input type="text"
-                                   class="form-control ng-animate-disabled"
-                                   ng-class="{'text-right':purchaseProduct.discount_percent != undefined && purchaseProduct.discount_percent != null}"
-                                   style="width: 74%; margin-right: 1%; float: left;"
-                                   ng-model="purchaseProduct.discount_percent"
-                                   ng-readonly="!purchaseProduct.product"
-                                   ng-change="calculate(purchaseProduct)"
-                                   ng-if="purchaseProduct.discount_type === 'percent' && !readonly"
-                                   placeholder="{{'Product.Discount' | translate}}"
-                                   tabindex="{{$index + 1 }}003"
-                                   places="2"
-                                   rounding="2"
-                                   number-decimal />
-                            <span class="label-readonly" ng-if="purchaseProduct.discount_type === 'amount' && readonly">{{purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null ? (purchaseProduct.discount_amount | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ''}}</span>
-                            <input type="text"
-                                   class="form-control ng-animate-disabled"
-                                   ng-class="{'text-right':purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null}"
-                                   style="width: 74%; margin-right: 1%; float: left;"
-                                   ng-model="purchaseProduct.discount_amount"
-                                   ng-readonly="!purchaseProduct.product"
-                                   ng-change="calculate(purchaseProduct)"
-                                   ng-if="purchaseProduct.discount_type === 'amount' && !readonly"
-                                   placeholder="{{'Product.Discount' | translate}}"
-                                   tabindex="{{$index + 1 }}004"
-                                   places="2"
-                                   rounding="2"
-                                   currency-symbol="purchaseProduct.product.currency.value || currencySymbol"
-                                   number-currency />
-                            <select class="form-control"
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null"
+                            class="form-group product-discount">
+                                    <span class="label-readonly"
+                                          ng-if="purchaseProduct.discount_type === 'percent' && readonly">{{purchaseProduct.discount_percent != undefined && purchaseProduct.discount_percent != null ? (purchaseProduct.discount_percent | number:2) + ' %' : ''}}</span>
+                            <input
+                                    type="text"
+                                    class="form-control ng-animate-disabled"
+                                    ng-class="{'text-right':purchaseProduct.discount_percent != undefined && purchaseProduct.discount_percent != null}"
+                                    style="width: 74%; margin-right: 1%; float: left;"
+                                    ng-model="purchaseProduct.discount_percent"
+                                    ng-readonly="!purchaseProduct.product"
+                                    ng-change="calculate(purchaseProduct)"
+                                    ng-if="purchaseProduct.discount_type === 'percent' && !readonly"
+                                    placeholder="{{'Product.Discount' | translate}}"
+                                    tabindex="{{$index + 1 }}003"
+                                    places="2"
+                                    rounding="2"
+                                    number-decimal />
+                            <span class="label-readonly"
+                                  ng-if="purchaseProduct.discount_type === 'amount' && readonly">{{purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null ? (purchaseProduct.discount_amount | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ''}}</span>
+                            <input
+                                    type="text"
+                                    class="form-control ng-animate-disabled"
+                                    ng-class="{'text-right':purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null}"
+                                    style="width: 74%; margin-right: 1%; float: left;"
+                                    ng-model="purchaseProduct.discount_amount"
+                                    ng-readonly="!purchaseProduct.product"
+                                    ng-change="calculate(purchaseProduct)"
+                                    ng-if="purchaseProduct.discount_type === 'amount' && !readonly"
+                                    placeholder="{{'Product.Discount' | translate}}"
+                                    tabindex="{{$index + 1 }}004"
+                                    places="2"
+                                    rounding="2"
+                                    currency-symbol="purchaseProduct.product.currency.value || currencySymbol"
+                                    number-currency />
+                            <select
+                                    class="form-control"
                                     style="width: 25%"
                                     ng-model="purchaseProduct.discount_type"
-                                    ng-change="calculate(purchaseProduct)"
+                                    ng-change="purchaseProduct.discount_percent =null; purchaseProduct.discount_amount =null;calculate(purchaseProduct)"
                                     ng-if="!readonly">
                                 <option value="percent" selected>%</option>
-                                <option value="amount">{{purchaseProduct.product.currency.value || currencySymbol}}</option>
+                                <option value="amount">{{purchaseProduct.product.currency.value || currencySymbol}}
+                                </option>
                             </select>
                         </td>
-                        <td class="form-group product-total">
+                        <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null" class="form-group product-total">
                             <span ng-class="{'text-right':(purchaseProduct.amount != undefined && purchaseProduct.amount != null), 'readonly':(purchaseProduct.product ? false : (!purchaseProduct['product.products.id'])), 'form-control':!readonly, 'label-readonly':readonly}">{{purchaseProduct.amount != undefined && purchaseProduct.amount != null ? (purchaseProduct.amount | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ('Product.Amount' | translate)}}</span>
-                            <span class="delete-button" ng-show="$parent.$parent.purchaseProducts.length > 1 && !readonly" ng-click="delete(purchaseProduct)">
-                                <i class="action-icon flaticon-bin9" title="{{'Common.Delete' | translate}}"></i>
+                            <span class="delete-button" ng-show="$parent.$parent.purchaseProducts.length > 0 && !readonly" ng-click="delete(purchaseProduct)">
+                                    <i class="action-icon flaticon-bin9" title="{{'Common.Delete' | translate}}"></i>
                             </span>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <div class="totals clearfix" ng-class="{'totals-readonly':readonly}" ng-show="$parent.$parent.purchaseProducts.length">
-                <div class="add-product">
-                    <a href class="add-button" ng-mouseup="addPurchaseProduct()" ng-if="!readonly">{{'Product.AddLine' | translate}}</a>
-                    <span>&nbsp;</span>
+            <div ng-if="!readonly && isMobile" class="mobile-products" ng-repeat="purchaseProduct in $parent.$parent.purchaseProducts | filter:{deleted:'!true'} | orderBy:'order'">
+                <div class="mobile-row product-name" ng-if="purchaseProduct.separator != undefined">
+                    <input ng-if="!readonly"
+                           ng-model="purchaseProduct.separator"
+                           class="form-control col-sm-12" name="separator" />
+                    <span ng-if="readonly">{{ purchaseProduct.separator }}</span>
                 </div>
-                <div class="total-labels">
+                <div class="mobile-row product-name"
+                     ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null">
+                    <span class="label-readonly" ng-if="readonly">{{purchaseProduct.product.name}}</span>
+                    <span class="product-name">{{'Product.ProductName' | translate}}</span>
+                    <angucomplete-alt input-name="{{purchaseProduct.id}}"
+                                      id="{{purchaseProduct.id}}"
+                                      input-class="form-control ng-animate-disabled quoteProduct-name"
+                                      match-class="highlight-angucomplete"
+                                      field-tabindex="{{$index + 1 }}000"
+                                      pause="200"
+                                      selected-object="purchaseProduct.product"
+                                      initial-value="purchaseProduct.product"
+                                      remote-api-handler="lookup"
+                                      search-fields="primary_value"
+                                      title-field="primary_value"
+                                      focus-in="setCurrentLookupProduct(purchaseProduct)"
+                                      minlength="2"
+                                      template-url="views/common/angucomplete.html"
+                                      text-searching="{{'Common.Searching' | translate}}"
+                                      text-no-results="{{'Common.NoResults' | translate}}"
+                                      use-original-object="true"
+                                      value-changed="selectProduct(purchaseProduct);"
+                                      placeholder="{{'Product.ProductName' | translate}}"
+                                      hide-create-new="true"
+                                      ng-if="!readonly" />
+                </div>
+                <div class="mobile-row product-quantity"
+                     ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null">
+                    <span class="label-readonly" ng-if="readonly">{{purchaseProduct.quantity != undefined && purchaseProduct.quantity != null ? (purchaseProduct.quantity | number:2) : ''}}</span>
+                    <span class="product-quantity">{{'Product.Quantity' | translate}}</span>
+                    <input type="text"
+                           class="form-control"
+                           ng-class="{'text-right':purchaseProduct.quantity != undefined && purchaseProduct.quantity != null}"
+                           ng-model="purchaseProduct.quantity"
+                           ng-readonly="!purchaseProduct.product"
+                           ng-change="calculate(purchaseProduct)"
+                           placeholder="{{'Product.Quantity' | translate}}"
+                           tabindex="{{$index + 1 }}001"
+                           places="2"
+                           rounding="2"
+                           number-decimal
+                           ng-if="!readonly" />
+                </div>
+                <div class="mobile-row product-unit"
+                     ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null">
+                    <span class="product-unit">{{'Product.Unit' | translate}}</span>
+                    <span ng-class="{'readonly':!readonly, 'form-control':!readonly, 'label-readonly':readonly}">{{purchaseProduct.usage_unit}}</span>
+                </div>
+                <div class="mobile-row product-price"
+                     ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null">
+                    <span class="label-readonly" ng-if="readonly">{{purchaseProduct.purchase_price != undefined && purchaseProduct.purchase_price != null ? (purchaseProduct.purchase_price | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ''}}</span>
+                    <span class="product-price">{{'Product.ListPrice' | translate}}</span>
+                    <input
+                            type="text"
+                            class="form-control"
+                            ng-class="{'text-right':purchaseProduct.purchase_price != undefined && purchaseProduct.purchase_price != null}"
+                            ng-model="purchaseProduct.purchase_price"
+                            ng-readonly="!purchaseProduct.product"
+                            ng-change="calculate(purchaseProduct)"
+                            placeholder="{{'Product.UnitPrice' | translate}}"
+                            tabindex="{{$index + 1 }}002"
+                            places="2"
+                            rounding="2"
+                            currency-symbol="purchaseProduct.product.currency.value || currencySymbol"
+                            number-currency
+                            ng-if="!readonly" />
+                </div>
+                <div class="mobile-row product-discount"
+                     ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null">
+                    <span class="product-discount">{{'Product.Discount' | translate}}</span>
+                    <span class="label-readonly" ng-if="purchaseProduct.discount_type === 'percent' && readonly">{{purchaseProduct.discount_percent != undefined && purchaseProduct.discount_percent != null ? (purchaseProduct.discount_percent | number:2) + ' %' : ''}}</span>
+                    <div>
+                        <input
+                                type="text"
+                                class="form-control ng-animate-disabled"
+                                ng-class="{'text-right':purchaseProduct.discount_percent != undefined && purchaseProduct.discount_percent != null}"
+                                style="width: 74%; margin-right: 1%; float: left;"
+                                ng-model="purchaseProduct.discount_percent"
+                                ng-readonly="!purchaseProduct.product"
+                                ng-change="calculate(purchaseProduct)"
+                                ng-if="purchaseProduct.discount_type === 'percent' && !readonly"
+                                placeholder="{{'Product.Discount' | translate}}"
+                                tabindex="{{$index + 1 }}003"
+                                places="2"
+                                rounding="2"
+                                number-decimal />
+                        <span class="label-readonly" ng-if="purchaseProduct.discount_type === 'amount' && readonly">{{purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null ? (purchaseProduct.discount_amount | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ''}}</span>
+                        <input
+                                type="text"
+                                class="form-control ng-animate-disabled"
+                                ng-class="{'text-right':purchaseProduct.discount_amount != undefined && purchaseProduct.discount_amount != null}"
+                                style="width: 74%; margin-right: 1%; float: left;"
+                                ng-model="purchaseProduct.discount_amount"
+                                ng-readonly="!purchaseProduct.product"
+                                ng-change="calculate(purchaseProduct)"
+                                ng-if="purchaseProduct.discount_type === 'amount' && !readonly"
+                                placeholder="{{'Product.Discount' | translate}}"
+                                tabindex="{{$index + 1 }}004"
+                                places="2"
+                                rounding="2"
+                                currency-symbol="purchaseProduct.product.currency.value || currencySymbol"
+                                number-currency />
+                        <select
+                                class="form-control"
+                                style="width: 25%"
+                                ng-model="purchaseProduct.discount_type"
+                                ng-change="calculate(purchaseProduct)"
+                                ng-if="!readonly">
+                            <option value="percent" selected>%</option>
+                            <option value="amount">{{purchaseProduct.product.currency.value || currencySymbol}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="product-total" ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null">
+                    <span class="product-total">{{'Product.Amount' | translate}}</span>
+                    <span class="{{$parent.$parent.purchaseProducts.length > 1 && !readonly ? 'product-amount mobile' : ''}}" ng-class="{'text-right':(purchaseProduct.amount != undefined && purchaseProduct.amount != null), 'readonly':(purchaseProduct.product ? false : (!purchaseProduct['product.products.id'])), 'form-control':!readonly, 'label-readonly':readonly}">{{purchaseProduct.amount != undefined && purchaseProduct.amount != null ? (purchaseProduct.amount | currency:(purchaseProduct.product.currency.value || currencySymbol)) : ('Product.Amount' | translate)}}</span>
+                    <span class="delete-button {{!readonly &&isMobile ? 'mobile' : ''}}" ng-show="$parent.$parent.purchaseProducts.length > 1 && !readonly" ng-click="delete(purchaseProduct)">
+                        <i class="action-icon flaticon-bin9" title="{{'Common.Delete' | translate}}"></i>
+                    </span>
+                </div>
+                <div class="product-total" ng-if="purchaseProduct.separator != undefined">
+                    <span class="delete-button {{!readonly &&isMobile ? 'mobile' : ''}}"
+                          ng-show="$parent.$parent.purchaseProducts.length > 1 && !readonly"
+                          ng-click="delete(purchaseProduct)">
+                        <i class="action-icon flaticon-bin9" title="{{'Common.Delete' | translate}}"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="totals clearfix" ng-class="{'totals-readonly':readonly}" ng-show="$parent.$parent.purchaseProducts.length">
+                <div class="add-product {{!readonly && isMobile ? 'mobile' : ''}}">
+                    <a href class="add-button" ng-mouseup="addPurchaseProduct()" ng-if="!readonly">{{'Product.AddLine' |
+                        translate}}</a> <span ng-if="!readonly &&   fields.separator">|</span>
+                    <a href class="add-button" ng-mouseup="addPurchaseProduct(true)"
+                       ng-if="!readonly &&  fields.separator">{{'Product.AddSeparator' | translate}}</a>
+                    <span>&nbsp;</span>
+
+                </div>
+                <div class="total-labels {{!readonly &&isMobile ? 'mobile' : ''}}">
                     <span>{{'Product.Total' | translate}}:</span>
                     <span>{{'Product.Discount' | translate}}:</span>
                     <span ng-show="$parent.$parent.record.discounted_total">{{'Product.DiscountedTotal' | translate}}:</span>
-                    <span ng-repeat="vat in vatList | orderBy:'percent'">
+                    <span ng-repeat="vat in $parent.$parent.vatList | orderBy:'percent'">
                         {{'Product.VatPercent' | translate:{percent:vat.percent + '%'} }}:
                     </span>
-                    <!--<span ng-show="vatList.length > 1">{{'Product.VatTotal' | translate}}:</span>-->
+                    <!--<span ng-show="$parent.$parent.vatList.length > 1">{{'Product.VatTotal' | translate}}:</span>-->
                     <span>{{'Product.GrandTotal' | translate}}:</span>
                 </div>
-                <div class="total-amounts">
+                <div class="total-amounts {{!readonly &&isMobile ? 'mobile' : ''}}">
                     <span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}">{{$parent.$parent.record.total | currency:currencySymbol}}</span>
                     <div class="clearfix">
-                        <span class="label-readonly" ng-if="$parent.$parent.record.discount_type === 'percent' && readonly">{{$parent.$parent.record.discount_percent ? ($parent.$parent.record.discount_percent | number:2) + ' %' : '&nbsp;'}}</span>
-                        <input type="text"
-                               class="form-control ng-animate-disabled"
-                               ng-class="{'text-right':$parent.$parent.record.discount_percent != undefined && $parent.$parent.record.discount_percent != null}"
-                               style="width: 70%; margin-right: 1%; float: left;"
-                               ng-model="$parent.$parent.record.discount_percent"
-                               ng-change="calculateAll()"
-                               ng-if="$parent.$parent.record.discount_type === 'percent' && !readonly"
-                               tabindex="9000"
-                               places="2"
-                               rounding="2"
-                               number-decimal />
-                        <span class="label-readonly" ng-if="$parent.$parent.record.discount_type === 'amount' && readonly">{{$parent.$parent.record.discount_amount ? ($parent.$parent.record.discount_amount | currency:currencySymbol) : '&nbsp;'}}</span>
-                        <input type="text"
-                               class="form-control ng-animate-disabled"
-                               ng-class="{'text-right':$parent.$parent.record.discount_amount != undefined && $parent.$parent.record.discount_amount != null}"
-                               style="width: 70%; margin-right: 1%; float: left;"
-                               ng-model="$parent.$parent.record.discount_amount"
-                               ng-change="calculateAll()"
-                               ng-if="$parent.$parent.record.discount_type === 'amount' && !readonly"
-                               tabindex="9000"
-                               places="2"
-                               rounding="2"
-                               currency-symbol="currencySymbol"
-                               number-currency />
-                        <select class="form-control ng-animate-disabled"
+                        <span class="label-readonly"
+                              ng-if="$parent.$parent.record.discount_type === 'percent' && readonly">{{$parent.$parent.record.discount_percent ? ($parent.$parent.record.discount_percent | number:2) + ' %' : '&nbsp;'}}</span>
+                        <input
+                                type="text"
+                                class="form-control ng-animate-disabled"
+                                ng-class="{'text-right':$parent.$parent.record.discount_percent != undefined && $parent.$parent.record.discount_percent != null}"
+                                style="width: 70%; margin-right: 1%; float: left;"
+                                ng-model="$parent.$parent.record.discount_percent"
+                                ng-change="calculateAll()"
+                                ng-if="$parent.$parent.record.discount_type === 'percent' && !readonly"
+                                tabindex="9000"
+                                places="2"
+                                rounding="2"
+                                number-decimal />
+                        <span class="label-readonly"
+                              ng-if="$parent.$parent.record.discount_type === 'amount' && readonly">{{$parent.$parent.record.discount_amount ? ($parent.$parent.record.discount_amount | currency:currencySymbol) : '&nbsp;'}}</span>
+                        <input
+                                type="text"
+                                class="form-control ng-animate-disabled"
+                                ng-class="{'text-right':$parent.$parent.record.discount_amount != undefined && $parent.$parent.record.discount_amount != null}"
+                                style="width: 70%; margin-right: 1%; float: left;"
+                                ng-model="$parent.$parent.record.discount_amount"
+                                ng-change="calculateAll()"
+                                ng-if="$parent.$parent.record.discount_type === 'amount' && !readonly"
+                                tabindex="9000"
+                                places="2"
+                                rounding="2"
+                                currency-symbol="currencySymbol"
+                                number-currency />
+                        <select
+                                class="form-control ng-animate-disabled"
                                 style="width: 29%"
                                 ng-model="$parent.$parent.record.discount_type"
                                 ng-change="calculateAll()"
@@ -177,18 +405,25 @@
                             <option value="amount">{{currencySymbol}}</option>
                         </select>
                     </div>
-                    <span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}" ng-show="$parent.$parent.record.discounted_total">{{$parent.$parent.record.discounted_total ? ($parent.$parent.record.discounted_total | currency:currencySymbol) : '&nbsp;'}}</span>
-                    <span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}" ng-repeat="vat in vatList | orderBy:'percent'">
+                    <span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}"
+                          ng-show="$parent.$parent.record.discounted_total">{{$parent.$parent.record.discounted_total ? ($parent.$parent.record.discounted_total | currency:currencySymbol) : '&nbsp;'}}</span>
+                    <span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}"
+                          ng-repeat="vat in $parent.$parent.vatList | orderBy:'percent'">
                         {{vat.total | currency:currencySymbol}}
                     </span>
-                    <!--<span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}" ng-show="vatList.length > 1">{{$parent.$parent.record.vat_total | currency:currencySymbol}}</span>-->
+                    <!--<span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}" ng-show="$parent.$parent.vatList.length > 1">{{$parent.$parent.record.vat_total | currency:currencySymbol}}</span>-->
                     <span class="ng-animate-disabled" ng-class="{'form-control':!readonly, 'label-readonly':readonly}">{{$parent.$parent.record.grand_total | currency:currencySymbol}}</span>
                 </div>
             </div>
             <div class="add-product" ng-show="!$parent.$parent.purchaseProducts.length && !readonly">
                 <a href class="add-button" ng-mouseup="addPurchaseProduct()">{{'Product.AddLine' | translate}}</a>
-                <span>&nbsp;</span>
+                <span ng-show="!$parent.$parent.purchaseProducts.length && !readonly">&nbsp;| </span>
+
+                <a href class="add-button" ng-show="!$parent.$parent.purchaseProducts.length && !readonly"
+                   ng-mouseup="addPurchaseProduct(true)" ng-if="!readonly">{{'Product.AddSeparator'
+                    | translate}}</a>
             </div>
         </div>
     </div>
 </div>
+

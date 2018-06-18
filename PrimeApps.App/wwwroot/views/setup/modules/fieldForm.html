@@ -96,14 +96,15 @@
                     <div class="advanced-options" ng-show="$parent.$parent.showAdvancedOptions && !currentField.systemReadonly">
 
                         <!--Default value options-->
-                        <div class="form-group"
-                             ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'">
+                        <div class="form-group" ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'" ng-class="{'has-error': fieldForm.$submitted && fieldForm.userLookup.$invalid}">
                             <label class="control-label col-sm-4">{{'Setup.Modules.DefaultValue' | translate}}:</label>
 
+                            <div class="col-sm-8" style="padding: 0;">
                             <input type="text"
                                    class="form-control ng-animate-disabled"
                                    ng-model="currentField.default_value"
-                                   ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'url'" />
+                                   ng-change="changeDefaultValue()"
+                                       ng-disabled="currentField.placeholder"ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'url'" />
 
                             <textarea
                                     class="form-control ng-animate-disabled"
@@ -139,20 +140,22 @@
                                    ng-model="currentField.default_value"
                                    ng-if="currentField.dataType.name === 'email'" />
 
-                            <input type="text"
-                                   class="form-control ng-animate-disabled"
-                                   ng-model="currentField.default_value"
-                                   data-autoclose="1"
-                                   data-date-type="iso"
-                                   data-icon-left="fa fa-chevron-left"
-                                   data-icon-right="fa fa-chevron-right"
-                                   bs-datepicker
-                                   ng-if="currentField.dataType.name === 'date'">
+                                <input type="text"
+                                       class="form-control ng-animate-disabled"
+                                       ng-model="currentField.default_value"
+                                       ng-disabled="currentField.default_value_now"
+                                       data-autoclose="1"
+                                       data-date-type="iso"
+                                       data-icon-left="fa fa-chevron-left"
+                                       data-icon-right="fa fa-chevron-right"
+                                       bs-datepicker
+                                       ng-if="currentField.dataType.name === 'date'">
 
                             <div class="clearfix datetime-container" ng-if="currentField.dataType.name === 'date_time'">
                                 <input type="text"
                                        class="form-control ng-animate-disabled pull-left datetime-date"
                                        ng-model="currentField.default_value"
+                                       ng-disabled="currentField.default_value_now"
                                        placeholder="{{'Common.Date' | translate}}"
                                        data-autoclose="1"
                                        data-date-type="iso"
@@ -161,8 +164,9 @@
                                        bs-datepicker>
                                 <input type="text"
                                        class="form-control datetime-time"
-                                       style="margin-left: 190px ; margin-top: 10px"
+                                       style="margin-left: 1px; margin-top: 10px"
                                        ng-model="currentField.default_value"
+                                       ng-disabled="currentField.default_value_now"
                                        placeholder="{{'Common.Time' | translate}}"
                                        data-autoclose="1"
                                        data-time-type="iso"
@@ -172,75 +176,111 @@
                                        data-minute-step="10"
                                        data-arrow-behavior="picker"
                                        bs-timepicker>
+                                <label>
+                                    <input type="checkbox"
+                                           class="ng-animate-disabled"
+                                           ng-change="defaultValueNowChanged()"
+                                           ng-model="currentField.default_value_now"
+                                    >{{'View.Now' | translate}}
+                                </label>
                             </div>
 
-                            <input type="text"
-                                   class="form-control"
-                                   ng-model="currentField.default_value"
-                                   data-autoclose="1"
-                                   data-time-type="iso"
-                                   data-icon-up="fa fa-chevron-up"
-                                   data-icon-down="fa fa-chevron-down"
-                                   data-length="1"
-                                   data-minute-step="10"
-                                   data-arrow-behavior="picker"
-                                   placeholder="{{'Common.Time' | translate}}"
-                                   bs-timepicker
-                                   ng-if="currentField.dataType.name === 'time'">
+                                <input type="text"
+                                       class="form-control"
+                                       ng-model="currentField.default_value"
+                                       ng-disabled="currentField.default_value_now"
+                                       data-autoclose="1"
+                                       data-time-type="iso"
+                                       data-icon-up="fa fa-chevron-up"
+                                       data-icon-down="fa fa-chevron-down"
+                                       data-length="1"
+                                       data-minute-step="10"
+                                       data-arrow-behavior="picker"
+                                       placeholder="{{'Common.Time' | translate}}"
+                                       bs-timepicker
+                                       ng-if="currentField.dataType.name === 'time'">
 
-                            <select class="form-control ng-animate-disabled"
-                                    ng-model="currentField.default_value"
-                                    ng-options="o.id as o['label_' + language] for o in defaulPicklistValues | filter:{inactive:'!true',hidden:'!true'} track by o.id"
-                                    ng-if="currentField.dataType.name === 'picklist'">
-                                <option value="">{{'Common.Select' | translate}}</option>
-                            </select>
+                            <label ng-if="currentField.dataType.name === 'date' || currentField.dataType.name === 'time'">
+                                <input type="checkbox"
+                                       class="ng-animate-disabled"
+                                       ng-change="defaultValueNowChanged()"
+                                       ng-model="currentField.default_value_now"
+                                >{{'View.Now' | translate}}
+                            </label>
+
+                                <select class="form-control ng-animate-disabled"
+                                        ng-model="currentField.default_value"
+                                        ng-options="o.id as o['label_' + language] for o in defaulPicklistValues | filter:{inactive:'!true',hidden:'!true'} track by o.id"
+                                        ng-if="currentField.dataType.name === 'picklist'">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
 
                             <input type="checkbox"
                                    class="ng-animate-disabled"
                                    ng-model="currentField.default_value"
                                    ng-if="currentField.dataType.name === 'checkbox'">
 
-                            <tags-input
-                                    ng-model="currentField.defaultValueMultiselect"
-                                    display-property="labelStr"
-                                    key-property="id"
-                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                    replace-spaces-with-dashes="false"
-                                    add-from-autocomplete-only="true"
-                                    min-length="1"
-                                    ng-if="currentField.dataType.name === 'multiselect'">
-                                <auto-complete source="multiselect($query, currentField)"
+                                <tags-input
+                                        ng-model="currentField.defaultValueMultiselect"
+                                        display-property="labelStr"
+                                        key-property="id"
+                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                        replace-spaces-with-dashes="false"
+                                        add-from-autocomplete-only="true"
+                                        min-length="1"
+                                        ng-if="currentField.dataType.name === 'multiselect'">
+                                    <auto-complete source="multiselect($query, currentField)"
+                                                   min-length="0"
+                                                   load-on-focus="true"
+                                                   load-on-empty="true"
+                                                   max-results-to-show="9999"></auto-complete>
+                                </tags-input>
+
+                                <div class="inner-addon right-addon hide" ng-if="currentField.dataType.name === 'location'">
+                                    <i class="glyphicon glyphicon-map-marker" style="height: 27px;"
+                                       ng-click="openLocationModal(field.name)"></i>
+                                    <input name="{{field.name}}" ng-model="currentField.default_value" type="text"
+                                           class="form-control" />
+                                </div>
+
+                            <tags-input name="userLookup"
+                                        class="ng-animate-disabled"
+                                        ng-model="currentField.default_value"
+                                        display-property="full_name"
+                                        key-property="id"
+                                        max-tags="1"
+                                        placeholder="{{'Common.Search' | translate}}"
+                                        replace-spaces-with-dashes="false"
+                                        add-from-autocomplete-only="true"
+                                        ng-if="currentField.dataType.name === 'lookup' && currentField.lookupType.value === 'users'">
+                                <auto-complete source="lookupUser($query, 'logged_in_user')"
                                                min-length="0"
                                                load-on-focus="true"
                                                load-on-empty="true"
                                                max-results-to-show="9999"></auto-complete>
                             </tags-input>
 
-                            <div class="inner-addon right-addon hide" ng-if="currentField.dataType.name === 'location'">
-                                <i class="glyphicon glyphicon-map-marker" style="height: 27px;"
-                                   ng-click="openLocationModal(field.name)"></i>
-                                <input name="{{field.name}}" ng-model="currentField.default_value" type="text"
-                                       class="form-control" />
+                                <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
+                                <angucomplete-alt input-name="lookupDefaultValue"
+                                                  id="lookupDefaultValue"
+                                                  input-class="form-control ng-animate-disabled"
+                                                  selected-object="currentField.default_value"
+                                                  initial-value="currentField.temporary_default_value"
+                                                  match-class="highlight-angucomplete"
+                                                  pause="200"
+                                                  remote-api-handler="lookup"
+                                                  search-fields="name"
+                                                  title-field="primary_value"
+                                                  minlength="2"
+                                                  template-url="views/common/angucomplete.html"
+                                                  focus-in="setCurrentLookupField(currentField)"
+                                                  text-searching="{{'Common.Searching' | translate}}"
+                                                  text-no-results="{{'Common.NoResults' | translate}}"
+                                                  use-original-object="true"
+                                                  value-changed="fieldValueChange(currentField);"
+                                                  ng-if="currentField.dataType.name === 'lookup' && currentField.lookupType.value != 'users'" />
+                                <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
                             </div>
-
-                            <angucomplete-alt
-                                    class="col-sm-6"
-                                    input-class="form-control ng-animate-disabled"
-                                    selected-object="currentField.default_value"
-                                    initial-value="currentField.temporary_default_value"
-                                    match-class="highlight-angucomplete"
-                                    pause="200"
-                                    remote-api-handler="lookup"
-                                    search-fields="name"
-                                    title-field="primary_value"
-                                    minlength="2"
-                                    template-url="views/common/angucomplete.html"
-                                    focus-in="setCurrentLookupField(currentField)"
-                                    text-searching="{{'Common.Searching' | translate}}"
-                                    text-no-results="{{'Common.NoResults' | translate}}"
-                                    use-original-object="true"
-                                    value-changed="fieldValueChange(currentField);"
-                                    ng-if="currentField.dataType.name === 'lookup'" />
                         </div>
                         <!--End of Default value options-->
 
@@ -378,16 +418,17 @@
                                    class="form-control ng-animate-disabled col-sm-8"
                                    ng-model="currentField.mask">
                         </div>
-                        <div class="form-group" ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'text_multi' || currentField.dataType.name === 'email' || currentField.dataType.name === 'url' || currentField.dataType.name === 'number' || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'" ng-show="!currentField.validation.readonly">
+                        <div class="form-group" ng-if="currentField.dataType.name === 'text_single'" ng-show="!currentField.validation.readonly">
                             <label class="col-sm-4"><label ng-if="!currentField.show_label && !currentField.editable" style="color:#b30000">* {{'Setup.Modules.Placeholder' | translate}}:</label><label ng-show="currentField.show_label || currentField.editable">{{'Setup.Modules.Placeholder' | translate}}:</label></label>
-                            <input type="text"
-                                   name="placeholder"
-                                   maxlength="400"
-                                   ng-required="!currentField.show_label && !currentField.editable"
-                                   class="form-control ng-animate-disabled col-sm-8"
-                                   ng-model="currentField.placeholder">
+                            <textarea
+                                    class="form-control ng-animate-disabled"
+                                    ng-model="currentField.placeholder"
+                                    ng-disabled="currentField.default_value || currentField.show_label"
+                                    maxlength="500"
+                                    ng-required="!currentField.show_label && !currentField.editable"
+                                    auto-grow></textarea>
                         </div>
-                        <div class="form-group" ng-show="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'">
+                        <div class="form-group" ng-show="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect' ||  currentField.dataType.name === 'tag' ">
                             <label class="col-sm-4">{{'Setup.Modules.PicklistSortOrder' | translate}}: </label>
                             <select name="picklistSortOrder"
                                     class="form-control ng-animate-disabled col-sm-8"
@@ -437,14 +478,14 @@
                             <label class="col-sm-4">{{'Setup.Modules.InlineEdit' | translate}}: </label>
                             <input type="checkbox" ng-model="currentField.inline_edit" ng-disabled="!currentField.editable">
                         </div>
-                        <div class="form-group"
-                             ng-show="currentField.dataType.name == 'text_single' || currentField.dataType.name == 'text_multi' || currentField.dataType.name == 'number' || currentField.dataType.name == 'number_decimal' || currentField.dataType.name == 'currency' || currentField.dataType.name == 'email' || currentField.dataType.name == 'date' || currentField.dataType.name == 'date_time' || currentField.dataType.name == 'time' || currentField.dataType.name == 'picklist' || currentField.dataType.name == 'checkbox' || currentField.dataType.name == 'url' || currentField.dataType.name == 'lookup'">
-                            <label class="col-sm-4">{{'Setup.Modules.Editable' | translate}}: </label>
-                            <input type="checkbox" name="editable" ng-model="currentField.editable" ng-change="currentField.inline_edit = currentField.editable">
-                        </div>
+                        <!--<div class="form-group"-->
+                        <!--ng-show="currentField.dataType.name == 'text_single' || currentField.dataType.name == 'text_multi' || currentField.dataType.name == 'number' || currentField.dataType.name == 'number_decimal' || currentField.dataType.name == 'currency' || currentField.dataType.name == 'email' || currentField.dataType.name == 'date' || currentField.dataType.name == 'date_time' || currentField.dataType.name == 'time' || currentField.dataType.name == 'picklist' || currentField.dataType.name == 'checkbox' || currentField.dataType.name == 'url' || currentField.dataType.name == 'lookup'">-->
+                        <!--<label class="col-sm-4">{{'Setup.Modules.Editable' | translate}}: </label>-->
+                        <!--<input type="checkbox" name="editable" ng-model="currentField.editable" ng-change="currentField.inline_edit = currentField.editable;changeEditable()">-->
+                        <!--</div>-->
                         <div class="form-group">
-                            <label class="col-sm-4">{{'Setup.Modules.ShowLabel' | translate}}: </label>
-                            <input type="checkbox" name="show_label" ng-model="currentField.show_label">
+                            <label class="col-sm-4" ng-if="currentField.dataType.name == 'text_single'">{{'Setup.Modules.ShowLabel' | translate}}: </label>
+                            <input type="checkbox" name="show_label" ng-disabled="currentField.default_value" ng-if="currentField.dataType.name == 'text_single'" ng-change="changeShowLabel()" ng-model="currentField.show_label">
                         </div>
 
                         <div class="form-group" ng-show="currentField.dataType.name === 'document' && documentSearch == true">
@@ -514,13 +555,13 @@
                             </select>
                         </div>
                         <div class="form-group"
-                             ng-show="currentField.dataType.name != 'lookup' && currentField.dataType.name != 'multiselect' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && !currentField.isNew">
+                             ng-show="currentField.dataType.name != 'lookup' && currentField.dataType.name != 'multiselect' && currentField.dataType.name != 'tag'  && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && !currentField.isNew">
                             <label class="col-sm-4">{{'Setup.Modules.PrimaryField' | translate}}: </label>
                             <input type="checkbox" ng-model="currentField.primary" disabled ng-if="currentField.primary && currentField.primary === true">
                             <a href ng-click="makePrimary(currentField)" ng-if="!currentField.primary"><i class="fa fa-check"></i> {{'Setup.Modules.MakePrimary' | translate}}</a>
                         </div>
                         <div class="form-group"
-                             ng-show="currentField.dataType.name != 'lookup' && currentField.dataType.name != 'multiselect' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && !currentField.isNew">
+                             ng-show="currentField.dataType.name != 'lookup' && currentField.dataType.name != 'multiselect' &&  currentField.dataType.name != 'tag' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && !currentField.isNew">
                             <label class="col-sm-4">{{'Setup.Modules.PrimaryFieldLookup' | translate}}: </label>
                             <input type="checkbox" ng-model="currentField.primary_lookup" disabled ng-if="currentField.primary_lookup && currentField.primary_lookup === true">
                             <a href ng-click="makePrimaryLookup(currentField)" ng-if="!currentField.primary_lookup"><i class="fa fa-check"></i> {{'Setup.Modules.MakePrimaryLookup' | translate}}</a>
@@ -560,6 +601,7 @@
                                 <p ng-if="fieldForm.$error.max && currentField.dataType.name === 'text_multi' && currentField.multiline_type != 'large'">{{'Setup.Modules.MaxError2000' | translate}}</p>
                                 <p ng-if="fieldForm.$error.max && currentField.dataType.name === 'text_multi' && currentField.multiline_type === 'large'">{{'Setup.Modules.MaxError32000' | translate}}</p>
                                 <p ng-if="fieldForm.$error.max && (currentField.dataType.name === 'number' || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency')">{{'Setup.Modules.MaxError27' | translate}}</p>
+                                <p ng-if="fieldForm.$error.maxTags && currentField.temporary_default_value && currentField.temporary_default_value.length > 1">{{'Setup.Modules.MaxTagUser' | translate}}</p>
                             </div>
                         </div>
                     </div>
@@ -573,7 +615,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-custom" ng-click="cancelField(); $parent.showAdvancedOptions = false;">{{'Common.Cancel' | translate}}</button>
-                    <button type="submit" class="btn btn-w-md btn-primary"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                    <button type="submit" class="btn btn-w-md btn-primary" ng-click="MinMaxValue()"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
                 </div>
             </form>
             <form name="picklistForm" class="form-horizontal form-custom picklist-form"

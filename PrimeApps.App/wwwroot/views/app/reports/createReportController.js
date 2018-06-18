@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('CreateReportController', ['$rootScope', '$scope', '$location', '$filter', '$timeout', '$state', 'ngToast', 'helper', 'ModuleService', 'dragularService', 'ReportsService', 'operators',
         function ($rootScope, $scope, $location, $filter, $timeout, $state, ngToast, helper, ModuleService, dragularService, ReportsService, operators) {
@@ -220,7 +220,14 @@ angular.module('ofisim')
                 $scope.loadingFilter = true;
                 $scope.numberField = [];
                 $scope.reportModel.aggregations = [];
-                $scope.module = $filter('filter')($rootScope.modules, { id: $scope.reportModel.module_id }, true)[0];
+                $scope.module = angular.copy($filter('filter')($rootScope.modules, { id: $scope.reportModel.module_id }, true)[0]);
+
+                angular.forEach($scope.module.fields, function (item) {
+                    if (item.data_type === 'lookup') {
+                        item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
+                    }
+                });
+
 
                 $scope.fields = {
                     "availableFields": angular.copy($scope.module.fields),
@@ -288,7 +295,7 @@ angular.module('ofisim')
                                                 if (value != '-') {
                                                     var userItem =
                                                         $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
-                                                        ];
+                                                            ];
                                                     user.id = userItem.Id;
                                                     user.email = userItem.Email;
                                                     user.full_name = userItem.FullName;
@@ -325,7 +332,7 @@ angular.module('ofisim')
                                     case 'checkbox':
                                         fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
                                         break;
-                                    default:
+                                    default :
                                         fieldValue = value;
                                         break;
                                 }
@@ -533,8 +540,11 @@ angular.module('ofisim')
                 //console.log($scope.reportModel);
             };
 
+           
+
             $scope.removeSelectAggregation = function (field) {
-                var index = $scope.reportModel.aggregations.indexOf(item);
+                field.Aggregation = null;
+                var index = $scope.reportModel.aggregations.indexOf(field);
                 $scope.reportModel.aggregations.splice(index, 1);
             };
 
@@ -704,13 +714,13 @@ angular.module('ofisim')
                     report.id = $scope.ReportId;
                     ReportsService.updateReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/crm/reports?id=" + result.data.id;
+                        window.location = "#/app/reports?id=" + result.data.id;
                     });
                 }
                 else {
                     ReportsService.createReport(report).then(function (result) {
                         $scope.saving = false;
-                        window.location = "#/app/crm/reports?id=" + result.data.id;
+                        window.location = "#/app/reports?id=" + result.data.id;
 
                     });
                 }
@@ -753,15 +763,15 @@ angular.module('ofisim')
 
             $scope.setValideStep3 = function () {
                 switch ($scope.reportModel.report_type) {
-                    case "tabular":
+                    case  "tabular":
                         break;
-                    case "summary":
+                    case "summary" :
                         $scope.setValide("group_field");
                         $scope.setValide("chartTypes");
                         $scope.setValide("yaxis_name");
                         $scope.setValide("xaxis_name");
                         break;
-                    case "single":
+                    case "single" :
                         break;
 
                 }

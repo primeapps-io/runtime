@@ -2759,7 +2759,7 @@
                             vm.monthOffsets = monthView.rowOffsets;
 
                             //this is for the timesheet module to order data by its type(morning,afternoon,fullday etc...)
-                            if ($scope.$root.currentPath == '/app/crm/timesheet') {
+                            if ($scope.$root.currentPath == '/app/timesheet') {
                                 angular.forEach(vm.view, function (item) {
                                     var itemEvents = angular.copy(item.events);
                                     angular.forEach(itemEvents, function (event) {
