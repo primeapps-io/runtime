@@ -30,7 +30,7 @@ angular.module('primeapps')
                         return;
 
                     task.assignedTo = assignedTo;
-                    task.isCompleted = task.task_status === taskStatusCompletedPicklistItem.label[$rootScope.user.tenantLanguage];
+                    task.isCompleted = task.task_status === taskStatusCompletedPicklistItem.label[$rootScope.user.tenant_language];
 
                     if (task.task_due_date)
                         task.dueDate = moment.utc(task.task_due_date).toDate();

@@ -1,6 +1,8 @@
 ﻿using Hangfire;
+using Hangfire.Common;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
+using Newtonsoft.Json;
 using PrimeApps.App.ActionFilters;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,7 @@ namespace PrimeApps.App
 				Queues = ConfigurationManager.AppSettings["HangfireQueues"].Split(',')
 			});
 			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
+			JobHelper.SetSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
 			ConfigureRecurringJobs();
 			ConfigureScheduledJobs();

@@ -86,7 +86,7 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("get_mappings/{moduleId:int}"), HttpGet]
-        public async Task<IActionResult> GetModuleMappings([FromQuery(Name = "moduleId")]int moduleId)
+        public async Task<IActionResult> GetModuleMappings(int moduleId)
         {
             var results = await _conversionMappingRepository.GetAll(moduleId);
             return Ok(results);

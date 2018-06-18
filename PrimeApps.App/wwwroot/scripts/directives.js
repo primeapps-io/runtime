@@ -505,7 +505,7 @@ angular.module('primeapps')
                                 filters.push({
                                     field: 'related_module',
                                     operator: 'is',
-                                    value: parentModule['label_' + $rootScope.user.tenantLanguage + '_singular'],
+                                    value: parentModule['label_' + $rootScope.user.tenant_language + '_singular'],
                                     no: 1
                                 });
                             }

@@ -133,7 +133,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_dashlet/{id:int}"), HttpDelete]
-        public async Task<IActionResult> DeleteDashlet([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> DeleteDashlet(int id)
         {
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 
@@ -164,7 +164,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_dashlet/{id:int}"), HttpPut]
-        public async Task<IActionResult> UpdateDashlet([FromQuery(Name = "id")]int id, [FromBody]DashletBindingModel dashlet)
+        public async Task<IActionResult> UpdateDashlet(int id, [FromBody]DashletBindingModel dashlet)
         {
             var dashletEntity = await _dashletRepository.GetDashletById(id);
 

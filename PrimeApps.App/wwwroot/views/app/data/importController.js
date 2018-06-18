@@ -358,13 +358,13 @@ angular.module('primeapps')
                             fixedValue[key] = parseFloat(fixedValue[key]);
                             break;
                         case 'picklist':
-                            fixedValue[key] = fixedValue[key].label[$rootScope.user.tenantLanguage];
+                            fixedValue[key] = fixedValue[key].label[$rootScope.user.tenant_language];
                             break;
                         case 'multiselect':
                             var values = '{';
 
                             angular.forEach(fixedValue[key], function (picklistItem) {
-                                values += '"' + picklistItem['label_' + $rootScope.user.tenantLanguage] + '",';
+                                values += '"' + picklistItem['label_' + $rootScope.user.tenant_language] + '",';
                             });
 
                             fixedValue[key] = values.slice(0, -1) + '}';

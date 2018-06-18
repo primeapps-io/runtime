@@ -393,7 +393,7 @@ angular.module('primeapps')
 
                                         angular.forEach(picklistIds, function (picklistId) {
                                             var picklistRecord = $filter('filter')($scope.defaulPicklistValues, { id: parseInt(picklistId) }, true)[0];
-                                            picklistRecord.labelStr = picklistRecord['label_' + $rootScope.user.tenantLanguage];
+                                            picklistRecord.labelStr = picklistRecord['label_' + $rootScope.user.tenant_language];
                                             values.push(picklistRecord);
                                         });
 

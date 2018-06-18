@@ -16,8 +16,6 @@
       }
     },
     "PrimeApps.App": {
-      "executablePath": "C:\\Program Files\\dotnet\\dotnet.exe",
-      "commandLineArgs": "watch run --server.urls http://*:8080",
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -31,7 +29,5 @@
       },
       "applicationUrl": "https://localhost:5002"
     }
-
-
   }
 }

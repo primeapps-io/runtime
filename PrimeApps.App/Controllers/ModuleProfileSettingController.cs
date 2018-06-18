@@ -58,7 +58,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
+        public async Task<IActionResult> Update(int id, [FromBody]ModuleProfileSettingBindingModels moduleProfileSetting)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -75,7 +75,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var moduleProfileSettingEntity = await _moduleProfileSettingRepository.GetByIdBasic(id);
 

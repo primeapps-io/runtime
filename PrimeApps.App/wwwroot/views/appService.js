@@ -825,7 +825,7 @@ angular.module('primeapps')
 
                             if (activityTypeCurrent) {
                                 activityTypeCurrent.hidden = false;
-                                activityTypeCurrent.label[$rootScope.user.tenantLanguage] = activityTypeLabel;
+                                activityTypeCurrent.label[$rootScope.user.tenant_language] = activityTypeLabel;
                             }
                         }
                     }

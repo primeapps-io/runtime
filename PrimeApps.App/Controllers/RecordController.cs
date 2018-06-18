@@ -50,7 +50,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get([FromQuery(Name = "module")]string module, [FromQuery(Name = "id")]int id, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")] bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
+        public async Task<IActionResult> Get(string module, int id, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")] bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             JObject record;
             var moduleEntity = await _moduleRepository.GetByNameBasic(module);
@@ -242,7 +242,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> Create([FromQuery(Name = "module")]string module, [FromBody]JObject record, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
+        public async Task<IActionResult> Create(string module, [FromBody]JObject record, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -348,7 +348,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "module")]string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
+        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -427,7 +427,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "module")]string module, [FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(string module, [FromQuery(Name = "id")]int id)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
             var record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);
@@ -451,7 +451,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> CreateBulk([FromQuery(Name = "module")]string module, [FromBody]JArray records)
+        public async Task<IActionResult> CreateBulk(string module, [FromBody]JArray records)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -510,7 +510,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]
-        public async Task<IActionResult> DeleteBulk([FromQuery(Name = "module")]string module, [FromBody]int[] ids)
+        public async Task<IActionResult> DeleteBulk(string module, [FromBody]int[] ids)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
 
@@ -538,7 +538,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("update_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IActionResult> UpdateBulk([FromQuery(Name = "module")]string module, [FromBody]JObject request)
+        public async Task<IActionResult> UpdateBulk(string module, [FromBody]JObject request)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
             var ids = (JArray)request["ids"];
@@ -601,7 +601,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("add_relations/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{relatedModule:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> AddRelations([FromQuery(Name = "module")]string module, [FromQuery(Name = "relatedModule")]string relatedModule, [FromBody]JArray records)
+        public async Task<IActionResult> AddRelations(string module, string relatedModule, [FromBody]JArray records)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -651,7 +651,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete_relation/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{relatedModule:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpDelete]
-        public async Task<IActionResult> DeleteRelation([FromQuery(Name = "module")]string module, [FromQuery(Name = "relatedModule")]string relatedModule, [FromBody]JObject record)
+        public async Task<IActionResult> DeleteRelation(string module, string relatedModule, [FromBody]JObject record)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -706,7 +706,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all_by_id/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> GetAllById([FromQuery(Name = "module")]string module, [FromBody]int[] recordIds, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
+        public async Task<IActionResult> GetAllById(string module, [FromBody]int[] recordIds, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

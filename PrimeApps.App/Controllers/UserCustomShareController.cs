@@ -40,7 +40,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_userid/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetByUserId([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> GetByUserId(int id)
         {
             var userOwnerEntity = await _userOwnerRepository.GetByUserId(id);
 
@@ -51,7 +51,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetById([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var userOwnerEntity = await _userOwnerRepository.GetById(id);
 
@@ -80,7 +80,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]UserCustomShareBindingModels userOwner)
+        public async Task<IActionResult> Update(int id, [FromBody]UserCustomShareBindingModels userOwner)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -97,7 +97,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var userOwnerEntity = await _userOwnerRepository.GetByIdBasic(id);
 

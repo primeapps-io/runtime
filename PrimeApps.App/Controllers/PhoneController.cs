@@ -79,7 +79,7 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
         [Route("delete_sip_account/{userId:int}"), HttpDelete]
-        public async Task<IActionResult> DeleteSipAccount([FromQuery(Name = "userId")]int userId)
+        public async Task<IActionResult> DeleteSipAccount(int userId)
         {
             await _settingRepository.DeleteAsync(Model.Enums.SettingType.Phone, userId);
             return Ok();

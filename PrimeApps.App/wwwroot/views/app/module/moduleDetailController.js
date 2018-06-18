@@ -149,7 +149,7 @@ angular.module('primeapps')
                                 {
                                     field: 'related_module',
                                     operator: 'is',
-                                    value: $scope.module["label_" + $rootScope.user.tenantLanguage + "_singular"],
+                                    value: $scope.module["label_" + $rootScope.user.tenant_language + "_singular"],
                                     no: 1
                                 }],
                             limit: 1,

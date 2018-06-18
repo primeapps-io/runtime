@@ -720,7 +720,7 @@ angular.module('primeapps')
                                     modulePicklistItem.label = {};
                                     modulePicklistItem.label.en = moduleItem.label_en_singular;
                                     modulePicklistItem.label.tr = moduleItem.label_tr_singular;
-                                    modulePicklistItem.labelStr = moduleItem['label_' + $rootScope.user.tenantLanguage + '_singular'];
+                                    modulePicklistItem.labelStr = moduleItem['label_' + $rootScope.user.tenant_language + '_singular'];
                                     modulePicklistItem.value = moduleItem.name;
 
                                     modulePicklist.push(modulePicklistItem);
@@ -3051,14 +3051,14 @@ angular.module('primeapps')
                                                                                 }
 
                                                                                 if (field.data_type === 'picklist')
-                                                                                    search.value = search.value.label[$rootScope.user.tenantLanguage];
+                                                                                    search.value = search.value.label[$rootScope.user.tenant_language];
 
                                                                                 if (field.data_type === 'multiselect') {
                                                                                     var valueArray = [];
 
                                                                                     for (var m = 0; m < search.value.length; m++) {
                                                                                         var val = search.value[m];
-                                                                                        valueArray.push(val.label[$rootScope.user.tenantLanguage]);
+                                                                                        valueArray.push(val.label[$rootScope.user.tenant_language]);
                                                                                     }
 
                                                                                     search.value = valueArray;

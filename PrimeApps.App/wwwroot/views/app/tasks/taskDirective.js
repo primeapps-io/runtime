@@ -59,7 +59,7 @@ angular.module('primeapps')
                                     findRequest.filters = [{
                                         field: 'activity_type',
                                         operator: 'is',
-                                        value: taskActivityType.label[$rootScope.user.tenantLanguage],
+                                        value: taskActivityType.label[$rootScope.user.tenant_language],
                                         no: 1
                                     }];
                                     findRequest.sort_field = 'task_due_date';
@@ -75,7 +75,7 @@ angular.module('primeapps')
                                     findRequest.filters.push({
                                         field: 'task_status',
                                         operator: operator,
-                                        value: $scope.taskStatusCompletedPicklistItem.label[$rootScope.user.tenantLanguage],
+                                        value: $scope.taskStatusCompletedPicklistItem.label[$rootScope.user.tenant_language],
                                         no: 2
                                     });
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -12,7 +13,7 @@ namespace PrimeApps.App.Helpers
     {
         private static readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
-        public static async void CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
+        public static async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
         {
             var auditLog = new AuditLog
             {

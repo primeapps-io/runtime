@@ -33,7 +33,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetActionButtons([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> GetActionButtons(int id)
         {
             var buttons = await _actionButtonRepository.GetByModuleId(id);
 
@@ -63,7 +63,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]ActionButtonBindingModel actionbutton)
+        public async Task<IActionResult> Update(int id, [FromBody]ActionButtonBindingModel actionbutton)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var actionButtonEntity = await _actionButtonRepository.GetByIdBasic(id);
 

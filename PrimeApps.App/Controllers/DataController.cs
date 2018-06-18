@@ -55,7 +55,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> Import([FromQuery(Name = "module")]string module, [FromBody]JArray records)
+        public async Task<IActionResult> Import(string module, [FromBody]JArray records)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
 
@@ -141,7 +141,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import_revert/{importId:int}"), HttpDelete]
-        public async Task<IActionResult> RevertImport([FromQuery(Name = "importId")]int importId)
+        public async Task<IActionResult> RevertImport(int importId)
         {
             var import = await _importRepository.GetById(importId);
 

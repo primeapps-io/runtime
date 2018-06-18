@@ -61,7 +61,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Get(int id)
         {
             var noteEntity = await _noteRepository.GetById(id);
 
@@ -221,7 +221,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]NoteBindingModel note)
+        public async Task<IActionResult> Update(int id, [FromBody]NoteBindingModel note)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -238,7 +238,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var noteEntity = await _noteRepository.GetByIdBasic(id);
 

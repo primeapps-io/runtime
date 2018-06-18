@@ -93,7 +93,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]ViewBindingModel view)
+        public async Task<IActionResult> Update(int id, [FromBody]ViewBindingModel view)
         {
             var viewEntity = await _viewRepository.GetById(id);
 
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
 

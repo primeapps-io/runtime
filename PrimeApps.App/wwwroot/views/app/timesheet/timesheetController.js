@@ -122,16 +122,16 @@ angular.module('primeapps')
                             var approvalTypeBusinessPicklistItem = $filter('filter')(picklistsApprover[approvalTypeField.picklist_id], { system_code: 'business' }, true)[0];
 
                             if ($scope.chargeType === 'billable')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBillablePicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBillablePicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                             else if ($scope.chargeType === 'nonbillable')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeNonBillablePicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeNonBillablePicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                             else if ($scope.chargeType === 'business')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBusinessPicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBusinessPicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                         }
                         else {
                             var approvalTypeManagementPicklistItem = $filter('filter')(picklistsApprover[approvalTypeField.picklist_id], { system_code: 'management' }, true)[0];
                             requestApprover.filters.push({ field: 'staff', operator: 'equals', value: $scope.currentStaff.id, no: 1 });
-                            requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeManagementPicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                            requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeManagementPicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                         }
 
                         ModuleService.findRecords('approval_workflow', requestApprover)
@@ -1024,16 +1024,16 @@ angular.module('primeapps')
                             var approvalTypeBusinessPicklistItem = $filter('filter')(picklistsApprover[approvalTypeField.picklist_id], { system_code: 'business' }, true)[0];
 
                             if ($scope.chargeType === 'billable')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBillablePicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBillablePicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                             else if ($scope.chargeType === 'nonbillable')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeNonBillablePicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeNonBillablePicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                             else if ($scope.chargeType === 'business')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBusinessPicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBusinessPicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                         }
                         else {
                             var approvalTypeManagementPicklistItem = $filter('filter')(picklistsApprover[approvalTypeField.picklist_id], { system_code: 'management' }, true)[0];
                             requestApprover.filters.push({ field: 'staff', operator: 'equals', value: $scope.currentStaff.id, no: 1 });
-                            requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeManagementPicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                            requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeManagementPicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                         }
 
                         ModuleService.findRecords('approval_workflow', requestApprover)
@@ -1175,16 +1175,16 @@ angular.module('primeapps')
                             var approvalTypeBusinessPicklistItem = $filter('filter')(picklistsApprover[approvalTypeField.picklist_id], { system_code: 'business' }, true)[0];
 
                             if ($scope.chargeType === 'billable')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBillablePicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBillablePicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                             else if ($scope.chargeType === 'nonbillable')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeNonBillablePicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeNonBillablePicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                             else if ($scope.chargeType === 'business')
-                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBusinessPicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                                requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeBusinessPicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                         }
                         else {
                             var approvalTypeManagementPicklistItem = $filter('filter')(picklistsApprover[approvalTypeField.picklist_id], { system_code: 'management' }, true)[0];
                             requestApprover.filters.push({ field: 'staff', operator: 'equals', value: $scope.currentStaff.id, no: 1 });
-                            requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeManagementPicklistItem['label_' + $rootScope.user.tenantLanguage], no: 2 });
+                            requestApprover.filters.push({ field: 'approval_type', operator: 'is', value: approvalTypeManagementPicklistItem['label_' + $rootScope.user.tenant_language], no: 2 });
                         }
 
                         ModuleService.findRecords('approval_workflow', requestApprover)

@@ -36,7 +36,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get/{id:int}"), HttpGet]
-        public async Task<IActionResult> Get([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Get(int id)
         {
             var settingEntity = await _settingRepository.GetById(id);
 
@@ -47,7 +47,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_by_key/{settingType}/{key}"), HttpGet]
-        public async Task<IActionResult> GetByKey([FromQuery(Name = "settingType")]SettingType settingType, [FromQuery(Name = "key")]string key, [FromQuery(Name = "userId")]int? userId = 0)
+        public async Task<IActionResult> GetByKey(SettingType settingType, string key, [FromQuery(Name = "userId")]int? userId = 0)
         {
             if (settingType == SettingType.Email || settingType == SettingType.SMS || settingType == SettingType.Phone)
                 userId = AppUser.Id;
@@ -61,7 +61,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("get_all/{settingType}"), HttpGet]
-        public async Task<ICollection<Setting>> GetAll([FromQuery(Name = "settingType")]SettingType settingType, [FromQuery(Name = "userId")]int? userId = 0)
+        public async Task<ICollection<Setting>> GetAll(SettingType settingType, [FromQuery(Name = "userId")]int? userId = 0)
         {
             if (settingType == SettingType.Email || settingType == SettingType.SMS || settingType == SettingType.Phone)
                 userId = AppUser.Id;
@@ -108,7 +108,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{id:int}"), HttpPut]
-        public async Task<IActionResult> Update([FromQuery(Name = "id")]int id, [FromBody]SettingBindingModel setting)
+        public async Task<IActionResult> Update(int id, [FromBody]SettingBindingModel setting)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -137,7 +137,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var settingEntity = await _settingRepository.GetById(id);
 
