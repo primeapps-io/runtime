@@ -324,10 +324,15 @@ angular.module('primeapps')
                                 else if (extension === 'zip') {
                                     var type = '|zip|';
                                 }
+                                else if (extension === 'eml') {
+                                    var type = '|eml|';
+                                } else if (extension === 'msg') {
+                                    var type = '|msg|';
+                                }
                                 else {
                                     var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
                                 }
-                                return '|msword|x-rar-compressed|zip|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.openxmlformats-officedocument.wordprocessingml.template|vnd.openxmlformats-officedocument.spreadsheetml.sheet|vnd.openxmlformats-officedocument.presentationml.presentation|vnd.openxmlformats-officedocument.presentationml.template|vnd.openxmlformats-officedocument.presentationml.slideshow|rtf|pdf|plain|tiff|bmp|jpeg|jpg|png|gif|'.indexOf(type) > -1;
+                                return '|msword|x-rar-compressed|zip|eml|msg|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.openxmlformats-officedocument.wordprocessingml.template|vnd.openxmlformats-officedocument.spreadsheetml.sheet|vnd.openxmlformats-officedocument.presentationml.presentation|vnd.openxmlformats-officedocument.presentationml.template|vnd.openxmlformats-officedocument.presentationml.slideshow|rtf|pdf|plain|tiff|bmp|jpeg|jpg|png|gif|'.indexOf(type) > -1;
                             }
                         });
 

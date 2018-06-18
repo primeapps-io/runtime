@@ -1079,7 +1079,11 @@ namespace PrimeApps.App.Controllers
                     Offset = 0,
                     RecordId = recordId
                 });
-
+                // NOTES kısmı  için html tagları temizlendi.
+                foreach (var item in noteList)
+                {
+                    item.Text = Regex.Replace(item.Text, "<.*?>", string.Empty).Replace("&nbsp;", " ");
+                }
                 notes.AddRange(noteList);
             }
 

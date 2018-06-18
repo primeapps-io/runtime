@@ -1178,6 +1178,7 @@ namespace PrimeApps.Model.Helpers
             var sql = "";
 
             modules.ForEach(x => { sql += $"UPDATE {x.Name}_d SET deleted=TRUE WHERE is_sample=TRUE;\n"; });
+            sql += $"UPDATE notes SET deleted=TRUE WHERE id=2;\n";
 
             return sql;
         }
