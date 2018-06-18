@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/outlook"), Authorize/*, SnakeCase*/]
-	public class OutlookController : BaseController
+    public class OutlookController : BaseController
     {
         private ISettingRepository _settingRepository;
         private IModuleRepository _moduleRepository;
@@ -44,21 +44,21 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
             _menuRepository = menuRepository;
         }
-		
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_settingRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_viewRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_picklistRepository);
-			SetCurrentUser(_recordRepository);
 
-			base.OnActionExecuting(context);
-		}
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_settingRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_viewRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_picklistRepository);
+            SetCurrentUser(_recordRepository);
 
-		[Route("get_settings"), HttpGet]
+            base.OnActionExecuting(context);
+        }
+
+        [Route("get_settings"), HttpGet]
         public async Task<IActionResult> GetSettings()
         {
             List<Setting> outlookSettings = null;
@@ -173,6 +173,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -191,6 +192,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -209,6 +211,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -227,6 +230,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -246,6 +250,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 2,
+                                        'show_label':true,
                                     },
                                     {
                                         'data_type': 'lookup',
@@ -262,6 +267,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 2,
+                                        'show_label':true,
                                     },
                                     {
                                         'data_type': 'text_single',
@@ -276,6 +282,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': true,
                                         'section': 'mail_content',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -294,6 +301,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_content',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'multiline_type': 'large',
                                         'validation': {
                                             'readonly': false,
@@ -314,6 +322,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -332,6 +341,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -351,6 +361,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 2,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -369,6 +380,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 2,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -466,14 +478,14 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
 
-			//TODO Change
-			var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _warehouse)
+            //TODO Change
+            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _warehouse)
             {
                 /*Request = new HttpRequestMessage(HttpMethod.Post,
 	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))*/
-			};
+            };
 
-			/*recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
+            /*recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
             recordController.Configuration.Formatters.Clear();
             recordController.Configuration.Formatters.Add(new JsonMediaTypeFormatter { SerializerSettings = serializerSettings });
             recordController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());*/

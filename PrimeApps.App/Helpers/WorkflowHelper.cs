@@ -93,7 +93,7 @@ namespace PrimeApps.App.Helpers
                         }
 
                         if (!hasProcessFilter)
-                            return;
+                            continue;
 
                         if ((workflow.Frequency == WorkflowFrequency.NotSet || workflow.Frequency == WorkflowFrequency.OneTime) && operationType != OperationType.delete)
                         {
@@ -906,6 +906,13 @@ namespace PrimeApps.App.Helpers
                                             domain = string.Format(domain, subdomain);
 
                                             //domain = "http://localhost:5554/";
+
+                                            //checks custom domain 
+                                            var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                            if (!string.IsNullOrEmpty(instance.CustomDomain))
+                                            {
+                                                domain = "https://" + instance.CustomDomain + "/";
+                                            }
 
                                             var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 

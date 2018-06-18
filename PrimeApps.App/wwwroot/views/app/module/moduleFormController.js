@@ -764,8 +764,8 @@ angular.module('primeapps')
                         delete record.process_id;
                         delete record.process_status;
                         delete record.process_status_order;
-                        delete record['process_request.updated_at'];
-                        delete record['process_request.updated_by'];
+                        delete record['process_request_updated_at'];
+                        delete record['process_request_updated_by'];
                         delete record.operation_type;
 
                         if (record.auto_id) record.auto_id = "";

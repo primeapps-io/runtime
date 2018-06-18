@@ -68,8 +68,8 @@ angular.module('primeapps')
                     delete record.process_status;
                     delete record.process_status_order;
                     delete record.operation_type;
-                    delete record['process_request.updated_by'];
-                    delete record['process_request.updated_at'];
+                    delete record['process_request_updated_by'];
+                    delete record['process_request_updated_by'];
                     delete record.freeze;
 
                     return $http.put(config.apiUrl + 'record/update/' + module + '?timezone_offset=' + new Date().getTimezoneOffset() * -1, record);

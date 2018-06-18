@@ -97,7 +97,7 @@ namespace PrimeApps.Model.Helpers
             var sql = "PREPARE SelectQuery AS\n" +
                       $"SELECT {fieldsSql}\n" +
                       // ", pr.process_id, pr.process_status, pr.operation_type, pr.process_status_order\n" +//Approval Processes
-                      ", pr.process_id, pr.process_status, pr.operation_type, pr.updated_by AS \"process_request.updated_by\", pr.updated_at AS \"process_request.updated_at\", pr.process_status_order\n" +//Approval Processes
+                      ", pr.process_id, pr.process_status, pr.operation_type, pr.updated_by AS \"process_request_updated_by\", pr.updated_at AS \"process_request_updated_at\", pr.process_status_order\n" +//Approval Processes
                       $"FROM {tableName} AS \"{moduleName}\"\n" +
                       $"LEFT OUTER JOIN process_requests AS pr ON pr.record_id = \"{moduleName}\".\"id\" AND pr.\"module\" = '{moduleName}'" +//Approval Processes
                       $"{joinSql}";

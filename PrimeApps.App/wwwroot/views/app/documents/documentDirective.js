@@ -131,6 +131,10 @@ angular.module('primeapps')
                                 case 'rar':
                                     icon += 'fa-file-archive-o';
                                     break;
+                                case 'eml':
+                                case 'msg':
+                                    icon += 'fa fa-envelope';
+                                    break;
                                 default:
                                     icon += 'fa-file-o';
                                     break;
@@ -215,12 +219,12 @@ angular.module('primeapps')
                         var moduleId = $scope.module.id;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
-                                url: config.apiUrl + 'Document/upload_large',
-                                headers: {
-                                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                    "Content-Type": "application/json", "Accept": "application/json"
-                                }
-                            });
+                            url: config.apiUrl + 'Document/upload_large',
+                            headers: {
+                                'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                                "Content-Type": "application/json", "Accept": "application/json"
+                            }
+                        });
 
                         uploader.onCompleteItem = function (fileItem, response, status, headers) {
                             if (status === 200) {
