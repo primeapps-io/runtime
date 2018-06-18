@@ -173,6 +173,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -191,6 +192,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                        'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -209,6 +211,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -227,6 +230,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 1,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -246,6 +250,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 2,
+                                         'show_label':true,
                                     },
                                     {
                                         'data_type': 'lookup',
@@ -262,6 +267,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_information',
                                         'section_column': 2,
+                                        'show_label':true,
                                     },
                                     {
                                         'data_type': 'text_single',
@@ -276,6 +282,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': true,
                                         'section': 'mail_content',
                                         'section_column': 1,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': false,
                                             'required': true
@@ -294,6 +301,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'mail_content',
                                         'section_column': 1,
+                                         'show_label':true,
                                         'multiline_type': 'large',
                                         'validation': {
                                             'readonly': false,
@@ -314,6 +322,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 1,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -332,6 +341,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 1,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -351,6 +361,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 2,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
@@ -369,6 +380,7 @@ namespace PrimeApps.App.Controllers
                                         'primary': false,
                                         'section': 'system_information',
                                         'section_column': 2,
+                                         'show_label':true,
                                         'validation': {
                                             'readonly': true,
                                             'required': true
