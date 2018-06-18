@@ -578,8 +578,7 @@ namespace PrimeApps.Auth.UI
 			}
 		}
 
-		private async Task<(ApplicationUser user, string provider, string providerUserId, IEnumerable<Claim> claims)>
-			FindUserFromExternalProviderAsync(AuthenticateResult result)
+		private async Task<(ApplicationUser user, string provider, string providerUserId, IEnumerable<Claim> claims)> FindUserFromExternalProviderAsync(AuthenticateResult result)
 		{
 			var externalUser = result.Principal;
 

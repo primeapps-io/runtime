@@ -78,31 +78,23 @@ namespace PrimeApps.App.Controllers
 
 		// GET account/activate?userId=&token=&culture=
 
-		
-		[HttpGet]
+
+		[HttpPost]
 		[AllowAnonymous]
 		[Route("activate")]
-		public async Task<IActionResult> Activate(
-			[FromQuery(Name = "email")] string email, 
-			[FromQuery(Name = "appId")] int appId = 0, 
-			[FromQuery(Name = "culture")] string culture = "", 
-			[FromQuery(Name = "firstName")] string firstName = "",
-			[FromQuery(Name = "lastName")] string lastName = "",
-			[FromQuery(Name = "token")] string token = null)
+		public async Task<IActionResult> Activate([FromBody]ActivateBindingModels activateBindingModel)
 		{
-			if (string.IsNullOrWhiteSpace(email) || appId == 0)
-			{
-				ModelState.AddModelError("", "appId and email are required");
+			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
-			}
+
 
 			var userExist = true;
-			PlatformUser user = await _platformUserRepository.GetWithTenants(email);
-			var app = _platformRepository.GetAppInfo(appId);
+			PlatformUser user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
+			var app = _platformRepository.GetAppInfo(activateBindingModel.AppId);
 
 			if (user != null)
 			{
-				var appTenant = user.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == appId);
+				var appTenant = user.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == activateBindingModel.AppId);
 
 				if (appTenant != null)
 				{
@@ -115,18 +107,18 @@ namespace PrimeApps.App.Controllers
 				userExist = false;
 				user = new PlatformUser
 				{
-					Email = email,
-					FirstName = firstName,
-					LastName = lastName,
+					Email = activateBindingModel.Email,
+					FirstName = activateBindingModel.FirstName,
+					LastName = activateBindingModel.LastName,
 					Setting = new PlatformUserSetting()
 				};
 
-				if (!string.IsNullOrEmpty(culture))
+				if (!string.IsNullOrEmpty(activateBindingModel.Culture))
 				{
-					user.Setting.Culture = culture;
-					user.Setting.Language = culture.Substring(0, 2);
+					user.Setting.Culture = activateBindingModel.Culture;
+					user.Setting.Language = activateBindingModel.Culture.Substring(0, 2);
 					//tenant.Setting.TimeZone = 
-					user.Setting.Currency = culture;
+					user.Setting.Currency = activateBindingModel.Culture;
 				}
 				else
 				{
@@ -145,27 +137,29 @@ namespace PrimeApps.App.Controllers
 					return BadRequest(ModelState);
 				}
 
-				user = await _platformUserRepository.GetWithTenants(email);
+				user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
 			}
 
-			//var tenantId = 0;
+			var tenantId = 0;
 			Tenant tenant = null;
-			var tenantId = 2032;
+			//var tenantId = 2032;
 			try
 			{
 
 				tenant = new Tenant
 				{
-					Id = tenantId,
-					AppId = appId,
+					//Id = tenantId,
+					AppId = activateBindingModel.AppId,
 					Owner = user,
 					UseUserSettings = true,
 					GuidId = Guid.NewGuid(),
-					License = new TenantLicense {
+					License = new TenantLicense
+					{
 						UserLicenseCount = 5,
 						ModuleLicenseCount = 2
 					},
-					Setting = new TenantSetting {
+					Setting = new TenantSetting
+					{
 						Culture = app.Setting.Culture,
 						Currency = app.Setting.Currency,
 						Language = app.Setting.Language,
@@ -195,7 +189,7 @@ namespace PrimeApps.App.Controllers
 					CreatedByEmail = user.Email
 				};
 
-				await Postgres.CreateDatabaseWithTemplate(tenantId, appId);
+				await Postgres.CreateDatabaseWithTemplate(tenantId, activateBindingModel.AppId);
 
 				_userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = user.Id };
 				_profileRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = user.Id };
@@ -215,13 +209,13 @@ namespace PrimeApps.App.Controllers
 
 
 				await _userRepository.UpdateAsync(tenantUser);
-				await _recordRepository.UpdateSystemData(user.Id, DateTime.UtcNow, tenant.Setting.Language, appId);
+				await _recordRepository.UpdateSystemData(user.Id, DateTime.UtcNow, tenant.Setting.Language, activateBindingModel.AppId);
 
 
 				user.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = user });
 
 				//HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
-				BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, appId, tenant.Setting.Language));
+				BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
 
 				//user.TenantId = user.Id;
 				//tenant.License.HasAnalyticsLicense = true;
@@ -232,20 +226,23 @@ namespace PrimeApps.App.Controllers
 				//await Cache.ApplicationUser.Add(user.Email, user.Id);
 				//await Cache.User.Get(user.Id);
 
-				if (token != null && !userExist)
+				if (!string.IsNullOrEmpty(activateBindingModel.Token)  && (!userExist || !activateBindingModel.EmailConfirmed))
 				{
-					var appTemplates = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "email_confirm", culture.Substring(0, 2));
-					var template = appTemplates.Templates.FirstOrDefault();
+					var template = _platformRepository.GetAppTemplate(activateBindingModel.AppId, AppTemplateType.Email, "email_confirm", activateBindingModel.Culture.Substring(0, 2));
+					var content = template.Content;
 
-					template.Content.Replace("{{:FIRSTNAME}}", firstName);
-					template.Content.Replace("{{:LASTNAME}}", lastName);
-					template.Content.Replace("{{:EMAIL}}", email);
-					template.Content.Replace("{:Url}", Request.IsLocal() ? "" : "https://" +  app.Setting.AuthDomain + "/user/activate?token=" + token);
+					content = content.Replace("{:FirstName}", activateBindingModel.FirstName);
+					content = content.Replace("{:LastName}", activateBindingModel.LastName);
+					content = content.Replace("{:Email}", activateBindingModel.Email);
+					content = content.Replace("{:Url}", Request.Scheme + "://" + app.Setting.AuthDomain + "/user/confirm_email?email=" + activateBindingModel.Email + "&token=" + WebUtility.UrlEncode(activateBindingModel.Token));
 
-					Email notification = new Email(template.Subject, template.Content);
+					Email notification = new Email(template.Subject, content);
 
-					notification.AddRecipient(template.MailSenderEmail);
-					notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
+					var senderEmail = template.MailSenderEmail ?? app.Setting.MailSenderEmail;
+					var senderName = template.MailSenderName ?? app.Setting.MailSenderName;
+
+					notification.AddRecipient(senderEmail);
+					notification.AddToQueue(senderEmail, senderName);
 
 				}
 

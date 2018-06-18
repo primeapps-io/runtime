@@ -49,9 +49,10 @@ namespace PrimeApps.Model.Repositories
 			return tenant;
 		}
 
-		public App GetAppTemplate(int appId, AppTemplateType type, string systemCode, string language)
+		public AppTemplate GetAppTemplate(int appId, AppTemplateType type, string systemCode, string language)
 		{
-			var template = DbContext.Apps.Include(x => x.Templates).SingleOrDefault(x => x.Id== appId && ((AppTemplate)x.Templates).SystemCode == systemCode && ((AppTemplate)x.Templates).Language == language && ((AppTemplate)x.Templates).Type == type && ((AppTemplate)x.Templates).Active == true);
+			var template = DbContext.AppTemplates
+				.SingleOrDefault(x => x.AppId== appId && x.SystemCode == systemCode && x.Language == language && x.Type == type && x.Active == true);
 
 			return template;
 		}

@@ -421,8 +421,7 @@ namespace PrimeApps.App.Controllers
 				return BadRequest(ModelState);
 			}
 
-			var app = _platformRepository.GetAppTemplate(sendActivationBindingModel.AppId, AppTemplateType.Email, "verification", sendActivationBindingModel.Culture);
-			var template = app.Templates.FirstOrDefault();
+			var template = _platformRepository.GetAppTemplate(sendActivationBindingModel.AppId, AppTemplateType.Email, "verification", sendActivationBindingModel.Culture);
 
 			template.Content.Replace("{{:FirstName}}", sendActivationBindingModel.FirstName);
 			template.Content.Replace("{{:LastName}}", sendActivationBindingModel.LastName);

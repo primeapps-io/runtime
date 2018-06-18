@@ -524,8 +524,7 @@ namespace PrimeApps.App.Controllers
 					{
 						var jsonResult = JObject.Parse(stringResult);
 
-						var appTemplates = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "invate_user", culture.Substring(0, 2));
-						var template = appTemplates.Templates.FirstOrDefault();
+						var template = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "invate_user", culture.Substring(0, 2));
 
 						template.Content.Replace("{{:FIRSTNAME}}", request.FirstName);
 						template.Content.Replace("{{:LASTNAME}}", request.LastName);

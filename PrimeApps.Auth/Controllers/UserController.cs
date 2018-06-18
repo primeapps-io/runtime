@@ -1,16 +1,22 @@
 ﻿using IdentityModel;
+using IdentityServer4.Events;
+using IdentityServer4.Extensions;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PrimeApps.Auth.Models;
+using PrimeApps.Auth.Models.UserViewModels;
 using PrimeApps.Auth.UI;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.Controllers
@@ -21,15 +27,35 @@ namespace PrimeApps.Auth.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private IPlatformRepository _platformRepository;
-
+		private readonly IEventService _events;
 		public UserController(
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager,
+			IEventService events,
 			IPlatformRepository platformRepository)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_platformRepository = platformRepository;
+			_events = events;
+		}
+
+		[Route("confirm_email"), HttpGet]
+		public async Task<IActionResult> ConfirmEmail(string email, string token)
+		{
+			if (email == null || token == null)
+			{
+				ModelState.AddModelError("", "Your url must be like register/{organization}/{app}");
+				return BadRequest(ModelState);
+			}
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user == null)
+			{
+				throw new ApplicationException($"Unable to load user with email: '{email}'.");
+			}
+			var result = await _userManager.ConfirmEmailAsync(user, token);
+
+			return result.Succeeded ? Ok() : (IActionResult)BadRequest(result.Errors.First().Description);
 		}
 
 		[Route("register/{organization}/{app}"), HttpPost]
@@ -62,20 +88,29 @@ namespace PrimeApps.Auth.Controllers
 				var result = await AddUser(registerViewModel);
 				if (!string.IsNullOrWhiteSpace(result))
 					return BadRequest(result);
-			}
 
+			}
 			var user = await _userManager.FindByNameAsync(registerViewModel.Email);
 			var token = "";
 
 			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.App.Setting.Culture;
 
-			var url = Request.Scheme + "://" + appInfo.App.Setting.Domain + "/api/account/activate?email= " + registerViewModel.Email +
-				"&appId=" + appInfo.App.Id + "&culture=" + culture + "&firstName=" + registerViewModel.FirstName + "&lastName=" + registerViewModel.LastName;
+			var url = Request.Scheme + "://" + appInfo.App.Setting.Domain + "/api/account/activate";
+
+			var activateModel = new ActivateBindingModels
+			{
+				email = registerViewModel.Email,
+				app_id = appInfo.App.Id,
+				culture = culture,
+				first_name = registerViewModel.FirstName,
+				last_name = registerViewModel.LastName,
+				email_confirmed = user.EmailConfirmed
+			};
 
 			if ((!userExist || !user.EmailConfirmed) && registerViewModel.SendActivation)
 			{
-				token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-				url += "&token=" + token;
+				token = await GetConfirmToken(user);
+				activateModel.token = token;
 			}
 
 			using (var httpClient = new HttpClient())
@@ -83,15 +118,37 @@ namespace PrimeApps.Auth.Controllers
 				httpClient.BaseAddress = new Uri(url);
 				httpClient.DefaultRequestHeaders.Accept.Clear();
 				httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-
-				var response = await httpClient.GetAsync(url);
+				var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(activateModel), Encoding.UTF8, "application/json"));
 
 				if (!response.IsSuccessStatusCode)
 					return BadRequest(response);
 
 			}
 
+			if (User?.Identity.IsAuthenticated == true)
+			{
+				// delete local authentication cookie
+				await _signInManager.SignOutAsync();
+				await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+			}
+
+			var signInResult = await _signInManager.PasswordSignInAsync(registerViewModel.Email, registerViewModel.Password, true, lockoutOnFailure: false);
+
+			if (signInResult.Succeeded)
+				await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
+
 			return Ok(@"{ message: 'User created', emailConfirmToken: '" + token + "' }");
+		}
+
+		[Route("confirm_token"), HttpGet]
+		public async Task<IActionResult> ConfirmTokenAsync(string email) {
+			var user = await _userManager.FindByEmailAsync(email);
+			if (user == null)
+				return StatusCode(404, "{message:' user not found'}");
+			else if (user.EmailConfirmed)
+				return StatusCode(404, "{message: 'already confirmed'}");
+
+			return StatusCode(200, "{token:'" + Json(await GetConfirmToken(user) + "'}"));
 		}
 
 		[Route("add_user"), HttpPost]
@@ -116,7 +173,7 @@ namespace PrimeApps.Auth.Controllers
 				return BadRequest(result);
 
 			var user = await _userManager.FindByNameAsync(model.Email);
-			var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+			var token = await GetConfirmToken(user);
 
 			return Ok("@{ token: "+ token +"}");
 		}
@@ -162,6 +219,12 @@ namespace PrimeApps.Auth.Controllers
 			}).Result;
 
 			return "";
+		}
+
+		//Helpers
+		public async Task<string> GetConfirmToken(ApplicationUser user)
+		{
+			return await _userManager.GenerateEmailConfirmationTokenAsync(user);
 		}
 	}
 }

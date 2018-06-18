@@ -28,6 +28,8 @@ using Microsoft.AspNetCore.Localization;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Repositories;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace PrimeApps.Auth
 {
@@ -86,6 +88,17 @@ namespace PrimeApps.Auth
 			services.AddMvc()
 				.AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
 				.AddDataAnnotationsLocalization()
+				.AddJsonOptions(opt =>
+				{
+					#region SnakeCaseAttribute
+					opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+					opt.SerializerSettings.ContractResolver = new DefaultContractResolver()
+					{
+						NamingStrategy = new SnakeCaseNamingStrategy(),
+					};
+					opt.SerializerSettings.Converters.Add(new StringEnumConverter());
+					#endregion
+				})
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 

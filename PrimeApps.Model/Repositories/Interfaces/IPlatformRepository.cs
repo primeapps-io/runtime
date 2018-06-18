@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         App GetAppInfo(int id);
 		TeamApp GetAppInfo(string organizationCode, string appCode);
 		Tenant GetTenant(int tenantId);
-		App GetAppTemplate(int appId, AppTemplateType type, string systemCode, string language);
+		AppTemplate GetAppTemplate(int appId, AppTemplateType type, string systemCode, string language);
 		Task<int> AppUpdate(App app);
         Task<int> AppDeleteSoft(App app);
         Task<int> AppDeleteHard(App app);
