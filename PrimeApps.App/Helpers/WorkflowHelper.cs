@@ -93,7 +93,7 @@ namespace PrimeApps.App.Helpers
                         }
 
                         if (!hasProcessFilter)
-                            return;
+                            continue;
 
                         if ((workflow.Frequency == WorkflowFrequency.NotSet || workflow.Frequency == WorkflowFrequency.OneTime) && operationType != OperationType.delete)
                         {
@@ -907,12 +907,22 @@ namespace PrimeApps.App.Helpers
 
                                             //domain = "http://localhost:5554/";
 
+                                            //checks custom domain 
+                                            //TODO Removed
+                                           /* var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                            if (!string.IsNullOrEmpty(instance.CustomDomain))
+                                            {
+                                                domain = "https://" + instance.CustomDomain + "/";
+                                            }
+
                                             var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
                                             var emailData = new Dictionary<string, string>();
                                             emailData.Add("Subject", sendNotification.Subject);
                                             emailData.Add("Content", sendNotification.Message);
                                             emailData.Add("Url", url);
+                                            */
+
 
                                             //TODO Removed
                                             /*var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);

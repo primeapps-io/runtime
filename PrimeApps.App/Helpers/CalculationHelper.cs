@@ -1160,7 +1160,7 @@ namespace PrimeApps.App.Helpers
                                             {
                                                 var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                 var pettyCashRequisitionRecords = recordRepository.Find(module.Name, findRequestPettyCashRequisition);
-                                                var currencyFieldRequisition = pettyCashRequisitionModule.Fields.Single(x => x.Name == "currency_2");
+                                                var currencyFieldRequisition = pettyCashRequisitionModule.Fields.Single(x => x.Name == "currency");
                                                 var currencyPicklistRequisition = await picklistRepository.GetById(currencyFieldRequisition.PicklistId.Value);
 
                                                 decimal totalIncomeTry = 0;
@@ -1171,7 +1171,7 @@ namespace PrimeApps.App.Helpers
                                                 foreach (var requisitionRecordItem in pettyCashRequisitionRecords)
                                                 {
                                                     var amount = !requisitionRecordItem["paid_amount"].IsNullOrEmpty() ? (decimal)requisitionRecordItem["paid_amount"] : 0;
-                                                    var currency = currencyPicklistRequisition.Items.Single(x => x.LabelEn == (string)requisitionRecordItem["currency_2"]).SystemCode;
+                                                    var currency = currencyPicklistRequisition.Items.Single(x => x.LabelEn == (string)requisitionRecordItem["currency"]).SystemCode;
 
                                                     switch (currency)
                                                     {
@@ -1286,7 +1286,7 @@ namespace PrimeApps.App.Helpers
                                                 approverUserRecord = recordRepository.Find("users", findApproverUser);
                                                 if (!humanResourcesRecord.IsNullOrEmpty())
                                                 {
-                                                    if (recordOwnerObj["email"] == humanResourcesRecordObj["e_mail1"])
+                                                    if ((string)recordOwnerObj["email"] == (string)humanResourcesRecordObj["e_mail1"])
                                                     {
                                                         var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
                                                         var approverRecord = recordRepository.Find("human_resources", approverRequest);
@@ -1448,7 +1448,7 @@ namespace PrimeApps.App.Helpers
 
                                                     if (!approverRecord.IsNullOrEmpty())
                                                     {
-                                                        if (recordOwnerObj["email"] == approverRecordObj["e_mail1"])
+                                                        if ((string)recordOwnerObj["email"] == (string)approverRecordObj["e_mail1"])
                                                         {
                                                             var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
                                                             var approverHumanRecord = recordRepository.Find("human_resources", approverRequest);

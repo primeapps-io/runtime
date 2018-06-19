@@ -131,6 +131,10 @@ angular.module('primeapps')
                                 case 'rar':
                                     icon += 'fa-file-archive-o';
                                     break;
+                                case 'eml':
+                                case 'msg':
+                                    icon += 'fa fa-envelope';
+                                    break;
                                 default:
                                     icon += 'fa-file-o';
                                     break;
@@ -215,12 +219,12 @@ angular.module('primeapps')
                         var moduleId = $scope.module.id;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
-                                url: config.apiUrl + 'Document/upload_large',
-                                headers: {
-                                    'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                    "Content-Type": "application/json", "Accept": "application/json"
-                                }
-                            });
+                            url: config.apiUrl + 'Document/upload_large',
+                            headers: {
+                                'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                                "Content-Type": "application/json", "Accept": "application/json"
+                            }
+                        });
 
                         uploader.onCompleteItem = function (fileItem, response, status, headers) {
                             if (status === 200) {
@@ -320,10 +324,15 @@ angular.module('primeapps')
                                 else if (extension === 'zip') {
                                     var type = '|zip|';
                                 }
+                                else if (extension === 'eml') {
+                                    var type = '|eml|';
+                                } else if (extension === 'msg') {
+                                    var type = '|msg|';
+                                }
                                 else {
                                     var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
                                 }
-                                return '|msword|x-rar-compressed|zip|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.openxmlformats-officedocument.wordprocessingml.template|vnd.openxmlformats-officedocument.spreadsheetml.sheet|vnd.openxmlformats-officedocument.presentationml.presentation|vnd.openxmlformats-officedocument.presentationml.template|vnd.openxmlformats-officedocument.presentationml.slideshow|rtf|pdf|plain|tiff|bmp|jpeg|jpg|png|gif|'.indexOf(type) > -1;
+                                return '|msword|x-rar-compressed|zip|eml|msg|vnd.ms-excel|vnd.ms-powerpoint|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.openxmlformats-officedocument.wordprocessingml.template|vnd.openxmlformats-officedocument.spreadsheetml.sheet|vnd.openxmlformats-officedocument.presentationml.presentation|vnd.openxmlformats-officedocument.presentationml.template|vnd.openxmlformats-officedocument.presentationml.slideshow|rtf|pdf|plain|tiff|bmp|jpeg|jpg|png|gif|'.indexOf(type) > -1;
                             }
                         });
 

@@ -268,7 +268,7 @@ namespace PrimeApps.App.Helpers
                                         if (approverFields.Length > 1)
                                         {
                                             var secondApprover = approverFields[1];
-                                            var secondApproverFieldName =  secondApprover.Split('.')[0];
+                                            var secondApproverFieldName = secondApprover.Split('.')[0];
                                             var secondApproverLookupName = secondApprover.Split('.')[1];
                                             var secondApproverLookupFieldName = secondApprover.Split('.')[2];
 
@@ -685,7 +685,7 @@ namespace PrimeApps.App.Helpers
                     using (var processRepository = new ProcessRepository(databaseContext))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
-                        request.UpdatedById = appUser.Id;
+                        //request.UpdatedById = appUser.LocalId;
                         request.UpdatedAt = DateTime.Now;
 
                         if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1))
@@ -758,7 +758,7 @@ namespace PrimeApps.App.Helpers
                                 //domain = "http://localhost:5554/";
 
                                 //checks custom domain 
-                                
+
                                 //TODO Removed
                                 /*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                                 if (!string.IsNullOrEmpty(instance.CustomDomain))
@@ -856,7 +856,8 @@ namespace PrimeApps.App.Helpers
                                     }
                                 }
                                 string beforeCc = "";
-                                if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
+                                var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
+                                if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com"))
                                 {
                                     switch ((int)record["process_status_order"])
                                     {
@@ -1053,7 +1054,8 @@ namespace PrimeApps.App.Helpers
                         var record = recordRepository.GetById(process.Module, request.RecordId);
 
                         string beforeCc = "";
-                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
+                        var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
+                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com"))
                         {
                             switch ((int)record["process_status_order"])
                             {
@@ -1077,7 +1079,7 @@ namespace PrimeApps.App.Helpers
                             var user = await userRepository.GetById(request.CreatedById);
                             request.Status = Model.Enums.ProcessStatus.Rejected;
                             request.ProcessStatusOrder = 0;
-                            request.UpdatedById = appUser.Id;
+                            //request.UpdatedById = appUser.LocalId;
                             request.UpdatedAt = DateTime.Now;
                             var emailData = new Dictionary<string, string>();
                             string domain;

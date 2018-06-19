@@ -68,8 +68,8 @@ angular.module('primeapps')
                     delete record.process_status;
                     delete record.process_status_order;
                     delete record.operation_type;
-                    delete record['process_request.updated_by'];
-                    delete record['process_request.updated_at'];
+                    delete record['process_request_updated_by'];
+                    delete record['process_request_updated_by'];
                     delete record.freeze;
 
                     return $http.put(config.apiUrl + 'record/update/' + module + '?timezone_offset=' + new Date().getTimezoneOffset() * -1, record);
@@ -1893,7 +1893,9 @@ angular.module('primeapps')
                                     moment(record['bitis_tarihi']).isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
                                     (moment(record['baslangic_tarihi']).isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && moment(record['bitis_tarihi']).isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
                                 ) {
-                                    return $filter('translate')('Leave.Validations.AlreadyHave');
+                                    if (record["alinan_izinler"][i].id != record.id) {
+                                        return $filter('translate')('Leave.Validations.AlreadyHave');
+                                    }
                                 }
                             }
                         }

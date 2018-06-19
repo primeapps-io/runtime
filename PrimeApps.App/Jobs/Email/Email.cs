@@ -271,13 +271,13 @@ namespace PrimeApps.App.Jobs.Email
                         {
                             foreach (var field in fields)
                             {
-                                if (!record[field.Name].IsNullOrEmpty())
+                                if (!record[field.Name].IsNullOrEmpty() && field.Name != "created_by" && field.Name != "updated_by" && field.Name != "created_at" && field.Name != "updated_at")
                                     recordTable += recordRow.Replace("{label}", field.LabelTr).Replace("{value}", record[field.Name].ToString());
 
                             }
 
                         }
-                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1)
+                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && (int)record["process_status_order"] != 0)
                         {
                             var userDataObj = new JObject();
                             var findRequest = new FindRequest();
