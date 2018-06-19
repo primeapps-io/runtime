@@ -86,7 +86,7 @@ angular.module('primeapps')
                 if (sipAccount && sipAccount.Extension && sipAccount.Password && sipAccount.UserId && $scope.sipProvider) {
                     $scope.userInviting = true;
                     sipAccount.Connector = $scope.sipProvider;
-                    sipAccount.CompanyKey = $scope.sipCompanyKey;
+                    sipAccount.company_key = $scope.sipCompanyKey;
                     sipAccount.UserId = parseInt(sipAccount.UserId);
                     sipAccount.RecordDetailModuleName = sipAccount.RecordDetailModuleName.name;
                     sipAccount.RecordDetailPhoneFieldName = sipAccount.RecordDetailPhoneFieldName.name;
