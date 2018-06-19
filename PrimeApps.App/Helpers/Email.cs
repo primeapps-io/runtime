@@ -88,7 +88,7 @@ namespace PrimeApps.App.Helpers
             Template templateEntity;
             using (TenantDBContext tdbCtx = new TenantDBContext(AppUser.TenantId))
             using (TemplateRepository tRepo = new TemplateRepository(tdbCtx))
-            {
+            {               
                 templateEntity = tRepo.GetByCode(resourceTypeName, language);
             }
 
@@ -173,7 +173,7 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-
+           
             tmpl = templateEntity.Content;
             tmpl = tmpl.Replace("{{URL}}", appUrl);
             tmpl = tmpl.Replace("{{APP_URL}}", appCodeUrl);
