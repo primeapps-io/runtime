@@ -908,7 +908,8 @@ namespace PrimeApps.App.Helpers
                                             //domain = "http://localhost:5554/";
 
                                             //checks custom domain 
-                                            var instance = crmInstance.GetInstanceById(appUser.InstanceId);
+                                            //TODO Removed
+                                           /* var instance = crmInstance.GetInstanceById(appUser.InstanceId);
                                             if (!string.IsNullOrEmpty(instance.CustomDomain))
                                             {
                                                 domain = "https://" + instance.CustomDomain + "/";
@@ -920,6 +921,8 @@ namespace PrimeApps.App.Helpers
                                             emailData.Add("Subject", sendNotification.Subject);
                                             emailData.Add("Content", sendNotification.Message);
                                             emailData.Add("Url", url);
+                                            */
+
 
                                             //TODO Removed
                                             /*var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
