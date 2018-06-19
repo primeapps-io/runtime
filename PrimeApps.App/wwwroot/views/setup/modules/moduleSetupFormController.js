@@ -316,13 +316,13 @@ angular.module('primeapps')
                 field.permissions = [];
 
                 angular.forEach($rootScope.profiles, function (profile) {
-                    if (profile.IsPersistent && profile.HasAdminRights)
-                        profile.Name = $filter('translate')('Setup.Profiles.Administrator');
+                    if (profile.is_persistent && profile.has_admin_rights)
+                        profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                    if (profile.IsPersistent && !profile.HasAdminRights)
-                        profile.Name = $filter('translate')('Setup.Profiles.Standard');
+                    if (profile.is_persistent && !profile.has_admin_rights)
+                        profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                    field.permissions.push({ profile_id: profile.Id, profile_name: profile.Name, type: 'full', profile_is_admin: profile.HasAdminRights });
+                    field.permissions.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
                 });
 
                 return field;
@@ -636,13 +636,13 @@ angular.module('primeapps')
                     $scope.showPermissionWarning = false;
                     section.permissions = [];
                     angular.forEach($rootScope.profiles, function (profile) {
-                        if (profile.IsPersistent && profile.HasAdminRights)
-                            profile.Name = $filter('translate')('Setup.Profiles.Administrator');
+                        if (profile.is_persistent && profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                        if (profile.IsPersistent && !profile.HasAdminRights)
-                            profile.Name = $filter('translate')('Setup.Profiles.Standard');
+                        if (profile.is_persistent && !profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                        section.permissions.push({ profile_id: profile.Id, profile_name: profile.Name, type: 'full', profile_is_admin: profile.HasAdminRights });
+                        section.permissions.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
                     });
                     var sortOrders = [];
 

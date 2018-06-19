@@ -1264,7 +1264,7 @@ angular.module('primeapps')
                                 record[field.name] = picklistRecord;
                                 break;
                             case 'lookup':
-                                var lookupId = field.default_value !== '[me]' ? parseInt(field.default_value) : $rootScope.user.ID;
+                                var lookupId = field.default_value !== '[me]' ? parseInt(field.default_value) : $rootScope.user.id;
                                 var fieldCurrent = angular.copy(field);
 
                                 this.getRecord(field.lookup_type, lookupId, true)
@@ -2666,7 +2666,7 @@ angular.module('primeapps')
 
                 setFilters: function (filters, field, fieldName, value, operator, no, isView) {
                     if (field.data_type === 'lookup' && field.lookup_type === 'users' && value === '[me]')
-                        value = $rootScope.user.ID;
+                        value = $rootScope.user.id;
 
                     if (field.data_type === 'email' && value === '[me.email]')
                         value = $rootScope.user.email;
@@ -3549,13 +3549,13 @@ angular.module('primeapps')
                     if (!field.permissions)
                         return true;
 
-                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     var hasFieldSectionDisplayPermission = function (field) {
                         if (!field.sectionObj || !field.sectionObj.permissions)
                             return true;
 
-                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                         if (!permission)
                             return true;
@@ -3576,13 +3576,13 @@ angular.module('primeapps')
                     if (!field.permissions)
                         return true;
 
-                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     var hasFieldSectionFullPermission = function (field) {
                         if (!field.sectionObj || !field.sectionObj.permissions)
                             return true;
 
-                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                         if (!permission)
                             return true;
@@ -3603,7 +3603,7 @@ angular.module('primeapps')
                     if (!section.permissions)
                         return true;
 
-                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     if (!permission)
                         return true;
@@ -3615,7 +3615,7 @@ angular.module('primeapps')
                     if (!section.permissions)
                         return true;
 
-                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     if (!permission)
                         return true;
@@ -3627,7 +3627,7 @@ angular.module('primeapps')
                     if (!actionButton.permissions)
                         return true;
 
-                    var permission = $filter('filter')(actionButton.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(actionButton.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     if (!permission)
                         return true;

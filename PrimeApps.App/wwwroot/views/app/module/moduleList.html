@@ -13,10 +13,10 @@
                     </select>
                 </div>
                 <div class="view-action-buttons pull-right">
-                    <a href="#app/crm/viewForm/{{type}}?id={{view.id}}" ng-if="view.created_by === user.ID || user.profile.HasAdminRights">{{'Common.Edit' | translate}}</a>
-                    <span ng-if="view.created_by == user.ID || user.profile.HasAdminRights"> |</span>
-                    <a href confirm-click action="deleteView(view.id)" placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}"  confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-if="view.system_type === 'custom' && (view.created_by === user.ID || user.profile.HasAdminRights)">{{'Common.Delete' | translate}}</a>
-                    <span ng-if="view.system_type === 'custom' && (view.created_by === user.ID || user.profile.HasAdminRights)"> |</span>
+                    <a href="#app/crm/viewForm/{{type}}?id={{view.id}}" ng-if="view.created_by === user.id || user.profile.has_admin_rights">{{'Common.Edit' | translate}}</a>
+                    <span ng-if="view.created_by == user.id || user.profile.has_admin_rights"> |</span>
+                    <a href confirm-click action="deleteView(view.id)" placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}"  confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)">{{'Common.Delete' | translate}}</a>
+                    <span ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)"> |</span>
                     <a href="#app/crm/viewForm/{{type}}">{{'Common.Create' | translate}}</a>
                 </div>
             </div>
@@ -32,17 +32,17 @@
                         </li>
                         <li role="separator" class="divider"></li>
 
-                        <li ng-if="user.profile.ExportData || user.profile.ImportData">
+                        <li ng-if="user.profile.export_data || user.profile.import_data">
                             <a href id="dataTransferButtons" ng-click="showDataTransferButtons();"
                                ng-disabled="loading"><i class="fa fa-database"></i> {{'Module.DataTransfer' |
                                 translate}} </a>
                         </li>
-                        <li ng-if="user.profile.SendSMS" ng-show="hasPermission(type, operations.read)">
+                        <li ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)">
                             <a href ng-click="showSMSModal();dropdownHide();" data-spinner-color="#666" ng-disabled="loading">
                                 <i class="fa fa-share-square"></i>{{'Module.SendSMS' | translate }}
                             </a>
                         </li>
-                        <li ng-if="user.profile.SendEmail" ng-show="hasPermission(type, operations.read)">
+                        <li ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)">
                             <a href ng-click="showEMailModal();dropdownHide();" data-spinner-color="#666" ng-disabled="loading">
                                 <i class="fa fa-envelope-o"></i>{{'Module.SendEMail' | translate }}
                             </a>
@@ -73,7 +73,7 @@
                 <a href ng-click="tableParams.showFilter = !tableParams.showFilter" class="btn btn-sm btn-custom" ng-disabled="loading" id="FilterButton2">
                     <i class="fa fa-filter"></i> {{'Common.Filter' | translate}}
                 </a>
-                <a ng-if="user.profile.ExportData || user.profile.ImportData" href id="dataTransferButtons" class="btn btn-sm btn-custom" ng-click="showDataTransferButtons()" ng-disabled="loading"><i class="fa fa-database"></i> {{'Module.DataTransfer' | translate}}</a>
+                <a ng-if="user.profile.export_data || user.profile.import_data" href id="dataTransferButtons" class="btn btn-sm btn-custom" ng-click="showDataTransferButtons()" ng-disabled="loading"><i class="fa fa-database"></i> {{'Module.DataTransfer' | translate}}</a>
 
                 <a ng-click="collectiveLeave()" class="btn btn-sm btn-custom"
                    ng-show="hasPermission(type, operations.write)"
@@ -99,7 +99,7 @@
                 </a>
 
                 <span class="dropdown list-dropdown-menu"
-                      ng-show="hasPermission(type, operations.remove) || user.profile.SendEmail || user.profile.SendSMS">
+                      ng-show="hasPermission(type, operations.remove) || user.profile.send_email || user.profile.send_sms">
                     <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
                     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
                        <li ng-show="hasPermission(type, operations.remove) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
@@ -112,12 +112,12 @@
                                 <i class="fa fa-pencil-square-o pull-left"></i> {{'Module.UpdateSelecteds' | translate }}
                             </a>
                         </li>
-                        <li ng-if="user.profile.SendEmail" ng-show="hasPermission(type, operations.read)">
+                        <li ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)">
                              <a href ng-click="showEMailModal()">
                                 <i class="fa fa-envelope-o pull-left"></i> {{'Module.SendEMail' | translate }}
                             </a>
                         </li>
-                        <li ng-if="user.profile.SendSMS" ng-show="hasPermission(type, operations.read)">
+                        <li ng-if="user.profile.send_sms" ng-show="hasPermission(type, operations.read)">
                             <a href ng-click="showSMSModal()">
                                 <i class="fa fa-mobile pull-left"></i> {{'Module.SendSMS' | translate }}
                             </a>

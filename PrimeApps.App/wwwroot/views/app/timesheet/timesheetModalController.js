@@ -270,7 +270,7 @@ angular.module('primeapps')
                     //create
                     var findTimesheet = {};
                     findTimesheet.fields = ['term', 'year'];
-                    findTimesheet.filters = [{ field: 'owner', operator: 'equals', value: $scope.owner.Id, no: 1 }];
+                    findTimesheet.filters = [{ field: 'owner', operator: 'equals', value: $scope.owner.id, no: 1 }];
                     findTimesheet.sort_field = 'created_at';
                     findTimesheet.sort_direction = 'desc';
                     findTimesheet.limit = 2000;
@@ -304,7 +304,7 @@ angular.module('primeapps')
                                 request.term = $filter('filter')($scope.months, { labelStr: currentMonth }, true)[0].id;
                                 request.year = $filter('filter')($scope.years, { labelStr: currentYear.toString() }, true)[0].id;
                                 request.status = $scope.statusDraft.id;
-                                request.owner = $rootScope.user.ID;
+                                request.owner = $rootScope.user.id;
 
                                 if ($scope.$parent.$parent.$parent.day.events.length < 2 || ( $scope.$parent.$parent.$parent.day.events.length == 2 && !$scope.$parent.$parent.$parent.day.events[0].code )) {
                                     var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {id: recordModal.entry_type}, true)[0].system_code;

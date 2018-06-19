@@ -4,7 +4,7 @@
        class="btn btn-sm btn-custom">
         <i class="fa fa-filter"></i> {{'Common.Filter' | translate}}
     </a>
-    <a ng-if="$root.user.profile.ExportData" id="{{relatedModule.related_module}}"
+    <a ng-if="$root.user.profile.export_data" id="{{relatedModule.related_module}}"
        ng-click="export(relatedModule,tableParams)"
        class="btn btn-sm btn-custom"
        ng-show="$parent.hasPermission($parent.type, $parent.operations.read)" data-spinner-color="#666"

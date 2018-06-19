@@ -17,23 +17,23 @@ angular.module('primeapps')
                     var profiles = allProfiles;
 
                     angular.forEach(profiles, function (profile) {
-                        if (profile.IsPersistent && profile.HasAdminRights) {
-                            profile.Name = $filter('translate')('Setup.Profiles.Administrator');
-                            profile.Description = $filter('translate')('Setup.Profiles.AdministratorDescription');
+                        if (profile.is_persistent && profile.has_admin_rights) {
+                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
+                            profile.description = $filter('translate')('Setup.Profiles.AdministratorDescription');
                         }
 
-                        if (profile.IsPersistent && !profile.HasAdminRights) {
-                            profile.Name = $filter('translate')('Setup.Profiles.Standard');
-                            profile.Description = $filter('translate')('Setup.Profiles.StandardDescription');
+                        if (profile.is_persistent && !profile.has_admin_rights) {
+                            profile.name = $filter('translate')('Setup.Profiles.Standard');
+                            profile.description = $filter('translate')('Setup.Profiles.StandardDescription');
                         }
 
                         if (clearPermissions) {
-                            delete profile.Permissions;
+                            delete profile.permissions;
                         }
                         else {
                             var permissions = [];
 
-                            angular.forEach(profile.Permissions, function (permission) {
+                            angular.forEach(profile.permissions, function (permission) {
                                 var addPermission = true;
 
                                 switch (permission.Type) {
@@ -63,11 +63,11 @@ angular.module('primeapps')
                                     permissions.push(permission);
                             });
 
-                            profile.Permissions = $filter('orderBy')(permissions, 'Order');
+                            profile.permissions = $filter('orderBy')(permissions, 'Order');
                         }
                     });
 
-                    profiles = $filter('orderBy')(profiles, ['-IsPersistent', '-HasAdminRights', '+Name']);
+                    profiles = $filter('orderBy')(profiles, ['-is_persistent', '-has_admin_rights', '+name']);
 
                     return profiles;
                 },
@@ -91,8 +91,8 @@ angular.module('primeapps')
                 remove: function (removedProfileId, transferProfileId, instanceId) {
                     return $http.post(config.apiUrl + 'Profile/Remove',
                         {
-                            RemovedProfile: { ID: removedProfileId, InstanceID: instanceId },
-                            TransferProfile: { ID: transferProfileId, InstanceID: instanceId }
+                            RemovedProfile: { id: removedProfileId, InstanceID: instanceId },
+                            TransferProfile: { id: transferProfileId, InstanceID: instanceId }
                         });
                 }
             };

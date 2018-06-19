@@ -34,10 +34,10 @@ angular.module('primeapps')
                         }
 
                         angular.forEach($scope.role.users, function (userId) {
-                            var user = $filter('filter')($rootScope.workgroup.users, {Id: userId}, true)[0];
+                            var user = $filter('filter')($rootScope.workgroup.users, {id: userId}, true)[0];
 
                             if (user)
-                                $scope.roleUsers.push($filter('filter')($rootScope.users, {Id: user.Id}, true)[0]);
+                                $scope.roleUsers.push($filter('filter')($rootScope.users, {id: user.Id}, true)[0]);
                         });
                     }
                     else if (reportsTo) {

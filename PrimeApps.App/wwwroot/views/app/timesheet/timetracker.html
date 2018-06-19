@@ -14,7 +14,7 @@
                     <div class="row calendar-header">
                         <div class="col-md-4">
                             <div class="btn-group">
-                                <a ng-hide="loggedInUser != owner.Id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week - 1, days, 'previous')"
+                                <a ng-hide="loggedInUser != owner.id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week - 1, days, 'previous')"
                                    class="btn btn-sm btn-custom"
                                    ng-disabled="week == 1">
                                     <i class="fa fa-chevron-left"></i>
@@ -22,7 +22,7 @@
                                 <div class="btn btn-sm btn-custom">
                                     {{week}}. {{'Timetracker.Week'|translate}}
                                 </div>
-                                <a ng-hide="loggedInUser != owner.Id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week + 1, days, 'next')"
+                                <a ng-hide="loggedInUser != owner.id || userWeek" ng-click="loadingForm=true; getTimeTrackerCalendar(week + 1, days, 'next')"
                                    class="btn btn-sm btn-custom"
                                    ng-disabled="week == weekLength + 4">
                                     <i class="fa fa-chevron-right"></i>

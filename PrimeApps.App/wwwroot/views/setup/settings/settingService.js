@@ -7,7 +7,7 @@ angular.module('primeapps')
 
                 editUser: function (user) {
                     return $http.post(config.apiUrl + 'User/Edit', {
-                        ID: user.ID,
+                        id: user.id,
                         firstName: user.firstName,
                         lastName: user.lastName,
                         email: user.email,

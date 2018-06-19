@@ -46,53 +46,53 @@ angular.module('primeapps')
             function getProfile() {
                 ProfileService.getAll()
                     .then(function (response) {
-                        $scope.profiles = ProfileService.getProfiles(response.data, $rootScope.workgroup.instanceID, false);
+                        $scope.profiles = ProfileService.getProfiles(response.data, $rootScope.workgroup.tenant_id, false);
                         $scope.profilesCopy = angular.copy($scope.profiles);
 
                         if (id) {
-                            $scope.profile = $filter('filter')($scope.profiles, { ID: id }, true)[0];
+                            $scope.profile = $filter('filter')($scope.profiles, { id: id }, true)[0];
 
                             //Update
-                            var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.StartPage }, true)[0];
+                            var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                             $scope.profile.PageStart = setPageStart;
 
 
                         }
                         else {
                             $scope.profile = {};
-                            $scope.profile.InstanceID = $rootScope.workgroup.instanceID;
+                            $scope.profile.tenant_id = $rootScope.workgroup.tenant_id;
 
                             if (clone) {
-                                var profile = $filter('filter')($scope.profiles, { ID: clone }, true)[0];
+                                var profile = $filter('filter')($scope.profiles, { id: clone }, true)[0];
                                 $scope.profile = profile;
-                                delete  $scope.profile.Name;
+                                delete  $scope.profile.name;
                                 delete  $scope.profile.UserIDs;
-                                delete  $scope.profile.Description;
-                                delete  $scope.profile.IsPersistent;
+                                delete  $scope.profile.description;
+                                delete  $scope.profile.is_persistent;
                                 delete  $scope.profile.CreatedBy;
-                                delete  $scope.profile.ID;
-                                var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.StartPage}, true)[0];
+                                delete  $scope.profile.id;
+                                var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.start_page}, true)[0];
                                 $scope.profile.PageStart = setPageStart;
                             }
                             else {
-                                $scope.profile.HasAdminRights = false;
-                                $scope.profile.IsPersistent = false;
-                                $scope.profile.BusinessIntelligence = false;
-                                $scope.profile.SendEmail = false;
-                                $scope.profile.SendSMS = false;
-                                $scope.profile.ExportData = false;
-                                $scope.profile.ImportData = false;
-                                $scope.profile.WordPdfDownload = false;
-                                $scope.profile.LeadConvert = false;
-                                $scope.profile.DocumentSearch = false;
-                                $scope.profile.Tasks = false;
-                                $scope.profile.Calendar = false;
-                                $scope.profile.Newsfeed = false;
-                                $scope.profile.Report = false;
-                                $scope.profile.Dashboard = true;
-                                $scope.profile.Home = false;
-                                $scope.profile.CollectiveAnnualLeave = false;
-                                $scope.profile.Permissions = $filter('filter')($scope.profiles, { IsPersistent: true, HasAdminRights: true })[0].Permissions;
+                                $scope.profile.has_admin_rights = false;
+                                $scope.profile.is_persistent = false;
+                                $scope.profile.business_intelligence = false;
+                                $scope.profile.send_email = false;
+                                $scope.profile.send_sms = false;
+                                $scope.profile.export_data = false;
+                                $scope.profile.import_data = false;
+                                $scope.profile.word_pdf_download = false;
+                                $scope.profile.lead_convert = false;
+                                $scope.profile.document_search = false;
+                                $scope.profile.tasks = false;
+                                $scope.profile.calendar = false;
+                                $scope.profile.newsfeed = false;
+                                $scope.profile.report = false;
+                                $scope.profile.dashboard = true;
+                                $scope.profile.home = false;
+                                $scope.profile.collective_annual_leave = false;
+                                $scope.profile.permissions = $filter('filter')($scope.profiles, { is_persistent: true, has_admin_rights: true })[0].permissions;
                                 //Create
                                 var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
                                 $scope.profile.PageStart = dashboard;
@@ -120,16 +120,16 @@ angular.module('primeapps')
                 var isValid = true;
                 var existingProfile = null;
 
-                if (!$scope.profile.ID) {
-                    existingProfile = $filter('filter')($scope.profilesCopy, { Name: $scope.profile.Name }, true)[0];
+                if (!$scope.profile.id) {
+                    existingProfile = $filter('filter')($scope.profilesCopy, { Name: $scope.profile.name }, true)[0];
 
                     if (existingProfile)
                         isValid = false;
                 }
                 else {
-                    existingProfile = $filter('filter')($scope.profilesCopy, { Name: $scope.profile.Name }, true)[0];
+                    existingProfile = $filter('filter')($scope.profilesCopy, { Name: $scope.profile.name }, true)[0];
 
-                    if (existingProfile && existingProfile.ID !== $scope.profile.ID)
+                    if (existingProfile && existingProfile.id !== $scope.profile.id)
                         isValid = false;
                 }
 
@@ -146,12 +146,12 @@ angular.module('primeapps')
                     $scope.profileSubmit = true;
                     var result = null;
 
-                    $scope.profile.startpage = $scope.profile.PageStart.valueLower;
+                    $scope.profile.start_page = $scope.profile.PageStart.valueLower;
                     var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
 
                     $scope.profile[setPage.value] = true;
 
-                    if (!$scope.profile.ID) {
+                    if (!$scope.profile.id) {
                         result = ProfileService.create($scope.profile);
                     }
                     else {

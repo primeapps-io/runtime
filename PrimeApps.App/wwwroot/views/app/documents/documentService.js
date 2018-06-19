@@ -53,7 +53,7 @@ angular.module('primeapps')
 
                 update: function (id, instanceId, name, description, recordId, moduleId) {
                     return $http.post(config.apiUrl + 'Document/Modify', {
-                        Id: id,
+                        id: id,
                         FileName: name,
                         Description: description,
                         InstanceID: instanceId,
@@ -101,11 +101,11 @@ angular.module('primeapps')
                     }
 
                     angular.forEach(documentsResultSet.Documents, function (document) {
-                        var compareData = document.CreatedBy.Id;
+                        var compareData = document.CreatedBy.id;
                         if(!compareData){
                             compareData = document.CreatedBy;
                         }
-                        var createdBy = $filter('filter')(users, {Id: compareData}, true)[0];
+                        var createdBy = $filter('filter')(users, {id: compareData}, true)[0];
                         document.CreatedBy = createdBy;
                         document.Timestamp = helper.getTime(document.CreatedTime);
                         document.Extension = helper.getFileExtension(document.Name);

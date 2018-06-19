@@ -62,7 +62,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 return;
 
             $scope.confirming = false;
-            AppService.changeTenant($rootScope.user.ID, tenant.TenantId, tenant.AppId, tenant.Email)
+            AppService.changeTenant($rootScope.user.id, tenant.TenantId, tenant.AppId, tenant.Email)
                 .then(function (response) {
                     if (response.status === 200) {
                         var domain = 'http://localhost:5554';

@@ -52,7 +52,7 @@ angular.module('primeapps')
                             $scope.documentUpdating = true;
                             var documentName = $scope.editedDocument.NamePlain.trim() + '.' + $scope.editedDocument.Extension;
 
-                            DocumentService.update($scope.editedDocument.ID, $scope.$root.workgroup.instanceID, documentName, $scope.editedDocument.Description, $scope.editedDocument.RecordId, $scope.editedDocument.ModuleId)
+                            DocumentService.update($scope.editedDocument.id, $scope.$root.workgroup.instanceID, documentName, $scope.editedDocument.description, $scope.editedDocument.RecordId, $scope.editedDocument.ModuleId)
                                 .then(function () {
                                     $scope.documentUpdating = false;
                                     $scope.editedDocument = null;
@@ -140,10 +140,10 @@ angular.module('primeapps')
                         };
 
                         $scope.downloadDocument = function (document) {
-                            DocumentService.getDocument(document.ID)
+                            DocumentService.getDocument(document.id)
                                 .then(function (doc) {
                                     if (doc.data) {
-                                        $window.open("/attach/download?fileId=" + document.ID, "_blank");
+                                        $window.open("/attach/download?fileId=" + document.id, "_blank");
                                         //var downloadUrl = $scope.getDownloadUrl(document);
                                         //if(downloadUrl){
                                         //$window.location = downloadUrl;
@@ -158,7 +158,7 @@ angular.module('primeapps')
                         };
 
                         $scope.getDownloadUrl = function (document) {
-                            return config.apiUrl + 'Document/Download?fileID=' + document.ID + '&access_token=' + $localStorage.read('access_token');
+                            return config.apiUrl + 'Document/Download?fileID=' + document.id + '&access_token=' + $localStorage.read('access_token');
                         };
 
                         $scope.showLightBox = function (fileData, Index) {

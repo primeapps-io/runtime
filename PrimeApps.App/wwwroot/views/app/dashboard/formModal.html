@@ -31,7 +31,7 @@
                         </div>
                         <div class="row"
                              style="margin-bottom: 5px"
-                             ng-if="user.profile.HasAdminRights"
+                             ng-if="user.profile.has_admin_rights"
                              ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.profile_id.$invalid}">
 
                             <label ng-if="!currentDashboard.id" name="name"
@@ -45,7 +45,7 @@
                                                name="profile_id"
                                                required
                                                ng-model="currentDashboard.profile_id"
-                                               ng-value="profile.Id">
+                                               ng-value="profile.id">
                                         {{ profile.Name }}
                                     </label>
 

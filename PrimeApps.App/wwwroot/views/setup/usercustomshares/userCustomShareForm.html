@@ -23,7 +23,7 @@
                                         tabindex="1"
                                         required
                                         ng-model="userOwner.user"
-                                        ng-options="o.Id as  o.userName + ' - ' + o.email for o in users">
+                                        ng-options="o.id as  o.userName + ' - ' + o.email for o in users">
                                     <option value="">{{'Setup.Workflow.ApprovelProcess.SelectUser' | translate}}</option>
                                 </select>
                             </div>
@@ -36,7 +36,7 @@
                                         tabindex="1"
                                         required
                                         ng-model="userOwner.shared_user"
-                                        ng-options="o.Id as  o.userName + ' - ' + o.email for o in users">
+                                        ng-options="o.id as  o.userName + ' - ' + o.email for o in users">
                                     <option value="">{{'Setup.Workflow.ApprovelProcess.SelectUser' | translate}}</option>
                                 </select>
                             </div>

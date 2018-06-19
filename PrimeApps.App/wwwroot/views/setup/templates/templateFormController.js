@@ -13,13 +13,13 @@ angular.module('primeapps')
                 template.permissions = [];
 
                 angular.forEach($rootScope.profiles, function (profile) {
-                    if (profile.IsPersistent && profile.HasAdminRights)
-                        profile.Name = $filter('translate')('Setup.Profiles.Administrator');
+                    if (profile.is_persistent && profile.has_admin_rights)
+                        profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                    if (profile.IsPersistent && !profile.HasAdminRights)
-                        profile.Name = $filter('translate')('Setup.Profiles.Standard');
+                    if (profile.is_persistent && !profile.has_admin_rights)
+                        profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                    template.permissions.push({ profile_id: profile.Id, profile_name: profile.Name, type: 'full', profile_is_admin: profile.HasAdminRights });
+                    template.permissions.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
 
                     $scope.temp = template.permissions;
                 });
@@ -34,9 +34,9 @@ angular.module('primeapps')
             else {
                 if (template.permissions && template.permissions.length > 0) {
                     angular.forEach(template.permissions, function (permission) {
-                        var profile = $filter('filter')($rootScope.profiles, { Id: permission.profile_id }, true)[0];
+                        var profile = $filter('filter')($rootScope.profiles, { id: permission.profile_id }, true)[0];
                         permission.profile_name = profile.Name;
-                        permission.profile_is_admin = profile.HasAdminRights
+                        permission.profile_is_admin = profile.has_admin_rights
                     });
                 }
                 else {
@@ -68,9 +68,9 @@ angular.module('primeapps')
                         }
 
                         angular.forEach(template.data.permissions, function (permission) {
-                            var profile = $filter('filter')($rootScope.profiles, { Id: permission.profile_id }, true)[0];
-                            permission.profile_name = profile.Name;
-                            permission.profile_is_admin = profile.HasAdminRights
+                            var profile = $filter('filter')($rootScope.profiles, { id: permission.profile_id }, true)[0];
+                            permission.profile_name = profile.name;
+                            permission.profile_is_admin = profile.has_admin_rights
                         });
 
                         $scope.getDownloadUrl();

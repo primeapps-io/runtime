@@ -12,13 +12,13 @@ angular.module('primeapps')
                         var user = workgroupUser;
 
                         angular.forEach(profiles, function (profile) {
-                            if (profile.UserIDs.indexOf(workgroupUser.Id) > -1) {
+                            if (profile.UserIDs.indexOf(workgroupUser.id) > -1) {
                                 user.profile = profile;
                             }
                         });
 
                         angular.forEach(roles, function (role) {
-                            if (role.users.indexOf(workgroupUser.Id) > -1) {
+                            if (role.users.indexOf(workgroupUser.id) > -1) {
                                 user.role = role;
                             }
                         });
@@ -59,7 +59,7 @@ angular.module('primeapps')
 
                 dismiss: function (user, instanceId) {
                     return $http.post(config.apiUrl + 'Instance/Dismiss', {
-                        UserID: user.ID,
+                        UserID: user.id,
                         EMail: user.email,
                         HasAccount: user.hasAccount,
                         InstanceID: instanceId

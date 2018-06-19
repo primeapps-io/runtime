@@ -123,7 +123,7 @@ angular.module('primeapps')
                     var profileList = [];
                     if(workflow.profile_list.length > 0){
                         for(var k=0; k < workflow.profile_list.length ; k++){
-                            var profile = $filter('filter')($rootScope.profiles, { Id: parseInt(workflow.profile_list[k]) }, true)[0];
+                            var profile = $filter('filter')($rootScope.profiles, { id: parseInt(workflow.profile_list[k]) }, true)[0];
                             profileList.push(profile);
                         }
                     }
@@ -250,9 +250,9 @@ angular.module('primeapps')
                         for (var j = 0; j < workflowModel.profiles.length; j++){
                             var profile = workflowModel.profiles[j];
                             if(profiles === null)
-                                profiles = profile.Id;
+                                profiles = profile.id;
                             else
-                                profiles += ',' + profile.Id;
+                                profiles += ',' + profile.id;
                         }
                     }
 

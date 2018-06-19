@@ -76,7 +76,7 @@ angular.module('primeapps')
                     angular.forEach(fields, function (value) {
                         var newValue = {};
                         angular.copy(value, newValue);
-                        newValue.ValueId = value.ID;
+                        newValue.ValueId = value.id;
 
                         switch (value.Type) {
                             case 3:
@@ -134,7 +134,7 @@ angular.module('primeapps')
                     allEntityTypes.push({id: entityTypes.activity, name: $filter('translate')('Activity.Activity')});
 
                     angular.forEach(workGroupEntityTypes, function (workGroupEntityType) {
-                        allEntityTypes.push({id: workGroupEntityType.ID, name: workGroupEntityType.Title});
+                        allEntityTypes.push({id: workGroupEntityType.id, name: workGroupEntityType.Title});
                     });
 
                     return allEntityTypes;

@@ -7,7 +7,7 @@ angular.module('primeapps')
 
             $scope.reportModel = {};
             $scope.reportModel.category_id = parseInt($location.search().categoryId);
-            $scope.ReportId = parseInt($location.search().Id);
+            $scope.ReportId = parseInt($location.search().id);
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
             $scope.reportModel.chart = {};
@@ -294,9 +294,9 @@ angular.module('primeapps')
                                             else {
                                                 if (value != '-') {
                                                     var userItem =
-                                                        $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
+                                                        $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0
                                                             ];
-                                                    user.id = userItem.Id;
+                                                    user.id = userItem.id;
                                                     user.email = userItem.Email;
                                                     user.full_name = userItem.FullName;
                                                 }

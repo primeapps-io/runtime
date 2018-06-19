@@ -27,7 +27,7 @@ angular.module('primeapps')
                 transferProfiles.splice(index, 1);
                 $scope.transferProfiles = transferProfiles;
 
-                $scope['deletePopover' + profile.ID] = $scope['deletePopover' + profile.ID] || $popover(angular.element(document.getElementById('deleteButton' + profile.ID)), {
+                $scope['deletePopover' + profile.id] = $scope['deletePopover' + profile.ID] || $popover(angular.element(document.getElementById('deleteButton' + profile.ID)), {
                         templateUrl: 'views/setup/profiles/profileDelete.html',
                         placement: 'left',
                         scope: $scope,
@@ -38,15 +38,15 @@ angular.module('primeapps')
 
             $scope.delete = function (transferProfileId) {
                 if (!transferProfileId)
-                    transferProfileId = $scope.transferProfiles[0].ID;
+                    transferProfileId = $scope.transferProfiles[0].id;
 
                 $scope.profileDeleting = true;
 
-                ProfileService.remove($scope.selectedProfile.ID, transferProfileId, $rootScope.workgroup.instanceID)
+                ProfileService.remove($scope.selectedProfile.id, transferProfileId, $rootScope.workgroup.instanceID)
                     .then(function () {
                         $scope.profileDeleting = false;
                         ngToast.create({content: $filter('translate')('Setup.Profiles.DeleteSuccess'), className: 'success'});
-                        $scope['deletePopover' + $scope.selectedProfile.ID].hide();
+                        $scope['deletePopover' + $scope.selectedProfile.id].hide();
 
                         getProfiles();
                     })

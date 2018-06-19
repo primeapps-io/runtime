@@ -27,7 +27,7 @@
                      width: 50px;
                      height: 50px;  "
                 ></div>
-                <div class="input-group input-group-sm new-folder " ng-if="user.profile.HasAdminRights">
+                <div class="input-group input-group-sm new-folder " ng-if="user.profile.has_admin_rights">
                     <button data-title="Klasör  Adı"
 
                             ng-click="categoryEditModalOpen('create',{created_by_id:0,name:''})"
@@ -46,7 +46,7 @@
                          bs-collapse>
                         <div class="panel panel-default"
                              ng-repeat="item in ReportCateogryies | filter : item | orderBy : order"
-                             ng-if="item.user_id==user.ID || item.user_id==null">
+                             ng-if="item.user_id==user.id || item.user_id==null">
                             <div class="panel-heading" role="tab">
                                 <h4 class="panel-title">
 
@@ -118,7 +118,7 @@
                            confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}"
                            title="{{'Common.Delete' | translate}}"
                            class="btn btn-sm btn-custom pull-right " role="button"
-                           ng-if="currentReport.created_by_id === user.ID  || user.profile.HasAdminRights">
+                           ng-if="currentReport.created_by_id === user.id  || user.profile.has_admin_rights">
                             {{'Common.Delete' |
                             translate}}</a>
                         <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id+'&clone=true' }}"
@@ -130,7 +130,7 @@
                         <a href="#/app/report?Id={{currentReport.id +'&categoryId='+ currentReport.category_id }}"
                            class="btn btn-sm btn-custom pull-right col-md-offset-0"
                            role="button" style="margin-left: 5px"
-                           ng-if="currentReport.created_by_id === user.ID  || user.profile.HasAdminRights">
+                           ng-if="currentReport.created_by_id === user.id  || user.profile.has_admin_rights">
                             {{'Report.Edit' | translate}}
                         </a>
                         <a href="#/app/report?categoryId={{currentReport.category_id }}"

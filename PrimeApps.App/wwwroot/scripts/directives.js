@@ -472,7 +472,7 @@ angular.module('primeapps')
                         $scope.previousParentType = $scope.$parent.previousParentType;
                         $scope.previousParentId = $scope.$parent.previousParentId;
                         $scope.previousReturnTab = $scope.$parent.previousReturnTab;
-                        $scope.isAdmin = $rootScope.user.profile.HasAdminRights;
+                        $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
                         var counts = [10, 25, 50, 100];
                         var displayFields = $scope.relatedModule.display_fields;

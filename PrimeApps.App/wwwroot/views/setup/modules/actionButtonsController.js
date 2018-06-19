@@ -126,13 +126,13 @@ angular.module('primeapps')
                     actionButton.permissions = [];
 
                     angular.forEach($rootScope.profiles, function (profile) {
-                        if (profile.IsPersistent && profile.HasAdminRights)
+                        if (profile.is_persistent && profile.has_admin_rights)
                             profile.Name = $filter('translate')('Setup.Profiles.Administrator');
 
-                        if (profile.IsPersistent && !profile.HasAdminRights)
+                        if (profile.is_persistent && !profile.has_admin_rights)
                             profile.Name = $filter('translate')('Setup.Profiles.Standard');
 
-                        actionButton.permissions.push({ profile_id: profile.Id, profile_name: profile.Name, type: 'full', profile_is_admin: profile.HasAdminRights });
+                        actionButton.permissions.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
                     });
                 };
 
@@ -142,9 +142,9 @@ angular.module('primeapps')
                 else {
                     if (actionButton.permissions && actionButton.permissions.length > 0) {
                         angular.forEach(actionButton.permissions, function (permission) {
-                            var profile = $filter('filter')($rootScope.profiles, { Id: permission.profile_id }, true)[0];
-                            permission.profile_name = profile.Name;
-                            permission.profile_is_admin = profile.HasAdminRights
+                            var profile = $filter('filter')($rootScope.profiles, { id: permission.profile_id }, true)[0];
+                            permission.profile_name = profile.name;
+                            permission.profile_is_admin = profile.has_admin_rights
                         });
                     }
                     else {

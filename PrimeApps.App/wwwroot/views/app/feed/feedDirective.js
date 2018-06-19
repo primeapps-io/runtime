@@ -40,7 +40,7 @@ angular.module('primeapps')
                         FeedService.comment($rootScope.workgroup.instanceID, activity.ID, activity.comment, '')
                             .then(function () {
                                 var comment = {};
-                                comment.userID = $scope.$root.user.ID;
+                                comment.userID = $scope.$root.user.id;
                                 comment.userName = $scope.$root.user.firstName + ' ' + $scope.$root.user.lastName;
                                 comment.timeStamp = convert.toMsDate(new Date());
                                 comment.entityName = activity.comment;
@@ -93,7 +93,7 @@ angular.module('primeapps')
                                 .then(function (activityId) {
                                     var newFeed = {};
                                     newFeed.ID = activityId.data;
-                                    newFeed.userID = $scope.$root.user.ID;
+                                    newFeed.userID = $scope.$root.user.id;
                                     newFeed.userName = $scope.$root.user.firstName + ' ' + $scope.$root.user.lastName;
                                     newFeed.timeStamp = convert.toMsDate(new Date());
                                     newFeed.entityName = text;

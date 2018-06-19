@@ -10,7 +10,7 @@
             </li>
             <li ng-repeat="user in users">
                 <label class="ui-radio">
-                    <input type="radio" name="createdBy" ng-checked="$parent.filter.CreatedBy == user.Id" ng-click="filterDocuments(user.Id); $hide();"><span>{{user.FullName}}</span>
+                    <input type="radio" name="createdBy" ng-checked="$parent.filter.CreatedBy == user.id" ng-click="filterDocuments(user.Id); $hide();"><span>{{user.FullName}}</span>
                 </label>
             </li>
         </ul>

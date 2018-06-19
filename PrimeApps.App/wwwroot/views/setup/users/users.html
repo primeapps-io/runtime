@@ -49,9 +49,9 @@
                                 <td>{{userItem.profile.Name}}</td>
                                 <td>{{userItem.role['label_'+language]}}</td>
                                 <td class="text-right">
-                                    <button type="button" id="editButton{{userItem.Id}}" class="btn btn-xs btn-custom" ng-if="!userItem.isAdmin && userItem.hasAccount" ng-hide="helper.hasAdminRights() && userItem.Id === user.ID" ng-click="showEditForm(userItem)">{{'Common.Edit' | translate}}</button>
+                                    <button type="button" id="editButton{{userItem.id}}" class="btn btn-xs btn-custom" ng-if="!userItem.isAdmin && userItem.hasAccount" ng-hide="helper.hasAdminRights() && userItem.Id === user.id" ng-click="showEditForm(userItem)">{{'Common.Edit' | translate}}</button>
                                     <button type="button" class="btn btn-xs btn-custom" ng-if="!userItem.isAdmin"
-                                            ng-hide="userItem.profile.HasAdminRights && userItem.Id === user.ID"
+                                            ng-hide="userItem.profile.has_admin_rights && userItem.id === user.id"
                                             data-template-url="views/setup/users/userDelete.html"
                                             data-auto-close="true" data-placement="left" bs-popover>{{'Common.Remove' |
                                         translate}}

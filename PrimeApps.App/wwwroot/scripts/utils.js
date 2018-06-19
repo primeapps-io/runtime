@@ -620,7 +620,7 @@ angular.module('primeapps')
                     if ($rootScope.user.profile.has_admin_rights)
                         return true;
 
-                    if (record.shared_users && record.shared_users.indexOf($rootScope.user.ID) > -1) {
+                    if (record.shared_users && record.shared_users.indexOf($rootScope.user.id) > -1) {
                         if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.id) > -1)
                             return true;
 
@@ -635,7 +635,7 @@ angular.module('primeapps')
                     }
 
                     if (record.shared_user_groups && $rootScope.user.groups.length) {
-                        if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.ID) > -1)
+                        if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.id) > -1)
                             return true;
 
                         if (record.shared_user_groups_edit) {

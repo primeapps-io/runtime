@@ -77,7 +77,7 @@ angular.module('primeapps')
 
             $scope.change = function () {
                 $scope.licenseChanging = true;
-                var licenseId = $rootScope.licenseStatus.License.ID;
+                var licenseId = $rootScope.licenseStatus.License.id;
                 var frequency = $scope.licenseInfo.CurrentPaymentFrequency === 1 ? 12 : 1;
 
                 LicenseService.change(licenseId, frequency)

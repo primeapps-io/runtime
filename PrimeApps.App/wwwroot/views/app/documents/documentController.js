@@ -30,7 +30,7 @@ angular.module('primeapps')
             if (recordId && type) {
                 if (recordId === null && type === null) {
                     $scope.title = $filter('translate')('Dashboard.AllDocuments');
-                    $scope.filter.CreatedBy = $rootScope.user.ID;
+                    $scope.filter.CreatedBy = $rootScope.user.id;
                 }
                 else {
                     ModuleService.getRecord($scope.module.name, recordId).then(function (response) {
@@ -83,7 +83,7 @@ angular.module('primeapps')
                     if (!document.Name)
                         return;
 
-                    if (document.Name.toLowerCase().indexOf(searchKey.toLowerCase()) > -1 || document.Description.toLowerCase().indexOf(searchKey.toLowerCase()) > -1)
+                    if (document.Name.toLowerCase().indexOf(searchKey.toLowerCase()) > -1 || document.description.toLowerCase().indexOf(searchKey.toLowerCase()) > -1)
                         searchedDocuments.push(document);
 
                 });

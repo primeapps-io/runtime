@@ -173,7 +173,7 @@ angular.module('primeapps')
                 var views = cache['views'];
                 $scope.view = angular.copy($filter('filter')(views, { id: parseInt(id) }, true)[0]);
                 $scope.view.label = $scope.view['label_' + $rootScope.language];
-                $scope.isOwner = $scope.view.created_by === $rootScope.user.ID;
+                $scope.isOwner = $scope.view.created_by === $rootScope.user.id;
 
                 if (!$scope.view) {
                     $state.go('app.moduleList', { type: module.name });
@@ -321,9 +321,9 @@ angular.module('primeapps')
                                         else {
                                             if (value != '-') {
                                                 var userItem =
-                                                    $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0
+                                                    $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0
                                                         ];
-                                                user.id = userItem.Id;
+                                                user.id = userItem.id;
                                                 user.email = userItem.Email;
                                                 user.full_name = userItem.FullName;
                                             }

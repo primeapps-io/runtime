@@ -24,7 +24,7 @@ angular.module('primeapps')
                 },
 
                 processTask: function (task, taskStatusCompletedPicklistItem) {
-                    var assignedTo = $filter('filter')($rootScope.users, { Id: task['owner.users.id'] }, true)[0];
+                    var assignedTo = $filter('filter')($rootScope.users, { id: task['owner.users.id'] }, true)[0];
 
                     if (!assignedTo)
                         return;
@@ -55,7 +55,7 @@ angular.module('primeapps')
                 prepareTask: function (task, taskStatusNotStartedPicklistItem) {
                     var taskModel = {};
                     taskModel.subject = task.subject;
-                    taskModel.owner = task.assignedTo.Id;
+                    taskModel.owner = task.assignedTo.id;
 
                     var dateParts = moment(task.task_due_date).format().split('+');
                     taskModel.task_due_date = dateParts[0];

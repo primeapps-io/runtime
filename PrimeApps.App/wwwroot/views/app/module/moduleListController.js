@@ -13,7 +13,7 @@ angular.module('primeapps')
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
             $scope.lookupUser = helper.lookupUser;
             $scope.searchingDocuments = false;
-            $scope.isAdmin = $rootScope.user.profile.HasAdminRights;
+            $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -546,7 +546,7 @@ angular.module('primeapps')
                             $scope.isShownWarning = true;
                             for (var i = 0; i < $scope.quoteTemplates.length; i++) {
                                 var quoteTemplate = $scope.quoteTemplates[i];
-                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
                                 if (currentQuoteTemplate.type === 'none') {
                                     quoteTemplate.isShown = false;
                                 } else {
@@ -636,8 +636,8 @@ angular.module('primeapps')
                                     user.full_name = $filter('translate')('Common.LoggedInUser');
                                 }
                                 else {
-                                    var userItem = $filter('filter')($rootScope.users, { Id: parseInt(value) }, true)[0];
-                                    user.id = userItem.Id;
+                                    var userItem = $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0];
+                                    user.id = userItem.id;
                                     user.email = userItem.Email;
                                     user.full_name = userItem.FullName;
 
@@ -772,7 +772,7 @@ angular.module('primeapps')
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
                             } else if (record.process_status === 3) {
                                 updateTime = record["process_request.updated_at"];
-                                rejectApprover = $filter('filter')($rootScope.users, { Id: record["process_request.updated_by"] }, true)[0].FullName;
+                                rejectApprover = $filter('filter')($rootScope.users, { id: record["process_request.updated_by"] }, true)[0].FullName;
                                 $scope.rejectApprover = rejectApprover;
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
                             }

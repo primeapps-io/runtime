@@ -68,7 +68,7 @@ angular.module('primeapps')
                                 $scope.$parent.currentPage = $scope.$parent.currentPage + 1;
 
                                 if (notes.length === 0) {
-                                    if ($scope.user.profile.HasAdminRights)
+                                    if ($scope.user.profile.has_admin_rights)
                                         $scope.$parent.allNotesLoaded = true;
                                     else {
                                         if ($scope.$parent.allNotesLoaded)
@@ -245,7 +245,7 @@ angular.module('primeapps')
                     $scope.like = function (note, type) {
                         var request = {
                             note_id: note.id,
-                            user_id: $scope.user.ID
+                            user_id: $scope.user.id
                         };
 
                         NoteService.like(request)
