@@ -23,7 +23,7 @@ namespace PrimeApps.App.Controllers
         private readonly IRecordRepository _recordRepository;
         private readonly IModuleRepository _moduleRepository;
 
-        public TemplateController(TemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository)
+        public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository)
         {
             _templateRepostory = templateRepostory;
             _userRepository = userRepository;

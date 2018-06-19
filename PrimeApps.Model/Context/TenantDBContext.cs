@@ -689,7 +689,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Setting>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Setting>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Setting>().HasIndex(x => x.Deleted);
-
+           
             //Template
             modelBuilder.Entity<Template>().HasIndex(x => new { x.Id, x.Code }).IsUnique();
             modelBuilder.Entity<Template>().HasIndex(x => x.SharingType);
