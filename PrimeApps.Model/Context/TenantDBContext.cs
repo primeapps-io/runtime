@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PrimeApps.Model.Context
 {
@@ -27,19 +28,13 @@ namespace PrimeApps.Model.Context
         }
 
         /// <summary>
-        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
+        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for Platform database specific operations. 
         /// Instead use <see cref="PlatformDBContext"/> 
         /// </summary>
-        public TenantDBContext() : base()
-        {
-            //Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
-            //Configuration.LazyLoadingEnabled = false;
-            //Configuration.ProxyCreationEnabled = false;
-        }
-        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options)
-        {
+        public TenantDBContext() { }
 
-        }
+        public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options) { }
+
         /// <summary>
         /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
         /// Instead use <see cref="PlatformDBContext"/> 
@@ -60,13 +55,11 @@ namespace PrimeApps.Model.Context
         {
             base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(databaseName);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateCustomModelMapping(modelBuilder);
+            modelBuilder.HasDefaultSchema("public");
 
             base.OnModelCreating(modelBuilder);
         }
