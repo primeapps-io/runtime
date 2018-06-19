@@ -21,7 +21,7 @@ angular.module('primeapps')
                     $scope.sipProviderUpdating = true;
                     var sipProvider = {};
                     sipProvider.provider = $scope.sipProvider;
-                    sipProvider.CompanyKey = $scope.sipCompanyKey;
+                    sipProvider.company_key = $scope.sipCompanyKey;
                     PhoneSettingsService.saveSipProvider(sipProvider).then(function () {
                         ngToast.create({ content: $filter('translate')('Setup.Settings.UpdateSuccess'), className: 'success' });
                         $scope.sipProviderUpdating = false;
@@ -85,11 +85,11 @@ angular.module('primeapps')
             $scope.addSipAccount = function (sipAccount) {
                 if (sipAccount && sipAccount.Extension && sipAccount.Password && sipAccount.UserId && $scope.sipProvider) {
                     $scope.userInviting = true;
-                    sipAccount.Connector = $scope.sipProvider;
+                    sipAccount.connector = $scope.sipProvider;
                     sipAccount.company_key = $scope.sipCompanyKey;
-                    sipAccount.UserId = parseInt(sipAccount.UserId);
-                    sipAccount.RecordDetailModuleName = sipAccount.RecordDetailModuleName.name;
-                    sipAccount.RecordDetailPhoneFieldName = sipAccount.RecordDetailPhoneFieldName.name;
+                    sipAccount.user_id = parseInt(sipAccount.UserId);
+                    sipAccount.record_detail_module_name = sipAccount.RecordDetailModuleName.name;
+                    sipAccount.record_detail_phone_field_name = sipAccount.RecordDetailPhoneFieldName.name;
 
                     PhoneSettingsService.saveSipAccount(sipAccount)
                         .then(function (response) {
