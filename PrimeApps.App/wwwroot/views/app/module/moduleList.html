@@ -13,11 +13,11 @@
                     </select>
                 </div>
                 <div class="view-action-buttons pull-right">
-                    <a href="#app/crm/viewForm/{{type}}?id={{view.id}}" ng-if="view.created_by === user.id || user.profile.has_admin_rights">{{'Common.Edit' | translate}}</a>
+                    <a href="#app/viewForm/{{type}}?id={{view.id}}" ng-if="view.created_by === user.id || user.profile.has_admin_rights">{{'Common.Edit' | translate}}</a>
                     <span ng-if="view.created_by == user.id || user.profile.has_admin_rights"> |</span>
                     <a href confirm-click action="deleteView(view.id)" placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}"  confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)">{{'Common.Delete' | translate}}</a>
                     <span ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)"> |</span>
-                    <a href="#app/crm/viewForm/{{type}}">{{'Common.Create' | translate}}</a>
+                    <a href="#app/viewForm/{{type}}">{{'Common.Create' | translate}}</a>
                 </div>
             </div>
             <div class="pull-right" ng-if="isAvailableForSmallDevice()">

@@ -24,7 +24,7 @@ namespace PrimeApps.Model.Repositories
         public Template GetByCode(string code, LanguageType language = LanguageType.Tr)
         {
 
-            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language==language);
+            var template = DbContext.Templates.FirstOrDefault(x => x.Code == code && x.Language == language);
 
             return template;
         }
