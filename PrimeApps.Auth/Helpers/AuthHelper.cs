@@ -1,22 +1,25 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Repositories.Interfaces;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
 namespace PrimeApps.Auth.Helpers
 {
-    public class AuthHelper
-    {
-		public static async Task<JObject> GetApplicationInfo(IConfiguration configuration, HttpRequest request, string returnUrl, string language)
+	public class AuthHelper
+	{
+		public static JObject GetApplicationInfo(IConfiguration configuration, HttpRequest request, HttpResponse response, string returnUrl, IPlatformRepository platformRepository)
 		{
-
-			//Thread.CurrentThread.CurrentUICulture = language == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
+			var _language = request.Cookies[".AspNetCore.Culture"].Split("uic=")[1];
 
 			var cdnUrlStatic = "";
 			var cdnUrl = configuration.GetSection("webOptimizer")["cdnUrl"];
@@ -26,6 +29,7 @@ namespace PrimeApps.Auth.Helpers
 				cdnUrlStatic = cdnUrl + "/" + versionStatic;
 			}
 
+			var primeLang = _language ?? "tr";
 			var json = @"{
 							app: 'primeapps', 
 							title: 'PrimeApps', 
@@ -35,77 +39,54 @@ namespace PrimeApps.Auth.Helpers
 							"desc_en:'BUILD POWERFUL BUSINESS APPS 10X FASTER', " +
 							"color: '#555198', " +
 							"customDomain: false, " +
-							"language: '', " +
+							"language: '" + primeLang + "', " +
 							"favicon: '" + cdnUrlStatic + "/images/favicon/primeapps.ico'," +
-							"cdnUrl: '"+ cdnUrlStatic + "'" +
+							"cdnUrl: '" + cdnUrlStatic + "'" +
 						"}";
 
 
 			Uri url = null;
 
-			if ((returnUrl.Split("&")).Length > 1)
+			if (!string.IsNullOrEmpty(returnUrl) && (returnUrl.Split("&")).Length > 1)
 				url = new Uri(HttpUtility.UrlDecode((returnUrl.Split("&")).Where(x => x.Contains("redirect_uri")).FirstOrDefault().Split("redirect_uri=")[1]));
 
-			if (url != null && !url.Authority.Contains("localhost"))
+			if (url != null /*&& !url.Authority.Contains("localhost")*/)
 			{
-				var apiUrl = url.Scheme + "://" + url.Authority + "/api/platform/get_domain_info?domain=" + url.Authority;
+				var result = platformRepository.GetAppInfo(url.Authority);
 
-				using (var httpClient = new HttpClient())
+				if (string.IsNullOrWhiteSpace(_language))
 				{
-					httpClient.BaseAddress = new Uri(apiUrl);
-					httpClient.DefaultRequestHeaders.Accept.Clear();
-					httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+					_language = result.Setting.Language ?? "tr";
+				}
 
-					var response = await httpClient.GetAsync(apiUrl);
-					var customerJsonString = await response.Content.ReadAsStringAsync();
-					var deserialized = JsonConvert.DeserializeObject(custome‌​rJsonString);
+				if (result != null)
+				{
+					var title = result.Setting.Title ?? "";
+					var description = result.Setting.Description ?? "";
+					var color = result.Setting.Color ?? "#555198";
+					var favicon = result.Setting.Favicon ?? cdnUrlStatic + "/images/favicon/primeapps.ico";
+					var image = result.Setting.Image ?? null;
+					//Thread.CurrentThread.CurrentUICulture = lang == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
+					json = @"{app: 'primeapps', title: '" + title + "', logo: '" + result.Logo + "', desc_tr:'" + description + "', desc_en:'" + description + "', color: '" + color + "', customDomain: true, language: '" + _language + "', favicon: '" + favicon + "', customImage: '" + image + "', cdnUrl: '" + cdnUrlStatic + "' }";
 
-					if (response.IsSuccessStatusCode)
-					{
-						//ViewBag.AppInfo = deserialized;
+					//SetLanguage(response, request, _language);
+					return JObject.Parse(json);
 
-						using (var content = response.Content)
-						{
-							var result = content.ReadAsStringAsync().Result;
-							if (result != "")
-							{
-								var jsonResult = JObject.Parse(result);
-								var title = !string.IsNullOrEmpty(jsonResult["title"].ToString()) ? jsonResult["Title"] : "PrimeApps";
-								var description = !string.IsNullOrEmpty(jsonResult["Description"].ToString())? jsonResult["Description"] : "";
-								var color = !string.IsNullOrEmpty(jsonResult["Color"].ToString()) ? jsonResult["Color"] : "#555198";
-								var lang = !string.IsNullOrEmpty(jsonResult["Language"].ToString())? (string)jsonResult["Language"] : string.Empty;
-								var favicon = !string.IsNullOrEmpty(jsonResult["Favicon"].ToString()) ? jsonResult["Favicon"] : cdnUrlStatic + "/images/favicon/primeapps.ico";
-								var image = !string.IsNullOrEmpty(jsonResult["Image"].ToString()) ? jsonResult["Image"] : null;
-								//Thread.CurrentThread.CurrentUICulture = lang == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
-								json = @"{app: 'primeapps', title: '" + title + "', logo: '" + jsonResult["Logo"] + "', desc_tr:'" + description + "', desc_en:'" + description + "', color: '" + color + "', customDomain: true, language: '" + lang + "', favicon: '" + favicon + "', customImage: '" + image + "' }";
-								return JObject.Parse(json);
-							}
-						}
-					}
 				}
 			}
+			if (string.IsNullOrWhiteSpace(_language))
+				_language = "tr";
+
+			//SetLanguage(response, request, _language);
 			return JObject.Parse(json);
 		}
-		
-		public static void SetLanguae(HttpRequest response, string lang)
+		/*public static void SetLanguage(HttpResponse response, HttpRequest request, string lang)
 		{
-			if (string.IsNullOrWhiteSpace(lang))
-				lang = "tr";
-
-			/*var cookieVisitor = new HttpCookie("_lang", lang) { Expires = DateTime.Now.AddYears(20) };
-			response.Cookies.Add(cookieVisitor);*/
-		}
-
-		public static string GetLanguage(HttpRequest response)
-		{
-			var lang = response.Cookies["_lang"];
-			if (lang != null)
-			{
-				return lang.ToString();
-			}
-
-			SetLanguae(response, "tr");
-			return "tr";
-		}
+			response.Cookies.Append(
+				CookieRequestCultureProvider.DefaultCookieName,
+				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(lang)),
+				new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+			);
+		}*/
 	}
 }

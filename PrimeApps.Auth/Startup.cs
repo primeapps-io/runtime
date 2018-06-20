@@ -30,6 +30,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Repositories;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
+using Microsoft.AspNetCore.Localization.Routing;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace PrimeApps.Auth
 {
@@ -114,19 +116,7 @@ namespace PrimeApps.Auth
 
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddTransient<IPlatformRepository, PlatformRepository>();
-
-			services.Configure<RequestLocalizationOptions>(options =>
-			{
-				var supportedCultures = new[]
-				{
-					new CultureInfo("en-US"),
-					new CultureInfo("tr-TR")
-				};
-
-				options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
-				options.SupportedCultures = supportedCultures;
-				options.SupportedUICultures = supportedCultures;
-			});
+			services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
 
 			var builder = services.AddIdentityServer(options =>
 				{
@@ -226,23 +216,23 @@ namespace PrimeApps.Auth
 				app.UseHttpsRedirection();
 				app.UseHsts();
 			}
+
 			var supportedCultures = new[]
 			{
-				new CultureInfo("en-US"),
+				new CultureInfo("tr"),
 				new CultureInfo("tr-TR"),
 				new CultureInfo("en"),
-				new CultureInfo("tr"),
+				new CultureInfo("en-US")
 			};
 
 			app.UseRequestLocalization(new RequestLocalizationOptions
 			{
-				DefaultRequestCulture = new RequestCulture("en-US"),
+				DefaultRequestCulture = new RequestCulture("tr"),
 				// Formatting numbers, dates, etc.
 				SupportedCultures = supportedCultures,
 				// UI strings that we have localized.
 				SupportedUICultures = supportedCultures
 			});
-			
 
 
 			app.Use(async (ctx, next) =>

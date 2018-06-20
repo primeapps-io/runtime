@@ -117,43 +117,58 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CreateAccount" xml:space="preserve">
+    <value>Hesabımı Oluştur</value>
+  </data>
+  <data name="CreateInfo" xml:space="preserve">
+    <value>'Hesabımı Oluştur' butonuna tıklayarak {0}  ve {1} okumuş ve kabul etmiş sayılacaksınız.</value>
+  </data>
   <data name="Email" xml:space="preserve">
     <value>E-Posta</value>
   </data>
   <data name="EN" xml:space="preserve">
     <value>English</value>
   </data>
-  <data name="ForgotPassword" xml:space="preserve">
-    <value>Parolamı Unuttum</value>
+  <data name="FirstName" xml:space="preserve">
+    <value>Ad</value>
   </data>
-  <data name="LoginButton" xml:space="preserve">
-    <value>Giriş</value>
-  </data>
-  <data name="LoginRegisterInfo" xml:space="preserve">
-    <value>&lt;strong&gt;Uygulamanızı tüm özellikleri ile 15 gün ücretsiz&lt;/strong&gt; kullanmaya başlamak için {0}</value>
-  </data>
-  <data name="LoginRegisterInfoLink" xml:space="preserve">
-    <value>üye olmanız yeterli.</value>
-  </data>
-  <data name="Password" xml:space="preserve">
-    <value>Şifre</value>
-  </data>
-  <data name="SignWithOffice" xml:space="preserve">
-    <value>Office 365 ile hızlı erişim</value>
-  </data>
-  <data name="TR" xml:space="preserve">
-    <value>Türkçe</value>
-  </data>
-  <data name="WrongInfo" xml:space="preserve">
-    <value>Hatalı e-posta veya şifre girdiniz.</value>
+  <data name="Free" xml:space="preserve">
+    <value>&lt;strong&gt;Uygulamanızı tüm özellikleri ile 15 gün ücretsiz&lt;/strong&gt; kullanmak için aşağıdaki formu doldurmanız yeterli.</value>
   </data>
   <data name="InvalidEmail" xml:space="preserve">
     <value>Lütfen geçerli bir e-posta giriniz.</value>
   </data>
-  <data name="LoginFieldsRequired" xml:space="preserve">
-    <value>Lütfen e-posta adresinizi ve parolanızı giriniz.</value>
+  <data name="LastName" xml:space="preserve">
+    <value>Soyad</value>
+  </data>
+  <data name="LoginForm" xml:space="preserve">
+    <value>Hesabınız var mı? Giriş yapın</value>
+  </data>
+  <data name="NameMinimum" xml:space="preserve">
+    <value>Lütfen ad/soyad alanlarına minimum 2 (iki) karakter giriniz.</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Parola</value>
   </data>
   <data name="PasswordMinimum" xml:space="preserve">
     <value>Lütfen parola olarak minimum 6 (altı) karakter giriniz.</value>
+  </data>
+  <data name="Policy" xml:space="preserve">
+    <value>Ofisim.com Gizlilik Politikasını</value>
+  </data>
+  <data name="RegisterFieldsRequired" xml:space="preserve">
+    <value>Tüm alanların doldurulması zorunludur.</value>
+  </data>
+  <data name="RegisterWithOffice" xml:space="preserve">
+    <value>Office 365 ile hızlı kayıt</value>
+  </data>
+  <data name="Terms" xml:space="preserve">
+    <value>Ofisim.com Kullanım Sözleşmesi</value>
+  </data>
+  <data name="TR" xml:space="preserve">
+    <value>Türkçe</value>
+  </data>
+  <data name="UserExist" xml:space="preserve">
+    <value>{0} uygulamasına kayıtlı hesabınızla kayıt olmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla kayıt olmayı deneyin.</value>
   </data>
 </root>

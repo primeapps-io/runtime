@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeApps.Model.Entities.Platform
 {
-	[Table("app_template")]
+	[Table("app_templates")]
 	public class AppTemplate
 	{
 		[JsonIgnore]

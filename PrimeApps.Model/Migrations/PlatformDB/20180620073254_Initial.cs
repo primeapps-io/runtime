@@ -139,7 +139,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "warehouse",
+                name: "warehouses",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -157,15 +157,15 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_warehouse", x => x.id);
+                    table.PrimaryKey("PK_warehouses", x => x.id);
                     table.ForeignKey(
-                        name: "FK_warehouse_users_created_by",
+                        name: "FK_warehouses_users_created_by",
                         column: x => x.created_by,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_warehouse_users_updated_by",
+                        name: "FK_warehouses_users_updated_by",
                         column: x => x.updated_by,
                         principalTable: "users",
                         principalColumn: "id",
@@ -205,7 +205,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "app_template",
+                name: "app_templates",
                 columns: table => new
                 {
                     app_id = table.Column<int>(nullable: false),
@@ -221,9 +221,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_app_template", x => x.app_id);
+                    table.PrimaryKey("PK_app_templates", x => x.app_id);
                     table.ForeignKey(
-                        name: "FK_app_template_apps_app_id",
+                        name: "FK_app_templates_apps_app_id",
                         column: x => x.app_id,
                         principalTable: "apps",
                         principalColumn: "id",
@@ -509,48 +509,48 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "time_zone");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_active",
-                table: "app_template",
+                name: "IX_app_templates_active",
+                table: "app_templates",
                 column: "active");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_app_id",
-                table: "app_template",
+                name: "IX_app_templates_app_id",
+                table: "app_templates",
                 column: "app_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_language",
-                table: "app_template",
+                name: "IX_app_templates_language",
+                table: "app_templates",
                 column: "language");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_mail_sender_email",
-                table: "app_template",
+                name: "IX_app_templates_mail_sender_email",
+                table: "app_templates",
                 column: "mail_sender_email");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_mail_sender_name",
-                table: "app_template",
+                name: "IX_app_templates_mail_sender_name",
+                table: "app_templates",
                 column: "mail_sender_name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_name",
-                table: "app_template",
+                name: "IX_app_templates_name",
+                table: "app_templates",
                 column: "name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_subject",
-                table: "app_template",
+                name: "IX_app_templates_subject",
+                table: "app_templates",
                 column: "subject");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_system_code",
-                table: "app_template",
+                name: "IX_app_templates_system_code",
+                table: "app_templates",
                 column: "system_code");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_template_type",
-                table: "app_template",
+                name: "IX_app_templates_type",
+                table: "app_templates",
                 column: "type");
 
             migrationBuilder.CreateIndex(
@@ -919,28 +919,28 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "updated_at");
 
             migrationBuilder.CreateIndex(
-                name: "IX_warehouse_completed",
-                table: "warehouse",
+                name: "IX_warehouses_completed",
+                table: "warehouses",
                 column: "completed");
 
             migrationBuilder.CreateIndex(
-                name: "IX_warehouse_created_by",
-                table: "warehouse",
+                name: "IX_warehouses_created_by",
+                table: "warehouses",
                 column: "created_by");
 
             migrationBuilder.CreateIndex(
-                name: "IX_warehouse_database_name",
-                table: "warehouse",
+                name: "IX_warehouses_database_name",
+                table: "warehouses",
                 column: "database_name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_warehouse_tenant_id",
-                table: "warehouse",
+                name: "IX_warehouses_tenant_id",
+                table: "warehouses",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_warehouse_updated_by",
-                table: "warehouse",
+                name: "IX_warehouses_updated_by",
+                table: "warehouses",
                 column: "updated_by");
         }
 
@@ -950,7 +950,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 name: "app_settings");
 
             migrationBuilder.DropTable(
-                name: "app_template");
+                name: "app_templates");
 
             migrationBuilder.DropTable(
                 name: "exchange_rates");
@@ -977,7 +977,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 name: "user_tenants");
 
             migrationBuilder.DropTable(
-                name: "warehouse");
+                name: "warehouses");
 
             migrationBuilder.DropTable(
                 name: "teams");

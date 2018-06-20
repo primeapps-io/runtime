@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180611114919_Initial")]
+    [Migration("20180620073254_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -214,7 +214,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Type");
 
-                    b.ToTable("app_template");
+                    b.ToTable("app_templates");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
@@ -450,7 +450,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("warehouse");
+                    b.ToTable("warehouses");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Team", b =>

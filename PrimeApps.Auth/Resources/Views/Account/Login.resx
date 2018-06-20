@@ -144,4 +144,16 @@
   <data name="TR" xml:space="preserve">
     <value>Türkçe</value>
   </data>
+  <data name="WrongInfo" xml:space="preserve">
+    <value>E-mail or password is invalid.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Please enter a valid e-mail.</value>
+  </data>
+  <data name="LoginFieldsRequired" xml:space="preserve">
+    <value>Please enter your e-mail and password.</value>
+  </data>
+  <data name="PasswordMinimum" xml:space="preserve">
+    <value>Password must be minimum 6 characters.</value>
+  </data>
 </root>

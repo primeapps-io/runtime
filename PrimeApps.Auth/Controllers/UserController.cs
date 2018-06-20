@@ -121,8 +121,12 @@ namespace PrimeApps.Auth.Controllers
 				var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(activateModel), Encoding.UTF8, "application/json"));
 
 				if (!response.IsSuccessStatusCode)
-					return BadRequest(response);
-
+				{
+					if (response.StatusCode == HttpStatusCode.Conflict)
+						return Conflict(response);
+					else
+						return BadRequest(response);
+				}
 			}
 
 			if (User?.Identity.IsAuthenticated == true)
@@ -137,7 +141,7 @@ namespace PrimeApps.Auth.Controllers
 			if (signInResult.Succeeded)
 				await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
 
-			return Ok(@"{ message: 'User created', emailConfirmToken: '" + token + "' }");
+			return Created(appInfo.App.Setting.Domain, new { token, domain = appInfo.App.Setting.Domain });
 		}
 
 		[Route("confirm_token"), HttpGet]
