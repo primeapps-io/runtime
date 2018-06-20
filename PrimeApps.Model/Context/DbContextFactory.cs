@@ -49,7 +49,7 @@ namespace PrimeApps.Model.Context
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();
 
             Console.WriteLine("DbContextFactory.Create(string): Connection string: {0}", connectionString);
-
+			
             optionsBuilder.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("_migration_history", "public"))
                 .ReplaceService<IHistoryRepository, PostgreHistoryContext>();
 
