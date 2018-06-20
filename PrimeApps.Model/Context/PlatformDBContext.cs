@@ -1,19 +1,27 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Context
 {
     public class PlatformDBContext : DbContext
     {
-        /// <summary>
-        /// This context is designed to be used by Ofisim SaaS DB related operations. It uses by default "platform" database. For tenant operations do not use this context!
-        /// instead use <see cref="TenantDBContext"/>
-        /// </summary>
-        public PlatformDBContext() { }
+		/// <summary>
+		/// This context is designed to be used by Ofisim SaaS DB related operations. It uses by default "platform" database. For tenant operations do not use this context!
+		/// instead use <see cref="TenantDBContext"/>
+		/// </summary>
+		public PlatformDBContext() : base()
+		{
+		}
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+			=> optionsBuilder
+				.UseNpgsql("Server=pg-dev.ofisim.com;Port=5433;Database=platform;User Id=postgres;Password=0f!s!mCRMDev;", x => x.MigrationsHistoryTable("_migration_history", "public"))
+				.ReplaceService<IHistoryRepository, PostgreHistoryContext>();
 
-        public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
-
-        public static PlatformDBContext Create()
+		public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options)
+		{
+		}
+		public static PlatformDBContext Create()
         {
             return new PlatformDBContext();
         }
@@ -21,8 +29,8 @@ namespace PrimeApps.Model.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateCustomModelMapping(modelBuilder);
-
-            base.OnModelCreating(modelBuilder);
+			modelBuilder.HasDefaultSchema("public");
+			base.OnModelCreating(modelBuilder);
         }
 
         public void BuildIndexes(ModelBuilder modelBuilder)

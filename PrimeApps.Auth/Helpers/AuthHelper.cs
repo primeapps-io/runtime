@@ -19,7 +19,7 @@ namespace PrimeApps.Auth.Helpers
 	{
 		public static JObject GetApplicationInfo(IConfiguration configuration, HttpRequest request, HttpResponse response, string returnUrl, IPlatformRepository platformRepository)
 		{
-			var _language = request.Cookies[".AspNetCore.Culture"].Split("uic=")[1];
+			var _language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
 			var cdnUrlStatic = "";
 			var cdnUrl = configuration.GetSection("webOptimizer")["cdnUrl"];

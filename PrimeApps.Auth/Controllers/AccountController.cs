@@ -101,8 +101,8 @@ namespace PrimeApps.Auth.UI
 			ViewBag.Success = success;
 			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _platformRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
-
-			if (Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] != ViewBag.Language)
+			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
+			if (cookieLang != ViewBag.Language)
 				return RedirectToAction("ChangeLanguage", "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
 
 
@@ -189,7 +189,8 @@ namespace PrimeApps.Auth.UI
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			ViewBag.ReadOnly = false;
 
-			if (Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] != ViewBag.Language)
+			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
+			if (cookieLang != ViewBag.Language)
 				return RedirectToAction("ChangeLanguage", "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
 
 			return View();

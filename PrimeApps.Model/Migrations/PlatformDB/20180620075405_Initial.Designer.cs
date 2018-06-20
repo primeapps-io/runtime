@@ -10,13 +10,14 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180620073254_Initial")]
+    [Migration("20180620075405_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("public")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
                 .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
