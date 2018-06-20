@@ -12,7 +12,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<App>> AppGetAll(int userId);
         Task<int> AppCreate(App app);
         App GetAppInfo(string domain);
-        App GetAppInfo(int id);
+		App GetAppInfoWithAuth(string domain);
+		App GetAppInfo(int id);
 		TeamApp GetAppInfo(string organizationCode, string appCode);
 		Tenant GetTenant(int tenantId);
 		AppTemplate GetAppTemplate(int appId, AppTemplateType type, string systemCode, string language);

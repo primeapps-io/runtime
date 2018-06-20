@@ -99,7 +99,7 @@ namespace PrimeApps.App.Controllers
 				if (appTenant != null)
 				{
 					ModelState.AddModelError("", "User is already registered for this app.");
-					return BadRequest(ModelState);
+					return Conflict(ModelState);
 				}
 			}
 			else

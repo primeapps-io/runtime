@@ -21,6 +21,13 @@ namespace PrimeApps.Model.Repositories
 			return app;
 		}
 
+		public App GetAppInfoWithAuth(string domain)
+		{
+			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Setting.AuthDomain == domain);
+
+			return app;
+		}
+
 		public App GetAppInfo(int id)
 		{
 			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Id == id);

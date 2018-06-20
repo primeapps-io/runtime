@@ -212,7 +212,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Type");
 
-                    b.ToTable("app_template");
+                    b.ToTable("app_templates");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
@@ -448,7 +448,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("warehouse");
+                    b.ToTable("warehouses");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Team", b =>

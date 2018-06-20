@@ -9,7 +9,7 @@
 	if (ViewBag.AppInfo != null)
 	{
 		app = ViewBag.AppInfo["app"].Value;
-		desc = ViewBag.AppInfo["desc_" + ViewBag.Lang].Value;
+		desc = ViewBag.AppInfo["desc_" + ViewBag.Language].Value;
 		color = ViewBag.AppInfo["color"].Value;
 	}
 	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";

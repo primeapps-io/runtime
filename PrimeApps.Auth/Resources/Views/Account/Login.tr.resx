@@ -144,4 +144,16 @@
   <data name="TR" xml:space="preserve">
     <value>Türkçe</value>
   </data>
+  <data name="WrongInfo" xml:space="preserve">
+    <value>Hatalı e-posta veya şifre girdiniz.</value>
+  </data>
+  <data name="InvalidEmail" xml:space="preserve">
+    <value>Lütfen geçerli bir e-posta giriniz.</value>
+  </data>
+  <data name="LoginFieldsRequired" xml:space="preserve">
+    <value>Lütfen e-posta adresinizi ve parolanızı giriniz.</value>
+  </data>
+  <data name="PasswordMinimum" xml:space="preserve">
+    <value>Lütfen parola olarak minimum 6 (altı) karakter giriniz.</value>
+  </data>
 </root>

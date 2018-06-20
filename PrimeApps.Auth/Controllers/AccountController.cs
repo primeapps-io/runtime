@@ -26,6 +26,11 @@ using System.Threading;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Auth.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Auth.Models.UserViewModels;
+using System.Text;
+using System.Net;
 
 namespace PrimeApps.Auth.UI
 {
@@ -38,6 +43,8 @@ namespace PrimeApps.Auth.UI
 		private readonly IClientStore _clientStore;
 		private readonly IAuthenticationSchemeProvider _schemeProvider;
 		private readonly IEventService _events;
+		private IPlatformRepository _platformRepository;
+		private IPlatformUserRepository _platformUserRepository;
 		public IConfiguration Configuration { get; }
 
 		public AccountController(
@@ -47,6 +54,8 @@ namespace PrimeApps.Auth.UI
 			IClientStore clientStore,
 			IAuthenticationSchemeProvider schemeProvider,
 			IEventService events,
+			IPlatformRepository platformRepository,
+			IPlatformUserRepository platformUserRepository,
 			IConfiguration configuration)
 		{
 			_userManager = userManager;
@@ -56,37 +65,245 @@ namespace PrimeApps.Auth.UI
 			_schemeProvider = schemeProvider;
 			_events = events;
 			Configuration = configuration;
+			_platformRepository = platformRepository;
+			_platformUserRepository = platformUserRepository;
+		}
+
+		/// <summary>
+		/// Change Language
+		/// </summary>
+		[HttpGet]
+		public IActionResult ChangeLanguage(string language, string returnUrl)
+		{
+			Response.Cookies.Append(
+				CookieRequestCultureProvider.DefaultCookieName,
+				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(language)),
+				new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+			);
+
+			return Redirect(returnUrl);
+		}
+
+		/// <summary>
+		/// Show login page
+		/// </summary>
+		[HttpGet]
+		public async Task<IActionResult> Login(string returnUrl, string success = "")
+		{
+			/*Response.Cookies.Append(
+				CookieRequestCultureProvider.DefaultCookieName,
+				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture("en-US")),
+				new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+			);*/
+
+			//AuthHelper.SetLanguage(Response, Request, language);
+
+			ViewBag.Success = success;
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _platformRepository);
+			ViewBag.Language = ViewBag.AppInfo["language"].Value;
+
+			if (Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] != ViewBag.Language)
+				return RedirectToAction("ChangeLanguage", "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
+
+
+			// build a model so we know what to show on the login page
+			var vm = await BuildLoginViewModelAsync(returnUrl);
+
+			if (vm.IsExternalLoginOnly)
+			{
+				// we only have one option for logging in and it's an external provider
+				return await ExternalLogin(vm.ExternalLoginScheme, returnUrl);
+			}
+
+
+			return View(vm);
+		}
+
+		/// <summary>
+		/// Handle postback from username/password login
+		/// </summary>
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Login(LoginInputModel model, string button)
+		{
+			//AuthHelper.SetLanguage(Response, Request, language);
+			//ViewBag.Language = language;
+
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, model.ReturnUrl, _platformRepository);
+			ViewBag.Language = ViewBag.AppInfo["language"].Value;
+
+			if (button != "login")
+			{
+				// the user clicked the "cancel" button
+				var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+				if (context != null)
+				{
+					// if the user cancels, send a result back into IdentityServer as if they 
+					// denied the consent (even if this client does not require consent).
+					// this will send back an access denied OIDC error response to the client.
+					await _interaction.GrantConsentAsync(context, ConsentResponse.Denied);
+
+					// we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
+					return Redirect(model.ReturnUrl);
+				}
+				else
+				{
+					// since we don't have a valid context, then we just go back to the home page
+					return Redirect("~/");
+				}
+			}
+
+			if (ModelState.IsValid)
+			{
+				var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
+				if (result.Succeeded)
+				{
+					var user = await _userManager.FindByNameAsync(model.Username);
+					await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
+
+					// make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
+					// the IsLocalUrl check is only necessary if you want to support additional local pages, otherwise IsValidReturnUrl is more strict
+					if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
+					{
+						return Redirect(model.ReturnUrl);
+					}
+
+					return Redirect("~/");
+				}
+
+				await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
+
+				ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
+			}
+
+			ViewBag.Error = "WrongInfo";
+			// something went wrong, show form with error
+			var vm = await BuildLoginViewModelAsync(model);
+			return View(vm);
 		}
 
 		[HttpGet]
 		public IActionResult Register(string returnUrl = null)
 		{
-			ViewData["ReturnUrl"] = returnUrl;
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _platformRepository);
+			ViewBag.Language = ViewBag.AppInfo["language"].Value;
+			ViewBag.ReadOnly = false;
+
+			if (Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] != ViewBag.Language)
+				return RedirectToAction("ChangeLanguage", "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
+
 			return View();
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+		public async Task<IActionResult> Register(RegisterViewModel registerViewModel, string organization, string app, string returnUrl = null)
 		{
-			ViewData["ReturnUrl"] = returnUrl;
-			if (ModelState.IsValid)
+			registerViewModel.SendActivation = true;
+			registerViewModel.Culture = CultureInfo.CurrentCulture.Name;
+			if (!ModelState.IsValid)
 			{
-				var user = new ApplicationUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
-				var result = await _userManager.CreateAsync(user, "0f!s!mTestPass");
-				if (result.Succeeded)
-				{
-					//var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-					//var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-					//await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-					await _signInManager.SignInAsync(user, isPersistent: false);
-					return RedirectToLocal(returnUrl);
-				}
-				AddErrors(result);
+				ViewBag.Error = "modelStateNotValid";
+				return View(registerViewModel);
 			}
 
-			// If we got this far, something failed, redisplay form
-			return View(model);
+
+			var appInfo = _platformRepository.GetAppInfoWithAuth(Request.Host.Value);
+
+			if (appInfo == null)
+			{
+				ViewBag.Error = "appNotAvailable";
+				return View(registerViewModel);
+			}
+			
+			var userCheck = _userManager.FindByNameAsync(registerViewModel.Email).Result;
+
+			if (userCheck == null)
+			{
+
+				var applicationUser = new ApplicationUser
+				{
+					UserName = registerViewModel.Email,
+					Email = registerViewModel.Email,
+					NormalizedEmail = registerViewModel.Email,
+					NormalizedUserName = !string.IsNullOrEmpty(registerViewModel.FirstName) ? registerViewModel.FirstName + " " + registerViewModel.LastName : ""
+				};
+
+				var result = await _userManager.CreateAsync(applicationUser, registerViewModel.Password);
+
+				if (!result.Succeeded)
+				{
+					ViewBag.Error = "userNotCreated";
+					return View(registerViewModel);
+				}
+
+				result = _userManager.AddClaimsAsync(applicationUser, new Claim[]{
+					new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(registerViewModel.FirstName) ? registerViewModel.FirstName + " " + registerViewModel.LastName : ""),
+					new Claim(JwtClaimTypes.GivenName, registerViewModel.FirstName),
+					new Claim(JwtClaimTypes.FamilyName, registerViewModel.LastName),
+					new Claim(JwtClaimTypes.Email, registerViewModel.Email),
+					new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
+				}).Result;
+
+			}
+
+			var user = await _userManager.FindByNameAsync(registerViewModel.Email);
+			var token = "";
+
+			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.Setting.Culture;
+
+			var url = Request.Scheme + "://" + appInfo.Setting.Domain + "/api/account/activate";
+
+			var activateModel = new ActivateBindingModels
+			{
+				email = registerViewModel.Email,
+				app_id = appInfo.Id,
+				culture = culture,
+				first_name = registerViewModel.FirstName,
+				last_name = registerViewModel.LastName,
+				email_confirmed = user.EmailConfirmed
+			};
+
+			if (!user.EmailConfirmed)
+			{
+				token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+				activateModel.token = token;
+			}
+
+			using (var httpClient = new HttpClient())
+			{
+				httpClient.BaseAddress = new Uri(url);
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+				var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(activateModel), Encoding.UTF8, "application/json"));
+
+				if (!response.IsSuccessStatusCode)
+				{
+					if (response.StatusCode == HttpStatusCode.Conflict)
+					{
+						ViewBag.Error = "alreadyRegisterForApp";
+						return View(registerViewModel);
+					}
+					else
+					{
+						ViewBag.Error = "unexpectedError";
+						return View(registerViewModel);
+					}
+				}
+			}
+
+			if (User?.Identity.IsAuthenticated == true)
+			{
+				// delete local authentication cookie
+				await _signInManager.SignOutAsync();
+				await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
+			}
+
+			var signInResult = await _signInManager.PasswordSignInAsync(registerViewModel.Email, registerViewModel.Password, true, lockoutOnFailure: false);
+
+			if (signInResult.Succeeded)
+				await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
+
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
 		}
 
 		[HttpGet]
@@ -180,96 +397,6 @@ namespace PrimeApps.Auth.UI
 		public IActionResult ResetPasswordConfirmation()
 		{
 			return View();
-		}
-
-		/// <summary>
-		/// Show login page
-		/// </summary>
-		[HttpGet]
-		public async Task<IActionResult> Login(string returnUrl, string language = null, string success = "")
-		{
-			/*Response.Cookies.Append(
-				CookieRequestCultureProvider.DefaultCookieName,
-				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture("en-US")),
-				new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
-			);*/
-			var lang = AuthHelper.GetLanguage(Request);
-			if (language != null)
-			{
-				lang = language;
-				AuthHelper.SetLanguae(Request, lang);
-			}
-			ViewBag.Success = success;
-			ViewBag.Lang = lang;
-
-			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Configuration, Request, returnUrl, "tr");
-
-			// build a model so we know what to show on the login page
-			var vm = await BuildLoginViewModelAsync(returnUrl);
-			
-			if (vm.IsExternalLoginOnly)
-			{
-				// we only have one option for logging in and it's an external provider
-				return await ExternalLogin(vm.ExternalLoginScheme, returnUrl);
-			}
-			
-			return View(vm);
-		}
-
-		/// <summary>
-		/// Handle postback from username/password login
-		/// </summary>
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Login(LoginInputModel model, string button)
-		{
-			if (button != "login")
-			{
-				// the user clicked the "cancel" button
-				var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-				if (context != null)
-				{
-					// if the user cancels, send a result back into IdentityServer as if they 
-					// denied the consent (even if this client does not require consent).
-					// this will send back an access denied OIDC error response to the client.
-					await _interaction.GrantConsentAsync(context, ConsentResponse.Denied);
-
-					// we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-					return Redirect(model.ReturnUrl);
-				}
-				else
-				{
-					// since we don't have a valid context, then we just go back to the home page
-					return Redirect("~/");
-				}
-			}
-
-			if (ModelState.IsValid)
-			{
-				var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: true);
-				if (result.Succeeded)
-				{
-					var user = await _userManager.FindByNameAsync(model.Username);
-					await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
-
-					// make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
-					// the IsLocalUrl check is only necessary if you want to support additional local pages, otherwise IsValidReturnUrl is more strict
-					if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
-					{
-						return Redirect(model.ReturnUrl);
-					}
-
-					return Redirect("~/");
-				}
-
-				await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
-
-				ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
-			}
-
-			// something went wrong, show form with error
-			var vm = await BuildLoginViewModelAsync(model);
-			return View(vm);
 		}
 
 		/// <summary>
@@ -661,7 +788,7 @@ namespace PrimeApps.Auth.UI
 				UserName = email,
 				NormalizedUserName = name ?? first + " " + last
 			};
-			
+
 
 			var identityResult = await _userManager.CreateAsync(user);
 			if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
