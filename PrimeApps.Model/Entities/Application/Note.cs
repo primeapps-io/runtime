@@ -30,7 +30,8 @@ namespace PrimeApps.Model.Entities.Application
 
         public virtual ICollection<NoteLikes> NoteLikes { get; set; }
 
-        public virtual ICollection<TenantUser> Likes { get; set; }
+        [NotMapped]
+        public ICollection<TenantUser> Likes { get; set; }
 
         [NotMapped]
         public string RecordPrimaryValue { get; set; }
