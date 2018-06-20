@@ -25,12 +25,14 @@ namespace PrimeApps.Model.Helpers
     public class Warehouse
     {
         private IAnalyticRepository _analyticRepository;
+        private IConfiguration _configuration;
 
         public string DatabaseName { get; set; }
 
-        public Warehouse(IAnalyticRepository analyticRepository)
+        public Warehouse(IAnalyticRepository analyticRepository, IConfiguration configuration)
         {
             _analyticRepository = analyticRepository;
+            _configuration = configuration;
         }
 
         public void CreateUser(Model.Entities.Platform.PlatformWarehouse warehouseEntity)
@@ -359,10 +361,9 @@ namespace PrimeApps.Model.Helpers
             CreateView(database, module, tenantLanguage);
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateTable(string warehouseDatabaseName, string moduleName, CurrentUser currentUser, string tenantLanguage, string connectionString)
+        public void CreateTable(string warehouseDatabaseName, string moduleName, CurrentUser currentUser, string tenantLanguage)
         {
-            var connection = new SqlConnection(connectionString);
+            var connection = new SqlConnection(_configuration.GetSection("AppSettings")["WarehouseConnection"]);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -378,10 +379,9 @@ namespace PrimeApps.Model.Helpers
             CreateTables(database, module, tenantLanguage);
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateColumns(string warehouseDatabaseName, string moduleName, List<int> fieldIds, CurrentUser currentUser, string tenantLanguage, string connectionString)
+        public void CreateColumns(string warehouseDatabaseName, string moduleName, List<int> fieldIds, CurrentUser currentUser, string tenantLanguage)
         {
-            var connection = new SqlConnection(connectionString);
+            var connection = new SqlConnection(_configuration.GetSection("AppSettings")["WarehouseConnection"]);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -398,10 +398,9 @@ namespace PrimeApps.Model.Helpers
             AlterView(database, module, tenantLanguage, true);
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateJunctionTable(string warehouseDatabaseName, string moduleName, int relationId, CurrentUser currentUser, string connectionString)
+        public void CreateJunctionTable(string warehouseDatabaseName, string moduleName, int relationId, CurrentUser currentUser)
         {
-            var connection = new SqlConnection(connectionString);
+            var connection = new SqlConnection(_configuration.GetSection("AppSettings")["WarehouseConnection"]);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -565,7 +564,6 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void CreateRole(int roleId, string databaseName, int tenantId, string tenantLanguage)
         {
             if (string.IsNullOrEmpty(tenantLanguage))
@@ -644,7 +642,6 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void CreateTenantUser(int userId, string databaseName, int tenantId, string tenantLanguage, int primeAppsTenantId)
         {
             //Primeapps warehouse control
@@ -733,7 +730,6 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void UpdateTenantUser(int userId, string databaseName, int tenantId, int primeAppsTenantId)
         {
             //Primeapps warehouse control
@@ -809,7 +805,7 @@ namespace PrimeApps.Model.Helpers
                 }
             }
         }
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
+
         public void CreateRecord(JObject record, string databaseName, string moduleName, CurrentUser currentUser)
         {
             var module = GetModule(moduleName, currentUser.TenantId);
@@ -849,14 +845,12 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void UpdateRecord(JObject record, string databaseName, string moduleName, CurrentUser currentUser, bool delete = false)
         {
             var module = GetModule(moduleName, currentUser.TenantId);
             UpdateRecord(record, databaseName, module, delete);
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void AddRelations(JArray records, string moduleName, string relatedModuleName, string databaseName, int relationId = 0)
         {
             var connection = new SqlConnection(GetConnectionString(databaseName));
@@ -898,7 +892,6 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void DeleteRelation(JObject record, string moduleName, string relatedModuleName, string databaseName, int relationId = 0)
         {
             var connection = new SqlConnection(GetConnectionString(databaseName));
@@ -984,7 +977,6 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void CreateRecordBulk(int importId, string databaseName, string moduleName, CurrentUser currentUser)
         {
             var module = GetModule(moduleName, currentUser.TenantId);
@@ -995,7 +987,6 @@ namespace PrimeApps.Model.Helpers
             CreateRecordBulk(records, databaseName, module, currentUser.UserId);
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public void ImportRevert(int importId, string databaseName, string moduleName, CurrentUser currentUser)
         {
             var sql = $"UPDATE {moduleName}_d SET deleted = true WHERE import_id = {importId}";
@@ -1657,7 +1648,7 @@ namespace PrimeApps.Model.Helpers
         private string GetConnectionString(string databaseName)
         {
             var connectionStringBuilder = new DbConnectionStringBuilder(false);
-            connectionStringBuilder.ConnectionString = ConfigurationManager.ConnectionStrings["WarehouseConnection"].ToString();
+            connectionStringBuilder.ConnectionString = _configuration.GetSection("AppSettings")["WarehouseConnection"];
             connectionStringBuilder["Database"] = databaseName;
 
             return connectionStringBuilder.ConnectionString;

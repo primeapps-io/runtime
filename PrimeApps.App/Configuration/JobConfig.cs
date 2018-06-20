@@ -1,14 +1,10 @@
 ﻿using Hangfire;
 using Hangfire.Common;
-using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Newtonsoft.Json;
 using PrimeApps.App.ActionFilters;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PrimeApps.App
 {
@@ -22,11 +18,11 @@ namespace PrimeApps.App
 				Queues = ConfigurationManager.AppSettings["HangfireQueues"].Split(',')
 			});
 			app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
-			JobHelper.SetSerializerSettings(new Newtonsoft.Json.JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+			JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
 			ConfigureRecurringJobs();
-			ConfigureScheduledJobs();
-			ConfigureBackgroundJobs();
+			
+			GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
 		}
 
 		public static void ConfigureRecurringJobs()
@@ -37,14 +33,6 @@ namespace PrimeApps.App
 			RecurringJob.AddOrUpdate<Jobs.UpdateLeave>("update-leave", update => update.Update(), Cron.Daily(04, 00), TimeZoneInfo.Utc);
 			RecurringJob.AddOrUpdate<Jobs.EmployeeCalculation>("employee-calculation", employee => employee.Calculate(), Cron.Daily(04, 00), TimeZoneInfo.Utc);
 			RecurringJob.AddOrUpdate<Jobs.AccountCleanup>("cleanup-account", cleanup => cleanup.Run(), Cron.Daily(00, 00));
-		}
-
-		public static void ConfigureScheduledJobs()
-		{
-		}
-
-		public static void ConfigureBackgroundJobs()
-		{
 		}
 	}
 }

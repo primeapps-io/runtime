@@ -119,7 +119,6 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 2)]
         public static async Task UpdateConnectionString(int analyticId, int tenantId)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;

@@ -23,7 +23,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class ProcessHelper
     {
-        public static async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime)
+        public static async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, IConfiguration configuration, ProcessTriggerTime triggerTime)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -342,7 +342,7 @@ namespace PrimeApps.App.Helpers
                                         break;
                                 }
 
-                                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                var subdomain = configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                                 domain = string.Format(domain, subdomain);
 
                                 //domain = "http://localhost:5554/";

@@ -50,7 +50,7 @@ namespace PrimeApps.App.Helpers
 
             try
             {
-                using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+                using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
                     using (var auditLogRepository = new AuditLogRepository(databaseContext))
                     {

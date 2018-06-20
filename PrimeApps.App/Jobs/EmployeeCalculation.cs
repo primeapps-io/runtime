@@ -6,6 +6,7 @@ using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
@@ -17,7 +18,14 @@ namespace PrimeApps.App.Jobs
 {
     public class EmployeeCalculation
     {
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        private IConfiguration _configuration;
+
+        public EmployeeCalculation(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        
+        [CommonQueue, DisableConcurrentExecution(360)]
         public async Task Calculate()
         {
             using (var platformDatabaseContext = new PlatformDBContext())
@@ -36,7 +44,7 @@ namespace PrimeApps.App.Jobs
                         using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext))
                         using (var analyticRepository = new AnalyticRepository(databaseContext))
                         {
-                            var warehouse = new Model.Helpers.Warehouse(analyticRepository);
+                            var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
 
                             var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
 

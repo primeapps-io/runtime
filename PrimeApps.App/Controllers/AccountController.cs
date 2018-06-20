@@ -236,7 +236,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
-                BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, tenantId, _warehouse));
+                BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _configuration));
 
             }
             catch (Exception ex)

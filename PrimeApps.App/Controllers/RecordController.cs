@@ -330,7 +330,7 @@ namespace PrimeApps.App.Controllers
             }
 
             //After create
-            RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
+            RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, _configuration, timeZoneOffset: timezoneOffset);
 
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
@@ -411,7 +411,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
+            RecordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, _configuration, runWorkflows, timeZoneOffset: timezoneOffset);
 
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
@@ -447,7 +447,7 @@ namespace PrimeApps.App.Controllers
 
             var deletedRecordCount = await _recordRepository.Delete(record, moduleEntity);
 
-            RecordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
+            RecordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse, _configuration);
 
             return Ok(deletedRecordCount);
         }
@@ -502,7 +502,7 @@ namespace PrimeApps.App.Controllers
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 //After create
-                RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
+                RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, _configuration, runDefaults: false, runWorkflows: false, runCalculations: true);
 
             }
 
@@ -596,7 +596,7 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
+                RecordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse, _configuration);
             }
 
             return Ok();

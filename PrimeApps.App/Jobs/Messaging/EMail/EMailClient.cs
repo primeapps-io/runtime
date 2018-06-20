@@ -12,18 +12,25 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Repositories;
 using PrimeApps.App.Jobs.Messaging.EMail.Providers;
 using PrimeApps.App.Helpers;
-using Hangfire;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Jobs.Messaging.EMail
 {
-	[MessagingQueue, AutomaticRetry(Attempts = 0)]
-	class EMailClient : MessageClient
+	[MessagingQueue]
+	public class EMailClient : MessageClient
 	{
+		private IConfiguration _configuration;
+
+		public EMailClient(IConfiguration configuration)
+		{
+			_configuration = configuration;
+		}
+		
 		/// <summary>
 		/// Processes bulk email request, prepares and sends it.
 		/// </summary>
@@ -149,7 +156,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 							/// compose bulk messages for sending.
 							//composerResult = await Compose(emailTemplate, module, emailField, subject, query, ids, language, emailId, cloudantClient, emailClient);
-							composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, tenantDBContext, platformUserRepository, tenantRepository, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName);
+							composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, tenantDBContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName);
 
 							/// send composed messages through selected provider.
 							emailResponse = await emailClient.Send(composerResult.Messages);
@@ -196,7 +203,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		/// <param name="language"></param>
 		/// <param name="cloudantClient"></param>
 		/// <returns></returns>
-		public async Task<EMailComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string emailField, string subject, string query, string[] ids, bool isAllSelected, int userId, string language, string emailId, TenantDBContext dbContext, PlatformUserRepository platformUserRepository, TenantRepository tenantRepository, EMailProvider emailClient, string attachmentLink, string attachmentName)
+		public async Task<EMailComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string emailField, string subject, string query, string[] ids, bool isAllSelected, int userId, string language, string emailId, TenantDBContext dbContext, PlatformUserRepository platformUserRepository, TenantRepository tenantRepository, IConfiguration configuration, EMailProvider emailClient, string attachmentLink, string attachmentName)
 		{
 			/// create required parameters for composing.
 			Regex templatePattern = new Regex(@"{(.*?)}");
@@ -314,7 +321,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 								}
 							}
 
-							record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, language, culture, 180, lookupModules, true);
+							record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, language, culture, 180, lookupModules, true);
 							string formattedMessage = FormatMessage(messageFields, messageBody, record);
 
 							JObject messageStatus = new JObject();

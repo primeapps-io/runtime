@@ -18,6 +18,7 @@ using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS
@@ -25,9 +26,16 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
     /// <summary>
     /// Sends bulk sms messages via choosen sms provider.
     /// </summary>
-    [MessagingQueue, AutomaticRetry(Attempts = 0)]
-    class SMSClient : MessageClient
+    [MessagingQueue]
+    public class SMSClient : MessageClient
     {
+        private IConfiguration _configuration;
+
+        public SMSClient(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         /// <summary>
         /// Processes bulk sms request, prepares and sends it.
         /// </summary>
@@ -262,7 +270,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                         var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
                                         var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
                                         var recordCopy = record;
-                                        record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, lang, culture, 180, lookupModules);
+                                        record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, lang, culture, 180, lookupModules);
 
                                         if (record[phoneField] != null)
                                         {

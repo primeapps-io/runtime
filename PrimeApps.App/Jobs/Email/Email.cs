@@ -39,7 +39,7 @@ namespace PrimeApps.App.Jobs.Email
         /// Checks database for new email records and transmits it if there is new one.
         /// </summary>
         /// <returns></returns>
-        [EmailQueue, AutomaticRetry(Attempts = 0)]
+        [EmailQueue]
         public bool TransmitMail(EmailEntry mail)
         // public bool TransmitMail(EmailEntry mail)
         {
@@ -117,7 +117,7 @@ namespace PrimeApps.App.Jobs.Email
             return status;
         }
 
-        [EmailQueue, AutomaticRetry(Attempts = 0)]
+        [EmailQueue]
         public bool TransmitMail(EmailEntry email, int tenantId, int moduleId, int recordId, bool addRecordSummary = true)
         {
             bool status = false;

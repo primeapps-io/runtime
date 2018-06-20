@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Jobs
 {
-    [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+    [CommonQueue, DisableConcurrentExecution(360)]
     /// Drops tenant databases that are inactive more then 1 month from servers.
     public class AccountCleanup
     {

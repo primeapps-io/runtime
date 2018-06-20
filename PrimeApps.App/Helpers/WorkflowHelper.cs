@@ -619,7 +619,7 @@ namespace PrimeApps.App.Helpers
                                                 //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             }
 
-                                            RecordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
+                                            RecordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, configuration, fieldUpdateModule.Id != module.Id, false);
                                         }
                                     }
 
@@ -691,7 +691,7 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            RecordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
+                                            RecordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, configuration, moduleActivity.Id != module.Id);
                                         }
                                         catch (Exception ex)
                                         {
@@ -742,7 +742,7 @@ namespace PrimeApps.App.Helpers
 
                                                     var recordData = recordRepository.GetById(module, recordId, false, lookupModules, true);
                                                     var tenant = subscriber.TenantsAsUser.Single();
-                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, tenant.Tenant.Setting.Language, subscriber.Setting.Culture, 180, lookupModules);
+                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, configuration, tenant.Tenant.Setting.Language, subscriber.Setting.Culture, 180, lookupModules);
 
                                                     foreach (var dataString in data)
                                                     {

@@ -11,7 +11,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail.Providers
     /// <summary>
     /// Standard abstract email class for supported email providers.
     /// </summary>
-    abstract class EMailProvider : IDisposable
+    public abstract class EMailProvider : IDisposable
     {
         protected string userName;
         protected string password;

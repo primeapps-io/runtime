@@ -13,6 +13,7 @@ using PrimeApps.Model.Common.Chart;
 using PrimeApps.Model.Enums;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -24,14 +25,16 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
         private IUserRepository _userRepository;
+        private IConfiguration _configuration;
 
-        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository)
+        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository, IConfiguration configuration)
         {
             _reportRepository = reportRepository;
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _userRepository = userRepository;
+            _configuration = configuration;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -66,7 +69,7 @@ namespace PrimeApps.App.Controllers
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
             var showDisplayValue = chart.ChartType != ChartType.Funnel && chart.ChartType != ChartType.Pyramid && aggregation != null && aggregation.AggregationType != AggregationType.Count;
-            var data = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser, showDisplayValue: showDisplayValue);
+            var data = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, _configuration, AppUser, showDisplayValue: showDisplayValue);
 
             var response = new
             {
@@ -92,7 +95,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_widget/{report:int}"), HttpGet]
         public async Task<IActionResult> GetWidget(int report)
         {
-            var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser);
+            var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, _configuration, AppUser);
             var widget = await _reportRepository.GetWidgetByReportId(report);
 
             response.First()["color"] = widget.Color;

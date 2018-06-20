@@ -20,7 +20,7 @@ namespace PrimeApps.App.Jobs
             _tenantRepository = tenantRepository;
         }
 
-        [QueueAttributes.WarehouseQueue, AutomaticRetry(Attempts = 0)]
+        [QueueAttributes.WarehouseQueue]
         public async Task Create(WarehouseCreateRequest request, UserItem appUser)
         {
             _moduleRepository.TenantId = request.TenantId;

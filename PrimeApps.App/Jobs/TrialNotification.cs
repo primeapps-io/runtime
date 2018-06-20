@@ -14,7 +14,7 @@ namespace PrimeApps.App.Jobs
 {
     public class TrialNotification
     {
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        [CommonQueue, DisableConcurrentExecution(360)]
         public async Task TrialExpire()
         {
             IList<Tenant> trialTenants = new List<Tenant>();

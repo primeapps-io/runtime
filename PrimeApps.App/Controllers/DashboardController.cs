@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.Models;
@@ -10,6 +9,7 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -24,10 +24,9 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
         private IViewRepository _viewRepository;
+        private IConfiguration _configuration;
 
-
-
-        public DashboardController(ISettingRepository settingRepository, IDashletRepository dashletRepository, IDashboardRepository dashboardRepository, IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository)
+        public DashboardController(ISettingRepository settingRepository, IDashletRepository dashletRepository, IDashboardRepository dashboardRepository, IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IConfiguration configuration)
         {
             _settingRepository = settingRepository;
             _dashletRepository = dashletRepository;
@@ -37,8 +36,7 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _viewRepository = viewRepository;
-
-
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -61,7 +59,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_dashlets"), HttpGet]
         public async Task<IActionResult> GetDashlets([FromQuery(Name = "dashboard")]int dashboard, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
-            var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, _reportRepository, _recordRepository, _moduleRepository, _picklistRepository, _viewRepository, locale, timezoneOffset.Value);
+            var dashlets = await _dashletRepository.GetDashboardDashlets(dashboard, AppUser, _reportRepository, _recordRepository, _moduleRepository, _picklistRepository, _viewRepository, _configuration, locale, timezoneOffset.Value);
             return Ok(dashlets);
         }
 

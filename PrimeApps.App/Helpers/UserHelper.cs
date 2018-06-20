@@ -176,7 +176,7 @@ namespace PrimeApps.App.Helpers
             return password;
         }
 
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        [CommonQueue, DisableConcurrentExecution(360)]
         public static async Task AddUserBulk(int tenantId, string apiUrl, string accessToken, bool activeDirectory = false)
         {
             var errorList = new JArray();

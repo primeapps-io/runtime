@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -15,18 +14,6 @@ using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
-
-/*
- * using OfisimCRM.DTO.AuditLog;
-using OfisimCRM.DTO.Cache;
-using OfisimCRM.DTO.Record;
-using OfisimCRM.Model.Entities;
-using OfisimCRM.Model.Enums;
-using OfisimCRM.Model.Helpers;
-using OfisimCRM.Model.Repositories.Interfaces;
-using OfisimCRM.App.Notifications;
-using OfisimCRM.DTO.Common;
- */
 
 namespace PrimeApps.App.Helpers
 {
@@ -238,7 +225,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, configuration));
-                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, configuration, ProcessTriggerTime.Instant));
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
@@ -267,7 +254,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse, configuration));
-                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, configuration, ProcessTriggerTime.Instant));
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
@@ -290,9 +277,9 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true)
+        public static void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, IConfiguration configuration, bool runWorkflows = true, bool runCalculations = true)
         {
-            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
+            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, configuration, RecordActionType.Deleted, null, module));
             BackgroundJob.Enqueue(() => NotificationHelper.Delete(appUser, record, module));
 
             //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
@@ -300,8 +287,8 @@ namespace PrimeApps.App.Helpers
 
             if (runWorkflows)
             {
-                BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
-                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+                BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, configuration));
+                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, configuration, ProcessTriggerTime.Instant));
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));

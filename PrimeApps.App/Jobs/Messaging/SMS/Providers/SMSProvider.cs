@@ -12,7 +12,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
     /// <summary>
     /// Standard abstract sms class for supported sms providers.
     /// </summary>
-    abstract class SMSProvider : IDisposable
+    public abstract class SMSProvider : IDisposable
     {
         protected string userName;
         protected string password;

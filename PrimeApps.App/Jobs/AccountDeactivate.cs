@@ -11,7 +11,7 @@ namespace PrimeApps.App.Jobs
 {
     public class AccountDeactivate
     {
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        [CommonQueue, DisableConcurrentExecution(360)]
         public async Task Deactivate()
         {
             using (var platformDbContext = new PlatformDBContext())

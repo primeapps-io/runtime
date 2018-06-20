@@ -330,7 +330,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(leadModule.Id, (int)lead["id"]);
@@ -698,7 +698,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(candidateModule.Id, (int)candidate["id"]);
@@ -896,7 +896,7 @@ namespace PrimeApps.App.Controllers
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(salesOrderModule.Id, (int)salesOrder["id"]);
@@ -1096,7 +1096,7 @@ namespace PrimeApps.App.Controllers
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(purchaseOrderModule.Id, (int)purchaseOrder["id"]);

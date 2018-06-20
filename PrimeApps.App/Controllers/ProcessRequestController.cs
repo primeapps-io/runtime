@@ -112,7 +112,7 @@ namespace PrimeApps.App.Controllers
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await ProcessHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant);
+            await ProcessHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, _configuration, ProcessTriggerTime.Instant);
 
             return Ok();
         }
@@ -146,7 +146,7 @@ namespace PrimeApps.App.Controllers
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
             try
             {
-                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel);
+                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, _configuration, ProcessTriggerTime.Manuel);
             }
             catch (ProcessFilterNotMatchException ex)
             {
