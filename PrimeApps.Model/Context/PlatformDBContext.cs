@@ -1,30 +1,134 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Context
 {
     public class PlatformDBContext : DbContext
     {
-        /// <summary>
-        /// This context is designed to be used by Ofisim SaaS DB related operations. It uses by default "platform" database. For tenant operations do not use this context!
-        /// instead use <see cref="TenantDBContext"/>
-        /// </summary>
         public PlatformDBContext() { }
 
         public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
 
-        public static PlatformDBContext Create()
-        {
-            return new PlatformDBContext();
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            CreateCustomModelMapping(modelBuilder);
+            CreateModelMapping(modelBuilder);
             modelBuilder.HasDefaultSchema("public");
+            
             base.OnModelCreating(modelBuilder);
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder
+                .UseNpgsql("Server=pg-dev.ofisim.com;Port=5433;Database=platform;User Id=postgres;Password=0f!s!mCRMDev;", x => x.MigrationsHistoryTable("_migration_history", "public"))
+                .ReplaceService<IHistoryRepository, PostgreHistoryContext>();
+
+        private void CreateModelMapping(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PlatformUser>()
+                .HasOne(x => x.Setting)
+                .WithOne(i => i.User)
+                .HasForeignKey<PlatformUserSetting>(b => b.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Tenant>()
+                .HasOne(x => x.Setting)
+                .WithOne(i => i.Tenant)
+                .HasForeignKey<TenantSetting>(b => b.TenantId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Tenant>()
+                .HasOne(x => x.License)
+                .WithOne(i => i.Tenant)
+                .HasForeignKey<TenantLicense>(b => b.TenantId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<App>()
+                .HasOne(x => x.Setting)
+                .WithOne(i => i.App)
+                .HasForeignKey<AppSetting>(b => b.AppId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TeamApp>()
+               .HasKey(t => new { t.AppId, t.TeamId });
+
+            modelBuilder.Entity<TeamApp>()
+                .HasOne(pt => pt.App)
+                .WithMany(p => p.AppTeams)
+                .HasForeignKey(pt => pt.AppId);
+
+            modelBuilder.Entity<TeamApp>()
+                .HasOne(pt => pt.Team)
+                .WithMany(t => t.TeamApps)
+                .HasForeignKey(pt => pt.TeamId);
+
+            modelBuilder.Entity<TeamUser>()
+               .HasKey(t => new { t.UserId, t.TeamId });
+
+            modelBuilder.Entity<TeamUser>()
+                .HasOne(pt => pt.PlatformUser)
+                .WithMany(p => p.UserTeams)
+                .HasForeignKey(pt => pt.TeamId);
+
+            modelBuilder.Entity<TeamUser>()
+                .HasOne(pt => pt.Team)
+                .WithMany(t => t.TeamUsers)
+                .HasForeignKey(pt => pt.UserId);
+
+            modelBuilder.Entity<OrganizationUser>()
+               .HasKey(t => new { t.UserId, t.OrganizationId });
+
+            modelBuilder.Entity<OrganizationUser>()
+                .HasOne(pt => pt.PlatformUser)
+                .WithMany(p => p.UserOrganizations)
+                .HasForeignKey(pt => pt.OrganizationId);
+
+            modelBuilder.Entity<OrganizationUser>()
+                .HasOne(pt => pt.Organization)
+                .WithMany(t => t.OrganizationUsers)
+                .HasForeignKey(pt => pt.UserId);
+
+            modelBuilder.Entity<UserTenant>()
+               .HasKey(t => new { t.UserId, t.TenantId });
+
+            modelBuilder.Entity<UserTenant>()
+                .HasOne(pt => pt.PlatformUser)
+                .WithMany(p => p.TenantsAsUser)
+                .HasForeignKey(pt => pt.UserId);
+
+            modelBuilder.Entity<UserTenant>()
+                .HasOne(pt => pt.Tenant)
+                .WithMany(t => t.TenantUsers)
+                .HasForeignKey(pt => pt.TenantId);
+
+            modelBuilder.Entity<App>()
+               .HasMany(p => p.Tenants)
+               .WithOne(i => i.App)
+               .HasForeignKey(b => b.AppId);
+
+            modelBuilder.Entity<App>()
+               .HasMany(p => p.Templates)
+               .WithOne(i => i.App)
+               .HasForeignKey(b => b.AppId);
+
+            modelBuilder.Entity<Team>()
+                .HasOne(p => p.Organization)
+                .WithMany(b => b.Teams)
+                .HasForeignKey(p => p.OrganizationId);
+
+            modelBuilder.Entity<Tenant>()
+                .HasOne(p => p.Owner)
+                .WithMany(b => b.TenantsAsOwner)
+                .HasForeignKey(p => p.OwnerId);
+
+            modelBuilder.Entity<Tenant>()
+                .HasOne(x => x.CreatedBy)
+                .WithMany()
+                .HasForeignKey(x => x.CreatedById);
+
+            BuildIndexes(modelBuilder);
+        }
+        
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
             //PlatformUser
@@ -48,13 +152,11 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<App>().HasIndex(x => x.Description);
             modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
             modelBuilder.Entity<App>().HasIndex(x => x.UseTenantSettings);
-
             modelBuilder.Entity<App>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<App>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.Deleted);
-
 
             //AppSetting
             modelBuilder.Entity<AppSetting>().HasIndex(x => x.AppId);
@@ -65,7 +167,6 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AppSetting>().HasIndex(x => x.Culture);
             modelBuilder.Entity<AppSetting>().HasIndex(x => x.Language);
             modelBuilder.Entity<AppSetting>().HasIndex(x => x.TimeZone);
-
 
             //AppTemplates
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.AppId);
@@ -160,125 +261,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.OrganizationId);
         }
-
-        private void CreateCustomModelMapping(ModelBuilder modelBuilder)
-        {
-            //PlatformUser One to One and Cascade delete for TenantInfo
-            modelBuilder.Entity<PlatformUser>()
-                .HasOne(x => x.Setting)
-                .WithOne(i => i.User)
-                .HasForeignKey<PlatformUserSetting>(b => b.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //Tenant One to One and Cascade delete for TenantSetting
-            modelBuilder.Entity<Tenant>()
-                .HasOne(x => x.Setting)
-                .WithOne(i => i.Tenant)
-                .HasForeignKey<TenantSetting>(b => b.TenantId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //Tenant One to One and Cascade delete for TenantLicense
-            modelBuilder.Entity<Tenant>()
-                .HasOne(x => x.License)
-                .WithOne(i => i.Tenant)
-                .HasForeignKey<TenantLicense>(b => b.TenantId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //App One to One and Cascade delete for AppSetting
-            modelBuilder.Entity<App>()
-                .HasOne(x => x.Setting)
-                .WithOne(i => i.App)
-                .HasForeignKey<AppSetting>(b => b.AppId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            //TeamApps Many to Many
-            modelBuilder.Entity<TeamApp>()
-               .HasKey(t => new { t.AppId, t.TeamId });
-
-            modelBuilder.Entity<TeamApp>()
-                .HasOne(pt => pt.App)
-                .WithMany(p => p.AppTeams)
-                .HasForeignKey(pt => pt.AppId);
-
-            modelBuilder.Entity<TeamApp>()
-                .HasOne(pt => pt.Team)
-                .WithMany(t => t.TeamApps)
-                .HasForeignKey(pt => pt.TeamId);
-
-            //TeamUsers Many to Many
-            modelBuilder.Entity<TeamUser>()
-               .HasKey(t => new { t.UserId, t.TeamId });
-
-            modelBuilder.Entity<TeamUser>()
-                .HasOne(pt => pt.PlatformUser)
-                .WithMany(p => p.UserTeams)
-                .HasForeignKey(pt => pt.TeamId);
-
-            modelBuilder.Entity<TeamUser>()
-                .HasOne(pt => pt.Team)
-                .WithMany(t => t.TeamUsers)
-                .HasForeignKey(pt => pt.UserId);
-
-            //OrganizationUsers Many to Many
-            modelBuilder.Entity<OrganizationUser>()
-               .HasKey(t => new { t.UserId, t.OrganizationId });
-
-            modelBuilder.Entity<OrganizationUser>()
-                .HasOne(pt => pt.PlatformUser)
-                .WithMany(p => p.UserOrganizations)
-                .HasForeignKey(pt => pt.OrganizationId);
-
-            modelBuilder.Entity<OrganizationUser>()
-                .HasOne(pt => pt.Organization)
-                .WithMany(t => t.OrganizationUsers)
-                .HasForeignKey(pt => pt.UserId);
-
-            //UserTenant Many to Many
-            modelBuilder.Entity<UserTenant>()
-               .HasKey(t => new { t.UserId, t.TenantId });
-
-            modelBuilder.Entity<UserTenant>()
-                .HasOne(pt => pt.PlatformUser)
-                .WithMany(p => p.TenantsAsUser)
-                .HasForeignKey(pt => pt.UserId);
-
-            modelBuilder.Entity<UserTenant>()
-                .HasOne(pt => pt.Tenant)
-                .WithMany(t => t.TenantUsers)
-                .HasForeignKey(pt => pt.TenantId);
-
-            //Apps and Tenants One to Many 
-            modelBuilder.Entity<App>()
-               .HasMany(p => p.Tenants)
-               .WithOne(i => i.App)
-               .HasForeignKey(b => b.AppId);
-
-            //Apps and EmailTemplates One to Many 
-            modelBuilder.Entity<App>()
-               .HasMany(p => p.Templates)
-               .WithOne(i => i.App)
-               .HasForeignKey(b => b.AppId);
-
-            //Organization and Team One to Many
-            modelBuilder.Entity<Team>()
-                .HasOne(p => p.Organization)
-                .WithMany(b => b.Teams)
-                .HasForeignKey(p => p.OrganizationId);
-
-            //Organization and Team One to Many
-            modelBuilder.Entity<Tenant>()
-                .HasOne(p => p.Owner)
-                .WithMany(b => b.TenantsAsOwner)
-                .HasForeignKey(p => p.OwnerId);
-
-            //BaseEntity Tenant CreatedBy Relation. For Solving Error: Unable to determine the relationship represented by navigation property 'Tenant.CreatedBy' of type 'PlatformUser'.
-            modelBuilder.Entity<Tenant>()
-                .HasOne(x => x.CreatedBy)
-                .WithMany()
-                .HasForeignKey(x => x.CreatedById);
-
-            BuildIndexes(modelBuilder);
-        }
+        
         public DbSet<PlatformUser> Users { get; set; }
         public DbSet<PlatformUserSetting> UserSettings { get; set; }
         public DbSet<App> Apps { get; set; }

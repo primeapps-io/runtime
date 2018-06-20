@@ -35,10 +35,10 @@ namespace PrimeApps.Model.Context
             var config = builder.Build();
             var connectionString = "";
 
-            if (GetType() == typeof(TenantDBContext))
-                config.GetConnectionString("TenantDBConnection");
-            else if (GetType() == typeof(PlatformDBContext))
-                config.GetConnectionString("PlatformDBConnection");
+            if (typeof(TContext) == typeof(TenantDBContext))
+                connectionString = config.GetConnectionString("TenantDBConnection");
+            else if (typeof(TContext) == typeof(PlatformDBContext))
+                connectionString = config.GetConnectionString("PlatformDBConnection");
 
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new InvalidOperationException("Could not find a connection string!");

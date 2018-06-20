@@ -28,11 +28,11 @@ namespace PrimeApps.App
 
                 var allServices = loadedAss.GetTypes().Where(t =>
                                     t.GetTypeInfo().IsClass &&
-                                    !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository"));
+                                    !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
 
                 foreach (var type in allServices)
                 {
-                    var allInterfaces = type.GetInterfaces().Where(x => x.Name.EndsWith("Repository"));
+                    var allInterfaces = type.GetInterfaces().Where(x => x.Name.EndsWith("Repository")).ToList();
                     var mainInterfaces = allInterfaces.Except
                             (allInterfaces.SelectMany(t => t.GetInterfaces()));
                     foreach (var itype in mainInterfaces)
