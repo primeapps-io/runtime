@@ -75,11 +75,11 @@ namespace PrimeApps.App.Controllers
             {
                 foreach (var likedUser in noteEntity.Likes)
                 {
-                    if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
-                        likedUser.TenantUser.Picture = AzureStorage.GetAvatarUrl(likedUser.TenantUser.Picture);
+                    if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
+                        likedUser.Picture = AzureStorage.GetAvatarUrl(likedUser.Picture);
                 }
             }
-            
+
             return Ok(noteEntity);
         }
 
@@ -98,8 +98,8 @@ namespace PrimeApps.App.Controllers
                 {
                     foreach (var likedUser in note.Likes)
                     {
-                        if (likedUser.TenantUser.Picture != null && !likedUser.TenantUser.Picture.StartsWith("http://"))
-                            likedUser.TenantUser.Picture = AzureStorage.GetAvatarUrl(likedUser.TenantUser.Picture);
+                        if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
+                            likedUser.Picture = AzureStorage.GetAvatarUrl(likedUser.Picture);
                     }
                 }
 
@@ -114,8 +114,8 @@ namespace PrimeApps.App.Controllers
                         {
                             foreach (var subLikedUser in note.Likes)
                             {
-                                if (subLikedUser.TenantUser.Picture != null && !subLikedUser.TenantUser.Picture.StartsWith("http://"))
-                                    subLikedUser.TenantUser.Picture = AzureStorage.GetAvatarUrl(subLikedUser.TenantUser.Picture);
+                                if (subLikedUser.Picture != null && !subLikedUser.Picture.StartsWith("http://"))
+                                    subLikedUser.Picture = AzureStorage.GetAvatarUrl(subLikedUser.Picture);
                             }
                         }
                     }

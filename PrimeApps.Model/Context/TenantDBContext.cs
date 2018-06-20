@@ -329,7 +329,7 @@ namespace PrimeApps.Model.Context
 
             modelBuilder.Entity<NoteLikes>()
                 .HasOne(pt => pt.Note)
-                .WithMany(p => p.Likes)
+                .WithMany(p => p.NoteLikes)
                 .HasForeignKey(pt => pt.NoteId);
 
             modelBuilder.Entity<NoteLikes>()

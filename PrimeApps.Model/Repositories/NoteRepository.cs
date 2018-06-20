@@ -16,9 +16,9 @@ namespace PrimeApps.Model.Repositories
         public async Task<Note> GetById(int id)
         {
             var note = await DbContext.Notes
-                .Include(x => x.Notes.Select(z => z.CreatedBy))
+                .Include(x => x.Notes).ThenInclude(z => (z as Note).CreatedBy)
                 .Include(x => x.CreatedBy)
-                .Include(x => x.Likes)
+                .Include(x => x.NoteLikes)
                 .ThenInclude(y => y.TenantUser)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
@@ -28,7 +28,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<Note> GetByIdBasic(int id)
         {
             var note = await DbContext.Notes
-                .Include(x => x.Likes)
+                .Include(x => x.NoteLikes)
                 .ThenInclude(y => y.TenantUser)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
@@ -44,7 +44,14 @@ namespace PrimeApps.Model.Repositories
                 .Skip(request.Offset)
                 .Take(request.Limit);
 
-            return await notes.ToListAsync();
+            var noteList = await notes.ToListAsync();
+
+            foreach (var note in noteList)
+            {
+                note.Likes = note.NoteLikes.Select(x => x.TenantUser).ToList();
+            }
+
+            return noteList;
         }
 
         public async Task<int> Count(NoteRequest request)
@@ -90,8 +97,8 @@ namespace PrimeApps.Model.Repositories
 				notes = notes
                     .Include(x => (x as Note).CreatedBy)
                     .Include(x => (x as Note).Likes)
-                    .Include(x => x.Notes)
-                    .Include(x => x.Likes).ThenInclude(y => y.TenantUser)
+                    .Include(x => x.Notes).ThenInclude(z => (z as Note).NoteLikes)
+                    .Include(x => x.NoteLikes).ThenInclude(y => y.TenantUser)
                     .Include(x => x.Module)
 					.Include(x => x.Module).ThenInclude(y => y.Fields)
 					.Include(x => x.CreatedBy);
