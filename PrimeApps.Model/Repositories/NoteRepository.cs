@@ -16,11 +16,21 @@ namespace PrimeApps.Model.Repositories
         public async Task<Note> GetById(int id)
         {
             var note = await DbContext.Notes
-                .Include(x => x.Notes).ThenInclude(z => (z as Note).CreatedBy)
                 .Include(x => x.CreatedBy)
+                .Include(x => (x.Notes as Note).CreatedBy)
+                .Include(x => (x.Notes as Note).NoteLikes)
                 .Include(x => x.NoteLikes)
-                .ThenInclude(y => y.TenantUser)
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+
+            note.Likes = note.NoteLikes.Select(x => x.TenantUser).ToList();
+
+            if (note.Notes.Count > 0)
+            {
+                foreach (var subNote in note.Notes)
+                {
+                    subNote.Likes = subNote.NoteLikes.Select(x => x.TenantUser).ToList();
+                }
+            }
 
             return note;
         }
@@ -49,6 +59,14 @@ namespace PrimeApps.Model.Repositories
             foreach (var note in noteList)
             {
                 note.Likes = note.NoteLikes.Select(x => x.TenantUser).ToList();
+
+                if(note.Notes.Count > 0)
+                {
+                    foreach (var subNote in note.Notes)
+                    {
+                        subNote.Likes = subNote.NoteLikes.Select(x => x.TenantUser).ToList();
+                    }
+                }
             }
 
             return noteList;
@@ -89,16 +107,15 @@ namespace PrimeApps.Model.Repositories
 
         private IQueryable<Note> GetNoteQuery(NoteRequest request, bool withIncludes = true)
         {
-            var notes = DbContext.Notes
+            var notes = DbContext.Notes.Include(x=>x.CreatedBy)
                 .Where(x => !x.Deleted);
 
             if (withIncludes)
             {
 				notes = notes
-                    .Include(x => (x as Note).CreatedBy)
-                    .Include(x => (x as Note).Likes)
-                    .Include(x => x.Notes).ThenInclude(z => (z as Note).NoteLikes)
-                    .Include(x => x.NoteLikes).ThenInclude(y => y.TenantUser)
+                    .Include(x => (x.Notes as Note).CreatedBy)
+                    .Include(x => (x.Notes as Note).NoteLikes)
+                    .Include(x => x.NoteLikes)
                     .Include(x => x.Module)
 					.Include(x => x.Module).ThenInclude(y => y.Fields)
 					.Include(x => x.CreatedBy);
