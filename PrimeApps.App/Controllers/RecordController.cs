@@ -348,7 +348,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
+        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false,int timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
