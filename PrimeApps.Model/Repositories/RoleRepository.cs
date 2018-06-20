@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
 
@@ -16,13 +17,17 @@ namespace PrimeApps.Model.Repositories
     public class RoleRepository : RepositoryBaseTenant, IRoleRepository
     {
         private Warehouse _warehouse;
-        public RoleRepository(TenantDBContext dbContext) : base(dbContext)
-        {
+        private IConfiguration _configuration;
 
+        public RoleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext)
+        {
+            _configuration = configuration;
         }
-        public RoleRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        public RoleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext)
         {
             _warehouse = warehouse;
+            _configuration = configuration;
+
         }
         /// <summary>
         /// Creates a new user role.
@@ -159,8 +164,10 @@ namespace PrimeApps.Model.Repositories
                 var result = await DbContext.SaveChangesAsync();
                 if (result > 0 && string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
                 {
+                    var platformTenantId = int.Parse(_configuration.GetSection("AppSettings")["PrimeAppsTenantId"]);
+
                     if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser.TenantId));
+                        BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser.TenantId, platformTenantId));
                 }
             }
         }

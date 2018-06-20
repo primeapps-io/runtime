@@ -159,7 +159,7 @@ namespace PrimeApps.App.Helpers
                     var instance = tRepo.Get(AppUser.TenantId);
                     if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
                     {
-                        appUrl = TenantRepository.GetLogoUrl(instance.Setting.Logo);
+                        appUrl = instance.Setting.Logo;
                         appCodeUrl = "#";
                         appName = instance.Setting.MailSenderName;
                         socialMediaIcons = "none";

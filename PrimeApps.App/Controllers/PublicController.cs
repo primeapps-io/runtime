@@ -69,7 +69,7 @@ namespace PrimeApps.App.Controllers
 
 			//TODO Changed
             customInfo = new CustomInfoDTO();
-            customInfo.Logo = TenantRepository.GetLogoUrl(tenant.Setting.Logo);
+            customInfo.Logo = tenant.Setting.Logo;
             customInfo.Title = tenant.Setting.CustomTitle;
             customInfo.Description = tenant.Setting.CustomDescription;
             customInfo.Favicon = tenant.Setting.CustomFavicon;

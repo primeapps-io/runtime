@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
@@ -16,7 +17,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class Integration
     {
-        public static async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse)
+        public static async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse, IConfiguration configuration)
         {
             try
             {
@@ -69,7 +70,7 @@ namespace PrimeApps.App.Helpers
                                         return;
                                     }
 
-                                    RecordHelper.AfterCreate(moduleAccount, account, appUser, warehouse);
+                                    RecordHelper.AfterCreate(moduleAccount, account, appUser, warehouse, configuration);
                                 }
                                 catch (Exception ex)
                                 {
@@ -104,7 +105,7 @@ namespace PrimeApps.App.Helpers
                                     //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
 
-                                RecordHelper.AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse);
+                                RecordHelper.AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse, configuration);
                                 account = accountCurrent;
                             }
 
@@ -134,7 +135,7 @@ namespace PrimeApps.App.Helpers
                                         return;
                                     }
 
-                                    RecordHelper.AfterCreate(moduleContact, contact, appUser, warehouse);
+                                    RecordHelper.AfterCreate(moduleContact, contact, appUser, warehouse, configuration);
                                 }
                                 catch (Exception ex)
                                 {
@@ -171,7 +172,7 @@ namespace PrimeApps.App.Helpers
                                     //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
 
-                                RecordHelper.AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse);
+                                RecordHelper.AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse, configuration);
                             }
                         }
                     }
@@ -317,7 +318,7 @@ namespace PrimeApps.App.Helpers
             //}
         }
 
-        public static async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse)
+        public static async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse, IConfiguration configuration)
         {
             try
             {
@@ -377,7 +378,7 @@ namespace PrimeApps.App.Helpers
                                 return;
                             }
 
-                            RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
+                            RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse, configuration);
 
                             var moduleAccount = await moduleRepository.GetByName("accounts");
                             var findRequestAccount = new FindRequest
@@ -426,7 +427,7 @@ namespace PrimeApps.App.Helpers
                                 return;
                             }
 
-                            RecordHelper.AfterUpdate(moduleAccount, account, accountCurrent, appUser, warehouse);
+                            RecordHelper.AfterUpdate(moduleAccount, account, accountCurrent, appUser, warehouse, configuration);
                         }
                     }
                 }
@@ -437,7 +438,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task UpdateUser(string userEmail, Warehouse warehouse)
+        public static async Task UpdateUser(string userEmail, Warehouse warehouse, IConfiguration configuration)
         {
             try
             {
@@ -497,7 +498,7 @@ namespace PrimeApps.App.Helpers
                                 return;
                             }
 
-                            RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
+                            RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse, configuration);
                         }
                     }
                 }

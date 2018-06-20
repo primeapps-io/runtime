@@ -1,15 +1,12 @@
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Results;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,7 +15,6 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Document = PrimeApps.Model.Entities.Application.Document;
-using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Document;
@@ -33,6 +29,7 @@ using PrimeApps.App.Extensions;
 using Microsoft.WindowsAzure.Storage.Blob;
 using PrimeApps.App.Storage;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -46,7 +43,9 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository)
+        private IConfiguration _configuration;
+
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IConfiguration configuration)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -55,6 +54,7 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -116,7 +116,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -184,7 +184,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -729,7 +729,7 @@ namespace PrimeApps.App.Controllers
                     }
                 }
 
-                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
             }
             catch (PostgresException ex)
             {
@@ -800,7 +800,7 @@ namespace PrimeApps.App.Controllers
                 var blob = AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1);
 
                 outputStream.Position = 0;
-                var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+                var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
                 var result = new { filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}" };
 
                 return Ok(result);
@@ -994,7 +994,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
+                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
 
                     if (secondLevel != null)
                         await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem["id"], secondLevel.SubModule, currentCulture, timezoneOffset);
@@ -1058,7 +1058,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
+                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
 
                     if (secondLevel != null)
                         await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem[relation.RelatedModule + "_id"], secondLevel.SubModule, currentCulture, timezoneOffset);
@@ -1122,7 +1122,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
                     if (!productFormatted["separator"].IsNullOrEmpty())
                     {
                         productFormatted["product.products.name"] = productFormatted["separator"] + "-product_separator_separator";
@@ -1169,7 +1169,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
                     productsFormatted.Add(productFormatted);
                 }
 
@@ -1210,7 +1210,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
                     productsFormatted.Add(productFormatted);
                 }
 
@@ -1253,7 +1253,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset);
+                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset);
                     record[secondLevelSubModuleEntity.Name] += (string)recordItemFormatted[primaryField.Name] + ControlChar.LineBreak;
                     recordsFormatted.Add(recordItemFormatted);
                 }
@@ -1295,7 +1295,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset);
+                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset);
                     record[secondLevelSubModuleEntity.Name] += (string)recordItemFormatted[relation.RelatedModule + "_id." + relation.RelatedModule + "." + primaryField.Name] + ControlChar.LineBreak;
                     recordsFormatted.Add(recordItemFormatted);
                 }

@@ -1,5 +1,4 @@
-﻿using PrimeApps.App.ActionFilters;
-using PrimeApps.App.Helpers;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -10,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using static PrimeApps.App.Helpers.ProcessHelper;
 
 namespace PrimeApps.App.Controllers
@@ -21,17 +21,18 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
-        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, Warehouse warehouse)
+        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, Warehouse warehouse, IConfiguration configuration)
         {
             _processRequestRepository = processRequestRepository;
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
-            _warehouse = warehouse; 
-
+            _warehouse = warehouse;
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_processRequestRepository);
@@ -63,7 +64,7 @@ namespace PrimeApps.App.Controllers
                 await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
                 await _processRequestRepository.Update(requestEntity);
 
-                await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+                await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             }
 
@@ -84,7 +85,7 @@ namespace PrimeApps.App.Controllers
             await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             return Ok(requestEntity);
         }
@@ -101,7 +102,7 @@ namespace PrimeApps.App.Controllers
             await ProcessHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             return Ok(requestEntity);
         }
@@ -130,7 +131,7 @@ namespace PrimeApps.App.Controllers
             await ProcessHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             return Ok(requestEntity);
         }

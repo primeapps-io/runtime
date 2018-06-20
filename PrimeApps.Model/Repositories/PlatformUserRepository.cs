@@ -45,21 +45,6 @@ namespace PrimeApps.Model.Repositories
 			return await DbContext.Users.Include(x => x.TenantsAsUser.Where(z => z.TenantId == tenantId)).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
 		}
 
-		/// <summary>
-		/// Gets avatar full url
-		/// </summary>
-		/// <returns></returns>
-		public static string GetAvatarUrl(string avatar)
-		{
-			if (string.IsNullOrWhiteSpace(avatar))
-				return string.Empty;
-
-			var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
-
-			return $"{blobUrl}/user-images/{avatar}";
-		}
-
-
 		public async Task UpdateAsync(PlatformUser userToEdit)
 		{
 			await DbContext.SaveChangesAsync();

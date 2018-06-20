@@ -2,7 +2,6 @@
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
@@ -26,9 +26,11 @@ namespace PrimeApps.App.Jobs.Email
     /// </summary>
     public class Email
     {
-        public Email()
+        private static IConfiguration _configuration;
+
+        public Email(IConfiguration configuration)
         {
-            // No DI required for this class since it only uses nhibernate and smtp provider.
+            _configuration = configuration;
         }
 
         public static object Messaging { get; internal set; }
@@ -196,13 +198,13 @@ namespace PrimeApps.App.Jobs.Email
             var pattern = new Regex(@"{(.*?)}");
             var contentFields = new List<string>();
             var matches = pattern.Matches(content);
-            
+
             Tenant subscriber = null;
 
             using (var platformDBContext = new PlatformDBContext())
             using (var tenantRepository = new TenantRepository(platformDBContext))
             {
-				subscriber = await tenantRepository.GetAsync(tenantId);
+                subscriber = await tenantRepository.GetAsync(tenantId);
             }
             /*
             PlatformUser subscriber = null;
@@ -235,7 +237,7 @@ namespace PrimeApps.App.Jobs.Email
 
                 if (!record.IsNullOrEmpty())
                 {
-                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
+                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
 
                     if (contentFields.Count > 0)
                     {

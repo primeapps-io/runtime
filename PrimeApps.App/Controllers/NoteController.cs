@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -19,9 +20,9 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/note")/*, SnakeCase*/]
-	[Authorize]
+    [Authorize]
 
-	public class NoteController : BaseController
+    public class NoteController : BaseController
     {
         private INoteRepository _noteRepository;
         private IUserRepository _userRepository;
@@ -29,8 +30,9 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
+        private IConfiguration _configuration;
 
-		public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository)
+        public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, IConfiguration configuration)
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
@@ -38,29 +40,23 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _profileRepository = profileRepository;
             _picklistRepository = picklistRepository;
-
-			/*SetCurrentUser(_noteRepository, _httpContextAccessor);
-            SetCurrentUser(_userRepository, _httpContextAccessor);
-            SetCurrentUser(_recordRepository, _httpContextAccessor);
-            SetCurrentUser(_moduleRepository, _httpContextAccessor);
-            SetCurrentUser(_profileRepository, _httpContextAccessor);
-            SetCurrentUser(_picklistRepository, _httpContextAccessor);*/
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_noteRepository);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_recordRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_picklistRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_picklistRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var noteEntity = await _noteRepository.GetById(id);
@@ -175,7 +171,7 @@ namespace PrimeApps.App.Controllers
                 if (record.IsNullOrEmpty())
                     continue;
 
-                var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(note.Module, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value);
+                var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(note.Module, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value);
 
                 if (!record.IsNullOrEmpty())
                 {
@@ -261,6 +257,6 @@ namespace PrimeApps.App.Controllers
             return Ok(noteEntity);
         }
 
-		
-	}
+
+    }
 }

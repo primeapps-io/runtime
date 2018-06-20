@@ -13,6 +13,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Common.Resources;
@@ -340,7 +342,7 @@ namespace PrimeApps.App.Helpers
                                         break;
                                 }
 
-                                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                var subdomain = ConfigurationManager<>.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
                                 domain = string.Format(domain, subdomain);
 
                                 //domain = "http://localhost:5554/";
@@ -1389,7 +1391,7 @@ namespace PrimeApps.App.Helpers
         //    }
         //}
 
-        public static async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse)
+        public static async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, IConfiguration configuration)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -1403,7 +1405,7 @@ namespace PrimeApps.App.Helpers
                         var process = await processRepository.GetById(request.ProcessId);
 
                         var record = recordRepository.GetById(process.Module, request.RecordId, false);
-                        await WorkflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse);
+                        await WorkflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, configuration);
 
                         if (process.Module.Name == "izinler" && request.Status == Model.Enums.ProcessStatus.Approved)
                             await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update);

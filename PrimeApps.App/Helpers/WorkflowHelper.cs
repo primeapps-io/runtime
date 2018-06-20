@@ -12,22 +12,19 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Net.Http;
-using System.Text;
 using System.Net.Http.Headers;
 using System.Web;
-using System.Configuration;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.IdentityModel.Protocols;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Helpers
 {
     public static class WorkflowHelper
     {
-        public static async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse)
+        public static async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, IConfiguration configuration)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -901,7 +898,7 @@ namespace PrimeApps.App.Helpers
                                                     break;
                                             }
 
-                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                            var subdomain = configuration.GetSection("TestMode")["BlobUrl"] == "true" ? "test" : appDomain;
 
                                             domain = string.Format(domain, subdomain);
 

@@ -2,63 +2,36 @@
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PrimeApps.Model.Context
 {
-    public partial class TenantDBContext : DbContext
+    public class TenantDBContext : DbContext
     {
-        private int? _tenantId;
-        private int? _userId;
+        public int? TenantId { get; set; }
 
-        public int? TenantId
-        {
-            get { return _tenantId; }
-            set { _tenantId = value; }
-        }
+        public int? UserId { get; set; }
 
-        public int? UserId
-        {
-            get { return _userId; }
-            set { _userId = value; }
-        }
-
-        /// <summary>
-        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for Platform database specific operations. 
-        /// Instead use <see cref="PlatformDBContext"/> 
-        /// </summary>
         public TenantDBContext() { }
 
         public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options) { }
 
-        /// <summary>
-        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
-        /// Instead use <see cref="PlatformDBContext"/> 
-        /// </summary>
-        /// <param name="tenantId"></param>
         public TenantDBContext(int tenantId) : this()
         {
-            _tenantId = tenantId;
-            base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(tenantId);
+            TenantId = tenantId;
+            base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(base.Database.GetDbConnection().ConnectionString, tenantId);
         }
 
-        /// <summary>
-        /// This context is to be used only for tenant database related operations. It includes all tenant related models. It must not be used for SaaS database specific operations. 
-        /// Instead use <see cref="PlatformDBContext"/> 
-        /// </summary>
-        /// <param name="databaseName"></param>
         public TenantDBContext(string databaseName) : this()
         {
-            base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(databaseName);
+            base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(base.Database.GetDbConnection().ConnectionString, databaseName);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            CreateCustomModelMapping(modelBuilder);
+            CreateModelMapping(modelBuilder);
             modelBuilder.HasDefaultSchema("public");
 
             base.OnModelCreating(modelBuilder);
@@ -66,44 +39,21 @@ namespace PrimeApps.Model.Context
 
         public override int SaveChanges()
         {
-
-            var validationErrors = ChangeTracker
-                                    .Entries<IValidatableObject>()
-                                    .SelectMany(e => e.Entity.Validate(null))
-                                    .Where(r => r != ValidationResult.Success);
-
-            if (validationErrors.Any())
-            {
-                // Possibly throw an exception here
-                string errorMessages = string.Join("; ", validationErrors.Select(x => x.ErrorMessage));
-                throw new Exception(errorMessages);
-
-            }
+            SetDefaultValues();
 
             return base.SaveChanges();
         }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var validationErrors = ChangeTracker
-                                    .Entries<IValidatableObject>()
-                                    .SelectMany(e => e.Entity.Validate(null))
-                                    .Where(r => r != ValidationResult.Success);
-
-            if (validationErrors.Any())
-            {
-                // Possibly throw an exception here
-                string errorMessages = string.Join("; ", validationErrors.Select(x => x.ErrorMessage));
-                throw new Exception(errorMessages);
-            }
-
             SetDefaultValues();
-            return base.SaveChangesAsync();
 
+            return base.SaveChangesAsync(cancellationToken);
         }
 
         public int GetCurrentUserId()
         {
-            return _userId ?? (_tenantId ?? 0);
+            return UserId ?? (TenantId ?? 0);
         }
 
         private void SetDefaultValues()
@@ -133,34 +83,26 @@ namespace PrimeApps.Model.Context
             }
         }
 
-        private void CreateCustomModelMapping(ModelBuilder modelBuilder)
+        private void CreateModelMapping(ModelBuilder modelBuilder)
         {
-            //Many to many relationship users <-> user_groups
-            modelBuilder.Entity<TenantUserGroup>()
+            modelBuilder.Entity<UsersUserGroup>()
                 .HasKey(ug => new { ug.UserId, ug.UserGroupId });
 
-            modelBuilder.Entity<TenantUserGroup>()
+            modelBuilder.Entity<UsersUserGroup>()
                 .HasOne(ug => ug.User)
                 .WithMany(u => u.Groups)
                 .HasForeignKey(bc => bc.UserId);
 
-            modelBuilder.Entity<TenantUserGroup>()
+            modelBuilder.Entity<UsersUserGroup>()
                 .HasOne(ug => ug.UserGroup)
                 .WithMany(g => g.Users)
                 .HasForeignKey(bc => bc.UserGroupId);
 
-            //Cascade delete for FieldValidation
             modelBuilder.Entity<Field>()
                 .HasOne(x => x.Validation)
                 .WithOne(x => x.Field)
                 .HasForeignKey<FieldValidation>(x => x.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //Cascade delete for FieldCombination
-            /*modelBuilder.Entity<Field>()
-                .HasOptional(x => x.Combination)
-                .WithRequired(x => x.Field)
-                .WillCascadeOnDelete(true);*/
 
             modelBuilder.Entity<Field>()
                 .HasOne(x => x.Combination)
@@ -168,7 +110,6 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey<FieldCombination>(b => b.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Junction table for view-user shares
             modelBuilder.Entity<ViewShares>()
                 .HasKey(vs => new { vs.UserId, vs.ViewId });
 
@@ -182,23 +123,11 @@ namespace PrimeApps.Model.Context
                 .WithMany(g => g.Shares)
                 .HasForeignKey(vs => vs.ViewId);
 
-            //Cascade delete for WorkflowNotification
-            /*modelBuilder.Entity<Workflow>()
-                .HasOptional(x => x.SendNotification)
-                .WithRequired(x => x.Workflow)
-                .WillCascadeOnDelete(true);*/
-
             modelBuilder.Entity<Workflow>()
                 .HasOne(x => x.SendNotification)
                 .WithOne(x => x.Workflow)
                 .HasForeignKey<WorkflowNotification>(x => x.WorkflowId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //Cascade delete for WorkflowTask
-            /*modelBuilder.Entity<Workflow>()
-                .HasOptional(x => x.CreateTask)
-                .WithRequired(x => x.Workflow)
-                .WillCascadeOnDelete(true);*/
 
             modelBuilder.Entity<Workflow>()
                 .HasOne(x => x.CreateTask)
@@ -206,23 +135,11 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey<WorkflowTask>(x => x.WorkflowId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Cascade delete for WorkflowUpdate
-            /*modelBuilder.Entity<Workflow>()
-                .HasOptional(x => x.FieldUpdate)
-                .WithRequired(x => x.Workflow)
-                .WillCascadeOnDelete(true);*/
-
             modelBuilder.Entity<Workflow>()
                 .HasOne(x => x.FieldUpdate)
                 .WithOne(x => x.Workflow)
                 .HasForeignKey<WorkflowUpdate>(x => x.WorkflowId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //Cascade delete for WorkflowWebHook
-            /*modelBuilder.Entity<Workflow>()
-                .HasOptional(x => x.WebHook)
-                .WithRequired(x => x.Workflow)
-                .WillCascadeOnDelete(true);*/
 
             modelBuilder.Entity<Workflow>()
                 .HasOne(x => x.WebHook)
@@ -230,7 +147,6 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey<WorkflowWebhook>(x => x.WorkflowId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //Temporary relation fix.
             modelBuilder.Entity<Profile>()
                 .HasMany(x => x.Users)
                 .WithOne(x => x.Profile)
@@ -241,36 +157,16 @@ namespace PrimeApps.Model.Context
                 .WithOne(x => x.Role)
                 .HasForeignKey(x => x.RoleId);
 
-            //Cascade delete profile permissions.
-            /*modelBuilder.Entity<ProfilePermission>()
-                .WithMany(x => x.Permissions)
-				.OnDelete(DeleteBehavior.Cascade);*/
-
             modelBuilder.Entity<ProfilePermission>()
                 .HasOne(x => x.Profile)
                 .WithMany(x => x.Permissions)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //Note self referecing
-            /*modelBuilder.Entity<Note>()
-                .HasOptional(x => x.Parent)
-                .WithMany(x => x.Notes)
-                .HasForeignKey(x => x.NoteId)
-                .WillCascadeOnDelete(true);*/
 
             modelBuilder.Entity<Note>()
                 .HasOne(x => x.Parent)
                 .WithMany(x => x.Notes)
                 .HasForeignKey(x => x.NoteId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //Junction table for analytic-user shares
-            /*modelBuilder.Entity<Analytic>()
-                .HasMany(x => x.Shares)
-                .WithMany(x => x.SharedAnalytics)
-                .Map(x => x.MapLeftKey("analytic_id")
-                .MapRightKey("user_id")
-                .ToTable("analytic_shares"));*/
 
             modelBuilder.Entity<AnalyticShares>()
                 .HasKey(t => new { t.UserId, t.AnaltyicId });
@@ -285,15 +181,6 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.SharedAnalytics)
                 .HasForeignKey(pt => pt.UserId);
 
-
-            //Junction table for template-user shares
-            /*modelBuilder.Entity<Template>()
-                .HasMany(x => x.Shares)
-                .WithMany(x => x.SharedTemplates)
-                .Map(x => x.MapLeftKey("template_id")
-                .MapRightKey("user_id")
-                .ToTable("template_shares"));*/
-
             modelBuilder.Entity<TemplateShares>()
                 .HasKey(t => new { t.UserId, t.TemplateId });/*We must ensure the primary key constraint names are matching*/
 
@@ -306,16 +193,6 @@ namespace PrimeApps.Model.Context
                 .HasOne(pt => pt.TenantUser)
                 .WithMany(t => t.SharedTemplates)
                 .HasForeignKey(pt => pt.UserId);
-
-
-            //Junction table for liked note shares
-            /*modelBuilder.Entity<Note>()
-                .HasMany(x => x.Likes)
-                .WithMany(x => x.LikedNotes)
-                .Map(x => x.MapLeftKey("note_id")
-                .MapRightKey("user_id")
-                .ToTable("note_likes"));*/
-
 
             modelBuilder.Entity<NoteLikes>()
                 .HasKey(t => new { t.UserId, t.NoteId });
@@ -330,15 +207,6 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.LikedNotes)
                 .HasForeignKey(pt => pt.UserId);
 
-
-            //Junction table for report-user shares
-            //modelBuilder.Entity<Report>()
-            //             .HasMany(x => x.Shares)
-            //             .WithMany(x => x.SharedReports)
-            //             .Map(x => x.MapLeftKey("reporProfilet_id")
-            //                 .MapRightKey("user_id")
-            //                 .ToTable("report_shares"));
-
             modelBuilder.Entity<ReportShares>()
                 .HasKey(t => new { t.UserId, t.ReportId });
 
@@ -352,7 +220,6 @@ namespace PrimeApps.Model.Context
                 .WithMany(t => t.SharedReports)
                 .HasForeignKey(pt => pt.UserId);
 
-            //BaseEntity Tenant CreatedBy Relation. For Solving Error: Unable to determine the relationship represented by navigation property 'Tenant.CreatedBy' of type 'PlatformUser'.
             modelBuilder.Entity<Profile>()
                 .HasOne(x => x.CreatedBy)
                 .WithMany()
@@ -372,19 +239,16 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ActionButton>().HasIndex(x => x.Deleted);
 
             //ActionButtonPermission
-            modelBuilder.Entity<ActionButtonPermission>()
-            .HasIndex(x => new { x.ActionButtonId, x.ProfileId })
-            .IsUnique().HasName("action_button_permissions_IX_action_button_id_profile_id");
+            modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => new { x.ActionButtonId, x.ProfileId }).IsUnique().HasName("action_button_permissions_IX_action_button_id_profile_id");
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<ActionButtonPermission>().HasIndex(x => x.Deleted);
+
             //Analytics
-            modelBuilder.Entity<Analytic>()
-            .HasIndex(x => x.PowerBiReportId);
-            modelBuilder.Entity<Analytic>()
-            .HasIndex(x => x.SharingType);
+            modelBuilder.Entity<Analytic>().HasIndex(x => x.PowerBiReportId);
+            modelBuilder.Entity<Analytic>().HasIndex(x => x.SharingType);
             modelBuilder.Entity<Analytic>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Analytic>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<Analytic>().HasIndex(x => x.UpdatedAt);
@@ -392,8 +256,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Analytic>().HasIndex(x => x.Deleted);
 
             //AuditLog
-            modelBuilder.Entity<AuditLog>()
-            .HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<AuditLog>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<AuditLog>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<AuditLog>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<AuditLog>().HasIndex(x => x.UpdatedAt);
@@ -401,8 +264,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AuditLog>().HasIndex(x => x.Deleted);
 
             //Calculation
-            modelBuilder.Entity<Calculation>()
-            .HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Calculation>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<Calculation>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Calculation>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<Calculation>().HasIndex(x => x.UpdatedAt);
@@ -410,16 +272,15 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Calculation>().HasIndex(x => x.Deleted);
 
             //Chart
-            modelBuilder.Entity<Chart>()
-            .HasIndex(x => x.ReportId);
+            modelBuilder.Entity<Chart>().HasIndex(x => x.ReportId);
             modelBuilder.Entity<Chart>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Chart>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<Chart>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Chart>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Chart>().HasIndex(x => x.Deleted);
+
             //Components
-            modelBuilder.Entity<Components>()
-            .HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<Components>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<Components>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Components>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<Components>().HasIndex(x => x.UpdatedAt);
@@ -441,6 +302,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ConversionSubModule>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ConversionSubModule>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<ConversionSubModule>().HasIndex(x => x.Deleted);
+
             //Dashboard
             modelBuilder.Entity<Dashboard>().HasIndex(x => x.UserId);
             modelBuilder.Entity<Dashboard>().HasIndex(x => x.ProfileId);
@@ -478,10 +340,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Document>().HasIndex(x => x.Deleted);
 
             //Field
-            modelBuilder.Entity<Field>()
-            .HasIndex(x => new { x.ModuleId, x.Name })
-            .HasName("fields_IX_module_id_name")
-            .IsUnique();
+            modelBuilder.Entity<Field>().HasIndex(x => new { x.ModuleId, x.Name }).HasName("fields_IX_module_id_name").IsUnique();
             modelBuilder.Entity<Field>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Field>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<Field>().HasIndex(x => x.UpdatedAt);
@@ -491,9 +350,7 @@ namespace PrimeApps.Model.Context
             //FieldCombination
             //FieldFilter
             //FieldPermission
-            modelBuilder.Entity<FieldPermission>()
-            .HasIndex(x => new { x.FieldId, x.ProfileId })
-            .HasName("field_permissions_IX_field_id_profile_id");
+            modelBuilder.Entity<FieldPermission>().HasIndex(x => new { x.FieldId, x.ProfileId }).HasName("field_permissions_IX_field_id_profile_id");
             modelBuilder.Entity<FieldPermission>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<FieldPermission>().HasIndex(x => x.CreatedById);
             modelBuilder.Entity<FieldPermission>().HasIndex(x => x.UpdatedAt);
@@ -508,6 +365,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Help>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Help>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Help>().HasIndex(x => x.Deleted);
+
             //Import
             modelBuilder.Entity<Import>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<Import>().HasIndex(x => x.CreatedAt);
@@ -584,6 +442,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ProcessApprover>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ProcessApprover>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<ProcessApprover>().HasIndex(x => x.Deleted);
+
             //ProcessFilter
             modelBuilder.Entity<ProcessFilter>().HasIndex(x => x.ProcessId);
             modelBuilder.Entity<ProcessFilter>().HasIndex(x => x.CreatedAt);
@@ -591,6 +450,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ProcessFilter>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<ProcessFilter>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<ProcessFilter>().HasIndex(x => x.Deleted);
+
             //ProcessLog
             modelBuilder.Entity<ProcessLog>().HasIndex(x => x.ProcessId);
             modelBuilder.Entity<ProcessLog>().HasIndex(x => x.ModuleId);
@@ -682,7 +542,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Setting>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Setting>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Setting>().HasIndex(x => x.Deleted);
-           
+
             //Template
             modelBuilder.Entity<Template>().HasIndex(x => new { x.Id, x.Code }).IsUnique();
             modelBuilder.Entity<Template>().HasIndex(x => x.SharingType);
@@ -831,7 +691,7 @@ namespace PrimeApps.Model.Context
         public DbSet<Help> Helps { get; set; }
         public DbSet<FieldFilter> FieldFilters { get; set; }
         public DbSet<ViewShares> ViewShares { get; set; }
-        public DbSet<TenantUserGroup> UsersUserGroups { get; set; }
+        public DbSet<UsersUserGroup> UsersUserGroups { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }

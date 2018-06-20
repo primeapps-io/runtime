@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Application;
@@ -74,10 +75,10 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public void CreateSchema(Model.Entities.Platform.PlatformWarehouse warehouseEntity, ICollection<Module> modules, string tenantLanguage)
+        public void CreateSchema(Entities.Platform.PlatformWarehouse warehouseEntity, ICollection<Module> modules, string tenantLanguage, string connectionString)
         {
             //Connect sql database using SMO
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            var connection = new SqlConnection(connectionString);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseEntity.DatabaseName];
@@ -359,9 +360,9 @@ namespace PrimeApps.Model.Helpers
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateTable(string warehouseDatabaseName, string moduleName, CurrentUser currentUser, string tenantLanguage)
+        public void CreateTable(string warehouseDatabaseName, string moduleName, CurrentUser currentUser, string tenantLanguage, string connectionString)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            var connection = new SqlConnection(connectionString);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -378,9 +379,9 @@ namespace PrimeApps.Model.Helpers
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateColumns(string warehouseDatabaseName, string moduleName, List<int> fieldIds, CurrentUser currentUser, string tenantLanguage)
+        public void CreateColumns(string warehouseDatabaseName, string moduleName, List<int> fieldIds, CurrentUser currentUser, string tenantLanguage, string connectionString)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            var connection = new SqlConnection(connectionString);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -398,9 +399,9 @@ namespace PrimeApps.Model.Helpers
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateJunctionTable(string warehouseDatabaseName, string moduleName, int relationId, CurrentUser currentUser)
+        public void CreateJunctionTable(string warehouseDatabaseName, string moduleName, int relationId, CurrentUser currentUser, string connectionString)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ConnectionString);
+            var connection = new SqlConnection(connectionString);
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
@@ -644,10 +645,10 @@ namespace PrimeApps.Model.Helpers
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void CreateTenantUser(int userId, string databaseName, int tenantId, string tenantLanguage)
+        public void CreateTenantUser(int userId, string databaseName, int tenantId, string tenantLanguage, int primeAppsTenantId)
         {
             //Primeapps warehouse control
-            if (tenantId == int.Parse(ConfigurationManager.AppSettings["PrimeAppsTenantId"]))
+            if (tenantId == primeAppsTenantId)
                 return;
 
             if (string.IsNullOrEmpty(tenantLanguage))
@@ -733,10 +734,10 @@ namespace PrimeApps.Model.Helpers
         }
 
         [WarehouseQueue, AutomaticRetry(Attempts = 0)]
-        public void UpdateTenantUser(int userId, string databaseName, int tenantId)
+        public void UpdateTenantUser(int userId, string databaseName, int tenantId, int primeAppsTenantId)
         {
             //Primeapps warehouse control
-            if (tenantId == int.Parse(ConfigurationManager.AppSettings["PrimeAppsTenantId"]))
+            if (tenantId == primeAppsTenantId)
                 return;
 
             var user = GetTenantUser(userId, tenantId);

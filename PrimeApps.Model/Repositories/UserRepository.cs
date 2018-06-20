@@ -8,6 +8,7 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Context;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Common.User;
@@ -18,11 +19,14 @@ namespace PrimeApps.Model.Repositories
     public class UserRepository : RepositoryBaseTenant, IUserRepository
     {
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
+
         public UserRepository(TenantDBContext dbContext) : base(dbContext) { }
 
-        public UserRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext)
         {
             _warehouse = warehouse;
+            _configuration = configuration;
         }
         /// <summary>
         /// Creates a new user.
@@ -36,8 +40,10 @@ namespace PrimeApps.Model.Repositories
             var result = await DbContext.SaveChangesAsync();
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
+                var platformTenantId = int.Parse(_configuration.GetSection("AppSettings")["PrimeAppsTenantId"]);
+
                 if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.CreateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId, user.Culture.Contains("tr") ? "tr" : "en"));
+                    BackgroundJob.Enqueue(() => _warehouse.CreateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId, user.Culture.Contains("tr") ? "tr" : "en", platformTenantId));
             }
 
         }
@@ -135,8 +141,10 @@ namespace PrimeApps.Model.Repositories
             var result = await DbContext.SaveChangesAsync();
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
+                var platformTenantId = int.Parse(_configuration.GetSection("AppSettings")["PrimeAppsTenantId"]);
+
                 if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId));
+                    BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId, platformTenantId));
             }
         }
 

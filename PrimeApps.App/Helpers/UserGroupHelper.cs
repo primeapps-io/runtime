@@ -7,7 +7,7 @@ namespace PrimeApps.App.Helpers
 {
     public static class UserGroupHelper
     {
-        public static UserGroup CreateEntity(UserGroupBindingModel userGroupModel, ICollection<TenantUserGroup> users)
+        public static UserGroup CreateEntity(UserGroupBindingModel userGroupModel, ICollection<UsersUserGroup> users)
         {
             var userGroup = new UserGroup
             {
@@ -19,7 +19,7 @@ namespace PrimeApps.App.Helpers
             return userGroup;
         }
 
-        public static void UpdateEntity(UserGroupBindingModel userGroupModel, UserGroup userGroup, ICollection<TenantUserGroup> users)
+        public static void UpdateEntity(UserGroupBindingModel userGroupModel, UserGroup userGroup, ICollection<UsersUserGroup> users)
         {
             userGroup.Name = userGroupModel.Name;
             userGroup.Description = userGroupModel.Description;

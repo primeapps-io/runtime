@@ -14,6 +14,7 @@ using PrimeApps.App.Notifications;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 
 /*
  * using OfisimCRM.DTO.AuditLog;
@@ -221,54 +222,54 @@ namespace PrimeApps.App.Helpers
             return 0;
         }
 
-        public static void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
+        public static void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, IConfiguration configuration, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
         {
             if (runDefaults)
             {
-				BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
-				BackgroundJob.Enqueue(() => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
-				BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
+                BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, configuration, RecordActionType.Inserted, null, module));
+                BackgroundJob.Enqueue(() => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
+                BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.SendTaskNotification(record, appUser, module));
             }
 
             if (runWorkflows)
             {
-				BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse));
-				BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+                BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, configuration));
+                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
             }
 
 
-			if (runCalculations)
-			{
-				BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
-			}
+            if (runCalculations)
+            {
+                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
+            }
         }
 
-        public static void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
+        public static void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, IConfiguration configuration, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
-			BackgroundJob.Enqueue(() => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
-			BackgroundJob.Enqueue(() => NotificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
-			BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
+            BackgroundJob.Enqueue(() => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
+            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, configuration, RecordActionType.Updated, null, module));
+            BackgroundJob.Enqueue(() => NotificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
+            BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
 
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
+            //HostingEnvironment.QueueBackgroundWorkItem(clt => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
             //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
             //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
             //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.SendTaskNotification(record, appUser, module));
 
             if (runWorkflows)
             {
-				BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse));
-				BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+                BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse, configuration));
+                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
 
                 //if (currentRecord["process_id"].IsNullOrEmpty())
@@ -282,36 +283,36 @@ namespace PrimeApps.App.Helpers
             }
 
 
-			if (runCalculations)
-			{
-				BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
-			}
+            if (runCalculations)
+            {
+                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
+            }
         }
 
         public static void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true)
         {
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
-			BackgroundJob.Enqueue(() => NotificationHelper.Delete(appUser, record, module));
+            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
+            BackgroundJob.Enqueue(() => NotificationHelper.Delete(appUser, record, module));
 
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
+            //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
             //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Delete(appUser, record, module));
 
             if (runWorkflows)
             {
-				BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
-				BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+                BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
+                BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
             }
 
 
-			if (runCalculations)
-			{
-				BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
-			}
+            if (runCalculations)
+            {
+                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
+            }
         }
 
         public static JObject PrepareConflictError(PostgresException ex)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DalSoft.Hosting.BackgroundQueue;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Application;
@@ -552,23 +553,23 @@ namespace PrimeApps.App.Helpers
             return moduleEntity;
         }
 
-        public static void AfterCreate(UserItem appUser, Module module)
+        public static void AfterCreate(UserItem appUser, Module module, IConfiguration configuration)
         {
             //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
-		}
+            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, configuration, null, SetupActionType.ModuleCreated, null));
+        }
 
-        public static void AfterUpdate(UserItem appUser, Module module)
+        public static void AfterUpdate(UserItem appUser, Module module, IConfiguration configuration)
         {
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
-		}
+            //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated));
+            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, configuration, null, SetupActionType.ModuleUpdated, null));
+        }
 
-        public static void AfterDelete(UserItem appUser, Module module)
+        public static void AfterDelete(UserItem appUser, Module module, IConfiguration configuration)
         {
             //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
-		}
+            BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, configuration, null, SetupActionType.ModuleDeleted, null));
+        }
 
         public static Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity)
         {
@@ -681,7 +682,7 @@ namespace PrimeApps.App.Helpers
                 ShowAsDropdown = fieldModel.ShowAsDropdown,
                 ViewType = fieldModel.ViewType,
                 Position = fieldModel.Position,
-            }; 
+            };
             return fieldEntity;
         }
 
