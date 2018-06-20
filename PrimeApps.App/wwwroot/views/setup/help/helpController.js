@@ -669,7 +669,7 @@ angular.module('primeapps')
                     angular.forEach($scope.helpsides, function (item) {
                         var moduleTypeControl = $filter('filter')($scope.helpEnums, { Name: item.module_type })[0];
 
-                        if (item.module_id === help.module_id && moduleTypeControl.Id === help.module_type) {
+                        if (item.module_id === help.module_id && moduleTypeControl.id === help.module_type) {
                             $scope.moduleControl = true;
                         }
                     });

@@ -29,10 +29,10 @@
                         <tr ng-repeat="moduleItem in modulesSetup | filter:{name:'!users'} | orderBy:['-system_type','order']">
                             <td><i class="{{moduleItem.menu_icon}}"></i></td>
                             <td>
-                            <a href="#app/setup/module?id={{moduleItem.name}}" ng-if="(user.isDemo && moduleItem.created_by_id==user.ID) || !user.isDemo">
+                            <a href="#app/setup/module?id={{moduleItem.name}}" ng-if="(user.isDemo && moduleItem.created_by_id==user.id) || !user.isDemo">
                                 {{moduleItem['label_' + language + '_plural']}}
                             </a>
-                            <span ng-if="user.isDemo && moduleItem.created_by_id!=user.ID">
+                            <span ng-if="user.isDemo && moduleItem.created_by_id!=user.id">
                                 {{moduleItem['label_' + language + '_plural']}}
                             </span>
                             </td>
@@ -40,7 +40,7 @@
                             <td>{{moduleItem.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
                             <td>{{moduleItem.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) : ('Setup.Modules.SharingPublic' | translate)}}</td>
                             <td class="text-right">
-                                <button id="actionButton-{{moduleItem.name}}" ng-disabled="user.isDemo && moduleItem.created_by_id!=user.ID" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i class="fa fa-caret-down"></i></button>
+                                <button id="actionButton-{{moduleItem.name}}" ng-disabled="user.isDemo && moduleItem.created_by_id!=user.id" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i class="fa fa-caret-down"></i></button>
                             </td>
                         </tr>
                         </tbody>

@@ -27,11 +27,11 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="profile in profiles">
-                            <td class="profile-name"><a href="#/app/setup/profile?id={{profile.ID}}">{{profile.Name}}</a></td>
-                            <td class="profile-description">{{profile.Description}}</td>
+                            <td class="profile-name"><a href="#/app/setup/profile?id={{profile.id}}">{{profile.Name}}</a></td>
+                            <td class="profile-description">{{profile.description}}</td>
                             <td class="text-right">
-                                <a href="#/app/setup/profile?clone={{profile.ID}}" class="btn btn-xs btn-custom">{{'Common.Copy' | translate}}</a>
-                                <button type="button" id="deleteButton{{profile.ID}}" class="btn btn-xs btn-custom" ng-disabled="profile.IsPersistent" ng-click="showDeleteForm(profile)">{{'Common.Remove' | translate}}</button>
+                                <a href="#/app/setup/profile?clone={{profile.id}}" class="btn btn-xs btn-custom">{{'Common.Copy' | translate}}</a>
+                                <button type="button" id="deleteButton{{profile.id}}" class="btn btn-xs btn-custom" ng-disabled="profile.is_persistent" ng-click="showDeleteForm(profile)">{{'Common.Remove' | translate}}</button>
                             </td>
                         </tr>
                         </tbody>

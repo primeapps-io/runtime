@@ -71,13 +71,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="userItem in roleUsers | filter:{ IsActive:true } track by userItem.Id">
+                        <tr ng-repeat="userItem in roleUsers | filter:{ IsActive:true } track by userItem.id">
                                 <td>{{userItem.Email}}</td>
-                                <td><span ng-if="userItem.Id">{{userItem.FirstName + " " + userItem.LastName}}</span></td>
+                                <td><span ng-if="userItem.id">{{userItem.FirstName + " " + userItem.LastName}}</span></td>
                                 <td>
                                     <span ng-if="userItem.IsSubscriber">{{'Setup.Users.GroupOwner' | translate}}</span>
-                                    <span ng-if="userItem.Id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus1' | translate}}</span>
-                                    <span ng-if="!userItem.Id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus2' | translate}}</span>
+                                    <span ng-if="userItem.id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus1' | translate}}</span>
+                                    <span ng-if="!userItem.id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus2' | translate}}</span>
                                 </td>
                             </tr>
                         </tbody>

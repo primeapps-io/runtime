@@ -12,10 +12,10 @@
                 </div>
                 <div class="view-action-buttons pull-right" ng-show="workgroup.hasAnalytics">
                     <a href="#/app/analyticsForm?id={{analyticsCurrentReport.id}}">{{'Common.Edit' | translate}}</a>
-                    <span ng-if="view.created_by == user.ID || user.profile.HasAdminRights"> |</span>
-                    <a href confirm-click action="delete(analyticsCurrentReport.id)" data-dismiss="modal" aria-hidden="true" ng-click="$hide()" placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-if="(view.created_by === user.ID || user.profile.HasAdminRights)">{{'Common.Delete' | translate}}</a>
+                    <span ng-if="view.created_by == user.id || user.profile.has_admin_rights"> |</span>
+                    <a href confirm-click action="delete(analyticsCurrentReport.id)" data-dismiss="modal" aria-hidden="true" ng-click="$hide()" placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-if="(view.created_by === user.id || user.profile.has_admin_rights)">{{'Common.Delete' | translate}}</a>
                     <span>|</span>
-                    <span ng-if="view.system_type === 'custom' && (view.created_by === user.ID || user.profile.HasAdminRights)"> |</span>
+                    <span ng-if="view.system_type === 'custom' && (view.created_by === user.id || user.profile.has_admin_rights)"> |</span>
                     <a href="#/app/analyticsForm">{{'Common.Create' | translate}}</a>
                 </div>
             </div>

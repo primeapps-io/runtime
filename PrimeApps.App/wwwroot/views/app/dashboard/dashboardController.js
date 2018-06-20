@@ -223,7 +223,7 @@ angular.module('primeapps')
                 //                 }
                 //
                 //                 var activityTypePicklistItem = $filter('filter')(activityTypes, {value: value}, true)[0];
-                //                 return activityTypePicklistItem.label[$rootScope.user.tenantLanguage];
+                //                 return activityTypePicklistItem.label[$rootScope.user.tenant_language];
                 //             };
                 //
                 //             if (activityTypeList.indexOf(responseDashboard.query1_type) > -1) {
@@ -385,7 +385,7 @@ angular.module('primeapps')
                     angular.forEach($rootScope.profiles, function (item) {
                         var profil = $filter('filter')($scope.dashboards, {
                             sharing_type: 'profile',
-                            profile_id: item.Id
+                            profile_id: item.id
                         }, true)[0];
                         if (!profil)
                             $scope.dashboardprofile.push(item);

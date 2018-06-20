@@ -4,8 +4,8 @@ var app = angular.module('primeapps', []);
 
 app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$modal', '$filter', '$location', 'ModuleService', 'config', '$http', '$state', 'helper', 'ngToast',
     function ($rootScope, $scope, moment, $modal, $filter, $location, ModuleService, config, $http, $state, helper, ngToast) {
-        $scope.loggedInUser = $rootScope.user.ID;
-        $scope.owner = $filter('filter')($rootScope.users, { Id: ($location.search().user ? parseInt($location.search().user) : $rootScope.user.ID) }, true)[0];
+        $scope.loggedInUser = $rootScope.user.id;
+        $scope.owner = $filter('filter')($rootScope.users, { Id: ($location.search().user ? parseInt($location.search().user) : $rootScope.user.id) }, true)[0];
         $scope.userWeek = parseInt($location.search().week);
         $scope.userYear = parseInt($location.search().year);
         $scope.userMonth = parseInt($location.search().month);
@@ -177,7 +177,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                 { field: 'week', operator: 'equals', value: week, no: 1 },
                 { field: 'year', operator: 'equals', value: year, no: 2 },
                 { field: 'month', operator: 'equals', value: month, no: 3 },
-                { field: 'owner', operator: 'equals', value: $scope.owner.Id, no: 4 }
+                { field: 'owner', operator: 'equals', value: $scope.owner.id, no: 4 }
             ];
 
             request.limit = 1;
@@ -208,14 +208,14 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                                     timetrackerRequest.year = year;
                                     timetrackerRequest.month = month;
                                     timetrackerRequest.calisan = responseCalisan.data[0].id;
-                                    timetrackerRequest.owner = $scope.owner.Id;
+                                    timetrackerRequest.owner = $scope.owner.id;
                                     timetrackerRequest.date_range = days[0].date + '-' + days[6].date;
                                     timetrackerRequest.tarih = moment(days[0].full_date).format('YYYY-MM-DD[T]HH:mm:ss');
                                     timetrackerRequest['toplam_saat'] = 0;
                                     ModuleService.insertRecord('timetrackers', timetrackerRequest)
                                         .then(function (responseTimetracker) {
                                             $scope.currentTimetracker = responseTimetracker.data;
-                                            if ($scope.owner.Id !== $scope.currentUser.id && ($scope.currentTimetracker.custom_approver === null || $scope.currentTimetracker.custom_approver !== $scope.currentUser.email)) {
+                                            if ($scope.owner.id !== $scope.currentUser.id && ($scope.currentTimetracker.custom_approver === null || $scope.currentTimetracker.custom_approver !== $scope.currentUser.email)) {
                                                 ModuleService.deleteRecord('timetrackers', responseTimetracker.data.id)
                                                     .then(function () {
                                                         ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -228,7 +228,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                             });
                     } else {
                         $scope.currentTimetracker = response.data[0];
-                        if ($scope.owner.Id !== $scope.currentUser.id && ($scope.currentTimetracker.custom_approver === null || $scope.currentTimetracker.custom_approver !== $scope.currentUser.email)) {
+                        if ($scope.owner.id !== $scope.currentUser.id && ($scope.currentTimetracker.custom_approver === null || $scope.currentTimetracker.custom_approver !== $scope.currentUser.email)) {
                             ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                             $state.go('app.dashboard');
                             return;
@@ -302,7 +302,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                         requestTimetrackerItems.fields.push(fieldLabel.name + '.' + fieldLabel.lookup_type + '.' + fieldLabel.lookupModulePrimaryField.name)
                 });
             });
-            requestTimetrackerItems.filters = [{ field: 'owner', operator: 'equals', value: $scope.owner.Id, no: 1 }, { field: 'related_timetracker', operator: 'equals', value: $scope.currentTimetracker.id, no: 2 }];
+            requestTimetrackerItems.filters = [{ field: 'owner', operator: 'equals', value: $scope.owner.id, no: 1 }, { field: 'related_timetracker', operator: 'equals', value: $scope.currentTimetracker.id, no: 2 }];
             requestTimetrackerItems.sort_field = 'created_at';
             requestTimetrackerItems.sort_direction = 'desc';
             requestTimetrackerItems.limit = 2000;

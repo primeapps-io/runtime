@@ -267,12 +267,12 @@ angular.module('primeapps')
             $scope.showEditForm = function (user) {
                 $scope.selectedUser = user;
                 $scope.editModel = {};
-                $scope.editModel.profile = user.profile.ID;
+                $scope.editModel.profile = user.profile.id;
                 $scope.editModel.role = user.role.id;
                 $scope.editModel.activeDirectoryEmail = user.activeDirectoryEmail;
                 $scope.userHaveActiveDirectoryEmail = user.activeDirectoryEmail !== null && user.activeDirectoryEmail !== "null" && user.activeDirectoryEmail !== '';
                 $scope.editModelState = angular.copy($scope.editModel);
-                $scope['editPopover' + user.Id] = $scope['editPopover' + user.Id] || $popover(angular.element(document.getElementById('editButton' + user.Id)), {
+                $scope['editPopover' + user.id] = $scope['editPopover' + user.Id] || $popover(angular.element(document.getElementById('editButton' + user.Id)), {
                     templateUrl: 'views/setup/users/userEdit.html',
                     placement: 'left',
                     scope: $scope,
@@ -307,7 +307,7 @@ angular.module('primeapps')
                 };
 
                 var updateActiveDirectoryEmail = function () {
-                    UserService.updateActiveDirectoryEmail($scope.selectedUser.Id, $scope.editModel.activeDirectoryEmail)
+                    UserService.updateActiveDirectoryEmail($scope.selectedUser.id, $scope.editModel.activeDirectoryEmail)
                         .then(function () {
                             getOfficeUsers();
                             success();
@@ -323,9 +323,9 @@ angular.module('primeapps')
                         });
                 };
 
-                ProfileService.changeUserProfile($scope.selectedUser.Id, $rootScope.workgroup.instanceID, $scope.editModel.profile)
+                ProfileService.changeUserProfile($scope.selectedUser.id, $rootScope.workgroup.instanceID, $scope.editModel.profile)
                     .then(function onSuccess() {
-                        RoleService.updateUserRole($scope.selectedUser.Id, $scope.editModel.role)
+                        RoleService.updateUserRole($scope.selectedUser.id, $scope.editModel.role)
                             .then(function onSuccess() {
                                 if (($scope.editModel.activeDirectoryEmail !== null || $scope.editModel.activeDirectoryEmail !== "" ) &&
                                     $scope.editModel.activeDirectoryEmail !== $scope.editModelState.activeDirectoryEmail) {

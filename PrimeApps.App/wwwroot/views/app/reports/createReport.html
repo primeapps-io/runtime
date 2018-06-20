@@ -126,10 +126,10 @@
                                             <input type="radio" ng-model="reportModel.sharing_type" value="me">
                                             {{'View.ShareMe' | translate}}
                                         </label><br />
-                                        <label ng-if="user.profile.HasAdminRights">
+                                        <label ng-if="user.profile.has_admin_rights">
                                             <input type="radio" ng-model="reportModel.sharing_type" value="everybody">
                                             {{'View.ShareEveryone' | translate}}
-                                        </label><br ng-if="user.profile.HasAdminRights" />
+                                        </label><br ng-if="user.profile.has_admin_rights" />
                                         <label>
                                             <input type="radio" ng-model="reportModel.sharing_type" value="custom">
                                             {{'View.ShareCustom' | translate}}

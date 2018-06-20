@@ -33,7 +33,7 @@ angular.module('primeapps')
                         var copyUsers = angular.copy($rootScope.users);
                         $scope.users = $filter('filter')(copyUsers, { IsActive: 'true' });
                         $scope.users = $filter('orderBy')($scope.users, 'FullName');
-                        var userAll = { Id: 0, FullName: $filter('translate')('Tasks.AllUsers') };
+                        var userAll = { id: 0, FullName: $filter('translate')('Tasks.AllUsers') };
                         $scope.users.unshift(userAll);
                         $scope.filter.assignedTo = userAll;
 
@@ -89,11 +89,11 @@ angular.module('primeapps')
                                         findRequest.filter_logic = findRequest.filter_logic.replace("2", "(2 or 3)");
                                     }
 
-                                    if ($scope.filter && $scope.filter.assignedTo && $scope.filter.assignedTo.Id != 0) {
+                                    if ($scope.filter && $scope.filter.assignedTo && $scope.filter.assignedTo.id != 0) {
                                         findRequest.filters.push({
                                             field: 'owner',
                                             operator: 'equals',
-                                            value: $scope.filter.assignedTo.Id,
+                                            value: $scope.filter.assignedTo.id,
                                             no: findRequest.filters.length + 1
                                         });
                                         findRequest.filter_logic = findRequest.filter_logic.replace("&", "and " + findRequest.filters.length + " &");
@@ -158,7 +158,7 @@ angular.module('primeapps')
 
                             ModuleService.updateRecord('activities', taskModel)
                                 .then(function () {
-                                    task['owner.users.id'] = task.assignedTo.Id;
+                                    task['owner.users.id'] = task.assignedTo.id;
                                     task['owner.users.full_name'] = task.assignedTo.FullName;
 
                                     TaskService.processTask(task, $scope.taskStatusCompletedPicklistItem);
@@ -260,7 +260,7 @@ angular.module('primeapps')
                         var newTask = function () {
                             $scope.task = {};
                             $scope.task.task_due_date = (new Date()).setHours(0, 0, 0, 0);
-                            $scope.task.assignedTo = $filter('filter')($scope.$root.users, { Id: $scope.$root.user.ID }, true)[0];
+                            $scope.task.assignedTo = $filter('filter')($scope.$root.users, { id: $scope.$root.user.id }, true)[0];
                         };
 
                         ModuleService.getPicklists($scope.module)
@@ -306,7 +306,7 @@ angular.module('primeapps')
                         $scope.cancelCreate = function (task) {
                             task.dueDate = 4132252800000;
                             task.taskText = null;
-                            $scope.selectedUser = $filter('filter')($scope.$root.users, { EntityID: $scope.$root.user.ID }, true)[0];
+                            $scope.selectedUser = $filter('filter')($scope.$root.users, { EntityID: $scope.$root.user.id }, true)[0];
                             $scope.show = false;
                             if ($scope.taskCreated) {
                                 $scope.taskCreated();

@@ -68,8 +68,8 @@ angular.module('primeapps')
                     delete record.process_status;
                     delete record.process_status_order;
                     delete record.operation_type;
-                    delete record['process_request.updated_by'];
-                    delete record['process_request.updated_at'];
+                    delete record['process_request_updated_by'];
+                    delete record['process_request_updated_by'];
                     delete record.freeze;
 
                     return $http.put(config.apiUrl + 'record/update/' + module + '?timezone_offset=' + new Date().getTimezoneOffset() * -1, record);
@@ -187,19 +187,19 @@ angular.module('primeapps')
 
                 sendEMail: function (moduleId, ids, query, isAllSelected, message, emailField, senderAlias, senderEMail, providerType, attachmentContainer, subject, attachmentLink, attachmentName) {
                     return $http.post(config.apiUrl + 'messaging/send_email', {
-                        "ModuleId": moduleId,
+                        "module_id": moduleId,
                         "Ids": ids,
                         "Query": query,
-                        "IsAllSelected": isAllSelected,
+                        "is_all_selected": isAllSelected,
                         "Message": message,
-                        "EMailField": emailField,
-                        "SenderAlias": senderAlias,
-                        "ProviderType": providerType,
-                        "SenderEMail": senderEMail,
-                        "AttachmentContainer": attachmentContainer,
-                        "Subject": subject,
-                        "AttachmentLink": attachmentLink,
-                        "AttachmentName": attachmentName
+                        "e_mail_field": emailField,
+                        "sender_alias": senderAlias,
+                        "provide_type": providerType,
+                        "sender_e_mail": senderEMail,
+                        "attachment_container": attachmentContainer,
+                        "subject": subject,
+                        "attachment_link": attachmentLink,
+                        "attachment_name": attachmentName
                     });
                 },
 
@@ -1264,7 +1264,7 @@ angular.module('primeapps')
                                 record[field.name] = picklistRecord;
                                 break;
                             case 'lookup':
-                                var lookupId = field.default_value !== '[me]' ? parseInt(field.default_value) : $rootScope.user.ID;
+                                var lookupId = field.default_value !== '[me]' ? parseInt(field.default_value) : $rootScope.user.id;
                                 var fieldCurrent = angular.copy(field);
 
                                 this.getRecord(field.lookup_type, lookupId, true)
@@ -1893,7 +1893,9 @@ angular.module('primeapps')
                                     moment(record['bitis_tarihi']).isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
                                     (moment(record['baslangic_tarihi']).isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && moment(record['bitis_tarihi']).isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
                                 ) {
-                                    return $filter('translate')('Leave.Validations.AlreadyHave');
+                                    if (record["alinan_izinler"][i].id != record.id) {
+                                        return $filter('translate')('Leave.Validations.AlreadyHave');
+                                    }
                                 }
                             }
                         }
@@ -2666,7 +2668,7 @@ angular.module('primeapps')
 
                 setFilters: function (filters, field, fieldName, value, operator, no, isView) {
                     if (field.data_type === 'lookup' && field.lookup_type === 'users' && value === '[me]')
-                        value = $rootScope.user.ID;
+                        value = $rootScope.user.id;
 
                     if (field.data_type === 'email' && value === '[me.email]')
                         value = $rootScope.user.email;
@@ -3549,13 +3551,13 @@ angular.module('primeapps')
                     if (!field.permissions)
                         return true;
 
-                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     var hasFieldSectionDisplayPermission = function (field) {
                         if (!field.sectionObj || !field.sectionObj.permissions)
                             return true;
 
-                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                         if (!permission)
                             return true;
@@ -3576,13 +3578,13 @@ angular.module('primeapps')
                     if (!field.permissions)
                         return true;
 
-                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(field.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     var hasFieldSectionFullPermission = function (field) {
                         if (!field.sectionObj || !field.sectionObj.permissions)
                             return true;
 
-                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                        var permission = $filter('filter')(field.sectionObj.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                         if (!permission)
                             return true;
@@ -3603,7 +3605,7 @@ angular.module('primeapps')
                     if (!section.permissions)
                         return true;
 
-                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     if (!permission)
                         return true;
@@ -3615,7 +3617,7 @@ angular.module('primeapps')
                     if (!section.permissions)
                         return true;
 
-                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(section.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     if (!permission)
                         return true;
@@ -3627,7 +3629,7 @@ angular.module('primeapps')
                     if (!actionButton.permissions)
                         return true;
 
-                    var permission = $filter('filter')(actionButton.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                    var permission = $filter('filter')(actionButton.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
 
                     if (!permission)
                         return true;

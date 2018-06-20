@@ -5,23 +5,23 @@
             <div ng-if="!loading" class="pull-right calendar-filter">
                 <a style="background-color:#c1591fc2 !important; border-bottom-color: #807866 !important; " class="btn btn-sm btn-primary" type="button" href="#/app/timesheetList">Timesheet List</a>
                 <span style="font-size: 12px;" ng-if="submitting">Please wait this might take some time...</span>
-                <h4 ng-if="currentTimesheet.owner === user.ID" style="display: inline-block;">
+                <h4 ng-if="currentTimesheet.owner === user.id" style="display: inline-block;">
                     <span class="label label-info" ng-if="currentTimesheet.statusValue.indexOf('waiting') > -1">WAITING FOR APPROVAL</span>
                     <span class="label label-danger" ng-if="currentTimesheet.statusValue.indexOf('rejected') > -1">REJECTED</span>
                     <span class="label label-success" ng-if="currentTimesheet.statusValue === 'approved_second'">APPROVED</span>
                 </h4>
-                <button class="btn btn-sm btn-primary" type="button" ng-click="showModuleFrameModal()" ng-if="currentTimesheet.owner === user.ID">Report</button>
+                <button class="btn btn-sm btn-primary" type="button" ng-click="showModuleFrameModal()" ng-if="currentTimesheet.owner === user.id">Report</button>
                 <button ng-click="submitApproval(null, false, null)" class="btn btn-sm btn-primary ng-animate-disabled"
                         ng-show="currentTimesheet.statusValue === 'draft' && timesheetItems.length > 0"
-                        ng-if="currentTimesheet.owner === user.ID"
+                        ng-if="currentTimesheet.owner === user.id"
                         ladda="submitting">Submit For Approval
                 </button>
                 <button ng-click="submitApproval(null, true, null)" class="btn btn-sm btn-primary ng-animate-disabled"
                         ng-show="currentTimesheet.statusValue.indexOf('rejected') > -1"
-                        ng-if="currentTimesheet.owner === user.ID" ladda="submitting">Resubmit For Approval
+                        ng-if="currentTimesheet.owner === user.id" ladda="submitting">Resubmit For Approval
                 </button>
-                <button ng-click="openRejectApprovalModal()" class="btn btn-sm btn-danger ng-animate-disabled" ng-show="currentTimesheet.statusValue.indexOf('waiting') > -1" ng-if="currentTimesheet.owner != user.ID && !approved && !rejected && !loadingCalendar && !alreadyProcessed" ladda="rejecting" ng-disabled="approving">Reject</button>
-                <button ng-click="approveApproval()" class="btn btn-sm btn-success ng-animate-disabled" ng-show="currentTimesheet.statusValue.indexOf('waiting') > -1" ng-if="currentTimesheet.owner != user.ID && !approved && !rejected && !loadingCalendar && !alreadyProcessed" ladda="approving" ng-disabled="rejecting">Approve</button>
+                <button ng-click="openRejectApprovalModal()" class="btn btn-sm btn-danger ng-animate-disabled" ng-show="currentTimesheet.statusValue.indexOf('waiting') > -1" ng-if="currentTimesheet.owner != user.id && !approved && !rejected && !loadingCalendar && !alreadyProcessed" ladda="rejecting" ng-disabled="approving">Reject</button>
+                <button ng-click="approveApproval()" class="btn btn-sm btn-success ng-animate-disabled" ng-show="currentTimesheet.statusValue.indexOf('waiting') > -1" ng-if="currentTimesheet.owner != user.id && !approved && !rejected && !loadingCalendar && !alreadyProcessed" ladda="approving" ng-disabled="rejecting">Approve</button>
             </div>
         </div>
         <div class="panel-body">

@@ -97,7 +97,7 @@ angular.module('primeapps')
                                 hesaplanan_alinacak_toplam_izin: $scope.record['hesaplanan_alinacak_toplam_izin'],
                                 izin_turu: $scope.izinTuruData.id,
                                 mevcut_kullanilabilir_izin: calisan['kalan_izin_hakki'],
-                                owner: calisanUser.Id,
+                                owner: calisanUser.id,
                                 shared_user_groups:null,
                                 shared_user_groups_edit:null,
                                 shared_users:null,

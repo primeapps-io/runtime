@@ -123,17 +123,17 @@ angular.module('primeapps')
                                     var isDemo = responseAccount.data.user.isDemo || false;
                                     var account = responseAccount.data;
                                     var modules = !isDemo ? response[0].data : $filter('filter')(response[0].data, function (value) {
-                                        return value.created_by_id == account.user.ID || value.system_type == 'system';
+                                        return value.created_by_id == account.user.id || value.system_type == 'system';
                                     }, true);
 
                                     var messaging = response[1].data;
 
                                     var users = !isDemo ? response[2].data : $filter('filter')(response[2].data, function (value) {
-                                        return value.Id == account.user.ID;
+                                        return value.id == account.user.id;
                                     }, true);
 
                                     var profiles = !isDemo ? response[3].data : $filter('filter')(response[3].data, function (value) {
-                                        return value.created_by_id == account.user.ID || value.IsPersistent === true;
+                                        return value.created_by_id == account.user.id || value.is_persistent === true;
                                     }, true);
 
                                     var moduleSettings = response[4].data;
@@ -257,7 +257,7 @@ angular.module('primeapps')
                                             var profileSetting = profileSettings[j];
                                             for (var k = 0; k < profileSetting.profile_list.length; k++) {
                                                 var profile = profileSetting.profile_list[k];
-                                                if (parseInt(profile) === $rootScope.user.profile.ID) {
+                                                if (parseInt(profile) === $rootScope.user.profile.id) {
                                                     var moduleSetting = $filter('filter')($rootScope.modules, { id: profileSetting.module_id }, true)[0];
                                                     if (moduleSetting) {
                                                         if($rootScope.customMenu){
@@ -350,7 +350,7 @@ angular.module('primeapps')
 
                                         //getUserSpecific sipAccount Info
                                         if (phoneSettings.sipUsers) {
-                                            var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.ID.toString(), isActive: 'true' }, true)[0];
+                                            var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.id.toString(), isActive: 'true' }, true)[0];
                                             if (sipData) {
                                                 var sipPromises = [];
                                                 sipPromises.push($http.get(config.apiUrl + 'phone/get_sip_password'));
@@ -565,28 +565,28 @@ angular.module('primeapps')
                         for (var j = 0; j < $rootScope.profiles.length; j++) {
                             var profile = $rootScope.profiles[j];
 
-                            if (profile.IsPersistent && profile.HasAdminRights)
-                                profile.Name = $filter('translate')('Setup.Profiles.Administrator');
+                            if (profile.is_persistent && profile.has_admin_rights)
+                                profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                            if (profile.IsPersistent && !profile.HasAdminRights)
-                                profile.Name = $filter('translate')('Setup.Profiles.Standard');
+                            if (profile.is_persistent && !profile.has_admin_rights)
+                                profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var sectionPermission = $filter('filter')(sectionPermissions, { profile_id: profile.Id }, true)[0];
+                            var sectionPermission = $filter('filter')(sectionPermissions, { profile_id: profile.id }, true)[0];
 
                             if (!sectionPermission) {
                                 section.permissions.push({
-                                    profile_id: profile.Id,
-                                    profile_name: profile.Name,
-                                    profile_is_admin: profile.HasAdminRights,
+                                    profile_id: profile.id,
+                                    profile_name: profile.name,
+                                    profile_is_admin: profile.has_admin_rights,
                                     type: 'full'
                                 });
                             }
                             else {
                                 section.permissions.push({
                                     id: sectionPermission.id,
-                                    profile_id: profile.Id,
-                                    profile_name: profile.Name,
-                                    profile_is_admin: profile.HasAdminRights,
+                                    profile_id: profile.id,
+                                    profile_name: profile.name,
+                                    profile_is_admin: profile.has_admin_rights,
                                     type: sectionPermission.type
                                 });
                             }
@@ -669,18 +669,18 @@ angular.module('primeapps')
                         for (var o = 0; o < $rootScope.profiles.length; o++) {
                             var profileItem = $rootScope.profiles[o];
 
-                            if (profileItem.IsPersistent && profileItem.HasAdminRights)
-                                profileItem.Name = $filter('translate')('Setup.Profiles.Administrator');
+                            if (profileItem.is_persistent && profileItem.has_admin_rights)
+                                profileItem.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                            if (profileItem.IsPersistent && !profileItem.HasAdminRights)
-                                profileItem.Name = $filter('translate')('Setup.Profiles.Standard');
+                            if (profileItem.is_persistent && !profileItem.has_admin_rights)
+                                profileItem.name = $filter('translate')('Setup.Profiles.Standard');
 
-                            var fieldPermission = $filter('filter')(fieldPermissions, { profile_id: profileItem.Id }, true)[0];
+                            var fieldPermission = $filter('filter')(fieldPermissions, { profile_id: profileItem.id }, true)[0];
 
                             if (!fieldPermission)
-                                field.permissions.push({ profile_id: profileItem.Id, profile_name: profileItem.Name, profile_is_admin: profileItem.HasAdminRights, type: 'full' });
+                                field.permissions.push({ profile_id: profileItem.id, profile_name: profileItem.name, profile_is_admin: profileItem.has_admin_rights, type: 'full' });
                             else
-                                field.permissions.push({ id: fieldPermission.id, profile_id: profileItem.Id, profile_name: profileItem.Name, profile_is_admin: profileItem.HasAdminRights, type: fieldPermission.type });
+                                field.permissions.push({ id: fieldPermission.id, profile_id: profileItem.id, profile_name: profileItem.name, profile_is_admin: profileItem.has_admin_rights, type: fieldPermission.type });
                         }
                     }
 

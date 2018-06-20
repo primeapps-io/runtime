@@ -10,7 +10,7 @@ angular.module('primeapps')
                 $scope.allImportsLoaded = false;
 
                 if (!helper.hasAdminRights())
-                    $scope.importHistoryFilter.userId = $rootScope.user.ID;
+                    $scope.importHistoryFilter.userId = $rootScope.user.id;
 
                 var request = {
                     limit: 30,

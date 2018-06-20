@@ -23,7 +23,7 @@ angular.module('primeapps')
                         var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
                         for(var i = 0; i < data.length ; i++){
                             for(var j=0; j<data[i].profile_list.length ; j++){
-                                var profileName = $filter('filter')($rootScope.profiles, { Id: parseInt(data[i].profile_list[j]) }, true)[0].Name;
+                                var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].Name;
                                 if(!data[i].profileName)
                                     data[i].profileName = profileName;
                                 else
@@ -47,14 +47,14 @@ angular.module('primeapps')
                 $scope.icons = ModuleService.getIcons();
 
                 $scope.multiselect = function () {
-                    return $filter('filter')($rootScope.profiles, { Deleted: false, HasAdminRights:false}, true);
+                    return $filter('filter')($rootScope.profiles, { deleted: false, has_admin_rights:false}, true);
                 };
 
                 if (profileSetting) {
                     var profileList = [];
                     if(profileSetting.profile_list.length > 0){
                         for(var k=0; k < profileSetting.profile_list.length ; k++){
-                            var profile = $filter('filter')($rootScope.profiles, { Id: parseInt(profileSetting.profile_list[k]) }, true)[0];
+                            var profile = $filter('filter')($rootScope.profiles, { id: parseInt(profileSetting.profile_list[k]) }, true)[0];
                             profileList.push(profile);
                         }
                     }
@@ -108,9 +108,9 @@ angular.module('primeapps')
                     for (var j = 0; j < $scope.currentProfileSetting.profiles.length; j++){
                         var profile = $scope.currentProfileSetting.profiles[j];
                         if(profiles === null)
-                            profiles = profile.Id;
+                            profiles = profile.id;
                         else
-                            profiles += ',' + profile.Id;
+                            profiles += ',' + profile.id;
                     }
                 }
 

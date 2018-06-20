@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('OutlookController', ['$rootScope', '$scope', '$filter', 'ngToast', 'OutlookService', 'AppService',
         function ($rootScope, $scope, $filter, ngToast, OutlookService, AppService) {
             $scope.modulesHasEmail = [];
-            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { Id: $rootScope.user.profile.ID }, true)[0].has_admin_rights;
+            $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
             for (var i = 0; i < $rootScope.modules.length; i++) {
                 var module = $rootScope.modules[i];
                 var emailFields = $filter('filter')(module.fields, { data_type: 'email', deleted: '!true', display_form: true });

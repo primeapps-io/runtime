@@ -97,7 +97,7 @@ namespace PrimeApps.Model.Helpers
             var sql = "PREPARE SelectQuery AS\n" +
                       $"SELECT {fieldsSql}\n" +
                       // ", pr.process_id, pr.process_status, pr.operation_type, pr.process_status_order\n" +//Approval Processes
-                      ", pr.process_id, pr.process_status, pr.operation_type, pr.updated_by AS \"process_request.updated_by\", pr.updated_at AS \"process_request.updated_at\", pr.process_status_order\n" +//Approval Processes
+                      ", pr.process_id, pr.process_status, pr.operation_type, pr.updated_by AS \"process_request_updated_by\", pr.updated_at AS \"process_request_updated_at\", pr.process_status_order\n" +//Approval Processes
                       $"FROM {tableName} AS \"{moduleName}\"\n" +
                       $"LEFT OUTER JOIN process_requests AS pr ON pr.record_id = \"{moduleName}\".\"id\" AND pr.\"module\" = '{moduleName}'" +//Approval Processes
                       $"{joinSql}";
@@ -1178,6 +1178,7 @@ namespace PrimeApps.Model.Helpers
             var sql = "";
 
             modules.ForEach(x => { sql += $"UPDATE {x.Name}_d SET deleted=TRUE WHERE is_sample=TRUE;\n"; });
+            sql += $"UPDATE notes SET deleted=TRUE WHERE id=2;\n";
 
             return sql;
         }

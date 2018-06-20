@@ -18,8 +18,8 @@ angular.module('primeapps')
                     if(!$scope.id){
                         for(var i =0 ; i < response.data.length ; i++){
                             var item = response.data[i];
-                            if($filter('filter')($scope.users, { Id: item.user_id }, true)[0]){
-                                var user = $filter('filter')($scope.users, { Id: item.user_id }, true)[0].email;
+                            if($filter('filter')($scope.users, { id: item.user_id }, true)[0]){
+                                var user = $filter('filter')($scope.users, { id: item.user_id }, true)[0].email;
                                 $scope.users = $filter('filter')($scope.users, { email: '!'+user }, true);
                             }
                         }
@@ -62,10 +62,10 @@ angular.module('primeapps')
                         //users
                         if(response.data.users_list.length > 0){
                             for(var i=0; i<response.data.users_list.length ; i++){
-                                var item = $filter('filter')($rootScope.users, { Id: parseInt(response.data.users_list[i]) }, true)[0];
+                                var item = $filter('filter')($rootScope.users, { id: parseInt(response.data.users_list[i]) }, true)[0];
                                 var user = {
                                     description: item.Email,
-                                    id : item.Id,
+                                    id : item.id,
                                     name : item.FullName,
                                     type : "user"
                                 };

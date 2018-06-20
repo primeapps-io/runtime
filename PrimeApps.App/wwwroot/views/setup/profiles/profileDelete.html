@@ -11,8 +11,8 @@
                             name="transferProfileId"
                             ng-model="transferProfileId"
                             required
-                            ng-options="o.ID as o.Name for o in transferProfiles"
-                            ng-init="transferProfileId = transferProfiles[0].ID">
+                            ng-options="o.id as o.name for o in transferProfiles"
+                            ng-init="transferProfileId = transferProfiles[0].id">
                         <option value="" ng-if="false"></option>
                     </select>
                 </div>

@@ -24,7 +24,7 @@
                     <div class="form-group pull-left" ng-show="helper.hasAdminRights()">
                         <select class="form-control"
                                 ng-model="importHistoryFilter.userId"
-                                ng-options="u.Id as u.FullName for u in users">
+                                ng-options="u.id as u.FullName for u in users">
                             <option value="">{{'Setup.ImportHistory.SelectUser' | translate}}</option>
                         </select>
                     </div>

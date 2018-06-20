@@ -226,7 +226,7 @@ angular.module('primeapps')
                                 request.week = currentWeek;
                                 request.month = currentMonth;
                                 request.year = currentYear;
-                                request.owner = $rootScope.user.ID;
+                                request.owner = $rootScope.user.id;
 
                                 //SAAT KONTROLÜ
                                 if ($scope.$parent.$parent.$parent.dayObj.totalHour + recordModal.saat <= $scope.$parent.$parent.$parent.settings.dayMaxHour) {

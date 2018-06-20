@@ -70,7 +70,7 @@ angular.module('primeapps')
 
                 function editUser() {
                     $scope.userUpdating = true;
-                    userModel.ID = $rootScope.user.ID;
+                    userModel.id = $rootScope.user.id;
 
                     SettingService.editUser(userModel)
                         .then(function () {
@@ -347,7 +347,7 @@ angular.module('primeapps')
 
             $scope.removeProfileImage = function () {
                 var userModel = $scope.userModel;
-                userModel.ID = $rootScope.user.ID;
+                userModel.id = $rootScope.user.id;
                 userModel.picture = "";
 
                 SettingService.editUser(userModel).then(function () {

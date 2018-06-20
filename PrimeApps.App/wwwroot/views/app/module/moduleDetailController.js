@@ -119,7 +119,7 @@ angular.module('primeapps')
             $scope.record = {};
             $scope.allFields = [];
             $scope.showEditor = false;
-            $scope.isAdmin = $rootScope.user.profile.HasAdminRights;
+            $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
             angular.forEach($scope.module.fields, function (field) {
                 if (ModuleService.hasFieldDisplayPermission(field))
@@ -401,12 +401,12 @@ angular.module('primeapps')
                                 if ($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length > 0) {
                                     for (var k = 0; k < $scope.currentModuleProcess.profile_list.length; k++) {
                                         var profile = $scope.currentModuleProcess.profile_list[k];
-                                        if (parseInt(profile) === $rootScope.user.profile.ID)
+                                        if (parseInt(profile) === $rootScope.user.profile.id)
                                             record.freeze = false;
                                     }
                                 }
 
-                                if ($rootScope.user.profile.HasAdminRights)
+                                if ($rootScope.user.profile.has_admin_rights)
                                     record.freeze = false;
 
                             }
@@ -747,7 +747,7 @@ angular.module('primeapps')
                                                 if ($scope.currentModuleProcess.profile_list && $scope.currentModuleProcess.profile_list.length > 0) {
                                                     for (var k = 0; k < $scope.currentModuleProcess.profile_list.length; k++) {
                                                         var profile = $scope.currentModuleProcess.profile_list[k];
-                                                        if (parseInt(profile) === $rootScope.user.profile.ID)
+                                                        if (parseInt(profile) === $rootScope.user.profile.id)
                                                             record.freeze = false;
                                                     }
                                                 }
@@ -1449,7 +1449,7 @@ angular.module('primeapps')
                             $scope.isShownWarning = true;
                             for (var i = 0; i < $scope.quoteTemplates.length; i++) {
                                 var quoteTemplate = $scope.quoteTemplates[i];
-                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.ID }, true)[0];
+                                var currentQuoteTemplate = $filter('filter')(quoteTemplate.permissions, { profile_id: $rootScope.user.profile.id }, true)[0];
                                 if (currentQuoteTemplate.type === 'none') {
                                     quoteTemplate.isShown = false;
                                 } else {

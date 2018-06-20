@@ -118,7 +118,7 @@ angular.module('primeapps')
                                             return;
                                         }
 
-                                        PaymentService.updateCampaign(payment.ID, payment.CampaignCode)
+                                        PaymentService.updateCampaign(payment.id, payment.CampaignCode)
                                             .then(function () {
                                                 $scope.campaignUpdating = false;
 

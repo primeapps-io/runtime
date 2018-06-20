@@ -5,7 +5,7 @@ var app = angular.module('primeapps', []);
 app.controller('TimesheetListController', ['$rootScope', '$scope', '$filter', 'ngToast', '$popover', 'helper', 'ModuleService',
         function ($rootScope, $scope, $filter, ngToast, $popover, helper, ModuleService) {
             $scope.loading = true;
-            $scope.user = $rootScope.user.ID;
+            $scope.user = $rootScope.user.id;
 
             $scope.filterList = [
                 {name : 'Waiting Approval From Me', status : 'draft', id:1},

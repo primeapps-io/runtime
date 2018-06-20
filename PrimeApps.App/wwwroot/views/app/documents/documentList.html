@@ -8,7 +8,7 @@
                 <i class="action-icon flaticon-bin9" confirm-click action="remove(document, $index)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasDocumentsPermission(operations.remove) && !$parent.$parent.record.freeze"></i>
         </span>
         <span class="document">
-            <a target="_blank" href ng-click="downloadDocument(document)" >{{document.Name}}</a><span ng-show="document.Description"> - {{document.Description}}</span><br>
+            <a target="_blank" href ng-click="downloadDocument(document)" >{{document.Name}}</a><span ng-show="document.description"> - {{document.Description}}</span><br>
             <span>{{document.CreatedBy.FullName}}, {{document.CreatedTime | relativeTime}}, {{document.FileSize | size}}</span>
             <span ng-if="document.parentEntityID && document.parentEntityID != entityId"> - </span>
         </span>

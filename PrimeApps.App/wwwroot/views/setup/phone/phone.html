@@ -88,7 +88,7 @@
                                             class="btn btn-xs btn-custom"
                                             ng-click="showEditAccountForm(sipUser)">{{'Common.Edit' | translate}}
                                     </button>
-                                    <button type="button" class="btn btn-xs btn-custom" ng-if="!userItem.isAdmin" ng-hide="userItem.profile.HasAdminRights && userItem.Id === user.ID"
+                                    <button type="button" class="btn btn-xs btn-custom" ng-if="!userItem.isAdmin" ng-hide="userItem.profile.has_admin_rights && userItem.id === user.id"
                                             data-template-url="views/setup/phone/sipAccountDelete.html" data-auto-close="true"
                                             data-placement="left" bs-popover>{{'Common.Remove' |
                                         translate}}

@@ -17,8 +17,8 @@ angular.module('primeapps')
             $scope.users = angular.copy($rootScope.workgroup.users);
             $scope.$parent.collapsed = true;
 
-            if(!$filter('filter')($scope.users, { Id: 0 }, true)[0])
-                $scope.users.unshift({Id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')});
+            if(!$filter('filter')($scope.users, { id: 0 }, true)[0])
+                $scope.users.unshift({id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')});
 
             var activityModule = $filter('filter')($rootScope.modules, { name: 'activities' }, true)[0];
 
@@ -107,14 +107,14 @@ angular.module('primeapps')
                 $scope.users = angular.copy($rootScope.workgroup.users);
 
 
-                if(!$filter('filter')($scope.users, { Id: 0 }, true)[0])
-                    $scope.users.unshift({Id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')});
+                if(!$filter('filter')($scope.users, { id: 0 }, true)[0])
+                    $scope.users.unshift({id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')});
 
                 $scope.fakeUsers=angular.copy($scope.users);
 
                 for(var i=0; i<$rootScope.approvalProcesses.length; i++){
                     var process = $rootScope.approvalProcesses[i];
-                    var user = $filter('filter')($scope.fakeUsers, { Id: process.user_id }, true)[0].email;
+                    var user = $filter('filter')($scope.fakeUsers, { id: process.user_id }, true)[0].email;
                     if(process && module.id === process.module_id){
                         $scope.users = $filter('filter')($scope.users, { email: '!'+user }, true);
                     }
@@ -305,7 +305,7 @@ angular.module('primeapps')
             };
 
             $scope.multiselectProfiles = function () {
-                return $filter('filter')($rootScope.profiles, { Deleted: false, HasAdminRights:false}, true);
+                return $filter('filter')($rootScope.profiles, { deleted: false, has_admin_rights:false}, true);
             };
 
             $scope.setCurrentLookupField = function (field) {
@@ -451,7 +451,7 @@ angular.module('primeapps')
                         for(var i=0; i<$scope.hookParameters.length; i++){
                             if($scope.hookParameters[i].approver){
                                 var approverObj = {};
-                                approverObj.user_id = $scope.hookParameters[i].approver.Id;
+                                approverObj.user_id = $scope.hookParameters[i].approver.id;
                                 approverObj.order = i+1;
                                 approvers.push(approverObj);
                             }
@@ -550,7 +550,7 @@ angular.module('primeapps')
                             var currentEl = editParameter.selectedUsers[i];
                             currentEl.isSelected = false;
                         }
-                        editParameter.approver = $filter('filter')($rootScope.workgroup.users, { Id: data.id }, true)[0];
+                        editParameter.approver = $filter('filter')($rootScope.workgroup.users, { id: data.id }, true)[0];
                         var order = data.order;
 
                         $scope.hookParameters[order-1]=editParameter;
