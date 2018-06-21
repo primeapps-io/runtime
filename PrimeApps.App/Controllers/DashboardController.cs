@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/dashboard"), Authorize/*, SnakeCase*/]
-    public class DashboardController : BaseController
+    [Route("api/dashboard"), Authorize]
+    public class DashboardController : ApiBaseController
     {
         private IDashletRepository _dashletRepository;
         private ISettingRepository _settingRepository;

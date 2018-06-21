@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace OfisimCRM.App.Controllers
 {
     [Route("api/tag"), Authorize]
-    public class TagController : BaseController
+    public class TagController : ApiBaseController
     {
         private ITagRepository _tagRepository;
 

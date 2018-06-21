@@ -37,7 +37,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/Document"), Authorize]
-    public class DocumentController : BaseController
+    public class DocumentController : ApiBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;

@@ -15,8 +15,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/help"), Authorize/*, SnakeCase*/]
-	public class HelpController : BaseController
+    [Route("api/help"), Authorize]
+	public class HelpController : ApiBaseController
     {
         private IHelpRepository _helpRepository;
         private IUserRepository _userRepository;

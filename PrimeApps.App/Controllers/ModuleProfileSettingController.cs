@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/module_profile_settings"), Authorize/*, SnakeCase*/]
-	public class ModuleProfileSettingController : BaseController
+    [Route("api/module_profile_settings"), Authorize]
+	public class ModuleProfileSettingController : ApiBaseController
     {
         private IModuleProfileSettingRepository _moduleProfileSettingRepository;
 

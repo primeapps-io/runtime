@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/License")]
-    public class LicenseController : BaseController
+    public class LicenseController : ApiBaseController
     {
         private ISettingRepository _settingRepository;
         private IPlatformUserRepository _platformUserRepository;
