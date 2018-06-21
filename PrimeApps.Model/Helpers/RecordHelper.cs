@@ -915,13 +915,13 @@ namespace PrimeApps.Model.Helpers
 
             if (!record["is_sample"].IsNullOrEmpty())
             {
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_sample", NpgsqlValue = (int)record["is_sample"], NpgsqlDbType = NpgsqlDbType.Boolean });
+                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_sample", NpgsqlValue = (bool)record["is_sample"], NpgsqlDbType = NpgsqlDbType.Boolean });
                 sets.Add("\"is_sample\" = @is_sample");
             }
 
             if (!record["is_converted"].IsNullOrEmpty())
             {
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_converted", NpgsqlValue = (int)record["is_converted"], NpgsqlDbType = NpgsqlDbType.Boolean });
+                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_converted", NpgsqlValue = (bool)record["is_converted"], NpgsqlDbType = NpgsqlDbType.Boolean });
                 sets.Add("\"is_converted\" = @is_converted");
             }
 

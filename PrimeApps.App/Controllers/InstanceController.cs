@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/Instance")]
-    public class InstanceController : BaseController
+    public class InstanceController : ApiBaseController
     {
         private IUserRepository _userRepository;
         private Warehouse _warehouse;

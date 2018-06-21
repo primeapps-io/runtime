@@ -17,8 +17,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/report"), Authorize/*, SnakeCase*/]
-	public class ReportController : BaseController
+    [Route("api/report"), Authorize]
+	public class ReportController : ApiBaseController
     {
         private IReportRepository _reportRepository;
         private IRecordRepository _recordRepository;

@@ -19,10 +19,10 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/note")/*, SnakeCase*/]
-    [Authorize]
+    [Route("api/note")]
+	[Authorize]
 
-    public class NoteController : BaseController
+	public class NoteController : ApiBaseController
     {
         private INoteRepository _noteRepository;
         private IUserRepository _userRepository;

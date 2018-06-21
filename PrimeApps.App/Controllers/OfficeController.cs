@@ -3,7 +3,7 @@
 namespace PrimeApps.App.Controllers
 {
     [Route("api/office")]
-    public class OfficeController : BaseController
+    public class OfficeController : ApiBaseController
     {
     }
 }

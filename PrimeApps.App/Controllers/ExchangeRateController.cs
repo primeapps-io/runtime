@@ -10,8 +10,8 @@ using PrimeApps.Model.Context;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/exchange_rates"), Authorize/*, SnakeCase*/]
-	public class ExchangeRateController : BaseController
+    [Route("api/exchange_rates"), Authorize]
+	public class ExchangeRateController : ApiBaseController
     {
         [Route("get_daily_rates"), HttpGet]
         public async Task<IActionResult> GetDailyRates([FromQuery(Name = "year")]int? year = null, [FromQuery(Name = "month")]int? month = null, [FromQuery(Name = "day")]int? day = null)

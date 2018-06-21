@@ -22,8 +22,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/outlook"), Authorize/*, SnakeCase*/]
-    public class OutlookController : BaseController
+    [Route("api/outlook"), Authorize]
+    public class OutlookController : ApiBaseController
     {
         private ISettingRepository _settingRepository;
         private IModuleRepository _moduleRepository;

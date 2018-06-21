@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/Profile")]
-    public class ProfileController : BaseController
+    public class ProfileController : ApiBaseController
     {
         private IProfileRepository _profileRepository;
 

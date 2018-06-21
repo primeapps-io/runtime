@@ -13,8 +13,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/picklist"), Authorize/*, SnakeCase*/]
-	public class PicklistController : BaseController
+    [Route("api/picklist"), Authorize]
+	public class PicklistController : ApiBaseController
     {
         private IPicklistRepository _picklistRepository;
 

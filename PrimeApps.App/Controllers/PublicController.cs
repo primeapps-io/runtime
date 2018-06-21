@@ -12,7 +12,7 @@ namespace PrimeApps.App.Controllers
 {
     [AllowAnonymous]
     [Route("api/Public")]
-    public class PublicController : BaseController
+    public class PublicController : ApiBaseController
     {
         private IPlatformUserRepository _platformUserRepository;
         private ITenantRepository _tenantRepository;

@@ -19,7 +19,7 @@ using Amazon.S3.Model;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/storage"), Authorize]
-    public class StorageController : BaseController
+    public class StorageController : ApiBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;

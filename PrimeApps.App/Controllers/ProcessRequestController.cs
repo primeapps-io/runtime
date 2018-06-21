@@ -14,8 +14,8 @@ using static PrimeApps.App.Helpers.ProcessHelper;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process_request"), Authorize/*, SnakeCase*/]
-	public class ProcessRequestController : BaseController
+    [Route("api/process_request"), Authorize]
+	public class ProcessRequestController : ApiBaseController
     {
         private IProcessRequestRepository _processRequestRepository;
         private IModuleRepository _moduleRepository;

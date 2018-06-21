@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers;
@@ -23,8 +22,8 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/convert"), Authorize/*, SnakeCase*/]
-    public class ConvertController : BaseController
+    [Route("api/convert"), Authorize]
+    public class ConvertController : ApiBaseController
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
