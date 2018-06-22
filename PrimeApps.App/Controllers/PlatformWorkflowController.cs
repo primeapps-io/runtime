@@ -41,7 +41,6 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             var workflowEntity = PlatformWorkflowHelper.CreateEntity(workflow);
-            _workflowRepository.DbContext.UserId = AppUser.Id;
             var result = await _workflowRepository.Create(workflowEntity);
 
             if (result < 1)
