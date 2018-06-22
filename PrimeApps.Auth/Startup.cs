@@ -49,13 +49,11 @@ namespace PrimeApps.Auth
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<ApplicationDbContext>(options =>
-				options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-
-			services.AddDbContext<PlatformDBContext>(options =>
-				options.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")));
-
-			services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+			services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+		    services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
+		    services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
+            
+            services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 			{
 				config.Password.RequiredLength = 6;
 				config.Password.RequireLowercase = false;

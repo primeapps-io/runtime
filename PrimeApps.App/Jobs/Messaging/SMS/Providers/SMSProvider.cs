@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OfisimCRM.App.Jobs.Messaging.SMS.Providers;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
 {

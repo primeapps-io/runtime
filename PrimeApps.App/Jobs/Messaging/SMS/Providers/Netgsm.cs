@@ -3,12 +3,9 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using PrimeApps.App.Jobs.Messaging;
-using PrimeApps.App.Jobs.Messaging.SMS;
-using PrimeApps.App.Jobs.Messaging.SMS.Providers;
 using PrimeApps.Model.Enums;
 
-namespace OfisimCRM.App.Jobs.Messaging.SMS.Providers
+namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
 {
 
     /// <summary>

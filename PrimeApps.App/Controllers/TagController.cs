@@ -1,13 +1,10 @@
-using System.Linq;
 using System.Threading.Tasks;
-using OfisimCRM.Model.Repositories.Interfaces;
-using System;
+using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.App.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace OfisimCRM.App.Controllers
+namespace PrimeApps.App.Controllers
 {
     [Route("api/tag"), Authorize]
     public class TagController : ApiBaseController
