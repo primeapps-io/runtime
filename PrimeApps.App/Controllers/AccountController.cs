@@ -47,13 +47,14 @@ namespace PrimeApps.App.Controllers
 		private IProfileRepository _profileRepository;
 		private IUserRepository _userRepository;
 		private IRoleRepository _roleRepository;
+        private IPlatformWorkflowRepository _platformWorkflowRepository;
 		private Warehouse _warehouse;
 
 		/*public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Warehouse warehouse) : this(recordRepository, platformUserRepository, tenantRepository, warehouse)
         {
         }*/
 
-		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, Warehouse warehouse)
+		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IPlatformWorkflowRepository platformWorkflowRepository, Warehouse warehouse)
 		{
 			_recordRepository = recordRepository;
 			_warehouse = warehouse;
@@ -63,10 +64,11 @@ namespace PrimeApps.App.Controllers
 			_profileRepository = profileRepository;
 			_roleRepository = roleRepository;
 			_userRepository = userRepository;
+            _platformWorkflowRepository = platformWorkflowRepository;
 
-			//Set warehouse database name Ofisim to integration
-			//_warehouse.DatabaseName = "Ofisim";
-		}
+            //Set warehouse database name Ofisim to integration
+            //_warehouse.DatabaseName = "Ofisim";
+        }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
@@ -246,10 +248,11 @@ namespace PrimeApps.App.Controllers
 
 				}
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
-				BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, tenantId, _warehouse));
+                //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
+                BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, tenantId, _warehouse));
+                BackgroundJob.Enqueue(() => PlatformWorkflowHelper.Run(OperationType.insert, app, _platformWorkflowRepository));
 
-			}
+            }
 			catch (Exception ex)
 			{
 				Postgres.DropDatabase(tenantId, true);
