@@ -36,8 +36,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/Document"), Authorize]
-    public class DocumentController : BaseController
+    [Route("api/document"), Authorize]
+    public class DocumentController : ApiBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
@@ -528,7 +528,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("Download"), HttpGet]
-        public async Task<IActionResult> Download([FromQuery(Name = "fileID")] int fileID)
+        public async Task<IActionResult> Download([FromQuery(Name = "file_id")] int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -826,43 +826,7 @@ namespace PrimeApps.App.Controllers
             return response;
         }
 
-        [Route("download_template"), HttpGet]
-        public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "templateId")]int templateId)
-        {
-            //get the document record from database
-            var template = await _templateRepository.GetById(templateId);
-            string publicName = "";
-
-            if (template != null)
-            {
-                //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
-                try
-                {
-                    //try to get the attributes of blob.
-                    await blob.FetchAttributesAsync();
-                }
-                catch (Exception)
-                {
-                    //if there is an exception, it means there is no such file.
-                    return NotFound();
-                }
-
-                //Bandwidth is enough, send the AzureStorage.
-                publicName = template.Name;
-
-                string[] splittedFileName = template.Content.Split('.');
-                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
-
-                return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
-
-            }
-            else
-            {
-                //there is no such file, return
-                return NotFound();
-            }
-        }
+       
         [Route("document_search"), HttpPost]
         public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
         {

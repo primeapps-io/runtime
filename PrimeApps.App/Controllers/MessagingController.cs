@@ -18,7 +18,7 @@ namespace PrimeApps.App.Controllers
 {
     [Route("api/messaging")]
     [Authorize]
-    public class MessagingController : BaseController
+    public class MessagingController : ApiBaseController
     {
         private IMessagingRepository _messagingRepository;
         private ISettingRepository _settingRepository;

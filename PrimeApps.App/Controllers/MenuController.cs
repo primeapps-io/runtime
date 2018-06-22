@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace OfisimCRM.App.Controllers
 {
     [Route("api/menu"), Authorize]
-    public class MenuController : BaseController
+    public class MenuController : ApiBaseController
     {
         private IMenuRepository _menuRepository;
         public MenuController(IMenuRepository menuRepository)

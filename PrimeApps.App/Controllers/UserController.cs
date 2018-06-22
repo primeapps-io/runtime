@@ -40,7 +40,7 @@ using PrimeApps.Model.Enums;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/User")]
-    public class UserController : BaseController
+    public class UserController : ApiBaseController
     {
         private IUserRepository _userRepository;
         private ISettingRepository _settingRepository;

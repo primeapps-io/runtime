@@ -17,7 +17,7 @@ namespace PrimeApps.App.Controllers
 {
     [Route("api/phone")]
     [Authorize]
-    public class PhoneController : BaseController
+    public class PhoneController : ApiBaseController
     {
         private ISettingRepository _settingRepository;
 

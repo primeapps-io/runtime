@@ -23,8 +23,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/record"), Authorize/*, SnakeCase*/]
-	public class RecordController : BaseController
+    [Route("api/record"), Authorize]
+	public class RecordController : ApiBaseController
     {
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;

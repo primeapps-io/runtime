@@ -19,8 +19,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/analytics"), Authorize/*, SnakeCase*/]
-	public class AnalyticsController : BaseController
+    [Route("api/analytics"), Authorize]
+	public class AnalyticsController : ApiBaseController
     {
         private Warehouse _warehouseHelper;
         private IAnalyticRepository _analyticRepository;
