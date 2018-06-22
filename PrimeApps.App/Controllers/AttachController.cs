@@ -25,11 +25,12 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _modulepository;
         private IRecordRepository _recordpository;
 
-        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository)
+        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository)
         {
             _tenantRepository = tenantRepository;
             _modulepository = moduleRepository;
             _recordpository = recordRepository;
+            _templateRepository = templateRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
