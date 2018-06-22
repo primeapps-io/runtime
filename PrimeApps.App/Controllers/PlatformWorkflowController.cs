@@ -22,14 +22,7 @@ namespace PrimeApps.App.Controllers
         public PlatformWorkflowController(IPlatformWorkflowRepository workflowRepository)
         {
             _workflowRepository = workflowRepository;
-        }
-
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            
-            base.OnActionExecuting(context);
-        }
+        }      
 
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]PlatformWorkflowBindingModels workflow)
