@@ -1,4 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using PrimeApps.Model.Entities.Platform;
 
@@ -6,14 +11,21 @@ namespace PrimeApps.Model.Context
 {
     public class PlatformDBContext : DbContext
     {
-		/// <summary>
-		/// This context is designed to be used by Ofisim SaaS DB related operations. It uses by default "platform" database. For tenant operations do not use this context!
-		/// instead use <see cref="TenantDBContext"/>
-		/// </summary>
-		public PlatformDBContext() : base()
+        /// <summary>
+        /// This context is designed to be used by Ofisim SaaS DB related operations. It uses by default "platform" database. For tenant operations do not use this context!
+        /// instead use <see cref="TenantDBContext"/>
+        /// </summary>
+
+        private int? _userId;
+        public PlatformDBContext() : base()
 		{
 		}
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public int? UserId
+        {
+            get { return _userId; }
+            set { _userId = value; }
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 			=> optionsBuilder
 				.UseNpgsql("Server=pg-dev.ofisim.com;Port=5433;Database=platform;User Id=postgres;Password=0f!s!mCRMDev;", x => x.MigrationsHistoryTable("_migration_history", "public"))
 				.ReplaceService<IHistoryRepository, PostgreHistoryContext>();
@@ -24,6 +36,53 @@ namespace PrimeApps.Model.Context
 		public static PlatformDBContext Create()
         {
             return new PlatformDBContext();
+        }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var validationErrors = ChangeTracker
+                                   .Entries<IValidatableObject>()
+                                   .SelectMany(e => e.Entity.Validate(null))
+                                   .Where(r => r != ValidationResult.Success);
+
+            if (validationErrors.Any())
+            {
+                // Possibly throw an exception here
+                string errorMessages = string.Join("; ", validationErrors.Select(x => x.ErrorMessage));
+                throw new Exception(errorMessages);
+            }
+
+            SetDefaultValues();
+            return base.SaveChangesAsync();
+        }
+        public int GetCurrentUserId()
+        {
+            return _userId ?? 0;
+        }
+        private void SetDefaultValues()
+        {
+            var currentUserId = GetCurrentUserId();
+
+            var entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
+
+            foreach (var entity in entities)
+            {
+                if (entity.State == EntityState.Added)
+                {
+                    if (((BaseEntity)entity.Entity).CreatedAt == DateTime.MinValue)
+                        ((BaseEntity)entity.Entity).CreatedAt = DateTime.UtcNow;
+
+                    if (((BaseEntity)entity.Entity).CreatedById < 1 && currentUserId > 0)
+                        ((BaseEntity)entity.Entity).CreatedById = currentUserId;
+                }
+                else
+                {
+                    if (!((BaseEntity)entity.Entity).UpdatedAt.HasValue)
+                        ((BaseEntity)entity.Entity).UpdatedAt = DateTime.UtcNow;
+
+                    if (!((BaseEntity)entity.Entity).UpdatedById.HasValue && currentUserId > 0)
+                        ((BaseEntity)entity.Entity).UpdatedById = currentUserId;
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -167,6 +226,14 @@ namespace PrimeApps.Model.Context
             //OrganizationUsers
             modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.OrganizationId);
+
+            //AppWorkflow
+            modelBuilder.Entity<AppWorkflow>().HasIndex(x => x.Active);
+            modelBuilder.Entity<AppWorkflow>().HasIndex(x => x.AppId);
+
+            //AppWorkflowLog
+            modelBuilder.Entity<AppWorkflowLog>().HasIndex(x => x.AppWorkflowId);
+            modelBuilder.Entity<AppWorkflowLog>().HasIndex(x => x.AppId);
         }
 
         private void CreateCustomModelMapping(ModelBuilder modelBuilder)
@@ -287,6 +354,7 @@ namespace PrimeApps.Model.Context
 
             BuildIndexes(modelBuilder);
         }
+        
         public DbSet<PlatformUser> Users { get; set; }
         public DbSet<PlatformUserSetting> UserSettings { get; set; }
         public DbSet<App> Apps { get; set; }
@@ -303,5 +371,8 @@ namespace PrimeApps.Model.Context
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
         public DbSet<UserTenant> UserTenants { get; set; }
+        public DbSet<AppWorkflow> AppWorkflows { get; set; }
+        public DbSet<AppWorkflowLog> AppWorkflowLogs { get; set; }
+        public DbSet<AppWorkflowWebhook> AppWorkflowWebhooks { get; set; }
     }
 }
