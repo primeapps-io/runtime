@@ -80,7 +80,7 @@ namespace PrimeApps.App.Helpers
 
                                 lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                 if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                    await CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert);
+                                    await CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, configuration);
 
                                 record = recordRepository.GetById(module, (int)record["id"], false, lookupModules);
                             }
@@ -217,7 +217,7 @@ namespace PrimeApps.App.Helpers
                             //Set warehouse database name
                             warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                            using (var userRepository = new UserRepository(databaseContext))
+                            using (var userRepository = new UserRepository(databaseContext, configuration))
                             {
                                 var user = new TenantUser();
                                 if (process.ApproverType == ProcessApproverType.StaticApprover)
@@ -676,7 +676,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse)
+        public static async Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, IConfiguration configuration)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -694,7 +694,7 @@ namespace PrimeApps.App.Helpers
                         {
                             request.ProcessStatusOrder++;
 
-                            using (var userRepository = new UserRepository(databaseContext))
+                            using (var userRepository = new UserRepository(databaseContext, configuration))
                             {
                                 var user = new TenantUser();
                                 var record = new JObject();
@@ -724,7 +724,7 @@ namespace PrimeApps.App.Helpers
 
                                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                         if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, configuration);
 
                                         record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                                         var approverMail = (string)record["custom_approver_2"];
@@ -828,7 +828,7 @@ namespace PrimeApps.App.Helpers
                                 await recordRepository.Delete(record, process.Module);
                             }
 
-                            using (var userRepository = new UserRepository(databaseContext))
+                            using (var userRepository = new UserRepository(databaseContext, configuration))
                             {
                                 var record = new JObject();
                                 int processOrder = request.ProcessStatusOrder + 1;
@@ -852,7 +852,7 @@ namespace PrimeApps.App.Helpers
 
                                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                         if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, configuration);
 
                                         record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                                     }
@@ -1042,7 +1042,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse)
+        public static async Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse, IConfiguration configuration)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -1076,7 +1076,7 @@ namespace PrimeApps.App.Helpers
                             }
                         }
 
-                        using (var userRepository = new UserRepository(databaseContext))
+                        using (var userRepository = new UserRepository(databaseContext, configuration))
                         {
                             var user = await userRepository.GetById(request.CreatedById);
                             request.Status = Model.Enums.ProcessStatus.Rejected;
@@ -1162,7 +1162,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse)
+        public static async Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, IConfiguration configuration)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -1178,7 +1178,7 @@ namespace PrimeApps.App.Helpers
                         request.ProcessStatusOrder++;
                         request.Status = Model.Enums.ProcessStatus.Waiting;
 
-                        using (var userRepository = new UserRepository(databaseContext))
+                        using (var userRepository = new UserRepository(databaseContext, configuration))
                         {
                             var user = new TenantUser();
                             var record = new JObject();
@@ -1208,7 +1208,7 @@ namespace PrimeApps.App.Helpers
 
                                     lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                     if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                        await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+                                        await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, configuration);
 
                                     record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                                     var approverMail = (string)record["custom_approver"];
@@ -1408,7 +1408,7 @@ namespace PrimeApps.App.Helpers
                         await WorkflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, configuration);
 
                         if (process.Module.Name == "izinler" && request.Status == Model.Enums.ProcessStatus.Approved)
-                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update);
+                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update, configuration);
                     }
                 }
             }

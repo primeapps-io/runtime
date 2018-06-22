@@ -842,7 +842,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (recipient == "[owner]")
                                             {
-                                                using (var userRepository = new UserRepository(databaseContext))
+                                                using (var userRepository = new UserRepository(databaseContext, configuration))
                                                 {
                                                     var recipientUser = await userRepository.GetById((int)record["owner.id"]);
 

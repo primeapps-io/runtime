@@ -61,7 +61,7 @@ namespace PrimeApps.App.Controllers
                 var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], moduleName, 0);
                 if (requestEntity == null)
                     continue;
-                await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+                await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _configuration);
                 await _processRequestRepository.Update(requestEntity);
 
                 await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
@@ -82,7 +82,7 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _configuration);
             await _processRequestRepository.Update(requestEntity);
 
             await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
@@ -99,7 +99,7 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
+            await ProcessHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse, _configuration);
             await _processRequestRepository.Update(requestEntity);
 
             await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
@@ -128,7 +128,7 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _configuration);
             await _processRequestRepository.Update(requestEntity);
 
             await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);

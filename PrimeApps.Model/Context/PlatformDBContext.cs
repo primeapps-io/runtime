@@ -14,14 +14,9 @@ namespace PrimeApps.Model.Context
         {
             CreateModelMapping(modelBuilder);
             modelBuilder.HasDefaultSchema("public");
-            
+
             base.OnModelCreating(modelBuilder);
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder
-                .UseNpgsql("Server=pg-dev.ofisim.com;Port=5433;Database=platform;User Id=postgres;Password=0f!s!mCRMDev;", x => x.MigrationsHistoryTable("_migration_history", "public"))
-                .ReplaceService<IHistoryRepository, PostgreHistoryContext>();
 
         private void CreateModelMapping(ModelBuilder modelBuilder)
         {
@@ -128,7 +123,7 @@ namespace PrimeApps.Model.Context
 
             BuildIndexes(modelBuilder);
         }
-        
+
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
             //PlatformUser
@@ -261,7 +256,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.OrganizationId);
         }
-        
+
         public DbSet<PlatformUser> Users { get; set; }
         public DbSet<PlatformUserSetting> UserSettings { get; set; }
         public DbSet<App> Apps { get; set; }

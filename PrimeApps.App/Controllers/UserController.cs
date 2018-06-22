@@ -65,15 +65,6 @@ namespace PrimeApps.App.Controllers
 			_platformRepository = platformRepository;
 			_tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-
-            /*SetCurrentUser(_userRepository, _userContextServices);
-			SetCurrentUser(_settingRepository, _userContextServices);
-			SetCurrentUser(_profileRepository, _userContextServices);
-			SetCurrentUser(_roleRepository, _userContextServices);
-			SetCurrentUser(_recordRepository, _userContextServices);*/
-
-            //Set warehouse database name Ofisim to integration
-            //_warehouse.DatabaseName = "Ofisim";
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)

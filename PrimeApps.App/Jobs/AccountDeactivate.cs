@@ -6,11 +6,19 @@ using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Jobs
 {
     public class AccountDeactivate
     {
+        private IConfiguration _configuration;
+
+        public AccountDeactivate(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [CommonQueue, DisableConcurrentExecution(360)]
         public async Task Deactivate()
         {
@@ -24,7 +32,7 @@ namespace PrimeApps.App.Jobs
                     foreach (var tenant in tenants)
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id))
-                        using (var userRepository = new UserRepository(databaseContext))
+                        using (var userRepository = new UserRepository(databaseContext, _configuration))
                         {
                             var users = await userRepository.GetAllAsync();
 

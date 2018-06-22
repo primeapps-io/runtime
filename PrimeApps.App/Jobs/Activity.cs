@@ -5,6 +5,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;
 
@@ -13,6 +14,12 @@ namespace PrimeApps.App.Jobs.Reminder
     [ActivityQueue, AutomaticRetry(Attempts = 3)]
     public class Activity
     {
+        private IConfiguration _configuration;
+
+        public Activity(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         /// <summary>
         /// Processes reminder object and classifies the type of the reminder.
         /// </summary>
@@ -99,7 +106,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
                 {
-                    using (var _userRepository = new UserRepository(dbContext))
+                    using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
                         var usr = await _userRepository.GetById((int)reminder.Owner);
 
@@ -113,11 +120,11 @@ namespace PrimeApps.App.Jobs.Reminder
                         var user = await platformUserRepository.Get(usr.Email);
                         var appUser = new UserItem
                         {
-                           AppId = _appUser.AppId,
-                           TenantId = _appUser.TenantId,
-                           Id = user.Id,
-                           UserName = user.Email,
-                           Email = user.Email
+                            AppId = _appUser.AppId,
+                            TenantId = _appUser.TenantId,
+                            Id = user.Id,
+                            UserName = user.Email,
+                            Email = user.Email
                         };
 
                         Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, _appUser.AppId, appUser);
@@ -150,7 +157,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
                 {
-                    using (var _userRepository = new UserRepository(dbContext))
+                    using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
                         var usr = await _userRepository.GetById((int)reminder.Owner);
 
@@ -160,16 +167,16 @@ namespace PrimeApps.App.Jobs.Reminder
                         string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
                             startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
 
-                            var user = await platformUserRepository.Get(usr.Email);
-                            var appUser = new UserItem
-                            {
-                                AppId = _appUser.AppId,
-                                TenantId = _appUser.TenantId,
-                                Id = user.Id,
-                                UserName = user.Email,
-                                Email = user.Email
-                            };
-                            Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser);
+                        var user = await platformUserRepository.Get(usr.Email);
+                        var appUser = new UserItem
+                        {
+                            AppId = _appUser.AppId,
+                            TenantId = _appUser.TenantId,
+                            Id = user.Id,
+                            UserName = user.Email,
+                            Email = user.Email
+                        };
+                        Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser);
 
                         /// program notification email for the reminder date.
 
@@ -206,7 +213,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
                 {
-                    using (var _userRepository = new UserRepository(dbContext))
+                    using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
                         var usr = await _userRepository.GetById((int)reminder.Owner);
 

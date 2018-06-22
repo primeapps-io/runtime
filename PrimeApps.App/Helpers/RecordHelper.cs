@@ -234,7 +234,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
+                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, configuration));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
             }
         }
@@ -272,7 +272,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
+                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update, configuration));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
             }
         }
@@ -297,7 +297,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
+                BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete, configuration));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
             }
         }

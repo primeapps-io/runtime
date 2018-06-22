@@ -26,7 +26,8 @@ namespace PrimeApps.App.Controllers
 
         public void SetCurrentUser(IRepositoryBaseTenant repository)
         {
-            repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+            if (AppUser != null)
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
         }
 
         private UserItem GetUser()
