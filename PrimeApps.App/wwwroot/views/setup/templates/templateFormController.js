@@ -259,7 +259,7 @@ angular.module('primeapps')
                 if (!$scope.template || !$scope.template.id)
                     return;
 
-                $scope.templateDownloadUrl = config.apiUrl + 'Document/download_template?templateId=' + $scope.template.id + '&access_token=' + $localStorage.read('access_token');
+                $scope.templateDownloadUrl = 'attach/download_template?template_id=' + $scope.template.id + '&access_token=' + $localStorage.read('access_token');
             };
 
             $scope.clearTemplateFile = function () {

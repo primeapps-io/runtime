@@ -10,6 +10,8 @@ using System.Net.Http;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Repositories;
 using Aspose.Cells;
+using PrimeApps.App.Storage;
+using System;
 
 namespace PrimeApps.App.Controllers
 {
@@ -17,16 +19,18 @@ namespace PrimeApps.App.Controllers
     public class AttachController : MvcBaseController
     {
         private ITenantRepository _tenantRepository;
+        private ITemplateRepository _templateRepository;
 
-        public AttachController(ITenantRepository tenantRepository)
+        public AttachController(ITenantRepository tenantRepository, ITemplateRepository templateRepository)
         {
             _tenantRepository = tenantRepository;
+            _templateRepository = templateRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-
+            SetCurrentUser(_templateRepository);
             base.OnActionExecuting(context);
         }
 
@@ -80,6 +84,44 @@ namespace PrimeApps.App.Controllers
         //    }
 
         //}
+
+        [Route("download_template"), HttpGet]
+        public async Task<IActionResult> DownloadTemplate([FromQuery(Name= "template_id")]int templateId)
+        {
+            //get the document record from database
+            var template = await _templateRepository.GetById(templateId);
+            string publicName = "";
+
+            if (template != null)
+            {
+                //if there is a document with this id, try to get it from blob AzureStorage.
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
+                try
+                {
+                    //try to get the attributes of blob.
+                    await blob.FetchAttributesAsync();
+                }
+                catch (Exception)
+                {
+                    //if there is an exception, it means there is no such file.
+                    return NotFound();
+                }
+
+                //Bandwidth is enough, send the AzureStorage.
+                publicName = template.Name;
+
+                string[] splittedFileName = template.Content.Split('.');
+                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
+
+                return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
+
+            }
+            else
+            {
+                //there is no such file, return
+                return NotFound();
+            }
+        }
 
         [Route("export_excel")]
         public async Task<FileStreamResult> ExportExcel([FromQuery(Name = "module")]string module)
