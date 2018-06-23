@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
-using System.Web;
 using System.Threading.Tasks;
-using PrimeApps.App.Models;
 using System.Security.Claims;
 using System.Threading;
 using PrimeApps.Model.Context;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
-using System.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.IdentityModel.Protocols;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Helpers
 {
@@ -129,20 +124,21 @@ namespace PrimeApps.App.Helpers
         }
 
         public static string AppInfo = "";
-        public static async Task<JObject> GetApplicationInfo(HttpRequest request, string language)
+
+        public static async Task<JObject> GetApplicationInfo(HttpRequest request, string language, IConfiguration configuration)
         {
             var uri = new Uri(request.GetDisplayUrl());
             var url = uri.Host;
             var json = "";
             Thread.CurrentThread.CurrentUICulture = language == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
 
-            var useCdn = bool.Parse(ConfigurationManager.AppSettings["UseCdn"]);
+            var useCdn = bool.Parse(configuration.GetSection("AppSettings")["UseCdn"]);
             var cdnUrlStatic = "";
 
             if (useCdn)
             {
                 var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(Auth)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-                cdnUrlStatic = ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic;
+                cdnUrlStatic = configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionStatic;
             }
 
             var index = uri.OriginalString.IndexOf(uri.PathAndQuery);

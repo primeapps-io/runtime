@@ -1,7 +1,6 @@
 ﻿using PrimeApps.App.Helpers;
 using PrimeApps.Model.Helpers;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -53,9 +52,9 @@ namespace PrimeApps.App.Jobs.Email
                 var smtpPort = "EmailSMTPPort";
                 var smtpUser = "EmailSMTPUser";
                 var smtpPassword = "EmailSMTPPassword";
-                var enableSsl = bool.Parse(ConfigurationManager.AppSettings["EmailSMTPEnableSsl"]);
+                var enableSsl = bool.Parse(_configuration.GetSection("AppSettings")["EmailSMTPEnableSsl"]);
 
-                if (bool.Parse(ConfigurationManager.AppSettings["TestMode"]))
+                if (bool.Parse(_configuration.GetSection("AppSettings")["TestMode"]))
                 {
                     smtpHost = "EmailSMTPHostTest";
                     smtpPort = "EmailSMTPPortTest";
@@ -63,11 +62,11 @@ namespace PrimeApps.App.Jobs.Email
                     smtpPassword = "EmailSMTPPasswordTest";
                 }
                 // get configuration settings from appsetting and apply them.
-                smtpClient = new SmtpClient(ConfigurationManager.AppSettings[smtpHost], int.Parse(ConfigurationManager.AppSettings[smtpPort]))
+                smtpClient = new SmtpClient(_configuration.GetSection("AppSettings")[smtpHost], int.Parse(_configuration.GetSection("AppSettings")[smtpPort]))
                 {
                     UseDefaultCredentials = false,
                     // set credentials
-                    Credentials = new NetworkCredential(ConfigurationManager.AppSettings[smtpUser], ConfigurationManager.AppSettings[smtpPassword]),
+                    Credentials = new NetworkCredential(_configuration.GetSection("AppSettings")[smtpUser], _configuration.GetSection("AppSettings")[smtpPassword]),
                     DeliveryFormat = SmtpDeliveryFormat.International,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     EnableSsl = enableSsl
@@ -127,9 +126,9 @@ namespace PrimeApps.App.Jobs.Email
                 var smtpPort = "EmailSMTPPort";
                 var smtpUser = "EmailSMTPUser";
                 var smtpPassword = "EmailSMTPPassword";
-                var enableSsl = bool.Parse(ConfigurationManager.AppSettings["EmailSMTPEnableSsl"]);
+                var enableSsl = bool.Parse(_configuration.GetSection("AppSettings")["EmailSMTPEnableSsl"]);
 
-                if (bool.Parse(ConfigurationManager.AppSettings["TestMode"]))
+                if (bool.Parse(_configuration.GetSection("AppSettings")["TestMode"]))
                 {
                     smtpHost = "EmailSMTPHostTest";
                     smtpPort = "EmailSMTPPortTest";
@@ -137,11 +136,11 @@ namespace PrimeApps.App.Jobs.Email
                     smtpPassword = "EmailSMTPPasswordTest";
                 }
                 // get configuration settings from appsetting and apply them.
-                smtpClient = new SmtpClient(ConfigurationManager.AppSettings[smtpHost], int.Parse(ConfigurationManager.AppSettings[smtpPort]))
+                smtpClient = new SmtpClient(_configuration.GetSection("AppSettings")[smtpHost], int.Parse(_configuration.GetSection("AppSettings")[smtpPort]))
                 {
                     UseDefaultCredentials = false,
                     // set credentials
-                    Credentials = new NetworkCredential(ConfigurationManager.AppSettings[smtpUser], ConfigurationManager.AppSettings[smtpPassword]),
+                    Credentials = new NetworkCredential(_configuration.GetSection("AppSettings")[smtpUser], _configuration.GetSection("AppSettings")[smtpPassword]),
                     DeliveryFormat = SmtpDeliveryFormat.International,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     EnableSsl = enableSsl

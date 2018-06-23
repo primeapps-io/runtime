@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
         {
             var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(Request.Body, out result);
+            var isUploaded = DocumentHelper.Upload(Request.Body, _configuration, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
@@ -156,7 +156,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
@@ -164,7 +164,7 @@ namespace PrimeApps.App.Controllers
 
                 if (chunk == chunks - 1)
                 {
-                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks);
+                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks, _configuration);
                     result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
                 }
 
@@ -269,14 +269,14 @@ namespace PrimeApps.App.Controllers
                 var chunks = 1; //one part chunk
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
                 result.UniqueName = fullFileName;
 
 
-                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
+                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, _configuration, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
                 result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
 
 
@@ -284,7 +284,7 @@ namespace PrimeApps.App.Controllers
                 {
                     var documentSearchHelper = new DocumentSearch();
 
-                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, false);//False because! 5 min auto index incremental change detection policy check which azure provided
+                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false);//False because! 5 min auto index incremental change detection policy check which azure provided
 
                 }
 
@@ -323,7 +323,7 @@ namespace PrimeApps.App.Controllers
             string uniqueFileName = $"{AppUser.TenantGuid}/{moduleDashesName}/{recordId}_{fieldName}.{fileNameExt}";
 
             //remove document
-            AzureStorage.RemoveFile(containerName, uniqueFileName);
+            AzureStorage.RemoveFile(containerName, uniqueFileName, _configuration);
 
 
 
@@ -332,7 +332,7 @@ namespace PrimeApps.App.Controllers
             if (field.DocumentSearch)
             {
                 DocumentSearch documentSearch = new DocumentSearch();
-                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, false);
+                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, _configuration, false);
             }
 
             return Ok();
@@ -359,7 +359,7 @@ namespace PrimeApps.App.Controllers
                 for (var i = 0; i < chunks.Count; i++)
                 {
                     //send stream and parameters to storage upload helper method for temporary upload.
-                    AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType);
+                    AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType, _configuration);
                 }
 
                 var result = new DocumentUploadResult
@@ -412,7 +412,7 @@ namespace PrimeApps.App.Controllers
             if (await _documentRepository.CreateAsync(currentDoc) != null)
             {
                 //transfer file to the permanent storage by committing it.
-                AzureStorage.CommitFile(document.UniqueFileName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), document.ChunkSize);
+                AzureStorage.CommitFile(document.UniqueFileName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), document.ChunkSize, _configuration);
                 return Ok(currentDoc.Id.ToString());
             }
 
@@ -437,7 +437,7 @@ namespace PrimeApps.App.Controllers
 
             if (UniqueFileName != null)
             {
-                AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize);
+                AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
                 return Ok(UniqueFileName);
             }
 
@@ -537,7 +537,7 @@ namespace PrimeApps.App.Controllers
             if (doc != null)
             {
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName);
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName, _configuration);
                 try
                 {
                     //try to get the attributes of blob.
@@ -605,7 +605,7 @@ namespace PrimeApps.App.Controllers
                 var docName = fileName + "." + fileNameExt;
 
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(containerName, uniqueFileName);
+                var blob = AzureStorage.GetBlob(containerName, uniqueFileName, _configuration);
                 try
                 {
                     //try to get the attributes of blob.
@@ -690,7 +690,7 @@ namespace PrimeApps.App.Controllers
                 return BadRequest();
 
             //if there is a template with this id, try to get it from blob AzureStorage.
-            var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}");
+            var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}", _configuration);
 
             try
             {
@@ -753,7 +753,7 @@ namespace PrimeApps.App.Controllers
 
             doc.MailMerge.UseNonMergeFields = true;
             doc.MailMerge.CleanupOptions = MailMergeCleanupOptions.RemoveUnusedRegions | MailMergeCleanupOptions.RemoveUnusedFields;
-            doc.MailMerge.FieldMergingCallback = new FieldMergingCallback(AppUser.TenantGuid);
+            doc.MailMerge.FieldMergingCallback = new FieldMergingCallback(AppUser.TenantGuid, _configuration);
 
             var mds = new MailMergeDataSource(record, module, moduleEntity, relatedModuleRecords, notes: notes);
 
@@ -796,8 +796,8 @@ namespace PrimeApps.App.Controllers
             if (save)
             {
 
-                AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType);
-                var blob = AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1);
+                AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType, _configuration);
+                var blob = AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1, _configuration);
 
                 outputStream.Position = 0;
                 var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
@@ -826,7 +826,7 @@ namespace PrimeApps.App.Controllers
             return response;
         }
 
-       
+
         [Route("document_search"), HttpPost]
         public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
         {
@@ -841,7 +841,7 @@ namespace PrimeApps.App.Controllers
                     return BadRequest();
                 }
 
-                var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip);
+                var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip, _configuration);
 
                 return Ok(results);
             }

@@ -206,7 +206,7 @@ namespace PrimeApps.App.Controllers
                 user.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = user });
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
-                BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
+                BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language, _configuration));
 
                 //user.TenantId = user.Id;
                 //tenant.License.HasAnalyticsLicense = true;

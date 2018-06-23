@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using System.Net.Mime;
 using PrimeApps.App.Storage;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -24,13 +25,15 @@ namespace PrimeApps.App.Controllers
         private ITemplateRepository _templateRepository;
         private IModuleRepository _modulepository;
         private IRecordRepository _recordpository;
+        private IConfiguration _configuration;
 
-        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository)
+        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IConfiguration configuration)
         {
             _tenantRepository = tenantRepository;
             _modulepository = moduleRepository;
             _recordpository = recordRepository;
             _templateRepository = templateRepository;
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -103,7 +106,7 @@ namespace PrimeApps.App.Controllers
             if (template != null)
             {
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
                 try
                 {
                     //try to get the attributes of blob.

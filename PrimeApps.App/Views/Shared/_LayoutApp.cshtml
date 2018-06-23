@@ -1,18 +1,18 @@
 ﻿@using PrimeApps.App.Extensions
 @{
-	var app = "primeapps";
-	if (ViewBag.AppInfo != null)
-	{
-		app = ViewBag.AppInfo["app"].Value;
-	}
-	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
-	var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-	var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-	/*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+    var app = "primeapps";
+    if (ViewBag.AppInfo != null)
+    {
+        app = ViewBag.AppInfo["app"].Value;
+    }
+    var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
+    //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+    //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
 	var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
-	var customDomain = false;
-	var customLanguage = string.Empty;
-	//var favicon = ViewBag.AppInfo["favicon"].Value;
+    var customDomain = false;
+    var customLanguage = string.Empty;
+    //var favicon = ViewBag.AppInfo["favicon"].Value;
 }
 
 <!DOCTYPE html>

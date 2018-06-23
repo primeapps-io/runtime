@@ -13,7 +13,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
-using System.Configuration;
 using System.Globalization;
 
 namespace PrimeApps.App
@@ -113,8 +112,8 @@ namespace PrimeApps.App
             var awsOptions = Configuration.GetAWSOptions();
             awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
             awsOptions.Credentials = new BasicAWSCredentials(
-                ConfigurationManager.AppSettings.Get("StorageAccessKey"),
-                ConfigurationManager.AppSettings.Get("StorageSecretKey"));
+                Configuration.GetSection("AppSettings")["StorageAccessKey"],
+                Configuration.GetSection("AppSettings")["StorageSecretKey"]);
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();

@@ -7,6 +7,7 @@ using System.Configuration;
 using Microsoft.Azure.Search.Models;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using PrimeApps.Model.Common.Document;
@@ -22,18 +23,19 @@ namespace PrimeApps.App.Helpers
     /// </summary>
     public class DocumentSearch
     {
-        private SearchServiceClient CreateSearchServiceClient()
+        private SearchServiceClient CreateSearchServiceClient(IConfiguration configuration)
         {
-            string searchServiceName = ConfigurationManager.AppSettings.Get("AzureSearch.Storage");
-            string adminApiKey = ConfigurationManager.AppSettings.Get("AzureSearch.AdminKey");
+            string searchServiceName = configuration.GetSection("AppSettings")["AzureSearch.Storage"];
+            string adminApiKey = configuration.GetSection("AppSettings")["AzureSearch.AdminKey"];
 
             SearchServiceClient serviceClient = new SearchServiceClient(searchServiceName, new SearchCredentials(adminApiKey));
             return serviceClient;
         }
-        private SearchIndexClient CreateSearchIndexClient(string indexName)
+
+        private SearchIndexClient CreateSearchIndexClient(string indexName, IConfiguration configuration)
         {
-            string searchServiceName = ConfigurationManager.AppSettings.Get("AzureSearch.Storage");
-            string adminApiKey = ConfigurationManager.AppSettings.Get("AzureSearch.AdminKey");
+            string searchServiceName = configuration.GetSection("AppSettings")["AzureSearch.Storage"];
+            string adminApiKey = configuration.GetSection("AppSettings")["AzureSearch.AdminKey"];
 
             SearchIndexClient indexClient = new SearchIndexClient(searchServiceName, indexName, new SearchCredentials(adminApiKey));
             return indexClient;
@@ -45,18 +47,18 @@ namespace PrimeApps.App.Helpers
         /// <param name="moduleName"></param>
         /// <param name="uniqueRecordId"></param>
         /// <returns></returns>
-        public string CreateOrUpdateIndexOnDocumentBlobStorage(string instanceId, string moduleName, bool renewIndex = false)
+        public string CreateOrUpdateIndexOnDocumentBlobStorage(string instanceId, string moduleName, IConfiguration configuration, bool renewIndex = false)
         {
             try
             {
                 moduleName = moduleName.Replace("_", "-");
-                var searchServiceClient = CreateSearchServiceClient();
+                var searchServiceClient = CreateSearchServiceClient(configuration);
                 var dataSourceName = "blob-datasource-" + instanceId + "-" + moduleName;
 
 
                 var dataSource = new DataSource();
 
-                dataSource.Credentials = new DataSourceCredentials(ConfigurationManager.AppSettings.Get("AzureStorage.ConnectionString"));
+                dataSource.Credentials = new DataSourceCredentials(configuration.GetSection("AppSettings")["AzureStorage.ConnectionString"]);
                 dataSource.Type = DataSourceType.AzureBlob;
                 dataSource.Name = dataSourceName;
 
@@ -81,7 +83,7 @@ namespace PrimeApps.App.Helpers
                         searchServiceClient.Indexes.Delete(uniqueSearchIndexName);
                     }
 
-                    SearchIndexClient searchIndexClient = CreateSearchIndexClient(uniqueSearchIndexName);
+                    SearchIndexClient searchIndexClient = CreateSearchIndexClient(uniqueSearchIndexName, configuration);
 
                     List<Field> searchIndexFields = new List<Field>();
                     Field fieldKey = new Field();
@@ -186,10 +188,11 @@ namespace PrimeApps.App.Helpers
             }
 
         }
-        public JArray SearchDocuments(List<string> ids, string searchIndexName, ICollection<Filter> filters)
+
+        public JArray SearchDocuments(List<string> ids, string searchIndexName, ICollection<Filter> filters, IConfiguration configuration)
         {
             searchIndexName = searchIndexName.Replace("_", "-");
-            ISearchIndexClient client = CreateSearchIndexClient(searchIndexName);
+            ISearchIndexClient client = CreateSearchIndexClient(searchIndexName, configuration);
 
 
             //Basic search for only one criteria search from module document type
@@ -257,10 +260,10 @@ namespace PrimeApps.App.Helpers
 
         }
 
-        public JObject AdvancedSearchDocuments(string searchIndexName, ICollection<DocumentFilter> filters, int maxResultCount, int startFrom)
+        public JObject AdvancedSearchDocuments(string searchIndexName, ICollection<DocumentFilter> filters, int maxResultCount, int startFrom, IConfiguration configuration)
         {
             //check index existence first
-            var searchServiceClient = CreateSearchServiceClient();
+            var searchServiceClient = CreateSearchServiceClient(configuration);
 
             searchIndexName = searchIndexName.Replace("_", "-");
 
@@ -270,7 +273,7 @@ namespace PrimeApps.App.Helpers
             }
             else
             {
-                ISearchIndexClient client = CreateSearchIndexClient(searchIndexName);
+                ISearchIndexClient client = CreateSearchIndexClient(searchIndexName, configuration);
 
 
                 var searchParameters = new SearchParameters()

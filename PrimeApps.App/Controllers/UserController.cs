@@ -79,7 +79,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
         {
             //get uploaded file from storage
-            var file = AzureStorage.GetBlob("user-images", fileName);
+            var file = AzureStorage.GetBlob("user-images", fileName, _configuration);
             try
             {
                 //if the file exists, fetchattributes method will fetch the attributes, otherwise it'll throw an exception/
@@ -159,7 +159,7 @@ namespace PrimeApps.App.Controllers
                 //};
                 //session.Save(req);
 
-                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "api-test" : "api";
+                var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "api-test" : "api";
 
                 //compose a new email to the new email address of the user.
                 Dictionary<string, string> emailData = new Dictionary<string, string>();
@@ -274,9 +274,9 @@ namespace PrimeApps.App.Controllers
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
-                acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture);
+                acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture, _configuration);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
-                acc.imageUrl = ConfigurationManager.AppSettings.Get("BlobUrl") + "/record-detail-" + tenant[0].tenantId + "/";
+                acc.imageUrl = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
                 //acc.user.userLicenseCount = AppUser.UserLicenseCount;
                 //acc.user.moduleLicenseCount = AppUser.ModuleLicenseCount;
                 //acc.user.isPaidCustomer = AppUser.IsPaidCustomer;
@@ -366,14 +366,14 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //upload file to the temporary AzureStorage.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
 
                 if (chunk == chunks - 1)
                 {
                     //if this is last chunk, then move the file to the permanent storage by commiting it.
                     //as a standart all avatar files renamed to UserID_UniqueFileName format.
                     var user_image = string.Format("{0}_{1}", AppUser.Id, uniqueName);
-                    AzureStorage.CommitFile(uniqueName, user_image, parser.ContentType, "user-images", chunks);
+                    AzureStorage.CommitFile(uniqueName, user_image, parser.ContentType, "user-images", chunks, _configuration);
                     return Ok(user_image);
                 }
 

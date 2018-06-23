@@ -754,7 +754,7 @@ namespace PrimeApps.App.Helpers
                                         break;
                                 }
 
-                                var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                var subdomain = configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                                 domain = string.Format(domain, subdomain);
 
                                 //domain = "http://localhost:5554/";
@@ -905,7 +905,7 @@ namespace PrimeApps.App.Helpers
                                             break;
                                     }
 
-                                    var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                    var subdomain = configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                                     domain = string.Format(domain, subdomain);
 
                                     //domain = "http://localhost:5554/";
@@ -994,7 +994,7 @@ namespace PrimeApps.App.Helpers
                                             break;
                                     }
 
-                                    var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                    var subdomain = configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                                     domain = string.Format(domain, subdomain);
 
                                     //checks custom domain 
@@ -1105,7 +1105,7 @@ namespace PrimeApps.App.Helpers
                                     break;
                             }
 
-                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                            var subdomain = configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                             domain = string.Format(domain, subdomain);
 
                             //checks custom domain 
@@ -1238,7 +1238,7 @@ namespace PrimeApps.App.Helpers
                                     break;
                             }
 
-                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                            var subdomain = configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                             domain = string.Format(domain, subdomain);
 
                             //checks custom domain 
@@ -1350,7 +1350,7 @@ namespace PrimeApps.App.Helpers
         //                                break;
         //                        }
 
-        //                        var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+        //                        var subdomain = configuration.GetSection("AppSettings")["TestMode") == "true" ? "test" : appDomain;
         //                        domain = string.Format(domain, subdomain);
 
         //                        //domain = "http://localhost:5554/";

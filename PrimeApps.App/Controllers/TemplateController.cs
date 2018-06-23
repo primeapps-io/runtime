@@ -1,16 +1,14 @@
 using System;
-using System.Data;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Enums;
-using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
@@ -22,16 +20,18 @@ namespace PrimeApps.App.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IRecordRepository _recordRepository;
         private readonly IModuleRepository _moduleRepository;
+        private IConfiguration _configuration;
 
-        public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository)
+        public TemplateController(ITemplateRepository templateRepostory, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IConfiguration configuration)
         {
             _templateRepostory = templateRepostory;
             _userRepository = userRepository;
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_userRepository);
@@ -81,7 +81,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             if (template.Chunks > 0)
-                AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks);
+                AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             var uri = new Uri(Request.GetDisplayUrl());
 			return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Controllers
             await _templateRepostory.Update(templateEntity);
 
             if (template.Chunks > 0)
-                AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks);
+                AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             return Ok(templateEntity);
         }
