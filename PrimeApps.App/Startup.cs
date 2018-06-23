@@ -22,7 +22,7 @@ namespace PrimeApps.App
     {
         public IHostingEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
-        
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -80,7 +80,7 @@ namespace PrimeApps.App
                             .AllowCredentials();
                     });
             });
-            
+
             services.AddMvc(opt =>
                 {
                     opt.CacheProfiles.Add("Nocache",
@@ -94,7 +94,7 @@ namespace PrimeApps.App
                 .AddJsonOptions(opt =>
                 {
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-					opt.SerializerSettings.ContractResolver = new DefaultContractResolver
+                    opt.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy(),
                     };
@@ -111,11 +111,10 @@ namespace PrimeApps.App
             RegisterBundle(services);
 
             var awsOptions = Configuration.GetAWSOptions();
-            awsOptions.DefaultClientConfig.ServiceURL = ConfigurationManager.ConnectionStrings["AzureStorageConnection"].ConnectionString;
-            //awsOptions.Credentials = new EnvironmentVariablesAWSCredentials(); // For futures usage!!! Getting credentials from docker environmental variables.
+            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
             awsOptions.Credentials = new BasicAWSCredentials(
-                ConfigurationManager.AppSettings.Get("AzureStorageAccessKey"),
-                ConfigurationManager.AppSettings.Get("AzureStorageSecretKey"));
+                ConfigurationManager.AppSettings.Get("StorageAccessKey"),
+                ConfigurationManager.AppSettings.Get("StorageSecretKey"));
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
@@ -138,11 +137,11 @@ namespace PrimeApps.App
                 app.UseHsts();
             }
 
-			app.UseHangfireDashboard();
-			app.UseWebOptimizer();
+            app.UseHangfireDashboard();
+            app.UseWebOptimizer();
             app.UseStaticFiles();
             app.UseAuthentication();
-            
+
             app.UseCors(cors =>
               cors
               .AllowAnyHeader()
