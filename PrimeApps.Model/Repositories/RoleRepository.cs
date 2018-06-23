@@ -19,16 +19,17 @@ namespace PrimeApps.Model.Repositories
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-        public RoleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext)
+        public RoleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
             _configuration = configuration;
         }
-        public RoleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext)
+
+        public RoleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
             _configuration = configuration;
-
         }
+
         /// <summary>
         /// Creates a new user role.
         /// </summary>

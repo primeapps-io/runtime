@@ -21,7 +21,7 @@ namespace PrimeApps.Model.Repositories
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private IConfiguration _configuration;
 
-        public WarehouseRepository(TenantDBContext dbContext, Warehouse warehouse, IPlatformWarehouseRepository platformWarehouseRepository, IConfiguration configuration) : base(dbContext)
+        public WarehouseRepository(TenantDBContext dbContext, Warehouse warehouse, IPlatformWarehouseRepository platformWarehouseRepository, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
             _platformWarehouseRepository = platformWarehouseRepository;

@@ -2,12 +2,13 @@
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ChangeLogRepository : RepositoryBaseTenant, IChangeLogRepository
     {
-        public ChangeLogRepository(TenantDBContext dbContext) : base(dbContext)
+        public ChangeLogRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
 
         }

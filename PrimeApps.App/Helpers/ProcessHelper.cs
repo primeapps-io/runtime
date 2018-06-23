@@ -28,7 +28,7 @@ namespace PrimeApps.App.Helpers
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
 
-                using (var processRequestRepository = new ProcessRequestRepository(databaseContext))
+                using (var processRequestRepository = new ProcessRequestRepository(databaseContext, configuration))
                 {
                     var requestInsert = await processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.insert);
                     var requestUpdate = await processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.update);
@@ -37,7 +37,7 @@ namespace PrimeApps.App.Helpers
                         return;
                 }
 
-                using (var processRepository = new ProcessRepository(databaseContext))
+                using (var processRepository = new ProcessRepository(databaseContext, configuration))
                 {
                     var processes = await processRepository.GetAll(module.Id, appUser.Id, true);
                     processes = processes.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
@@ -59,9 +59,9 @@ namespace PrimeApps.App.Helpers
                                 continue;
                         }
 
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                         {
-                            using (var recordRepository = new RecordRepository(databaseContext))
+                            using (var recordRepository = new RecordRepository(databaseContext, configuration))
                             {
                                 var lookupModuleNames = new List<string>();
                                 ICollection<Module> lookupModules = null;
@@ -212,7 +212,7 @@ namespace PrimeApps.App.Helpers
                             }
                         }
 
-                        using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                        using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                         {
                             //Set warehouse database name
                             warehouse.DatabaseName = appUser.WarehouseDatabaseName;
@@ -241,7 +241,7 @@ namespace PrimeApps.App.Helpers
                                             approverModule = process.Module;
                                         else
                                         {
-                                            using (var moduleRepository = new ModuleRepository(databaseContext))
+                                            using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                             {
                                                 approverModule = await moduleRepository.GetByNameBasic(approverField.LookupType);
                                             }
@@ -252,7 +252,7 @@ namespace PrimeApps.App.Helpers
 
                                         if (approverLookupField.LookupType != "users")
                                         {
-                                            using (var moduleRepository = new ModuleRepository(databaseContext))
+                                            using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                             {
                                                 approverLookupModule = await moduleRepository.GetByNameBasic(approverLookupField.LookupType);
                                             }
@@ -282,7 +282,7 @@ namespace PrimeApps.App.Helpers
                                                 secondApproverModule = process.Module;
                                             else
                                             {
-                                                using (var moduleRepository = new ModuleRepository(databaseContext))
+                                                using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                                 {
                                                     secondApproverModule = await moduleRepository.GetByNameBasic(secondApproverField.LookupType);
                                                 }
@@ -293,7 +293,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (secondApproverLookupField.LookupType != "users")
                                             {
-                                                using (var moduleRepository = new ModuleRepository(databaseContext))
+                                                using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                                 {
                                                     secondApproverLookupModule = await moduleRepository.GetByNameBasic(secondApproverLookupField.LookupType);
                                                 }
@@ -680,11 +680,11 @@ namespace PrimeApps.App.Helpers
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                 {
                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                    using (var processRepository = new ProcessRepository(databaseContext))
+                    using (var processRepository = new ProcessRepository(databaseContext, configuration))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
                         //request.UpdatedById = appUser.LocalId;
@@ -715,7 +715,7 @@ namespace PrimeApps.App.Helpers
                                             lookupModuleNames.Add(field.LookupType);
                                     }
 
-                                    using (var moduleRepository = new ModuleRepository(databaseContext))
+                                    using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                     {
                                         if (lookupModuleNames.Count > 0)
                                             lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
@@ -843,7 +843,7 @@ namespace PrimeApps.App.Helpers
                                             lookupModuleNames.Add(field.LookupType);
                                     }
 
-                                    using (var moduleRepository = new ModuleRepository(databaseContext))
+                                    using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                     {
                                         if (lookupModuleNames.Count > 0)
                                             lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
@@ -1046,11 +1046,11 @@ namespace PrimeApps.App.Helpers
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                 {
                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                    using (var processRepository = new ProcessRepository(databaseContext))
+                    using (var processRepository = new ProcessRepository(databaseContext, configuration))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
                         var record = recordRepository.GetById(process.Module, request.RecordId);
@@ -1166,12 +1166,12 @@ namespace PrimeApps.App.Helpers
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                 {
                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
 
-                    using (var processRepository = new ProcessRepository(databaseContext))
+                    using (var processRepository = new ProcessRepository(databaseContext, configuration))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
 
@@ -1199,7 +1199,7 @@ namespace PrimeApps.App.Helpers
                                         lookupModuleNames.Add(field.LookupType);
                                 }
 
-                                using (var moduleRepository = new ModuleRepository(databaseContext))
+                                using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                                 {
                                     if (lookupModuleNames.Count > 0)
                                         lookupModules = await moduleRepository.GetByNamesBasic(lookupModuleNames);
@@ -1308,21 +1308,21 @@ namespace PrimeApps.App.Helpers
         //{
         //    using (var databaseContext = new TenantDBContext(appUser.TenantId))
         //    {
-        //        using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+        //        using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
         //        {
         //            warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-        //            using (var processRequestRepository = new ProcessRequestRepository(databaseContext))
+        //            using (var processRequestRepository = new ProcessRequestRepository(databaseContext, configuration))
         //            {
         //                var requestEntity = await processRequestRepository.GetByRecordId((int)record["id"], operationType);
-        //                using (var processRepository = new ProcessRepository(databaseContext))
+        //                using (var processRepository = new ProcessRepository(databaseContext, configuration))
         //                {
         //                    var process = await processRepository.GetById(requestEntity.ProcessId);
 
         //                    requestEntity.ProcessStatusOrder = 1;
         //                    requestEntity.Status = Model.Enums.ProcessStatus.Waiting;
 
-        //                    using (var userRepository = new UserRepository(databaseContext))
+        //                    using (var userRepository = new UserRepository(databaseContext, configuration))
         //                    {
         //                        var nextApproverOrder = requestEntity.ProcessStatusOrder;
         //                        var nextApprover = process.Approvers.FirstOrDefault(x => x.Order == nextApproverOrder);
@@ -1395,12 +1395,12 @@ namespace PrimeApps.App.Helpers
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                 {
                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
 
-                    using (var processRepository = new ProcessRepository(databaseContext))
+                    using (var processRepository = new ProcessRepository(databaseContext, configuration))
                     {
                         var process = await processRepository.GetById(request.ProcessId);
 

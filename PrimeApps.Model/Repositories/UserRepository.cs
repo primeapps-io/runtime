@@ -21,12 +21,12 @@ namespace PrimeApps.Model.Repositories
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext)
+        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
             _configuration = configuration;
         }
 
-        public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext)
+        public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
             _configuration = configuration;

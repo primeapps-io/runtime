@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -11,7 +12,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class NoteRepository : RepositoryBaseTenant, INoteRepository
     {
-        public NoteRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public NoteRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Note> GetById(int id)
         {

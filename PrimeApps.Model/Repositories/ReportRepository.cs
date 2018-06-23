@@ -18,8 +18,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class ReportRepository : RepositoryBaseTenant, IReportRepository
     {
-        private IReportRepository _reportRepositoryImplementation;
-        public ReportRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ReportRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
         {
@@ -193,20 +192,15 @@ namespace PrimeApps.Model.Repositories
             return data;
         }
 
-        public Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true)
-        {
-            return _reportRepositoryImplementation.GetDashletViewData(viewId, recordRepository, moduleRepository, picklistRepository, configuration, appUser, locale, timezoneOffset, roleBasedEnabled);
-        }
-
-        public async Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true)
+        public async Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true)
         {
             var data = new JArray();
 
             var view = await DbContext.Views
-                 .Include(x => x.Fields)
-                 .Include(x => x.Filters)
-                 .Include(x => x.Module)
-                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
+                .Include(x => x.Fields)
+                .Include(x => x.Filters)
+                .Include(x => x.Module)
+                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
 
             if (view == null)
                 return data;

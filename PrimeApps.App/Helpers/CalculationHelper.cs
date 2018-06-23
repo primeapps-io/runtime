@@ -23,11 +23,11 @@ namespace PrimeApps.App.Helpers
             {
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
-                    using (var moduleRepository = new ModuleRepository(databaseContext))
+                    using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                     {
-                        using (var picklistRepository = new PicklistRepository(databaseContext))
+                        using (var picklistRepository = new PicklistRepository(databaseContext, configuration))
                         {
-                            using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                            using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                             {
                                 moduleRepository.UserId = appUser.TenantId;
                                 recordRepository.UserId = appUser.TenantId;
@@ -78,7 +78,7 @@ namespace PrimeApps.App.Helpers
                                         string mailSubject;
                                         string mailBody;
 
-                                        using (var templateRepostory = new TemplateRepository(databaseContext))
+                                        using (var templateRepostory = new TemplateRepository(databaseContext, configuration))
                                         {
                                             var mailTemplate = await templateRepostory.GetById(48);//Organizasyonel değişiklik bildirimi
                                             mailSubject = mailTemplate.Subject;
@@ -1376,7 +1376,7 @@ namespace PrimeApps.App.Helpers
                                                 }
                                             }
 
-                                            using (var userGroupRepository = new UserGroupRepository(databaseContext))
+                                            using (var userGroupRepository = new UserGroupRepository(databaseContext, configuration))
                                             {
                                                 var financeUserGroup = await userGroupRepository.GetByName("finance-expense");
 
@@ -1526,7 +1526,7 @@ namespace PrimeApps.App.Helpers
                                                 }
                                             }
 
-                                            using (var userGroupRepository = new UserGroupRepository(databaseContext))
+                                            using (var userGroupRepository = new UserGroupRepository(databaseContext, configuration))
                                             {
                                                 var financeUserGroup = await userGroupRepository.GetByName("finance-expense");
 

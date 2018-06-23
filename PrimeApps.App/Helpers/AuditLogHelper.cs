@@ -52,7 +52,7 @@ namespace PrimeApps.App.Helpers
             {
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
-                    using (var auditLogRepository = new AuditLogRepository(databaseContext))
+                    using (var auditLogRepository = new AuditLogRepository(databaseContext, configuration))
                     {
                         var result = await auditLogRepository.Create(auditLog);
 

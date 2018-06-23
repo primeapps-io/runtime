@@ -41,7 +41,7 @@ namespace PrimeApps.App.Jobs
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id))
                         {
-                            using (var analyticRepository = new AnalyticRepository(databaseContext))
+                            using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                             {
                                 var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
 
@@ -52,14 +52,14 @@ namespace PrimeApps.App.Jobs
                                 else
                                     warehouse.DatabaseName = "0";
 
-                                using (var moduleRepository = new ModuleRepository(databaseContext))
+                                using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                                 {
                                     var izinTurleriModule = await moduleRepository.GetByName("izin_turleri");
 
                                     if (izinTurleriModule == null)
                                         continue;
 
-                                    using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                                    using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                     {
                                         var module = await moduleRepository.GetByName("calisanlar") ??
                                                      await moduleRepository.GetByName("human_resources");

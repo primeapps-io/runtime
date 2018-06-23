@@ -84,85 +84,87 @@ namespace PrimeApps.App.Controllers
         [Route("export_excel")]
         public async Task<FileStreamResult> ExportExcel([FromQuery(Name = "module")]string module)
         {
-            if (string.IsNullOrWhiteSpace(module))
-                throw new HttpRequestException("Module field is required");
+            //if (string.IsNullOrWhiteSpace(module))
+            //    throw new HttpRequestException("Module field is required");
 
-            using (var tenantDbContext = new TenantDBContext(AppUser.TenantId))
-            {
-                using (var moduleRepository = new ModuleRepository(tenantDbContext))
-                {
-                    using (var recordRepository = new RecordRepository(tenantDbContext))
-                    {
-                        var moduleEntity = await moduleRepository.GetByName(module);
-                        var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
-                        var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
-                        byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(nameModule);
-                        var moduleName = System.Text.Encoding.ASCII.GetString(bytes);
-                        Workbook workbook = new Workbook(FileFormatType.Xlsx);
-                        Worksheet worksheetData = workbook.Worksheets[0];
-                        worksheetData.Name = "Data";
-                        DataTable dt = new DataTable("Excel");
-                        Worksheet worksheet2 = workbook.Worksheets.Add("Report Formula");
-                        var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, moduleRepository);
+            //using (var tenantDbContext = new TenantDBContext(AppUser.TenantId))
+            //{
+            //    using (var moduleRepository = new ModuleRepository(tenantDbContext))
+            //    {
+            //        using (var recordRepository = new RecordRepository(tenantDbContext))
+            //        {
+            //            var moduleEntity = await moduleRepository.GetByName(module);
+            //            var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
+            //            var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
+            //            byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(nameModule);
+            //            var moduleName = System.Text.Encoding.ASCII.GetString(bytes);
+            //            Workbook workbook = new Workbook(FileFormatType.Xlsx);
+            //            Worksheet worksheetData = workbook.Worksheets[0];
+            //            worksheetData.Name = "Data";
+            //            DataTable dt = new DataTable("Excel");
+            //            Worksheet worksheet2 = workbook.Worksheets.Add("Report Formula");
+            //            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, moduleRepository);
 
-                        var findRequest = new FindRequest();
-                        findRequest.Fields = new List<string>();
+            //            var findRequest = new FindRequest();
+            //            findRequest.Fields = new List<string>();
 
-                        for (int i = 0; i < fields.Count; i++)
-                        {
-                            var field = fields[i];
+            //            for (int i = 0; i < fields.Count; i++)
+            //            {
+            //                var field = fields[i];
 
-                            if (field.DataType != Model.Enums.DataType.Lookup)
-                            {
-                                findRequest.Fields.Add(field.Name);
-                            }
-                            else
-                            {
-                                var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                                var primaryField = lookupModule.Fields.Single(x => x.Primary);
-                                findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
-                            }
-                        }
+            //                if (field.DataType != Model.Enums.DataType.Lookup)
+            //                {
+            //                    findRequest.Fields.Add(field.Name);
+            //                }
+            //                else
+            //                {
+            //                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
+            //                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
+            //                    findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
+            //                }
+            //            }
 
-                        var records = recordRepository.Find(moduleEntity.Name, findRequest);
+            //            var records = recordRepository.Find(moduleEntity.Name, findRequest);
 
-                        for (int i = 0; i < fields.Count; i++)
-                        {
-                            var field = fields[i];
-                            dt.Columns.Add(field.LabelTr.ToString());
-                        }
-                        for (int j = 0; j < records.Count; j++)
-                        {
-                            var record = records[j];
-                            var dr = dt.NewRow();
+            //            for (int i = 0; i < fields.Count; i++)
+            //            {
+            //                var field = fields[i];
+            //                dt.Columns.Add(field.LabelTr.ToString());
+            //            }
+            //            for (int j = 0; j < records.Count; j++)
+            //            {
+            //                var record = records[j];
+            //                var dr = dt.NewRow();
 
-                            for (int i = 0; i < fields.Count; i++)
-                            {
-                                var field = fields[i];
+            //                for (int i = 0; i < fields.Count; i++)
+            //                {
+            //                    var field = fields[i];
 
-                                if (field.DataType != Model.Enums.DataType.Lookup)
-                                {
-                                    dr[i] = record[field.Name];
-                                }
-                                else
-                                {
-                                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
-                                    dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
-                                }
-                            }
-                            dt.Rows.Add(dr);
-                        }
+            //                    if (field.DataType != Model.Enums.DataType.Lookup)
+            //                    {
+            //                        dr[i] = record[field.Name];
+            //                    }
+            //                    else
+            //                    {
+            //                        var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
+            //                        var primaryField = lookupModule.Fields.Single(x => x.Primary);
+            //                        dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
+            //                    }
+            //                }
+            //                dt.Rows.Add(dr);
+            //            }
 
-                        worksheetData.Cells.ImportDataTable(dt, true, "A1");
+            //            worksheetData.Cells.ImportDataTable(dt, true, "A1");
 
-                        workbook.Save(moduleName + ".xlsx");
+            //            workbook.Save(moduleName + ".xlsx");
 
 
-                        return null;
-                    }
-                }
-            }
+            //            return null;
+            //        }
+            //    }
+            //}
+
+            return null;
         }
     }
 

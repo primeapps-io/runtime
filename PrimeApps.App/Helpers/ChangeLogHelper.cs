@@ -12,28 +12,29 @@ namespace PrimeApps.App.Helpers
     {
         public static async Task<bool> CreateLog(UserItem appUser, JObject record, Module module)
         {
-            int result = 0;
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
-            {
-                using (var changeLogRepository = new ChangeLogRepository(databaseContext))
-                {
-                    var changeLog = new ChangeLog()
-                    {
-                        Record = record,
-                        RecordId = (int)record["id"],
-                        UpdatedAt = DateTime.UtcNow,
-                        UpdatedById = appUser.Id
-                    };
-                    result = await changeLogRepository.Create(changeLog);
+            //int result = 0;
+            //using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            //{
+            //    using (var changeLogRepository = new ChangeLogRepository(databaseContext))
+            //    {
+            //        var changeLog = new ChangeLog()
+            //        {
+            //            Record = record,
+            //            RecordId = (int)record["id"],
+            //            UpdatedAt = DateTime.UtcNow,
+            //            UpdatedById = appUser.Id
+            //        };
+            //        result = await changeLogRepository.Create(changeLog);
 
-                    if (result < 1)
-                    {
-                        //ErrorLog.GetDefault(null).Log(new Error(new Exception("ChangeLog cannot be created! Object: " + changeLog.ToJsonString())));
-                    }
-                }
-            }
+            //        if (result < 1)
+            //        {
+            //            //ErrorLog.GetDefault(null).Log(new Error(new Exception("ChangeLog cannot be created! Object: " + changeLog.ToJsonString())));
+            //        }
+            //    }
+            //}
 
-            return result > 0;
+            //return result > 0;
+            return false;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace PrimeApps.App.Helpers
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var workflowRepository = new WorkflowRepository(databaseContext))
+                using (var workflowRepository = new WorkflowRepository(databaseContext, configuration))
                 {
                     var workflows = await workflowRepository.GetAll(module.Id, true);
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
@@ -39,9 +39,9 @@ namespace PrimeApps.App.Helpers
 
                     foreach (var workflow in workflows)
                     {
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                         {
-                            using (var recordRepository = new RecordRepository(databaseContext))
+                            using (var recordRepository = new RecordRepository(databaseContext, configuration))
                             {
                                 var lookupModuleNames = new List<string>();
                                 ICollection<Module> lookupModules = null;
@@ -268,11 +268,11 @@ namespace PrimeApps.App.Helpers
                                 continue;
                         }
 
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                         {
-                            using (var picklistRepository = new PicklistRepository(databaseContext))
+                            using (var picklistRepository = new PicklistRepository(databaseContext, configuration))
                             {
-                                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                                using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                                 {
                                     //Set warehouse database name
                                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;

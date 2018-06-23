@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
@@ -11,7 +12,7 @@ namespace PrimeApps.Model.Repositories
 {
 	public class WorkflowRepository : RepositoryBaseTenant, IWorkflowRepository
     {
-        public WorkflowRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public WorkflowRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Workflow> GetById(int id)
         {

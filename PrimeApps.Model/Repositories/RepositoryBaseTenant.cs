@@ -4,12 +4,14 @@ using PrimeApps.Model.Exceptions;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public abstract class RepositoryBaseTenant : IRepositoryBaseTenant, IDisposable
     {
         private TenantDBContext _dbContext;
+        private IConfiguration _configuration;
 
         public int? TenantId { get; set; }
 
@@ -17,9 +19,10 @@ namespace PrimeApps.Model.Repositories
 
         public CurrentUser CurrentUser { get; set; }
 
-        public RepositoryBaseTenant(TenantDBContext dbContext)
+        public RepositoryBaseTenant(TenantDBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _configuration = configuration;
 
             if (dbContext.TenantId.HasValue && !TenantId.HasValue)
             {
@@ -31,17 +34,18 @@ namespace PrimeApps.Model.Repositories
         {
             get
             {
-                var con = _dbContext.Database.GetDbConnection();
+                var dbConnection = _dbContext.Database.GetDbConnection();
+                var connectionString = _configuration.GetConnectionString("TenantDBConnection");
 
-                if (con.State != System.Data.ConnectionState.Open)
+                if (dbConnection.State != System.Data.ConnectionState.Open)
                 {
                     if (TenantId.HasValue)
                     {
-                        con.ConnectionString = Postgres.GetConnectionString(con.ConnectionString, TenantId.Value);
+                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value);
                     }
                     else if (CurrentUser.TenantId != -1)
                     {
-                        con.ConnectionString = Postgres.GetConnectionString(con.ConnectionString, CurrentUser.TenantId);
+                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, CurrentUser.TenantId);
                     }
                     else
                     {
@@ -54,7 +58,6 @@ namespace PrimeApps.Model.Repositories
                 return _dbContext;
             }
         }
-
 
         public void Dispose()
         {

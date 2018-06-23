@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
@@ -12,7 +13,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class TemplateRepository : RepositoryBaseTenant, ITemplateRepository
     {
-        public TemplateRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public TemplateRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Template> GetById(int id)
         {

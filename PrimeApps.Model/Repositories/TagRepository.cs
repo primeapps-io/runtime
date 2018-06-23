@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class TagRepository : RepositoryBaseTenant, ITagRepository
     {
-        public TagRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public TagRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
 
 

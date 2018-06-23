@@ -9,12 +9,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class SettingRepository : RepositoryBaseTenant, ISettingRepository
     {
-        public SettingRepository(TenantDBContext dbContext) : base(dbContext)
+        public SettingRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
 

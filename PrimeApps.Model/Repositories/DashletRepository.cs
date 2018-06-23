@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class DashletRepository : RepositoryBaseTenant, IDashletRepository
     {
-        public DashletRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public DashletRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         /// <summary>
         /// Getting dashboard specific dashlets for user and user is null for the purpose "shared" dashlets view by system admin.

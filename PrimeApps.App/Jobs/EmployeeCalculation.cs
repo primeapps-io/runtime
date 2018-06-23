@@ -24,7 +24,7 @@ namespace PrimeApps.App.Jobs
         {
             _configuration = configuration;
         }
-        
+
         [CommonQueue, DisableConcurrentExecution(360)]
         public async Task Calculate()
         {
@@ -42,7 +42,7 @@ namespace PrimeApps.App.Jobs
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id))
                         using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext))
-                        using (var analyticRepository = new AnalyticRepository(databaseContext))
+                        using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                         {
                             var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
 
@@ -53,9 +53,9 @@ namespace PrimeApps.App.Jobs
                             else
                                 warehouse.DatabaseName = "0";
 
-                            using (var moduleRepository = new ModuleRepository(databaseContext))
+                            using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                             {
-                                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                                using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                 {
                                     var module = await moduleRepository.GetByName("calisanlar");
 

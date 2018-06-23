@@ -142,7 +142,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 						if (emailQueueItem.Rev != emailRev) return true;
 
-						using (var moduleRepository = new ModuleRepository(tenantDBContext))
+						using (var moduleRepository = new ModuleRepository(tenantDBContext, _configuration))
 						{
 							module = await moduleRepository.GetById(emailNotification.ModuleId);
 						}
@@ -187,7 +187,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				ErrorHandler.LogError(ex, $"EMail Client has failed while sending a short message template with id:{emailId} of tenant: {emailQueueItem.TenantId}.");
 				bulkEMailStatus = NotificationStatus.SystemError;
 			}
-			Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId);
+			Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration);
 
 			/// always return true to say queue that the job has done.
 			return true;
@@ -262,7 +262,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 					using (var databaseContext = new TenantDBContext(messageDto.TenantId))
 					{
-						using (var recordRepository = new RecordRepository(databaseContext))
+						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
 							recordRepository.UserId = userId;
 
@@ -286,9 +286,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				if (ids?.Length > 0)
 				{
 					using (var databaseContext = new TenantDBContext(messageDto.TenantId))
-					using (var moduleRepository = new ModuleRepository(databaseContext))
-					using (var picklistRepository = new PicklistRepository(databaseContext))
-					using (var recordRepository = new RecordRepository(databaseContext))
+					using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+					using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+					using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 					{
 						foreach (string recordId in ids)
 						{

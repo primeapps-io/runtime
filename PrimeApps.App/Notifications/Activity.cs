@@ -6,6 +6,7 @@ using PrimeApps.Model.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;
 using PrimeApps.Model.Helpers;
@@ -15,7 +16,7 @@ namespace PrimeApps.App.Notifications
     public class Activity
     {
         #region Create
-        public static async Task Create(UserItem appUser, JObject record, Module module, bool createForExisting = true, int timezoneOffset = 180)
+        public static async Task Create(UserItem appUser, JObject record, Module module, IConfiguration configuration, bool createForExisting = true, int timezoneOffset = 180)
         {
             string activityType = record["activity_type_system"]?.ToString();
 
@@ -26,7 +27,7 @@ namespace PrimeApps.App.Notifications
                 {
                     var recordId = record["id"]?.ToString();
 
-                    using (var recordRepository = new RecordRepository(dbContext))
+                    using (var recordRepository = new RecordRepository(dbContext, configuration))
                     {
                         recordRepository.TenantId = appUser.TenantId;
                         recordRepository.UserId = appUser.TenantId;
@@ -47,13 +48,13 @@ namespace PrimeApps.App.Notifications
                             switch (activityType)
                             {
                                 case "task":
-                                    await Task(appUser, fullRecord, module, createForExisting, timezoneOffset);
+                                    await Task(appUser, fullRecord, module, configuration, createForExisting, timezoneOffset);
                                     break;
                                 case "event":
-                                    await Event(appUser, fullRecord, module, timezoneOffset);
+                                    await Event(appUser, fullRecord, module, configuration, timezoneOffset);
                                     break;
                                 case "call":
-                                    await Call(appUser, fullRecord, module, timezoneOffset);
+                                    await Call(appUser, fullRecord, module, configuration, timezoneOffset);
                                     break;
                             }
                         }
@@ -69,7 +70,7 @@ namespace PrimeApps.App.Notifications
         /// <param name="appUser"></param>
         /// <param name="record"></param>
         /// <returns></returns>
-        private static async Task Event(UserItem appUser, JObject record, Module module, int timezoneOffset = 180)
+        private static async Task Event(UserItem appUser, JObject record, Module module, IConfiguration configuration, int timezoneOffset = 180)
         {
             if (record["event_reminder"].IsNullOrEmpty()) return;
 
@@ -99,7 +100,7 @@ namespace PrimeApps.App.Notifications
 
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     var newReminder = await _reminderRepository.Create(reminder);
                     if (newReminder != null)
@@ -115,7 +116,7 @@ namespace PrimeApps.App.Notifications
                         //await ServiceBus.SendMessage("reminder", reminderDto, nextReminder);
 
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(nextReminder, DateTimeKind.Utc);
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser, configuration), dateOffset);
                     }
                 }
 
@@ -127,7 +128,7 @@ namespace PrimeApps.App.Notifications
         /// Creates notifications for call typed activity records.
         /// </summary>
         /// <returns></returns>
-        private static async Task Call(UserItem appUser, JObject record, Module module, int timezoneOffset = 180)
+        private static async Task Call(UserItem appUser, JObject record, Module module, IConfiguration configuration, int timezoneOffset = 180)
         {
             if (record["event_reminder"].IsNullOrEmpty()) return;
 
@@ -138,7 +139,7 @@ namespace PrimeApps.App.Notifications
 
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     Reminder reminder = new Reminder()
                     {
@@ -168,7 +169,7 @@ namespace PrimeApps.App.Notifications
                         //await ServiceBus.SendMessage("reminder", reminderDto, nextReminder);
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(nextReminder, DateTimeKind.Utc);
 
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser, configuration), dateOffset);
 
                     }
                 }
@@ -184,7 +185,7 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="createForExisting">if the record is being updated, but there is no previous notification defined.</param>
         /// <returns></returns>
-        private static async Task Task(UserItem appUser, JObject record, Module module, bool createForExisting = true, int timezoneOffset = 180)
+        private static async Task Task(UserItem appUser, JObject record, Module module, IConfiguration configuration, bool createForExisting = true, int timezoneOffset = 180)
         {
             if (!record["task_due_date"].IsNullOrEmpty() && !record["task_reminder"].IsNullOrEmpty() && !(!record["task_status"].IsNullOrEmpty() && (string)record["task_status"]["value"] == "completed"))
             {
@@ -197,7 +198,7 @@ namespace PrimeApps.App.Notifications
 
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
-                    using (var _reminderRepository = new ReminderRepository(databaseContext))
+                    using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                     {
                         Reminder reminder = new Reminder()
                         {
@@ -228,7 +229,7 @@ namespace PrimeApps.App.Notifications
 
                                 DateTimeOffset dateOffset = DateTime.SpecifyKind(taskReminderDate, DateTimeKind.Utc);
                                 /// send message to the queue.
-                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
+                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser, configuration), dateOffset);
                             }
                         }
                     }
@@ -245,13 +246,13 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timezoneOffset = 180)
+        public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, IConfiguration configuration, int timezoneOffset = 180)
         {
             var recordId = record["id"].ToString();
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
 
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     var reminderExisting = await _reminderRepository.GetReminder(Convert.ToInt32(recordId), null, module.Id);
                     if (reminderExisting == null)
@@ -261,7 +262,7 @@ namespace PrimeApps.App.Notifications
                         {
                             case "activities":
 
-                                using (var _recordRepository = new RecordRepository(databaseContext))
+                                using (var _recordRepository = new RecordRepository(databaseContext, configuration))
                                 {
                                     var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                                     var listLookupModule = new List<Module>();
@@ -272,7 +273,7 @@ namespace PrimeApps.App.Notifications
                                     //create case activity system type needed
                                     databaseRecord["activity_type_system"] = databaseRecord["activity_type"]?["value"]?.ToString();
 
-                                    await (Create(appUser, databaseRecord, module, timezoneOffset: timezoneOffset));
+                                    await (Create(appUser, databaseRecord, module, configuration, timezoneOffset: timezoneOffset));
                                 }
                                 break;
                                 //case "opportunities"://check here if any need on that
@@ -285,7 +286,7 @@ namespace PrimeApps.App.Notifications
                     else
                     {
                         /// there is an existing notification for this activity record. so just fetch it and send to the respective methods to update.
-                        using (var _recordRepository = new RecordRepository(databaseContext))
+                        using (var _recordRepository = new RecordRepository(databaseContext, configuration))
                         {
                             _recordRepository.TenantId = appUser.TenantId;
                             _recordRepository.UserId = appUser.TenantId;
@@ -302,13 +303,13 @@ namespace PrimeApps.App.Notifications
                             switch (activityType)
                             {
                                 case "task":
-                                    await TaskUpdate(appUser, fullRecord, reminderExisting, timezoneOffset);
+                                    await TaskUpdate(appUser, fullRecord, reminderExisting, configuration, timezoneOffset);
                                     break;
                                 case "event":
-                                    await EventUpdate(appUser, fullRecord, reminderExisting, timezoneOffset);
+                                    await EventUpdate(appUser, fullRecord, reminderExisting, configuration, timezoneOffset);
                                     break;
                                 case "call":
-                                    await CallUpdate(appUser, fullRecord, reminderExisting, timezoneOffset);
+                                    await CallUpdate(appUser, fullRecord, reminderExisting, configuration, timezoneOffset);
                                     break;
                                 default:
                                     break;
@@ -327,11 +328,11 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="eventNotification"></param>
         /// <returns></returns>
-        private static async Task EventUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180)
+        private static async Task EventUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     if (record["event_reminder"].IsNullOrEmpty())
                     {
@@ -367,7 +368,7 @@ namespace PrimeApps.App.Notifications
                         /// send message to the queue.
                         //await ServiceBus.SendMessage("reminder", reminder, remindOn);
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser, configuration), dateOffset);
                     }
 
                 }
@@ -378,11 +379,11 @@ namespace PrimeApps.App.Notifications
         /// <summary>
         /// Updates call typed notifications.
         /// </summary>
-        private static async Task CallUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180)
+        private static async Task CallUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     if (record["call_time"].IsNullOrEmpty())
                     {
@@ -413,7 +414,7 @@ namespace PrimeApps.App.Notifications
                         /// send message to the queue.
                         //await ServiceBus.SendMessage("reminder", reminderDto, callStartDate);
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(callStartDate, DateTimeKind.Utc);
-                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser, configuration), dateOffset);
                     }
 
                 }
@@ -429,11 +430,11 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="taskNotification"></param>
         /// <returns></returns>
-        private static async Task TaskUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180)
+        private static async Task TaskUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     if (!record["task_status"].IsNullOrEmpty() && (string)record["task_status"]["value"] == "completed")
                     {
@@ -507,7 +508,7 @@ namespace PrimeApps.App.Notifications
                     //await ServiceBus.SendMessage("reminder", reminder, (DateTime)remindOn);
                     DateTimeOffset dateOffset = DateTime.SpecifyKind((DateTime)remindOn, DateTimeKind.Utc);
 
-                    Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser), dateOffset);
+                    Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser, configuration), dateOffset);
                 }
             }
 
@@ -515,12 +516,12 @@ namespace PrimeApps.App.Notifications
         #endregion
 
         #region Delete
-        public static async Task Delete(UserItem appUser, JObject record, Module module)
+        public static async Task Delete(UserItem appUser, JObject record, Module module, IConfiguration configuration)
         {
 
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext))
+                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
                     int recordId = (int)record["id"];
                     await _reminderRepository.Delete(recordId, module.Id);

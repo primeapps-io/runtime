@@ -124,7 +124,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                         if (smsQueueItem.Rev != smsRev) return true;
 
                         ///get related module
-                        using (var moduleRepository = new ModuleRepository(dbContext))
+                        using (var moduleRepository = new ModuleRepository(dbContext, _configuration))
                         {
                             module = await moduleRepository.GetById(smsNotification.ModuleId);
                         }
@@ -232,7 +232,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                     //Set find request limit to our maximum value 3000 unlike filter default
                     using (var databaseContext = new TenantDBContext(messageDto.TenantId))
                     {
-                        using (var recordRepository = new RecordRepository(databaseContext))
+                        using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                         {
                             recordRepository.UserId = userId;
 
@@ -257,11 +257,11 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 {
                     using (var databaseContext = new TenantDBContext(messageDto.TenantId))
                     {
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                         {
-                            using (var picklistRepository = new PicklistRepository(databaseContext))
+                            using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
                             {
-                                using (var recordRepository = new RecordRepository(databaseContext))
+                                using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                                 {
                                     foreach (string recordId in ids)
                                     {

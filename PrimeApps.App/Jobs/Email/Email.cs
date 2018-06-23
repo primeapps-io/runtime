@@ -227,9 +227,9 @@ namespace PrimeApps.App.Jobs.Email
 
 
             using (var databaseContext = new TenantDBContext(tenantId))
-            using (var moduleRepository = new ModuleRepository(databaseContext))
-            using (var picklistRepository = new PicklistRepository(databaseContext))
-            using (var recordRepository = new RecordRepository(databaseContext))
+            using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+            using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+            using (var recordRepository = new RecordRepository(databaseContext, _configuration))
             {
                 var module = await moduleRepository.GetById(moduleId);
                 var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);

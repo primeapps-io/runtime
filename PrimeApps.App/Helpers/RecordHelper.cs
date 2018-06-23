@@ -214,8 +214,8 @@ namespace PrimeApps.App.Helpers
             if (runDefaults)
             {
                 BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, configuration, RecordActionType.Inserted, null, module));
-                BackgroundJob.Enqueue(() => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
-                BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
+                BackgroundJob.Enqueue(() => NotificationHelper.Create(appUser, record, module, configuration, timeZoneOffset));
+                BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module, configuration));
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
@@ -241,10 +241,10 @@ namespace PrimeApps.App.Helpers
 
         public static void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, IConfiguration configuration, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
-            BackgroundJob.Enqueue(() => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
+            //BackgroundJob.Enqueue(() => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
             BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, configuration, RecordActionType.Updated, null, module));
-            BackgroundJob.Enqueue(() => NotificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
-            BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
+            BackgroundJob.Enqueue(() => NotificationHelper.Update(appUser, record, currentRecord, module, configuration, timeZoneOffset));
+            BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module, configuration));
 
             //HostingEnvironment.QueueBackgroundWorkItem(clt => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
             //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
@@ -280,7 +280,7 @@ namespace PrimeApps.App.Helpers
         public static void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, IConfiguration configuration, bool runWorkflows = true, bool runCalculations = true)
         {
             BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, configuration, RecordActionType.Deleted, null, module));
-            BackgroundJob.Enqueue(() => NotificationHelper.Delete(appUser, record, module));
+            BackgroundJob.Enqueue(() => NotificationHelper.Delete(appUser, record, module, configuration));
 
             //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
             //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Delete(appUser, record, module));

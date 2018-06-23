@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Common.Resources;
 
@@ -14,6 +15,13 @@ namespace PrimeApps.App.Jobs
 {
     public class TrialNotification
     {
+        private IConfiguration _configuration;
+
+        public TrialNotification(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [CommonQueue, DisableConcurrentExecution(360)]
         public async Task TrialExpire()
         {
@@ -45,7 +53,7 @@ namespace PrimeApps.App.Jobs
                 if (!string.IsNullOrWhiteSpace(culture) && Helpers.Constants.CULTURES.Contains(culture))
                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
 
-                var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, tenant.AppId);
+                var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, tenant.AppId);
                 notification.AddRecipient(user.Email);
                 notification.AddToQueue();
             }
