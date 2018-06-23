@@ -4,46 +4,43 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Context
 {
     public class PlatformDBContext : DbContext
     {
-        private int? _userId;
-
-        public int? UserId
-        {
-            get { return _userId; }
-            set { _userId = value; }
-        }
+        public int? UserId { get; set; }
 
         public PlatformDBContext() { }
 
         public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            CreateModelMapping(modelBuilder);
+            modelBuilder.HasDefaultSchema("public");
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public override int SaveChanges()
+        {
+            SetDefaultValues();
+
+            return base.SaveChanges();
+        }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            var validationErrors = ChangeTracker
-                                   .Entries<IValidatableObject>()
-                                   .SelectMany(e => e.Entity.Validate(null))
-                                   .Where(r => r != ValidationResult.Success);
-
-            if (validationErrors.Any())
-            {
-                // Possibly throw an exception here
-                string errorMessages = string.Join("; ", validationErrors.Select(x => x.ErrorMessage));
-                throw new Exception(errorMessages);
-            }
-
             SetDefaultValues();
+
             return base.SaveChangesAsync();
         }
 
         public int GetCurrentUserId()
         {
-            return _userId ?? 0;
+            return UserId ?? 0;
         }
 
         private void SetDefaultValues()
@@ -72,15 +69,7 @@ namespace PrimeApps.Model.Context
                 }
             }
         }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            CreateModelMapping(modelBuilder);
-            modelBuilder.HasDefaultSchema("public");
-
-            base.OnModelCreating(modelBuilder);
-        }
-
+        
         private void CreateModelMapping(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PlatformUser>()

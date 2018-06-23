@@ -53,7 +53,7 @@ namespace PrimeApps.App.Controllers
 		private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IPlatformWorkflowRepository platformWorkflowRepository, Warehouse warehouse)
+		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IPlatformWorkflowRepository platformWorkflowRepository, Warehouse warehouse, IConfiguration configuration)
 		{
 			_recordRepository = recordRepository;
 			_warehouse = warehouse;
