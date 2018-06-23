@@ -49,24 +49,26 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IUserRepository _userRepository;
         private IRoleRepository _roleRepository;
-        private Warehouse _warehouse;
+        private IPlatformWorkflowRepository _platformWorkflowRepository;
+		private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-        public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, Warehouse warehouse, IConfiguration configuration)
-        {
-            _recordRepository = recordRepository;
-            _warehouse = warehouse;
-            _platformUserRepository = platformUserRepository;
-            _tenantRepository = tenantRepository;
-            _platformRepository = platformRepository;
-            _profileRepository = profileRepository;
-            _roleRepository = roleRepository;
-            _userRepository = userRepository;
+		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IPlatformWorkflowRepository platformWorkflowRepository, Warehouse warehouse)
+		{
+			_recordRepository = recordRepository;
+			_warehouse = warehouse;
+			_platformUserRepository = platformUserRepository;
+			_tenantRepository = tenantRepository;
+			_platformRepository = platformRepository;
+			_profileRepository = profileRepository;
+			_roleRepository = roleRepository;
+			_userRepository = userRepository;
+            _platformWorkflowRepository = platformWorkflowRepository;
             _configuration = configuration;
 
-            //Set warehouse database name Ofisim to integration
-            //_warehouse.DatabaseName = "Ofisim";
-        }
+			//Set warehouse database name Ofisim to integration
+			//_warehouse.DatabaseName = "Ofisim";
+		}
 
         [HttpPost]
         [AllowAnonymous]
@@ -106,7 +108,7 @@ namespace PrimeApps.App.Controllers
                 {
                     user.Setting.Culture = activateBindingModel.Culture;
                     user.Setting.Language = activateBindingModel.Culture.Substring(0, 2);
-                    //tenant.Setting.TimeZone = 
+                    //tenant.Setting.TimeZone =
                     user.Setting.Currency = activateBindingModel.Culture;
                 }
                 else
@@ -237,6 +239,7 @@ namespace PrimeApps.App.Controllers
 
                 //HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
                 BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _configuration));
+                BackgroundJob.Enqueue(() => PlatformWorkflowHelper.Run(OperationType.insert, app, _platformWorkflowRepository));
 
             }
             catch (Exception ex)
