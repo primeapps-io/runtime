@@ -1,11 +1,8 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Instance;
-using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
@@ -56,19 +53,13 @@ namespace PrimeApps.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCustomInfo([FromQuery(Name = "customDomain")]string customDomain)
         {
-            var cacheClient = Redis.Client();
-            var customInfo = await cacheClient.GetAsync<CustomInfoDTO>($"custom_info_{customDomain.Replace(".", "")}");
-
-            if (customInfo != null)
-                return Ok(customInfo);
-
             var tenant = await _tenantRepository.GetByCustomDomain(customDomain);
 
             if (tenant == null)
                 return Ok();
 
 			//TODO Changed
-            customInfo = new CustomInfoDTO();
+            var customInfo = new CustomInfoDTO();
             customInfo.Logo = tenant.Setting.Logo;
             customInfo.Title = tenant.Setting.CustomTitle;
             customInfo.Description = tenant.Setting.CustomDescription;
@@ -76,8 +67,6 @@ namespace PrimeApps.App.Controllers
             customInfo.Color = tenant.Setting.CustomColor;
             customInfo.Image = tenant.Setting.CustomImage;
             customInfo.Language = tenant.Setting.Language;
-
-            await cacheClient.AddAsync($"custom_info_{customDomain.Replace(".", "")}", customInfo, TimeSpan.FromDays(90));
 
             return Ok(customInfo);
         }
