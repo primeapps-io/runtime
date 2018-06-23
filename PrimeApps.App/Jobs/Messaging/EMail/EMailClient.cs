@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Repositories;
 using PrimeApps.App.Jobs.Messaging.EMail.Providers;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
@@ -21,7 +20,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Jobs.Messaging.EMail
 {
-	[MessagingQueue]
 	public class EMailClient : MessageClient
 	{
 		private IConfiguration _configuration;

@@ -12,8 +12,6 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Repositories;
 using PrimeApps.App.Jobs.Messaging.SMS.Providers;
 using PrimeApps.App.Helpers;
-using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
@@ -26,7 +24,6 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
     /// <summary>
     /// Sends bulk sms messages via choosen sms provider.
     /// </summary>
-    [MessagingQueue]
     public class SMSClient : MessageClient
     {
         private IConfiguration _configuration;

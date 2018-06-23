@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
-using PrimeApps.Model.Context;
+﻿using PrimeApps.Model.Context;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -10,7 +8,6 @@ namespace PrimeApps.App.Jobs
 {
     public class ExchangeRate
     {
-        [CommonQueue, AutomaticRetry(Attempts = 3), DisableConcurrentExecution(360)]
         public void DailyRates()
         {
             var todayXml = "http://www.tcmb.gov.tr/kurlar/today.xml";

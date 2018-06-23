@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using PrimeApps.App.Helpers;
-using PrimeApps.App.Jobs.QueueAttributes;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using System;
@@ -11,7 +9,6 @@ using PrimeApps.Model.Common.Notification;
 
 namespace PrimeApps.App.Jobs.Reminder
 {
-    [ActivityQueue, AutomaticRetry(Attempts = 3)]
     public class Activity
     {
         private IConfiguration _configuration;

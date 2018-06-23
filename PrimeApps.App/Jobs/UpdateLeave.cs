@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +24,6 @@ namespace PrimeApps.App.Jobs
             _configuration = configuration;
         }
 
-        [CommonQueue, DisableConcurrentExecution(360)]
         public async Task Update()
         {
             using (var platformDatabaseContext = new PlatformDBContext())

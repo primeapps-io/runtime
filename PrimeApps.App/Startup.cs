@@ -38,7 +38,7 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var hangfireStorage = new PostgreSqlStorage(ConfigurationManager.ConnectionStrings["HangfireConnection"].ConnectionString);
+            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 

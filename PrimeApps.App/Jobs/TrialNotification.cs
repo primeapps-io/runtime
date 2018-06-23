@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
-using PrimeApps.Model.Context;
+﻿using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,7 +20,6 @@ namespace PrimeApps.App.Jobs
             _configuration = configuration;
         }
 
-        [CommonQueue, DisableConcurrentExecution(360)]
         public async Task TrialExpire()
         {
             IList<Tenant> trialTenants = new List<Tenant>();

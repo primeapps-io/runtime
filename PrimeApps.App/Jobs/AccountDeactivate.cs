@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
-using PrimeApps.Model.Context;
+﻿using PrimeApps.Model.Context;
 using System.Threading.Tasks;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
@@ -19,7 +17,6 @@ namespace PrimeApps.App.Jobs
             _configuration = configuration;
         }
 
-        [CommonQueue, DisableConcurrentExecution(360)]
         public async Task Deactivate()
         {
             using (var platformDbContext = new PlatformDBContext())
