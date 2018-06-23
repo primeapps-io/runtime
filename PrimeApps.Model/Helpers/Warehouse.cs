@@ -642,12 +642,8 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public void CreateTenantUser(int userId, string databaseName, int tenantId, string tenantLanguage, int primeAppsTenantId)
+        public void CreateTenantUser(int userId, string databaseName, int tenantId, string tenantLanguage)
         {
-            //Primeapps warehouse control
-            if (tenantId == primeAppsTenantId)
-                return;
-
             if (string.IsNullOrEmpty(tenantLanguage))
                 tenantLanguage = "tr";
 
@@ -730,12 +726,8 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public void UpdateTenantUser(int userId, string databaseName, int tenantId, int primeAppsTenantId)
+        public void UpdateTenantUser(int userId, string databaseName, int tenantId)
         {
-            //Primeapps warehouse control
-            if (tenantId == primeAppsTenantId)
-                return;
-
             var user = GetTenantUser(userId, tenantId);
             UpdateTenantUser(user, databaseName, user.Culture.Contains("tr") ? "tr" : "en", false);
         }

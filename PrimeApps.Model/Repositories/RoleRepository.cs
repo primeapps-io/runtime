@@ -163,12 +163,11 @@ namespace PrimeApps.Model.Repositories
             if (saveChanges)
             {
                 var result = await DbContext.SaveChangesAsync();
+
                 if (result > 0 && string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
                 {
-                    var platformTenantId = int.Parse(_configuration.GetSection("AppSettings")["PrimeAppsTenantId"]);
-
                     if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser.TenantId, platformTenantId));
+                        BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser.TenantId));
                 }
             }
         }

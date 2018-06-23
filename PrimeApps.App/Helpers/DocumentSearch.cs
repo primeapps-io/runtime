@@ -24,16 +24,16 @@ namespace PrimeApps.App.Helpers
     {
         private SearchServiceClient CreateSearchServiceClient()
         {
-            string searchServiceName = ConfigurationManager.AppSettings.Get("Microsoft.Azure.Search.Storage");
-            string adminApiKey = ConfigurationManager.AppSettings.Get("Microsoft.Azure.Search.AdminKey");
+            string searchServiceName = ConfigurationManager.AppSettings.Get("AzureSearch.Storage");
+            string adminApiKey = ConfigurationManager.AppSettings.Get("AzureSearch.AdminKey");
 
             SearchServiceClient serviceClient = new SearchServiceClient(searchServiceName, new SearchCredentials(adminApiKey));
             return serviceClient;
         }
         private SearchIndexClient CreateSearchIndexClient(string indexName)
         {
-            string searchServiceName = ConfigurationManager.AppSettings.Get("Microsoft.Azure.Search.Storage");
-            string adminApiKey = ConfigurationManager.AppSettings.Get("Microsoft.Azure.Search.AdminKey");
+            string searchServiceName = ConfigurationManager.AppSettings.Get("AzureSearch.Storage");
+            string adminApiKey = ConfigurationManager.AppSettings.Get("AzureSearch.AdminKey");
 
             SearchIndexClient indexClient = new SearchIndexClient(searchServiceName, indexName, new SearchCredentials(adminApiKey));
             return indexClient;
@@ -56,7 +56,7 @@ namespace PrimeApps.App.Helpers
 
                 var dataSource = new DataSource();
 
-                dataSource.Credentials = new DataSourceCredentials(ConfigurationManager.AppSettings.Get("Microsoft.WindowsAzure.Plugins.Storage.ConnectionString"));
+                dataSource.Credentials = new DataSourceCredentials(ConfigurationManager.AppSettings.Get("AzureStorage.ConnectionString"));
                 dataSource.Type = DataSourceType.AzureBlob;
                 dataSource.Name = dataSourceName;
 

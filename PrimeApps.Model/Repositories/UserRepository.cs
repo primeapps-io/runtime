@@ -42,12 +42,11 @@ namespace PrimeApps.Model.Repositories
             DbContext.Users.Add(user);
 
             var result = await DbContext.SaveChangesAsync();
+
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
-                var platformTenantId = int.Parse(_configuration.GetSection("AppSettings")["PrimeAppsTenantId"]);
-
                 if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.CreateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId, user.Culture.Contains("tr") ? "tr" : "en", platformTenantId));
+                    BackgroundJob.Enqueue(() => _warehouse.CreateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId, user.Culture.Contains("tr") ? "tr" : "en"));
             }
 
         }
@@ -145,10 +144,8 @@ namespace PrimeApps.Model.Repositories
             var result = await DbContext.SaveChangesAsync();
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
-                var platformTenantId = int.Parse(_configuration.GetSection("AppSettings")["PrimeAppsTenantId"]);
-
                 if (_warehouse.DatabaseName != "0")
-                    BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId, platformTenantId));
+                    BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser.TenantId));
             }
         }
 

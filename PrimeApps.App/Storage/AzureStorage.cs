@@ -22,7 +22,7 @@ namespace PrimeApps.App.Storage
     /// Also we use crmDocuments table to store some information about files, like file name, content-type, file size, user and instance on Windows Azure.
     /// For more information about Windows Azure Storage: http://www.windowsazure.com/en-us/documentation/services/storage/
     /// </summary>
-    class AzureStorage
+    public class AzureStorage
     {
         /// <summary>
         /// This method allows to upload chunked files to the AzureStorage.
@@ -159,7 +159,7 @@ namespace PrimeApps.App.Storage
             CloudBlobContainer blobContainer;
 
             // Use the local storage account.
-            cloudStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("Microsoft.WindowsAzure.Plugins.AzureStorage.ConnectionString"));
+            cloudStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("AzureStorage.ConnectionString"));
 
             // create blob container
             blobClient = cloudStorageAccount.CreateCloudBlobClient();
