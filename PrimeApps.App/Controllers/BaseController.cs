@@ -27,69 +27,59 @@ namespace PrimeApps.App.Controllers
         public void SetCurrentUser(IRepositoryBaseTenant repository)
         {
             if (AppUser != null)
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = AppUser.TenantId};
         }
 
         private UserItem GetUser()
         {
-            var platformUser = (PlatformUser)HttpContext.Items["user"];
-            var userTenant = platformUser.TenantsAsUser.Single();
-
-            var currency = "";
-            var culture = "";
-            var language = "";
-            var timeZone = "";
-
-
-            if (!userTenant.Tenant.App.UseTenantSettings)
-            {
-                currency = userTenant.Tenant.App.Setting?.Currency;
-                culture = userTenant.Tenant.App.Setting?.Culture;
-                language = userTenant.Tenant.App.Setting?.Language;
-                timeZone = userTenant.Tenant.App.Setting?.TimeZone;
-            }
-            else if (!userTenant.Tenant.UseUserSettings)
-            {
-                currency = userTenant.Tenant.Setting?.Currency;
-                culture = userTenant.Tenant.Setting?.Culture;
-                language = userTenant.Tenant.Setting?.Language;
-                timeZone = userTenant.Tenant.Setting?.TimeZone;
-            }
-            else
-            {
-                currency = platformUser.Setting?.Currency;
-                culture = platformUser.Setting?.Culture;
-                language = platformUser.Setting?.Language;
-                timeZone = platformUser.Setting?.TimeZone;
-            }
+            var platformUser = (PlatformUser) HttpContext.Items["user"];
+            var tenant = platformUser.TenantsAsUser.Single().Tenant;
 
             var appUser = new UserItem
             {
                 Id = platformUser.Id,
-                AppId = userTenant.Tenant.AppId,
-                TenantId = userTenant.Tenant.Id,
-                TenantGuid = userTenant.Tenant.GuidId,
-                TenantLanguage = userTenant.Tenant.Setting?.Language,
-                Language = language,
+                AppId = tenant.AppId,
+                TenantId = tenant.Id,
+                TenantGuid = tenant.GuidId,
+                TenantLanguage = tenant.Setting?.Language,
                 Email = platformUser.Email,
-                UserName = platformUser.FirstName + " " + platformUser.LastName,
-                Culture = culture,
-                Currency = currency,
-                TimeZone = timeZone
+                UserName = platformUser.FirstName + " " + platformUser.LastName
             };
 
-            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
+            if (!tenant.App.UseTenantSettings)
+            {
+                appUser.Currency = tenant.App.Setting?.Currency;
+                appUser.Culture = tenant.App.Setting?.Culture;
+                appUser.Language = tenant.App.Setting?.Language;
+                appUser.TimeZone = tenant.App.Setting?.TimeZone;
+            }
+            else if (!tenant.UseUserSettings)
+            {
+                appUser.Currency = tenant.Setting?.Currency;
+                appUser.Culture = tenant.Setting?.Culture;
+                appUser.Language = tenant.Setting?.Language;
+                appUser.TimeZone = tenant.Setting?.TimeZone;
+            }
+            else
+            {
+                appUser.Currency = platformUser.Setting?.Currency;
+                appUser.Culture = platformUser.Setting?.Culture;
+                appUser.Language = platformUser.Setting?.Language;
+                appUser.TimeZone = platformUser.Setting?.TimeZone;
+            }
+
+            var tenantUserRepository = (IUserRepository) HttpContext.RequestServices.GetService(typeof(IUserRepository));
+            tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = appUser.TenantId};
             var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-            appUser.Role = tenantUser.RoleId != null ? (int)tenantUser.RoleId : 0;
-            appUser.ProfileId = tenantUser.RoleId != null ? (int)tenantUser.RoleId : 0;
+            appUser.Role = tenantUser.RoleId ?? 0;
+            appUser.ProfileId = tenantUser.RoleId ?? 0;
             appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 
-            if (userTenant.Tenant.License?.AnalyticsLicenseCount > 0)
+            if (tenant.License?.AnalyticsLicenseCount > 0)
             {
-                var warehouseRepository = (IPlatformWarehouseRepository)HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-                var warehouse = warehouseRepository.GetByTenantIdSync(userTenant.Tenant.Id);
+                var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                var warehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
                 appUser.WarehouseDatabaseName = warehouse.DatabaseName;
             }
