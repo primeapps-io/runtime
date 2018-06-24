@@ -4,20 +4,26 @@ using Microsoft.AspNetCore.Builder;
 using Newtonsoft.Json;
 using PrimeApps.App.ActionFilters;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App
 {
     public partial class Startup
     {
-        public static void JobConfiguration(IApplicationBuilder app)
+        public static void JobConfiguration(IApplicationBuilder app, IConfiguration configuration)
         {
-            app.UseHangfireServer(new BackgroundJobServerOptions { Queues = new[] { "Queue-" + Environment.MachineName } });
-            app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
-            JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            var enableJobs = bool.Parse(configuration.GetSection("AppSettings")["EnableJobs"]);
+
+            if (!enableJobs)
+                return;
+
+            app.UseHangfireServer(new BackgroundJobServerOptions {Queues = new[] {"Queue-" + Environment.MachineName}});
+            app.UseHangfireDashboard("/jobs", new DashboardOptions {Authorization = new[] {new HangfireAuthorizationFilter()}});
+            JobHelper.SetSerializerSettings(new JsonSerializerSettings {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
 
             ConfigureRecurringJobs();
 
-            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute {Attempts = 0});
         }
 
         public static void ConfigureRecurringJobs()

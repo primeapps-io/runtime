@@ -148,7 +148,7 @@ namespace PrimeApps.App
               .AllowAnyOrigin()
             );
 
-            JobConfiguration(app);
+            JobConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {
