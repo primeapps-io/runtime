@@ -20,14 +20,14 @@ namespace PrimeApps.App
             if (!enableJobs)
                 return;
 
-            app.UseHangfireServer(new BackgroundJobServerOptions {Queues = new[] {QueueName, "default"}});
-            app.UseHangfireDashboard("/jobs", new DashboardOptions {Authorization = new[] {new HangfireAuthorizationFilter()}});
-            JobHelper.SetSerializerSettings(new JsonSerializerSettings {ReferenceLoopHandling = ReferenceLoopHandling.Ignore});
+            app.UseHangfireServer(new BackgroundJobServerOptions { Queues = new[] { QueueName, "default" } });
+            app.UseHangfireDashboard("/jobs", new DashboardOptions { Authorization = new[] { new HangfireAuthorizationFilter() } });
+            JobHelper.SetSerializerSettings(new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
             ConfigureRecurringJobs();
 
-            GlobalJobFilters.Filters.Add(new QueueFilterAttribute());
-            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute {Attempts = 0});
+            //GlobalJobFilters.Filters.Add(new QueueFilterAttribute());
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 
         public static void ConfigureRecurringJobs()

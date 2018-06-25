@@ -4,6 +4,7 @@ using PrimeApps.Model.Repositories;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;
 
@@ -22,6 +23,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// </summary>
         /// <param name="reminderMessage"></param>
         /// <returns>it will return false only when an error occured during the processing, not when the reminder revision is wrong or non-existant.</returns>
+        [QueueCustom]
         public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser, IConfiguration configuration)
         {
             Model.Entities.Application.Reminder reminder;

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
@@ -36,6 +37,7 @@ namespace PrimeApps.App.Jobs.Email
         /// Checks database for new email records and transmits it if there is new one.
         /// </summary>
         /// <returns></returns>
+        [QueueCustom]
         public bool TransmitMail(EmailEntry mail)
         // public bool TransmitMail(EmailEntry mail)
         {
@@ -113,6 +115,7 @@ namespace PrimeApps.App.Jobs.Email
             return status;
         }
 
+        [QueueCustom]
         public bool TransmitMail(EmailEntry email, int tenantId, int moduleId, int recordId, bool addRecordSummary = true)
         {
             bool status = false;

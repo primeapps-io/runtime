@@ -5,7 +5,7 @@ using Humanizer;
 
 namespace PrimeApps.App.ActionFilters
 {
-    public class QueueFilterAttribute : JobFilterAttribute, IElectStateFilter
+    public class QueueCustomAttribute : JobFilterAttribute, IElectStateFilter
     {
         public void OnStateElection(ElectStateContext context)
         {
