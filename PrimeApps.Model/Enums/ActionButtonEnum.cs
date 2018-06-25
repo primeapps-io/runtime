@@ -18,6 +18,8 @@ namespace PrimeApps.Model.Enums
         }
         public enum WebhhookHttpMethod
         {
+            [EnumMember(Value = "")]
+            NotSet = 0,
 
             [EnumMember(Value = "post")]
             Post = 1,

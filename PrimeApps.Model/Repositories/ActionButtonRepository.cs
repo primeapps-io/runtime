@@ -6,12 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.ActionButton;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ActionButtonRepository : RepositoryBaseTenant, IActionButtonRepository
     {
-        public ActionButtonRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ActionButtonRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<ICollection<ActionButtonViewModel>> GetByModuleId(int id)
         {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS
 {
-    class SMSResponse
+    public class SMSResponse
     {
         public NotificationStatus Status { get; set; }
         public string Response { get; set; }

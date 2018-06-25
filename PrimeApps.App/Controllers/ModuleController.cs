@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Constants;
@@ -17,41 +15,44 @@ using PrimeApps.Model.Helpers;
 using ModuleHelper = PrimeApps.App.Helpers.ModuleHelper;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/module"), Authorize/*, SnakeCase*/]
-	public class ModuleController : BaseController
+    [Route("api/module"), Authorize]
+	public class ModuleController : ApiBaseController
     {
         private IModuleRepository _moduleRepository;
         private IViewRepository _viewRepository;
         private IProfileRepository _profileRepository;
         private ISettingRepository _settingRepository;
         private IMenuRepository _menuRepository;
-        private Model.Helpers.Warehouse _warehouse;
+        private IConfiguration _configuration;
+        private Warehouse _warehouse;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository)
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IConfiguration configuration)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
             _profileRepository = profileRepository;
             _settingRepository = settingRepository;
             _warehouse = warehouse;
+            _configuration = configuration;
             _menuRepository = menuRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_viewRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_settingRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_viewRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_settingRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get_by_id/{id:int}"), HttpGet]
+        [Route("get_by_id/{id:int}"), HttpGet]
         public async Task<IActionResult> GetById(int id)
         {
             var module = await _moduleRepository.GetById(id);
@@ -174,7 +175,7 @@ namespace PrimeApps.App.Controllers
             await _profileRepository.AddModuleAsync(moduleEntity.Id);
             await _menuRepository.AddModuleToMenuAsync(moduleEntity);
 
-            ModuleHelper.AfterCreate(AppUser, moduleEntity);
+            ModuleHelper.AfterCreate(AppUser, moduleEntity, _configuration);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
@@ -245,7 +246,7 @@ namespace PrimeApps.App.Controllers
             //    }
             //}
 
-            ModuleHelper.AfterUpdate(AppUser, moduleEntity);
+            ModuleHelper.AfterUpdate(AppUser, moduleEntity, _configuration);
 
             return Ok();
         }
@@ -262,7 +263,7 @@ namespace PrimeApps.App.Controllers
 
             if (result > 0)
             {
-                ModuleHelper.AfterDelete(AppUser, moduleEntity);
+                ModuleHelper.AfterDelete(AppUser, moduleEntity, _configuration);
                 await _menuRepository.DeleteModuleFromMenu(id);
             }
 

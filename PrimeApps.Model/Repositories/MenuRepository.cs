@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -10,7 +11,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class MenuRepository : RepositoryBaseTenant, IMenuRepository
     {
-        public MenuRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public MenuRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Menu> GetByProfileId(int id)
         {

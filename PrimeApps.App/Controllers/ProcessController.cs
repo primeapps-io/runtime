@@ -15,8 +15,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process"), Authorize/*, SnakeCase*/]
-	public class ProcessController : BaseController
+    [Route("api/process"), Authorize]
+	public class ProcessController : ApiBaseController
     {
         private IProcessRepository _processRepository;
         private IModuleRepository _moduleRepository;

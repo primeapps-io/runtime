@@ -216,6 +216,146 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.ToTable("app_templates");
                 });
 
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<bool>("Active")
+                        .HasColumnName("active");
+
+                    b.Property<int>("AppId")
+                        .HasColumnName("app_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnName("frequency");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Operations")
+                        .IsRequired()
+                        .HasColumnName("operations")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Active");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("workflows");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("AppId")
+                        .HasColumnName("app_id");
+
+                    b.Property<int>("AppWorkflowId")
+                        .HasColumnName("workflow_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("AppWorkflowId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("workflow_logs");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowWebhook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<string>("CallbackUrl")
+                        .IsRequired()
+                        .HasColumnName("callback_url")
+                        .HasMaxLength(500);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<int>("MethodType")
+                        .HasColumnName("method_type");
+
+                    b.Property<string>("Parameters")
+                        .HasColumnName("parameters");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnName("workflow_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("WorkflowId")
+                        .IsUnique();
+
+                    b.ToTable("workflow_webhooks");
+                });
+
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
                 {
                     b.Property<int>("Id")
@@ -759,6 +899,57 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
                         .WithMany("Templates")
                         .HasForeignKey("AppId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflow", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
+                        .WithMany()
+                        .HasForeignKey("AppId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowLog", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Platform.AppWorkflow", "AppWorkflow")
+                        .WithMany("Logs")
+                        .HasForeignKey("AppWorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowWebhook", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.AppWorkflow", "AppWorkflow")
+                        .WithOne("WebHook")
+                        .HasForeignKey("PrimeApps.Model.Entities.Platform.AppWorkflowWebhook", "WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

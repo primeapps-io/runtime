@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/user_custom_shares"), Authorize/*, SnakeCase*/]
-	public class UserCustomShareController : BaseController
+    [Route("api/user_custom_shares"), Authorize]
+	public class UserCustomShareController : ApiBaseController
     {
         private IUserCustomShareRepository _userOwnerRepository;
 

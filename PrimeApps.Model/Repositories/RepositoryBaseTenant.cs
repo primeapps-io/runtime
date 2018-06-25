@@ -4,12 +4,14 @@ using PrimeApps.Model.Exceptions;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public abstract class RepositoryBaseTenant : IRepositoryBaseTenant, IDisposable
     {
         private TenantDBContext _dbContext;
+        private IConfiguration _configuration;
 
         public int? TenantId { get; set; }
 
@@ -17,9 +19,10 @@ namespace PrimeApps.Model.Repositories
 
         public CurrentUser CurrentUser { get; set; }
 
-        public RepositoryBaseTenant(TenantDBContext dbContext)
+        public RepositoryBaseTenant(TenantDBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
+            _configuration = configuration;
 
             if (dbContext.TenantId.HasValue && !TenantId.HasValue)
             {
@@ -27,36 +30,36 @@ namespace PrimeApps.Model.Repositories
             }
         }
 
-		public TenantDBContext DbContext
-		{
-			get
-			{
-				var con = _dbContext.Database.GetDbConnection();
+        public TenantDBContext DbContext
+        {
+            get
+            {
+                var dbConnection = _dbContext.Database.GetDbConnection();
+                var connectionString = _configuration.GetConnectionString("TenantDBConnection");
 
-				if (con.State != System.Data.ConnectionState.Open)
-				{
-					if (TenantId.HasValue)
-					{
-						con.ConnectionString = Postgres.GetConnectionString(TenantId.Value);
-					}
-					else if (CurrentUser.TenantId != -1)
-					{
-						con.ConnectionString = Postgres.GetConnectionString(CurrentUser.TenantId);
-					}
-					else
-					{
-						throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
-					}
-				}
+                if (dbConnection.State != System.Data.ConnectionState.Open)
+                {
+                    if (TenantId.HasValue)
+                    {
+                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value);
+                    }
+                    else if (CurrentUser.TenantId != -1)
+                    {
+                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, CurrentUser.TenantId);
+                    }
+                    else
+                    {
+                        throw new TenantNotFoundException("No valid Tenant Database information found for the repository.");
+                    }
+                }
 
-				_dbContext.UserId = CurrentUser.UserId;
+                _dbContext.UserId = CurrentUser.UserId;
 
-				return _dbContext;
-			}
-		}
+                return _dbContext;
+            }
+        }
 
-
-		public void Dispose()
+        public void Dispose()
         {
         }
     }

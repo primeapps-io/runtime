@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Document;
 
 
@@ -12,7 +13,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class DocumentRepository : RepositoryBaseTenant, IDocumentRepository
     {
-        public DocumentRepository(TenantDBContext dbContext) : base(dbContext)
+        public DocumentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
         }
         public async Task<Document> CreateAsync(Document document)

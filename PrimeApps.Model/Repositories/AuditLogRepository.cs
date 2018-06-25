@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.AuditLog;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -12,7 +13,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class AuditLogRepository : RepositoryBaseTenant, IAuditLogRepository
     {
-        public AuditLogRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public AuditLogRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<ICollection<AuditLog>> Find(AuditLogRequest request)
         {

@@ -13,9 +13,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/action_button"), Authorize/*, SnakeCase*/]
+    [Route("api/action_button"), Authorize]
 
-	public class ActionButtonController : BaseController
+	public class ActionButtonController : ApiBaseController
     {
         private IActionButtonRepository _actionButtonRepository;
 

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeApps.Model.Entities.Application
 {
     [Table("users_user_groups")]
-    public class TenantUserGroup
+    public class UsersUserGroup
     {
         [Column("user_id"), ForeignKey("User")]
         public int UserId { get; set; }
@@ -14,6 +11,7 @@ namespace PrimeApps.Model.Entities.Application
 
         [Column("group_id"), ForeignKey("UserGroup")]
         public int UserGroupId { get; set; }
+
         public virtual UserGroup UserGroup { get; set; }
     }
 }

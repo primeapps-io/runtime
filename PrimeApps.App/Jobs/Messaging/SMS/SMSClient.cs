@@ -12,12 +12,11 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Repositories;
 using PrimeApps.App.Jobs.Messaging.SMS.Providers;
 using PrimeApps.App.Helpers;
-using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS
@@ -25,9 +24,15 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
     /// <summary>
     /// Sends bulk sms messages via choosen sms provider.
     /// </summary>
-    [MessagingQueue, AutomaticRetry(Attempts = 0)]
-    class SMSClient : MessageClient
+    public class SMSClient : MessageClient
     {
+        private IConfiguration _configuration;
+
+        public SMSClient(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         /// <summary>
         /// Processes bulk sms request, prepares and sends it.
         /// </summary>
@@ -116,7 +121,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                         if (smsQueueItem.Rev != smsRev) return true;
 
                         ///get related module
-                        using (var moduleRepository = new ModuleRepository(dbContext))
+                        using (var moduleRepository = new ModuleRepository(dbContext, _configuration))
                         {
                             module = await moduleRepository.GetById(smsNotification.ModuleId);
                         }
@@ -224,7 +229,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                     //Set find request limit to our maximum value 3000 unlike filter default
                     using (var databaseContext = new TenantDBContext(messageDto.TenantId))
                     {
-                        using (var recordRepository = new RecordRepository(databaseContext))
+                        using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                         {
                             recordRepository.UserId = userId;
 
@@ -249,11 +254,11 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 {
                     using (var databaseContext = new TenantDBContext(messageDto.TenantId))
                     {
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                         {
-                            using (var picklistRepository = new PicklistRepository(databaseContext))
+                            using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
                             {
-                                using (var recordRepository = new RecordRepository(databaseContext))
+                                using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                                 {
                                     foreach (string recordId in ids)
                                     {
@@ -262,7 +267,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                         var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
                                         var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
                                         var recordCopy = record;
-                                        record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, lang, culture, 180, lookupModules);
+                                        record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, lang, culture, 180, lookupModules);
 
                                         if (record[phoneField] != null)
                                         {

@@ -1,5 +1,4 @@
-﻿using PrimeApps.App.ActionFilters;
-using PrimeApps.App.Helpers;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -10,28 +9,30 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using static PrimeApps.App.Helpers.ProcessHelper;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process_request"), Authorize/*, SnakeCase*/]
-	public class ProcessRequestController : BaseController
+    [Route("api/process_request"), Authorize]
+	public class ProcessRequestController : ApiBaseController
     {
         private IProcessRequestRepository _processRequestRepository;
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
-        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, Warehouse warehouse)
+        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, Warehouse warehouse, IConfiguration configuration)
         {
             _processRequestRepository = processRequestRepository;
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
-            _warehouse = warehouse; 
-
+            _warehouse = warehouse;
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_processRequestRepository);
@@ -60,10 +61,10 @@ namespace PrimeApps.App.Controllers
                 var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], moduleName, 0);
                 if (requestEntity == null)
                     continue;
-                await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+                await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _configuration);
                 await _processRequestRepository.Update(requestEntity);
 
-                await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+                await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             }
 
@@ -81,10 +82,10 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _configuration);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             return Ok(requestEntity);
         }
@@ -98,10 +99,10 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
+            await ProcessHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse, _configuration);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             return Ok(requestEntity);
         }
@@ -111,7 +112,7 @@ namespace PrimeApps.App.Controllers
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await ProcessHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant);
+            await ProcessHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, _configuration, ProcessTriggerTime.Instant);
 
             return Ok();
         }
@@ -127,10 +128,10 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _configuration);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _configuration);
 
             return Ok(requestEntity);
         }
@@ -145,7 +146,7 @@ namespace PrimeApps.App.Controllers
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
             try
             {
-                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel);
+                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, _configuration, ProcessTriggerTime.Manuel);
             }
             catch (ProcessFilterNotMatchException ex)
             {

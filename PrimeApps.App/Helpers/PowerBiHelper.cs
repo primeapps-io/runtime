@@ -8,6 +8,7 @@ using PrimeApps.App.Models.ViewModel.Analytics;
 using System.Net;
 using Hangfire;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Context;
@@ -20,19 +21,17 @@ namespace PrimeApps.App.Helpers
     public class PowerBiHelper
     {
         private static string _powerBiApiEndpoint = "https://api.powerbi.com";
-        private static string _workspaceCollection = ConfigurationManager.AppSettings["PowerbiWorkspaceCollection"];
-        private static string _accessKey = ConfigurationManager.AppSettings["PowerbiAccessKey"];
         private static string _powerBiEmbedUrl = "https://embedded.powerbi.com/appTokenReportEmbed?reportId={0}";
 
-        public static async Task<Microsoft.PowerBI.Api.V1.Models.Workspace> CreateWorkspace()
+        public static async Task<Microsoft.PowerBI.Api.V1.Models.Workspace> CreateWorkspace(IConfiguration configuration)
         {
-            using (var client = CreateClient())
+            using (var client = CreateClient(configuration))
             {
-                return await client.Workspaces.PostWorkspaceAsync(_workspaceCollection);
+                return await client.Workspaces.PostWorkspaceAsync(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"]);
             }
         }
 
-        public static async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(int tenantId, string name)
+        public static async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(int tenantId, string name, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (PlatformDBContext dbContext = new PlatformDBContext())
@@ -43,16 +42,16 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            using (var client = CreateClient())
+            using (var client = CreateClient(configuration))
             {
-                var reportsResponse = await client.Reports.GetReportsAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId);
+                var reportsResponse = await client.Reports.GetReportsAsync(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId);
                 var report = reportsResponse.Value.SingleOrDefault(x => x.Name == name);
 
                 return report;
             }
         }
 
-        public static async Task<List<ReportViewModel>> GetReports(int tenantId, ICollection<Analytic> analytics)
+        public static async Task<List<ReportViewModel>> GetReports(int tenantId, ICollection<Analytic> analytics, IConfiguration configuration)
         {
             var reports = new List<ReportViewModel>();
             Model.Entities.Platform.PlatformWarehouse warehouse;
@@ -79,8 +78,8 @@ namespace PrimeApps.App.Helpers
                 report.ReportId = analytic.PowerBiReportId;
                 report.MenuIcon = analytic.MenuIcon;
 
-                var embedToken = PowerBIToken.CreateReportEmbedToken(_workspaceCollection, warehouse.PowerbiWorkspaceId, analytic.PowerBiReportId, TimeSpan.FromDays(15));
-                var accessToken = embedToken.Generate(_accessKey);
+                var embedToken = PowerBIToken.CreateReportEmbedToken(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId, analytic.PowerBiReportId, TimeSpan.FromDays(15));
+                var accessToken = embedToken.Generate(configuration.GetSection("AppSettings")["PowerbiAccessKey"]);
 
                 report.AccessToken = accessToken;
                 report.EmbedUrl = string.Format(_powerBiEmbedUrl, analytic.PowerBiReportId);
@@ -91,7 +90,7 @@ namespace PrimeApps.App.Helpers
             return reports;
         }
 
-        public static async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, int tenantId)
+        public static async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, int tenantId, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (PlatformDBContext dbContext = new PlatformDBContext())
@@ -106,12 +105,12 @@ namespace PrimeApps.App.Helpers
             {
                 using (var fileStream = webClient.OpenRead(pbixUrl))
                 {
-                    using (var client = CreateClient())
+                    using (var client = CreateClient(configuration))
                     {
                         client.HttpClient.Timeout = TimeSpan.FromMinutes(5);
                         client.HttpClient.DefaultRequestHeaders.Add("ActivityId", Guid.NewGuid().ToString());
 
-                        var import = client.Imports.PostImportWithFile(_workspaceCollection, warehouse.PowerbiWorkspaceId, fileStream, reportName);
+                        var import = client.Imports.PostImportWithFile(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId, fileStream, reportName);
 
                         return import;
                     }
@@ -119,8 +118,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        [WarehouseQueue, AutomaticRetry(Attempts = 2)]
-        public static async Task UpdateConnectionString(int analyticId, int tenantId)
+        public static async Task UpdateConnectionString(int analyticId, int tenantId, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (PlatformDBContext dbContext = new PlatformDBContext())
@@ -131,27 +129,28 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            using (var client = CreateClient())
+            using (var client = CreateClient(configuration))
             {
-                var datasets = await client.Datasets.GetDatasetsAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId);
+                var workspaceCollection = configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"];
+                var datasets = await client.Datasets.GetDatasetsAsync(workspaceCollection, warehouse.PowerbiWorkspaceId);
                 var dataset = datasets.Value.Single(x => x.Name == analyticId.ToString());
-                var datasources = await client.Datasets.GetGatewayDatasourcesAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId, dataset.Id);
+                var datasources = await client.Datasets.GetGatewayDatasourcesAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, dataset.Id);
 
                 var delta = new GatewayDatasource
                 {
                     CredentialType = "Basic",
                     BasicCredentials = new BasicCredentials
                     {
-                        Username = ConfigurationManager.AppSettings["WarehouseMasterUser"],
-                        Password = ConfigurationManager.AppSettings["WarehouseMasterPassword"]
+                        Username = configuration.GetSection("AppSettings")["WarehouseMasterUser"],
+                        Password = configuration.GetSection("AppSettings")["WarehouseMasterPassword"]
                     }
                 };
 
-                await client.Gateways.PatchDatasourceAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId, datasources.Value[0].GatewayId, datasources.Value[0].Id, delta);
+                await client.Gateways.PatchDatasourceAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, datasources.Value[0].GatewayId, datasources.Value[0].Id, delta);
             }
         }
 
-        public static async Task DeleteReport(int tenantId, int analyticId)
+        public static async Task DeleteReport(int tenantId, int analyticId, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (PlatformDBContext dbContext = new PlatformDBContext())
@@ -162,21 +161,22 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            using (var client = CreateClient())
+            using (var client = CreateClient(configuration))
             {
-                var datasets = await client.Datasets.GetDatasetsAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId);
+                var workspaceCollection = configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"];
+                var datasets = await client.Datasets.GetDatasetsAsync(workspaceCollection, warehouse.PowerbiWorkspaceId);
                 var reports = datasets.Value.Where(x => x.Name == analyticId.ToString());
 
                 foreach (var report in reports)
                 {
-                    var result = await client.Datasets.DeleteDatasetByIdAsync(_workspaceCollection, warehouse.PowerbiWorkspaceId, report.Id);
+                    var result = await client.Datasets.DeleteDatasetByIdAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, report.Id);
                 }
             }
         }
 
-        private static PowerBIClient CreateClient()
+        private static PowerBIClient CreateClient(IConfiguration configuration)
         {
-            var credentials = new TokenCredentials(_accessKey, "AppKey");
+            var credentials = new TokenCredentials(configuration.GetSection("AppSettings")["PowerbiAccessKey"], "AppKey");
             var client = new PowerBIClient(credentials)
             {
                 BaseUri = new Uri(_powerBiApiEndpoint)

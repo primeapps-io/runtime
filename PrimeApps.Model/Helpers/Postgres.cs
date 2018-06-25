@@ -16,11 +16,11 @@ namespace PrimeApps.Model.Helpers
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public static string GetConnectionString(int tenantId, string externalConnectionString = null)
+        public static string GetConnectionString(string connectionString, int tenantId, string externalConnectionString = null)
         {
             var database = $"tenant{tenantId}";
             var builder = new DbConnectionStringBuilder(false);
-            builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? ConfigurationManager.ConnectionStrings["PostgreSqlConnection"].ConnectionString : externalConnectionString;
+            builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? connectionString : externalConnectionString;
 
             if (tenantId < 0)
             {
@@ -38,11 +38,11 @@ namespace PrimeApps.Model.Helpers
         /// </summary>
         /// <param name="databaseName"></param>
         /// <returns></returns>
-        public static string GetConnectionString(string databaseName, string connectionString = null)
+        public static string GetConnectionString(string connectionString, string databaseName, string externalConnectionString = null)
         {
             var builder = new DbConnectionStringBuilder(false);
 
-            builder.ConnectionString = string.IsNullOrWhiteSpace(connectionString) ? ConfigurationManager.ConnectionStrings["PostgreSqlConnection"].ConnectionString : connectionString;
+            builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? connectionString : externalConnectionString;
 
             if (string.IsNullOrWhiteSpace(databaseName))
             {
@@ -61,19 +61,19 @@ namespace PrimeApps.Model.Helpers
         /// <param name="tenantId"></param>
         /// <param name="appId"></param>
         /// <returns></returns>
-        public static async Task<bool> CreateDatabaseWithTemplate(int tenantId, int appId)
+        public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, int tenantId, int appId)
         {
-            return await CreateDatabaseWithTemplate($"tenant{tenantId}", $"app{appId}");
+            return await CreateDatabaseWithTemplate(connectionString, $"tenant{tenantId}", $"app{appId}");
         }
 
-        public static async Task<bool> CreateDatabaseWithTemplate(string databaseName, string templateDbName)
+        public static async Task<bool> CreateDatabaseWithTemplate(string connectionString, string databaseName, string templateDbName)
         {
             bool result = false;
             int intResult = 0;
 
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(-1)))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1)))
                 {
                     connection.Open();
 
@@ -101,17 +101,17 @@ namespace PrimeApps.Model.Helpers
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public static bool DropDatabase(int tenantId, bool terminateExistingConnections = false)
+        public static bool DropDatabase(string connectionString, int tenantId, bool terminateExistingConnections = false)
         {
-            return DropDatabase($"tenant{tenantId}", terminateExistingConnections);
+            return DropDatabase(connectionString, $"tenant{tenantId}", terminateExistingConnections);
         }
 
-        public static bool DropDatabase(string dbName, bool terminateExistingConnections = false)
+        public static bool DropDatabase(string connectionString, string dbName, bool terminateExistingConnections = false)
         {
             bool result = false;
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(-1)))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1)))
                 {
                     connection.Open();
 
@@ -137,12 +137,12 @@ namespace PrimeApps.Model.Helpers
             return result;
         }
 
-        public static IEnumerable<string> GetTenantDatabases(string externalConnectionString = null)
+        public static IEnumerable<string> GetTenantDatabases(string connectionString, string externalConnectionString = null)
         {
             JArray dbs = new JArray();
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString("postgres", externalConnectionString)))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
                 {
                     connection.Open();
 
@@ -166,12 +166,12 @@ namespace PrimeApps.Model.Helpers
             return dbs.Select(x => x["datname"].ToString()).ToList();
         }
 
-        public static IEnumerable<string> GetTemplateDatabases(string externalConnectionString = null)
+        public static IEnumerable<string> GetTemplateDatabases(string connectionString, string externalConnectionString = null)
         {
             JArray dbs = new JArray();
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString("postgres", externalConnectionString)))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, "postgres", externalConnectionString)))
                 {
                     connection.Open();
 
@@ -195,12 +195,12 @@ namespace PrimeApps.Model.Helpers
             return dbs.Select(x => x["datname"].ToString()).ToList();
         }
 
-        public static void PrepareTemplateDatabaseForUpgrade(string dbName, string externalConnectionString = null)
+        public static void PrepareTemplateDatabaseForUpgrade(string connectionString, string dbName, string externalConnectionString = null)
         {
             JArray dbs = new JArray();
             List<string> dbList = new List<string>();
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(-1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -217,10 +217,10 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static void FinalizeTemplateDatabaseUpgrade(string dbName, string externalConnectionString)
+        public static void FinalizeTemplateDatabaseUpgrade(string connectionString, string dbName, string externalConnectionString)
         {
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(-1, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, externalConnectionString)))
             {
                 connection.Open();
                 using (var command = connection.CreateCommand())
@@ -275,11 +275,11 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static int ExecuteSql(string databaseName, string sql, string externalConnectionString = null)
+        public static int ExecuteSql(string connectionString, string databaseName, string sql, string externalConnectionString = null)
         {
             int result;
 
-            using (var connection = new NpgsqlConnection(GetConnectionString(databaseName, externalConnectionString)))
+            using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, databaseName, externalConnectionString)))
             {
                 connection.Open();
 

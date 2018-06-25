@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace PrimeApps.App
 {
@@ -21,8 +14,7 @@ namespace PrimeApps.App
 					"scripts/vendor/sweetalert.js",
 					"scripts/vendor/spin.js",
 					"scripts/vendor/ladda.js");
-
-				/*pipeline.AddBundle("/scripts/bundles-js/app.js", "text/javascript; charset=UTF-8",*/
+                
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/app.js",
 					"scripts/app.js",
 					"scripts/interceptors.js",

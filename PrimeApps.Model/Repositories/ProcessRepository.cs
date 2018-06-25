@@ -8,12 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ProcessRepository : RepositoryBaseTenant, IProcessRepository
     {
-        public ProcessRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ProcessRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Process> GetById(int id)
         {

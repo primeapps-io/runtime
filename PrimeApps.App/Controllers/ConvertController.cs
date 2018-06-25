@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers;
@@ -18,12 +17,13 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using Microsoft.Extensions.Configuration;
 
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/convert"), Authorize/*, SnakeCase*/]
-    public class ConvertController : BaseController
+    [Route("api/convert"), Authorize]
+    public class ConvertController : ApiBaseController
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
@@ -32,8 +32,9 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IConversionMappingRepository _conversionMappingRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
-        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, Warehouse warehouse)
+        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, Warehouse warehouse, IConfiguration configuration)
         {
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
@@ -42,6 +43,7 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _conversionMappingRepository = conversionMappingRepository;
             _warehouse = warehouse;
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -196,7 +198,7 @@ namespace PrimeApps.App.Controllers
 
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
+                RecordHelper.AfterCreate(accountModule, account, AppUser, _warehouse, _configuration);
             }
 
             // contact
@@ -237,7 +239,7 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
+                RecordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse, _configuration);
             }
 
             // opportunity
@@ -284,7 +286,7 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
+                RecordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse, _configuration);
             }
 
             // Update lead as converted
@@ -327,7 +329,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(leadModule.Id, (int)lead["id"]);
@@ -469,7 +471,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
+            RecordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse, _configuration);
 
             // Get all quote products and insert order products
             var findRequest = new FindRequest
@@ -536,7 +538,7 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
+                RecordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse, _configuration);
             }
 
             // Update quote as converted
@@ -574,7 +576,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
+            RecordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse, _configuration);
 
             var result = new JObject();
             result["sales_order_id"] = salesOrder["id"];
@@ -650,7 +652,7 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
+                RecordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse, _configuration);
             }
 
             // Update lead as converted
@@ -695,7 +697,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(candidateModule.Id, (int)candidate["id"]);
@@ -844,7 +846,7 @@ namespace PrimeApps.App.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-                RecordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
+                RecordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse, _configuration);
             }
 
             //Update order stage
@@ -891,9 +893,9 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultUpdate < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString()); 
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(salesOrderModule.Id, (int)salesOrder["id"]);
@@ -1044,7 +1046,7 @@ namespace PrimeApps.App.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-                RecordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
+                RecordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse, _configuration);
             }
 
             //Update order stage
@@ -1093,7 +1095,7 @@ namespace PrimeApps.App.Controllers
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
+            RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse, _configuration);
 
             // Move documents
             var documents = await _documentRepository.GetAll(purchaseOrderModule.Id, (int)purchaseOrder["id"]);

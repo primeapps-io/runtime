@@ -1,17 +1,22 @@
-﻿using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
-using PrimeApps.Model.Context;
+﻿using PrimeApps.Model.Context;
 using System.Threading.Tasks;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Jobs
 {
     public class AccountDeactivate
     {
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        private IConfiguration _configuration;
+
+        public AccountDeactivate(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public async Task Deactivate()
         {
             using (var platformDbContext = new PlatformDBContext())
@@ -24,7 +29,7 @@ namespace PrimeApps.App.Jobs
                     foreach (var tenant in tenants)
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id))
-                        using (var userRepository = new UserRepository(databaseContext))
+                        using (var userRepository = new UserRepository(databaseContext, _configuration))
                         {
                             var users = await userRepository.GetAllAsync();
 

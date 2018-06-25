@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Entities.Application;
 using System;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.Model.Repositories
 {
     public class DashboardRepository : RepositoryBaseTenant, IDashboardRepository
     {
-        public DashboardRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public DashboardRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<int> Create(Dashboard dashboard)
         {

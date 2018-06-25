@@ -203,7 +203,7 @@ angular.module('primeapps')
                 }
                 else {
                     actionButton.parameters = null;
-                    actionButton.method_type = null;
+                    actionButton.method_type = "";
                 }
 
                 if (!actionButton.css_class)

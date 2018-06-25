@@ -4,12 +4,12 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
 using System;
-using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Storage
 {
@@ -22,7 +22,7 @@ namespace PrimeApps.App.Storage
     /// Also we use crmDocuments table to store some information about files, like file name, content-type, file size, user and instance on Windows Azure.
     /// For more information about Windows Azure Storage: http://www.windowsazure.com/en-us/documentation/services/storage/
     /// </summary>
-    class AzureStorage
+    public class AzureStorage
     {
         /// <summary>
         /// This method allows to upload chunked files to the AzureStorage.
@@ -32,10 +32,10 @@ namespace PrimeApps.App.Storage
         /// <param name="containerName">Container name for the block blob</param>
         /// <param name="tempName">Temporary file name</param>
         /// <param name="contentType">Content Type of file</param>
-        public static void UploadFile(int chunk, Stream fileContent, string containerName, string tempName, string contentType, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob)
+        public static void UploadFile(int chunk, Stream fileContent, string containerName, string tempName, string contentType, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob)
         {
             //get/create blob container
-            var blobContainer = GetBlobContainer(containerName, accessType);
+            var blobContainer = GetBlobContainer(containerName, configuration, accessType);
 
             //create block id with the given chunk id.
             var blockId = Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Format(CultureInfo.InvariantCulture, "{0:D4}", chunk)));
@@ -60,13 +60,13 @@ namespace PrimeApps.App.Storage
         /// <param name="containerName">Container name for the uploaded file</param>
         /// <param name="chunks">Total chunks for the uploaded file</param>
         /// <param name="tempblobContainerName">Temporary blob container name for the uploaded file to move/copy on selected container. Default 'temp'</param>
-        public static CloudBlockBlob CommitFile(string tempName, string newName, string contentType, string containerName, int chunks, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob, string tempblobContainerName = "temp", string relatedMetadataRecordIdForBlob = null, string relatedMetadataModuleNameForBlob = null, string relatedMetadataViewFileName = null, string relatedMetadataFullFileName = null)
+        public static CloudBlockBlob CommitFile(string tempName, string newName, string contentType, string containerName, int chunks, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob, string tempblobContainerName = "temp", string relatedMetadataRecordIdForBlob = null, string relatedMetadataModuleNameForBlob = null, string relatedMetadataViewFileName = null, string relatedMetadataFullFileName = null)
         {
             //get temporary blob container which reserved for uploads.
-            var tempBlobContainer = GetBlobContainer(tempblobContainerName);
+            var tempBlobContainer = GetBlobContainer(tempblobContainerName, configuration);
 
             //get blob container for the instance
-            var blobContainer = GetBlobContainer(containerName, accessType);
+            var blobContainer = GetBlobContainer(containerName, configuration, accessType);
 
             //calculate chunk id's.
             var blockList = Enumerable.Range(0, chunks).ToList<int>().ConvertAll(rangeElement => Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Format(CultureInfo.InvariantCulture, "{0:D4}", rangeElement))));
@@ -119,10 +119,10 @@ namespace PrimeApps.App.Storage
         /// <param name="containerName">Container(instance) name for the file</param>
         /// <param name="fileName">File name</param>
         /// <returns></returns>
-        public static CloudBlockBlob GetBlob(string containerName, string fileName)
+        public static CloudBlockBlob GetBlob(string containerName, string fileName, IConfiguration configuration)
         {
             //get blob container
-            var blobContainer = GetBlobContainer(containerName);
+            var blobContainer = GetBlobContainer(containerName, configuration);
 
             //get blob
             CloudBlockBlob blob = blobContainer.GetBlockBlobReference(fileName);
@@ -134,10 +134,10 @@ namespace PrimeApps.App.Storage
         /// </summary>
         /// <param name="containerName">Container(instance) name for the file</param>
         /// <param name="fileName">File name</param>
-        public static void RemoveFile(string containerName, string fileName)
+        public static void RemoveFile(string containerName, string fileName, IConfiguration configuration)
         {
             //get blob container
-            var blobContainer = GetBlobContainer(containerName);
+            var blobContainer = GetBlobContainer(containerName, configuration);
 
             //get blob
             CloudBlockBlob blob = blobContainer.GetBlockBlobReference(fileName);
@@ -151,7 +151,7 @@ namespace PrimeApps.App.Storage
         /// </summary>
         /// <param name="containerName">Container(instance) name for the file</param>
         /// <returns></returns>
-        public static CloudBlobContainer GetBlobContainer(string containerName, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob)
+        public static CloudBlobContainer GetBlobContainer(string containerName, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob)
         {
             // Variables for the cloud storage objects.
             CloudStorageAccount cloudStorageAccount;
@@ -159,7 +159,7 @@ namespace PrimeApps.App.Storage
             CloudBlobContainer blobContainer;
 
             // Use the local storage account.
-            cloudStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings.Get("Microsoft.WindowsAzure.Plugins.AzureStorage.ConnectionString"));
+            cloudStorageAccount = CloudStorageAccount.Parse(configuration.GetSection("AppSettings")["AzureStorage.ConnectionString"]);
 
             // create blob container
             blobClient = cloudStorageAccount.CreateCloudBlobClient();
@@ -176,46 +176,46 @@ namespace PrimeApps.App.Storage
         /// <param name="containerName">Container(instance) name for the file</param>
         /// <param name="fileName">File name</param>
         /// <returns></returns>
-        public static CopyStatus CopyBlob(ref string fileName, Guid containerName)
-        {
-            CloudBlobContainer sourceContainer = AzureStorage.GetBlobContainer(string.Format("inst-{0}", containerName));
-            CloudBlobContainer targetContainer = AzureStorage.GetBlobContainer(string.Format("inst-{0}", containerName));
+        //public static CopyStatus CopyBlob(ref string fileName, Guid containerName)
+        //{
+        //    CloudBlobContainer sourceContainer = AzureStorage.GetBlobContainer(string.Format("inst-{0}", containerName));
+        //    CloudBlobContainer targetContainer = AzureStorage.GetBlobContainer(string.Format("inst-{0}", containerName));
 
-            string newFileName = Guid.NewGuid().ToString();
+        //    string newFileName = Guid.NewGuid().ToString();
 
-            if (fileName.LastIndexOf('.') > 0)
-            {
-                newFileName = fileName.Replace(fileName.Substring(0, fileName.LastIndexOf('.')), newFileName);
-            }
+        //    if (fileName.LastIndexOf('.') > 0)
+        //    {
+        //        newFileName = fileName.Replace(fileName.Substring(0, fileName.LastIndexOf('.')), newFileName);
+        //    }
 
-            CloudBlockBlob sourceBlob = sourceContainer.GetBlockBlobReference(fileName);
-            CloudBlockBlob targetBlob = targetContainer.GetBlockBlobReference(newFileName);
-            var copyToken = targetBlob.StartCopyAsync(sourceBlob.Uri);
+        //    CloudBlockBlob sourceBlob = sourceContainer.GetBlockBlobReference(fileName);
+        //    CloudBlockBlob targetBlob = targetContainer.GetBlockBlobReference(newFileName);
+        //    var copyToken = targetBlob.StartCopyAsync(sourceBlob.Uri);
 
-            fileName = newFileName;
-            return targetBlob.CopyState.Status;
-        }
+        //    fileName = newFileName;
+        //    return targetBlob.CopyState.Status;
+        //}
 
         /// <summary>
         /// Gets avatar full url
         /// </summary>
         /// <returns></returns>
-        public static string GetAvatarUrl(string avatar)
+        public static string GetAvatarUrl(string avatar, IConfiguration configuration)
         {
             if (string.IsNullOrWhiteSpace(avatar))
                 return string.Empty;
 
-            var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
             return $"{blobUrl}/user-images/{avatar}";
         }
 
-        public static string GetLogoUrl(string logo)
+        public static string GetLogoUrl(string logo, IConfiguration configuration)
         {
             if (string.IsNullOrWhiteSpace(logo))
                 return string.Empty;
 
-            var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
             return $"{blobUrl}/app-logo/{logo}";
         }

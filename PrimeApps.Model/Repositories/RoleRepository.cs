@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
 
@@ -16,14 +17,19 @@ namespace PrimeApps.Model.Repositories
     public class RoleRepository : RepositoryBaseTenant, IRoleRepository
     {
         private Warehouse _warehouse;
-        public RoleRepository(TenantDBContext dbContext) : base(dbContext)
-        {
+        private IConfiguration _configuration;
 
+        public RoleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+            _configuration = configuration;
         }
-        public RoleRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+
+        public RoleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
+            _configuration = configuration;
         }
+
         /// <summary>
         /// Creates a new user role.
         /// </summary>
@@ -157,6 +163,7 @@ namespace PrimeApps.Model.Repositories
             if (saveChanges)
             {
                 var result = await DbContext.SaveChangesAsync();
+
                 if (result > 0 && string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
                 {
                     if (_warehouse.DatabaseName != "0")

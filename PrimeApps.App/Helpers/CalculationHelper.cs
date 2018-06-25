@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
@@ -16,17 +17,17 @@ namespace PrimeApps.App.Helpers
 {
     public static class CalculationHelper
     {
-        public static async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType)
+        public static async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, IConfiguration configuration)
         {
             try
             {
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
-                    using (var moduleRepository = new ModuleRepository(databaseContext))
+                    using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                     {
-                        using (var picklistRepository = new PicklistRepository(databaseContext))
+                        using (var picklistRepository = new PicklistRepository(databaseContext, configuration))
                         {
-                            using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                            using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                             {
                                 moduleRepository.UserId = appUser.TenantId;
                                 recordRepository.UserId = appUser.TenantId;
@@ -77,7 +78,7 @@ namespace PrimeApps.App.Helpers
                                         string mailSubject;
                                         string mailBody;
 
-                                        using (var templateRepostory = new TemplateRepository(databaseContext))
+                                        using (var templateRepostory = new TemplateRepository(databaseContext, configuration))
                                         {
                                             var mailTemplate = await templateRepostory.GetById(48);//Organizasyonel değişiklik bildirimi
                                             mailSubject = mailTemplate.Subject;
@@ -1375,7 +1376,7 @@ namespace PrimeApps.App.Helpers
                                                 }
                                             }
 
-                                            using (var userGroupRepository = new UserGroupRepository(databaseContext))
+                                            using (var userGroupRepository = new UserGroupRepository(databaseContext, configuration))
                                             {
                                                 var financeUserGroup = await userGroupRepository.GetByName("finance-expense");
 
@@ -1525,7 +1526,7 @@ namespace PrimeApps.App.Helpers
                                                 }
                                             }
 
-                                            using (var userGroupRepository = new UserGroupRepository(databaseContext))
+                                            using (var userGroupRepository = new UserGroupRepository(databaseContext, configuration))
                                             {
                                                 var financeUserGroup = await userGroupRepository.GetByName("finance-expense");
 
@@ -1616,7 +1617,7 @@ namespace PrimeApps.App.Helpers
                                             var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
                                             var purchaseStagePicklist = purchaseOrderModule.Fields.Single(x => x.Name == "order_stage");
                                             currentModulePicklist = await picklistRepository.FindItemByLabel(purchaseStagePicklist.PicklistId.Value, (string)purchaseOrderItem["order_stage"], appUser.TenantLanguage);
-                                           
+
                                         }
 
                                         var currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord);
@@ -1779,7 +1780,7 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            await Calculate((int)projectScopeUpdateRecord["id"], projectScopeModule, appUser, warehouse, operationType);
+                                            await Calculate((int)projectScopeUpdateRecord["id"], projectScopeModule, appUser, warehouse, operationType, configuration);
                                         }
                                         catch (Exception ex)
                                         {
@@ -2064,7 +2065,7 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            using (var userRepository = new UserRepository(databaseContext))
+                                            using (var userRepository = new UserRepository(databaseContext, configuration))
                                             {
                                                 var timesheetOwner = await userRepository.GetById((int)record["owner"]);
 

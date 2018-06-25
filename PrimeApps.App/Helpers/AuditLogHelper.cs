@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -13,7 +14,7 @@ namespace PrimeApps.App.Helpers
     {
         private static readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
-        public static async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
+        public static async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, IConfiguration configuration, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
         {
             var auditLog = new AuditLog
             {
@@ -51,12 +52,12 @@ namespace PrimeApps.App.Helpers
             {
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
-                    using (var auditLogRepository = new AuditLogRepository(databaseContext))
+                    using (var auditLogRepository = new AuditLogRepository(databaseContext, configuration))
                     {
                         var result = await auditLogRepository.Create(auditLog);
 
                         //if (result < 1)
-                            //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
+                        //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
                     }
                 }
             }

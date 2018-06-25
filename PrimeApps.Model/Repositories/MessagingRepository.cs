@@ -3,14 +3,14 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class MessagingRepository : RepositoryBaseTenant, IMessagingRepository
     {
-        public MessagingRepository(TenantDBContext dbContext) : base(dbContext)
-        {
-        }
+        public MessagingRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+
         public async Task<Notification> Create(Notification notification)
         {
             var newNotification = DbContext.Notifications.Add(notification);

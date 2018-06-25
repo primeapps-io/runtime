@@ -43,17 +43,7 @@ namespace PrimeApps.Model.Common.Instance
         /// Logo Url
         /// </summary>
         [DataMember]
-        public string logoUrl
-        {
-            get
-            {
-                return GetLogoUrl(_logoUrl);
-            }
-            set
-            {
-                _logoUrl = value;
-            }
-        }
+        public string logoUrl { get; set; }
 
         /// <summary>
         /// Has Sample Data
@@ -93,15 +83,5 @@ namespace PrimeApps.Model.Common.Instance
         /// </summary>
         [DataMember]
         public IList<UserList> users { get; set; }
-
-        private static string GetLogoUrl(string logo)
-        {
-            if (string.IsNullOrWhiteSpace(logo))
-                return string.Empty;
-
-            var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
-
-            return $"{blobUrl}/company-logo/{logo}";
-        }
     }
 }

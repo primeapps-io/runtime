@@ -10,6 +10,7 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Common.Resources;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Helpers
@@ -67,7 +68,7 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, int AppId = 1, UserItem AppUser = null)
+        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, IConfiguration configuration, int appId = 1, UserItem appUser = null)
         {
             string tmpl = "",
                    appUrl = "",
@@ -86,13 +87,13 @@ namespace PrimeApps.App.Helpers
 
             LanguageType language = culture.Contains("tr") ? LanguageType.Tr : LanguageType.En;
             Template templateEntity;
-            using (TenantDBContext tdbCtx = new TenantDBContext(AppUser.TenantId))
-            using (TemplateRepository tRepo = new TemplateRepository(tdbCtx))
+            using (TenantDBContext tdbCtx = new TenantDBContext(appUser.TenantId))
+            using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
             {               
                 templateEntity = tRepo.GetByCode(resourceTypeName, language);
             }
 
-            switch (AppId)
+            switch (appId)
             {
                 case 1:
                     appUrl = "http://www.ofisim.com/mail/crm/logo.png";
@@ -151,15 +152,15 @@ namespace PrimeApps.App.Helpers
 
             }
 
-            if (AppUser != null)
+            if (appUser != null)
             {
                 using (PlatformDBContext pdbCtx = new PlatformDBContext())
                 using (TenantRepository tRepo = new TenantRepository(pdbCtx))
                 {
-                    var instance = tRepo.Get(AppUser.TenantId);
+                    var instance = tRepo.Get(appUser.TenantId);
                     if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
                     {
-                        appUrl = TenantRepository.GetLogoUrl(instance.Setting.Logo);
+                        appUrl = instance.Setting.Logo;
                         appCodeUrl = "#";
                         appName = instance.Setting.MailSenderName;
                         socialMediaIcons = "none";

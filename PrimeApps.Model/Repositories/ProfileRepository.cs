@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Profile;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ProfileRepository : RepositoryBaseTenant, IProfileRepository
     {
-        public ProfileRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task CreateAsync(ProfileDTO newProfileDTO)
         {

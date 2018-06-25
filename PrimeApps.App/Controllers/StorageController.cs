@@ -15,11 +15,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using PrimeApps.App.Storage.Unified;
 using Amazon.S3.Model;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Protocols;
 
 namespace PrimeApps.App.Controllers
 {
     [Route("api/storage"), Authorize]
-    public class StorageController : BaseController
+    public class StorageController : ApiBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
@@ -28,7 +30,9 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private ISettingRepository _settingRepository;
         private IUnifiedStorage _storage;
-        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage)
+        private IConfiguration _configuration;
+
+        public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage, IConfiguration configuration)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -37,6 +41,7 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _settingRepository = settingRepository;
             _storage = storage;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -104,7 +109,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -144,7 +149,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
@@ -152,7 +157,7 @@ namespace PrimeApps.App.Controllers
 
                 if (chunk == chunks - 1)
                 {
-                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks);
+                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks, _configuration);
                     result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
                 }
 
@@ -172,7 +177,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -257,14 +262,14 @@ namespace PrimeApps.App.Controllers
                 var chunks = 1; //one part chunk
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
                 result.UniqueName = fullFileName;
 
 
-                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
+                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, _configuration, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
                 result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
 
 
@@ -272,7 +277,7 @@ namespace PrimeApps.App.Controllers
                 {
                     var documentSearchHelper = new DocumentSearch();
 
-                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, false);//False because! 5 min auto index incremental change detection policy check which azure provided
+                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false);//False because! 5 min auto index incremental change detection policy check which azure provided
 
                 }
 
@@ -311,7 +316,7 @@ namespace PrimeApps.App.Controllers
             string uniqueFileName = $"{AppUser.TenantGuid}/{moduleDashesName}/{recordId}_{fieldName}.{fileNameExt}";
 
             //remove document
-            AzureStorage.RemoveFile(containerName, uniqueFileName);
+            AzureStorage.RemoveFile(containerName, uniqueFileName, _configuration);
 
 
 
@@ -320,7 +325,7 @@ namespace PrimeApps.App.Controllers
             if (field.DocumentSearch)
             {
                 DocumentSearch documentSearch = new DocumentSearch();
-                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, false);
+                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, _configuration, false);
             }
 
             return Ok();
@@ -340,7 +345,7 @@ namespace PrimeApps.App.Controllers
             if (doc != null)
             {
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName);
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName, _configuration);
                 try
                 {
                     //try to get the attributes of blob.
@@ -408,7 +413,7 @@ namespace PrimeApps.App.Controllers
                 var docName = fileName + "." + fileNameExt;
 
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(containerName, uniqueFileName);
+                var blob = AzureStorage.GetBlob(containerName, uniqueFileName, _configuration);
                 try
                 {
                     //try to get the attributes of blob.
@@ -460,7 +465,7 @@ namespace PrimeApps.App.Controllers
             if (template != null)
             {
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
                 try
                 {
                     //try to get the attributes of blob.

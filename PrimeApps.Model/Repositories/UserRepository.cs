@@ -8,6 +8,7 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Context;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Common.User;
@@ -18,12 +19,19 @@ namespace PrimeApps.Model.Repositories
     public class UserRepository : RepositoryBaseTenant, IUserRepository
     {
         private Warehouse _warehouse;
-        public UserRepository(TenantDBContext dbContext) : base(dbContext) { }
+        private IConfiguration _configuration;
 
-        public UserRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
+            _configuration = configuration;
         }
+
         /// <summary>
         /// Creates a new user.
         /// </summary>
@@ -34,6 +42,7 @@ namespace PrimeApps.Model.Repositories
             DbContext.Users.Add(user);
 
             var result = await DbContext.SaveChangesAsync();
+
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
                 if (_warehouse.DatabaseName != "0")

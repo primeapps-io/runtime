@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 
 namespace PrimeApps.Model.Common.Document
 {
@@ -48,25 +47,6 @@ namespace PrimeApps.Model.Common.Document
         /// </summary>
         public virtual Guid ContainerId { get; set; }
 
-
-        /// <summary>
-        /// Document full URL.
-        /// </summary>
-        public virtual string FileUrl
-        {
-            get
-            {
-                return GetDocumentUrl(ContainerId, UniqueName);
-            }
-        }
-
-        private string GetDocumentUrl(Guid storageContainer, string uniqueName)
-        {
-            var containerName = string.Format("inst-{0}", storageContainer);
-            var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
-
-            return blobUrl + "/" + containerName + "/" + uniqueName;
-        }
         /// <summary>
         /// Document size in byte(s).
         /// </summary>

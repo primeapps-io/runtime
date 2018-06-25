@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Entities.Platform;
@@ -25,14 +26,14 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public static async Task Create(UserItem appUser, JObject record, Module module, int timezoneOffset)
+        public static async Task Create(UserItem appUser, JObject record, Module module, IConfiguration configuration, int timezoneOffset)
         {
             string moduleName = module?.Name?.ToLower();
 
             switch (moduleName)
             {
                 case "activities":
-                    await Activity.Create(appUser, record, module, timezoneOffset: timezoneOffset);
+                    await Activity.Create(appUser, record, module, configuration, timezoneOffset: timezoneOffset);
                     break;
             }
         }
@@ -48,19 +49,19 @@ namespace PrimeApps.App.Notifications
         /// <param name="module"></param>
         /// <param name="currentRecord"></param>
         /// <returns></returns>
-        public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timeZoneOffset = 180)
+        public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, IConfiguration configuration, int timeZoneOffset = 180)
         {
             string moduleName = module?.Name?.ToLower();
 
             switch (moduleName)
             {
                 case "activities":
-                    await Activity.Update(appUser, record, currentRecord, module, timezoneOffset: timeZoneOffset);
+                    await Activity.Update(appUser, record, currentRecord, module, configuration, timezoneOffset: timeZoneOffset);
                     break;
             }
 
             /// check if owner of the record changed.
-            await IsOwnerChanged(appUser, record, currentRecord, module);
+            await IsOwnerChanged(appUser, record, currentRecord, module, configuration);
         }
 
         /// <summary>
@@ -70,11 +71,11 @@ namespace PrimeApps.App.Notifications
         /// <param name="appUser"></param>
         /// <param name="record"></param>
         /// <returns></returns>
-        private static async Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module)
+        private static async Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module, IConfiguration configuration)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var settingRepository = new SettingRepository(databaseContext))
+                using (var settingRepository = new SettingRepository(databaseContext, configuration))
                 {
                     var settings = await settingRepository.GetAllSettings();
                     if (settings.Any(setting => setting.Key == "send_owner_changed_notification" && setting.Value == "true"))
@@ -111,17 +112,17 @@ namespace PrimeApps.App.Notifications
                         if (isTask)
                         {
                             ///it is a task so just notify user about the task.
-                            await OwnerChangedTask(appUser, record, oldRecord, module);
+                            await OwnerChangedTask(appUser, record, oldRecord, module, configuration);
                             return;
                         }
 
-                        await OwnerChangedDefault(appUser, record, oldRecord, module);
+                        await OwnerChangedDefault(appUser, record, oldRecord, module, configuration);
                     }
                 }
             }
         }
 
-        private static async Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module)
+        private static async Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module, IConfiguration configuration)
         {
             DateTime dueDate = UnixDate.GetDate((long)record["task_due_date"]);
 
@@ -146,13 +147,13 @@ namespace PrimeApps.App.Notifications
                 emailData.Add("OldOwner", oldOwnerName);
                 emailData.Add("DueDate", formattedDueDate);
 
-                Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, appUser.AppId);
+                Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, configuration, appUser.AppId);
                 email.AddRecipient(newOwner.Email);
                 email.AddToQueue(appUser: appUser);
             }
         }
 
-        private static async Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module)
+        private static async Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module, IConfiguration configuration)
         {
             string newOwnerId = record["owner"]?.ToString(),
                 oldOwnerId = oldRecord["owner"]?.ToString(),
@@ -164,7 +165,7 @@ namespace PrimeApps.App.Notifications
             using (PlatformDBContext platformDBContext = new PlatformDBContext())
             using (PlatformUserRepository userRepository = new PlatformUserRepository(platformDBContext))
             using (var tenantDBContext = new TenantDBContext(appUser.TenantId))
-            using (var recordRepository = new RecordRepository(tenantDBContext))
+            using (var recordRepository = new RecordRepository(tenantDBContext, configuration))
 
             {
                 PlatformUser newOwner = await userRepository.Get(Convert.ToInt32(newOwnerId)),
@@ -193,7 +194,7 @@ namespace PrimeApps.App.Notifications
 
                 emailData.Add("PrimaryValue", moduleRecordPrimary[modulePkey]?.ToString()); //?wtf to change
 
-                Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, appUser.AppId);
+                Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, configuration, appUser.AppId);
                 email.AddRecipient(newOwner.Email);
                 email.AddToQueue(appUser: appUser);
             }
@@ -209,27 +210,27 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public static async Task Delete(UserItem appUser, JObject record, Module module)
+        public static async Task Delete(UserItem appUser, JObject record, Module module, IConfiguration configuration)
         {
             string moduleName = module?.Name?.ToLower();
 
             switch (moduleName)
             {
                 case "activities":
-                    await Activity.Delete(appUser, record, module);
+                    await Activity.Delete(appUser, record, module, configuration);
                     break;
             }
         }
         #endregion
 
-        public static void SendTaskNotification(JObject record, UserItem appUser, Module module)
+        public static void SendTaskNotification(JObject record, UserItem appUser, Module module, IConfiguration configuration)
         {
             // Get full record and set picklists
             JObject fullRecord;
 
             using (var dbContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var recordRepository = new RecordRepository(dbContext))
+                using (var recordRepository = new RecordRepository(dbContext, configuration))
                 {
                     recordRepository.TenantId = appUser.TenantId;
                     recordRepository.UserId = appUser.TenantId;
@@ -258,7 +259,7 @@ namespace PrimeApps.App.Notifications
                 emailData.Add("DueDate", ((DateTime)fullRecord["task_due_date"]).ToString(appUser.TenantLanguage == "tr" ? "dd.MM.yyyy" : "MM/dd/yyyy"));
                 emailData.Add("Subject", (string)fullRecord["subject"]);
 
-                var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, appUser.AppId);
+                var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, configuration, appUser.AppId);
                 email.AddRecipient((string)fullRecord["owner.email"]);
                 email.AddToQueue(appUser: appUser);
             }

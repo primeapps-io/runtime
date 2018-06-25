@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Chart;
@@ -15,12 +16,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class DashletRepository : RepositoryBaseTenant, IDashletRepository
     {
-   
-
-        public DashletRepository(TenantDBContext dbContext) : base(dbContext)
-        {
-          
-        }
+        public DashletRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         /// <summary>
         /// Getting dashboard specific dashlets for user and user is null for the purpose "shared" dashlets view by system admin.
@@ -28,7 +24,7 @@ namespace PrimeApps.Model.Repositories
         /// If you need "another" dashlet that contain widget, without changing entity, you can add new WidgetType enum. (model changing can be hard at multitenant database system like ofisim.com)
         /// </summary>
         /// <returns></returns>
-        public async Task<ICollection<DashletView>> GetDashboardDashlets(int dashboardId, UserItem appUser, IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, string locale = "", int timezoneOffset = 180)
+        public async Task<ICollection<DashletView>> GetDashboardDashlets(int dashboardId, UserItem appUser, IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IConfiguration configuration, string locale = "", int timezoneOffset = 180)
         {
             var dashletViews = new List<DashletView>();
 
@@ -58,7 +54,7 @@ namespace PrimeApps.Model.Repositories
                 {
                     var aggregation = dashlet.Chart.Report.Aggregations.FirstOrDefault();
                     var showDisplayValue = dashlet.Chart.ChartType != ChartType.Funnel && dashlet.Chart.ChartType != ChartType.Pyramid && aggregation != null && aggregation.AggregationType != AggregationType.Count;
-                    var chartData = await reportRepository.GetDashletReportData(dashlet.Chart.ReportId.Value, recordRepository, moduleRepository, picklistRepository, appUser, locale, timezoneOffset, showDisplayValue: showDisplayValue);
+                    var chartData = await reportRepository.GetDashletReportData(dashlet.Chart.ReportId.Value, recordRepository, moduleRepository, picklistRepository, configuration, appUser, locale, timezoneOffset, showDisplayValue: showDisplayValue);
 
                     dashletView.ChartItem = new ChartItem
                     {
@@ -85,10 +81,10 @@ namespace PrimeApps.Model.Repositories
                     JArray widgetData = null;
 
                     if (dashlet.Widget.ReportId.HasValue)
-                        widgetData = await reportRepository.GetDashletReportData(dashlet.Widget.ReportId.Value, recordRepository, moduleRepository, picklistRepository, appUser, locale, timezoneOffset);
+                        widgetData = await reportRepository.GetDashletReportData(dashlet.Widget.ReportId.Value, recordRepository, moduleRepository, picklistRepository, configuration, appUser, locale, timezoneOffset);
 
                     if (dashlet.Widget.ViewId.HasValue)
-                        widgetData = await reportRepository.GetDashletViewData(dashlet.Widget.ViewId.Value, recordRepository, moduleRepository,picklistRepository, appUser, locale, timezoneOffset);
+                        widgetData = await reportRepository.GetDashletViewData(dashlet.Widget.ViewId.Value, recordRepository, moduleRepository, picklistRepository, configuration, appUser, locale, timezoneOffset);
 
                     dashletView.Widget = new Model.Common.Widget.WidgetView
                     {

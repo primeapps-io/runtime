@@ -36,17 +36,26 @@ namespace PrimeApps.App.Helpers
         public static async Task<Note> UpdateLikedNote(Note note, int userId, IUserRepository userRepository)
         {
             var likedUser = await userRepository.GetById(userId);
+
+            var noteLike = new NoteLikes();
+            noteLike.NoteId = note.Id;
+            noteLike.UserId = likedUser.Id;
+
             int x = 0;
-            foreach (var user in note.Likes)
+            foreach (var like in note.NoteLikes)
             {
-                if (user.Id == userId)
+                if (like.UserId == userId)
+                {
                     x++;
+                    noteLike = like;
+                }
+                    
             }
 
             if(x>0)
-                note.Likes.Remove(likedUser);
+                note.NoteLikes.Remove(noteLike);
             else
-                note.Likes.Add(likedUser);
+                note.NoteLikes.Add(noteLike);
 
             return note;
         }

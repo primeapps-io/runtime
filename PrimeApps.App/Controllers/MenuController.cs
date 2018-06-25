@@ -1,21 +1,17 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.App.Controllers;
-using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Entities.Application;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace OfisimCRM.App.Controllers
+namespace PrimeApps.App.Controllers
 {
     [Route("api/menu"), Authorize]
-    public class MenuController : BaseController
+    public class MenuController : ApiBaseController
     {
         private IMenuRepository _menuRepository;
         public MenuController(IMenuRepository menuRepository)

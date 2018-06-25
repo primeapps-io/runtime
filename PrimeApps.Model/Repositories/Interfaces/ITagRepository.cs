@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Entities.Application;
-using PrimeApps.Model.Repositories.Interfaces;
 
-namespace OfisimCRM.Model.Repositories.Interfaces
+namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface ITagRepository : IRepositoryBaseTenant
     {
