@@ -6,8 +6,8 @@ using System.Text;
 namespace PrimeApps.Model.Entities.Application
 {
     [Table("users_user_groups")]
-    public class TenantUserGroup
-    {
+    public class UsersUserGroup
+	{
         [Column("user_id"), ForeignKey("User")]
         public int UserId { get; set; }
         public virtual TenantUser User { get; set; }
