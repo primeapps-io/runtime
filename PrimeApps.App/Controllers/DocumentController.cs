@@ -1,15 +1,12 @@
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.Helpers;
-using PrimeApps.App.Results;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,7 +15,6 @@ using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Document = PrimeApps.Model.Entities.Application.Document;
-using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Document;
@@ -33,11 +29,12 @@ using PrimeApps.App.Extensions;
 using Microsoft.WindowsAzure.Storage.Blob;
 using PrimeApps.App.Storage;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/Document"), Authorize]
-    public class DocumentController : BaseController
+    [Route("api/document"), Authorize]
+    public class DocumentController : ApiBaseController
     {
         private IDocumentRepository _documentRepository;
         private IRecordRepository _recordRepository;
@@ -46,9 +43,10 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
+	    private IConfiguration _configuration;
 
-	    private IRecordHelper _recordHelper;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper)
+		private IRecordHelper _recordHelper;
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -57,6 +55,7 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
+            _configuration = configuration;
 
 	        _recordHelper = recordHelper;
         }
@@ -85,7 +84,7 @@ namespace PrimeApps.App.Controllers
         {
             var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(Request.Body, out result);
+            var isUploaded = DocumentHelper.Upload(Request.Body, _configuration, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
@@ -120,7 +119,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -160,7 +159,7 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
@@ -168,7 +167,7 @@ namespace PrimeApps.App.Controllers
 
                 if (chunk == chunks - 1)
                 {
-                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks);
+                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks, _configuration);
                     result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
                 }
 
@@ -188,7 +187,7 @@ namespace PrimeApps.App.Controllers
         {
             //Parse stream and get file properties.
             HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
             //if it is successfully parsed continue.
             if (parser.Success)
             {
@@ -273,14 +272,14 @@ namespace PrimeApps.App.Controllers
                 var chunks = 1; //one part chunk
 
                 //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;
                 result.UniqueName = fullFileName;
 
 
-                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
+                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, _configuration, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
                 result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
 
 
@@ -288,7 +287,7 @@ namespace PrimeApps.App.Controllers
                 {
                     var documentSearchHelper = new DocumentSearch();
 
-                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, false);//False because! 5 min auto index incremental change detection policy check which azure provided
+                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false);//False because! 5 min auto index incremental change detection policy check which azure provided
 
                 }
 
@@ -327,7 +326,7 @@ namespace PrimeApps.App.Controllers
             string uniqueFileName = $"{AppUser.TenantGuid}/{moduleDashesName}/{recordId}_{fieldName}.{fileNameExt}";
 
             //remove document
-            AzureStorage.RemoveFile(containerName, uniqueFileName);
+            AzureStorage.RemoveFile(containerName, uniqueFileName, _configuration);
 
 
 
@@ -336,7 +335,7 @@ namespace PrimeApps.App.Controllers
             if (field.DocumentSearch)
             {
                 DocumentSearch documentSearch = new DocumentSearch();
-                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, false);
+                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, _configuration, false);
             }
 
             return Ok();
@@ -363,7 +362,7 @@ namespace PrimeApps.App.Controllers
                 for (var i = 0; i < chunks.Count; i++)
                 {
                     //send stream and parameters to storage upload helper method for temporary upload.
-                    AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType);
+                    AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType, _configuration);
                 }
 
                 var result = new DocumentUploadResult
@@ -416,7 +415,7 @@ namespace PrimeApps.App.Controllers
             if (await _documentRepository.CreateAsync(currentDoc) != null)
             {
                 //transfer file to the permanent storage by committing it.
-                AzureStorage.CommitFile(document.UniqueFileName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), document.ChunkSize);
+                AzureStorage.CommitFile(document.UniqueFileName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), document.ChunkSize, _configuration);
                 return Ok(currentDoc.Id.ToString());
             }
 
@@ -441,7 +440,7 @@ namespace PrimeApps.App.Controllers
 
             if (UniqueFileName != null)
             {
-                AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize);
+                AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
                 return Ok(UniqueFileName);
             }
 
@@ -532,7 +531,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="fileID"></param>
         /// <returns></returns>
         [Route("Download"), HttpGet]
-        public async Task<IActionResult> Download([FromQuery(Name = "fileID")] int fileID)
+        public async Task<IActionResult> Download([FromQuery(Name = "file_id")] int fileID)
         {
             //get the document record from database
             var doc = await _documentRepository.GetById(fileID);
@@ -541,7 +540,7 @@ namespace PrimeApps.App.Controllers
             if (doc != null)
             {
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName);
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName, _configuration);
                 try
                 {
                     //try to get the attributes of blob.
@@ -609,7 +608,7 @@ namespace PrimeApps.App.Controllers
                 var docName = fileName + "." + fileNameExt;
 
                 //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(containerName, uniqueFileName);
+                var blob = AzureStorage.GetBlob(containerName, uniqueFileName, _configuration);
                 try
                 {
                     //try to get the attributes of blob.
@@ -694,7 +693,7 @@ namespace PrimeApps.App.Controllers
                 return BadRequest();
 
             //if there is a template with this id, try to get it from blob AzureStorage.
-            var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}");
+            var templateBlob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{templateEntity.Content}", _configuration);
 
             try
             {
@@ -733,7 +732,7 @@ namespace PrimeApps.App.Controllers
                     }
                 }
 
-                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
             }
             catch (PostgresException ex)
             {
@@ -757,7 +756,7 @@ namespace PrimeApps.App.Controllers
 
             doc.MailMerge.UseNonMergeFields = true;
             doc.MailMerge.CleanupOptions = MailMergeCleanupOptions.RemoveUnusedRegions | MailMergeCleanupOptions.RemoveUnusedFields;
-            doc.MailMerge.FieldMergingCallback = new FieldMergingCallback(AppUser.TenantGuid);
+            doc.MailMerge.FieldMergingCallback = new FieldMergingCallback(AppUser.TenantGuid, _configuration);
 
             var mds = new MailMergeDataSource(record, module, moduleEntity, relatedModuleRecords, notes: notes);
 
@@ -800,11 +799,11 @@ namespace PrimeApps.App.Controllers
             if (save)
             {
 
-                AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType);
-                var blob = AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1);
+                AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType, _configuration);
+                var blob = AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1, _configuration);
 
                 outputStream.Position = 0;
-                var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
+                var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
                 var result = new { filename = fileName, fileurl = $"{blobUrl}{blob.Uri.AbsolutePath}" };
 
                 return Ok(result);
@@ -830,43 +829,7 @@ namespace PrimeApps.App.Controllers
             return response;
         }
 
-        [Route("download_template"), HttpGet]
-        public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "templateId")]int templateId)
-        {
-            //get the document record from database
-            var template = await _templateRepository.GetById(templateId);
-            string publicName = "";
 
-            if (template != null)
-            {
-                //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}");
-                try
-                {
-                    //try to get the attributes of blob.
-                    await blob.FetchAttributesAsync();
-                }
-                catch (Exception)
-                {
-                    //if there is an exception, it means there is no such file.
-                    return NotFound();
-                }
-
-                //Bandwidth is enough, send the AzureStorage.
-                publicName = template.Name;
-
-                string[] splittedFileName = template.Content.Split('.');
-                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
-
-                return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
-
-            }
-            else
-            {
-                //there is no such file, return
-                return NotFound();
-            }
-        }
         [Route("document_search"), HttpPost]
         public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
         {
@@ -881,7 +844,7 @@ namespace PrimeApps.App.Controllers
                     return BadRequest();
                 }
 
-                var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip);
+                var results = search.AdvancedSearchDocuments(searchIndexName, filterRequest.Filters, filterRequest.Top, filterRequest.Skip, _configuration);
 
                 return Ok(results);
             }
@@ -998,7 +961,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
+                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
 
                     if (secondLevel != null)
                         await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem["id"], secondLevel.SubModule, currentCulture, timezoneOffset);
@@ -1062,7 +1025,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
+                    var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(relatedModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, relatedLookupModules);
 
                     if (secondLevel != null)
                         await AddSecondLevelRecords(recordFormatted, secondLevel.Module, secondLevel.SubRelation, (int)recordItem[relation.RelatedModule + "_id"], secondLevel.SubModule, currentCulture, timezoneOffset);
@@ -1126,7 +1089,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
                     if (!productFormatted["separator"].IsNullOrEmpty())
                     {
                         productFormatted["product.products.name"] = productFormatted["separator"] + "-product_separator_separator";
@@ -1173,7 +1136,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
                     productsFormatted.Add(productFormatted);
                 }
 
@@ -1214,7 +1177,7 @@ namespace PrimeApps.App.Controllers
                     if (!product["product.products.currency"].IsNullOrEmpty())
                         product["currency"] = (string)product["product.products.currency"];
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
                     productsFormatted.Add(productFormatted);
                 }
 
@@ -1257,7 +1220,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset);
+                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset);
                     record[secondLevelSubModuleEntity.Name] += (string)recordItemFormatted[primaryField.Name] + ControlChar.LineBreak;
                     recordsFormatted.Add(recordItemFormatted);
                 }
@@ -1299,7 +1262,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (JObject recordItem in records)
                 {
-                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset);
+                    var recordItemFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(secondLevelSubModuleEntity, recordItem, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset);
                     record[secondLevelSubModuleEntity.Name] += (string)recordItemFormatted[relation.RelatedModule + "_id." + relation.RelatedModule + "." + primaryField.Name] + ControlChar.LineBreak;
                     recordsFormatted.Add(recordItemFormatted);
                 }

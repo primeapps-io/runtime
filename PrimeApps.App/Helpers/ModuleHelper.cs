@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DalSoft.Hosting.BackgroundQueue;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Common.Cache;
@@ -708,7 +709,7 @@ namespace PrimeApps.App.Helpers
                 ShowAsDropdown = fieldModel.ShowAsDropdown,
                 ViewType = fieldModel.ViewType,
                 Position = fieldModel.Position,
-            }; 
+            };
             return fieldEntity;
         }
 

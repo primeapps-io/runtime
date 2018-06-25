@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OfisimCRM.App.Jobs.Messaging.SMS.Providers;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
 {
@@ -12,7 +9,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS.Providers
     /// <summary>
     /// Standard abstract sms class for supported sms providers.
     /// </summary>
-    abstract class SMSProvider : IDisposable
+    public abstract class SMSProvider : IDisposable
     {
         protected string userName;
         protected string password;

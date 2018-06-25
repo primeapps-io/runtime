@@ -20,11 +20,12 @@ using PrimeApps.Model.Constants;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/data"), Authorize/*, SnakeCase*/]
-	public class DataController : BaseController
+    [Route("api/data"), Authorize]
+    public class DataController : ApiBaseController
     {
         private IAuditLogRepository _auditLogRepository;
         private IRecordRepository _recordRepository;
@@ -32,9 +33,10 @@ namespace PrimeApps.App.Controllers
         private IImportRepository _importRepository;
         private ITenantRepository _tenantRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
 	    private IRecordHelper _recordHelper;
-        public DataController(IAuditLogRepository auditLogRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IImportRepository importRepository, ITenantRepository tenantRepository, IRecordHelper recordHelper, Warehouse warehouse)
+        public DataController(IAuditLogRepository auditLogRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IImportRepository importRepository, ITenantRepository tenantRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
         {
             _auditLogRepository = auditLogRepository;
             _recordRepository = recordRepository;
@@ -42,22 +44,23 @@ namespace PrimeApps.App.Controllers
             _importRepository = importRepository;
             _tenantRepository = tenantRepository;
             _warehouse = warehouse;
+            _configuration = configuration;
 
 	        _recordHelper = recordHelper;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_auditLogRepository);
-			SetCurrentUser(_recordRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_importRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_auditLogRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_importRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
+        [Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
         public async Task<IActionResult> Import(string module, [FromBody]JArray records)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
@@ -124,12 +127,12 @@ namespace PrimeApps.App.Controllers
 
             var stream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(stream, out result);
+            var isUploaded = DocumentHelper.Upload(stream, _configuration, out result);
 
             if (!isUploaded)
                 return BadRequest();
 
-            var excelUrl = DocumentHelper.Save(result, "import-" + AppUser.TenantId);
+            var excelUrl = DocumentHelper.Save(result, "import-" + AppUser.TenantId, _configuration);
 
             import.ExcelUrl = excelUrl;
             await _importRepository.Update(import);
@@ -163,7 +166,7 @@ namespace PrimeApps.App.Controllers
         [Route("remove_sample_data"), HttpDelete]
         public async Task<IActionResult> RemoveSampleData()
         {
-            var result = await _recordRepository.DeleteSampleData((List<Module>) await _moduleRepository.GetAll());
+            var result = await _recordRepository.DeleteSampleData((List<Module>)await _moduleRepository.GetAll());
 
             //if (result > 0)
             //{

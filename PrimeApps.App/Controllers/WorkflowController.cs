@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/workflow"), Authorize/*, SnakeCase*/]
-    public class WorkflowController : BaseController
+    [Route("api/workflow"), Authorize]
+    public class WorkflowController : ApiBaseController
     {
         private IWorkflowRepository _workflowRepository;
         private IModuleRepository _moduleRepository;

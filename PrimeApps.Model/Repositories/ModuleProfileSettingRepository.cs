@@ -9,12 +9,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ModuleProfileSettingRepository : RepositoryBaseTenant, IModuleProfileSettingRepository
     {
-        public ModuleProfileSettingRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ModuleProfileSettingRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<ICollection<ModuleProfileSetting>> GetAllBasic()
         {

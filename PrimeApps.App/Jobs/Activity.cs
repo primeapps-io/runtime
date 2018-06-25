@@ -1,24 +1,30 @@
-﻿using Hangfire;
-using PrimeApps.App.Helpers;
-using PrimeApps.App.Jobs.QueueAttributes;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;
 
 namespace PrimeApps.App.Jobs.Reminder
 {
-    [ActivityQueue, AutomaticRetry(Attempts = 3)]
     public class Activity
     {
+        private IConfiguration _configuration;
+
+        public Activity(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         /// <summary>
         /// Processes reminder object and classifies the type of the reminder.
         /// </summary>
         /// <param name="reminderMessage"></param>
         /// <returns>it will return false only when an error occured during the processing, not when the reminder revision is wrong or non-existant.</returns>
-        public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser)
+        [QueueCustom]
+        public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser, IConfiguration configuration)
         {
             Model.Entities.Application.Reminder reminder;
             bool status = false;
@@ -27,7 +33,7 @@ namespace PrimeApps.App.Jobs.Reminder
                 using (var databaseContext = new TenantDBContext(reminderMessage.TenantId))
                 {
 
-                    using (var _reminderRepository = new ReminderRepository(databaseContext))
+                    using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                     {
                         /// Get related reminder record from data store.
                         reminder = await _reminderRepository.GetById(Convert.ToInt32(reminderMessage.Id));
@@ -50,7 +56,7 @@ namespace PrimeApps.App.Jobs.Reminder
                                     switch (reminderType)
                                     {
                                         case "task":
-                                            await Task(reminder, reminderMessage, platformUserRepository, appUser);
+                                            await Task(reminder, reminderMessage, platformUserRepository, appUser, configuration);
                                             break;
                                         case "event":
                                             await Event(reminder, reminderMessage, platformUserRepository, appUser);
@@ -99,7 +105,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
                 {
-                    using (var _userRepository = new UserRepository(dbContext))
+                    using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
                         var usr = await _userRepository.GetById((int)reminder.Owner);
 
@@ -113,14 +119,14 @@ namespace PrimeApps.App.Jobs.Reminder
                         var user = await platformUserRepository.Get(usr.Email);
                         var appUser = new UserItem
                         {
-                           AppId = _appUser.AppId,
-                           TenantId = _appUser.TenantId,
-                           Id = user.Id,
-                           UserName = user.Email,
-                           Email = user.Email
+                            AppId = _appUser.AppId,
+                            TenantId = _appUser.TenantId,
+                            Id = user.Id,
+                            UserName = user.Email,
+                            Email = user.Email
                         };
 
-                        Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, _appUser.AppId, appUser);
+                        Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, _appUser.AppId, appUser, _configuration);
                         /// program notification email for the reminder date.
 
 
@@ -150,7 +156,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
                 {
-                    using (var _userRepository = new UserRepository(dbContext))
+                    using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
                         var usr = await _userRepository.GetById((int)reminder.Owner);
 
@@ -160,16 +166,16 @@ namespace PrimeApps.App.Jobs.Reminder
                         string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
                             startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
 
-                            var user = await platformUserRepository.Get(usr.Email);
-                            var appUser = new UserItem
-                            {
-                                AppId = _appUser.AppId,
-                                TenantId = _appUser.TenantId,
-                                Id = user.Id,
-                                UserName = user.Email,
-                                Email = user.Email
-                            };
-                            Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser);
+                        var user = await platformUserRepository.Get(usr.Email);
+                        var appUser = new UserItem
+                        {
+                            AppId = _appUser.AppId,
+                            TenantId = _appUser.TenantId,
+                            Id = user.Id,
+                            UserName = user.Email,
+                            Email = user.Email
+                        };
+                        Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser, _configuration);
 
                         /// program notification email for the reminder date.
 
@@ -186,7 +192,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for task typed activity records.
         /// </summary>
-        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser)
+        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser, IConfiguration configuration)
         {
 
             try
@@ -206,7 +212,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
                 {
-                    using (var _userRepository = new UserRepository(dbContext))
+                    using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
                         var usr = await _userRepository.GetById((int)reminder.Owner);
 
@@ -228,7 +234,7 @@ namespace PrimeApps.App.Jobs.Reminder
                             Email = user.Email
                         };
 
-                        Email.Notification.Task(userName, subject, email, usr.Culture, deadline, _appUser.AppId, appUser);
+                        Email.Notification.Task(userName, subject, email, usr.Culture, deadline, _appUser.AppId, appUser, _configuration);
                     };
                 }
 
@@ -250,7 +256,7 @@ namespace PrimeApps.App.Jobs.Reminder
                     //dynamic result = await cloudantClient.UpdateAsync((string)record._id, record);
                     using (var databaseContext = new TenantDBContext(reminderMessage.TenantId))
                     {
-                        using (var _reminderRepository = new ReminderRepository(databaseContext))
+                        using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                         {
 
                             var result = await _reminderRepository.Update(reminder);
@@ -258,7 +264,7 @@ namespace PrimeApps.App.Jobs.Reminder
                             {
                                 reminderMessage.Rev = result.Rev;
                                 DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
-                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser), dateOffset);
+                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser, configuration), dateOffset);
 
                             }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.App.Models.ViewModel.Analytics;
 using PrimeApps.Model.Entities.Application;
@@ -42,7 +42,7 @@ namespace PrimeApps.App.Helpers
             return analytic;
         }
 
-        public static async Task<WarehouseInfo> GetWarehouse(int tenantId)
+        public static async Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration)
         {
             PlatformWarehouse warehouse = null;
 
@@ -62,7 +62,7 @@ namespace PrimeApps.App.Helpers
 
             var warehouseInfo = new WarehouseInfo
             {
-                Server = ConfigurationManager.AppSettings["WarehouseServer"],
+                Server = configuration.GetSection("AppSettings")["WarehouseServer"],
                 Database = warehouse.DatabaseName,
                 Username = warehouse.DatabaseUser
             };

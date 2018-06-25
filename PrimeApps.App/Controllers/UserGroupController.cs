@@ -15,8 +15,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/user_group"), Authorize/*, SnakeCase*/]
-	public class UserGroupController : BaseController
+    [Route("api/user_group"), Authorize]
+	public class UserGroupController : ApiBaseController
     {
         private IUserGroupRepository _userGroupRepository;
         private IUserRepository _userRepository;
@@ -64,11 +64,11 @@ namespace PrimeApps.App.Controllers
             if (users.Count < userGroup.UserIds.Count)
                 return BadRequest("User not found.");
 
-            var userUserGroup = new List<TenantUserGroup>();
+            var userUserGroup = new List<UsersUserGroup>();
             foreach (var user in users)
             {
                 if (user != null)
-                    userUserGroup.Add(new TenantUserGroup{ UserId = user.Id });
+                    userUserGroup.Add(new UsersUserGroup{ UserId = user.Id });
             }
 
             var userGroupEntity = UserGroupHelper.CreateEntity(userGroup, userUserGroup);
@@ -101,11 +101,11 @@ namespace PrimeApps.App.Controllers
             if (users.Count < userGroup.UserIds.Count)
                 return BadRequest("User not found.");
 
-            var userUserGroup = new List<TenantUserGroup>();
+            var userUserGroup = new List<UsersUserGroup>();
             foreach (var user in users)
             {
                 if (user != null)
-                    userUserGroup.Add(new TenantUserGroup { UserId = user.Id });
+                    userUserGroup.Add(new UsersUserGroup { UserId = user.Id });
             }
 
             UserGroupHelper.UpdateEntity(userGroup, userGroupEntity, userUserGroup);

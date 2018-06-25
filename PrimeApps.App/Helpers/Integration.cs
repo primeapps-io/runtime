@@ -2,208 +2,189 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
-	public interface IIntegration
-	{
-		Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterCreate AfterCreate, AfterUpdate AfterUpdate);
-		Task InsertUser(RegisterBindingModel model, Warehouse warehouse);
-		Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehous, AfterUpdate AfterUpdate);
-		Task UpdateUser(string userEmail, Warehouse warehouse, AfterUpdate AfterUpdate);
-		JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId);
-		JObject CreateContactRecord(RegisterBindingModel model, int integrationUserId, bool isMember, int? accountId);
-	}
-	public class Integration : IIntegration
-	{
-		private IHttpContextAccessor _context;
-		private IModuleRepository _moduleRepository;
-	    public Integration(IModuleRepository moduleRepository, IHttpContextAccessor context)
-	    {
-			_context = context;
-		    _moduleRepository = moduleRepository;
-		    _moduleRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
-		}
-        public async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterCreate AfterCreate, AfterUpdate AfterUpdate)
+    public static class Integration
+    {
+        public static async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse, IConfiguration configuration)
         {
-            try
-            {
-                warehouse.DatabaseName = "Ofisim";
-                var appUser = GetAppUser();
-                var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
+            //try
+            //{
+            //    warehouse.DatabaseName = "Ofisim";
+            //    var appUser = GetAppUser();
+            //    var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
 
-                using (var databaseContext = new TenantDBContext(appUser.TenantId))
-                {
-                    using (var moduleRepository = new ModuleRepository(databaseContext))
-                    {
-                        using (var recordRepository = new RecordRepository(databaseContext, warehouse))
-                        {
-                            var moduleAccount = await moduleRepository.GetByName("accounts");
-                            var findRequestContact = new FindRequest
-                            {
-                                Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = model.Email, No = 1 } },
-                                Limit = 1
-                            };
+            //    using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            //    {
+            //        using (var moduleRepository = new ModuleRepository(databaseContext))
+            //        {
+            //            using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+            //            {
+            //                var moduleAccount = await moduleRepository.GetByName("accounts");
+            //                var findRequestContact = new FindRequest
+            //                {
+            //                    Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = model.Email, No = 1 } },
+            //                    Limit = 1
+            //                };
 
-                            var contactsCurrent = recordRepository.Find("contacts", findRequestContact, false);
-                            JObject contactCurrent = null;
+            //                var contactsCurrent = recordRepository.Find("contacts", findRequestContact, false);
+            //                JObject contactCurrent = null;
 
-                            if (contactsCurrent.Count > 0)
-                                contactCurrent = (JObject)contactsCurrent[0];
+            //                if (contactsCurrent.Count > 0)
+            //                    contactCurrent = (JObject)contactsCurrent[0];
 
-                            JObject account;
+            //                JObject account;
 
-                            if (contactCurrent.IsNullOrEmpty() || contactCurrent["account"].IsNullOrEmpty())
-                            {
-                                account = CreateAccountRecord(model, integrationUserId);
-                                var modelStateAccount = new ModelStateDictionary();
-                                var resultBeforeAccount = await BeforeCreateUpdate(moduleAccount, account, modelStateAccount, appUser.TenantLanguage, false);
+            //                if (contactCurrent.IsNullOrEmpty() || contactCurrent["account"].IsNullOrEmpty())
+            //                {
+            //                    account = CreateAccountRecord(model, integrationUserId);
+            //                    var modelStateAccount = new ModelStateDictionary();
+            //                    var resultBeforeAccount = await RecordHelper.BeforeCreateUpdate(moduleAccount, account, modelStateAccount, appUser.TenantLanguage, moduleRepository, null, false);
 
-                                if (resultBeforeAccount < 0 && !modelStateAccount.IsValid)
-                                {
-                                    //var error = new Error(new Exception("Ofisim subscriber insert failed. Account create-before has error! Email: " + model.Email + " ModelState: " + modelStateAccount.ToJsonString()), HttpContext.Current);
-                                    //ErrorLog.GetDefault(null).Log(error);
-                                    return;
-                                }
+            //                    if (resultBeforeAccount < 0 && !modelStateAccount.IsValid)
+            //                    {
+            //                        //var error = new Error(new Exception("Ofisim subscriber insert failed. Account create-before has error! Email: " + model.Email + " ModelState: " + modelStateAccount.ToJsonString()), HttpContext.Current);
+            //                        //ErrorLog.GetDefault(null).Log(error);
+            //                        return;
+            //                    }
 
-                                try
-                                {
-                                    var resultCreate = await recordRepository.Create(account, moduleAccount);
+            //                    try
+            //                    {
+            //                        var resultCreate = await recordRepository.Create(account, moduleAccount);
 
-                                    if (resultCreate < 1)
-                                    {
-                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. Account create has error! Email: " + model.Email), HttpContext.Current);
-                                        //ErrorLog.GetDefault(null).Log(error);
-                                        return;
-                                    }
+            //                        if (resultCreate < 1)
+            //                        {
+            //                            //var error = new Error(new Exception("Ofisim subscriber insert failed. Account create has error! Email: " + model.Email), HttpContext.Current);
+            //                            //ErrorLog.GetDefault(null).Log(error);
+            //                            return;
+            //                        }
 
-                                    AfterCreate(moduleAccount, account, appUser, warehouse);
-                                }
-                                catch (Exception ex)
-                                {
-                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                var accountCurrent = recordRepository.GetById(moduleAccount, (int)contactCurrent["account"], false);
-                                var currentAccountCurrent = accountCurrent;
-                                accountCurrent["email_aktivasyonu_c"] = false;
-                                accountCurrent["kampanya_kodu_c"] = model.CampaignCode;
-                                accountCurrent["dil_c"] = model.Culture == "tr-TR" ? "Türkçe" : "İngilizce";
-                                accountCurrent["tenant_id_c"] = 0;
-                                accountCurrent["updated_by"] = integrationUserId;
-                                accountCurrent["updated_at"] = DateTime.UtcNow;
+            //                        RecordHelper.AfterCreate(moduleAccount, account, appUser, warehouse, configuration);
+            //                    }
+            //                    catch (Exception ex)
+            //                    {
+            //                        //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                        return;
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    var accountCurrent = recordRepository.GetById(moduleAccount, (int)contactCurrent["account"], false);
+            //                    var currentAccountCurrent = accountCurrent;
+            //                    accountCurrent["email_aktivasyonu_c"] = false;
+            //                    accountCurrent["kampanya_kodu_c"] = model.CampaignCode;
+            //                    accountCurrent["dil_c"] = model.Culture == "tr-TR" ? "Türkçe" : "İngilizce";
+            //                    accountCurrent["tenant_id_c"] = 0;
+            //                    accountCurrent["updated_by"] = integrationUserId;
+            //                    accountCurrent["updated_at"] = DateTime.UtcNow;
 
-                                try
-                                {
-                                    var resultUpdate = await recordRepository.Update(accountCurrent, moduleAccount);
+            //                    try
+            //                    {
+            //                        var resultUpdate = await recordRepository.Update(accountCurrent, moduleAccount);
 
-                                    if (resultUpdate < 1)
-                                    {
-                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. AccountCurrent update has error! Email: " + model.Email), HttpContext.Current);
-                                        //ErrorLog.GetDefault(null).Log(error);
-                                        return;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                }
+            //                        if (resultUpdate < 1)
+            //                        {
+            //                            //var error = new Error(new Exception("Ofisim subscriber insert failed. AccountCurrent update has error! Email: " + model.Email), HttpContext.Current);
+            //                            //ErrorLog.GetDefault(null).Log(error);
+            //                            return;
+            //                        }
+            //                    }
+            //                    catch (Exception ex)
+            //                    {
+            //                        //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                    }
 
-                                AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse);
-                                account = accountCurrent;
-                            }
+            //                    RecordHelper.AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse, configuration);
+            //                    account = accountCurrent;
+            //                }
 
-                            var moduleContact = await moduleRepository.GetByName("contacts");
+            //                var moduleContact = await moduleRepository.GetByName("contacts");
 
-                            if (contactCurrent == null)
-                            {
-                                var contact = CreateContactRecord(model, integrationUserId, true, (int)account["id"]);
-                                var modelStateContact = new ModelStateDictionary();
-                                var resultBeforeContact = await BeforeCreateUpdate(moduleContact, contact, modelStateContact, appUser.TenantLanguage, false);
+            //                if (contactCurrent == null)
+            //                {
+            //                    var contact = CreateContactRecord(model, integrationUserId, true, (int)account["id"]);
+            //                    var modelStateContact = new ModelStateDictionary();
+            //                    var resultBeforeContact = await RecordHelper.BeforeCreateUpdate(moduleContact, contact, modelStateContact, appUser.TenantLanguage, moduleRepository, null, false);
 
-                                if (resultBeforeContact < 0 && !modelStateContact.IsValid)
-                                {
-                                    //var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create-before has error! Email: " + model.Email + " ModelState: " + modelStateContact.ToJsonString()), HttpContext.Current);
-                                    //ErrorLog.GetDefault(null).Log(error);
-                                    return;
-                                }
+            //                    if (resultBeforeContact < 0 && !modelStateContact.IsValid)
+            //                    {
+            //                        //var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create-before has error! Email: " + model.Email + " ModelState: " + modelStateContact.ToJsonString()), HttpContext.Current);
+            //                        //ErrorLog.GetDefault(null).Log(error);
+            //                        return;
+            //                    }
 
-                                try
-                                {
-                                    var resultCreate = await recordRepository.Create(contact, moduleContact);
+            //                    try
+            //                    {
+            //                        var resultCreate = await recordRepository.Create(contact, moduleContact);
 
-                                    if (resultCreate < 1)
-                                    {
-                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create has error! Email: " + model.Email), HttpContext.Current);
-                                        //ErrorLog.GetDefault(null).Log(error);
-                                        return;
-                                    }
+            //                        if (resultCreate < 1)
+            //                        {
+            //                            //var error = new Error(new Exception("Ofisim subscriber insert failed. Contact create has error! Email: " + model.Email), HttpContext.Current);
+            //                            //ErrorLog.GetDefault(null).Log(error);
+            //                            return;
+            //                        }
 
-                                    AfterCreate(moduleContact, contact, appUser, warehouse);
-                                }
-                                catch (Exception ex)
-                                {
-                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                var currentContactCurrent = contactCurrent;
-                                contactCurrent["first_name"] = model.FirstName;
-                                contactCurrent["last_name"] = model.LastName;
-                                contactCurrent["full_name"] = model.FirstName + " " + model.LastName;
-                                contactCurrent["mobile"] = "0" + model.Phone;
-                                contactCurrent["account"] = (int)account["id"];
-                                contactCurrent["email_aktivasyonu_c"] = false;
-                                contactCurrent["ana_kullanici_c"] = true;
-                                contactCurrent["updated_by"] = integrationUserId;
-                                contactCurrent["updated_at"] = DateTime.UtcNow;
+            //                        RecordHelper.AfterCreate(moduleContact, contact, appUser, warehouse, configuration);
+            //                    }
+            //                    catch (Exception ex)
+            //                    {
+            //                        //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                        return;
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    var currentContactCurrent = contactCurrent;
+            //                    contactCurrent["first_name"] = model.FirstName;
+            //                    contactCurrent["last_name"] = model.LastName;
+            //                    contactCurrent["full_name"] = model.FirstName + " " + model.LastName;
+            //                    contactCurrent["mobile"] = "0" + model.Phone;
+            //                    contactCurrent["account"] = (int)account["id"];
+            //                    contactCurrent["email_aktivasyonu_c"] = false;
+            //                    contactCurrent["ana_kullanici_c"] = true;
+            //                    contactCurrent["updated_by"] = integrationUserId;
+            //                    contactCurrent["updated_at"] = DateTime.UtcNow;
 
-                                try
-                                {
-                                    var resultUpdate = await recordRepository.Update(contactCurrent, moduleContact);
+            //                    try
+            //                    {
+            //                        var resultUpdate = await recordRepository.Update(contactCurrent, moduleContact);
 
-                                    if (resultUpdate < 1)
-                                    {
-                                        //var error = new Error(new Exception("Ofisim subscriber insert failed. ContactCurrent update has error! Email: " + model.Email), HttpContext.Current);
-                                        //ErrorLog.GetDefault(null).Log(error);
-                                        return;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                }
+            //                        if (resultUpdate < 1)
+            //                        {
+            //                            //var error = new Error(new Exception("Ofisim subscriber insert failed. ContactCurrent update has error! Email: " + model.Email), HttpContext.Current);
+            //                            //ErrorLog.GetDefault(null).Log(error);
+            //                            return;
+            //                        }
+            //                    }
+            //                    catch (Exception ex)
+            //                    {
+            //                        //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                    }
 
-                                AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //ErrorLog.GetDefault(null).Log(new Error(ex));
-            }
+            //                    RecordHelper.AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse, configuration);
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //}
         }
 
-        public async Task InsertUser(RegisterBindingModel model, Warehouse warehouse)
+        public static async Task InsertUser(RegisterBindingModel model, Warehouse warehouse)
         {
             //warehouse.DatabaseName = "Ofisim";
             //var appUser = GetAppUser();
@@ -337,198 +318,198 @@ namespace PrimeApps.App.Helpers
             //}
         }
 
-        public async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse, AfterUpdate AfterUpdate)
+        public static async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse, IConfiguration configuration)
         {
-            try
-            {
-                warehouse.DatabaseName = "Ofisim";
-                var appUser = GetAppUser();
-                var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
+            //try
+            //{
+            //    warehouse.DatabaseName = "Ofisim";
+            //    var appUser = GetAppUser();
+            //    var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
 
-                using (var databaseContext = new TenantDBContext(appUser.TenantId))
-                {
-                    using (var moduleRepository = new ModuleRepository(databaseContext))
-                    {
-                        using (var recordRepository = new RecordRepository(databaseContext, warehouse))
-                        {
-                            var moduleContact = await moduleRepository.GetByName("contacts");
-                            var findRequestContact = new FindRequest
-                            {
-                                Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = userEmail, No = 1 } },
-                                Limit = 1
-                            };
+            //    using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            //    {
+            //        using (var moduleRepository = new ModuleRepository(databaseContext))
+            //        {
+            //            using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+            //            {
+            //                var moduleContact = await moduleRepository.GetByName("contacts");
+            //                var findRequestContact = new FindRequest
+            //                {
+            //                    Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = userEmail, No = 1 } },
+            //                    Limit = 1
+            //                };
 
-                            var contacts = recordRepository.Find("contacts", findRequestContact, false);
+            //                var contacts = recordRepository.Find("contacts", findRequestContact, false);
 
-                            if (contacts.Count < 1)
-                            {
-                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
-                                //ErrorLog.GetDefault(null).Log(error);
-                                return;
-                            }
+            //                if (contacts.Count < 1)
+            //                {
+            //                    //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
+            //                    //ErrorLog.GetDefault(null).Log(error);
+            //                    return;
+            //                }
 
-                            if (contacts.Count > 1)
-                            {
-                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
-                                //ErrorLog.GetDefault(null).Log(error);
-                                return;
-                            }
+            //                if (contacts.Count > 1)
+            //                {
+            //                    //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
+            //                    //ErrorLog.GetDefault(null).Log(error);
+            //                    return;
+            //                }
 
-                            var contact = (JObject)contacts[0];
-                            var contactCurrent = contact;
-                            contact["email_aktivasyonu_c"] = true;
-                            contact["updated_by"] = integrationUserId;
-                            contact["updated_at"] = DateTime.UtcNow;
+            //                var contact = (JObject)contacts[0];
+            //                var contactCurrent = contact;
+            //                contact["email_aktivasyonu_c"] = true;
+            //                contact["updated_by"] = integrationUserId;
+            //                contact["updated_at"] = DateTime.UtcNow;
 
-                            try
-                            {
-                                var resultUpdate = await recordRepository.Update(contact, moduleContact);
+            //                try
+            //                {
+            //                    var resultUpdate = await recordRepository.Update(contact, moduleContact);
 
-                                if (resultUpdate < 1)
-                                {
-                                    //var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
-                                    //ErrorLog.GetDefault(null).Log(error);
-                                    return;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                return;
-                            }
+            //                    if (resultUpdate < 1)
+            //                    {
+            //                        //var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
+            //                        //ErrorLog.GetDefault(null).Log(error);
+            //                        return;
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                    return;
+            //                }
 
-                            AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
+            //                RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse, configuration);
 
-                            var moduleAccount = await moduleRepository.GetByName("accounts");
-                            var findRequestAccount = new FindRequest
-                            {
-                                Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = userEmail, No = 1 } },
-                                Limit = 1
-                            };
+            //                var moduleAccount = await moduleRepository.GetByName("accounts");
+            //                var findRequestAccount = new FindRequest
+            //                {
+            //                    Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = userEmail, No = 1 } },
+            //                    Limit = 1
+            //                };
 
-                            var accounts = recordRepository.Find("accounts", findRequestAccount, false);
+            //                var accounts = recordRepository.Find("accounts", findRequestAccount, false);
 
-                            if (accounts.Count < 1)
-                            {
-                                //var error = new Error(new Exception("Ofisim subscriber update failed (account). Contact not found! Email: " + userEmail), HttpContext.Current);
-                                //ErrorLog.GetDefault(null).Log(error);
-                                return;
-                            }
+            //                if (accounts.Count < 1)
+            //                {
+            //                    //var error = new Error(new Exception("Ofisim subscriber update failed (account). Contact not found! Email: " + userEmail), HttpContext.Current);
+            //                    //ErrorLog.GetDefault(null).Log(error);
+            //                    return;
+            //                }
 
-                            if (accounts.Count > 1)
-                            {
-                                //var error = new Error(new Exception("Ofisim subscriber update failed (account). Too many contacts found! Email: " + userEmail), HttpContext.Current);
-                                //ErrorLog.GetDefault(null).Log(error);
-                                return;
-                            }
+            //                if (accounts.Count > 1)
+            //                {
+            //                    //var error = new Error(new Exception("Ofisim subscriber update failed (account). Too many contacts found! Email: " + userEmail), HttpContext.Current);
+            //                    //ErrorLog.GetDefault(null).Log(error);
+            //                    return;
+            //                }
 
-                            var account = (JObject)accounts[0];
-                            var accountCurrent = account;
-                            account["tenant_id_c"] = tenantId;
-                            account["email_aktivasyonu_c"] = true;
-                            account["updated_by"] = integrationUserId;
-                            account["updated_at"] = DateTime.UtcNow;
+            //                var account = (JObject)accounts[0];
+            //                var accountCurrent = account;
+            //                account["tenant_id_c"] = tenantId;
+            //                account["email_aktivasyonu_c"] = true;
+            //                account["updated_by"] = integrationUserId;
+            //                account["updated_at"] = DateTime.UtcNow;
 
-                            try
-                            {
-                                var resultUpdate = await recordRepository.Update(account, moduleAccount);
+            //                try
+            //                {
+            //                    var resultUpdate = await recordRepository.Update(account, moduleAccount);
 
-                                if (resultUpdate < 1)
-                                {
-                                    //var error = new Error(new Exception("Ofisim subscriber update failed. Account update has error! Email: " + userEmail), HttpContext.Current);
-                                    //ErrorLog.GetDefault(null).Log(error);
-                                    return;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                return;
-                            }
+            //                    if (resultUpdate < 1)
+            //                    {
+            //                        //var error = new Error(new Exception("Ofisim subscriber update failed. Account update has error! Email: " + userEmail), HttpContext.Current);
+            //                        //ErrorLog.GetDefault(null).Log(error);
+            //                        return;
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                    return;
+            //                }
 
-                            AfterUpdate(moduleAccount, account, accountCurrent, appUser, warehouse);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //ErrorLog.GetDefault(null).Log(new Error(ex));
-            }
+            //                RecordHelper.AfterUpdate(moduleAccount, account, accountCurrent, appUser, warehouse, configuration);
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //}
         }
 
-        public async Task UpdateUser(string userEmail, Warehouse warehouse, AfterUpdate AfterUpdate)
+        public static async Task UpdateUser(string userEmail, Warehouse warehouse, IConfiguration configuration)
         {
-            try
-            {
-                warehouse.DatabaseName = "Ofisim";
-                var appUser = GetAppUser();
-                var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
+            //try
+            //{
+            //    warehouse.DatabaseName = "Ofisim";
+            //    var appUser = GetAppUser();
+            //    var integrationUserId = int.Parse(ConfigurationManager.AppSettings.Get("OfisimIntegrationUserId"));
 
-                using (var databaseContext = new TenantDBContext(appUser.TenantId))
-                {
-                    using (var moduleRepository = new ModuleRepository(databaseContext))
-                    {
-                        using (var recordRepository = new RecordRepository(databaseContext, warehouse))
-                        {
-                            var moduleContact = await moduleRepository.GetByName("contacts");
-                            var findRequestContact = new FindRequest
-                            {
-                                Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = userEmail, No = 1 } },
-                                Limit = 1
-                            };
+            //    using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            //    {
+            //        using (var moduleRepository = new ModuleRepository(databaseContext))
+            //        {
+            //            using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+            //            {
+            //                var moduleContact = await moduleRepository.GetByName("contacts");
+            //                var findRequestContact = new FindRequest
+            //                {
+            //                    Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Is, Value = userEmail, No = 1 } },
+            //                    Limit = 1
+            //                };
 
-                            var contacts = recordRepository.Find("contacts", findRequestContact, false);
+            //                var contacts = recordRepository.Find("contacts", findRequestContact, false);
 
-                            if (contacts.Count < 1)
-                            {
-                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
-                                //ErrorLog.GetDefault(null).Log(error);
-                                return;
-                            }
+            //                if (contacts.Count < 1)
+            //                {
+            //                    //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Contact not found! Email: " + userEmail), HttpContext.Current);
+            //                    //ErrorLog.GetDefault(null).Log(error);
+            //                    return;
+            //                }
 
-                            if (contacts.Count > 1)
-                            {
-                                //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
-                                //ErrorLog.GetDefault(null).Log(error);
-                                return;
-                            }
+            //                if (contacts.Count > 1)
+            //                {
+            //                    //var error = new Error(new Exception("Ofisim subscriber update failed (contact). Too many contacts found! Email: " + userEmail), HttpContext.Current);
+            //                    //ErrorLog.GetDefault(null).Log(error);
+            //                    return;
+            //                }
 
-                            var contact = (JObject)contacts[0];
-                            var contactCurrent = contact;
-                            contact["email_aktivasyonu_c"] = true;
-                            contact["updated_by"] = integrationUserId;
-                            contact["updated_at"] = DateTime.UtcNow;
+            //                var contact = (JObject)contacts[0];
+            //                var contactCurrent = contact;
+            //                contact["email_aktivasyonu_c"] = true;
+            //                contact["updated_by"] = integrationUserId;
+            //                contact["updated_at"] = DateTime.UtcNow;
 
-                            try
-                            {
-                                var resultUpdate = await recordRepository.Update(contact, moduleContact);
+            //                try
+            //                {
+            //                    var resultUpdate = await recordRepository.Update(contact, moduleContact);
 
-                                if (resultUpdate < 1)
-                                {
-                                    //var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
-                                    //ErrorLog.GetDefault(null).Log(error);
-                                    return;
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                return;
-                            }
+            //                    if (resultUpdate < 1)
+            //                    {
+            //                        //var error = new Error(new Exception("Ofisim subscriber update failed. Contact update has error! Email: " + userEmail), HttpContext.Current);
+            //                        //ErrorLog.GetDefault(null).Log(error);
+            //                        return;
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //                    return;
+            //                }
 
-                            AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //ErrorLog.GetDefault(null).Log(new Error(ex));
-            }
+            //                RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse, configuration);
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    //ErrorLog.GetDefault(null).Log(new Error(ex));
+            //}
         }
 
-	    public UserItem GetAppUser()
+        private static UserItem GetAppUser()
         {
             //var userEmail = ConfigurationManager.AppSettings.Get("OfisimTenantEmail");
             //var userId = AsyncHelpers.RunSync(() => Cache.ApplicationUser.GetId(userEmail));
@@ -537,7 +518,7 @@ namespace PrimeApps.App.Helpers
             return null;
         }
 
-	    public JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId)
+        private static JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId)
         {
             var account = new JObject();
             account["owner"] = integrationUserId;
@@ -578,7 +559,7 @@ namespace PrimeApps.App.Helpers
             return account;
         }
 
-	    public JObject CreateContactRecord(RegisterBindingModel model, int integrationUserId, bool isMember, int? accountId)
+        private static JObject CreateContactRecord(RegisterBindingModel model, int integrationUserId, bool isMember, int? accountId)
         {
             var contact = new JObject();
             contact["owner"] = integrationUserId;

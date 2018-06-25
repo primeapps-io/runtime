@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -20,20 +19,22 @@ using PrimeApps.Model.Constants;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/record"), Authorize/*, SnakeCase*/]
-	public class RecordController : BaseController
+    [Route("api/record"), Authorize]
+    public class RecordController : ApiBaseController
     {
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
 	    private IRecordHelper _recordHelper;
 
-        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse)
+        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
         {
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
@@ -41,19 +42,20 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
 
 	        _recordHelper = recordHelper;
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_recordRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_picklistRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_picklistRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
+        [Route("get/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(string module, int id, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")] bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int? timezoneOffset = 180)
         {
             JObject record;
@@ -110,7 +112,7 @@ namespace PrimeApps.App.Controllers
                 if (!string.IsNullOrWhiteSpace(locale))
                 {
                     var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-                    record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value, lookupModules);
+                    record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value, lookupModules);
 
                     if (normalize.HasValue && normalize.Value)
                         record = Model.Helpers.RecordHelper.NormalizeRecordValues(record);
@@ -181,7 +183,7 @@ namespace PrimeApps.App.Controllers
 
                     foreach (JObject record in records)
                     {
-                        var newRecord = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value, lookupModules);
+                        var newRecord = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value, lookupModules);
 
                         if (normalize.HasValue && normalize.Value)
                             newRecord = Model.Helpers.RecordHelper.NormalizeRecordValues(newRecord, isManyToMany);
@@ -210,7 +212,7 @@ namespace PrimeApps.App.Controllers
                         {
                             var searchIndexName = AppUser.TenantGuid + "-" + module;
                             var documentSearch = new DocumentSearch();
-                            var documentRecords = documentSearch.SearchDocuments(ids, searchIndexName, customQueryFilters);
+                            var documentRecords = documentSearch.SearchDocuments(ids, searchIndexName, customQueryFilters, _configuration);
 
                             foreach (var record in records)
                             {
@@ -340,19 +342,19 @@ namespace PrimeApps.App.Controllers
                 ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                 record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
-                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)
                     record = Model.Helpers.RecordHelper.NormalizeRecordValues(record);
             }
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + record["id"], record);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + record["id"], record);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/record/get/" + module + "/?id=" + record["id"], record);
         }
 
         [Route("update/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPut]
-        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, [FromQuery(Name = "timezoneOffset")]int timezoneOffset = 180)
+        public async Task<IActionResult> Update(string module, [FromBody]JObject record, [FromQuery(Name = "runWorkflows")]bool runWorkflows = true, [FromQuery(Name = "locale")]string locale = "", [FromQuery(Name = "normalize")]bool? normalize = false, int timezoneOffset = 180)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -421,7 +423,7 @@ namespace PrimeApps.App.Controllers
                 ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
                 var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                 record = _recordRepository.GetById(moduleEntity, (int)record["id"], !AppUser.HasAdminProfile, lookupModules);
-                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+                record = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                 if (normalize.HasValue && normalize.Value)
                     record = Model.Helpers.RecordHelper.NormalizeRecordValues(record);
@@ -509,7 +511,7 @@ namespace PrimeApps.App.Controllers
             }
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/record/find/" + module, records);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/record/find/" + module, records);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/record/find/" + module, records);
         }
 
@@ -730,7 +732,7 @@ namespace PrimeApps.App.Controllers
 
                     foreach (JObject record in records)
                     {
-                        var newRecord = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value, null);
+                        var newRecord = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value, null);
 
                         if (normalize.HasValue && normalize.Value)
                             newRecord = Model.Helpers.RecordHelper.NormalizeRecordValues(newRecord, true);

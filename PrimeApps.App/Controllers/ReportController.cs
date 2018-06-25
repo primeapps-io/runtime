@@ -13,22 +13,24 @@ using PrimeApps.Model.Common.Chart;
 using PrimeApps.Model.Enums;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/report"), Authorize/*, SnakeCase*/]
-	public class ReportController : BaseController
+    [Route("api/report"), Authorize]
+	public class ReportController : ApiBaseController
     {
         private IReportRepository _reportRepository;
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
         private IUserRepository _userRepository;
+        private IConfiguration _configuration;
 
 	    private IRecordHelper _recordHelper;
 	    private IReportHelper _reportHelper;
 
-        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository, IRecordHelper recordHelper, IReportHelper reportHelper)
+        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository, IRecordHelper recordHelper, IReportHelper reportHelper, IConfiguration configuration)
         {
             _reportRepository = reportRepository;
             _recordRepository = recordRepository;
@@ -38,6 +40,7 @@ namespace PrimeApps.App.Controllers
 
 	        _recordHelper = recordHelper;
 	        _reportHelper = reportHelper;
+            _configuration = configuration;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -72,7 +75,7 @@ namespace PrimeApps.App.Controllers
             var chart = await _reportRepository.GetChartByReportId(report);
             var aggregation = chart.Report.Aggregations.FirstOrDefault();
             var showDisplayValue = chart.ChartType != ChartType.Funnel && chart.ChartType != ChartType.Pyramid && aggregation != null && aggregation.AggregationType != AggregationType.Count;
-            var data = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser, showDisplayValue: showDisplayValue);
+            var data = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, _configuration, AppUser, showDisplayValue: showDisplayValue);
 
             var response = new
             {
@@ -98,7 +101,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_widget/{report:int}"), HttpGet]
         public async Task<IActionResult> GetWidget(int report)
         {
-            var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, AppUser);
+            var response = await _reportRepository.GetDashletReportData(report, _recordRepository, _moduleRepository, _picklistRepository, _configuration, AppUser);
             var widget = await _reportRepository.GetWidgetByReportId(report);
 
             response.First()["color"] = widget.Color;

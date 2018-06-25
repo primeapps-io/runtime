@@ -16,8 +16,8 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/view"), Authorize/*, SnakeCase*/]
-	public class ViewController : BaseController
+    [Route("api/view"), Authorize]
+	public class ViewController : ApiBaseController
     {
         private IViewRepository _viewRepository;
         private IUserRepository _userRepository;

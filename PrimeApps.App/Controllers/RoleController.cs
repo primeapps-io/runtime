@@ -12,8 +12,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/role"), Authorize/*, SnakeCase*/]
-	public class RoleController : BaseController
+    [Route("api/role"), Authorize]
+	public class RoleController : ApiBaseController
     {
         private IRoleRepository _roleRepository;
         private IUserRepository _userRepository;

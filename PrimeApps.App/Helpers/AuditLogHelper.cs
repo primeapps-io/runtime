@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -57,12 +58,12 @@ namespace PrimeApps.App.Helpers
             {
                 using (var databaseContext = new TenantDBContext(appUser.TenantId))
                 {
-                    using (var auditLogRepository = new AuditLogRepository(databaseContext))
+                    using (var auditLogRepository = new AuditLogRepository(databaseContext, configuration))
                     {
                         var result = await auditLogRepository.Create(auditLog);
 
                         //if (result < 1)
-                            //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
+                        //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
                     }
                 }
             }

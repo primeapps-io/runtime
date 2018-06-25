@@ -18,11 +18,12 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/outlook"), Authorize/*, SnakeCase*/]
-    public class OutlookController : BaseController
+    [Route("api/outlook"), Authorize]
+    public class OutlookController : ApiBaseController
     {
         private ISettingRepository _settingRepository;
         private IModuleRepository _moduleRepository;
@@ -31,11 +32,12 @@ namespace PrimeApps.App.Controllers
         private IPicklistRepository _picklistRepository;
         private IRecordRepository _recordRepository;
         private IMenuRepository _menuRepository;
-        private Model.Helpers.Warehouse _warehouse;
+        private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
 	    private IRecordHelper _recordHelper;
 	    private IModuleHelper _moduleHelper;
-        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository, IRecordHelper recordHelper, IModuleHelper moduleHelper)
+        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository, IRecordHelper recordHelper, IModuleHelper moduleHelper, IConfiguration configuration)
         {
             _settingRepository = settingRepository;
             _moduleRepository = moduleRepository;
@@ -48,6 +50,7 @@ namespace PrimeApps.App.Controllers
 
 	        _recordHelper = recordHelper;
 	        _moduleHelper = moduleHelper;
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -434,7 +437,7 @@ namespace PrimeApps.App.Controllers
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
             //TODO Change
-            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse, _menuRepository, _moduleHelper)
+            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse, _menuRepository, _moduleHelper, _configuration)
             {
                 /*Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))*/
             };
@@ -484,7 +487,7 @@ namespace PrimeApps.App.Controllers
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
 
             //TODO Change
-            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _recordHelper, _warehouse)
+            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _recordHelper, _warehouse, _configuration)
             {
                 /*Request = new HttpRequestMessage(HttpMethod.Post,
 	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))*/

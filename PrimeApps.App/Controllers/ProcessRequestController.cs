@@ -1,5 +1,4 @@
-﻿using PrimeApps.App.ActionFilters;
-using PrimeApps.App.Helpers;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -10,22 +9,24 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using static PrimeApps.App.Helpers.ProcessHelper;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process_request"), Authorize/*, SnakeCase*/]
-	public class ProcessRequestController : BaseController
+    [Route("api/process_request"), Authorize]
+	public class ProcessRequestController : ApiBaseController
     {
         private IProcessRequestRepository _processRequestRepository;
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
 	    private IProcessHelper _processHelper;
 	    private IRecordHelper _recordHelper;
 
-        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse)
+        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
         {
             _processRequestRepository = processRequestRepository;
             _moduleRepository = moduleRepository;
@@ -34,10 +35,10 @@ namespace PrimeApps.App.Controllers
 
 	        _processHelper = processHelper;
 	        _recordHelper = recordHelper;
-
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_processRequestRepository);

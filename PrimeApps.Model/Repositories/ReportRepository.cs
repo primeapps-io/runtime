@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NpgsqlTypes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Application;
@@ -17,9 +18,9 @@ namespace PrimeApps.Model.Repositories
 {
     public class ReportRepository : RepositoryBaseTenant, IReportRepository
     {
-        public ReportRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ReportRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
+        public async Task<JArray> GetDashletReportData(int reportId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true, bool showDisplayValue = true)
         {
             var data = new JArray();
             var parameters = new List<NpgsqlParameter>();
@@ -111,7 +112,7 @@ namespace PrimeApps.Model.Repositories
                             var record = new JObject();
                             record[aggregation.Field] = records[0].First().First();
 
-                            var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, record, moduleRepository, picklistRepository, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+                            var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, record, moduleRepository, picklistRepository, configuration, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                             dataItem["value"] = !recordFormatted[aggregation.Field].IsNullOrEmpty() ? recordFormatted[aggregation.Field] : noneLabel;
                         }
@@ -171,7 +172,7 @@ namespace PrimeApps.Model.Repositories
                         if (aggregation.Field != report.GroupField)
                             record[aggregation.Field] = record.First().First();
 
-                        var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+                        var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
 
                         dataItem["label"] = !recordFormatted[report.GroupField].IsNullOrEmpty() ? recordFormatted[report.GroupField] : noneLabel;
                         dataItem["valueFormatted"] = recordFormatted[aggregation.Field];
@@ -191,15 +192,15 @@ namespace PrimeApps.Model.Repositories
             return data;
         }
 
-        public async Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true)
+        public async Task<JArray> GetDashletViewData(int viewId, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, UserItem appUser, string locale = "", int timezoneOffset = 180, bool roleBasedEnabled = true)
         {
             var data = new JArray();
 
             var view = await DbContext.Views
-                 .Include(x => x.Fields)
-                 .Include(x => x.Filters)
-                 .Include(x => x.Module)
-                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
+                .Include(x => x.Fields)
+                .Include(x => x.Filters)
+                .Include(x => x.Module)
+                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
 
             if (view == null)
                 return data;

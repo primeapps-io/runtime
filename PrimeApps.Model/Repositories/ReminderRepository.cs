@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ReminderRepository : RepositoryBaseTenant, IReminderRepository
     {
-        public ReminderRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ReminderRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
          
         public async Task<Reminder> GetById(int id)
         {

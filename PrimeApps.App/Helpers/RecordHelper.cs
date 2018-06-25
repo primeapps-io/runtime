@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using Npgsql;
@@ -17,18 +16,6 @@ using Hangfire;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Entities.Platform;
-
-/*
- * using OfisimCRM.DTO.AuditLog;
-using OfisimCRM.DTO.Cache;
-using OfisimCRM.DTO.Record;
-using OfisimCRM.Model.Entities;
-using OfisimCRM.Model.Enums;
-using OfisimCRM.Model.Helpers;
-using OfisimCRM.Model.Repositories.Interfaces;
-using OfisimCRM.App.Notifications;
-using OfisimCRM.DTO.Common;
- */
 
 namespace PrimeApps.App.Helpers
 {

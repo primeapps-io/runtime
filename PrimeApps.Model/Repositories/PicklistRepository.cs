@@ -5,11 +5,13 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
 namespace PrimeApps.Model.Repositories
 {
     public class PicklistRepository : RepositoryBaseTenant, IPicklistRepository
     {
-        public PicklistRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public PicklistRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Picklist> GetById(int id)
         {

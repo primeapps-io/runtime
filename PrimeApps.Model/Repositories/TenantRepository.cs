@@ -103,18 +103,8 @@ namespace PrimeApps.Model.Repositories
 			
 			return a;
         }
-
-        public static string GetLogoUrl(string logo)
-        {
-            if (string.IsNullOrWhiteSpace(logo))
-                return string.Empty;
-
-            var blobUrl = ConfigurationManager.AppSettings.Get("BlobUrl");
-
-            return $"{blobUrl}/company-logo/{logo}";
-        }
-
-        public async Task<Entities.Platform.Tenant> GetByCustomDomain(string customDomain)
+        
+        public async Task<Tenant> GetByCustomDomain(string customDomain)
         {
             return await DbContext.Tenants.Where(x => x.Setting.CustomDomain == customDomain).SingleOrDefaultAsync();
         }

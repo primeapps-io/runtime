@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using Aspose.Words;
 using Aspose.Words.Tables;
+using Microsoft.Extensions.Configuration;
 using SkiaSharp;
 
 namespace PrimeApps.App.Helpers
@@ -291,10 +292,12 @@ namespace PrimeApps.App.Helpers
     {
         private Guid instanceId { get; set; }
         private DocumentBuilder _documentBuilder;
+        private IConfiguration _configuration;
 
-        public FieldMergingCallback(Guid instanceId)
+        public FieldMergingCallback(Guid instanceId, IConfiguration configuration)
         {
             this.instanceId = instanceId;
+            _configuration = configuration;
         }
 
         public void FieldMerging(FieldMergingArgs args)
@@ -313,7 +316,7 @@ namespace PrimeApps.App.Helpers
                 args.Text = "";
             } else if (args.DocumentFieldName.Contains("img__") && args.FieldValue != null && !string.IsNullOrWhiteSpace(args.FieldValue.ToString()))
             {
-                var url = ConfigurationManager.AppSettings.Get("BlobUrl") + "/record-detail-" + instanceId + "/" + args.FieldValue;
+                var url = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + instanceId + "/" + args.FieldValue;
                 var wc = new WebClient();
                 var bytes = wc.DownloadData(url);
                 var ms = new MemoryStream(bytes);

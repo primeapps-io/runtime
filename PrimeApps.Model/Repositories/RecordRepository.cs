@@ -14,6 +14,7 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Repositories
@@ -22,9 +23,9 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public RecordRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public RecordRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public RecordRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        public RecordRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
         }

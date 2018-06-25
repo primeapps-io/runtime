@@ -11,26 +11,29 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.App.Storage;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
     [Route("api/Instance")]
-    public class InstanceController : BaseController
+    public class InstanceController : ApiBaseController
     {
         private IUserRepository _userRepository;
         private Warehouse _warehouse;
         private ITenantRepository _tenantRepository;
         private IPlatformUserRepository _platformUserRepository;
+        private IConfiguration _configuration;
 
-        public InstanceController(IUserRepository userRepository, Warehouse warehouse, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository)
+        public InstanceController(IUserRepository userRepository, Warehouse warehouse, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _warehouse = warehouse;
             _tenantRepository = tenantRepository;
             _platformUserRepository = platformUserRepository;
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_userRepository);
@@ -170,14 +173,14 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //upload file to the temporary AzureStorage.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
 
                 if (chunk == chunks - 1)
                 {
                     //if this is last chunk, then move the file to the permanent storage by commiting it.
                     //as a standart all avatar files renamed to UserID_UniqueFileName format.
                     var logo = string.Format("{0}_{1}", AppUser.TenantGuid, uniqueName);
-                    AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "company-logo", chunks);
+                    AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "company-logo", chunks, _configuration);
                     return Ok(logo);
                 }
 

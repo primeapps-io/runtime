@@ -11,7 +11,6 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Enums;
@@ -202,7 +201,7 @@ namespace PrimeApps.App.Helpers
             return password;
         }
 
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        [CommonQueue, DisableConcurrentExecution(360)]
         public static async Task AddUserBulk(int tenantId, string apiUrl, string accessToken, bool activeDirectory = false)
         {
             var errorList = new JArray();

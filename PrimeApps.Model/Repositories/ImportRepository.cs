@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Import;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -16,9 +17,9 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public ImportRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ImportRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public ImportRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        public ImportRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
         }

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Npgsql;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
@@ -17,7 +16,13 @@ namespace PrimeApps.App.Jobs
 {
     public class EmployeeCalculation
     {
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+        private IConfiguration _configuration;
+
+        public EmployeeCalculation(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public async Task Calculate()
         {
             using (var platformDatabaseContext = new PlatformDBContext())
@@ -34,9 +39,9 @@ namespace PrimeApps.App.Jobs
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id))
                         using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext))
-                        using (var analyticRepository = new AnalyticRepository(databaseContext))
+                        using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                         {
-                            var warehouse = new Model.Helpers.Warehouse(analyticRepository);
+                            var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
 
                             var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
 
@@ -45,9 +50,9 @@ namespace PrimeApps.App.Jobs
                             else
                                 warehouse.DatabaseName = "0";
 
-                            using (var moduleRepository = new ModuleRepository(databaseContext))
+                            using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                             {
-                                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                                using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                 {
                                     var module = await moduleRepository.GetByName("calisanlar");
 

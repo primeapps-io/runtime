@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Context
         }
 
         protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options);
-        
+
         public TContext Create()
         {
             var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -33,10 +33,15 @@ namespace PrimeApps.Model.Context
                 .AddEnvironmentVariables();
 
             var config = builder.Build();
-            var connectionString = config.GetConnectionString("PostgreSqlConnection");
+            var connectionString = "";
+
+            if (typeof(TContext) == typeof(TenantDBContext))
+                connectionString = config.GetConnectionString("TenantDBConnection");
+            else if (typeof(TContext) == typeof(PlatformDBContext))
+                connectionString = config.GetConnectionString("PlatformDBConnection");
 
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new InvalidOperationException("Could not find a connection string named 'PostgreSqlConnection'.");
+                throw new InvalidOperationException("Could not find a connection string!");
 
             return Create(connectionString);
         }
@@ -49,7 +54,7 @@ namespace PrimeApps.Model.Context
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();
 
             Console.WriteLine("DbContextFactory.Create(string): Connection string: {0}", connectionString);
-			
+
             optionsBuilder.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("_migration_history", "public"))
                 .ReplaceService<IHistoryRepository, PostgreHistoryContext>();
 

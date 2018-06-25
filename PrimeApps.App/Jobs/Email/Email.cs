@@ -1,16 +1,14 @@
-﻿using Hangfire;
-using PrimeApps.App.Helpers;
-using PrimeApps.App.Jobs.QueueAttributes;
+﻿using PrimeApps.App.Helpers;
 using PrimeApps.Model.Helpers;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
@@ -26,9 +24,11 @@ namespace PrimeApps.App.Jobs.Email
     /// </summary>
     public class Email
     {
-        public Email()
+        private static IConfiguration _configuration;
+
+        public Email(IConfiguration configuration)
         {
-            // No DI required for this class since it only uses nhibernate and smtp provider.
+            _configuration = configuration;
         }
 
         public static object Messaging { get; internal set; }
@@ -37,7 +37,7 @@ namespace PrimeApps.App.Jobs.Email
         /// Checks database for new email records and transmits it if there is new one.
         /// </summary>
         /// <returns></returns>
-        [EmailQueue, AutomaticRetry(Attempts = 0)]
+        [QueueCustom]
         public bool TransmitMail(EmailEntry mail)
         // public bool TransmitMail(EmailEntry mail)
         {
@@ -54,9 +54,9 @@ namespace PrimeApps.App.Jobs.Email
                 var smtpPort = "EmailSMTPPort";
                 var smtpUser = "EmailSMTPUser";
                 var smtpPassword = "EmailSMTPPassword";
-                var enableSsl = bool.Parse(ConfigurationManager.AppSettings["EmailSMTPEnableSsl"]);
+                var enableSsl = bool.Parse(_configuration.GetSection("AppSettings")["EmailSMTPEnableSsl"]);
 
-                if (bool.Parse(ConfigurationManager.AppSettings["TestMode"]))
+                if (bool.Parse(_configuration.GetSection("AppSettings")["TestMode"]))
                 {
                     smtpHost = "EmailSMTPHostTest";
                     smtpPort = "EmailSMTPPortTest";
@@ -64,11 +64,11 @@ namespace PrimeApps.App.Jobs.Email
                     smtpPassword = "EmailSMTPPasswordTest";
                 }
                 // get configuration settings from appsetting and apply them.
-                smtpClient = new SmtpClient(ConfigurationManager.AppSettings[smtpHost], int.Parse(ConfigurationManager.AppSettings[smtpPort]))
+                smtpClient = new SmtpClient(_configuration.GetSection("AppSettings")[smtpHost], int.Parse(_configuration.GetSection("AppSettings")[smtpPort]))
                 {
                     UseDefaultCredentials = false,
                     // set credentials
-                    Credentials = new NetworkCredential(ConfigurationManager.AppSettings[smtpUser], ConfigurationManager.AppSettings[smtpPassword]),
+                    Credentials = new NetworkCredential(_configuration.GetSection("AppSettings")[smtpUser], _configuration.GetSection("AppSettings")[smtpPassword]),
                     DeliveryFormat = SmtpDeliveryFormat.International,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     EnableSsl = enableSsl
@@ -115,7 +115,7 @@ namespace PrimeApps.App.Jobs.Email
             return status;
         }
 
-        [EmailQueue, AutomaticRetry(Attempts = 0)]
+        [QueueCustom]
         public bool TransmitMail(EmailEntry email, int tenantId, int moduleId, int recordId, bool addRecordSummary = true)
         {
             bool status = false;
@@ -129,9 +129,9 @@ namespace PrimeApps.App.Jobs.Email
                 var smtpPort = "EmailSMTPPort";
                 var smtpUser = "EmailSMTPUser";
                 var smtpPassword = "EmailSMTPPassword";
-                var enableSsl = bool.Parse(ConfigurationManager.AppSettings["EmailSMTPEnableSsl"]);
+                var enableSsl = bool.Parse(_configuration.GetSection("AppSettings")["EmailSMTPEnableSsl"]);
 
-                if (bool.Parse(ConfigurationManager.AppSettings["TestMode"]))
+                if (bool.Parse(_configuration.GetSection("AppSettings")["TestMode"]))
                 {
                     smtpHost = "EmailSMTPHostTest";
                     smtpPort = "EmailSMTPPortTest";
@@ -139,11 +139,11 @@ namespace PrimeApps.App.Jobs.Email
                     smtpPassword = "EmailSMTPPasswordTest";
                 }
                 // get configuration settings from appsetting and apply them.
-                smtpClient = new SmtpClient(ConfigurationManager.AppSettings[smtpHost], int.Parse(ConfigurationManager.AppSettings[smtpPort]))
+                smtpClient = new SmtpClient(_configuration.GetSection("AppSettings")[smtpHost], int.Parse(_configuration.GetSection("AppSettings")[smtpPort]))
                 {
                     UseDefaultCredentials = false,
                     // set credentials
-                    Credentials = new NetworkCredential(ConfigurationManager.AppSettings[smtpUser], ConfigurationManager.AppSettings[smtpPassword]),
+                    Credentials = new NetworkCredential(_configuration.GetSection("AppSettings")[smtpUser], _configuration.GetSection("AppSettings")[smtpPassword]),
                     DeliveryFormat = SmtpDeliveryFormat.International,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
                     EnableSsl = enableSsl
@@ -196,13 +196,13 @@ namespace PrimeApps.App.Jobs.Email
             var pattern = new Regex(@"{(.*?)}");
             var contentFields = new List<string>();
             var matches = pattern.Matches(content);
-            
+
             Tenant subscriber = null;
 
             using (var platformDBContext = new PlatformDBContext())
             using (var tenantRepository = new TenantRepository(platformDBContext))
             {
-				subscriber = await tenantRepository.GetAsync(tenantId);
+                subscriber = await tenantRepository.GetAsync(tenantId);
             }
             /*
             PlatformUser subscriber = null;
@@ -225,9 +225,9 @@ namespace PrimeApps.App.Jobs.Email
 
 
             using (var databaseContext = new TenantDBContext(tenantId))
-            using (var moduleRepository = new ModuleRepository(databaseContext))
-            using (var picklistRepository = new PicklistRepository(databaseContext))
-            using (var recordRepository = new RecordRepository(databaseContext))
+            using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+            using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+            using (var recordRepository = new RecordRepository(databaseContext, _configuration))
             {
                 var module = await moduleRepository.GetById(moduleId);
                 var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
@@ -235,7 +235,7 @@ namespace PrimeApps.App.Jobs.Email
 
                 if (!record.IsNullOrEmpty())
                 {
-                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
+                    record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
 
                     if (contentFields.Count > 0)
                     {

@@ -16,34 +16,38 @@ using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Warehouse;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/analytics"), Authorize/*, SnakeCase*/]
-	public class AnalyticsController : BaseController
+    [Route("api/analytics"), Authorize]
+    public class AnalyticsController : ApiBaseController
     {
         private Warehouse _warehouseHelper;
         private IAnalyticRepository _analyticRepository;
         private IUserRepository _userRepository;
         private IPlatformWarehouseRepository _warehousePlatformRepository;
-        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository)
+        private IConfiguration _configuration;
+
+        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration)
         {
             _warehouseHelper = warehouseHelper;
             _analyticRepository = analyticRepository;
             _userRepository = userRepository;
             _warehousePlatformRepository = warehousePlatformRepository;
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_analyticRepository);
-			SetCurrentUser(_userRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_analyticRepository);
+            SetCurrentUser(_userRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("create_warehouse"), HttpPost]
+        [Route("create_warehouse"), HttpPost]
         public async Task<IActionResult> CreateWarehouse([FromBody]WarehouseCreateRequest request)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
@@ -62,7 +66,7 @@ namespace PrimeApps.App.Controllers
             if (warehouse != null)
                 return BadRequest("Already exists");
 
-            var powerBiWorkspace = await PowerBiHelper.CreateWorkspace();
+            var powerBiWorkspace = await PowerBiHelper.CreateWorkspace(_configuration);
             request.PowerBiWorkspaceId = powerBiWorkspace.WorkspaceId;
 
             var jobId = BackgroundJob.Enqueue(() => _warehouseHelper.Create(request, AppUser));
@@ -81,7 +85,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_warehouse_info"), HttpGet]
         public async Task<IActionResult> GetWarehouseInfo()
         {
-            var warehouseInfo = await AnalyticsHelper.GetWarehouse(AppUser.TenantId);
+            var warehouseInfo = await AnalyticsHelper.GetWarehouse(AppUser.TenantId, _configuration);
 
             if (warehouseInfo == null)
                 return NotFound();
@@ -133,7 +137,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetReports()
         {
             var analytics = await _analyticRepository.GetReports();
-            var reports = await PowerBiHelper.GetReports(AppUser.TenantId, analytics);
+            var reports = await PowerBiHelper.GetReports(AppUser.TenantId, analytics, _configuration);
 
             return Ok(reports);
         }
@@ -143,7 +147,7 @@ namespace PrimeApps.App.Controllers
         {
             var stream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(stream, out result);
+            var isUploaded = DocumentHelper.Upload(stream, _configuration, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
@@ -151,7 +155,7 @@ namespace PrimeApps.App.Controllers
             if (!isUploaded)
                 return BadRequest();
 
-            var pibxUrl = DocumentHelper.Save(result, "analytics-" + AppUser.TenantId);
+            var pibxUrl = DocumentHelper.Save(result, "analytics-" + AppUser.TenantId, _configuration);
 
             return Ok(pibxUrl);
         }
@@ -167,7 +171,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var powerBiReportName = analyticEntity.Id.ToString();
-            var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId);
+            var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId, _configuration);
 
             if (string.IsNullOrWhiteSpace(import.Id))
             {
@@ -178,7 +182,7 @@ namespace PrimeApps.App.Controllers
             // Wait 5 second for PowerBI Embedded import pbix completed
             await Task.Delay(5000);
 
-            var report = await PowerBiHelper.GetReportByName(AppUser.TenantId, powerBiReportName);
+            var report = await PowerBiHelper.GetReportByName(AppUser.TenantId, powerBiReportName, _configuration);
 
             if (report == null)
             {
@@ -189,10 +193,10 @@ namespace PrimeApps.App.Controllers
             analyticEntity.PowerBiReportId = report.Id;
 
             await _analyticRepository.Update(analyticEntity);
-            BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId));
+            BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId, _configuration));
 
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/analytics/get_reports", analyticEntity);
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/analytics/get_reports", analyticEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/analytics/get_reports", analyticEntity);
         }
 
@@ -206,10 +210,10 @@ namespace PrimeApps.App.Controllers
 
             if (analyticEntity.PbixUrl != analytic.PbixUrl)
             {
-                await PowerBiHelper.DeleteReport(AppUser.TenantId, analyticEntity.Id);
+                await PowerBiHelper.DeleteReport(AppUser.TenantId, analyticEntity.Id, _configuration);
 
                 var powerBiReportName = analyticEntity.Id.ToString();
-                var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId);
+                var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId, _configuration);
 
                 if (string.IsNullOrWhiteSpace(import.Id))
                     throw new Exception("Pbix import not succeeded");
@@ -217,14 +221,14 @@ namespace PrimeApps.App.Controllers
                 // Wait 5 second for PowerBI Embedded import pbix completed
                 await Task.Delay(5000);
 
-                var report = await PowerBiHelper.GetReportByName(AppUser.TenantId, powerBiReportName);
+                var report = await PowerBiHelper.GetReportByName(AppUser.TenantId, powerBiReportName, _configuration);
 
                 if (report == null)
                     throw new Exception("Pbix import not succeeded");
 
                 analyticEntity.PowerBiReportId = report.Id;
 
-                BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId));
+                BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId, _configuration));
             }
 
             if (analyticEntity.Shares != null && analyticEntity.Shares.Count > 0)

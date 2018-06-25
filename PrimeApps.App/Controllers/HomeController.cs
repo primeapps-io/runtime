@@ -1,33 +1,45 @@
-﻿using System.Configuration;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-	public class HomeController : Controller
+    public class HomeController : Controller
     {
-		[Authorize]
-		public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
-		{			
-			var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-			var appId = platformUserRepository.GetAppIdByDomain(Request.Host.Value);
+        private IConfiguration _configuration;
 
-			if (appId == 0 && localAppId != 0)
-				appId = localAppId;
+        public HomeController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
-			var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+        [Authorize]
+        public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
+        {
+            if (string.IsNullOrEmpty(Request.Cookies["tenant_id"]))
+            {
+                var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+                var appId = platformUserRepository.GetAppIdByDomain(Request.Host.Value);
 
-			if (tenant == null)
-				return BadRequest();
+                if (appId == 0 && localAppId != 0)
+                    appId = localAppId;
 
-			Response.Cookies.Append("tenant_id", tenant.Id.ToString());			
-			return View();
-		}
+                var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
-		public async Task<ActionResult> Preview()
+                if (tenant == null)
+                    return BadRequest();
+
+
+                Response.Cookies.Append("tenant_id", tenant.Id.ToString());
+            }
+
+            return View();
+        }
+
+        public async Task<ActionResult> Preview()
         {
             await SetValues();
 
@@ -39,15 +51,15 @@ namespace PrimeApps.App.Controllers
             var lang = Request.Cookies["_lang"];
             var language = lang ?? "tr";
 
-            var useCdn = bool.Parse(ConfigurationManager.AppSettings["UseCdn"]);
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language);
+            var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
+            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language, _configuration);
 
             if (useCdn)
             {
                 var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
                 var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-                ViewBag.CdnUrlDynamic = ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionDynamic + "/";
-                ViewBag.CdnUrlStatic = ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic + "/";
+                ViewBag.CdnUrlDynamic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionDynamic + "/";
+                ViewBag.CdnUrlStatic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionStatic + "/";
             }
             else
             {

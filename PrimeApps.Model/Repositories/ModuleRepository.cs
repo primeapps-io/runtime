@@ -7,6 +7,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
@@ -15,9 +16,9 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public ModuleRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ModuleRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public ModuleRepository(TenantDBContext dbContext, Warehouse warehouse) : base(dbContext)
+        public ModuleRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
         }

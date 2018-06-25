@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
@@ -11,7 +12,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class HelpRepository : RepositoryBaseTenant, IHelpRepository
     {
-        public HelpRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public HelpRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<Help> GetById(int id)
         {

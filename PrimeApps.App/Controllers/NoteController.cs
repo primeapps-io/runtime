@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
@@ -18,10 +19,10 @@ using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/note")/*, SnakeCase*/]
+    [Route("api/note")]
 	[Authorize]
 
-	public class NoteController : BaseController
+	public class NoteController : ApiBaseController
     {
         private INoteRepository _noteRepository;
         private IUserRepository _userRepository;
@@ -29,8 +30,9 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
+        private IConfiguration _configuration;
 
-		public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository)
+        public NoteController(INoteRepository noteRepository, IUserRepository userRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, IConfiguration configuration)
         {
             _noteRepository = noteRepository;
             _userRepository = userRepository;
@@ -38,29 +40,23 @@ namespace PrimeApps.App.Controllers
             _moduleRepository = moduleRepository;
             _profileRepository = profileRepository;
             _picklistRepository = picklistRepository;
-
-			/*SetCurrentUser(_noteRepository, _httpContextAccessor);
-            SetCurrentUser(_userRepository, _httpContextAccessor);
-            SetCurrentUser(_recordRepository, _httpContextAccessor);
-            SetCurrentUser(_moduleRepository, _httpContextAccessor);
-            SetCurrentUser(_profileRepository, _httpContextAccessor);
-            SetCurrentUser(_picklistRepository, _httpContextAccessor);*/
+            _configuration = configuration;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_noteRepository);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_recordRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_picklistRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_recordRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_profileRepository);
+            SetCurrentUser(_picklistRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var noteEntity = await _noteRepository.GetById(id);
@@ -69,14 +65,14 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             if (noteEntity.CreatedBy.Picture != null && !noteEntity.CreatedBy.Picture.StartsWith("http://"))
-                noteEntity.CreatedBy.Picture = AzureStorage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
+                noteEntity.CreatedBy.Picture = AzureStorage.GetAvatarUrl(noteEntity.CreatedBy.Picture, _configuration);
 
             if (noteEntity.Likes.Count > 0)
             {
                 foreach (var likedUser in noteEntity.Likes)
                 {
                     if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
-                        likedUser.Picture = AzureStorage.GetAvatarUrl(likedUser.Picture);
+                        likedUser.Picture = AzureStorage.GetAvatarUrl(likedUser.Picture, _configuration);
                 }
             }
 
@@ -92,14 +88,14 @@ namespace PrimeApps.App.Controllers
             foreach (var note in notes)
             {
                 if (note.CreatedBy.Picture != null && !note.CreatedBy.Picture.StartsWith("http://"))
-                    note.CreatedBy.Picture = AzureStorage.GetAvatarUrl(note.CreatedBy.Picture);
+                    note.CreatedBy.Picture = AzureStorage.GetAvatarUrl(note.CreatedBy.Picture, _configuration);
 
                 if (note.Likes.Count > 0)
                 {
                     foreach (var likedUser in note.Likes)
                     {
                         if (likedUser.Picture != null && !likedUser.Picture.StartsWith("http://"))
-                            likedUser.Picture = AzureStorage.GetAvatarUrl(likedUser.Picture);
+                            likedUser.Picture = AzureStorage.GetAvatarUrl(likedUser.Picture, _configuration);
                     }
                 }
 
@@ -108,14 +104,14 @@ namespace PrimeApps.App.Controllers
                     foreach (var subNote in note.Notes)
                     {
                         if (subNote.CreatedBy.Picture != null && !subNote.CreatedBy.Picture.StartsWith("http://"))
-                            subNote.CreatedBy.Picture = AzureStorage.GetAvatarUrl(subNote.CreatedBy.Picture);
+                            subNote.CreatedBy.Picture = AzureStorage.GetAvatarUrl(subNote.CreatedBy.Picture, _configuration);
 
                         if (subNote.Likes.Count > 0)
                         {
                             foreach (var subLikedUser in note.Likes)
                             {
                                 if (subLikedUser.Picture != null && !subLikedUser.Picture.StartsWith("http://"))
-                                    subLikedUser.Picture = AzureStorage.GetAvatarUrl(subLikedUser.Picture);
+                                    subLikedUser.Picture = AzureStorage.GetAvatarUrl(subLikedUser.Picture, _configuration);
                             }
                         }
                     }
@@ -175,7 +171,7 @@ namespace PrimeApps.App.Controllers
                 if (record.IsNullOrEmpty())
                     continue;
 
-                var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(note.Module, record, _moduleRepository, _picklistRepository, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value);
+                var recordFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(note.Module, record, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset.Value);
 
                 if (!record.IsNullOrEmpty())
                 {
@@ -213,7 +209,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             noteEntity = await _noteRepository.GetById(noteEntity.Id);
-            noteEntity.CreatedBy.Picture = AzureStorage.GetAvatarUrl(noteEntity.CreatedBy.Picture);
+            noteEntity.CreatedBy.Picture = AzureStorage.GetAvatarUrl(noteEntity.CreatedBy.Picture, _configuration);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/note/get/" + noteEntity.Id, noteEntity);
@@ -261,6 +257,6 @@ namespace PrimeApps.App.Controllers
             return Ok(noteEntity);
         }
 
-		
-	}
+
+    }
 }

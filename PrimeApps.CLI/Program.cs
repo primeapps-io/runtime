@@ -34,8 +34,8 @@ namespace PrimeApps.CLI
             var serviceProvider = new ServiceCollection()
                 .AddLogging(config=>config.SetMinimumLevel(LogLevel.Error))
                 .AddEntityFrameworkNpgsql()
-                .AddDbContext<PlatformDBContext>(options=>options.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")))
-                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")))
+                .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")))
+                .AddDbContext<PlatformDBContext>(options=>options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")))
                 .AddSingleton<IDatabaseService, DatabaseService>()
                 .AddSingleton<IConfiguration>(Configuration)
                 .BuildServiceProvider();

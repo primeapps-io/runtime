@@ -1,163 +1,94 @@
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Controllers
 {
-	[Authorize(AuthenticationSchemes = "Bearer"), CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
+    public class BaseController : Controller
+    {
+        private UserItem _appUser;
 
-	public class BaseController : Controller
-	{
-		private UserItem _appUser;
+        public UserItem AppUser
+        {
+            get
+            {
+                if (_appUser == null && HttpContext.Items?["user"] != null)
+                {
+                    _appUser = GetUser();
+                }
 
-		public UserItem AppUser
-		{
-			get
-			{
-				if ( _appUser == null && HttpContext.Items?["user"] != null)
-				{
-					_appUser = GetUser();
-				}
+                return _appUser;
+            }
+        }
 
-				return _appUser;
-			}
-		}
+        public void SetCurrentUser(IRepositoryBaseTenant repository)
+        {
+            if (AppUser != null)
+                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = AppUser.TenantId};
+        }
 
-		//public override void OnActionExecuting(ActionExecutingContext context)
-		//{
-		//	if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-		//		context.Result = new UnauthorizedResult();
+        private UserItem GetUser()
+        {
+            var platformUser = (PlatformUser) HttpContext.Items["user"];
+            var tenant = platformUser.TenantsAsUser.Single().Tenant;
 
-		//	var tenantId = 0;
+            var appUser = new UserItem
+            {
+                Id = platformUser.Id,
+                AppId = tenant.AppId,
+                TenantId = tenant.Id,
+                TenantGuid = tenant.GuidId,
+                TenantLanguage = tenant.Setting?.Language,
+                Email = platformUser.Email,
+                UserName = platformUser.FirstName + " " + platformUser.LastName
+            };
 
-		//	if (string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
-		//		context.Result = new UnauthorizedResult();
+            if (!tenant.App.UseTenantSettings)
+            {
+                appUser.Currency = tenant.App.Setting?.Currency;
+                appUser.Culture = tenant.App.Setting?.Culture;
+                appUser.Language = tenant.App.Setting?.Language;
+                appUser.TimeZone = tenant.App.Setting?.TimeZone;
+            }
+            else if (!tenant.UseUserSettings)
+            {
+                appUser.Currency = tenant.Setting?.Currency;
+                appUser.Culture = tenant.Setting?.Culture;
+                appUser.Language = tenant.Setting?.Language;
+                appUser.TimeZone = tenant.Setting?.TimeZone;
+            }
+            else
+            {
+                appUser.Currency = platformUser.Setting?.Currency;
+                appUser.Culture = platformUser.Setting?.Culture;
+                appUser.Language = platformUser.Setting?.Language;
+                appUser.TimeZone = platformUser.Setting?.TimeZone;
+            }
 
-		//	if (tenantId < 1)
-		//		context.Result = new UnauthorizedResult();
+            var tenantUserRepository = (IUserRepository) HttpContext.RequestServices.GetService(typeof(IUserRepository));
+            tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = appUser.TenantId};
+            var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-		//	if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-		//		context.Result = new UnauthorizedResult();
+            appUser.Role = tenantUser.RoleId ?? 0;
+            appUser.ProfileId = tenantUser.RoleId ?? 0;
+            appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 
-		//	var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-		//	var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
+            if (tenant.License?.AnalyticsLicenseCount > 0)
+            {
+                var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                var warehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
-		//	if (platformUser == null || platformUser.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-		//		context.Result = new UnauthorizedResult();
+                appUser.WarehouseDatabaseName = warehouse.DatabaseName;
+            }
+            else
+            {
+                appUser.WarehouseDatabaseName = "0";
+            }
 
-		//	context.HttpContext.Items.Add("user", platformUser);
-
-		//	_httpContext = context.HttpContext;
-
-		//	base.OnActionExecuting(context);
-		//}
-
-		public void SetContext(ActionExecutingContext context) {
-			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-				context.Result = new UnauthorizedResult();
-
-			var tenantId = 0;
-
-			if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
-				context.Result = new UnauthorizedResult();
-
-			if (tenantId < 1)
-				context.Result = new UnauthorizedResult();
-
-			if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-				context.Result = new UnauthorizedResult();
-
-			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
-
-			if (platformUser == null || platformUser.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-				context.Result = new UnauthorizedResult();
-
-			context.HttpContext.Items.Add("user", platformUser);
-		}
-
-		public void SetCurrentUser(IRepositoryBaseTenant repository)
-		{
-			repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
-		}
-
-		private UserItem GetUser()
-		{
-			var platformUser = (PlatformUser)HttpContext.Items["user"];
-			var userTenant = platformUser.TenantsAsUser.Single();
-
-			var currency = "";
-			var culture = "";
-			var language = "";
-			var timeZone = "";
-
-			if (!userTenant.Tenant.App.UseTenantSettings)
-			{
-				currency = userTenant.Tenant.App.Setting?.Currency;
-				culture = userTenant.Tenant.App.Setting?.Culture;
-				language = userTenant.Tenant.App.Setting?.Language;
-				timeZone = userTenant.Tenant.App.Setting?.TimeZone;
-			}
-			else if (!userTenant.Tenant.UseUserSettings)
-			{
-				currency = userTenant.Tenant.Setting?.Currency;
-				culture = userTenant.Tenant.Setting?.Culture;
-				language = userTenant.Tenant.Setting?.Language;
-				timeZone = userTenant.Tenant.Setting?.TimeZone;
-			}
-			else
-			{
-				currency = platformUser.Setting?.Currency;
-				currency = platformUser.Setting?.Culture;
-				language = platformUser.Setting?.Language;
-				timeZone = platformUser.Setting?.TimeZone;
-			}
-
-			var appUser = new UserItem
-			{
-				Id = platformUser.Id,
-				AppId = userTenant.Tenant.AppId,
-				TenantId = userTenant.Tenant.Id,
-				TenantGuid = userTenant.Tenant.GuidId,
-				TenantLanguage = userTenant.Tenant.Setting?.Language,
-				Language = language,
-				Email = platformUser.Email,
-				UserName = platformUser.FirstName + " " + platformUser.LastName,
-				Culture = culture,
-				Currency = currency,
-				TimeZone = timeZone
-			};
-
-			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-			tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
-			var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
-
-			appUser.Role = tenantUser.RoleId != null ? (int)tenantUser.RoleId : 0;
-			appUser.ProfileId = tenantUser.RoleId != null ? (int)tenantUser.RoleId : 0;
-			appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
-
-			if (userTenant.Tenant.License?.AnalyticsLicenseCount > 0)
-			{
-				var warehouseRepository = (IPlatformWarehouseRepository)HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-				var warehouse = warehouseRepository.GetByTenantIdSync(userTenant.Tenant.Id);
-
-				appUser.WarehouseDatabaseName = warehouse.DatabaseName;
-			}
-			else
-			{
-				appUser.WarehouseDatabaseName = "0";
-			}
-
-			return appUser;
-		}
-	}
+            return appUser;
+        }
+    }
 }

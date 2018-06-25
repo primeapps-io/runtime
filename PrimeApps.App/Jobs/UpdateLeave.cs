@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using Hangfire;
-using PrimeApps.App.Jobs.QueueAttributes;
 using PrimeApps.Model.Context;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.Helpers;
@@ -19,12 +18,13 @@ namespace PrimeApps.App.Jobs
     public class UpdateLeave
     {
 	    private ICalculationHelper _calculationHelper;
-	    public UpdateLeave(ICalculationHelper calculationHelper)
+	    private IConfiguration _configuration;
+		public UpdateLeave(ICalculationHelper calculationHelper, IConfiguration configuration)
 	    {
 		    _calculationHelper = calculationHelper;
-	    }
-
-        [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
+		    _configuration = configuration;
+		}
+		
         public async Task Update()
         {
             using (var platformDatabaseContext = new PlatformDBContext())
@@ -39,9 +39,9 @@ namespace PrimeApps.App.Jobs
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id))
                         {
-                            using (var analyticRepository = new AnalyticRepository(databaseContext))
+                            using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                             {
-                                var warehouse = new Model.Helpers.Warehouse(analyticRepository);
+                                var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
 
                                 var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
 
@@ -50,14 +50,14 @@ namespace PrimeApps.App.Jobs
                                 else
                                     warehouse.DatabaseName = "0";
 
-                                using (var moduleRepository = new ModuleRepository(databaseContext))
+                                using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                                 {
                                     var izinTurleriModule = await moduleRepository.GetByName("izin_turleri");
 
                                     if (izinTurleriModule == null)
                                         continue;
 
-                                    using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                                    using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                     {
                                         var module = await moduleRepository.GetByName("calisanlar") ??
                                                      await moduleRepository.GetByName("human_resources");
@@ -68,9 +68,9 @@ namespace PrimeApps.App.Jobs
                                         var findRequestCalisan = new FindRequest
                                         {
                                             Filters = new List<Filter>
-                                        {
-                                            new Filter {Field = "deleted", Operator = Operator.Equals, Value = false, No = 1}
-                                        },
+                                            {
+                                                new Filter {Field = "deleted", Operator = Operator.Equals, Value = false, No = 1}
+                                            },
                                             Limit = 99999,
                                             Offset = 0
                                         };
@@ -78,10 +78,10 @@ namespace PrimeApps.App.Jobs
                                         var findRequestIzinler = new FindRequest
                                         {
                                             Filters = new List<Filter>
-                                        {
-                                            new Filter {Field = "yillik_izin", Operator = Operator.Equals, Value = true, No = 1},
-                                            new Filter {Field = "deleted", Operator = Operator.Equals, Value = false, No = 2}
-                                        },
+                                            {
+                                                new Filter {Field = "yillik_izin", Operator = Operator.Equals, Value = true, No = 1},
+                                                new Filter {Field = "deleted", Operator = Operator.Equals, Value = false, No = 2}
+                                            },
                                             Limit = 99999,
                                             Offset = 0
                                         };
@@ -99,7 +99,7 @@ namespace PrimeApps.App.Jobs
                                             if (calisan["ise_baslama_tarihi"].IsNullOrEmpty())
                                                 continue;
 
-                                            var iseBaslamaTarihi = (string)calisan["ise_baslama_tarihi"];
+                                            var iseBaslamaTarihi = (string) calisan["ise_baslama_tarihi"];
                                             var bugun = DateTime.UtcNow;
 
                                             var calismayaBasladigiZaman = DateTime.ParseExact(iseBaslamaTarihi, "MM/dd/yyyy h:mm:ss", null);
@@ -118,19 +118,19 @@ namespace PrimeApps.App.Jobs
 
                                                 if (!calisan["kalan_izin_hakki"].IsNullOrEmpty())
                                                 {
-                                                    kalanIzinHakki = (int)calisan["kalan_izin_hakki"];
+                                                    kalanIzinHakki = (int) calisan["kalan_izin_hakki"];
                                                 }
 
                                                 var devredecekIzin = 0;
 
 
-                                                var izinKurali = recordRepository.GetById(izinTurleriModule, (int)izinler["id"], false);
+                                                var izinKurali = recordRepository.GetById(izinTurleriModule, (int) izinler["id"], false);
 
-                                                if ((bool)izinKurali["yillik_izine_ek_izin_suresi_ekle"] &&
-                                                    !izinKurali["yillik_izine_ek_izin_suresi_gun"].IsNullOrEmpty() && (int)izinKurali["yillik_izine_ek_izin_suresi_gun"] != 0 &&
-                                                    !(bool)izinKurali["ek_izin_sonraki_yillara_devreder"])
+                                                if ((bool) izinKurali["yillik_izine_ek_izin_suresi_ekle"] &&
+                                                    !izinKurali["yillik_izine_ek_izin_suresi_gun"].IsNullOrEmpty() && (int) izinKurali["yillik_izine_ek_izin_suresi_gun"] != 0 &&
+                                                    !(bool) izinKurali["ek_izin_sonraki_yillara_devreder"])
                                                 {
-                                                    var ekIzinSuresi = (int)izinKurali["yillik_izine_ek_izin_suresi_gun"];
+                                                    var ekIzinSuresi = (int) izinKurali["yillik_izine_ek_izin_suresi_gun"];
 
                                                     if (kalanIzinHakki > ekIzinSuresi)
                                                     {
@@ -143,9 +143,9 @@ namespace PrimeApps.App.Jobs
                                                 }
 
                                                 if (!izinKurali["sonraki_doneme_devredilen_izin_gun"].IsNullOrEmpty() &&
-                                                    (int)izinKurali["sonraki_doneme_devredilen_izin_gun"] <= kalanIzinHakki)
+                                                    (int) izinKurali["sonraki_doneme_devredilen_izin_gun"] <= kalanIzinHakki)
                                                 {
-                                                    devredecekIzin = (int)izinKurali["sonraki_doneme_devredilen_izin_gun"];
+                                                    devredecekIzin = (int) izinKurali["sonraki_doneme_devredilen_izin_gun"];
                                                 }
 
                                                 calisan["sabit_devreden_izin"] = devredecekIzin;
@@ -154,7 +154,6 @@ namespace PrimeApps.App.Jobs
 
                                                 await _calculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinler["id"]);
                                             }
-
                                         }
                                     }
                                 }
@@ -166,7 +165,7 @@ namespace PrimeApps.App.Jobs
                     {
                         if (ex.InnerException is PostgresException)
                         {
-                            var innerEx = (PostgresException)ex.InnerException;
+                            var innerEx = (PostgresException) ex.InnerException;
                             if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
                                 continue;
                         }
@@ -174,7 +173,6 @@ namespace PrimeApps.App.Jobs
                         throw;
                     }
                 }
-
             }
         }
     }

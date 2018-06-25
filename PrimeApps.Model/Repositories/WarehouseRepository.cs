@@ -4,6 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Warehouse;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -17,15 +19,18 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
         private IPlatformWarehouseRepository _platformWarehouseRepository;
-        public WarehouseRepository(TenantDBContext dbContext, Warehouse warehouse, IPlatformWarehouseRepository platformWarehouseRepository) : base(dbContext)
+        private IConfiguration _configuration;
+
+        public WarehouseRepository(TenantDBContext dbContext, Warehouse warehouse, IPlatformWarehouseRepository platformWarehouseRepository, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
             _platformWarehouseRepository = platformWarehouseRepository;
+            _configuration = configuration;
         }
 
         public async Task Create(WarehouseCreateRequest request, ICollection<Module> modules, string userEmail, string tenantLanguage)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ToString());
+            var connection = new SqlConnection(_configuration.GetConnectionString("WarehouseConnection"));
 
             using (connection)
             {
@@ -64,7 +69,7 @@ namespace PrimeApps.Model.Repositories
                 throw new Exception("Sync already completed");
 
             _warehouse.CreateUser(warehouseEntity);
-            _warehouse.CreateSchema(warehouseEntity, modules, tenantLanguage);
+            _warehouse.CreateSchema(warehouseEntity, modules, tenantLanguage, _configuration.GetConnectionString("WarehouseConnection"));
             _warehouse.SyncData(modules, warehouseEntity.DatabaseName, TenantId.Value, tenantLanguage);
 
             _platformWarehouseRepository.SetCompleted(warehouseEntity, userEmail);
@@ -72,7 +77,7 @@ namespace PrimeApps.Model.Repositories
 
         public void ChangePassword(string username, string password)
         {
-            var connection = new SqlConnection(ConfigurationManager.ConnectionStrings["WarehouseConnection"].ToString());
+            var connection = new SqlConnection(_configuration.GetConnectionString("WarehouseConnection"));
 
             using (connection)
             {

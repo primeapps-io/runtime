@@ -1,16 +1,14 @@
-﻿using Hangfire;
-using Npgsql;
-using PrimeApps.App.Jobs.QueueAttributes;
+﻿using Npgsql;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace PrimeApps.App.Jobs
 {
-    [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
     /// Drops tenant databases that are inactive more then 1 month from servers.
     public class AccountCleanup
     {
@@ -20,6 +18,7 @@ namespace PrimeApps.App.Jobs
         public async Task Run()
         {
             IList<int> expiredTenants = new List<int>();
+            var connectionString = "";
 
             using (var platformDbContext = new PlatformDBContext())
             using (var tenantRepository = new TenantRepository(platformDbContext))
@@ -27,12 +26,13 @@ namespace PrimeApps.App.Jobs
 
                 // Get expired inactive tenant ids.
                 expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
+                connectionString = platformDbContext.Database.GetDbConnection().ConnectionString;
             }
 
             var dropSql = $"DROP DATABASE IF EXISTS";
 
             // create a connection to the server without specifying a database.
-            using (var connection = new NpgsqlConnection(Postgres.GetConnectionString(-1)))
+            using (var connection = new NpgsqlConnection(Postgres.GetConnectionString(connectionString, -1)))
             {
                 connection.Open();
 

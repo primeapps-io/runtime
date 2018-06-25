@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Hangfire;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Warehouse;
 using PrimeApps.Model.Entities.Platform;
@@ -20,7 +19,6 @@ namespace PrimeApps.App.Jobs
             _tenantRepository = tenantRepository;
         }
 
-        [QueueAttributes.WarehouseQueue, AutomaticRetry(Attempts = 0)]
         public async Task Create(WarehouseCreateRequest request, UserItem appUser)
         {
             _moduleRepository.TenantId = request.TenantId;

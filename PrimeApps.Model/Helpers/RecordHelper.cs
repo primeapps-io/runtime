@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using NpgsqlTypes;
@@ -10,7 +11,6 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Helpers.QueryTranslation;
-using System.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Common.Record;
@@ -915,13 +915,13 @@ namespace PrimeApps.Model.Helpers
 
             if (!record["is_sample"].IsNullOrEmpty())
             {
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_sample", NpgsqlValue = (int)record["is_sample"], NpgsqlDbType = NpgsqlDbType.Boolean });
+                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_sample", NpgsqlValue = (bool)record["is_sample"], NpgsqlDbType = NpgsqlDbType.Boolean });
                 sets.Add("\"is_sample\" = @is_sample");
             }
 
             if (!record["is_converted"].IsNullOrEmpty())
             {
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_converted", NpgsqlValue = (int)record["is_converted"], NpgsqlDbType = NpgsqlDbType.Boolean });
+                command.Parameters.Add(new NpgsqlParameter { ParameterName = "is_converted", NpgsqlValue = (bool)record["is_converted"], NpgsqlDbType = NpgsqlDbType.Boolean });
                 sets.Add("\"is_converted\" = @is_converted");
             }
 
@@ -1496,7 +1496,7 @@ namespace PrimeApps.Model.Helpers
             return sql;
         }
 
-        public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false)
+        public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false)
         {
             var recordNew = new JObject();
 
@@ -1663,7 +1663,7 @@ namespace PrimeApps.Model.Helpers
                                 {
                                     var tenant = tenantRepository.Get(moduleRepository.CurrentUser.TenantId);
 
-                                    var url = ConfigurationManager.AppSettings.Get("BlobUrl") + "/record-detail-" + tenant.GuidId + "/" + property.Value;
+                                    var url = configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + tenant.GuidId + "/" + property.Value;
                                     var img = "<img src=\"" + url + "\" width=\"100%\">";
                                     recordNew[property.Key] = img;
                                 }

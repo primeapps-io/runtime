@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers;
@@ -23,8 +22,8 @@ using PrimeApps.App.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/convert"), Authorize/*, SnakeCase*/]
-    public class ConvertController : BaseController
+    [Route("api/convert"), Authorize]
+    public class ConvertController : ApiBaseController
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
@@ -33,10 +32,11 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IConversionMappingRepository _conversionMappingRepository;
         private Warehouse _warehouse;
+        private IConfiguration _configuration;
 
 	    private IRecordHelper _recordHelper;
 
-        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, IRecordHelper recordHelper, Warehouse warehouse)
+        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, IRecordHelper recordHelper, IConfiguration configuration, Warehouse warehouse)
         {
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
@@ -47,6 +47,7 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
 
 	        _recordHelper = recordHelper;
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)

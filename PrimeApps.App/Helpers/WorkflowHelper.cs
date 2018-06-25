@@ -12,17 +12,15 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Net.Http;
-using System.Text;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.IdentityModel.Protocols;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Helpers
 {
@@ -53,7 +51,7 @@ namespace PrimeApps.App.Helpers
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
-                using (var workflowRepository = new WorkflowRepository(databaseContext))
+                using (var workflowRepository = new WorkflowRepository(databaseContext, configuration))
                 {
                     var workflows = await workflowRepository.GetAll(module.Id, true);
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
@@ -64,9 +62,9 @@ namespace PrimeApps.App.Helpers
 
                     foreach (var workflow in workflows)
                     {
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                         {
-                            using (var recordRepository = new RecordRepository(databaseContext))
+                            using (var recordRepository = new RecordRepository(databaseContext, configuration))
                             {
                                 var lookupModuleNames = new List<string>();
                                 ICollection<Module> lookupModules = null;
@@ -293,11 +291,11 @@ namespace PrimeApps.App.Helpers
                                 continue;
                         }
 
-                        using (var moduleRepository = new ModuleRepository(databaseContext))
+                        using (var moduleRepository = new ModuleRepository(databaseContext, configuration))
                         {
-                            using (var picklistRepository = new PicklistRepository(databaseContext))
+                            using (var picklistRepository = new PicklistRepository(databaseContext, configuration))
                             {
-                                using (var recordRepository = new RecordRepository(databaseContext, warehouse))
+                                using (var recordRepository = new RecordRepository(databaseContext, warehouse, configuration))
                                 {
                                     //Set warehouse database name
                                     warehouse.DatabaseName = appUser.WarehouseDatabaseName;
@@ -767,7 +765,7 @@ namespace PrimeApps.App.Helpers
 
                                                     var recordData = recordRepository.GetById(module, recordId, false, lookupModules, true);
                                                     var tenant = subscriber.TenantsAsUser.Single();
-                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, tenant.Tenant.Setting.Language, subscriber.Setting.Culture, 180, lookupModules);
+                                                    recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, moduleRepository, picklistRepository, configuration, tenant.Tenant.Setting.Language, subscriber.Setting.Culture, 180, lookupModules);
 
                                                     foreach (var dataString in data)
                                                     {
@@ -867,7 +865,7 @@ namespace PrimeApps.App.Helpers
 
                                             if (recipient == "[owner]")
                                             {
-                                                using (var userRepository = new UserRepository(databaseContext))
+                                                using (var userRepository = new UserRepository(databaseContext, configuration))
                                                 {
                                                     var recipientUser = await userRepository.GetById((int)record["owner.id"]);
 
@@ -923,7 +921,7 @@ namespace PrimeApps.App.Helpers
                                                     break;
                                             }
 
-                                            var subdomain = ConfigurationManager.AppSettings.Get("TestMode") == "true" ? "test" : appDomain;
+                                            var subdomain = configuration.GetSection("TestMode")["BlobUrl"] == "true" ? "test" : appDomain;
 
                                             domain = string.Format(domain, subdomain);
 

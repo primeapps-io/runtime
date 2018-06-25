@@ -7,13 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ProcessRequestRepository : RepositoryBaseTenant, IProcessRequestRepository
     {
-        public ProcessRequestRepository(TenantDBContext dbContext) : base(dbContext) { }
+        public ProcessRequestRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<ICollection<ProcessRequest>> GetByProcessId(int id)
         {
