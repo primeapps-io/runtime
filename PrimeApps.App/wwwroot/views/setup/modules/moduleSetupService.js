@@ -130,8 +130,8 @@ angular.module('primeapps')
                         if (field.combination) {
                             field.data_type = 'combination';
                             field.dataType = $rootScope.dataTypesExtended.combination;
-                            field.combinationField1 = field.combination.field_1;
-                            field.combinationField2 = field.combination.field_2;
+                            field.combinationField1 = field.combination.field1;
+                            field.combinationField2 = field.combination.field2;
                             field.combinationCharacter = field.combination.combination_character;
                         }
                     });
@@ -520,8 +520,8 @@ angular.module('primeapps')
                                 field2Name = helper.getSlug(field2['label_' + $rootScope.language]);
                             }
 
-                            field.combination.field_1 = field1Name;
-                            field.combination.field_2 = field2Name;
+                            field.combination.field1 = field1Name;
+                            field.combination.field2 = field2Name;
                             field.combination.combination_character = field.combinationCharacter;
                             delete field.combinationCharacter;
 

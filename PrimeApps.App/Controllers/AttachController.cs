@@ -15,6 +15,8 @@ using System.Net.Mime;
 using PrimeApps.App.Storage;
 using System;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.App.Helpers;
+using System.IO;
 
 namespace PrimeApps.App.Controllers
 {
@@ -43,6 +45,65 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_recordpository);
             SetCurrentUser(_templateRepository);
             base.OnActionExecuting(context);
+        }
+
+        [Route("upload_logo")]
+        [ProducesResponseType(typeof(string), 200)]
+        //[ResponseType(typeof(string))]
+        [HttpPost]
+        public async Task<IActionResult> UploadLogo()
+        {
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
+
+            if (parser.Success)
+            {
+                //if succesfully parsed, then continue to thread.
+                if (parser.FileContents.Length <= 0)
+                {
+                    //if file is invalid, then stop thread and return bad request status code.
+                    return BadRequest();
+                }
+
+                //initialize chunk parameters for the upload.
+                int chunk = 0;
+                int chunks = 1;
+
+                var uniqueName = string.Empty;
+
+                if (parser.Parameters.Count > 1)
+                {
+                    //this is a chunked upload process, calculate how many chunks we have.
+                    chunk = int.Parse(parser.Parameters["chunk"]);
+                    chunks = int.Parse(parser.Parameters["chunks"]);
+
+                    //get the file name from parser
+                    if (parser.Parameters.ContainsKey("name"))
+                        uniqueName = parser.Parameters["name"];
+                }
+
+                if (string.IsNullOrEmpty(uniqueName))
+                {
+                    var ext = Path.GetExtension(parser.Filename);
+                    uniqueName = Guid.NewGuid() + ext;
+                }
+
+                //upload file to the temporary AzureStorage.
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
+
+                if (chunk == chunks - 1)
+                {
+                    //if this is last chunk, then move the file to the permanent storage by commiting it.
+                    //as a standart all avatar files renamed to UserID_UniqueFileName format.
+                    var logo = string.Format("{0}_{1}", AppUser.TenantGuid, uniqueName);
+                    AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "company-logo", chunks, _configuration);
+                    return Ok(logo);
+                }
+
+                //return content type.
+                return Ok(parser.ContentType);
+            }
+            //this is not a valid request so return fail.
+            return Ok("Fail");
         }
 
         //[Route("download")]
