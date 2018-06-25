@@ -66,7 +66,7 @@ angular.module('primeapps')
                                 var profile = $filter('filter')($scope.profiles, { id: clone }, true)[0];
                                 $scope.profile = profile;
                                 delete  $scope.profile.name;
-                                delete  $scope.profile.UserIDs;
+                                delete  $scope.profile.user_ids;
                                 delete  $scope.profile.description;
                                 delete  $scope.profile.is_persistent;
                                 delete  $scope.profile.CreatedBy;

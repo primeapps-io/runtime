@@ -23,12 +23,15 @@ namespace PrimeApps.App.Controllers
         private IViewRepository _viewRepository;
         private IPicklistRepository _picklistRepository;
 
-        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository)
+	    private IProcessHelper _processHelper;
+        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IProcessHelper processHelper)
         {
             _processRepository = processRepository;
             _viewRepository = viewRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
+
+	        _processHelper = processHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -72,7 +75,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var processEntity = await ProcessHelper.CreateEntity(process, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            var processEntity = await _processHelper.CreateEntity(process, AppUser.TenantLanguage);
             var result = await _processRepository.Create(processEntity);
 
             if (result < 1)
@@ -114,7 +117,7 @@ namespace PrimeApps.App.Controllers
 
             var currentFilterIds = processEntity.Filters.Select(x => x.Id).ToList();
             var currentApproverIds = processEntity.Approvers.Select(x => x.Id).ToList();
-            await ProcessHelper.UpdateEntity(process, processEntity, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            await _processHelper.UpdateEntity(process, processEntity, AppUser.TenantLanguage);
             await _processRepository.Update(processEntity, currentFilterIds, currentApproverIds);
 
             await _processRepository.DeleteLogs(id);

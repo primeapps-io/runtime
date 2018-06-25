@@ -22,9 +22,9 @@ angular.module('primeapps')
 
                 changePassword: function (currentPassword, newPassword, confirmPassword) {
                     return $http.post(config.apiUrl + 'account/change_password', {
-                        OldPassword: currentPassword,
-                        NewPassword: newPassword,
-                        ConfirmPassword: confirmPassword
+                        old_password: currentPassword,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword
                     });
                 },
                 getThemes: function () {

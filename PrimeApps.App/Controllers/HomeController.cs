@@ -11,24 +11,19 @@ namespace PrimeApps.App.Controllers
     {
 		[Authorize]
 		public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
-		{
-			if (string.IsNullOrEmpty(Request.Cookies["tenant_id"]))
-			{
-				var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-				var appId = platformUserRepository.GetAppIdByDomain(Request.Host.Value);
+		{			
+			var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+			var appId = platformUserRepository.GetAppIdByDomain(Request.Host.Value);
 
-				if (appId == 0 && localAppId != 0)
-					appId = localAppId;
+			if (appId == 0 && localAppId != 0)
+				appId = localAppId;
 
-				var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+			var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
-				if (tenant == null)
-					return BadRequest();
+			if (tenant == null)
+				return BadRequest();
 
-
-				Response.Cookies.Append("tenant_id", tenant.Id.ToString());
-			}
-			
+			Response.Cookies.Append("tenant_id", tenant.Id.ToString());			
 			return View();
 		}
 

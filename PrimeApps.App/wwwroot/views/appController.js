@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', '$location', '$state', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
-    function ($rootScope, $scope, $location, $state, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, sipHelper, operations, blockUI, $cache, helps, AppService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
+angular.module('primeapps').controller('AppController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'AppService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
+    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, sipHelper, operations, blockUI, $cache, helps, AppService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;
@@ -128,11 +128,12 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             blockUI.start();
 
             AuthService.logout()
-                .then(function () {
+                .then(function (response) {
                     $rootScope.app = 'crm';
                     AuthService.logoutComplete();
+                    $cookies.remove('tenant_id')
                     //$state.go('auth.login');
-                    $window.location.href = '/Auth/SignOut';
+                    window.location = response.data['redirect_url'];
                     blockUI.stop();
                 });
         };

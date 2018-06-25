@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Cache;
@@ -11,12 +12,41 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class CalculationHelper
-    {
-        public static async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType)
+
+	public interface ICalculationHelper
+	{
+		Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+		Task<bool> YillikIzinHesaplama(int userId, int izinTuruId);
+		Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record);
+		Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule);
+		Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module);
+		Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module);
+		Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module kasaHareketiModule);
+		Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule);
+		Task<decimal> CalculateStock(JObject record, UserItem appUser, Module stockTransactionModule);
+	}
+
+	public class CalculationHelper : ICalculationHelper
+	{
+		private IModuleRepository _moduleRepository;
+		private IRecordRepository _recordRepository;
+		private IPicklistRepository _picklistRepository;
+		private IHttpContextAccessor _context;
+		public CalculationHelper(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IHttpContextAccessor context)
+		{
+			_context = context;
+		    _moduleRepository = moduleRepository;
+		    _recordRepository = recordRepository;
+		    _picklistRepository = picklistRepository;
+
+		    _picklistRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+		}
+
+	    public async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             try
             {
@@ -214,7 +244,7 @@ namespace PrimeApps.App.Helpers
                                                         await recordRepository.Update(recordCurrentAccount, currentAccountModule);
                                                     }
 
-                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
                                                     recordAccount["balance"] = recordAccountBalance;
 
                                                     break;
@@ -230,7 +260,7 @@ namespace PrimeApps.App.Helpers
                                                         await recordRepository.Update(recordCurrentAccount, currentAccountModule);
                                                     }
 
-                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
                                                     recordAccount["bakiye_eur"] = recordAccountBalance;
 
                                                     break;
@@ -246,7 +276,7 @@ namespace PrimeApps.App.Helpers
                                                         await recordRepository.Update(recordCurrentAccount, currentAccountModule);
                                                     }
 
-                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                    recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
                                                     recordAccount["bakiye_usd"] = recordAccountBalance;
 
                                                     break;
@@ -262,15 +292,15 @@ namespace PrimeApps.App.Helpers
                                                 switch (currencySalesInvoice)
                                                 {
                                                     case "try":
-                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
                                                         recordAccount["balance"] = recordAccountBalance;
                                                         break;
                                                     case "eur":
-                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
                                                         recordAccount["bakiye_eur"] = recordAccountBalance;
                                                         break;
                                                     case "usd":
-                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, recordRepository, currentAccountModule, currencyPicklistSalesInvoice, module);
+                                                        recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
                                                         recordAccount["bakiye_usd"] = recordAccountBalance;
                                                         break;
                                                 }
@@ -331,7 +361,7 @@ namespace PrimeApps.App.Helpers
                                                         await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
                                                     }
 
-                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
                                                     recordSupplier["balance"] = recordSupplierBalance;
 
                                                     break;
@@ -347,7 +377,7 @@ namespace PrimeApps.App.Helpers
                                                         await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
                                                     }
 
-                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
                                                     recordSupplier["bakiye_euro"] = recordSupplierBalance;
 
                                                     break;
@@ -363,7 +393,7 @@ namespace PrimeApps.App.Helpers
                                                         await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
                                                     }
 
-                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                    recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
                                                     recordSupplier["bakiye_usd"] = recordSupplierBalance;
 
                                                     break;
@@ -379,15 +409,15 @@ namespace PrimeApps.App.Helpers
                                                 switch (currencyPurchaseInvoice)
                                                 {
                                                     case "try":
-                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
                                                         recordSupplier["balance"] = recordSupplierBalance;
                                                         break;
                                                     case "eur":
-                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
                                                         recordSupplier["bakiye_euro"] = recordSupplierBalance;
                                                         break;
                                                     case "usd":
-                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, recordRepository, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+                                                        recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
                                                         recordSupplier["bakiye_usd"] = recordSupplierBalance;
                                                         break;
                                                 }
@@ -419,15 +449,15 @@ namespace PrimeApps.App.Helpers
                                             switch (currencyCurrentAccount)
                                             {
                                                 case "try":
-                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
                                                     parentAccountRecord["balance"] = parentAccountRecordBalance;
                                                     break;
                                                 case "eur":
-                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
                                                     parentAccountRecord["bakiye_eur"] = parentAccountRecordBalance;
                                                     break;
                                                 case "usd":
-                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
                                                     parentAccountRecord["bakiye_usd"] = parentAccountRecordBalance;
                                                     break;
                                             }
@@ -448,15 +478,15 @@ namespace PrimeApps.App.Helpers
                                             switch (currencyCurrentAccount)
                                             {
                                                 case "try":
-                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
                                                     parentSupplierRecord["balance"] = parentSupplierRecordBalance;
                                                     break;
                                                 case "eur":
-                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
                                                     parentSupplierRecord["bakiye_euro"] = parentSupplierRecordBalance;
                                                     break;
                                                 case "usd":
-                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, recordRepository, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
                                                     parentSupplierRecord["bakiye_usd"] = parentSupplierRecordBalance;
                                                     break;
                                             }
@@ -522,7 +552,7 @@ namespace PrimeApps.App.Helpers
                                                     await recordRepository.Create(kasaHareketiRecord, kasaHareketiModule);
 
                                                 //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
-                                                decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, recordRepository, kasaHareketiModule);
+                                                decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule);
                                                 var kasaRecord = new JObject();
                                                 kasaRecord["id"] = record["kasa"];
                                                 kasaRecord["guncel_bakiye"] = kasaBalance;
@@ -578,7 +608,7 @@ namespace PrimeApps.App.Helpers
                                                     await recordRepository.Create(bankaHareketiRecord, bankaHareketiModule);
 
                                                 //banka hareketlerinin ve ana bankanın bakiyesini güncelleme
-                                                decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, recordRepository, bankaHareketiModule);
+                                                decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule);
                                                 var bankaRecord = new JObject();
                                                 bankaRecord["id"] = record["banka"];
                                                 bankaRecord["guncel_bakiye"] = bankaBalance;
@@ -602,7 +632,7 @@ namespace PrimeApps.App.Helpers
                                                     await recordRepository.Delete(kasaHareketiObj, kasaHareketiModule);
 
                                                     //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
-                                                    decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, recordRepository, kasaHareketiModule);
+                                                    decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule);
                                                     var kasaRecord = new JObject();
                                                     kasaRecord["id"] = record["kasa"];
                                                     kasaRecord["guncel_bakiye"] = kasaBalance;
@@ -624,7 +654,7 @@ namespace PrimeApps.App.Helpers
                                                     await recordRepository.Delete(bankaHareketiObj, bankaHareketiModule);
 
                                                     //banka hareketlerinin ve ana kasanın bakiyesini güncelleme
-                                                    decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, recordRepository, bankaHareketiModule);
+                                                    decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule);
                                                     var bankaRecord = new JObject();
                                                     bankaRecord["id"] = record["banka"];
                                                     bankaRecord["guncel_bakiye"] = bankaBalance;
@@ -643,7 +673,7 @@ namespace PrimeApps.App.Helpers
                                         var recordKasa = new JObject();
                                         decimal kasaRecordBalance;
 
-                                        kasaRecordBalance = await CalculateKasaBalance(record, kasaHareketTipleri, appUser, recordRepository, kasaHareketleriModule);
+                                        kasaRecordBalance = await CalculateKasaBalance(record, kasaHareketTipleri, appUser, kasaHareketleriModule);
                                         recordKasa["guncel_bakiye"] = kasaRecordBalance;
 
                                         //bankanın balance'ını güncelleme
@@ -660,7 +690,7 @@ namespace PrimeApps.App.Helpers
                                         var bankRecord = new JObject();
                                         decimal bankaRecordBalance;
 
-                                        bankaRecordBalance = await CalculateBankaBalance(record, bankaHareketTipleri, appUser, recordRepository, bankaHareketleriModule);
+                                        bankaRecordBalance = await CalculateBankaBalance(record, bankaHareketTipleri, appUser, bankaHareketleriModule);
                                         bankRecord["guncel_bakiye"] = bankaRecordBalance;
 
                                         //bankanın balance'ını güncelleme
@@ -1563,7 +1593,7 @@ namespace PrimeApps.App.Helpers
                                                 {
                                                     await recordRepository.Delete(stockTransObj, stockModObj);
                                                     var prodItemObj = new JObject();
-                                                    decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, recordRepository, stockModObj, picklistRepository);
+                                                    decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, stockModObj);
                                                     prodItemObj["stock_quantity"] = productStockQuantity;
                                                     prodItemObj["id"] = stockTransObj["product"];
                                                     await recordRepository.Update(prodItemObj, prodModObj);
@@ -1587,7 +1617,7 @@ namespace PrimeApps.App.Helpers
                                                 {
                                                     await recordRepository.Delete(stockTransObj, stockModObj2);
                                                     var prodItemObj = new JObject();
-                                                    decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, recordRepository, stockModObj2, picklistRepository);
+                                                    decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, stockModObj2);
                                                     prodItemObj["stock_quantity"] = productStockQuantity;
                                                     prodItemObj["id"] = stockTransObj["product"];
                                                     await recordRepository.Update(prodItemObj, prodModObj2);
@@ -1647,7 +1677,7 @@ namespace PrimeApps.App.Helpers
                                                 stock["purchase_order"] = (int)record["purchase_order"];
                                             }
 
-                                            var transactionBeforeCreate = await RecordHelper.BeforeCreateUpdate(stockModule, stock, modelStateTransaction, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                            var transactionBeforeCreate = await BeforeCreateUpdate(stockModule, stock, modelStateTransaction, appUser.TenantLanguage);
                                             if (transactionBeforeCreate < 0 && !modelStateTransaction.IsValid)
                                             {
                                                 //ErrorLog.GetDefault(null).Log(new Error(new Exception("Stock transaction can not be created")));
@@ -1666,7 +1696,7 @@ namespace PrimeApps.App.Helpers
                                                 prodItem["stock_quantity"] = 0;
 
 
-                                            decimal productStockQuantity = await CalculateStock(record, appUser, recordRepository, stockModule, picklistRepository);
+                                            decimal productStockQuantity = await CalculateStock(record, appUser, stockModule);
                                             prodItem["stock_quantity"] = productStockQuantity;
 
                                             await recordRepository.Update(prodItem, prodMod);
@@ -1683,7 +1713,7 @@ namespace PrimeApps.App.Helpers
 
                                         var stockModuleObj = await moduleRepository.GetByName("stock_transactions");
                                         var transactionTypePicklist = stockModuleObj.Fields.Single(x => x.Name == "stock_transaction_type");
-                                        decimal stockQuantity = await CalculateStock(record, appUser, recordRepository, stockModuleObj, picklistRepository);
+                                        decimal stockQuantity = await CalculateStock(record, appUser, stockModuleObj);
                                         product["stock_quantity"] = stockQuantity;
 
                                         await recordRepository.Update(product, productModuleObj);
@@ -1761,7 +1791,7 @@ namespace PrimeApps.App.Helpers
                                         projectScopeUpdateRecord["actual_budget"] = actualBudget;
                                         projectScopeUpdateRecord["updated_by"] = (int)projectScopeRecord["updated_by"];
 
-                                        var resultBeforeProjectScope = await RecordHelper.BeforeCreateUpdate(projectScopeModule, projectScopeUpdateRecord, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                        var resultBeforeProjectScope = await BeforeCreateUpdate(projectScopeModule, projectScopeUpdateRecord, modelState, appUser.TenantLanguage);
 
                                         if (resultBeforeProjectScope < 0 && !modelState.IsValid)
                                         {
@@ -1779,7 +1809,7 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            await Calculate((int)projectScopeUpdateRecord["id"], projectScopeModule, appUser, warehouse, operationType);
+                                            await Calculate((int)projectScopeUpdateRecord["id"], projectScopeModule, appUser, warehouse, operationType, BeforeCreateUpdate, GetAllFieldsForFindRequest);
                                         }
                                         catch (Exception ex)
                                         {
@@ -1812,7 +1842,7 @@ namespace PrimeApps.App.Helpers
                                             if (percentageIndicator <= 0)
                                                 projectIndicatorUpdateRecord["status"] = notStartedStatusPicklistItem.Id;
 
-                                            var resultBeforeProjectIndicator = await RecordHelper.BeforeCreateUpdate(module, projectIndicatorUpdateRecord, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                            var resultBeforeProjectIndicator = await BeforeCreateUpdate(module, projectIndicatorUpdateRecord, modelState, appUser.TenantLanguage);
 
                                             if (resultBeforeProjectIndicator < 0 && !modelState.IsValid)
                                             {
@@ -1857,7 +1887,7 @@ namespace PrimeApps.App.Helpers
                                         projectUpdateRecord["scope"] = scope;
                                         projectUpdateRecord["updated_by"] = (int)projectRecord["updated_by"];
 
-                                        var resultBeforeProject = await RecordHelper.BeforeCreateUpdate(projectModule, projectUpdateRecord, modelStateScope, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                        var resultBeforeProject = await BeforeCreateUpdate(projectModule, projectUpdateRecord, modelStateScope, appUser.TenantLanguage);
 
                                         if (resultBeforeProject < 0 && !modelStateScope.IsValid)
                                         {
@@ -1923,7 +1953,7 @@ namespace PrimeApps.App.Helpers
                                         expenseSheetUpdateRecord["total_amount_gbp"] = totalAmountGbp;
                                         expenseSheetUpdateRecord["updated_by"] = (int)expenseSheetRecord["updated_by"];
 
-                                        var resultBeforeExpenseSheet = await RecordHelper.BeforeCreateUpdate(expenseSheetModule, expenseSheetUpdateRecord, modelStateExpenseSheet, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                        var resultBeforeExpenseSheet = await BeforeCreateUpdate(expenseSheetModule, expenseSheetUpdateRecord, modelStateExpenseSheet, appUser.TenantLanguage);
 
                                         if (resultBeforeExpenseSheet < 0 && !modelStateExpenseSheet.IsValid)
                                         {
@@ -1998,7 +2028,7 @@ namespace PrimeApps.App.Helpers
                                         break;
                                     case "timesheet_item":
                                         var timesheetModule = await moduleRepository.GetByName("timesheet");
-                                        var findRequestFields = await RecordHelper.GetAllFieldsForFindRequest("timesheet_item", moduleRepository);
+                                        var findRequestFields = await GetAllFieldsForFindRequest("timesheet_item");
                                         var findRequestTimesheetItems = new FindRequest { Fields = findRequestFields, Filters = new List<Filter> { new Filter { Field = "related_timesheet", Operator = Operator.Equals, Value = (int)record["related_timesheet"], No = 1 } }, Limit = 9999 };
                                         var timesheetItemsRecords = recordRepository.Find(module.Name, findRequestTimesheetItems, false);
                                         var statusField = timesheetModule.Fields.Single(x => x.Name == "status");
@@ -2040,7 +2070,7 @@ namespace PrimeApps.App.Helpers
                                             timesheetRecordUpdate["updated_by"] = (int)record["updated_by"];
 
                                             var modelStateTimesheet = new ModelStateDictionary();
-                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(timesheetModule, timesheetRecordUpdate, modelStateTimesheet, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                            var resultBefore = await BeforeCreateUpdate(timesheetModule, timesheetRecordUpdate, modelStateTimesheet, appUser.TenantLanguage);
 
                                             if (resultBefore < 0 && !modelStateTimesheet.IsValid)
                                             {
@@ -2078,7 +2108,7 @@ namespace PrimeApps.App.Helpers
                                             }
 
 
-                                            await CalculateTimesheet(timesheetItemsRecords, appUser, module, timesheetModule, recordRepository, moduleRepository, picklistRepository);
+                                            await CalculateTimesheet(timesheetItemsRecords, appUser, module, timesheetModule);
                                         }
                                         break;
                                     case "human_resources":
@@ -2090,7 +2120,7 @@ namespace PrimeApps.App.Helpers
                                         };
 
                                         var izinlerCalisanPG = recordRepository.Find("izin_turleri", findRequestIzinlerCalisanPG, false).First;
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"], recordRepository, moduleRepository);
+                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"]);
                                         break;
                                     case "calisanlar":
 
@@ -2163,7 +2193,7 @@ namespace PrimeApps.App.Helpers
                                             }
 
                                             var modelStateRehber = new ModelStateDictionary();
-                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(rehberModule, recordRehber, modelStateRehber, appUser.TenantLanguage, moduleRepository, picklistRepository, convertPicklists: false);
+                                            var resultBefore = await BeforeCreateUpdate(rehberModule, recordRehber, modelStateRehber, appUser.TenantLanguage, convertPicklists: false);
 
                                             if (resultBefore < 0 && !modelStateRehber.IsValid)
                                             {
@@ -2307,19 +2337,19 @@ namespace PrimeApps.App.Helpers
                                         if (record["process_status"] != null)
                                         {
                                             if ((bool)izinler["yillik_izin"] && operationType == OperationType.update && !record["process_status"].IsNullOrEmpty() && (int)record["process_status"] == 2)
-                                                await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], recordRepository, moduleRepository);
+                                                await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"]);
                                             else if ((bool)izinler["yillik_izin"] && operationType == OperationType.delete && !record["process_status"].IsNullOrEmpty() && (int)record["process_status"] == 2)
-                                                await DeleteAnnualLeave((int)record["calisan"], (int)izinler["id"], record, recordRepository, moduleRepository);
+                                                await DeleteAnnualLeave((int)record["calisan"], (int)izinler["id"], record);
                                         }
                                         else
                                         {
                                             if (operationType == OperationType.delete)
                                             {
-                                                await DeleteAnnualLeave((int)record["calisan"], (int)izinler["id"], record, recordRepository, moduleRepository);
+                                                await DeleteAnnualLeave((int)record["calisan"], (int)izinler["id"], record);
                                             }
                                             else
                                             {
-                                                await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], recordRepository, moduleRepository);
+                                                await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"]);
                                             }
                                         }
                                         break;
@@ -2430,24 +2460,24 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, RecordRepository recordRepository, ModuleRepository moduleRepository)
+        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId)
         {
-            var calisanlarModule = await moduleRepository.GetByName("calisanlar");
+            var calisanlarModule = await _moduleRepository.GetByName("calisanlar");
             if (calisanlarModule == null)
             {
-                calisanlarModule = await moduleRepository.GetByName("human_resources");
+                calisanlarModule = await _moduleRepository.GetByName("human_resources");
                 if (calisanlarModule == null)
                     return false;
             }
 
             var calisanId = userId;
 
-            var calisan = recordRepository.GetById(calisanlarModule, calisanId, false);
+            var calisan = _recordRepository.GetById(calisanlarModule, calisanId, false);
 
             if (calisan == null)
                 return false;
 
-            var izinTurleri = await moduleRepository.GetByName("izin_turleri");
+            var izinTurleri = await _moduleRepository.GetByName("izin_turleri");
             var iseBaslamaTarihi = (string)calisan["ise_baslama_tarihi"];
 
             var bugun = DateTime.UtcNow;
@@ -2461,7 +2491,7 @@ namespace PrimeApps.App.Helpers
             var dayDiffMonth = ((bugun.Year - calismayaBasladigiZaman.Year) * 12) + bugun.Month - calismayaBasladigiZaman.Month;
             var dayDiffYear = dayDiff.Days / 365;
 
-            var izinKurali = recordRepository.GetById(izinTurleri, izinTuruId, false);
+            var izinKurali = _recordRepository.GetById(izinTurleri, izinTuruId, false);
 
             var ekIzin = 0.0;
             var toplamKalanIzin = 0.0;
@@ -2511,7 +2541,7 @@ namespace PrimeApps.App.Helpers
                     SortDirection = SortDirection.Desc
                 };
 
-                var kidemIzni = recordRepository.Find("kideme_gore_yillik_izin_artislari", findRequestKidemeGoreIzinler, false).First;
+                var kidemIzni = _recordRepository.Find("kideme_gore_yillik_izin_artislari", findRequestKidemeGoreIzinler, false).First;
 
 
                 if (kidemIzni != null)
@@ -2556,7 +2586,7 @@ namespace PrimeApps.App.Helpers
                 Limit = 9999
             };
 
-            var izinlerRecords = recordRepository.Find("izinler", findRequestIzinler, false);
+            var izinlerRecords = _recordRepository.Find("izinler", findRequestIzinler, false);
 
             foreach (var izinlerRecord in izinlerRecords)
             {
@@ -2598,7 +2628,7 @@ namespace PrimeApps.App.Helpers
 
 
                 accountRecordUpdate["updated_by"] = (int)calisan["updated_by"];
-                var resultUpdate = await recordRepository.Update(accountRecordUpdate, calisanlarModule);
+                var resultUpdate = await _recordRepository.Update(accountRecordUpdate, calisanlarModule);
 
                 if (resultUpdate < 1)
                 {
@@ -2614,18 +2644,18 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
-        public static async Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record, RecordRepository recordRepository, ModuleRepository moduleRepository)
+        public async Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record)
         {
-            var calisanlarModule = await moduleRepository.GetByName("calisanlar");
+            var calisanlarModule = await _moduleRepository.GetByName("calisanlar");
             if (calisanlarModule == null)
             {
-                calisanlarModule = await moduleRepository.GetByName("human_resources");
+                calisanlarModule = await _moduleRepository.GetByName("human_resources");
                 if (calisanlarModule == null)
                     return false;
             }
 
             var calisanId = userId;
-            var calisan = recordRepository.GetById(calisanlarModule, calisanId, false);
+            var calisan = _recordRepository.GetById(calisanlarModule, calisanId, false);
 
             if (calisan == null)
                 return false;
@@ -2638,7 +2668,7 @@ namespace PrimeApps.App.Helpers
 
 
                 accountRecordUpdate["updated_by"] = (int)calisan["updated_by"];
-                var resultUpdate = await recordRepository.Update(accountRecordUpdate, calisanlarModule);
+                var resultUpdate = await _recordRepository.Update(accountRecordUpdate, calisanlarModule);
 
                 if (resultUpdate < 1)
                 {
@@ -2654,14 +2684,14 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        private static async Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule, RecordRepository recordRepository, ModuleRepository moduleRepository, PicklistRepository picklistRepository)
+		public async Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule)
         {
             var entryTypeField = timesheetItemModule.Fields.Single(x => x.Name == "entry_type");
-            var entryTypePicklist = await picklistRepository.GetById(entryTypeField.PicklistId.Value);
+            var entryTypePicklist = await _picklistRepository.GetById(entryTypeField.PicklistId.Value);
             var chargeTypeField = timesheetItemModule.Fields.Single(x => x.Name == "charge_type");
-            var chargeTypePicklist = await picklistRepository.GetById(chargeTypeField.PicklistId.Value);
+            var chargeTypePicklist = await _picklistRepository.GetById(chargeTypeField.PicklistId.Value);
             var placeOfPerformanceField = timesheetItemModule.Fields.Single(x => x.Name == "place_of_performance");
-            var placeOfPerformancePicklist = await picklistRepository.GetById(placeOfPerformanceField.PicklistId.Value);
+            var placeOfPerformancePicklist = await _picklistRepository.GetById(placeOfPerformanceField.PicklistId.Value);
             var timesheetId = 0;
             var timesheetOwnerEmail = "";
             var totalDaysWorked = 0.0;
@@ -2734,7 +2764,7 @@ namespace PrimeApps.App.Helpers
 
             try
             {
-                var resultUpdate = await recordRepository.Update(timesheetRecordUpdate, timesheetModule);
+                var resultUpdate = await _recordRepository.Update(timesheetRecordUpdate, timesheetModule);
 
                 if (resultUpdate < 1)
                 {
@@ -2750,7 +2780,7 @@ namespace PrimeApps.App.Helpers
 
             //Update project teams billable timesheet total days
             var findRequestExpert = new FindRequest { Filters = new List<Filter> { new Filter { Field = "e_mail1", Operator = Operator.Is, Value = timesheetOwnerEmail, No = 1 } } };
-            var expertRecords = recordRepository.Find("experts", findRequestExpert, false);
+            var expertRecords = _recordRepository.Find("experts", findRequestExpert, false);
 
             if (expertRecords.IsNullOrEmpty() || expertRecords.Count < 1)
             {
@@ -2759,7 +2789,7 @@ namespace PrimeApps.App.Helpers
             }
 
             var expertRecord = expertRecords[0];
-            var projectTeamModule = await moduleRepository.GetByName("project_team");
+            var projectTeamModule = await _moduleRepository.GetByName("project_team");
 
             foreach (var projectTotal in projectTotals)
             {
@@ -2772,7 +2802,7 @@ namespace PrimeApps.App.Helpers
                     }
                 };
 
-                var projectTeamRecords = recordRepository.Find("project_team", findRequestProjectTeam, false);
+                var projectTeamRecords = _recordRepository.Find("project_team", findRequestProjectTeam, false);
 
                 if (projectTeamRecords.IsNullOrEmpty() || projectTeamRecords.Count < 1)
                     continue;
@@ -2783,7 +2813,7 @@ namespace PrimeApps.App.Helpers
 
                 try
                 {
-                    var resultUpdate = await recordRepository.Update(projectTeamRecordUpdate, projectTeamModule);
+                    var resultUpdate = await _recordRepository.Update(projectTeamRecordUpdate, projectTeamModule);
 
                     if (resultUpdate < 1)
                     {
@@ -2801,14 +2831,14 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
-        public static async Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, RecordRepository recordRepository, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module)
+        public async Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module)
         {
             decimal balance = 0;
             switch (currency)
             {
                 case "try":
                     var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
-                    var accountCurrentAccountsTry = recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
+                    var accountCurrentAccountsTry = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
                     if (accountCurrentAccountsTry.Count > 0)
                     {
                         foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
@@ -2819,7 +2849,7 @@ namespace PrimeApps.App.Helpers
                                 balance -= (decimal)accountCurrentAccountTry["alacak"];
 
                             accountCurrentAccountTry["bakiye_tl"] = balance;
-                            await recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
+                            await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
                         }
 
                     }
@@ -2827,7 +2857,7 @@ namespace PrimeApps.App.Helpers
 
                 case "eur":
                     var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
-                    var accountCurrentAccountsEuro = recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
+                    var accountCurrentAccountsEuro = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
                     if (accountCurrentAccountsEuro.Count > 0)
                     {
                         foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
@@ -2838,14 +2868,14 @@ namespace PrimeApps.App.Helpers
                                 balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
 
                             accountCurrentAccountEuro["bakiye_euro"] = balance;
-                            await recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
+                            await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
                         }
                     }
                     break;
 
                 case "usd":
                     var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "customer", Operator = Operator.Equals, Value = module.Name == "sales_invoices" ? (int)record["account"] : (int)record["customer"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistSalesInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
-                    var accountCurrentAccountsUsd = recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
+                    var accountCurrentAccountsUsd = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
                     if (accountCurrentAccountsUsd.Count > 0)
                     {
                         foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
@@ -2856,7 +2886,7 @@ namespace PrimeApps.App.Helpers
                                 balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
 
                             accountCurrentAccountUsd["bakiye_usd"] = balance;
-                            await recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
+                            await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
                         }
                     }
                     break;
@@ -2865,14 +2895,14 @@ namespace PrimeApps.App.Helpers
             return balance;
         }
 
-        public static async Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, RecordRepository recordRepository, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module)
+        public async Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module)
         {
             decimal balance = 0;
             switch (currency)
             {
                 case "try":
                     var accountCurrentAccountsRequestTry = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "try").LabelEn, No = 2 } }, Limit = 9999 };
-                    var accountCurrentAccountsTry = recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
+                    var accountCurrentAccountsTry = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestTry);
                     if (accountCurrentAccountsTry.Count > 0)
                     {
                         foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
@@ -2883,7 +2913,7 @@ namespace PrimeApps.App.Helpers
                                 balance += (decimal)accountCurrentAccountTry["borc_tl"];
 
                             accountCurrentAccountTry["bakiye_tl"] = balance;
-                            await recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
+                            await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
                         }
 
                     }
@@ -2891,7 +2921,7 @@ namespace PrimeApps.App.Helpers
 
                 case "eur":
                     var accountCurrentAccountsRequestEuro = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "eur").LabelEn, No = 2 } }, Limit = 9999 };
-                    var accountCurrentAccountsEuro = recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
+                    var accountCurrentAccountsEuro = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestEuro);
                     if (accountCurrentAccountsEuro.Count > 0)
                     {
                         foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
@@ -2902,14 +2932,14 @@ namespace PrimeApps.App.Helpers
                                 balance += (decimal)accountCurrentAccountEuro["borc_euro"];
 
                             accountCurrentAccountEuro["bakiye_euro"] = balance;
-                            await recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
+                            await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
                         }
                     }
                     break;
 
                 case "usd":
                     var accountCurrentAccountsRequestUsd = new FindRequest { SortField = "date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "supplier", Operator = Operator.Equals, Value = module.Name == "purchase_invoices" ? (int)record["tedarikci"] : (int)record["supplier"], No = 1 }, new Filter { Field = "currency", Operator = Operator.Is, Value = appUser.TenantLanguage == "tr" ? currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelTr : currencyPicklistPurchaseInvoice.Items.Single(x => x.SystemCode == "usd").LabelEn, No = 2 } }, Limit = 9999 };
-                    var accountCurrentAccountsUsd = recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
+                    var accountCurrentAccountsUsd = _recordRepository.Find("current_accounts", accountCurrentAccountsRequestUsd);
                     if (accountCurrentAccountsUsd.Count > 0)
                     {
                         foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
@@ -2920,7 +2950,7 @@ namespace PrimeApps.App.Helpers
                                 balance += (decimal)accountCurrentAccountUsd["borc_usd"];
 
                             accountCurrentAccountUsd["bakiye_usd"] = balance;
-                            await recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
+                            await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
                         }
                     }
                     break;
@@ -2929,11 +2959,11 @@ namespace PrimeApps.App.Helpers
             return balance;
         }
 
-        public static async Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, RecordRepository recordRepository, Module kasaHareketiModule)
+        public async Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module kasaHareketiModule)
         {
             decimal balance = 0;
             var kasaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "kasa", Operator = Operator.Equals, Value = (int)record["kasa"], No = 1 } }, Limit = 9999 };
-            var kasaHareketleri = recordRepository.Find("kasa_hareketleri", kasaHareketleriRequest);
+            var kasaHareketleri = _recordRepository.Find("kasa_hareketleri", kasaHareketleriRequest);
             if (kasaHareketleri.Count > 0)
             {
                 foreach (JObject kasaHareketi in kasaHareketleri)
@@ -2946,7 +2976,7 @@ namespace PrimeApps.App.Helpers
                         balance += (decimal)kasaHareketi["borc"];
 
                     kasaHareketi["bakiye"] = balance;
-                    await recordRepository.Update(kasaHareketi, kasaHareketiModule);
+                    await _recordRepository.Update(kasaHareketi, kasaHareketiModule);
                 }
 
             }
@@ -2954,11 +2984,11 @@ namespace PrimeApps.App.Helpers
             return balance;
         }
 
-        public static async Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, RecordRepository recordRepository, Module bankaHareketiModule)
+        public async Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule)
         {
             decimal balance = 0;
             var bankaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "banka", Operator = Operator.Equals, Value = (int)record["banka"], No = 1 } }, Limit = 9999 };
-            var bankaHareketleri = recordRepository.Find("banka_hareketleri", bankaHareketleriRequest);
+            var bankaHareketleri = _recordRepository.Find("banka_hareketleri", bankaHareketleriRequest);
             if (bankaHareketleri.Count > 0)
             {
                 foreach (JObject bankaHareketi in bankaHareketleri)
@@ -2971,7 +3001,7 @@ namespace PrimeApps.App.Helpers
                         balance += (decimal)bankaHareketi["borc"];
 
                     bankaHareketi["bakiye"] = balance;
-                    await recordRepository.Update(bankaHareketi, bankaHareketiModule);
+                    await _recordRepository.Update(bankaHareketi, bankaHareketiModule);
                 }
 
             }
@@ -2979,19 +3009,19 @@ namespace PrimeApps.App.Helpers
             return balance;
         }
 
-        public static async Task<decimal> CalculateStock(JObject record, UserItem appUser, RecordRepository recordRepository, Module stockTransactionModule, PicklistRepository picklistRepository)
+        public async Task<decimal> CalculateStock(JObject record, UserItem appUser, Module stockTransactionModule)
         {
             decimal balance = 0;
             var stockTransactionRequest = new FindRequest { SortField = "transaction_date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 1 } }, Limit = 9999 };
-            var stockTransactions = recordRepository.Find("stock_transactions", stockTransactionRequest);
+            var stockTransactions = _recordRepository.Find("stock_transactions", stockTransactionRequest);
             if (stockTransactions.Count > 0)
             {
                 var transactionTypePicklist = stockTransactionModule.Fields.Single(x => x.Name == "stock_transaction_type");
-                var transactionsTypes = await picklistRepository.GetById(transactionTypePicklist.PicklistId.Value);
+                var transactionsTypes = await _picklistRepository.GetById(transactionTypePicklist.PicklistId.Value);
 
                 foreach (JObject stockTransaction in stockTransactions)
                 {
-                    var transactionTypePicklistItem = await picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
+                    var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
                     if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
                     {
                         balance += (decimal)stockTransaction["quantity"];
@@ -3002,7 +3032,7 @@ namespace PrimeApps.App.Helpers
                     }
 
                     stockTransaction["bakiye"] = balance;
-                    await recordRepository.Update(stockTransaction, stockTransactionModule);
+                    await _recordRepository.Update(stockTransaction, stockTransactionModule);
                 }
 
             }

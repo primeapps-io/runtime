@@ -13,15 +13,45 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class ProcessHelper
-    {
-        public static async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime)
+	public interface IProcessHelper
+	{
+		Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse,
+			ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+		Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage);
+		Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage);
+		Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+		Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse);
+		Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+		Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+	}
+
+
+	public class ProcessHelper : IProcessHelper
+	{
+		private IModuleRepository _moduleRepository;
+		private IPicklistRepository _picklistRepository;
+		private IHttpContextAccessor _context;
+		private IWorkflowHelper _workflowHelper;
+		private ICalculationHelper _calculationHelper;
+	    public ProcessHelper(IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IWorkflowHelper workflowHelper, ICalculationHelper calculationHelper, IHttpContextAccessor context)
+	    {
+		    _context = context;
+		    _moduleRepository = moduleRepository;
+			_picklistRepository = picklistRepository;
+		    _picklistRepository.CurrentUser = _moduleRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+
+			_workflowHelper = workflowHelper;
+		    _calculationHelper = calculationHelper;
+	    }
+
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -78,7 +108,7 @@ namespace PrimeApps.App.Helpers
 
                                 lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                 if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                    await CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert);
+                                    await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest);
 
                                 record = recordRepository.GetById(module, (int)record["id"], false, lookupModules);
                             }
@@ -475,7 +505,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async static Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository)
+        public async Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage)
         {
             var process = new Process
             {
@@ -493,7 +523,7 @@ namespace PrimeApps.App.Helpers
 
             if (processModel.Filters != null && processModel.Filters.Count > 0)
             {
-                var module = await moduleRepository.GetById(processModel.ModuleId);
+                var module = await _moduleRepository.GetById(processModel.ModuleId);
                 var picklistItemIds = new List<int>();
                 process.Filters = new List<ProcessFilter>();
 
@@ -519,7 +549,7 @@ namespace PrimeApps.App.Helpers
                 ICollection<PicklistItem> picklistItems = null;
 
                 if (picklistItemIds.Count > 0)
-                    picklistItems = await picklistRepository.FindItems(picklistItemIds);
+                    picklistItems = await _picklistRepository.FindItems(picklistItemIds);
 
                 foreach (var filterModel in processModel.Filters)
                 {
@@ -577,7 +607,7 @@ namespace PrimeApps.App.Helpers
             return process;
         }
 
-        public static async Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository)
+        public async Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage)
         {
             process.Name = processModel.Name;
             process.Frequency = processModel.Frequency;
@@ -591,7 +621,7 @@ namespace PrimeApps.App.Helpers
                 if (process.Filters == null)
                     process.Filters = new List<ProcessFilter>();
 
-                var module = await moduleRepository.GetById(processModel.ModuleId);
+                var module = await _moduleRepository.GetById(processModel.ModuleId);
                 var picklistItemIds = new List<int>();
 
                 foreach (var filterModel in processModel.Filters)
@@ -616,7 +646,7 @@ namespace PrimeApps.App.Helpers
                 ICollection<PicklistItem> picklistItems = null;
 
                 if (picklistItemIds.Count > 0)
-                    picklistItems = await picklistRepository.FindItems(picklistItemIds);
+                    picklistItems = await _picklistRepository.FindItems(picklistItemIds);
 
                 foreach (var filterModel in processModel.Filters)
                 {
@@ -674,7 +704,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse)
+        public async Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -722,7 +752,7 @@ namespace PrimeApps.App.Helpers
 
                                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                         if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+                                            await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest);
 
                                         record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                                         var approverMail = (string)record["custom_approver_2"];
@@ -850,7 +880,7 @@ namespace PrimeApps.App.Helpers
 
                                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                         if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+                                            await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest);
 
                                         record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                                     }
@@ -1040,7 +1070,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse)
+        public async Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -1160,7 +1190,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse)
+        public async Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -1206,7 +1236,7 @@ namespace PrimeApps.App.Helpers
 
                                     lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
                                     if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                        await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert);
+                                        await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest);
 
                                     record = recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                                     var approverMail = (string)record["custom_approver"];
@@ -1389,7 +1419,7 @@ namespace PrimeApps.App.Helpers
         //    }
         //}
 
-        public static async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse)
+        public async Task AfterCreateProcess(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -1403,10 +1433,10 @@ namespace PrimeApps.App.Helpers
                         var process = await processRepository.GetById(request.ProcessId);
 
                         var record = recordRepository.GetById(process.Module, request.RecordId, false);
-                        await WorkflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse);
-
+                        await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+						
                         if (process.Module.Name == "izinler" && request.Status == Model.Enums.ProcessStatus.Approved)
-                            await CalculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update);
+                            await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, GetAllFieldsForFindRequest);
                     }
                 }
             }

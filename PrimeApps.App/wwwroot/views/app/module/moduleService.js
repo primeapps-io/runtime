@@ -2332,27 +2332,27 @@ angular.module('primeapps')
                                         sBitis = moment(toDate).format(format);
 
                                     var di = 0;
-                                    if (moment(oBaslangic, format).isBefore(moment(sBaslangic, format)) || moment(oBaslangic, format).isSame(moment(sBaslangic, format))) {
-                                        if (moment(oBitis, format).isBefore(moment(sBaslangic, format))) {
-                                            //console.log("t1 t2 ba bi")
-                                            di = 0;
-                                        } else if (moment(oBitis, format).isBefore(moment(sBitis, format))) {
-                                            di = moment(oBitis, format).diff(moment(sBaslangic, format), 'minutes') / 60;
-                                            //console.log("t1 ba t2 bi");
-                                        } else {
-                                            di = calculatedField;
-                                            //console.log("t1 ba bi t2");
-                                        }
-                                    } else if (moment(oBaslangic, format).isBefore(moment(sBitis, format)) || moment(oBaslangic, format).isSame(moment(sBitis, format))) {
-                                        // t1 bi
-                                        if (moment(oBitis, format).isBefore(moment(sBitis, format))) {
-                                            //console.log("ba t1 t2 bi");
-                                            di = moment(oBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
-                                        } else if (moment(oBitis, format).isAfter(moment(sBitis, format))) {
-                                            //console.log("ba t1 bi t2");
-                                            di = moment(sBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
-                                        }
-                                    }
+									if (moment(oBaslangic, format).isSameOrBefore(moment(sBaslangic, format))) {
+										if (moment(oBitis, format).isSameOrBefore(moment(sBaslangic, format))) {
+											//console.log("t1 t2 ba bi")
+											di = 0;
+										} else if (moment(oBitis, format).isSameOrBefore(moment(sBitis, format))) {
+											di = moment(oBitis, format).diff(moment(sBaslangic, format), 'minutes') / 60;
+											//console.log("t1 ba t2 bi");
+										} else {
+											di = calculatedField;
+											//console.log("t1 ba bi t2");
+										}
+									} else if (moment(oBaslangic, format).isSameOrBefore(moment(sBitis, format))) {
+										// t1 bi
+										if (moment(oBitis, format).isSameOrBefore(moment(sBitis, format))) {
+											//console.log("ba t1 t2 bi");
+											di = moment(oBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
+										} else if (moment(oBitis, format).isSameOrAfter(moment(sBitis, format))) {
+											//console.log("ba t1 bi t2");
+											di = moment(sBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
+										}
+									}
                                     /*else if(moment(oBaslangictime, format).isAfter(moment(sBitis, format))){
                                      console.log("ba bi t1 t2");
                                      } else {

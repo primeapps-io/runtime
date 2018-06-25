@@ -25,13 +25,19 @@ namespace PrimeApps.App.Controllers
         private IPicklistRepository _picklistRepository;
         private IUserRepository _userRepository;
 
-        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository)
+	    private IRecordHelper _recordHelper;
+	    private IReportHelper _reportHelper;
+
+        public ReportController(IReportRepository reportRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IUserRepository userRepository, IRecordHelper recordHelper, IReportHelper reportHelper)
         {
             _reportRepository = reportRepository;
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _userRepository = userRepository;
+
+	        _recordHelper = recordHelper;
+	        _reportHelper = reportHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -104,12 +110,12 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ReportBindingModel report)
         {
-            ReportHelper.Validate(report, ModelState);
+            _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var reportEntity = await ReportHelper.CreateEntity(report, _userRepository);
+            var reportEntity = await _reportHelper.CreateEntity(report);
             var resultReport = await _reportRepository.Create(reportEntity);
 
             if (resultReport < 1)
@@ -119,7 +125,7 @@ namespace PrimeApps.App.Controllers
 
             if (report.ReportType == ReportType.Summary)
             {
-                var chartEntity = ReportHelper.CreateChartEntity(report.Chart, reportEntity.Id);
+                var chartEntity = _reportHelper.CreateChartEntity(report.Chart, reportEntity.Id);
                 var resultChart = await _reportRepository.CreateChart(chartEntity);
 
                 if (resultChart < 1)
@@ -132,7 +138,7 @@ namespace PrimeApps.App.Controllers
 
             if (report.ReportType == ReportType.Single)
             {
-                var widgetEntity = ReportHelper.CreateWidgetEntity(report.Widget, reportEntity.Id);
+                var widgetEntity = _reportHelper.CreateWidgetEntity(report.Widget, reportEntity.Id);
                 var resultWidget = await _reportRepository.CreateWidget(widgetEntity);
 
                 if (resultWidget < 1)
@@ -151,7 +157,7 @@ namespace PrimeApps.App.Controllers
         [Route("update/{id:int}"), HttpPut]
         public async Task<IActionResult> Update(int id, [FromBody]ReportBindingModel report)
         {
-            ReportHelper.Validate(report, ModelState);
+            _reportHelper.Validate(report, ModelState, _recordHelper.ValidateFilterLogic);
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -178,20 +184,20 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            await ReportHelper.UpdateEntity(report, reportEntity, _userRepository);
+            await _reportHelper.UpdateEntity(report, reportEntity);
             await _reportRepository.Update(reportEntity, currentFieldIds, currentFilterIds, currentAggregationIds);
 
             if (report.ReportType == ReportType.Summary)
             {
                 var currentChartEntity = await _reportRepository.GetChartByReportId(reportEntity.Id);
-                var chartEntity = ReportHelper.UpdateChartEntity(report.Chart, currentChartEntity);
+                var chartEntity = _reportHelper.UpdateChartEntity(report.Chart, currentChartEntity);
                 await _reportRepository.UpdateChart(chartEntity);
             }
 
             if (report.ReportType == ReportType.Single)
             {
                 var currentWidgetEntity = await _reportRepository.GetWidgetByReportId(reportEntity.Id);
-                var widgetEntity = ReportHelper.UpdateWidgetEntity(report.Widget, currentWidgetEntity);
+                var widgetEntity = _reportHelper.UpdateWidgetEntity(report.Widget, currentWidgetEntity);
                 await _reportRepository.UpdateWidget(widgetEntity);
             }
 
@@ -225,7 +231,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var reportCategoryEntity = ReportHelper.CreateCategoryEntity(reportCategory);
+            var reportCategoryEntity = _reportHelper.CreateCategoryEntity(reportCategory);
             var result = await _reportRepository.CreateCategory(reportCategoryEntity);
 
             if (result < 1)
@@ -248,7 +254,7 @@ namespace PrimeApps.App.Controllers
             if (reportCategoryEntity == null)
                 return NotFound();
 
-            ReportHelper.UpdateCategoryEntity(reportCategory, reportCategoryEntity);
+	        _reportHelper.UpdateCategoryEntity(reportCategory, reportCategoryEntity);
             await _reportRepository.UpdateCategory(reportCategoryEntity);
 
             return Ok(reportCategoryEntity);

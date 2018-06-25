@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common;
@@ -12,9 +13,35 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class ReportHelper
+	public interface IReportHelper
+	{
+		Task<Report> CreateEntity(ReportBindingModel reportModel);
+		Task UpdateEntity(ReportBindingModel reportModel, Report report);
+		ReportViewModel MapToViewModel(Report report);
+		List<ReportViewModel> MapToViewModel(ICollection<Report> reports);
+		ReportCategory CreateCategoryEntity(ReportCategoryBindingModel reportCategoryModel);
+
+		ReportCategory UpdateCategoryEntity(ReportCategoryBindingModel reportCategoryModel, ReportCategory reportCategory);
+		Chart CreateChartEntity(ChartBindingModel chartModel, int reportId);
+		Chart UpdateChartEntity(ChartBindingModel chartModel, Chart chart);
+		Widget CreateWidgetEntity(WidgetBindingModel widgetModel, int reportId);
+		Widget UpdateWidgetEntity(WidgetBindingModel widgetModel, Widget widget);
+		void Validate(ReportBindingModel report, ModelStateDictionary modelState, ValidateFilterLogic ValidateFilterLogic);
+		Task CreateReportRelations(ReportBindingModel reportModel, Report report);
+	}
+
+    public class ReportHelper : IReportHelper
     {
-        public static async Task<Report> CreateEntity(ReportBindingModel reportModel, IUserRepository userRepository)
+	    private IHttpContextAccessor _context;
+		private IUserRepository _userRepository;
+	    public ReportHelper(IUserRepository userRepository, IHttpContextAccessor context)
+	    {
+		    _context = context;
+		    _userRepository = userRepository;
+
+		    _userRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+		}
+        public async Task<Report> CreateEntity(ReportBindingModel reportModel)
         {
             var report = new Report
             {
@@ -33,12 +60,12 @@ namespace PrimeApps.App.Helpers
                 Aggregations = new List<ReportAggregation>()
             };
 
-            await CreateReportRelations(reportModel, report, userRepository);
+            await CreateReportRelations(reportModel, report);
 
             return report;
         }
 
-        public static async Task UpdateEntity(ReportBindingModel reportModel, Report report, IUserRepository userRepository)
+        public async Task UpdateEntity(ReportBindingModel reportModel, Report report)
         {
             report.Name = reportModel.Name;
             report.ModuleId = reportModel.ModuleId;
@@ -50,10 +77,10 @@ namespace PrimeApps.App.Helpers
             report.SharingType = reportModel.SharingType != ReportSharingType.NotSet ? reportModel.SharingType : ReportSharingType.Me;
             report.FilterLogic = reportModel.FilterLogic;
 
-            await CreateReportRelations(reportModel, report, userRepository);
+            await CreateReportRelations(reportModel, report);
         }
 
-        public static ReportViewModel MapToViewModel(Report report)
+        public ReportViewModel MapToViewModel(Report report)
         {
             var reportViewModel = new ReportViewModel
             {
@@ -119,13 +146,12 @@ namespace PrimeApps.App.Helpers
             return reportViewModel;
         }
 
-
-        public static List<ReportViewModel> MapToViewModel(ICollection<Report> reports)
+        public List<ReportViewModel> MapToViewModel(ICollection<Report> reports)
         {
             return reports.Select(MapToViewModel).ToList();
         }
 
-        public static ReportCategory CreateCategoryEntity(ReportCategoryBindingModel reportCategoryModel)
+        public ReportCategory CreateCategoryEntity(ReportCategoryBindingModel reportCategoryModel)
         {
             var reportCategory = new ReportCategory
             {
@@ -137,7 +163,7 @@ namespace PrimeApps.App.Helpers
             return reportCategory;
         }
 
-        public static ReportCategory UpdateCategoryEntity(ReportCategoryBindingModel reportCategoryModel, ReportCategory reportCategory)
+        public ReportCategory UpdateCategoryEntity(ReportCategoryBindingModel reportCategoryModel, ReportCategory reportCategory)
         {
             reportCategory.Name = reportCategoryModel.Name;
             reportCategory.Order = reportCategoryModel.Order;
@@ -146,7 +172,7 @@ namespace PrimeApps.App.Helpers
             return reportCategory;
         }
 
-        public static Chart CreateChartEntity(ChartBindingModel chartModel, int reportId)
+        public Chart CreateChartEntity(ChartBindingModel chartModel, int reportId)
         {
             var chart = new Chart
             {
@@ -162,7 +188,7 @@ namespace PrimeApps.App.Helpers
             return chart;
         }
 
-        public static Chart UpdateChartEntity(ChartBindingModel chartModel, Chart chart)
+        public Chart UpdateChartEntity(ChartBindingModel chartModel, Chart chart)
         {
             chart.ChartType = chartModel.Type;
             chart.Caption = chartModel.Caption;
@@ -174,7 +200,7 @@ namespace PrimeApps.App.Helpers
             return chart;
         }
 
-        public static Widget CreateWidgetEntity(WidgetBindingModel widgetModel, int reportId)
+        public Widget CreateWidgetEntity(WidgetBindingModel widgetModel, int reportId)
         {
             var widget = new Widget
             {
@@ -188,7 +214,7 @@ namespace PrimeApps.App.Helpers
             return widget;
         }
 
-        public static Widget UpdateWidgetEntity(WidgetBindingModel widgetModel, Widget widget)
+        public Widget UpdateWidgetEntity(WidgetBindingModel widgetModel, Widget widget)
         {
             widget.WidgetType = widgetModel.WidgetType;
             widget.Name = widgetModel.Name;
@@ -198,9 +224,9 @@ namespace PrimeApps.App.Helpers
             return widget;
         }
 
-        public static void Validate(ReportBindingModel report, ModelStateDictionary modelState)
+        public void Validate(ReportBindingModel report, ModelStateDictionary modelState, ValidateFilterLogic ValidateFilterLogic)
         {
-            if (!RecordHelper.ValidateFilterLogic(report.FilterLogic, report.Filters))
+            if (!ValidateFilterLogic(report.FilterLogic, report.Filters))
                 modelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
 
             if (report.ReportType == ReportType.Tabular && (report.Fields == null || report.Fields.Count < 1))
@@ -222,7 +248,7 @@ namespace PrimeApps.App.Helpers
                 modelState.AddModelError("request._widget", "Widget cannot be null when report type is single");
         }
 
-        private static async Task CreateReportRelations(ReportBindingModel reportModel, Report report, IUserRepository userRepository)
+        public async Task CreateReportRelations(ReportBindingModel reportModel, Report report)
         {
             if (reportModel.Fields != null)
             {
@@ -274,7 +300,7 @@ namespace PrimeApps.App.Helpers
 
                 foreach (var userId in reportModel.Shares)
                 {
-                    var sharedUser = await userRepository.GetById(userId);
+                    var sharedUser = await _userRepository.GetById(userId);
 
                     if (sharedUser != null)
                         report.Shares.Add(new ReportShares { TenantUser = sharedUser });

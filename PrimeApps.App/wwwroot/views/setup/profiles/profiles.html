@@ -27,7 +27,7 @@
                         </thead>
                         <tbody>
                         <tr ng-repeat="profile in profiles">
-                            <td class="profile-name"><a href="#/app/setup/profile?id={{profile.id}}">{{profile.Name}}</a></td>
+                            <td class="profile-name"><a href="#/app/setup/profile?id={{profile.id}}">{{profile.name}}</a></td>
                             <td class="profile-description">{{profile.description}}</td>
                             <td class="text-right">
                                 <a href="#/app/setup/profile?clone={{profile.id}}" class="btn btn-xs btn-custom">{{'Common.Copy' | translate}}</a>

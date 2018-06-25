@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.App.Models
 {
-	public class ActivateBindingModels
+	public class CreateBindingModels
 	{
 		[DataMember(Name = "email"), Required]
 		public string Email { get; set; }

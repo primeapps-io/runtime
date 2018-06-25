@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -23,7 +24,10 @@ namespace PrimeApps.Model.Repositories
 
 		public async Task<PlatformUser> Get(int platformUserId)
 		{
-			return await DbContext.Users.Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
+			return await DbContext.Users
+				.Include(x => x.TenantsAsUser)
+				.Where(x => x.Id == platformUserId)
+				.SingleOrDefaultAsync();
 		}
 
 		public async Task<PlatformUser> Get(string email)
@@ -140,10 +144,8 @@ namespace PrimeApps.Model.Repositories
 		/// </summary>
 		/// <param name="email"></param>
 		/// <returns></returns>
-		public async Task<bool> IsEmailAvailable(string email, int appId)
+		public async Task<EmailAvailableType> IsEmailAvailable(string email, int appId)
 		{
-			bool status = true;
-
 			//get session and check the email address
 			//TODO Removed
 			var user = await DbContext.Users.Include(x => x.TenantsAsUser).Include(x => x.TenantsAsOwner).Where(x => x.Email == email).SingleOrDefaultAsync();
@@ -151,12 +153,11 @@ namespace PrimeApps.Model.Repositories
 			{
 				var appTenant = user.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == appId);
 
-				if (appTenant != null)
-					status = false;
+				return appTenant != null ? EmailAvailableType.NotAvailable : EmailAvailableType.AvailableForApp;
 			}
 
 			//return status.
-			return status;
+			return EmailAvailableType.Available;
 		}
 
 		/// <summary>

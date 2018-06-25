@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace PrimeApps.App.Models
 {
@@ -33,25 +35,29 @@ namespace PrimeApps.App.Models
         [DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [Display(Name = "Current password")]
-        public string OldPassword { get; set; }
+        [JsonProperty("old_password")]
+		public string OldPassword { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
-        public string NewPassword { get; set; }
+        [JsonProperty("new_password")]
+		public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        [JsonProperty("confirm_password")]
+		public string ConfirmPassword { get; set; }
     }
 
     public class RegisterBindingModel
     {
         [Required]
         [Display(Name = "Email")]
-        public string Email { get; set; }
+		[JsonProperty("email")]
+		public string Email { get; set; }
 
         [Required]
         [Display(Name = "Phone")]
@@ -61,17 +67,20 @@ namespace PrimeApps.App.Models
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        public string Password { get; set; }
+		[JsonProperty("password")]
+		public string Password { get; set; }
 
         [Required]
         [StringLength(40, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [Display(Name = "First Name")]
-        public string FirstName { get; set; }
+		[JsonProperty("first_name")]
+		public string FirstName { get; set; }
 
         [Required]
         [StringLength(40, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 2)]
         [Display(Name = "Last Name")]
-        public string LastName { get; set; }
+		[JsonProperty("last_name")]
+		public string LastName { get; set; }
 
         [Required]
         [Display(Name = "License")]

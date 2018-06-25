@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -18,7 +19,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 
 		Task UpdateAsync(PlatformUser userToEdit);
         Task<PlatformUser> GetUserByAutoId(int tenantID);
-		Task<bool> IsEmailAvailable(string email, int appId);
+		Task<EmailAvailableType> IsEmailAvailable(string email, int appId);
 		Task<Tenant> GetTenantWithOwner(int tenantId);
 
 		Task<bool> IsActiveDirectoryEmailAvailable(string email);

@@ -8,9 +8,13 @@ using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class ChangeLogHelper
+	public interface IChangeLogHelper
+	{
+		Task<bool> CreateLog(UserItem appUser, JObject record, Module module);
+	}
+    public class ChangeLogHelper : IChangeLogHelper
     {
-        public static async Task<bool> CreateLog(UserItem appUser, JObject record, Module module)
+        public async Task<bool> CreateLog(UserItem appUser, JObject record, Module module)
         {
             int result = 0;
             using (var databaseContext = new TenantDBContext(appUser.TenantId))

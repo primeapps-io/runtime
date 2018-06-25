@@ -138,7 +138,7 @@
   <data name="Password" xml:space="preserve">
     <value>Password</value>
   </data>
-  <data name="SignWithOffice" xml:space="preserve">
+  <data name="Azure AD" xml:space="preserve">
     <value>Fast access with Office 365</value>
   </data>
   <data name="TR" xml:space="preserve">
@@ -155,5 +155,8 @@
   </data>
   <data name="PasswordMinimum" xml:space="preserve">
     <value>Password must be minimum 6 characters.</value>
+  </data>
+  <data name="Google" xml:space="preserve">
+    <value>Fast access with Google</value>
   </data>
 </root>

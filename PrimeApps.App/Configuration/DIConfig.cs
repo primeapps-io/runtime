@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Helpers;
 using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
 using Hangfire;
 using PrimeApps.App.Services;
@@ -14,6 +13,10 @@ using System;
 using System.Configuration;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Helpers;
+using PrimeApps.Model.Helpers;
+using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
+
 namespace PrimeApps.App
 {
 	public partial class Startup
@@ -70,6 +73,24 @@ namespace PrimeApps.App
 				}
 
 			}
+
+			//Background Tasks DI
+			services.AddHostedService<QueuedHostedService>();
+			services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+			services.AddScoped<PrimeApps.App.Helpers.IRecordHelper, PrimeApps.App.Helpers.RecordHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.IAuditLogHelper, PrimeApps.App.Helpers.AuditLogHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.ICalculationHelper, PrimeApps.App.Helpers.CalculationHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.IChangeLogHelper, PrimeApps.App.Helpers.ChangeLogHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.IIntegration, PrimeApps.App.Helpers.Integration>();
+			services.AddScoped<PrimeApps.App.Helpers.IModuleHelper, PrimeApps.App.Helpers.ModuleHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.IProcessHelper, PrimeApps.App.Helpers.ProcessHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.IReportHelper, PrimeApps.App.Helpers.ReportHelper>();
+			services.AddScoped<PrimeApps.App.Helpers.IWorkflowHelper, PrimeApps.App.Helpers.WorkflowHelper>();
+			services.AddScoped<PrimeApps.App.Notifications.INotificationHelper, PrimeApps.App.Notifications.NotificationHelper>();
+
+
+			//Background Tasks DI End
 
 			services.AddScoped<WarehouseHelper, WarehouseHelper>();
 			services.AddScoped<Warehouse, Warehouse>();

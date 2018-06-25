@@ -138,7 +138,7 @@
   <data name="Password" xml:space="preserve">
     <value>Şifre</value>
   </data>
-  <data name="SignWithOffice" xml:space="preserve">
+  <data name="Azure AD" xml:space="preserve">
     <value>Office 365 ile hızlı erişim</value>
   </data>
   <data name="TR" xml:space="preserve">
@@ -155,5 +155,8 @@
   </data>
   <data name="PasswordMinimum" xml:space="preserve">
     <value>Lütfen parola olarak minimum 6 (altı) karakter giriniz.</value>
+  </data>
+  <data name="Google" xml:space="preserve">
+    <value>Google ile hızlı erişim</value>
   </data>
 </root>

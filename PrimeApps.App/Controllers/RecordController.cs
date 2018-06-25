@@ -31,12 +31,16 @@ namespace PrimeApps.App.Controllers
         private IPicklistRepository _picklistRepository;
         private Warehouse _warehouse;
 
-        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, Warehouse warehouse)
+	    private IRecordHelper _recordHelper;
+
+        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse)
         {
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _warehouse = warehouse;
+
+	        _recordHelper = recordHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -129,7 +133,7 @@ namespace PrimeApps.App.Controllers
             if (request == null)
                 request = new FindRequest();
 
-            if (!RecordHelper.ValidateFilterLogic(request.FilterLogic, request.Filters))
+            if (!_recordHelper.ValidateFilterLogic(request.FilterLogic, request.Filters))
                 ModelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
 
             if (!ModelState.IsValid)
@@ -252,7 +256,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage);
 
             if (resultBefore < 0 && !ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -268,12 +272,12 @@ namespace PrimeApps.App.Controllers
 
                 // If module is opportunities create stage history
                 if (module == "opportunities")
-                    await RecordHelper.CreateStageHistory(record, _recordRepository, _moduleRepository);
+                    await _recordHelper.CreateStageHistory(record);
             }
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -304,7 +308,7 @@ namespace PrimeApps.App.Controllers
                     {
                         foreach (var combinationField in combinationFields)
                         {
-                            RecordHelper.SetCombinations(currentRecord, null, combinationField);
+	                        _recordHelper.SetCombinations(currentRecord, null, combinationField);
                         }
 
                         hasUpdate = true;
@@ -327,8 +331,8 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            //After create
-            RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
+			//After create
+	        _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
 
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
@@ -370,7 +374,7 @@ namespace PrimeApps.App.Controllers
             if (currentRecord == null)
                 return BadRequest("Record not found!");
 
-            var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, true, currentRecord, AppUser);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, true, currentRecord, AppUser);
 
             //if ((bool)record["freeze"])
             //    return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -389,12 +393,12 @@ namespace PrimeApps.App.Controllers
 
                 // If module is opportunities update stage history
                 if (module == "opportunities")
-                    await RecordHelper.UpdateStageHistory(record, currentRecord, _recordRepository, _moduleRepository);
+                    await _recordHelper.UpdateStageHistory(record, currentRecord);
             }
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -407,9 +411,9 @@ namespace PrimeApps.App.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
+	        _recordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
 
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
@@ -435,7 +439,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await RecordHelper.BeforeDelete(moduleEntity, record, AppUser);
+            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -445,7 +449,7 @@ namespace PrimeApps.App.Controllers
 
             var deletedRecordCount = await _recordRepository.Delete(record, moduleEntity);
 
-            RecordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
+	        _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
 
             return Ok(deletedRecordCount);
         }
@@ -463,7 +467,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -479,12 +483,12 @@ namespace PrimeApps.App.Controllers
 
                     // If module is opportunities create stage history
                     if (module == "opportunities")
-                        await RecordHelper.CreateStageHistory(record, _recordRepository, _moduleRepository);
+                        await _recordHelper.CreateStageHistory(record);
                 }
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -497,10 +501,10 @@ namespace PrimeApps.App.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                //After create
-                RecordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
+				//After create
+	            _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
 
             }
 
@@ -521,7 +525,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                await RecordHelper.BeforeDelete(moduleEntity, record, AppUser);
+                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser);
 
 
                 if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
@@ -556,7 +560,7 @@ namespace PrimeApps.App.Controllers
                 if (currentRecord.IsNullOrEmpty())
                     return BadRequest("Record not found!");
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, true, currentRecord, AppUser);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, recordUpdate, ModelState, AppUser.TenantLanguage, true, currentRecord, AppUser);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -573,12 +577,12 @@ namespace PrimeApps.App.Controllers
 
                     // If module is opportunities update stage history
                     if (module == "opportunities")
-                        await RecordHelper.UpdateStageHistory(recordUpdate, currentRecord, _recordRepository, _moduleRepository);
+                        await _recordHelper.UpdateStageHistory(recordUpdate, currentRecord);
                 }
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
@@ -592,9 +596,9 @@ namespace PrimeApps.App.Controllers
 
                 if (resultUpdate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
+	            _recordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
             }
 
             return Ok();

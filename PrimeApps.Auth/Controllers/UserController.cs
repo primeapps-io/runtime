@@ -18,10 +18,12 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PrimeApps.Auth.Controllers
 {
 	[Route("user")]
+	[SecurityHeaders]
 	public class UserController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
@@ -45,7 +47,7 @@ namespace PrimeApps.Auth.Controllers
 		{
 			if (email == null || token == null)
 			{
-				ModelState.AddModelError("", "Your url must be like register/{organization}/{app}");
+				ModelState.AddModelError("", "email and token are required.");
 				return BadRequest(ModelState);
 			}
 			var user = await _userManager.FindByEmailAsync(email);
@@ -145,7 +147,8 @@ namespace PrimeApps.Auth.Controllers
 		}
 
 		[Route("confirm_token"), HttpGet]
-		public async Task<IActionResult> ConfirmTokenAsync(string email) {
+		public async Task<IActionResult> ConfirmTokenAsync(string email)
+		{
 			var user = await _userManager.FindByEmailAsync(email);
 			if (user == null)
 				return StatusCode(404, "{message:' user not found'}");
@@ -155,31 +158,30 @@ namespace PrimeApps.Auth.Controllers
 			return StatusCode(200, "{token:'" + Json(await GetConfirmToken(user) + "'}"));
 		}
 
-		[Route("add_user"), HttpPost]
-		public async Task<IActionResult> AddUser([FromQuery(Name = "email")] string email, [FromQuery(Name = "password")] string password, [FromQuery(Name = "firstName")] string firstName = "", [FromQuery(Name = "lastName")] string lastName = "")
+		[Route("register"), HttpPost]
+		public async Task<IActionResult> Register([FromBody]RegisterViewModel registerViewModel)
 		{
-			if (string.IsNullOrEmpty(email))
+			if (!ModelState.IsValid)
 			{
-				ModelState.AddModelError("", "email is required");
+				ModelState.AddModelError("", "ModelState is not valid.");
 				return BadRequest(ModelState);
 			}
 
-			var model = new RegisterViewModel
-			{
-				Email = email,
-				FirstName = firstName,
-				LastName = lastName,
-				Password = password
-			};
+			var user = await _userManager.FindByNameAsync(registerViewModel.Email);
 
-			var result = await AddUser(model);
+			//If user already registered check email is confirmed. If not return confirm token with status code.
+			if (user != null)
+				return !user.EmailConfirmed ? StatusCode(201, new { token = await GetConfirmToken(user) }) : (IActionResult)StatusCode(201);
+
+
+			var result = await AddUser(registerViewModel);
 			if (!string.IsNullOrWhiteSpace(result))
 				return BadRequest(result);
 
-			var user = await _userManager.FindByNameAsync(model.Email);
+			user = await _userManager.FindByNameAsync(registerViewModel.Email);
 			var token = await GetConfirmToken(user);
 
-			return Ok("@{ token: "+ token +"}");
+			return StatusCode(201, new { token });
 		}
 
 		[HttpGet]
@@ -194,12 +196,17 @@ namespace PrimeApps.Auth.Controllers
 			return Ok();
 		}
 
-		[HttpPost]
-		public IActionResult ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel)
+		[Route("change_password"), HttpPost, Authorize]
+		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel)
 		{
-			return Ok();
-		}
+			if (HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
+				return Unauthorized();
 
+			var user = await _userManager.FindByEmailAsync(HttpContext.User.FindFirst("email").Value);
+			var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
+
+			return result.Succeeded ? Ok() : StatusCode(400);
+		}
 		public async Task<string> AddUser(RegisterViewModel registerViewModel)
 		{
 			var user = new ApplicationUser
@@ -230,5 +237,6 @@ namespace PrimeApps.Auth.Controllers
 		{
 			return await _userManager.GenerateEmailConfirmationTokenAsync(user);
 		}
+
 	}
 }

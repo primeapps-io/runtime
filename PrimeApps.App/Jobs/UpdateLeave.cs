@@ -18,6 +18,12 @@ namespace PrimeApps.App.Jobs
 {
     public class UpdateLeave
     {
+	    private ICalculationHelper _calculationHelper;
+	    public UpdateLeave(ICalculationHelper calculationHelper)
+	    {
+		    _calculationHelper = calculationHelper;
+	    }
+
         [CommonQueue, AutomaticRetry(Attempts = 0), DisableConcurrentExecution(360)]
         public async Task Update()
         {
@@ -146,7 +152,7 @@ namespace PrimeApps.App.Jobs
                                                 calisan["devreden_izin"] = devredecekIzin;
                                                 await recordRepository.Update(calisan, module);
 
-                                                await CalculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinler["id"], recordRepository, moduleRepository);
+                                                await _calculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinler["id"]);
                                             }
 
                                         }

@@ -18,6 +18,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using PrimeApps.App.Helpers;
 
 
 namespace PrimeApps.App.Controllers
@@ -33,7 +34,9 @@ namespace PrimeApps.App.Controllers
         private IConversionMappingRepository _conversionMappingRepository;
         private Warehouse _warehouse;
 
-        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, Warehouse warehouse)
+	    private IRecordHelper _recordHelper;
+
+        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, IRecordHelper recordHelper, Warehouse warehouse)
         {
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
@@ -42,6 +45,8 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _conversionMappingRepository = conversionMappingRepository;
             _warehouse = warehouse;
+
+	        _recordHelper = recordHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -166,7 +171,7 @@ namespace PrimeApps.App.Controllers
             {
                 account["owner"] = lead["owner"];
                 account["master_id"] = lead["id"];
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(accountModule, account, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(accountModule, account, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -180,7 +185,7 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -194,9 +199,9 @@ namespace PrimeApps.App.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(accountModule, account, AppUser, _warehouse);
             }
 
             // contact
@@ -208,7 +213,7 @@ namespace PrimeApps.App.Controllers
                 if (account["id"] != null && contactModule.Fields.Any(x => x.Name == "account"))
                     contact["account"] = account["id"];
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(contactModule, contact, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(contactModule, contact, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -222,7 +227,7 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -235,9 +240,9 @@ namespace PrimeApps.App.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(contactModule, contact, AppUser, _warehouse);
             }
 
             // opportunity
@@ -252,7 +257,7 @@ namespace PrimeApps.App.Controllers
                 if (contact["id"] != null && opportunityModule.Fields.Any(x => x.Name == "contact"))
                     opportunity["contact"] = contact["id"];
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(opportunityModule, opportunity, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(opportunityModule, opportunity, ModelState, AppUser.TenantLanguage);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -264,12 +269,12 @@ namespace PrimeApps.App.Controllers
                     resultCreate = await _recordRepository.Create(opportunity, opportunityModule);
 
                     // Create stage history
-                    await RecordHelper.CreateStageHistory(opportunity, _recordRepository, _moduleRepository);
+                    await _recordHelper.CreateStageHistory(opportunity);
                 }
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -282,9 +287,9 @@ namespace PrimeApps.App.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(opportunityModule, opportunity, AppUser, _warehouse);
             }
 
             // Update lead as converted
@@ -312,7 +317,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -325,9 +330,9 @@ namespace PrimeApps.App.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
+	        _recordHelper.AfterDelete(leadModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(leadModule.Id, (int)lead["id"]);
@@ -440,7 +445,7 @@ namespace PrimeApps.App.Controllers
                 var currencyPicklist = await _picklistRepository.FindItemByLabel(currencyfield.PicklistId.Value, (string)salesOrder["currency"], AppUser.TenantLanguage);
                 salesOrder["currency"] = AppUser.TenantLanguage == "tr" ? currencyPicklist.LabelTr : currencyPicklist.LabelEn;
             }
-            var resultBefore = await RecordHelper.BeforeCreateUpdate(salesOrderModule, salesOrder, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(salesOrderModule, salesOrder, ModelState, AppUser.TenantLanguage, false);
 
             if (resultBefore < 0 && !ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -454,7 +459,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -467,9 +472,9 @@ namespace PrimeApps.App.Controllers
 
             if (resultCreate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
+	        _recordHelper.AfterCreate(salesOrderModule, salesOrder, AppUser, _warehouse);
 
             // Get all quote products and insert order products
             var findRequest = new FindRequest
@@ -507,7 +512,7 @@ namespace PrimeApps.App.Controllers
                 if (quoteProduct["vat"] != null)
                     orderProduct["vat"] = quoteProduct["vat"];
 
-                var resultBeforeProduct = await RecordHelper.BeforeCreateUpdate(orderProductModule, orderProduct, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(orderProductModule, orderProduct, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBeforeProduct < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -521,7 +526,7 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -534,9 +539,9 @@ namespace PrimeApps.App.Controllers
 
                 if (resultCreateProduct < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(orderProductModule, orderProduct, AppUser, _warehouse);
             }
 
             // Update quote as converted
@@ -559,7 +564,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -572,9 +577,9 @@ namespace PrimeApps.App.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
+	        _recordHelper.AfterUpdate(quoteModule, quoteModel, quote, AppUser, _warehouse);
 
             var result = new JObject();
             result["sales_order_id"] = salesOrder["id"];
@@ -621,7 +626,7 @@ namespace PrimeApps.App.Controllers
             {
                 employee["owner"] = candidate["owner"];
                 employee["master_id"] = candidate["id"];
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(employeeModule, employee, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(employeeModule, employee, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -635,7 +640,7 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -648,9 +653,9 @@ namespace PrimeApps.App.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-                RecordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(employeeModule, employee, AppUser, _warehouse);
             }
 
             // Update lead as converted
@@ -680,7 +685,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -693,9 +698,9 @@ namespace PrimeApps.App.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            RecordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
+	        _recordHelper.AfterDelete(candidateModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(candidateModule.Id, (int)candidate["id"]);
@@ -816,7 +821,7 @@ namespace PrimeApps.App.Controllers
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
                 salesInvoice["asama"] = AppUser.TenantLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -830,7 +835,7 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -844,7 +849,7 @@ namespace PrimeApps.App.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-                RecordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
             }
 
             //Update order stage
@@ -879,7 +884,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -891,9 +896,9 @@ namespace PrimeApps.App.Controllers
             }
 
             if (resultUpdate < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString()); 
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            RecordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
+	        _recordHelper.AfterDelete(salesOrderModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(salesOrderModule.Id, (int)salesOrder["id"]);
@@ -1016,7 +1021,7 @@ namespace PrimeApps.App.Controllers
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
                 purchaseInvoice["asama"] = AppUser.TenantLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
 
-                var resultBefore = await RecordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBefore < 0 && !ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -1030,7 +1035,7 @@ namespace PrimeApps.App.Controllers
                 catch (PostgresException ex)
                 {
                     if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                        return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                        return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                     if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                         return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -1044,7 +1049,7 @@ namespace PrimeApps.App.Controllers
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-                RecordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
+	            _recordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
             }
 
             //Update order stage
@@ -1079,7 +1084,7 @@ namespace PrimeApps.App.Controllers
             catch (PostgresException ex)
             {
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
@@ -1093,7 +1098,7 @@ namespace PrimeApps.App.Controllers
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            RecordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
+	        _recordHelper.AfterDelete(purchaseOrderModule, leadModel, AppUser, _warehouse);
 
             // Move documents
             var documents = await _documentRepository.GetAll(purchaseOrderModule.Id, (int)purchaseOrder["id"]);

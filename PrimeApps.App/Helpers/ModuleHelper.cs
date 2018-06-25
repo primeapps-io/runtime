@@ -3,6 +3,7 @@ using System.Linq;
 using DalSoft.Hosting.BackgroundQueue;
 using Hangfire;
 using PrimeApps.App.Models;
+using PrimeApps.App.Services;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
@@ -10,9 +11,38 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class ModuleHelper
+	public interface IModuleHelper
+	{
+		Module CreateEntity(ModuleBindingModel moduleModel);
+		ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity);
+		List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields);
+		Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity);
+		void AfterCreate(UserItem appUser, Module module);
+		void AfterUpdate(UserItem appUser, Module module);
+		void AfterDelete(UserItem appUser, Module module);
+		Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity);
+		void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity);
+		Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity);
+		void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity);
+		Section NewSectionEntity(SectionBindingModel sectionModel);
+		Field NewFieldEntity(FieldBindingModel fieldModel);
+		FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel);
+		FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel);
+		Relation NewRelationEntity(RelationBindingModel relationModel);
+		Dependency NewDependencyEntity(DependencyBindingModel dependencyModel);
+		Calculation NewCalculationEntity(CalculationBindingModel calculationModel);
+	}
+    public class ModuleHelper : IModuleHelper
     {
-        public static Module CreateEntity(ModuleBindingModel moduleModel)
+	    private IAuditLogHelper _auditLogHelper;
+	    public IBackgroundTaskQueue Queue { get; }
+
+		public ModuleHelper(IAuditLogHelper auditLogHelper, IBackgroundTaskQueue queue)
+	    {
+		    _auditLogHelper = auditLogHelper;
+		    Queue = queue;
+	    }
+        public Module CreateEntity(ModuleBindingModel moduleModel)
         {
             var moduleEntity = new Module
             {
@@ -132,7 +162,7 @@ namespace PrimeApps.App.Helpers
             return moduleEntity;
         }
 
-        public static ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity)
+        public ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity)
         {
             moduleEntity.Name = moduleModel.Name;
             moduleEntity.LabelEnSingular = moduleModel.LabelEnSingular;
@@ -497,7 +527,7 @@ namespace PrimeApps.App.Helpers
             return moduleChanges;
         }
 
-        public static List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields)
+        public List<ViewField> DeleteViewField(ICollection<View> views, int id, List<FieldBindingModel> fields)
         {
             var deletedViewFields = new List<ViewField>();
 
@@ -523,7 +553,7 @@ namespace PrimeApps.App.Helpers
             return deletedViewFields;
         }
 
-        public static Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity)
+        public Module RevertEntity(ModuleChanges moduleChanges, Module moduleEntity)
         {
             foreach (var sectionAdded in moduleChanges.SectionsAdded)
             {
@@ -552,25 +582,22 @@ namespace PrimeApps.App.Helpers
             return moduleEntity;
         }
 
-        public static void AfterCreate(UserItem appUser, Module module)
+        public void AfterCreate(UserItem appUser, Module module)
         {
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
+	        Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleCreated, null));
 		}
 
-        public static void AfterUpdate(UserItem appUser, Module module)
+        public void AfterUpdate(UserItem appUser, Module module)
         {
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
+	        Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleUpdated, null));
 		}
 
-        public static void AfterDelete(UserItem appUser, Module module)
+        public void AfterDelete(UserItem appUser, Module module)
         {
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
+	        Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, module.Id, string.Empty, AuditType.Setup, null, SetupActionType.ModuleDeleted, null));
 		}
 
-        public static Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity)
+        public Relation CreateRelationEntity(RelationBindingModel relationModel, Module moduleEntity)
         {
             var relationEntity = NewRelationEntity(relationModel);
             relationEntity.ModuleId = moduleEntity.Id;
@@ -578,7 +605,7 @@ namespace PrimeApps.App.Helpers
             return relationEntity;
         }
 
-        public static void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity)
+        public void UpdateRelationEntity(RelationBindingModel relationModel, Relation relationEntity, Module moduleEntity)
         {
             relationEntity.RelatedModule = relationModel.RelatedModule;
             relationEntity.RelationField = relationModel.RelationField;
@@ -594,7 +621,7 @@ namespace PrimeApps.App.Helpers
             relationEntity.DetailViewType = relationModel.DetailViewType;
         }
 
-        public static Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity)
+        public Dependency CreateDependencyEntity(DependencyBindingModel dependencyModel, Module moduleEntity)
         {
             var dependencyEntity = NewDependencyEntity(dependencyModel);
             dependencyEntity.ModuleId = moduleEntity.Id;
@@ -602,7 +629,7 @@ namespace PrimeApps.App.Helpers
             return dependencyEntity;
         }
 
-        public static void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity)
+        public void UpdateDependencyEntity(DependencyBindingModel dependencyModel, Dependency dependencyEntity, Module moduleEntity)
         {
             dependencyEntity.ParentField = dependencyModel.ParentField;
             dependencyEntity.ChildField = dependencyModel.ChildField;
@@ -616,7 +643,7 @@ namespace PrimeApps.App.Helpers
             dependencyEntity.ModuleId = moduleEntity.Id;
         }
 
-        private static Section NewSectionEntity(SectionBindingModel sectionModel)
+	    public Section NewSectionEntity(SectionBindingModel sectionModel)
         {
             var sectionEntity = new Section
             {
@@ -634,7 +661,7 @@ namespace PrimeApps.App.Helpers
             return sectionEntity;
         }
 
-        private static Field NewFieldEntity(FieldBindingModel fieldModel)
+	    public Field NewFieldEntity(FieldBindingModel fieldModel)
         {
             var fieldEntity = new Field
             {
@@ -685,7 +712,7 @@ namespace PrimeApps.App.Helpers
             return fieldEntity;
         }
 
-        private static FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel)
+	    public FieldValidation NewFieldValidationEntity(FieldBindingModel fieldModel)
         {
             var fieldValidationEntity = new FieldValidation
             {
@@ -702,7 +729,7 @@ namespace PrimeApps.App.Helpers
             return fieldValidationEntity;
         }
 
-        private static FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel)
+	    public FieldCombination NewFieldCombinationEntity(FieldBindingModel fieldModel)
         {
             var fieldCombinationEntity = new FieldCombination
             {
@@ -714,7 +741,7 @@ namespace PrimeApps.App.Helpers
             return fieldCombinationEntity;
         }
 
-        private static Relation NewRelationEntity(RelationBindingModel relationModel)
+	    public Relation NewRelationEntity(RelationBindingModel relationModel)
         {
             var relationEntity = new Relation
             {
@@ -733,7 +760,7 @@ namespace PrimeApps.App.Helpers
             return relationEntity;
         }
 
-        private static Dependency NewDependencyEntity(DependencyBindingModel dependencyModel)
+	    public Dependency NewDependencyEntity(DependencyBindingModel dependencyModel)
         {
             var dependencyEntity = new Dependency
             {
@@ -752,7 +779,7 @@ namespace PrimeApps.App.Helpers
             return dependencyEntity;
         }
 
-        private static Calculation NewCalculationEntity(CalculationBindingModel calculationModel)
+	    public Calculation NewCalculationEntity(CalculationBindingModel calculationModel)
         {
             var calculationEntity = new Calculation
             {

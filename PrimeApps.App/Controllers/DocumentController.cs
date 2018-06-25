@@ -46,7 +46,9 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository)
+
+	    private IRecordHelper _recordHelper;
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -55,6 +57,8 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _picklistRepository = picklistRepository;
             _settingRepository = settingRepository;
+
+	        _recordHelper = recordHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -932,7 +936,7 @@ namespace PrimeApps.App.Controllers
                 if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
                     continue;
 
-                var fields = await Helpers.RecordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, _moduleRepository);
+                var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule);
 
                 var findRequest = new FindRequest
                 {
@@ -1011,7 +1015,7 @@ namespace PrimeApps.App.Controllers
                 if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
                     continue;
 
-                var fields = await Helpers.RecordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, _moduleRepository, false);
+                var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, false);
                 var fieldsManyToMany = new List<string>();
 
                 foreach (var field in fields)
@@ -1089,7 +1093,7 @@ namespace PrimeApps.App.Controllers
 
             if (module == "quotes" && doc.Range.Text.Contains("{{#foreach quote_products}}"))
             {
-                var quoteFields = await Helpers.RecordHelper.GetAllFieldsForFindRequest("quote_products", _moduleRepository);
+                var quoteFields = await _recordHelper.GetAllFieldsForFindRequest("quote_products");
 
                 var products = _recordRepository.Find("quote_products", new FindRequest()
                 {
@@ -1136,7 +1140,7 @@ namespace PrimeApps.App.Controllers
 
             if (module == "sales_orders" && doc.Range.Text.Contains("{{#foreach order_products}}"))
             {
-                var orderFields = await Helpers.RecordHelper.GetAllFieldsForFindRequest("order_products", _moduleRepository);
+                var orderFields = await _recordHelper.GetAllFieldsForFindRequest("order_products");
 
                 var products = _recordRepository.Find("order_products", new FindRequest()
                 {
@@ -1177,7 +1181,7 @@ namespace PrimeApps.App.Controllers
             }
             if (module == "purchase_orders" && doc.Range.Text.Contains("{{#foreach purchase_order_products}}"))
             {
-                var orderFields = await Helpers.RecordHelper.GetAllFieldsForFindRequest("purchase_order_products", _moduleRepository);
+                var orderFields = await _recordHelper.GetAllFieldsForFindRequest("purchase_order_products");
 
                 var products = _recordRepository.Find("purchase_order_products", new FindRequest()
                 {
@@ -1227,7 +1231,7 @@ namespace PrimeApps.App.Controllers
 
             if (relation.RelationType != RelationType.ManyToMany)
             {
-                var fields = await Helpers.RecordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, _moduleRepository);
+                var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule);
 
                 var secondLevelFindRequest = new FindRequest
                 {
@@ -1262,7 +1266,7 @@ namespace PrimeApps.App.Controllers
             }
             else
             {
-                var fields = await Helpers.RecordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, _moduleRepository, false);
+                var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule, false);
                 var fieldsManyToMany = new List<string>();
 
                 foreach (var field in fields)

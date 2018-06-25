@@ -12,7 +12,7 @@ angular.module('primeapps')
                         var user = workgroupUser;
 
                         angular.forEach(profiles, function (profile) {
-                            if (profile.UserIDs.indexOf(workgroupUser.id) > -1) {
+                            if (profile.user_ids.indexOf(workgroupUser.id) > -1) {
                                 user.profile = profile;
                             }
                         });

@@ -16,6 +16,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Web;
 using System.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Protocols;
 using PrimeApps.Model.Common.Cache;
@@ -25,9 +26,30 @@ using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class WorkflowHelper
-    {
-        public static async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse)
+
+	public interface IWorkflowHelper
+	{
+		Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
+
+		Task<Workflow> CreateEntity(WorkflowBindingModel workflowModel, string tenantLanguage);
+
+		Task UpdateEntity(WorkflowBindingModel workflowModel, Workflow workflow, string tenantLanguage);
+	}
+
+	public class WorkflowHelper : IWorkflowHelper
+	{
+		private IPicklistRepository _picklistRepository;
+		private IModuleRepository _moduleRepository;
+		private IHttpContextAccessor _context;
+
+		public WorkflowHelper(IPicklistRepository picklistRepository, IModuleRepository moduleRepository, IHttpContextAccessor context)
+		{
+			_context = context;
+			_picklistRepository = picklistRepository;
+			_moduleRepository = moduleRepository;
+			_picklistRepository.CurrentUser = _moduleRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+		}
+	    public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -591,7 +613,7 @@ namespace PrimeApps.App.Helpers
 
 
                                             var modelState = new ModelStateDictionary();
-                                            var resultBefore = await RecordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository, false, currentRecordFieldUpdate, appUser: appUser);
+                                            var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, false, currentRecordFieldUpdate, appUser: appUser);
 
                                             if (resultBefore < 0 && !modelState.IsValid)
                                             {
@@ -615,14 +637,14 @@ namespace PrimeApps.App.Helpers
 
                                                 // If module is opportunities create stage history
                                                 if (fieldUpdateModule.Name == "opportunities")
-                                                    await RecordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate, recordRepository, moduleRepository);
+                                                    await UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
                                             }
                                             catch (Exception ex)
                                             {
                                                 //ErrorLog.GetDefault(null).Log(new Error(ex));
                                             }
 
-                                            RecordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
+	                                        AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
                                         }
                                     }
 
@@ -676,7 +698,7 @@ namespace PrimeApps.App.Helpers
                                         task["created_by"] = workflow.CreatedById;
 
                                         var modelState = new ModelStateDictionary();
-                                        var resultBefore = await RecordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, moduleRepository, picklistRepository);
+                                        var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage);
 
                                         if (resultBefore < 0 && !modelState.IsValid)
                                         {
@@ -694,7 +716,7 @@ namespace PrimeApps.App.Helpers
                                                 return;
                                             }
 
-                                            RecordHelper.AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
+	                                        AfterCreate(moduleActivity, task, appUser, warehouse, moduleActivity.Id != module.Id);
                                         }
                                         catch (Exception ex)
                                         {
@@ -962,7 +984,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async static Task<Workflow> CreateEntity(WorkflowBindingModel workflowModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository)
+        public async Task<Workflow> CreateEntity(WorkflowBindingModel workflowModel, string tenantLanguage)
         {
             var workflow = new Workflow
             {
@@ -976,7 +998,7 @@ namespace PrimeApps.App.Helpers
 
             if (workflowModel.Filters != null && workflowModel.Filters.Count > 0)
             {
-                var module = await moduleRepository.GetById(workflowModel.ModuleId);
+                var module = await _moduleRepository.GetById(workflowModel.ModuleId);
                 var picklistItemIds = new List<int>();
                 workflow.Filters = new List<WorkflowFilter>();
 
@@ -1011,7 +1033,7 @@ namespace PrimeApps.App.Helpers
                 ICollection<PicklistItem> picklistItems = null;
 
                 if (picklistItemIds.Count > 0)
-                    picklistItems = await picklistRepository.FindItems(picklistItemIds);
+                    picklistItems = await _picklistRepository.FindItems(picklistItemIds);
 
                 foreach (var filterModel in workflowModel.Filters)
                 {
@@ -1110,7 +1132,7 @@ namespace PrimeApps.App.Helpers
             return workflow;
         }
 
-        public static async Task UpdateEntity(WorkflowBindingModel workflowModel, Workflow workflow, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository)
+        public async Task UpdateEntity(WorkflowBindingModel workflowModel, Workflow workflow, string tenantLanguage)
         {
             workflow.Name = workflowModel.Name;
             workflow.Frequency = workflowModel.Frequency;
@@ -1123,7 +1145,7 @@ namespace PrimeApps.App.Helpers
                 if (workflow.Filters == null)
                     workflow.Filters = new List<WorkflowFilter>();
 
-                var module = await moduleRepository.GetById(workflowModel.ModuleId);
+                var module = await _moduleRepository.GetById(workflowModel.ModuleId);
                 var picklistItemIds = new List<int>();
 
                 foreach (var filterModel in workflowModel.Filters)
@@ -1151,7 +1173,7 @@ namespace PrimeApps.App.Helpers
                 ICollection<PicklistItem> picklistItems = null;
 
                 if (picklistItemIds.Count > 0)
-                    picklistItems = await picklistRepository.FindItems(picklistItemIds);
+                    picklistItems = await _picklistRepository.FindItems(picklistItemIds);
 
                 foreach (var filterModel in workflowModel.Filters)
                 {

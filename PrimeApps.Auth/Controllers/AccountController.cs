@@ -103,7 +103,7 @@ namespace PrimeApps.Auth.UI
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
-				return RedirectToAction("ChangeLanguage", "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
+				return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
 
 
 			// build a model so we know what to show on the login page
@@ -191,7 +191,7 @@ namespace PrimeApps.Auth.UI
 
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
-				return RedirectToAction("ChangeLanguage", "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
+				return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
 
 			return View();
 		}
@@ -252,7 +252,7 @@ namespace PrimeApps.Auth.UI
 
 			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.Setting.Culture;
 
-			var url = Request.Scheme + "://" + appInfo.Setting.Domain + "/api/account/activate";
+			var url = Request.Scheme + "://" + appInfo.Setting.Domain + "/api/account/create";
 
 			var activateModel = new ActivateBindingModels
 			{
@@ -308,19 +308,23 @@ namespace PrimeApps.Auth.UI
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> ConfirmEmail(string userId, string code)
+		public async Task<IActionResult> ConfirmEmail([FromQuery(Name = "email")]string email, [FromQuery(Name = "code")]string code)
 		{
-			if (userId == null || code == null)
+			if (email == null || code == null)
 			{
 				return RedirectToAction(nameof(HomeController.Index), "Home");
 			}
-			var user = await _userManager.FindByIdAsync(userId);
+			var user = await _userManager.FindByEmailAsync(email);
+
 			if (user == null)
-			{
-				throw new ApplicationException($"Unable to load user with ID '{userId}'.");
-			}
+				throw new ApplicationException($"Unable to load user with user '{email}'.");
+			
 			var result = await _userManager.ConfirmEmailAsync(user, code);
-			return View(result.Succeeded ? "ConfirmEmail" : "Error");
+
+			if (!result.Succeeded)
+				ViewBag.Error = result.Errors.FirstOrDefault().Code; //InvaliedToken
+
+			return View();
 		}
 
 		[HttpGet]
@@ -601,7 +605,11 @@ namespace PrimeApps.Auth.UI
 		{
 			var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
-			if (User?.Identity.IsAuthenticated != true)
+			vm.ShowLogoutPrompt = false;
+			return vm;
+
+			//TODO Removed
+			/*if (User?.Identity.IsAuthenticated != true)
 			{
 				// if the user is not authenticated, then just show logged out page
 				vm.ShowLogoutPrompt = false;
@@ -618,7 +626,7 @@ namespace PrimeApps.Auth.UI
 
 			// show the logout prompt. this prevents attacks where the user
 			// is automatically signed out by another malicious web page.
-			return vm;
+			return vm;*/
 		}
 
 		private async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string logoutId)

@@ -22,10 +22,13 @@ namespace PrimeApps.App.Controllers
         private IViewRepository _viewRepository;
         private IUserRepository _userRepository;
 
-        public ViewController(IViewRepository viewRepository, IUserRepository userRepository)
+	    private IRecordHelper _recordHelper;
+
+        public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IRecordHelper recordHelper)
         {
             _viewRepository = viewRepository;
             _userRepository = userRepository;
+	        _recordHelper = recordHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -74,7 +77,7 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ViewBindingModel view)
         {
-            if (!RecordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
+            if (!_recordHelper.ValidateFilterLogic(view.FilterLogic, view.Filters))
                 ModelState.AddModelError("request._filter_logic", "The field FilterLogic is invalid or has no filters.");
 
             if (!ModelState.IsValid)

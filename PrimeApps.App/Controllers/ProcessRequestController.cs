@@ -22,12 +22,18 @@ namespace PrimeApps.App.Controllers
         private IRecordRepository _recordRepository;
         private Warehouse _warehouse;
 
-        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, Warehouse warehouse)
+	    private IProcessHelper _processHelper;
+	    private IRecordHelper _recordHelper;
+
+        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse)
         {
             _processRequestRepository = processRequestRepository;
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
-            _warehouse = warehouse; 
+            _warehouse = warehouse;
+
+	        _processHelper = processHelper;
+	        _recordHelper = recordHelper;
 
         }
 
@@ -60,10 +66,10 @@ namespace PrimeApps.App.Controllers
                 var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], moduleName, 0);
                 if (requestEntity == null)
                     continue;
-                await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+                await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
                 await _processRequestRepository.Update(requestEntity);
 
-                await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+                await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             }
 
@@ -81,10 +87,10 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.ApproveRequest(requestEntity, AppUser, _warehouse);
+            await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             return Ok(requestEntity);
         }
@@ -98,10 +104,10 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
+            await _processHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             return Ok(requestEntity);
         }
@@ -111,7 +117,7 @@ namespace PrimeApps.App.Controllers
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await ProcessHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant);
+            await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
 
             return Ok();
         }
@@ -127,10 +133,10 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await ProcessHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse);
+            await _processHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
             await _processRequestRepository.Update(requestEntity);
 
-            await ProcessHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse);
+            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
             return Ok(requestEntity);
         }
@@ -145,7 +151,7 @@ namespace PrimeApps.App.Controllers
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
             try
             {
-                await ProcessHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel);
+                await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
             }
             catch (ProcessFilterNotMatchException ex)
             {

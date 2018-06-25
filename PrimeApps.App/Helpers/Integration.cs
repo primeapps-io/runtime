@@ -2,21 +2,41 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class Integration
-    {
-        public static async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse)
+	public interface IIntegration
+	{
+		Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterCreate AfterCreate, AfterUpdate AfterUpdate);
+		Task InsertUser(RegisterBindingModel model, Warehouse warehouse);
+		Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehous, AfterUpdate AfterUpdate);
+		Task UpdateUser(string userEmail, Warehouse warehouse, AfterUpdate AfterUpdate);
+		JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId);
+		JObject CreateContactRecord(RegisterBindingModel model, int integrationUserId, bool isMember, int? accountId);
+	}
+	public class Integration : IIntegration
+	{
+		private IHttpContextAccessor _context;
+		private IModuleRepository _moduleRepository;
+	    public Integration(IModuleRepository moduleRepository, IHttpContextAccessor context)
+	    {
+			_context = context;
+		    _moduleRepository = moduleRepository;
+		    _moduleRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+		}
+        public async Task InsertSubscriber(RegisterBindingModel model, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterCreate AfterCreate, AfterUpdate AfterUpdate)
         {
             try
             {
@@ -49,7 +69,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 account = CreateAccountRecord(model, integrationUserId);
                                 var modelStateAccount = new ModelStateDictionary();
-                                var resultBeforeAccount = await RecordHelper.BeforeCreateUpdate(moduleAccount, account, modelStateAccount, appUser.TenantLanguage, moduleRepository, null, false);
+                                var resultBeforeAccount = await BeforeCreateUpdate(moduleAccount, account, modelStateAccount, appUser.TenantLanguage, false);
 
                                 if (resultBeforeAccount < 0 && !modelStateAccount.IsValid)
                                 {
@@ -69,7 +89,7 @@ namespace PrimeApps.App.Helpers
                                         return;
                                     }
 
-                                    RecordHelper.AfterCreate(moduleAccount, account, appUser, warehouse);
+                                    AfterCreate(moduleAccount, account, appUser, warehouse);
                                 }
                                 catch (Exception ex)
                                 {
@@ -104,7 +124,7 @@ namespace PrimeApps.App.Helpers
                                     //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
 
-                                RecordHelper.AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse);
+                                AfterUpdate(moduleAccount, accountCurrent, currentAccountCurrent, appUser, warehouse);
                                 account = accountCurrent;
                             }
 
@@ -114,7 +134,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 var contact = CreateContactRecord(model, integrationUserId, true, (int)account["id"]);
                                 var modelStateContact = new ModelStateDictionary();
-                                var resultBeforeContact = await RecordHelper.BeforeCreateUpdate(moduleContact, contact, modelStateContact, appUser.TenantLanguage, moduleRepository, null, false);
+                                var resultBeforeContact = await BeforeCreateUpdate(moduleContact, contact, modelStateContact, appUser.TenantLanguage, false);
 
                                 if (resultBeforeContact < 0 && !modelStateContact.IsValid)
                                 {
@@ -134,7 +154,7 @@ namespace PrimeApps.App.Helpers
                                         return;
                                     }
 
-                                    RecordHelper.AfterCreate(moduleContact, contact, appUser, warehouse);
+                                    AfterCreate(moduleContact, contact, appUser, warehouse);
                                 }
                                 catch (Exception ex)
                                 {
@@ -171,7 +191,7 @@ namespace PrimeApps.App.Helpers
                                     //ErrorLog.GetDefault(null).Log(new Error(ex));
                                 }
 
-                                RecordHelper.AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse);
+                                AfterUpdate(moduleContact, contactCurrent, currentContactCurrent, appUser, warehouse);
                             }
                         }
                     }
@@ -183,7 +203,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task InsertUser(RegisterBindingModel model, Warehouse warehouse)
+        public async Task InsertUser(RegisterBindingModel model, Warehouse warehouse)
         {
             //warehouse.DatabaseName = "Ofisim";
             //var appUser = GetAppUser();
@@ -317,7 +337,7 @@ namespace PrimeApps.App.Helpers
             //}
         }
 
-        public static async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse)
+        public async Task UpdateSubscriber(string userEmail, int tenantId, Warehouse warehouse, AfterUpdate AfterUpdate)
         {
             try
             {
@@ -377,7 +397,7 @@ namespace PrimeApps.App.Helpers
                                 return;
                             }
 
-                            RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
+                            AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
 
                             var moduleAccount = await moduleRepository.GetByName("accounts");
                             var findRequestAccount = new FindRequest
@@ -426,7 +446,7 @@ namespace PrimeApps.App.Helpers
                                 return;
                             }
 
-                            RecordHelper.AfterUpdate(moduleAccount, account, accountCurrent, appUser, warehouse);
+                            AfterUpdate(moduleAccount, account, accountCurrent, appUser, warehouse);
                         }
                     }
                 }
@@ -437,7 +457,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task UpdateUser(string userEmail, Warehouse warehouse)
+        public async Task UpdateUser(string userEmail, Warehouse warehouse, AfterUpdate AfterUpdate)
         {
             try
             {
@@ -497,7 +517,7 @@ namespace PrimeApps.App.Helpers
                                 return;
                             }
 
-                            RecordHelper.AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
+                            AfterUpdate(moduleContact, contact, contactCurrent, appUser, warehouse);
                         }
                     }
                 }
@@ -508,7 +528,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        private static UserItem GetAppUser()
+	    public UserItem GetAppUser()
         {
             //var userEmail = ConfigurationManager.AppSettings.Get("OfisimTenantEmail");
             //var userId = AsyncHelpers.RunSync(() => Cache.ApplicationUser.GetId(userEmail));
@@ -517,7 +537,7 @@ namespace PrimeApps.App.Helpers
             return null;
         }
 
-        private static JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId)
+	    public JObject CreateAccountRecord(RegisterBindingModel model, int integrationUserId)
         {
             var account = new JObject();
             account["owner"] = integrationUserId;
@@ -558,7 +578,7 @@ namespace PrimeApps.App.Helpers
             return account;
         }
 
-        private static JObject CreateContactRecord(RegisterBindingModel model, int integrationUserId, bool isMember, int? accountId)
+	    public JObject CreateContactRecord(RegisterBindingModel model, int integrationUserId, bool isMember, int? accountId)
         {
             var contact = new JObject();
             contact["owner"] = integrationUserId;

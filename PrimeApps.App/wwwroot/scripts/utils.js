@@ -553,6 +553,39 @@ angular.module('primeapps')
     .factory('helper', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache',
         function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache) {
             return {
+                SnakeToCamel: function(data, depth) {
+
+                    function _processKeys(obj, processer, depth) {
+                        if (depth === 0 || !angular.isObject(obj)) {
+                            return obj;
+                        }
+
+                        var result = {};
+                        var keys = Object.keys(obj);
+
+                        for (var i = 0; i < keys.length; i++) {
+                            result[processer(keys[i])] = _processKeys(obj[keys[i]], processer, depth - 1);
+                        }
+
+                        return result;
+                    }
+
+                    function _snakelize(key) {
+                        var separator = '_';
+                        var split = /(?=[A-Z])/;
+
+                        return key.split(split).join(separator).toLowerCase();
+                    }
+
+                    if (angular.isObject(data)) {
+                        if (typeof depth === 'undefined') {
+                            depth = 1;
+                        }
+                        return _processKeys(data, _snakelize, depth);
+                    } else {
+                        return _snakelize(data);
+                    }
+                },
                 getTime: function (str) {
                     if (!str)
                         return '';
@@ -939,7 +972,7 @@ angular.module('primeapps')
                                 picklistItem.system_code = picklistResponseItem.system_code;
                                 picklistItem.order = picklistResponseItem.order;
                                 picklistItem.inactive = picklistResponseItem.inactive;
-                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenant_language];
+                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenantLanguage];
 
                                 picklistItems.push(picklistItem);
                             }

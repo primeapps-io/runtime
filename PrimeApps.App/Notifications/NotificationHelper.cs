@@ -15,7 +15,20 @@ using PrimeApps.Model.Common.Resources;
 
 namespace PrimeApps.App.Notifications
 {
-    public static class NotificationHelper
+
+	public interface INotificationHelper
+	{
+		Task Create(UserItem appUser, JObject record, Module module, int timezoneOffset);
+		Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timeZoneOffset = 180);
+		Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module);
+		Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module);
+		Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module);
+
+		Task Delete(UserItem appUser, JObject record, Module module);
+		void SendTaskNotification(JObject record, UserItem appUser, Module module);
+	}
+
+	public class NotificationHelper : INotificationHelper
     {
         #region Create
         /// <summary>
@@ -25,7 +38,7 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public static async Task Create(UserItem appUser, JObject record, Module module, int timezoneOffset)
+        public async Task Create(UserItem appUser, JObject record, Module module, int timezoneOffset)
         {
             string moduleName = module?.Name?.ToLower();
 
@@ -48,7 +61,7 @@ namespace PrimeApps.App.Notifications
         /// <param name="module"></param>
         /// <param name="currentRecord"></param>
         /// <returns></returns>
-        public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timeZoneOffset = 180)
+        public async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timeZoneOffset = 180)
         {
             string moduleName = module?.Name?.ToLower();
 
@@ -63,14 +76,14 @@ namespace PrimeApps.App.Notifications
             await IsOwnerChanged(appUser, record, currentRecord, module);
         }
 
-        /// <summary>
-        /// Creates a notification when the owner is changed for an updated module record.
-        /// </summary>
-        /// <param name="httpClient"></param>
-        /// <param name="appUser"></param>
-        /// <param name="record"></param>
-        /// <returns></returns>
-        private static async Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module)
+		/// <summary>
+		/// Creates a notification when the owner is changed for an updated module record.
+		/// </summary>
+		/// <param name="httpClient"></param>
+		/// <param name="appUser"></param>
+		/// <param name="record"></param>
+		/// <returns></returns>
+		public async Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module)
         {
             using (var databaseContext = new TenantDBContext(appUser.TenantId))
             {
@@ -121,7 +134,7 @@ namespace PrimeApps.App.Notifications
             }
         }
 
-        private static async Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module)
+	    public async Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module)
         {
             DateTime dueDate = UnixDate.GetDate((long)record["task_due_date"]);
 
@@ -152,7 +165,7 @@ namespace PrimeApps.App.Notifications
             }
         }
 
-        private static async Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module)
+	    public async Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module)
         {
             string newOwnerId = record["owner"]?.ToString(),
                 oldOwnerId = oldRecord["owner"]?.ToString(),
@@ -209,7 +222,7 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public static async Task Delete(UserItem appUser, JObject record, Module module)
+        public async Task Delete(UserItem appUser, JObject record, Module module)
         {
             string moduleName = module?.Name?.ToLower();
 
@@ -222,7 +235,7 @@ namespace PrimeApps.App.Notifications
         }
         #endregion
 
-        public static void SendTaskNotification(JObject record, UserItem appUser, Module module)
+        public void SendTaskNotification(JObject record, UserItem appUser, Module module)
         {
             // Get full record and set picklists
             JObject fullRecord;

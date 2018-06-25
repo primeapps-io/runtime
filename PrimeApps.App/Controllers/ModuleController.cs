@@ -30,7 +30,9 @@ namespace PrimeApps.App.Controllers
         private IMenuRepository _menuRepository;
         private Model.Helpers.Warehouse _warehouse;
 
-        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository)
+	    private IModuleHelper _moduleHelper;
+
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper)
         {
             _moduleRepository = moduleRepository;
             _viewRepository = viewRepository;
@@ -38,6 +40,8 @@ namespace PrimeApps.App.Controllers
             _settingRepository = settingRepository;
             _warehouse = warehouse;
             _menuRepository = menuRepository;
+
+	        _moduleHelper = moduleHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -92,7 +96,7 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             //Create module
-            var moduleEntity = ModuleHelper.CreateEntity(module);
+            var moduleEntity = _moduleHelper.CreateEntity(module);
             var resultCreate = await _moduleRepository.Create(moduleEntity);
 
             if (resultCreate < 1)
@@ -174,7 +178,7 @@ namespace PrimeApps.App.Controllers
             await _profileRepository.AddModuleAsync(moduleEntity.Id);
             await _menuRepository.AddModuleToMenuAsync(moduleEntity);
 
-            ModuleHelper.AfterCreate(AppUser, moduleEntity);
+	        _moduleHelper.AfterCreate(AppUser, moduleEntity);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
@@ -193,7 +197,7 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             //Update module
-            var moduleChanges = ModuleHelper.UpdateEntity(module, moduleEntity);
+            var moduleChanges = _moduleHelper.UpdateEntity(module, moduleEntity);
             await _moduleRepository.Update(moduleEntity);
 
             //If there is no changes for dynamic tables then return ok
@@ -210,7 +214,7 @@ namespace PrimeApps.App.Controllers
 
                 if (resultAlterTable != -1)
                 {
-                    var entityRevert = ModuleHelper.RevertEntity(moduleChanges, moduleEntity);
+                    var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
                     await _moduleRepository.Update(entityRevert);
 
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
@@ -219,7 +223,7 @@ namespace PrimeApps.App.Controllers
             }
             catch (Exception ex)
             {
-                var entityRevert = ModuleHelper.RevertEntity(moduleChanges, moduleEntity);
+                var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
                 await _moduleRepository.Update(entityRevert);
 
                 throw;
@@ -227,7 +231,7 @@ namespace PrimeApps.App.Controllers
 
             //Delete View Fields
             var views = await _viewRepository.GetAll(id);
-            var fields = ModuleHelper.DeleteViewField(views, id, module.Fields);
+            var fields = _moduleHelper.DeleteViewField(views, id, module.Fields);
             if (fields.Count > 0)
             {
                 foreach (var field in fields)
@@ -236,16 +240,16 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            //var viewStates = await _viewRepository.GetAllViewStates(id);
-            //if (viewStates.Count > 0)
-            //{
-            //    foreach (var viewState in viewStates)
-            //    {
-            //        await _viewRepository.DeleteHardViewState(viewState);
-            //    }
-            //}
+			//var viewStates = await _viewRepository.GetAllViewStates(id);
+			//if (viewStates.Count > 0)
+			//{
+			//    foreach (var viewState in viewStates)
+			//    {
+			//        await _viewRepository.DeleteHardViewState(viewState);
+			//    }
+			//}
 
-            ModuleHelper.AfterUpdate(AppUser, moduleEntity);
+	        _moduleHelper.AfterUpdate(AppUser, moduleEntity);
 
             return Ok();
         }
@@ -262,7 +266,7 @@ namespace PrimeApps.App.Controllers
 
             if (result > 0)
             {
-                ModuleHelper.AfterDelete(AppUser, moduleEntity);
+	            _moduleHelper.AfterDelete(AppUser, moduleEntity);
                 await _menuRepository.DeleteModuleFromMenu(id);
             }
 
@@ -281,7 +285,7 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             var currentRelations = moduleEntity.Relations.ToList();
-            var relationEntity = ModuleHelper.CreateRelationEntity(relation, moduleEntity);
+            var relationEntity = _moduleHelper.CreateRelationEntity(relation, moduleEntity);
             var resultCreate = await _moduleRepository.CreateRelation(relationEntity);
 
             if (resultCreate < 1)
@@ -335,7 +339,7 @@ namespace PrimeApps.App.Controllers
             if (relationEntity == null)
                 return NotFound();
 
-            ModuleHelper.UpdateRelationEntity(relation, relationEntity, moduleEntity);
+	        _moduleHelper.UpdateRelationEntity(relation, relationEntity, moduleEntity);
             await _moduleRepository.UpdateRelation(relationEntity);
 
             return Ok();
@@ -365,7 +369,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null)
                 return NotFound();
 
-            var dependencyEntity = ModuleHelper.CreateDependencyEntity(dependency, moduleEntity);
+            var dependencyEntity = _moduleHelper.CreateDependencyEntity(dependency, moduleEntity);
             var resultCreate = await _moduleRepository.CreateDependency(dependencyEntity);
 
             if (resultCreate < 1)
@@ -394,7 +398,7 @@ namespace PrimeApps.App.Controllers
             if (dependencyEntity == null)
                 return NotFound();
 
-            ModuleHelper.UpdateDependencyEntity(dependency, dependencyEntity, moduleEntity);
+	        _moduleHelper.UpdateDependencyEntity(dependency, dependencyEntity, moduleEntity);
             await _moduleRepository.UpdateDependency(dependencyEntity);
 
             return Ok();

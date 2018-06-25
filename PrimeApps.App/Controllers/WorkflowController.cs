@@ -21,11 +21,14 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
 
-        public WorkflowController(IWorkflowRepository workflowRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository)
+	    private IWorkflowHelper _workflowHelper;
+
+        public WorkflowController(IWorkflowRepository workflowRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IWorkflowHelper workflowHelper)
         {
             _workflowRepository = workflowRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
+	        _workflowHelper = workflowHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -78,7 +81,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var workflowEntity = await WorkflowHelper.CreateEntity(workflow, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            var workflowEntity = await _workflowHelper.CreateEntity(workflow, AppUser.TenantLanguage);
             var result = await _workflowRepository.Create(workflowEntity);
 
             if (result < 1)
@@ -98,7 +101,7 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             var currentFilterIds = workflowEntity.Filters.Select(x => x.Id).ToList();
-            await WorkflowHelper.UpdateEntity(workflow, workflowEntity, AppUser.TenantLanguage, _moduleRepository, _picklistRepository);
+            await _workflowHelper.UpdateEntity(workflow, workflowEntity, AppUser.TenantLanguage);
             await _workflowRepository.Update(workflowEntity, currentFilterIds);
 
             await _workflowRepository.DeleteLogs(id);

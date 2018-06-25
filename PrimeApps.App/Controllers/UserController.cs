@@ -36,6 +36,8 @@ using PrimeApps.App.Storage;
 using PrimeApps.App.Services;
 using System.Net.Http;
 using PrimeApps.Model.Enums;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace PrimeApps.App.Controllers
 {
@@ -53,7 +55,9 @@ namespace PrimeApps.App.Controllers
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
 
-		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, Warehouse warehouse)
+	    private IIntegration _integration;
+	    public IBackgroundTaskQueue Queue { get; }
+		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IIntegration integration, IBackgroundTaskQueue queue, Warehouse warehouse)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -66,14 +70,11 @@ namespace PrimeApps.App.Controllers
 			_tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
 
-            /*SetCurrentUser(_userRepository, _userContextServices);
-			SetCurrentUser(_settingRepository, _userContextServices);
-			SetCurrentUser(_profileRepository, _userContextServices);
-			SetCurrentUser(_roleRepository, _userContextServices);
-			SetCurrentUser(_recordRepository, _userContextServices);*/
+	        _integration = integration;
+	        Queue = queue;
 
-            //Set warehouse database name Ofisim to integration
-            //_warehouse.DatabaseName = "Ofisim";
+	        //Set warehouse database name Ofisim to integration
+	        //_warehouse.DatabaseName = "Ofisim";
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -409,11 +410,11 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("add_user"), HttpPost]
-        public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel request)
+        public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel addUserBindingModel)
         {
-			var resultControl = await _platformUserRepository.IsEmailAvailable(request.Email, request.AppId);
+			var checkEmail = await _platformUserRepository.IsEmailAvailable(addUserBindingModel.Email, addUserBindingModel.AppId);
 
-			if (resultControl == false)
+			if (checkEmail == EmailAvailableType.NotAvailable)
 				return StatusCode(HttpStatusCode.Status409Conflict);
 
 			//Set warehouse database name
@@ -429,21 +430,21 @@ namespace PrimeApps.App.Controllers
 			var appId = AppUser.AppId;
 			var createdBy = AppUser.Email;
 
-			if (request.TenantId.HasValue)
+			if (addUserBindingModel.TenantId.HasValue)
 			{
 				if (!AppUser.Email.EndsWith("@ofisim.com"))
 					return StatusCode(HttpStatusCode.Status403Forbidden);
 
-				var tenant = await _platformUserRepository.GetTenantWithOwner(request.TenantId.Value);
+				var tenantWithOwner = await _platformUserRepository.GetTenantWithOwner(addUserBindingModel.TenantId.Value);
 
-				tenantId = request.TenantId.Value;
-				adminUserLocalId = tenant.OwnerId;
-				adminUserGlobalId = tenant.OwnerId;
-				adminUserEmail = tenant.Owner.Email;
-				culture = tenant.Owner.Setting.Culture;
-				currency = tenant.Owner.Setting.Currency;
-				appId = tenant.AppId;
-				createdBy = tenant.Owner.Email;
+				tenantId = addUserBindingModel.TenantId.Value;
+				adminUserLocalId = tenantWithOwner.OwnerId;
+				adminUserGlobalId = tenantWithOwner.OwnerId;
+				adminUserEmail = tenantWithOwner.Owner.Email;
+				culture = tenantWithOwner.Owner.Setting.Culture;
+				currency = tenantWithOwner.Owner.Setting.Currency;
+				appId = tenantWithOwner.AppId;
+				createdBy = tenantWithOwner.Owner.Email;
 
 				_userRepository.TenantId = tenantId;
 				_profileRepository.TenantId = tenantId;
@@ -477,45 +478,57 @@ namespace PrimeApps.App.Controllers
 			//    return StatusCode(HttpStatusCode.Conflict);
 
 			//Register
+			var tenant = _platformRepository.GetTenant(tenantId);
+
+			if (tenant.TenantUsers.Count >= tenant.License.UserLicenseCount)
+				return StatusCode(HttpStatusCode.Status402PaymentRequired);
+
 			var randomPassword = Utils.GenerateRandomUnique(8);
 
-			
-
-			var applicationUser = new PlatformUser
+			PlatformUser applicationUser = null;
+			if (checkEmail != EmailAvailableType.AvailableForApp)
 			{
-				Email = request.Email,
-				FirstName = request.FirstName,
-				LastName = request.LastName,
-				Setting = new PlatformUserSetting()
-			};
+				applicationUser = new PlatformUser
+				{
+					Email = addUserBindingModel.Email,
+					FirstName = addUserBindingModel.FirstName,
+					LastName = addUserBindingModel.LastName,
+					Setting = new PlatformUserSetting()
+				};
 
-			applicationUser.Setting.Culture = culture;
-			applicationUser.Setting.Language = culture.Substring(0, 2);
-			//tenant.Setting.TimeZone = 
-			applicationUser.Setting.Currency = currency;
-			
+				applicationUser.Setting.Culture = tenant.Setting.Culture;
+				applicationUser.Setting.Language = tenant.Setting.Language;
+				//tenant.Setting.TimeZone = 
+				applicationUser.Setting.Currency = tenant.Setting.Currency;
 
-			var result = _platformUserRepository.CreateUser(applicationUser).Result;
 
-			if (result == 0)
+				var result = _platformUserRepository.CreateUser(applicationUser).Result;
+				if (result == 0)
+				{
+					ModelState.AddModelError("", "user not created");
+					return BadRequest(ModelState);
+				}
+			}
+			else
 			{
-				ModelState.AddModelError("", "user not created");
-				return BadRequest(ModelState);
+				applicationUser = await _platformUserRepository.Get(addUserBindingModel.Email);
 			}
 
 			var appInfo = _platformRepository.GetAppInfo(appId);
 
 			using (var httpClient = new HttpClient())
 			{
-				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user?email=" + request.Email + "&password=" + randomPassword + "&firstName=" + request.FirstName + "&lastName=" + request.LastName;
+
+				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/register";
 				httpClient.BaseAddress = new Uri(url);
 				httpClient.DefaultRequestHeaders.Accept.Clear();
-				httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 				
-				var response = await httpClient.GetAsync(url);
+				var json = JsonConvert.SerializeObject(new RegisterBindingModel { Email = addUserBindingModel.Email, FirstName = addUserBindingModel.FirstName, LastName = addUserBindingModel.LastName, Password = randomPassword });
+				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
-				if (!response.IsSuccessStatusCode)
-					return BadRequest(response);
+				/*if (!response.IsSuccessStatusCode)
+					return BadRequest(response);*/
 
 				using (var content = response.Content)
 				{
@@ -523,31 +536,34 @@ namespace PrimeApps.App.Controllers
 					if (!string.IsNullOrEmpty(stringResult))
 					{
 						var jsonResult = JObject.Parse(stringResult);
+						if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
+						{
+							var template = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "email_confirm", culture.Substring(0, 2));
+							if (template != null)
+							{
+								template.Content.Replace("{{:FIRSTNAME}}", addUserBindingModel.FirstName);
+								template.Content.Replace("{{:LASTNAME}}", addUserBindingModel.LastName);
+								template.Content.Replace("{{:EMAIL}}", addUserBindingModel.Email);
+								template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/activate?token=" + jsonResult["token"]);
 
-						var template = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "invate_user", culture.Substring(0, 2));
+								Email notification = new Email(template.Subject, template.Content);
 
-						template.Content.Replace("{{:FIRSTNAME}}", request.FirstName);
-						template.Content.Replace("{{:LASTNAME}}", request.LastName);
-						template.Content.Replace("{{:EMAIL}}", request.Email);
-						template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/activate?token=" + jsonResult["token"]);
-
-						Email notification = new Email(template.Subject, template.Content);
-
-						notification.AddRecipient(template.MailSenderEmail);
-						notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
+								notification.AddRecipient(template.MailSenderEmail);
+								notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
+							}
+						}
 					}
 				}
 			}
 
 			var registerModel = new RegisterBindingModel();
-			registerModel.Email = request.Email;
-			registerModel.FirstName = request.FirstName;
-			registerModel.LastName = request.LastName;
+			registerModel.Email = addUserBindingModel.Email;
+			registerModel.FirstName = addUserBindingModel.FirstName;
+			registerModel.LastName = addUserBindingModel.LastName;
 			registerModel.Password = randomPassword;
 			registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
 
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.InsertUser(registerModel, _warehouse));
-			BackgroundJob.Enqueue(() => Integration.InsertUser(registerModel, _warehouse));
+	        Queue.QueueBackgroundWorkItem(async token => _integration.InsertUser(registerModel, _warehouse));
 
 			var user = await _platformUserRepository.Get(applicationUser.Id);
 			var adminUser = await _platformUserRepository.GetTenantWithOwner(tenantId);
@@ -556,10 +572,10 @@ namespace PrimeApps.App.Controllers
 			var tenantUser = new User
 			{
 				Id = user.Id,
-				Email = request.Email,
-				FirstName = request.FirstName,
-				LastName = request.LastName,
-				FullName = $"{request.FirstName} {request.LastName}",
+				Email = addUserBindingModel.Email,
+				FirstName = addUserBindingModel.FirstName,
+				LastName = addUserBindingModel.LastName,
+				FullName = $"{addUserBindingModel.FirstName} {addUserBindingModel.LastName}",
 				Picture = "",
 				IsActive = true,
 				IsSubscriber = false,
@@ -581,8 +597,8 @@ namespace PrimeApps.App.Controllers
 			_warehouse.DatabaseName = warehouseInfo != null ? warehouseInfo.DatabaseName : "0";
 
 			await _userRepository.CreateAsync(tenantUser);
-			await _profileRepository.AddUserAsync(user.Id, request.ProfileId);
-			await _roleRepository.AddUserAsync(user.Id, request.RoleId);
+			await _profileRepository.AddUserAsync(user.Id, addUserBindingModel.ProfileId);
+			await _roleRepository.AddUserAsync(user.Id, addUserBindingModel.RoleId);
 
 			await _platformUserRepository.UpdateAsync(user);
 

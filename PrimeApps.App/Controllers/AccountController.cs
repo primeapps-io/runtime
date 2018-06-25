@@ -9,6 +9,8 @@ using System.Threading;
 using System.Globalization;
 using System.Net;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -32,6 +34,8 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Hangfire;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Newtonsoft.Json;
+using PrimeApps.App.Services;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
@@ -49,11 +53,10 @@ namespace PrimeApps.App.Controllers
 		private IRoleRepository _roleRepository;
 		private Warehouse _warehouse;
 
-		/*public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, ITenantRepository tenantRepository, Warehouse warehouse) : this(recordRepository, platformUserRepository, tenantRepository, warehouse)
-        {
-        }*/
-
-		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, Warehouse warehouse)
+		private IIntegration _integration;
+		private IRecordHelper _recordHelper;
+		public IBackgroundTaskQueue Queue { get; }
+		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IIntegration integration, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse)
 		{
 			_recordRepository = recordRepository;
 			_warehouse = warehouse;
@@ -64,25 +67,15 @@ namespace PrimeApps.App.Controllers
 			_roleRepository = roleRepository;
 			_userRepository = userRepository;
 
-			//Set warehouse database name Ofisim to integration
-			//_warehouse.DatabaseName = "Ofisim";
+			Queue = queue;
+			_integration = integration;
+			_recordHelper = recordHelper;
 		}
-
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			//SetContext(context);
-			//SetCurrentUser(_recordRepository);
-
-			base.OnActionExecuting(context);
-		}
-
-		// GET account/activate?userId=&token=&culture=
-
-
+		
 		[HttpPost]
 		[AllowAnonymous]
-		[Route("activate")]
-		public async Task<IActionResult> Activate([FromBody]ActivateBindingModels activateBindingModel)
+		[Route("create")]
+		public async Task<IActionResult> Create([FromBody]CreateBindingModels activateBindingModel)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -214,8 +207,7 @@ namespace PrimeApps.App.Controllers
 
 				user.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = user });
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => DocumentHelper.UploadSampleDocuments(user.Tenant.GuidId, user.AppId, tenant.Language));
-				BackgroundJob.Enqueue(() => DocumentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
+				Queue.QueueBackgroundWorkItem(async token => DocumentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
 
 				//user.TenantId = user.Id;
 				//tenant.License.HasAnalyticsLicense = true;
@@ -246,8 +238,7 @@ namespace PrimeApps.App.Controllers
 
 				}
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => Integration.UpdateSubscriber(user.Email, user.TenantId.Value, _warehouse));
-				BackgroundJob.Enqueue(() => Integration.UpdateSubscriber(user.Email, tenantId, _warehouse));
+				Queue.QueueBackgroundWorkItem(async token => _integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _recordHelper.AfterUpdate));
 
 			}
 			catch (Exception ex)
@@ -264,19 +255,51 @@ namespace PrimeApps.App.Controllers
 		//return GetErrorResult(confirmResponse);
 		//return BadRequestResult();
 
+		[Route("change_password")]
+		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordBindingModel changePasswordBindingModel)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			if(HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
+				return Unauthorized();
+
+			var appInfo = _platformRepository.GetAppInfo(Request.Host.Value);
+			using (var httpClient = new HttpClient())
+			{
+
+				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/change_password";
+				httpClient.BaseAddress = new Uri(url);
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+
+				var json = JsonConvert.SerializeObject(changePasswordBindingModel);
+				var response = await httpClient.PostAsJsonAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+
+				if (!response.IsSuccessStatusCode)
+					return BadRequest(response);
+			}
+
+			return Ok();
+		}
+
+		// POST account/logout
+		[Route("logout")]
+		public async Task<IActionResult> Logout()
+		{
+			var appInfo = _platformRepository.GetAppInfo(Request.Host.Value);
+
+			Response.Cookies.Delete("tenant_id");
+			await HttpContext.SignOutAsync();
+
+			return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout" });
+		}
+
 		private async Task DeactivateUser(Tenant tenant)
 		{
 			await _tenantRepository.DeleteAsync(tenant);
 		}
 	}
-
-	// POST account/logout
-	/*[Route("logout")]
-	public IActionResult Logout()
-	{
-		//Authentication.SignOut(CookieAuthenticationDefaults.AuthenticationType);
-		return Ok();
-	}*/
 }
 
 

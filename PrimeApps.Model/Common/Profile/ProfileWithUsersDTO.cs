@@ -53,7 +53,7 @@ namespace PrimeApps.Model.Common.Profile
         [DataMember]
         public int CreatedBy { get; set; }
         [DataMember]
-        public IEnumerable<int> UserIDs { get; set; }
+        public IEnumerable<int> UserIds { get; set; }
         [DataMember]
         public IList<ProfilePermissionDTO> Permissions { get; set; }
     }

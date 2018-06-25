@@ -33,7 +33,8 @@ namespace PrimeApps.App.Controllers
         private ITenantRepository _tenantRepository;
         private Warehouse _warehouse;
 
-        public DataController(IAuditLogRepository auditLogRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IImportRepository importRepository, ITenantRepository tenantRepository, Warehouse warehouse)
+	    private IRecordHelper _recordHelper;
+        public DataController(IAuditLogRepository auditLogRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IImportRepository importRepository, ITenantRepository tenantRepository, IRecordHelper recordHelper, Warehouse warehouse)
         {
             _auditLogRepository = auditLogRepository;
             _recordRepository = recordRepository;
@@ -41,6 +42,8 @@ namespace PrimeApps.App.Controllers
             _importRepository = importRepository;
             _tenantRepository = tenantRepository;
             _warehouse = warehouse;
+
+	        _recordHelper = recordHelper;
         }
 
 		public override void OnActionExecuting(ActionExecutingContext context)
@@ -93,7 +96,7 @@ namespace PrimeApps.App.Controllers
                 await _importRepository.DeleteHard(importEntity);
 
                 if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, RecordHelper.PrepareConflictError(ex));
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
                 if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
                     return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });

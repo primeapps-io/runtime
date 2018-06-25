@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
+using Microsoft.AspNetCore.Http;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
@@ -21,6 +22,31 @@ namespace PrimeApps.App.Helpers
 {
     public static class UserHelper
 	{
+		public static CurrentUser GetCurrentUser(IHttpContextAccessor context)
+		{
+			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+				return null;
+
+			var tenantId = 0;
+
+			if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
+				return null;
+
+			if (tenantId < 1)
+				return null;
+
+			if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
+				return null;
+
+			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
+
+			if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
+				return null;
+
+			return new CurrentUser { TenantId = tenantId, UserId = platformUser.Id };
+		}
+
 		//TODO Removed
 		/*public static async Task<string> AddUser(AddUserBindingModel request, string culture, string currency, string picklistLanguage, int appId, string adminUserEmail, int tenantId, ApplicationUserManager userManager, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse, PlatformUser applicationUser = null, string password = "")
         {
@@ -265,5 +291,5 @@ namespace PrimeApps.App.Helpers
             //if (errorList.Count > 0)
                 //ErrorLog.GetDefault(null).Log(new Error(new Exception(errorList.ToJsonString())));
         }*/
-    }
+	}
 }

@@ -33,7 +33,9 @@ namespace PrimeApps.App.Controllers
         private IMenuRepository _menuRepository;
         private Model.Helpers.Warehouse _warehouse;
 
-        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository)
+	    private IRecordHelper _recordHelper;
+	    private IModuleHelper _moduleHelper;
+        public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository, IRecordHelper recordHelper, IModuleHelper moduleHelper)
         {
             _settingRepository = settingRepository;
             _moduleRepository = moduleRepository;
@@ -43,6 +45,9 @@ namespace PrimeApps.App.Controllers
             _recordRepository = recordRepository;
             _warehouse = warehouse;
             _menuRepository = menuRepository;
+
+	        _recordHelper = recordHelper;
+	        _moduleHelper = moduleHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -429,7 +434,7 @@ namespace PrimeApps.App.Controllers
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
             //TODO Change
-            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse, _menuRepository)
+            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse, _menuRepository, _moduleHelper)
             {
                 /*Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))*/
             };
@@ -479,7 +484,7 @@ namespace PrimeApps.App.Controllers
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
 
             //TODO Change
-            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _warehouse)
+            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _recordHelper, _warehouse)
             {
                 /*Request = new HttpRequestMessage(HttpMethod.Post,
 	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))*/

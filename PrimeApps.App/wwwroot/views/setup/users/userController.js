@@ -83,7 +83,8 @@ angular.module('primeapps')
                 $scope.addedUser = {};
             };
 
-            getOfficeUsers();
+            //TODO Removed
+            /*getOfficeUsers();
 
             function getOfficeUsers() {
                 officeHelper.officeTenantInfo()
@@ -100,30 +101,30 @@ angular.module('primeapps')
                             $rootScope.user.azureDirectory = adInfo.data;
                         }
                     });
-            }
+            }*/
 
             function getUsers() {
                 var promises = [];
 
-                promises.push(WorkgroupService.getWorkgoup());
+                //promises.push(WorkgroupService.getWorkgoup());
                 promises.push(ProfileService.getAll());
                 promises.push(RoleService.getAll());
                 promises.push(LicenseService.getUserLicenseStatus());
 
 
                 $q.all(promises).then(function (data) {
-                    var workgroupData = data[0].data,
-                        responseProfiles = data[1].data,
-                        responseRoles = data[2].data,
-                        license = data[3].data;
+                    var //workgroupData = data[0].data,
+                        responseProfiles = data[0].data,
+                        responseRoles = data[1].data,
+                        license = data[2].data;
 
-                    var workgroup = $filter('filter')(workgroupData['Personal'], { instanceID: $rootScope.workgroup.instanceID }, true)[0];
+                    //var workgroup = $filter('filter')($rootScope.workgroups, { tenant_id: $rootScope.user.tenant_id }, true)[0];
 
-                    $scope.profiles = ProfileService.getProfiles(responseProfiles, $rootScope.workgroup.instanceID, true);
+                    $scope.profiles = ProfileService.getProfiles(responseProfiles, $rootScope.workgroup.tenant_id, true);
                     $scope.roles = responseRoles;
-                    $scope.users = UserService.getUsers(workgroup.users, $scope.profiles, $scope.roles);
-                    $scope.licensesBought = license.Total || 0;
-                    $scope.licensesUsed = license.Used || 0;
+                    $scope.users = UserService.getUsers($rootScope.workgroup.users, $scope.profiles, $scope.roles);
+                    $scope.licensesBought = license.total || 0;
+                    $scope.licensesUsed = license.used || 0;
                     $scope.licenseAvailable = $scope.licensesBought - $scope.licensesUsed;
                     $scope.loading = false;
                 });
@@ -169,11 +170,13 @@ angular.module('primeapps')
                 inviteModel.roleId = inviteModel.role;
 
                 $scope.addedUser = angular.copy(inviteModel);
+                inviteModel = helper.SnakeToCamel(inviteModel);
 
                 UserService.addUser(inviteModel)
                     .then(function (response) {
                         if (response.data) {
-                            getOfficeUsers();
+                            //TODO Removed
+                            /*getOfficeUsers();*/
                             getUsers();
 
                             $scope.userInviting = false;
@@ -309,7 +312,8 @@ angular.module('primeapps')
                 var updateActiveDirectoryEmail = function () {
                     UserService.updateActiveDirectoryEmail($scope.selectedUser.id, $scope.editModel.activeDirectoryEmail)
                         .then(function () {
-                            getOfficeUsers();
+                            //TODO Removed
+                            /*getOfficeUsers();*/
                             success();
                         })
                         .catch(function (response) {
@@ -358,8 +362,8 @@ angular.module('primeapps')
                         AppService.getMyAccount(true);
 
                         LicenseService.getUserLicenseStatus().then(function onSuccess(license) {
-                            $scope.licensesBought = license.data.Total || 0;
-                            $scope.licensesUsed = license.data.Used || 0;
+                            $scope.licensesBought = license.data.total || 0;
+                            $scope.licensesUsed = license.data.used || 0;
                             $scope.licenseAvailable = $scope.licensesBought - $scope.licensesUsed;
                         });
 

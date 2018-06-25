@@ -9,11 +9,17 @@ using PrimeApps.Model.Repositories;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class AuditLogHelper
-    {
-        private static readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
+	public interface IAuditLogHelper
+	{
+		Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type,
+			RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null);
+	}
 
-        public static async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
+	public class AuditLogHelper : IAuditLogHelper
+    {
+        private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
+
+        public async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
         {
             var auditLog = new AuditLog
             {

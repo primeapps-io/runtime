@@ -14,6 +14,9 @@ using PrimeApps.App.Notifications;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using Hangfire;
+using Microsoft.AspNetCore.Http;
+using PrimeApps.App.Services;
+using PrimeApps.Model.Entities.Platform;
 
 /*
  * using OfisimCRM.DTO.AuditLog;
@@ -29,524 +32,573 @@ using OfisimCRM.DTO.Common;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class RecordHelper
-    {
-        public static async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
-        {
-            //TODO: Validate metadata
-            //TODO: Profile permission check
-            var picklistItemIds = new List<int>();
+	public interface IRecordHelper
+	{
+		Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState,
+			string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+		Task<int> BeforeDelete(Module module, JObject record, UserItem appUser);
+		void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true,
+			bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
+		void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse,
+			bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
+		void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true,
+			bool runCalculations = true);
+		JObject PrepareConflictError(PostgresException ex);
+		bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
+		Task CreateStageHistory(JObject record, JObject currentRecord = null);
+		Task UpdateStageHistory(JObject record, JObject currentRecord);
+		void SetCombinations(JObject record, JObject currentRecord, Field fieldCombination);
+		Task SetActivityType(JObject record);
+		Task SetTransactionType(JObject record);
+		Task SetForecastFields(JObject record);
+		JObject CreateStageHistoryRecord(JObject record, JObject currentRecord);
+		string GetRecordPrimaryValue(JObject record, Module module);
+		Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true);
+	}
 
-            // Check all fields is valid and prepare for related data types
-            foreach (var prop in record)
-            {
-                if (Model.Helpers.ModuleHelper.SystemFields.Contains(prop.Key))
-                    continue;
+	public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState,
+		string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
 
-                if (Model.Helpers.ModuleHelper.ModuleSpecificFields(module).Contains(prop.Key))
-                    continue;
+	public delegate Task UpdateStageHistory(JObject record, JObject currentRecord);
 
-                var field = module.Fields.FirstOrDefault(x => x.Name == prop.Key);
+	public delegate void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser,
+		Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
 
-                if (field == null)
-                {
-                    modelState.AddModelError(prop.Key, $"Field '{prop.Key}' not found.");
-                    return -1;
-                }
+	public delegate void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse,
+		bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
 
-                if (prop.Value.IsNullOrEmpty())
-                    continue;
+	public delegate Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true);
 
-                if (field.DataType == DataType.Picklist && convertPicklists)
-                {
-                    if (!prop.Value.IsNumeric())
-                    {
-                        modelState.AddModelError(prop.Key, $"Value of '{prop.Key}' field must be numeric.");
-                        return -1;
-                    }
+	public delegate bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
 
-                    picklistItemIds.Add((int)prop.Value);
-                }
+	public class RecordHelper : IRecordHelper
+	{
+		private IPicklistRepository _picklistRepository;
+		private IModuleRepository _moduleRepository;
+		private IRecordRepository _recordRepository;
 
-                if (field.DataType == DataType.Multiselect && convertPicklists)
-                {
-                    if (!(prop.Value is JArray))
-                    {
-                        modelState.AddModelError(prop.Key, $"Value of '{prop.Key}' field must be array.");
-                        return -1;
-                    }
+		private IAuditLogHelper _auditLogHelper;
+		private INotificationHelper _notificationHelper;
+		private IWorkflowHelper _workflowHelper;
+		private IProcessHelper _processHelper;
+		private ICalculationHelper _calculationHelper;
+		private IChangeLogHelper _changeLogHelper;
+		private IHttpContextAccessor _context;
+		public IBackgroundTaskQueue Queue { get; }
 
-                    var multiselectPicklistItemIds = new List<int>();
+		public RecordHelper(IPicklistRepository picklistRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IChangeLogHelper changeLogHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context)
+		{
+			_context = context;
+			_picklistRepository = picklistRepository;
+			_moduleRepository = moduleRepository;
+			_recordRepository = recordRepository;
 
-                    foreach (var item in (JArray)prop.Value)
-                    {
-                        if (!item.IsNumeric())
-                        {
-                            modelState.AddModelError(prop.Key, $"All items of '{prop.Key}' field value must be numeric.");
-                            return -1;
-                        }
+			_picklistRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
 
-                        multiselectPicklistItemIds.Add((int)item);
-                    }
+			_auditLogHelper = auditLogHelper;
+			_notificationHelper = notificationHelper;
+			_workflowHelper = workflowHelper;
+			_processHelper = processHelper;
+			_calculationHelper = calculationHelper;
+			_changeLogHelper = changeLogHelper;
 
-                    picklistItemIds.AddRange(multiselectPicklistItemIds);
-                }
-            }
+			Queue = queue;
+		}
 
-            //Module specific actions
-            switch (module.Name)
-            {
-                case "activities":
-                    if (!record["activity_type"].IsNullOrEmpty())
-                        await SetActivityType(record, picklistRepository);
-                    break;
-                case "opportunities":
-                    await SetForecastFields(record, picklistRepository);
-                    break;
-                case "current_accounts":
-                    await SetTransactionType(record, picklistRepository);
-                    break;
-            }
 
-            // Check picklists and set picklist's label to record value
-            if (picklistItemIds.Count > 0 && convertPicklists)
-            {
-                var picklistItems = await picklistRepository.FindItems(picklistItemIds);
-                var hasModulePicklists = picklistItemIds.Any(x => x > 900000);
+		
+		public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
+		{
+			//TODO: Validate metadata
+			//TODO: Profile permission check
+			var picklistItemIds = new List<int>();
 
-                if ((picklistItems == null || picklistItems.Count < 1) && !hasModulePicklists)
-                {
-                    modelState.AddModelError("picklist", "Picklists not found.");
-                    return -1;
-                }
+			// Check all fields is valid and prepare for related data types
+			foreach (var prop in record)
+			{
+				if (Model.Helpers.ModuleHelper.SystemFields.Contains(prop.Key))
+					continue;
 
-                foreach (var pair in record)
-                {
-                    if (Model.Helpers.ModuleHelper.SystemFields.Contains(pair.Key))
-                        continue;
+				if (Model.Helpers.ModuleHelper.ModuleSpecificFields(module).Contains(prop.Key))
+					continue;
 
-                    var field = module.Fields.FirstOrDefault(x => x.Name == pair.Key);
+				var field = module.Fields.FirstOrDefault(x => x.Name == prop.Key);
 
-                    if (field == null)
-                        continue;
+				if (field == null)
+				{
+					modelState.AddModelError(prop.Key, $"Field '{prop.Key}' not found.");
+					return -1;
+				}
 
-                    if (field.DataType == DataType.Picklist)
-                    {
-                        if (pair.Value.IsNullOrEmpty())
-                            continue;
+				if (prop.Value.IsNullOrEmpty())
+					continue;
 
-                        if (field.Name != "related_module")
-                        {
-                            var picklistItem = picklistItems.FirstOrDefault(x => x.Id == (int)pair.Value && x.PicklistId == field.PicklistId.Value);
+				if (field.DataType == DataType.Picklist && convertPicklists)
+				{
+					if (!prop.Value.IsNumeric())
+					{
+						modelState.AddModelError(prop.Key, $"Value of '{prop.Key}' field must be numeric.");
+						return -1;
+					}
 
-                            if (picklistItem == null)
-                            {
-                                modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
-                                return -1;
-                            }
+					picklistItemIds.Add((int)prop.Value);
+				}
 
-                            record[pair.Key] = tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn;
-                        }
-                        else
-                        {
-                            var relatedModule = await moduleRepository.GetByIdBasic((int)pair.Value - 900000);
+				if (field.DataType == DataType.Multiselect && convertPicklists)
+				{
+					if (!(prop.Value is JArray))
+					{
+						modelState.AddModelError(prop.Key, $"Value of '{prop.Key}' field must be array.");
+						return -1;
+					}
 
-                            if (relatedModule == null)
-                            {
-                                modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
-                                return -1;
-                            }
+					var multiselectPicklistItemIds = new List<int>();
 
-                            record[pair.Key] = tenantLanguage == "tr" ? relatedModule.LabelTrSingular : relatedModule.LabelEnSingular;
-                        }
-                    }
+					foreach (var item in (JArray)prop.Value)
+					{
+						if (!item.IsNumeric())
+						{
+							modelState.AddModelError(prop.Key, $"All items of '{prop.Key}' field value must be numeric.");
+							return -1;
+						}
 
-                    if (field.DataType == DataType.Multiselect)
-                    {
-                        if (pair.Value.IsNullOrEmpty())
-                            continue;
+						multiselectPicklistItemIds.Add((int)item);
+					}
 
-                        var picklistLabels = new List<string>();
+					picklistItemIds.AddRange(multiselectPicklistItemIds);
+				}
+			}
 
-                        foreach (var item in (JArray)pair.Value)
-                        {
-                            var picklistItem = picklistItems.FirstOrDefault(x => x.Id == (int)item && x.PicklistId == field.PicklistId.Value);
+			//Module specific actions
+			switch (module.Name)
+			{
+				case "activities":
+					if (!record["activity_type"].IsNullOrEmpty())
+						await SetActivityType(record);
+					break;
+				case "opportunities":
+					await SetForecastFields(record);
+					break;
+				case "current_accounts":
+					await SetTransactionType(record);
+					break;
+			}
 
-                            if (picklistItem == null)
-                            {
-                                modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
-                                return -1;
-                            }
+			// Check picklists and set picklist's label to record value
+			if (picklistItemIds.Count > 0 && convertPicklists)
+			{
+				var picklistItems = await _picklistRepository.FindItems(picklistItemIds);
+				var hasModulePicklists = picklistItemIds.Any(x => x > 900000);
 
-                            picklistLabels.Add(tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn);
-                        }
+				if ((picklistItems == null || picklistItems.Count < 1) && !hasModulePicklists)
+				{
+					modelState.AddModelError("picklist", "Picklists not found.");
+					return -1;
+				}
 
-                        record[pair.Key] = string.Join("|", picklistLabels);
-                    }
-                }
-            }
+				foreach (var pair in record)
+				{
+					if (Model.Helpers.ModuleHelper.SystemFields.Contains(pair.Key))
+						continue;
 
-            // Process combination
-            var fieldCombinations = module.Fields.Where(x => x.Combination != null);
+					var field = module.Fields.FirstOrDefault(x => x.Name == pair.Key);
 
-            foreach (var fieldCombination in fieldCombinations)
-            {
-                SetCombinations(record, currentRecord, fieldCombination);
-            }
+					if (field == null)
+						continue;
 
-            // Check freeze
-            if (!currentRecord.IsNullOrEmpty() && !currentRecord["process_id"].IsNullOrEmpty())
-            {
-                if ((int)currentRecord["process_status"] != 3 && (int)currentRecord["operation_type"] != 1 && appUser != null && !appUser.HasAdminProfile)
-                    record["freeze"] = true;
-                else
-                    record["freeze"] = false;
-            }
-            return 0;
-        }
+					if (field.DataType == DataType.Picklist)
+					{
+						if (pair.Value.IsNullOrEmpty())
+							continue;
 
-        public static async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser)
-        {
-            //TODO: Profile permission check
+						if (field.Name != "related_module")
+						{
+							var picklistItem = picklistItems.FirstOrDefault(x => x.Id == (int)pair.Value && x.PicklistId == field.PicklistId.Value);
 
-            // Check freeze
-            if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
-            {
+							if (picklistItem == null)
+							{
+								modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
+								return -1;
+							}
 
-                if (appUser != null && !appUser.HasAdminProfile)
-                    record["freeze"] = true;
-                else
-                    record["freeze"] = false;
-            }
-            return 0;
-        }
+							record[pair.Key] = tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn;
+						}
+						else
+						{
+							var relatedModule = await _moduleRepository.GetByIdBasic((int)pair.Value - 900000);
 
-        public static void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
-        {
-            if (runDefaults)
-            {
-				BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
-				BackgroundJob.Enqueue(() => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
-				BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
+							if (relatedModule == null)
+							{
+								modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
+								return -1;
+							}
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
-                //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Create(appUser, record, module, timeZoneOffset));
-                //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.SendTaskNotification(record, appUser, module));
-            }
+							record[pair.Key] = tenantLanguage == "tr" ? relatedModule.LabelTrSingular : relatedModule.LabelEnSingular;
+						}
+					}
 
-            if (runWorkflows)
-            {
-				BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse));
-				BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
+					if (field.DataType == DataType.Multiselect)
+					{
+						if (pair.Value.IsNullOrEmpty())
+							continue;
 
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.insert, record, module, appUser, warehouse));
-                //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
-            }
+						var picklistLabels = new List<string>();
+
+						foreach (var item in (JArray)pair.Value)
+						{
+							var picklistItem = picklistItems.FirstOrDefault(x => x.Id == (int)item && x.PicklistId == field.PicklistId.Value);
+
+							if (picklistItem == null)
+							{
+								modelState.AddModelError(pair.Key, $"Picklist item '{pair.Value}' not found.");
+								return -1;
+							}
+
+							picklistLabels.Add(tenantLanguage == "tr" ? picklistItem.LabelTr : picklistItem.LabelEn);
+						}
+
+						record[pair.Key] = string.Join("|", picklistLabels);
+					}
+				}
+			}
+
+			// Process combination
+			var fieldCombinations = module.Fields.Where(x => x.Combination != null);
+
+			foreach (var fieldCombination in fieldCombinations)
+			{
+				SetCombinations(record, currentRecord, fieldCombination);
+			}
+
+			// Check freeze
+			if (!currentRecord.IsNullOrEmpty() && !currentRecord["process_id"].IsNullOrEmpty())
+			{
+				if ((int)currentRecord["process_status"] != 3 && (int)currentRecord["operation_type"] != 1 && appUser != null && !appUser.HasAdminProfile)
+					record["freeze"] = true;
+				else
+					record["freeze"] = false;
+			}
+			return 0;
+		}
+
+		public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser)
+		{
+			//TODO: Profile permission check
+
+			// Check freeze
+			if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
+			{
+
+				if (appUser != null && !appUser.HasAdminProfile)
+					record["freeze"] = true;
+				else
+					record["freeze"] = false;
+			}
+			return 0;
+		}
+
+		public void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
+		{
+			if (runDefaults)
+			{
+				Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
+				Queue.QueueBackgroundWorkItem(async token => _notificationHelper.Create(appUser, record, module, timeZoneOffset));
+				Queue.QueueBackgroundWorkItem(async token => _notificationHelper.SendTaskNotification(record, appUser, module));
+			}
+
+			if (runWorkflows)
+			{
+				Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+			}
 
 
 			if (runCalculations)
 			{
-				BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert));
+				Queue.QueueBackgroundWorkItem(async token => _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest));
 			}
-        }
+		}
 
-        public static void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
-        {
-			BackgroundJob.Enqueue(() => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
-			BackgroundJob.Enqueue(() => NotificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
-			BackgroundJob.Enqueue(() => NotificationHelper.SendTaskNotification(record, appUser, module));
+		public void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
+		{
+			Queue.QueueBackgroundWorkItem(async token => _changeLogHelper.CreateLog(appUser, currentRecord, module));
+			Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
+			Queue.QueueBackgroundWorkItem(async token => _notificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
+			Queue.QueueBackgroundWorkItem(async token => _notificationHelper.SendTaskNotification(record, appUser, module));
 
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => ChangeLogHelper.CreateLog(appUser, currentRecord, module));
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Update(appUser, record, currentRecord, module, timeZoneOffset));
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.SendTaskNotification(record, appUser, module));
+			if (runWorkflows)
+			{
+				Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
 
-            if (runWorkflows)
-            {
-				BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse));
-				BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
-
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.update, record, module, appUser, warehouse));
-                //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
-
-                //if (currentRecord["process_id"].IsNullOrEmpty())
-                //{
-                //    HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse));
-                //}
-                //else if (!currentRecord["process_status"].IsNullOrEmpty() && (int)currentRecord["process_status"] == 2)
-                //{
-                //    HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.SendToApprovalApprovedRequest(OperationType.update, currentRecord, appUser, warehouse));
-                //}
-            }
+				//if (currentRecord["process_id"].IsNullOrEmpty())
+				//{
+				//    HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse));
+				//}
+				//else if (!currentRecord["process_status"].IsNullOrEmpty() && (int)currentRecord["process_status"] == 2)
+				//{
+				//    HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.SendToApprovalApprovedRequest(OperationType.update, currentRecord, appUser, warehouse));
+				//}
+			}
 
 
 			if (runCalculations)
 			{
-				BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update));
+				Queue.QueueBackgroundWorkItem(async token => _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update,BeforeCreateUpdate, GetAllFieldsForFindRequest));
 			}
-        }
+		}
 
-        public static void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true)
-        {
-			BackgroundJob.Enqueue(() => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
-			BackgroundJob.Enqueue(() => NotificationHelper.Delete(appUser, record, module));
+		public void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true)
+		{
+			Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
+			Queue.QueueBackgroundWorkItem(async token => _notificationHelper.Delete(appUser, record, module));
 
-			//HostingEnvironment.QueueBackgroundWorkItem(clt => AuditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
-            //HostingEnvironment.QueueBackgroundWorkItem(clt => NotificationHelper.Delete(appUser, record, module));
-
-            if (runWorkflows)
-            {
-				BackgroundJob.Enqueue(() => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
-				BackgroundJob.Enqueue(() => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
-
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => WorkflowHelper.Run(OperationType.delete, record, module, appUser, warehouse));
-                //HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant));
-            }
+			if (runWorkflows)
+			{
+				Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
+				Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+			}
 
 
 			if (runCalculations)
 			{
-				BackgroundJob.Enqueue(() => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
-				//HostingEnvironment.QueueBackgroundWorkItem(clt => CalculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete));
+				Queue.QueueBackgroundWorkItem(async token => _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete, BeforeCreateUpdate, GetAllFieldsForFindRequest));
 			}
-        }
+		}
 
-        public static JObject PrepareConflictError(PostgresException ex)
-        {
-            var field = ex.ConstraintName;
-            var field2 = string.Empty;
+		public JObject PrepareConflictError(PostgresException ex)
+		{
+			var field = ex.ConstraintName;
+			var field2 = string.Empty;
 
-            var moduleName = ex.TableName.TrimEnd('d').TrimEnd('_');
+			var moduleName = ex.TableName.TrimEnd('d').TrimEnd('_');
 
-            if (field.StartsWith(moduleName + "_"))
-                field = field.Remove(0, moduleName.Length + 1);
+			if (field.StartsWith(moduleName + "_"))
+				field = field.Remove(0, moduleName.Length + 1);
 
-            if (field.StartsWith("ix_unique_"))
-                field = field.Remove(0, "ix_unique_".Length);
+			if (field.StartsWith("ix_unique_"))
+				field = field.Remove(0, "ix_unique_".Length);
 
-            if (field.Contains("-"))
-            {
-                var fieldParts = field.Split('-');
-                field = fieldParts[0];
-                field2 = fieldParts[1];
-            }
+			if (field.Contains("-"))
+			{
+				var fieldParts = field.Split('-');
+				field = fieldParts[0];
+				field2 = fieldParts[1];
+			}
 
-            var error = new JObject();
-            error["field"] = field;
-            error["message"] = ex.Detail;
+			var error = new JObject();
+			error["field"] = field;
+			error["message"] = ex.Detail;
 
-            if (!string.IsNullOrEmpty(field2))
-                error["field2"] = field2;
+			if (!string.IsNullOrEmpty(field2))
+				error["field2"] = field2;
 
 
-            return error;
-        }
+			return error;
+		}
 
-        public static bool ValidateFilterLogic(string filterLogic, List<Filter> filters)
-        {
-            if (string.IsNullOrWhiteSpace(filterLogic))
-                return true;
+		public bool ValidateFilterLogic(string filterLogic, List<Filter> filters)
+		{
+			if (string.IsNullOrWhiteSpace(filterLogic))
+				return true;
 
-            if (filters == null || filters.Count < 1)
-                return false;
+			if (filters == null || filters.Count < 1)
+				return false;
 
-            var digits = filterLogic.Where(char.IsDigit).ToList();
+			var digits = filterLogic.Where(char.IsDigit).ToList();
 
-            foreach (var digit in digits)
-            {
-                var filterNo = byte.Parse(digit.ToString());
-                var filter = filters.FirstOrDefault(x => x.No == filterNo);
+			foreach (var digit in digits)
+			{
+				var filterNo = byte.Parse(digit.ToString());
+				var filter = filters.FirstOrDefault(x => x.No == filterNo);
 
-                if (filter == null)
-                    return false;
-            }
+				if (filter == null)
+					return false;
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        public static async Task CreateStageHistory(JObject record, IRecordRepository recordRepository, IModuleRepository moduleRepository, JObject currentRecord = null)
-        {
-            if (record["stage"] != null)
-            {
-                var stageHistoryModule = await moduleRepository.GetByNameBasic("stage_history");
-                var stageHistory = CreateStageHistoryRecord(record, currentRecord);
+		public async Task CreateStageHistory(JObject record, JObject currentRecord = null)
+		{
+			if (record["stage"] != null)
+			{
+				var stageHistoryModule = await _moduleRepository.GetByNameBasic("stage_history");
+				var stageHistory = CreateStageHistoryRecord(record, currentRecord);
 
-                await recordRepository.Create(stageHistory, stageHistoryModule);
-            }
-        }
+				await _recordRepository.Create(stageHistory, stageHistoryModule);
+			}
+		}
 
-        public static async Task UpdateStageHistory(JObject record, JObject currentRecord, IRecordRepository recordRepository, IModuleRepository moduleRepository)
-        {
-            if (record["stage"] != null)
-            {
-                if ((string)record["stage"] != (string)currentRecord["stage"])
-                    await CreateStageHistory(record, recordRepository, moduleRepository, currentRecord);
-            }
-        }
+		public async Task UpdateStageHistory(JObject record, JObject currentRecord)
+		{
+			if (record["stage"] != null)
+			{
+				if ((string)record["stage"] != (string)currentRecord["stage"])
+					await CreateStageHistory(record, currentRecord);
+			}
+		}
 
-        public static void SetCombinations(JObject record, JObject currentRecord, Field fieldCombination)
-        {
-            var isSet = false;
-            var combinationCharacter = !string.IsNullOrWhiteSpace(fieldCombination.Combination.CombinationCharacter) ? fieldCombination.Combination.CombinationCharacter : " ";
+		public void SetCombinations(JObject record, JObject currentRecord, Field fieldCombination)
+		{
+			var isSet = false;
+			var combinationCharacter = !string.IsNullOrWhiteSpace(fieldCombination.Combination.CombinationCharacter) ? fieldCombination.Combination.CombinationCharacter : " ";
 
-            if (combinationCharacter == "<+>")
-                combinationCharacter = "";
+			if (combinationCharacter == "<+>")
+				combinationCharacter = "";
 
-            if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty() && !record[fieldCombination.Combination.Field2].IsNullOrEmpty())
-            {
-                record[fieldCombination.Name] = record[fieldCombination.Combination.Field1] + combinationCharacter + record[fieldCombination.Combination.Field2];
-                isSet = true;
-            }
+			if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty() && !record[fieldCombination.Combination.Field2].IsNullOrEmpty())
+			{
+				record[fieldCombination.Name] = record[fieldCombination.Combination.Field1] + combinationCharacter + record[fieldCombination.Combination.Field2];
+				isSet = true;
+			}
 
-            if (!isSet && currentRecord != null)
-            {
-                if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty() && record[fieldCombination.Combination.Field2].IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field2].IsNullOrEmpty())
-                {
-                    record[fieldCombination.Name] = record[fieldCombination.Combination.Field1] + combinationCharacter + currentRecord[fieldCombination.Combination.Field2];
-                    isSet = true;
-                }
+			if (!isSet && currentRecord != null)
+			{
+				if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty() && record[fieldCombination.Combination.Field2].IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field2].IsNullOrEmpty())
+				{
+					record[fieldCombination.Name] = record[fieldCombination.Combination.Field1] + combinationCharacter + currentRecord[fieldCombination.Combination.Field2];
+					isSet = true;
+				}
 
-                if (record[fieldCombination.Combination.Field1].IsNullOrEmpty() && !record[fieldCombination.Combination.Field2].IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field1].IsNullOrEmpty())
-                {
-                    record[fieldCombination.Name] = currentRecord[fieldCombination.Combination.Field1] + combinationCharacter + record[fieldCombination.Combination.Field2];
-                    isSet = true;
-                }
-            }
+				if (record[fieldCombination.Combination.Field1].IsNullOrEmpty() && !record[fieldCombination.Combination.Field2].IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field1].IsNullOrEmpty())
+				{
+					record[fieldCombination.Name] = currentRecord[fieldCombination.Combination.Field1] + combinationCharacter + record[fieldCombination.Combination.Field2];
+					isSet = true;
+				}
+			}
 
-            if (!isSet && !record[fieldCombination.Combination.Field1].IsNullOrEmpty())
-                record[fieldCombination.Name] = record[fieldCombination.Combination.Field1];
+			if (!isSet && !record[fieldCombination.Combination.Field1].IsNullOrEmpty())
+				record[fieldCombination.Name] = record[fieldCombination.Combination.Field1];
 
-            if (!isSet && !record[fieldCombination.Combination.Field2].IsNullOrEmpty())
-                record[fieldCombination.Name] = record[fieldCombination.Combination.Field2];
-        }
+			if (!isSet && !record[fieldCombination.Combination.Field2].IsNullOrEmpty())
+				record[fieldCombination.Name] = record[fieldCombination.Combination.Field2];
+		}
 
-        private static async Task SetActivityType(JObject record, IPicklistRepository picklistRepository)
-        {
-            if (!record["id"].IsNullOrEmpty() && record["activity_type"].IsNullOrEmpty())
-                return;
+		public async Task SetActivityType(JObject record)
+		{
+			if (!record["id"].IsNullOrEmpty() && record["activity_type"].IsNullOrEmpty())
+				return;
 
-            if (record["id"].IsNullOrEmpty() && record["activity_type"].IsNullOrEmpty())
-                throw new Exception("ActivityType not found!");
+			if (record["id"].IsNullOrEmpty() && record["activity_type"].IsNullOrEmpty())
+				throw new Exception("ActivityType not found!");
 
-            var activityType = await picklistRepository.GetItemById((int)record["activity_type"]);
+			var activityType = await _picklistRepository.GetItemById((int)record["activity_type"]);
 
-            if (activityType == null)
-                throw new Exception("ActivityType picklist item not found!");
+			if (activityType == null)
+				throw new Exception("ActivityType picklist item not found!");
 
-            record["activity_type_system"] = activityType.Value;
-        }
+			record["activity_type_system"] = activityType.Value;
+		}
 
-        private static async Task SetTransactionType(JObject record, IPicklistRepository picklistRepository)
-        {
-            if (!record["id"].IsNullOrEmpty() && record["transaction_type"].IsNullOrEmpty())
-                return;
+		public async Task SetTransactionType(JObject record)
+		{
+			if (!record["id"].IsNullOrEmpty() && record["transaction_type"].IsNullOrEmpty())
+				return;
 
-            if (record["id"].IsNullOrEmpty() && record["transaction_type"].IsNullOrEmpty())
-                throw new Exception("TransactionType not found!");
+			if (record["id"].IsNullOrEmpty() && record["transaction_type"].IsNullOrEmpty())
+				throw new Exception("TransactionType not found!");
 
-            var transactionType = await picklistRepository.GetItemById((int)record["transaction_type"]);
+			var transactionType = await _picklistRepository.GetItemById((int)record["transaction_type"]);
 
-            if (transactionType == null)
-                throw new Exception("TransactionType picklist item not found!");
+			if (transactionType == null)
+				throw new Exception("TransactionType picklist item not found!");
 
-            record["transaction_type_system"] = transactionType.Value;
-        }
+			record["transaction_type_system"] = transactionType.Value;
+		}
 
-        private static async Task SetForecastFields(JObject record, IPicklistRepository picklistRepository)
-        {
-            if (!record["stage"].IsNullOrEmpty())
-            {
-                var stage = await picklistRepository.GetItemById((int)record["stage"]);
+		public async Task SetForecastFields(JObject record)
+		{
+			if (!record["stage"].IsNullOrEmpty())
+			{
+				var stage = await _picklistRepository.GetItemById((int)record["stage"]);
 
-                if (stage == null)
-                    throw new Exception("Stage picklist not found!");
+				if (stage == null)
+					throw new Exception("Stage picklist not found!");
 
-                record["forecast_type"] = stage.Value2;
-                record["forecast_category"] = stage.Value3;
-            }
+				record["forecast_type"] = stage.Value2;
+				record["forecast_category"] = stage.Value3;
+			}
 
-            if (!record["closing_date"].IsNullOrEmpty())
-            {
-                var closingDate = (DateTime)record["closing_date"];
+			if (!record["closing_date"].IsNullOrEmpty())
+			{
+				var closingDate = (DateTime)record["closing_date"];
 
-                record["forecast_year"] = closingDate.Year;
-                record["forecast_month"] = closingDate.Month;
-                record["forecast_quarter"] = closingDate.ToQuarter();
-            }
-        }
+				record["forecast_year"] = closingDate.Year;
+				record["forecast_month"] = closingDate.Month;
+				record["forecast_quarter"] = closingDate.ToQuarter();
+			}
+		}
 
-        private static JObject CreateStageHistoryRecord(JObject record, JObject currentRecord)
-        {
-            var stageHistory = new JObject();
-            stageHistory["opportunity"] = record["id"];
-            stageHistory["stage"] = record["stage"];
+		public JObject CreateStageHistoryRecord(JObject record, JObject currentRecord)
+		{
+			var stageHistory = new JObject();
+			stageHistory["opportunity"] = record["id"];
+			stageHistory["stage"] = record["stage"];
 
-            if (currentRecord != null)
-            {
-                stageHistory["amount"] = !record["amount"].IsNullOrEmpty() ? record["amount"] : currentRecord["amount"];
-                stageHistory["closing_date"] = !record["closing_date"].IsNullOrEmpty() ? record["closing_date"] : currentRecord["closing_date"];
-                stageHistory["probability"] = !record["probability"].IsNullOrEmpty() ? record["probability"] : currentRecord["probability"];
-                stageHistory["expected_revenue"] = !record["expected_revenue"].IsNullOrEmpty() ? record["expected_revenue"] : currentRecord["expected_revenue"];
-            }
-            else
-            {
-                stageHistory["amount"] = !record["amount"].IsNullOrEmpty() ? record["amount"] : null;
-                stageHistory["closing_date"] = !record["closing_date"].IsNullOrEmpty() ? record["closing_date"] : null;
-                stageHistory["probability"] = !record["probability"].IsNullOrEmpty() ? record["probability"] : null;
-                stageHistory["expected_revenue"] = !record["expected_revenue"].IsNullOrEmpty() ? record["expected_revenue"] : null;
-            }
+			if (currentRecord != null)
+			{
+				stageHistory["amount"] = !record["amount"].IsNullOrEmpty() ? record["amount"] : currentRecord["amount"];
+				stageHistory["closing_date"] = !record["closing_date"].IsNullOrEmpty() ? record["closing_date"] : currentRecord["closing_date"];
+				stageHistory["probability"] = !record["probability"].IsNullOrEmpty() ? record["probability"] : currentRecord["probability"];
+				stageHistory["expected_revenue"] = !record["expected_revenue"].IsNullOrEmpty() ? record["expected_revenue"] : currentRecord["expected_revenue"];
+			}
+			else
+			{
+				stageHistory["amount"] = !record["amount"].IsNullOrEmpty() ? record["amount"] : null;
+				stageHistory["closing_date"] = !record["closing_date"].IsNullOrEmpty() ? record["closing_date"] : null;
+				stageHistory["probability"] = !record["probability"].IsNullOrEmpty() ? record["probability"] : null;
+				stageHistory["expected_revenue"] = !record["expected_revenue"].IsNullOrEmpty() ? record["expected_revenue"] : null;
+			}
 
-            return stageHistory;
-        }
+			return stageHistory;
+		}
 
-        private static string GetRecordPrimaryValue(JObject record, Module module)
-        {
-            var recordName = string.Empty;
-            var primaryField = module.Fields.FirstOrDefault(x => x.Primary);
+		public string GetRecordPrimaryValue(JObject record, Module module)
+		{
+			var recordName = string.Empty;
+			var primaryField = module.Fields.FirstOrDefault(x => x.Primary);
 
-            if (primaryField != null)
-                recordName = (string)record[primaryField.Name];
+			if (primaryField != null)
+				recordName = (string)record[primaryField.Name];
 
-            return recordName;
-        }
+			return recordName;
+		}
 
-        public static async Task<List<string>> GetAllFieldsForFindRequest(string moduleName, IModuleRepository moduleRepository, bool withLookups = true)
-        {
-            var module = await moduleRepository.GetByNameBasic(moduleName);
-            var fields = new List<string>();
+		public async Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true)
+		{
+			var module = await _moduleRepository.GetByNameBasic(moduleName);
+			var fields = new List<string>();
 
-            foreach (var field in module.Fields)
-            {
-                if (field.Deleted || field.LookupType == "relation")
-                    continue;
+			foreach (var field in module.Fields)
+			{
+				if (field.Deleted || field.LookupType == "relation")
+					continue;
 
-                if (field.DataType == DataType.Lookup && withLookups)
-                {
-                    Module lookupModule;
+				if (field.DataType == DataType.Lookup && withLookups)
+				{
+					Module lookupModule;
 
-                    if (field.LookupType == "users")
-                        lookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
-                    else
-                        lookupModule = await moduleRepository.GetByName(field.LookupType);
+					if (field.LookupType == "users")
+						lookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+					else
+						lookupModule = await _moduleRepository.GetByName(field.LookupType);
 
-                    foreach (var lookupModuleField in lookupModule.Fields)
-                    {
-                        if (lookupModuleField.Deleted || lookupModuleField.DataType == DataType.Lookup)
-                            continue;
+					foreach (var lookupModuleField in lookupModule.Fields)
+					{
+						if (lookupModuleField.Deleted || lookupModuleField.DataType == DataType.Lookup)
+							continue;
 
-                        fields.Add(field.Name + "." + field.LookupType + "." + lookupModuleField.Name);
-                    }
-                }
-                else
-                {
-                    fields.Add(field.Name);
-                }
-            }
+						fields.Add(field.Name + "." + field.LookupType + "." + lookupModuleField.Name);
+					}
+				}
+				else
+				{
+					fields.Add(field.Name);
+				}
+			}
 
-            return fields;
-        }
-    }
+			return fields;
+		}
+	}
 }

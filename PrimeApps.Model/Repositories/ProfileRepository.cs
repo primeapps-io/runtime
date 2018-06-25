@@ -254,7 +254,7 @@ namespace PrimeApps.Model.Repositories
                                    Home = x.Home,
 	                               CollectiveAnnualLeave = x.CollectiveAnnualLeave,
 								   StartPage = x.StartPage,
-                                   UserIDs = x.Users.Select(z => z.Id).ToList(),
+                                   UserIds = x.Users.Select(z => z.Id).ToList(),
                                    Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
                                    {
                                        ID = x.Id,
