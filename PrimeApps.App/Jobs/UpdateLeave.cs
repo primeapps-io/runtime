@@ -37,7 +37,7 @@ namespace PrimeApps.App.Jobs
                 {
                     try
                     {
-                        using (var databaseContext = new TenantDBContext(tenant.Id))
+                        using (var databaseContext = new TenantDBContext(tenant.Id, _configuration))
                         {
                             using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                             {

@@ -62,7 +62,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
             try
             {
 
-                using (var dbContext = new TenantDBContext(smsQueueItem.TenantId))
+				using (var dbContext = new TenantDBContext(smsQueueItem.TenantId, _configuration))
                 {
                     /// get sms settings.
                     var smsSettings = dbContext.Settings.Include(x => x.CreatedBy).Where(r => r.Type == Model.Enums.SettingType.SMS && r.Deleted == false).ToList();
@@ -227,7 +227,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                     FindRequest findRequest = JsonConvert.DeserializeObject<FindRequest>(query);
 
                     //Set find request limit to our maximum value 3000 unlike filter default
-                    using (var databaseContext = new TenantDBContext(messageDto.TenantId))
+                    using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
                     {
                         using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                         {
@@ -252,7 +252,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 
                 if (ids?.Length > 0)
                 {
-                    using (var databaseContext = new TenantDBContext(messageDto.TenantId))
+                    using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
                     {
                         using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                         {

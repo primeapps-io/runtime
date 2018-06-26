@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Helpers;
 using System;
@@ -18,13 +19,13 @@ namespace PrimeApps.Model.Context
 
         public TenantDBContext(DbContextOptions<TenantDBContext> options) : base(options) { }
 
-        public TenantDBContext(int tenantId) : this()
-        {
-            TenantId = tenantId;
-            base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(base.Database.GetDbConnection().ConnectionString, tenantId);
-        }
+		public TenantDBContext(int tenantId, IConfiguration configuration) : this()
+		{
+			TenantId = tenantId;
+			base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId);
+		}
 
-        public TenantDBContext(string databaseName) : this()
+		public TenantDBContext(string databaseName) : this()
         {
             base.Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(base.Database.GetDbConnection().ConnectionString, databaseName);
         }

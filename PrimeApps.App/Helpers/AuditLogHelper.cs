@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 
@@ -20,16 +22,19 @@ namespace PrimeApps.App.Helpers
 
 	public class AuditLogHelper : IAuditLogHelper
 	{
-		private IConfiguration _configuration;
-		private IAuditLogRepository _auditLogRepository;
 		private IHttpContextAccessor _context;
-		public AuditLogHelper(IConfiguration configuration, IAuditLogRepository auditLogRepository, IHttpContextAccessor context)
+		private IConfiguration _configuration;
+		private IServiceScopeFactory _serviceScopeFactory;
+		private CurrentUser _currentUser;
+
+		public AuditLogHelper(IConfiguration configuration, IAuditLogRepository auditLogRepository, IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory)
 		{
 			_context = context;
-			_configuration = configuration;
-			_auditLogRepository = auditLogRepository;
+			_serviceScopeFactory = serviceScopeFactory;
 
-			_auditLogRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+			_configuration = configuration;
+
+			_currentUser = UserHelper.GetCurrentUser(_context);
 		}
         private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
@@ -69,7 +74,15 @@ namespace PrimeApps.App.Helpers
 
             try
             {
-                var result = await _auditLogRepository.Create(auditLog);
+				using (var scope = _serviceScopeFactory.CreateScope())
+				{
+					var context = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+					using (var _auditLogRepository = new AuditLogRepository(context, _configuration))
+					{
+						_auditLogRepository.CurrentUser = _currentUser;
+						var result1 = await _auditLogRepository.Create(auditLog);
+					}
+				}
 
                 //if (result < 1)
                 //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
