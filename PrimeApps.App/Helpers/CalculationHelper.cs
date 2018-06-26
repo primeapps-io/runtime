@@ -57,6 +57,8 @@ namespace PrimeApps.App.Helpers
 					{
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						{
+							warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+
 							using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
 							{
 								moduleRepository.UserId = appUser.TenantId;
@@ -65,7 +67,6 @@ namespace PrimeApps.App.Helpers
 
 								moduleRepository.CurrentUser = recordRepository.CurrentUser = picklistRepository.CurrentUser = _currentUser;
 
-								warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 								var record = recordRepository.GetById(module, recordId, true, null, true);
 
 								switch (module.Name)

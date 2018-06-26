@@ -197,7 +197,8 @@ namespace PrimeApps.App.Notifications
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))
+				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
 					_recordRepository.CurrentUser = _currentUser;
