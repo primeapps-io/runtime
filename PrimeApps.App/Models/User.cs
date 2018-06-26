@@ -15,7 +15,7 @@ namespace PrimeApps.App.Models
         /// User ID
         /// </summary>
         [DataMember]
-        public Guid id { get; set; }
+        public int id { get; set; }
 
         /// <summary>
         /// Email address
