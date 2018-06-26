@@ -62,6 +62,9 @@ namespace PrimeApps.App.Helpers
 								moduleRepository.UserId = appUser.TenantId;
 								recordRepository.UserId = appUser.TenantId;
 								picklistRepository.UserId = appUser.TenantId;
+
+								moduleRepository.CurrentUser = recordRepository.CurrentUser = picklistRepository.CurrentUser = _currentUser;
+
 								warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 								var record = recordRepository.GetById(module, recordId, true, null, true);
 
@@ -2470,6 +2473,8 @@ namespace PrimeApps.App.Helpers
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
+					_moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+
 					var calisanlarModule = await _moduleRepository.GetByName("calisanlar");
 					if (calisanlarModule == null)
 					{
@@ -2662,6 +2667,8 @@ namespace PrimeApps.App.Helpers
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
+					_moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+
 					var calisanlarModule = await _moduleRepository.GetByName("calisanlar");
 					if (calisanlarModule == null)
 					{
@@ -2711,6 +2718,8 @@ namespace PrimeApps.App.Helpers
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
 				{
+					_moduleRepository.CurrentUser = _recordRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
+
 					var entryTypeField = timesheetItemModule.Fields.Single(x => x.Name == "entry_type");
 					var entryTypePicklist = await _picklistRepository.GetById(entryTypeField.PicklistId.Value);
 					var chargeTypeField = timesheetItemModule.Fields.Single(x => x.Name == "charge_type");
@@ -2865,6 +2874,8 @@ namespace PrimeApps.App.Helpers
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
+					_recordRepository.CurrentUser = _currentUser;
+
 					decimal balance = 0;
 					switch (currency)
 					{
@@ -2937,6 +2948,8 @@ namespace PrimeApps.App.Helpers
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
+					_recordRepository.CurrentUser = _currentUser;
+
 					decimal balance = 0;
 					switch (currency)
 					{
@@ -3009,6 +3022,8 @@ namespace PrimeApps.App.Helpers
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
+					_recordRepository.CurrentUser = _currentUser;
+
 					decimal balance = 0;
 					var kasaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "kasa", Operator = Operator.Equals, Value = (int)record["kasa"], No = 1 } }, Limit = 9999 };
 					var kasaHareketleri = _recordRepository.Find("kasa_hareketleri", kasaHareketleriRequest);
@@ -3035,12 +3050,12 @@ namespace PrimeApps.App.Helpers
 
 		public async Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule)
 		{
-
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				{
+					_recordRepository.CurrentUser = _currentUser;
 
 					decimal balance = 0;
 					var bankaHareketleriRequest = new FindRequest { SortField = "islem_tarihi,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "banka", Operator = Operator.Equals, Value = (int)record["banka"], No = 1 } }, Limit = 9999 };
@@ -3074,6 +3089,8 @@ namespace PrimeApps.App.Helpers
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
 				{
+					_recordRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
+
 					decimal balance = 0;
 					var stockTransactionRequest = new FindRequest { SortField = "transaction_date,id", SortDirection = SortDirection.Asc, Filters = new List<Filter> { new Filter { Field = "product", Operator = Operator.Equals, Value = (int)record["product"], No = 1 } }, Limit = 9999 };
 					var stockTransactions = _recordRepository.Find("stock_transactions", stockTransactionRequest);
