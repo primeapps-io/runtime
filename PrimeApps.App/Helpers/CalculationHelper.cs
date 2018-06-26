@@ -730,8 +730,18 @@ namespace PrimeApps.App.Helpers
 										var referancePoolModule = await moduleRepository.GetByName("referance_pool");
 										var refObj = new JObject();
 										refObj["id"] = record["id"];
-										refObj["proportion_carried_out"] = (int)record["total_budget"] * (decimal)record["company_share"] / 100;
-										await recordRepository.Update(refObj, referancePoolModule);
+                                        if (!record["total_budget"].IsNullOrEmpty() && !record["company_share"].IsNullOrEmpty())
+                                        {
+                                            refObj["proportion_carried_out"] = (int)record["total_budget"] * (decimal)record["company_share"] / 100;
+                                        }
+
+                                        if (!record["related_partner"].IsNullOrEmpty())
+                                        {
+                                            var relatedPartnerRequest = new FindRequest { Fields = new List<string> { "name" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["related_partner"], No = 1 } }, Limit = 1 };
+                                            var relatedPartner = recordRepository.Find("accounts", relatedPartnerRequest);
+                                            refObj["related_partner_text"] = (string)relatedPartner.First()["name"];
+                                        }
+                                        await recordRepository.Update(refObj, referancePoolModule);
 										break;
 									case "procurement_requisition":
 										var procurementRequisitionModule = await moduleRepository.GetByName("procurement_requisition");
