@@ -152,7 +152,8 @@ angular.module('primeapps')
                     unique_names: true,
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     filters: {
                         mime_types: [

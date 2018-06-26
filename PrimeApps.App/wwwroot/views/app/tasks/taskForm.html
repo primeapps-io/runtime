@@ -15,7 +15,7 @@
             <div class="input-group">
                 <ui-select ng-model="task.assignedTo">
                     <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.FullName}}</ui-select-match>
-                    <ui-select-choices repeat="user in $root.users | filter:{FullName: $select.search} | orderBy:'FullName'">
+                    <ui-select-choices repeat="user in $root.users | filter:{FullName: $select.search,Deleted:false} | orderBy:'FullName'">
                         <div ng-bind-html="user.FullName | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>

@@ -259,7 +259,7 @@ angular.module('primeapps')
             };
 
             var uploader = $scope.uploader = new FileUploader({
-                url: config.apiUrl + 'User/UploadAvatar',
+                url: 'attach/UploadAvatar',
                 headers: {
                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                     'Accept': 'application/json' /// we have to set accept header to provide consistency between browsers.
