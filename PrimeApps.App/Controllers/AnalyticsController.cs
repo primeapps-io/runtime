@@ -28,13 +28,15 @@ namespace PrimeApps.App.Controllers
         private IUserRepository _userRepository;
         private IPlatformWarehouseRepository _warehousePlatformRepository;
         private IConfiguration _configuration;
+	    private IDocumentHelper _documentHelper;
 
-        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration)
+        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration, IDocumentHelper documentHelper)
         {
             _warehouseHelper = warehouseHelper;
             _analyticRepository = analyticRepository;
             _userRepository = userRepository;
             _warehousePlatformRepository = warehousePlatformRepository;
+	        _documentHelper = documentHelper;
             _configuration = configuration;
         }
 
@@ -147,7 +149,7 @@ namespace PrimeApps.App.Controllers
         {
             var stream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(stream, _configuration, out result);
+            var isUploaded = _documentHelper.Upload(stream, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
@@ -155,7 +157,7 @@ namespace PrimeApps.App.Controllers
             if (!isUploaded)
                 return BadRequest();
 
-            var pibxUrl = DocumentHelper.Save(result, "analytics-" + AppUser.TenantId, _configuration);
+            var pibxUrl = _documentHelper.Save(result, "analytics-" + AppUser.TenantId);
 
             return Ok(pibxUrl);
         }

@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
 using Newtonsoft.Json;
 using System.Text;
+using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Controllers
 {
@@ -44,10 +45,9 @@ namespace PrimeApps.App.Controllers
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
-
-	    private IIntegration _integration;
+		
 	    public IBackgroundTaskQueue Queue { get; }
-		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IIntegration integration, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration)
+		public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -59,8 +59,7 @@ namespace PrimeApps.App.Controllers
             _platformRepository = platformRepository;
             _tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-
-	        _integration = integration;
+			
 	        Queue = queue;
 
 	        //Set warehouse database name Ofisim to integration
@@ -554,7 +553,8 @@ namespace PrimeApps.App.Controllers
 			registerModel.Password = randomPassword;
 			registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
 
-	        Queue.QueueBackgroundWorkItem(async token => _integration.InsertUser(registerModel, _warehouse));
+			//TODO Integration
+	        //Queue.QueueBackgroundWorkItem(async token => _integration.InsertUser(registerModel, _warehouse));
 
             var user = await _platformUserRepository.Get(applicationUser.Id);
             var adminUser = await _platformUserRepository.GetTenantWithOwner(tenantId);

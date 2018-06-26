@@ -24,164 +24,166 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/data"), Authorize]
-    public class DataController : ApiBaseController
-    {
-        private IAuditLogRepository _auditLogRepository;
-        private IRecordRepository _recordRepository;
-        private IModuleRepository _moduleRepository;
-        private IImportRepository _importRepository;
-        private ITenantRepository _tenantRepository;
-        private Warehouse _warehouse;
-        private IConfiguration _configuration;
+	[Route("api/data"), Authorize]
+	public class DataController : ApiBaseController
+	{
+		private IAuditLogRepository _auditLogRepository;
+		private IRecordRepository _recordRepository;
+		private IModuleRepository _moduleRepository;
+		private IImportRepository _importRepository;
+		private ITenantRepository _tenantRepository;
+		private Warehouse _warehouse;
+		private IConfiguration _configuration;
 
-	    private IRecordHelper _recordHelper;
-        public DataController(IAuditLogRepository auditLogRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IImportRepository importRepository, ITenantRepository tenantRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
-        {
-            _auditLogRepository = auditLogRepository;
-            _recordRepository = recordRepository;
-            _moduleRepository = moduleRepository;
-            _importRepository = importRepository;
-            _tenantRepository = tenantRepository;
-            _warehouse = warehouse;
-            _configuration = configuration;
+		private IDocumentHelper _documentHelper;
+		private IRecordHelper _recordHelper;
+		public DataController(IAuditLogRepository auditLogRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, IImportRepository importRepository, ITenantRepository tenantRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IDocumentHelper documentHelper)
+		{
+			_auditLogRepository = auditLogRepository;
+			_recordRepository = recordRepository;
+			_moduleRepository = moduleRepository;
+			_importRepository = importRepository;
+			_tenantRepository = tenantRepository;
+			_warehouse = warehouse;
+			_configuration = configuration;
 
-	        _recordHelper = recordHelper;
-        }
+			_documentHelper = documentHelper;
+			_recordHelper = recordHelper;
+		}
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_auditLogRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_importRepository);
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_auditLogRepository);
+			SetCurrentUser(_recordRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_importRepository);
 
-            base.OnActionExecuting(context);
-        }
+			base.OnActionExecuting(context);
+		}
 
-        [Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
-        public async Task<IActionResult> Import(string module, [FromBody]JArray records)
-        {
-            var moduleEntity = await _moduleRepository.GetByName(module);
+		[Route("import/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
+		public async Task<IActionResult> Import(string module, [FromBody]JArray records)
+		{
+			var moduleEntity = await _moduleRepository.GetByName(module);
 
-            if (moduleEntity == null || records.IsNullOrEmpty() || records.Count < 1)
-                return BadRequest();
+			if (moduleEntity == null || records.IsNullOrEmpty() || records.Count < 1)
+				return BadRequest();
 
-            var importEntity = new Import
-            {
-                ModuleId = moduleEntity.Id,
-                TotalCount = records.Count
-            };
+			var importEntity = new Import
+			{
+				ModuleId = moduleEntity.Id,
+				TotalCount = records.Count
+			};
 
-            var result = await _importRepository.Create(importEntity);
+			var result = await _importRepository.Create(importEntity);
 
-            if (result < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			if (result < 1)
+				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            foreach (JObject record in records)
-            {
-                record["import_id"] = importEntity.Id;
-            }
+			foreach (JObject record in records)
+			{
+				record["import_id"] = importEntity.Id;
+			}
 
-            //Set warehouse database name
-            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			//Set warehouse database name
+			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            int resultCreate;
+			int resultCreate;
 
-            try
-            {
-                resultCreate = await _recordRepository.CreateBulk(records, moduleEntity);
-            }
-            catch (PostgresException ex)
-            {
-                await _importRepository.DeleteHard(importEntity);
+			try
+			{
+				resultCreate = await _recordRepository.CreateBulk(records, moduleEntity);
+			}
+			catch (PostgresException ex)
+			{
+				await _importRepository.DeleteHard(importEntity);
 
-                if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
-                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
+				if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+					return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
-                if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+				if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+					return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
 
-                if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
-                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+				if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+					return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
 
-                throw;
-            }
+				throw;
+			}
 
-            if (resultCreate < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+			if (resultCreate < 1)
+				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-            return Ok(importEntity);
-        }
+			return Ok(importEntity);
+		}
 
-        [Route("import_save_excel"), HttpPost]
-        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "importId")]int importId)
-        {
-            var import = await _importRepository.GetById(importId);
+		[Route("import_save_excel"), HttpPost]
+		public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "importId")]int importId)
+		{
+			var import = await _importRepository.GetById(importId);
 
-            if (import == null)
-                return NotFound();
+			if (import == null)
+				return NotFound();
 
-            var stream = await Request.ReadAsStreamAsync();
-            DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(stream, _configuration, out result);
+			var stream = await Request.ReadAsStreamAsync();
+			DocumentUploadResult result;
+			var isUploaded = _documentHelper.Upload(stream, out result);
 
-            if (!isUploaded)
-                return BadRequest();
+			if (!isUploaded)
+				return BadRequest();
 
-            var excelUrl = DocumentHelper.Save(result, "import-" + AppUser.TenantId, _configuration);
+			var excelUrl = _documentHelper.Save(result, "import-" + AppUser.TenantId);
 
-            import.ExcelUrl = excelUrl;
-            await _importRepository.Update(import);
+			import.ExcelUrl = excelUrl;
+			await _importRepository.Update(import);
 
-            return Ok(excelUrl);
-        }
+			return Ok(excelUrl);
+		}
 
-        [Route("import_find"), HttpPost]
-        public async Task<ICollection<Import>> ImportFind([FromBody]ImportRequest request)
-        {
-            return await _importRepository.Find(request);
-        }
+		[Route("import_find"), HttpPost]
+		public async Task<ICollection<Import>> ImportFind([FromBody]ImportRequest request)
+		{
+			return await _importRepository.Find(request);
+		}
 
-        [Route("import_revert/{importId:int}"), HttpDelete]
-        public async Task<IActionResult> RevertImport(int importId)
-        {
-            var import = await _importRepository.GetById(importId);
+		[Route("import_revert/{importId:int}"), HttpDelete]
+		public async Task<IActionResult> RevertImport(int importId)
+		{
+			var import = await _importRepository.GetById(importId);
 
-            if (import == null)
-                return NotFound();
+			if (import == null)
+				return NotFound();
 
-            //Set warehouse database name
-            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			//Set warehouse database name
+			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            await _importRepository.Revert(import);
-            await _importRepository.DeleteSoft(import);
+			await _importRepository.Revert(import);
+			await _importRepository.DeleteSoft(import);
 
-            return Ok();
-        }
+			return Ok();
+		}
 
-        [Route("remove_sample_data"), HttpDelete]
-        public async Task<IActionResult> RemoveSampleData()
-        {
-            var result = await _recordRepository.DeleteSampleData((List<Module>)await _moduleRepository.GetAll());
+		[Route("remove_sample_data"), HttpDelete]
+		public async Task<IActionResult> RemoveSampleData()
+		{
+			var result = await _recordRepository.DeleteSampleData((List<Module>)await _moduleRepository.GetAll());
 
-            //if (result > 0)
-            //{
-            //    var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
-            //    instanceToUpdate.HasSampleData = false;
-            //   await _tenantRepository.UpdateAsync(instanceToUpdate);
-            //}
+			//if (result > 0)
+			//{
+			//    var instanceToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
+			//    instanceToUpdate.HasSampleData = false;
+			//   await _tenantRepository.UpdateAsync(instanceToUpdate);
+			//}
 
-            return Ok();
-        }
+			return Ok();
+		}
 
-        [Route("find_audit_logs"), HttpPost]
-        public async Task<ICollection<AuditLog>> FindAuditLogs([FromBody]AuditLogRequest request)
-        {
-            return await _auditLogRepository.Find(request);
-        }
-    }
+		[Route("find_audit_logs"), HttpPost]
+		public async Task<ICollection<AuditLog>> FindAuditLogs([FromBody]AuditLogRequest request)
+		{
+			return await _auditLogRepository.Find(request);
+		}
+	}
 }

@@ -56,11 +56,13 @@ namespace PrimeApps.App.Controllers
         private IPlatformWorkflowRepository _platformWorkflowRepository;
 		private Warehouse _warehouse;
         private IConfiguration _configuration;
-
-		private IIntegration _integration;
+		
 		private IRecordHelper _recordHelper;
+	    private IPlatformWorkflowHelper _platformWorkflowHelper;
+	    private IDocumentHelper _documentHelper;
+
 		public IBackgroundTaskQueue Queue { get; }
-		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IIntegration integration, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse)
+		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IPlatformWorkflowRepository platformWorkflowRepository, IPlatformWorkflowHelper platformWorkflowHelper, IDocumentHelper documentHelper)
 		{
 			_recordRepository = recordRepository;
 			_warehouse = warehouse;
@@ -74,8 +76,9 @@ namespace PrimeApps.App.Controllers
             _configuration = configuration;
 
 			Queue = queue;
-			_integration = integration;
 			_recordHelper = recordHelper;
+			_platformWorkflowHelper = platformWorkflowHelper;
+			_documentHelper = documentHelper;
 		}
 		
 		[HttpPost]
@@ -213,7 +216,7 @@ namespace PrimeApps.App.Controllers
 
                 user.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = user });
 
-				Queue.QueueBackgroundWorkItem(async token => DocumentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
+				Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
 
                 //user.TenantId = user.Id;
                 //tenant.License.HasAnalyticsLicense = true;
@@ -244,8 +247,9 @@ namespace PrimeApps.App.Controllers
 
                 }
 
-				Queue.QueueBackgroundWorkItem(async token => _integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _recordHelper.AfterUpdate));
-				Queue.QueueBackgroundWorkItem(async token => PlatformWorkflowHelper.Run(OperationType.insert, app, _platformWorkflowRepository));
+				//TODO Integration
+				//Queue.QueueBackgroundWorkItem(async token => _integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _recordHelper.AfterUpdate));
+				Queue.QueueBackgroundWorkItem(async token => _platformWorkflowHelper.Run(OperationType.insert, app));
 
             }
             catch (Exception ex)

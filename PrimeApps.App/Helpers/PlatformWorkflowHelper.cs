@@ -26,12 +26,23 @@ using Application = PrimeApps.Model.Entities.Platform.App;
 
 namespace PrimeApps.App.Helpers
 {
-    public static class PlatformWorkflowHelper
-    {
+	public interface IPlatformWorkflowHelper
+	{
+		Task Run(OperationType operationType, Application application);
+		AppWorkflow CreateEntity(PlatformWorkflowBindingModels workflowModel);
+		void UpdateEntity(PlatformWorkflowBindingModels workflowModel, AppWorkflow workflow);
+	}
+    public class PlatformWorkflowHelper : IPlatformWorkflowHelper
+	{
+	    private IPlatformWorkflowRepository _platformWorkflowRepository;
 
-        public static async Task Run(OperationType operationType, Application application, IPlatformWorkflowRepository platformWorkflowRepository)
+	    public PlatformWorkflowHelper(IPlatformWorkflowRepository platformWorkflowRepository)
+	    {
+		    _platformWorkflowRepository = platformWorkflowRepository;
+	    }
+        public async Task Run(OperationType operationType, Application application)
         {
-            var workflows = await platformWorkflowRepository.GetAll(application.Id, true);
+            var workflows = await _platformWorkflowRepository.GetAll(application.Id, true);
             workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
 
             if (workflows.Count < 1)
@@ -99,7 +110,7 @@ namespace PrimeApps.App.Helpers
 
                 try
                 {
-                    var resultCreateLog = await platformWorkflowRepository.CreateLog(workflowLog);
+                    var resultCreateLog = await _platformWorkflowRepository.CreateLog(workflowLog);
 
                     //if (resultCreateLog < 1)
                     //    ErrorLog.GetDefault(null).Log(new Error(new Exception("WorkflowLog cannot be created! Object: " + workflowLog.ToJsonString())));
@@ -111,7 +122,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static AppWorkflow CreateEntity(PlatformWorkflowBindingModels workflowModel)
+        public AppWorkflow CreateEntity(PlatformWorkflowBindingModels workflowModel)
         {
             var workflow = new AppWorkflow
             {
@@ -135,7 +146,7 @@ namespace PrimeApps.App.Helpers
             return workflow;
         }
 
-        public static void UpdateEntity(PlatformWorkflowBindingModels workflowModel, AppWorkflow workflow)
+        public void UpdateEntity(PlatformWorkflowBindingModels workflowModel, AppWorkflow workflow)
         {
             workflow.Name = workflowModel.Name;
             workflow.Frequency = workflowModel.Frequency;

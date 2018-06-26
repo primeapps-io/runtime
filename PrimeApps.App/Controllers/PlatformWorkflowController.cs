@@ -19,9 +19,12 @@ namespace PrimeApps.App.Controllers
     {
         private IPlatformWorkflowRepository _workflowRepository;
 
-        public PlatformWorkflowController(IPlatformWorkflowRepository workflowRepository)
+	    private IPlatformWorkflowHelper _platformWorkflowHelper;
+
+        public PlatformWorkflowController(IPlatformWorkflowRepository workflowRepository, IPlatformWorkflowHelper platformWorkflowHelper)
         {
             _workflowRepository = workflowRepository;
+	        _platformWorkflowHelper = platformWorkflowHelper;
         }      
 
         [Route("create"), HttpPost]
@@ -33,7 +36,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var workflowEntity = PlatformWorkflowHelper.CreateEntity(workflow);
+            var workflowEntity = _platformWorkflowHelper.CreateEntity(workflow);
             var result = await _workflowRepository.Create(workflowEntity);
 
             if (result < 1)
@@ -51,8 +54,8 @@ namespace PrimeApps.App.Controllers
 
             if (workflowEntity == null)
                 return NotFound();
-            
-            PlatformWorkflowHelper.UpdateEntity(workflow, workflowEntity);
+
+	        _platformWorkflowHelper.UpdateEntity(workflow, workflowEntity);
             await _workflowRepository.Update(workflowEntity);
 
             await _workflowRepository.DeleteLogs(id);

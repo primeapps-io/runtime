@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
@@ -17,7 +19,18 @@ namespace PrimeApps.App.Helpers
 	}
 
 	public class AuditLogHelper : IAuditLogHelper
-    {
+	{
+		private IConfiguration _configuration;
+		private IAuditLogRepository _auditLogRepository;
+		private IHttpContextAccessor _context;
+		public AuditLogHelper(IConfiguration configuration, IAuditLogRepository auditLogRepository, IHttpContextAccessor context)
+		{
+			_context = context;
+			_configuration = configuration;
+			_auditLogRepository = auditLogRepository;
+
+			_auditLogRepository.CurrentUser = UserHelper.GetCurrentUser(_context);
+		}
         private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
         public async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
@@ -56,16 +69,11 @@ namespace PrimeApps.App.Helpers
 
             try
             {
-                using (var databaseContext = new TenantDBContext(appUser.TenantId))
-                {
-                    using (var auditLogRepository = new AuditLogRepository(databaseContext, configuration))
-                    {
-                        var result = await auditLogRepository.Create(auditLog);
+                var result = await _auditLogRepository.Create(auditLog);
 
-                        //if (result < 1)
-                        //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
-                    }
-                }
+                //if (result < 1)
+                //ErrorLog(null).Log(new Error(new Exception("AuditLog cannot be created! Object: " + auditLog.ToJsonString())));
+                  
             }
             catch (Exception ex)
             {

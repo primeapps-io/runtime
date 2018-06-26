@@ -44,9 +44,10 @@ namespace PrimeApps.App.Controllers
         private IPicklistRepository _picklistRepository;
         private ISettingRepository _settingRepository;
 	    private IConfiguration _configuration;
+	    private IDocumentHelper _documentHelper;
 
 		private IRecordHelper _recordHelper;
-        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration)
+        public DocumentController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, IConfiguration configuration, IDocumentHelper documentHelper)
         {
             _documentRepository = documentRepository;
             _recordRepository = recordRepository;
@@ -57,6 +58,7 @@ namespace PrimeApps.App.Controllers
             _settingRepository = settingRepository;
             _configuration = configuration;
 
+	        _documentHelper = documentHelper;
 	        _recordHelper = recordHelper;
         }
 
@@ -84,7 +86,7 @@ namespace PrimeApps.App.Controllers
         {
             var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.Upload(Request.Body, _configuration, out result);
+            var isUploaded = _documentHelper.Upload(Request.Body, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
@@ -99,7 +101,7 @@ namespace PrimeApps.App.Controllers
         {
             var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = DocumentHelper.UploadExcel(requestStream, out result);
+            var isUploaded = _documentHelper.UploadExcel(requestStream, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();

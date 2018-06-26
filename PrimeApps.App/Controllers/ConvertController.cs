@@ -17,6 +17,7 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 
 

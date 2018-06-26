@@ -60,6 +60,7 @@ namespace PrimeApps.App
 	        services.AddScoped<PrimeApps.App.Helpers.IProcessHelper, PrimeApps.App.Helpers.ProcessHelper>();
 	        services.AddScoped<PrimeApps.App.Helpers.IReportHelper, PrimeApps.App.Helpers.ReportHelper>();
 	        services.AddScoped<PrimeApps.App.Helpers.IWorkflowHelper, PrimeApps.App.Helpers.WorkflowHelper>();
+	        services.AddScoped<PrimeApps.App.Helpers.IPlatformWorkflowHelper, PrimeApps.App.Helpers.PlatformWorkflowHelper>();
 	        services.AddScoped<PrimeApps.App.Notifications.INotificationHelper, PrimeApps.App.Notifications.NotificationHelper>();
 	        //Background Tasks DI End
 
