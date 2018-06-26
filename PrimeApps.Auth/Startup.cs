@@ -52,8 +52,10 @@ namespace PrimeApps.Auth
 			services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 		    services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
 		    services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
+			services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
 
-		    services.AddSingleton(Configuration);
+
+			services.AddSingleton(Configuration);
 
 		    services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 			{

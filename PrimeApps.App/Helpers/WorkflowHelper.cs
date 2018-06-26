@@ -53,10 +53,14 @@ namespace PrimeApps.App.Helpers
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
+
+				//Set warehouse database name
+				warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _workflowRepository = new WorkflowRepository(databaseContext, _configuration))
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
 				{
@@ -296,8 +300,6 @@ namespace PrimeApps.App.Helpers
 								continue;
 						}
 
-						//Set warehouse database name
-						warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
 						//if (workflow.SendNotification != null)
 						//{

@@ -723,7 +723,7 @@ namespace PrimeApps.App.Helpers
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
 				{
 					_moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
