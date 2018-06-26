@@ -313,6 +313,7 @@ namespace PrimeApps.App.Helpers
 						using (var _userRepository = new UserRepository(databaseContext, _configuration))
 						{
 							var sharedUser = await _userRepository.GetById(userId);
+							_userRepository.CurrentUser = _currentUser;
 
 							if (sharedUser != null)
 								report.Shares.Add(new ReportShares { TenantUser = sharedUser });
