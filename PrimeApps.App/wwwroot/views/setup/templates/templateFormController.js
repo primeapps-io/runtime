@@ -87,7 +87,7 @@ angular.module('primeapps')
             $scope.fileUpload = {
                 settings: {
                     runtimes: 'html5',
-                    url: config.apiUrl + 'Document/Upload',
+                    url: config.apiUrl + 'document/Upload',
                     chunk_size: '256kb',
                     multipart: true,
                     unique_names: true,

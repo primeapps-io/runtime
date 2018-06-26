@@ -53,7 +53,8 @@ namespace PrimeApps.App
 
 	        services.AddScoped<PrimeApps.App.Helpers.IRecordHelper, PrimeApps.App.Helpers.RecordHelper>();
 	        services.AddScoped<PrimeApps.App.Helpers.IAuditLogHelper, PrimeApps.App.Helpers.AuditLogHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.ICalculationHelper, PrimeApps.App.Helpers.CalculationHelper>();
+            services.AddScoped<PrimeApps.App.Helpers.IDocumentHelper, PrimeApps.App.Helpers.DocumentHelper>();
+            services.AddScoped<PrimeApps.App.Helpers.ICalculationHelper, PrimeApps.App.Helpers.CalculationHelper>();
 	        services.AddScoped<PrimeApps.App.Helpers.IChangeLogHelper, PrimeApps.App.Helpers.ChangeLogHelper>();
 	        //services.AddScoped<PrimeApps.App.Helpers.IIntegration, PrimeApps.App.Helpers.Integration>();
 	        services.AddScoped<PrimeApps.App.Helpers.IModuleHelper, PrimeApps.App.Helpers.ModuleHelper>();
