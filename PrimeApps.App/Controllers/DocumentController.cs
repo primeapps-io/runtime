@@ -86,7 +86,7 @@ namespace PrimeApps.App.Controllers
         {
             var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = _documentHelper.Upload(Request.Body, out result);
+            var isUploaded = _documentHelper.Upload(requestStream, out result);
 
             if (!isUploaded && result == null)
                 return NotFound();
