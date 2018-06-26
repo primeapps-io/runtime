@@ -18,20 +18,25 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 using System.IO;
 using PrimeApps.App.Extensions;
+using System.Net;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace PrimeApps.App.Controllers
 {
     [Route("attach")]
     public class AttachController : MvcBaseController
     {
+        private IHostingEnvironment _hostingEnvironment;
         private ITenantRepository _tenantRepository;
         private ITemplateRepository _templateRepository;
         private IModuleRepository _modulepository;
         private IRecordRepository _recordpository;
         private IConfiguration _configuration;
 
-        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IConfiguration configuration)
+        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IConfiguration configuration,IHostingEnvironment hostingEnvironment)
         {
+            _hostingEnvironment = hostingEnvironment;
             _tenantRepository = tenantRepository;
             _modulepository = moduleRepository;
             _recordpository = recordRepository;
@@ -324,11 +329,23 @@ namespace PrimeApps.App.Controllers
             }
 
             worksheetData.Cells.ImportDataTable(dt, true, "A1");
+            
+            Stream memory = new MemoryStream();
+            var fileName = nameModule + ".xlsx";
 
-            workbook.Save(nameModule + ".xlsx", new OoxmlSaveOptions());
+            var sWebRootFolder = _hostingEnvironment.WebRootPath.Replace("wwwroot","");
 
-            return Ok();
+            workbook.Save(fileName,SaveFormat.Xlsx); 
+           
+            using (var stream = new FileStream(Path.Combine(sWebRootFolder, fileName), FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
+
+        
 
         [Route("export_excel_view")]
         public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
@@ -398,8 +415,7 @@ namespace PrimeApps.App.Controllers
 
             worksheetData.Cells.ImportDataTable(dt, true, "A1");
 
-            workbook.Save(nameModule + ".xlsx",new OoxmlSaveOptions());
-
+             workbook.Save(nameModule + ".xlsx",new OoxmlSaveOptions());
             return Ok();
         }
 
