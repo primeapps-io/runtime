@@ -14,7 +14,7 @@
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?ptype={{relatedModule.relation_field}}&pid={{ $parent.$parent.record.id }}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
        class="btn btn-sm btn-custom"
        ng-show="$parent.hasPermission(relatedModule.related_module, $parent.operations.write)  && parentModule != 'calisanlar'"
-       ng-if="relatedModule.related_module != 'activities' && relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && relatedModule.related_module != 'current_accounts' && !$parent.$parent.$parent.record.freeze">
+       ng-if="relatedModule.related_module != 'activities' && relatedModule.related_module != 'mails' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && relatedModule.related_module != 'current_accounts' && (parentType != 'katilimcilar' && parentModule !='calisanlar') && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:relatedModule['label_' + language + '_singular']} }}
     </a>
