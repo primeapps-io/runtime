@@ -19,9 +19,9 @@ namespace PrimeApps.App.Jobs
 
         public async Task Deactivate()
         {
-            using (var platformDbContext = new PlatformDBContext())
+            using (var platformDbContext = new PlatformDBContext(_configuration))
             {
-                using (var tenantRepository = new TenantRepository(platformDbContext))
+                using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
                 {
 
                     var tenants = await tenantRepository.GetExpiredTenants();

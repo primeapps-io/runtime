@@ -28,7 +28,8 @@ namespace PrimeApps.App.Controllers
         //[ResponseType(typeof(string))]
         [HttpPost]
         public IActionResult DetectCulture()
-        {
+		{
+		    var user = _platformUserRepository.Get("caglar@ofisim.com");
             return Ok(Thread.CurrentThread.CurrentCulture.Name);
         }
 

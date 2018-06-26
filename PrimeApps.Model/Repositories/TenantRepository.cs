@@ -6,6 +6,7 @@ using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Entities.Platform;
@@ -14,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class TenantRepository : RepositoryBasePlatform, ITenantRepository
     {
-        public TenantRepository(PlatformDBContext dbContext) : base(dbContext)
+        public TenantRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
 
         }

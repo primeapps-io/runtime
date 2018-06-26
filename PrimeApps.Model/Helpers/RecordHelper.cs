@@ -1657,9 +1657,9 @@ namespace PrimeApps.Model.Helpers
                     case DataType.Image:
                         if (convertImage)
                         {
-                            using (var platformDbContext = new PlatformDBContext())
+                            using (var platformDbContext = new PlatformDBContext(configuration))
                             {
-                                using (var tenantRepository = new TenantRepository(platformDbContext))
+                                using (var tenantRepository = new TenantRepository(platformDbContext, configuration))
                                 {
                                     var tenant = tenantRepository.Get(moduleRepository.CurrentUser.TenantId);
 

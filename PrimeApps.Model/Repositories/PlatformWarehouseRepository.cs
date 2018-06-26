@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class PlatformWarehouseRepository : RepositoryBasePlatform, IPlatformWarehouseRepository
     {
-        public PlatformWarehouseRepository(PlatformDBContext dbContext) : base(dbContext) { }
+        public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public Task<PlatformWarehouse> GetByTenantId(int tenantId)
         {

@@ -34,9 +34,9 @@ namespace PrimeApps.App.Helpers
         public static async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(int tenantId, string name, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext())
+            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
             {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext))
+                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
                 {
                     warehouse = await warehouseRepo.GetByTenantId(tenantId);
                 }
@@ -56,9 +56,9 @@ namespace PrimeApps.App.Helpers
             var reports = new List<ReportViewModel>();
             Model.Entities.Platform.PlatformWarehouse warehouse;
 
-            using (var dbContext = new PlatformDBContext())
+            using (var dbContext = new PlatformDBContext(configuration))
             {
-                using (var warehouseRepo = new PlatformWarehouseRepository(dbContext))
+                using (var warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
                 {
                     warehouse = await warehouseRepo.GetByTenantId(tenantId);
 
@@ -93,9 +93,9 @@ namespace PrimeApps.App.Helpers
         public static async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, int tenantId, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext())
+            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
             {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext))
+                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
                 {
                     warehouse = await warehouseRepo.GetByTenantId(tenantId);
                 }
@@ -121,9 +121,9 @@ namespace PrimeApps.App.Helpers
         public static async Task UpdateConnectionString(int analyticId, int tenantId, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext())
+            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
             {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext))
+                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
                 {
                     warehouse = await warehouseRepo.GetByTenantId(tenantId);
                 }
@@ -153,9 +153,9 @@ namespace PrimeApps.App.Helpers
         public static async Task DeleteReport(int tenantId, int analyticId, IConfiguration configuration)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext())
+            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
             {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext))
+                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
                 {
                     warehouse = await warehouseRepo.GetByTenantId(tenantId);
                 }

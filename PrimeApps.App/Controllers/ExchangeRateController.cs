@@ -1,24 +1,30 @@
-
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PrimeApps.App.ActionFilters;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Context;
 
 namespace PrimeApps.App.Controllers
 {
     [Route("api/exchange_rates"), Authorize]
-	public class ExchangeRateController : ApiBaseController
+    public class ExchangeRateController : ApiBaseController
     {
+        private IConfiguration _configuration;
+
+        public ExchangeRateController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [Route("get_daily_rates"), HttpGet]
         public async Task<IActionResult> GetDailyRates([FromQuery(Name = "year")]int? year = null, [FromQuery(Name = "month")]int? month = null, [FromQuery(Name = "day")]int? day = null)
         {
             ExchangeRate dailyRates;
 
-            using (var dbContext = new PlatformDBContext())
+            using (var dbContext = new PlatformDBContext(_configuration))
             {
                 if (year.HasValue && month.HasValue && day.HasValue)
                     dailyRates = await dbContext.ExchangeRates.SingleOrDefaultAsync(x => x.Year == year && x.Month == month && x.Day == day);

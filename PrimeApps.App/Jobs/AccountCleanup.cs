@@ -6,12 +6,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Jobs
 {
     /// Drops tenant databases that are inactive more then 1 month from servers.
     public class AccountCleanup
     {
+        private IConfiguration _configuration;
+
+        public AccountCleanup(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         /// <summary>
         /// Execute the job
         /// </summary>
@@ -20,8 +28,8 @@ namespace PrimeApps.App.Jobs
             IList<int> expiredTenants = new List<int>();
             var connectionString = "";
 
-            using (var platformDbContext = new PlatformDBContext())
-            using (var tenantRepository = new TenantRepository(platformDbContext))
+            using (var platformDbContext = new PlatformDBContext(_configuration))
+            using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
             {
 
                 // Get expired inactive tenant ids.

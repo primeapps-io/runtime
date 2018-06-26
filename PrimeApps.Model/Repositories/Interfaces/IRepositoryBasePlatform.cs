@@ -5,6 +5,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IRepositoryBasePlatform
     {
+        CurrentUser CurrentUser { get; set; }
         PlatformDBContext DbContext { get; }
     }
 }

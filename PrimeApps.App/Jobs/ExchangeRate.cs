@@ -3,11 +3,19 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Jobs
 {
     public class ExchangeRate
     {
+        private IConfiguration _configuration;
+
+        public ExchangeRate(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         public void DailyRates()
         {
             var todayXml = "http://www.tcmb.gov.tr/kurlar/today.xml";
@@ -25,7 +33,7 @@ namespace PrimeApps.App.Jobs
             var usd = usdNode.InnerXml;
             var euro = euroNode.InnerXml;
 
-            using (var dbContext = new PlatformDBContext())
+            using (var dbContext = new PlatformDBContext(_configuration))
             {
                 var exchangeRate = dbContext.ExchangeRates.SingleOrDefault(x => x.Year == date.Year && x.Month == date.Month && x.Day == date.Day);
 

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Context
@@ -16,6 +16,11 @@ namespace PrimeApps.Model.Context
 
         public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
 
+        public PlatformDBContext(IConfiguration configuration) : this()
+        {
+            Database.GetDbConnection().ConnectionString = configuration.GetConnectionString("PlatformDBConnection");
+        }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateModelMapping(modelBuilder);
@@ -69,7 +74,7 @@ namespace PrimeApps.Model.Context
                 }
             }
         }
-        
+
         private void CreateModelMapping(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PlatformUser>()

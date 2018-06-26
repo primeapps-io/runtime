@@ -25,6 +25,7 @@ namespace PrimeApps.App.Helpers
     /// </summary>
     public class Email
     {
+        private IConfiguration _configuration;
         /// <summary>
         /// The pattern of template placeholders.
         /// </summary>
@@ -70,6 +71,8 @@ namespace PrimeApps.App.Helpers
         /// <param name="dataFields">The data fields of email</param>
         public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, IConfiguration configuration, int appId = 1, UserItem appUser = null)
         {
+            _configuration = configuration;
+
             string tmpl = "",
                    appUrl = "",
                    appName = "",
@@ -89,7 +92,7 @@ namespace PrimeApps.App.Helpers
             Template templateEntity;
             using (TenantDBContext tdbCtx = new TenantDBContext(appUser.TenantId, configuration))
             using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
-            {               
+            {
                 templateEntity = tRepo.GetByCode(resourceTypeName, language);
             }
 
@@ -154,8 +157,8 @@ namespace PrimeApps.App.Helpers
 
             if (appUser != null)
             {
-                using (PlatformDBContext pdbCtx = new PlatformDBContext())
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx))
+                using (PlatformDBContext pdbCtx = new PlatformDBContext(configuration))
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
                 {
                     var instance = tRepo.Get(appUser.TenantId);
                     if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
@@ -174,7 +177,7 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-           
+
             tmpl = templateEntity.Content;
             tmpl = tmpl.Replace("{{URL}}", appUrl);
             tmpl = tmpl.Replace("{{APP_URL}}", appCodeUrl);
@@ -204,8 +207,9 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(string subject, string templateData)
+        public Email(string subject, string templateData, IConfiguration configuration)
         {
+            _configuration = configuration;
             this.Template = templateData;
             this.Subject = subject;
         }
@@ -306,8 +310,8 @@ namespace PrimeApps.App.Helpers
 
             if (appUser != null)
             {
-                using (PlatformDBContext pdbCtx = new PlatformDBContext())
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx))
+                using (PlatformDBContext pdbCtx = new PlatformDBContext(_configuration))
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
                 {
                     var tenant = tRepo.Get(appUser.TenantId);
                     if (!string.IsNullOrEmpty(tenant.Setting.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting.MailSenderEmail))
@@ -338,40 +342,40 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-		public void AddToQueue(string from, string fromName, string cc = "", string bcc = "")
-		{
-			foreach (string to in toList)
-			{
-				var queue = new EmailEntry()
-				{
-					EmailTo = to,
-					EmailFrom = from,
-					ReplyTo = from,
-					FromName = fromName,
-					CC = cc,
-					Bcc = bcc,
-					Subject = Subject,
-					Body = Template,
-					UniqueID = null,
-					QueueTime = DateTime.UtcNow,
-					SendOn = SendOn
-				};
-				BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
-			}
-		}
+        public void AddToQueue(string from, string fromName, string cc = "", string bcc = "")
+        {
+            foreach (string to in toList)
+            {
+                var queue = new EmailEntry()
+                {
+                    EmailTo = to,
+                    EmailFrom = from,
+                    ReplyTo = from,
+                    FromName = fromName,
+                    CC = cc,
+                    Bcc = bcc,
+                    Subject = Subject,
+                    Body = Template,
+                    UniqueID = null,
+                    QueueTime = DateTime.UtcNow,
+                    SendOn = SendOn
+                };
+                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
+            }
+        }
 
-		/// <summary>
-		/// Writes email(s) into the database in a stateless session context.
-		/// </summary>
-		public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
+        /// <summary>
+        /// Writes email(s) into the database in a stateless session context.
+        /// </summary>
+        public void AddToQueue(int tenantId, int moduleId, int recordId, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null, bool addRecordSummary = true)
         {
             from = "destek@ofisim.com";
             fromName = "Ofisim.com";
 
             if (appUser != null)
             {
-                using (PlatformDBContext pdbCtx = new PlatformDBContext())
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx))
+                using (PlatformDBContext pdbCtx = new PlatformDBContext(_configuration))
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
                 {
                     var instance = tRepo.Get(appUser.TenantId);
                     if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
@@ -380,7 +384,7 @@ namespace PrimeApps.App.Helpers
                         /*if (!string.IsNullOrEmpty(fromEmail))
                             from = fromEmail;
                         else*/
-                            from = instance.Setting.MailSenderEmail;
+                        from = instance.Setting.MailSenderEmail;
                         fromName = instance.Setting.MailSenderName;
                     }
                 }

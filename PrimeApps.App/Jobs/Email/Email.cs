@@ -199,8 +199,8 @@ namespace PrimeApps.App.Jobs.Email
 
             Tenant subscriber = null;
 
-            using (var platformDBContext = new PlatformDBContext())
-            using (var tenantRepository = new TenantRepository(platformDBContext))
+            using (var platformDBContext = new PlatformDBContext(_configuration))
+            using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))
             {
                 subscriber = await tenantRepository.GetAsync(tenantId);
             }

@@ -60,9 +60,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 			TenantUser emailOwner = new TenantUser();
 			try
 			{
-				using (var platformDBContext = new PlatformDBContext())
-				using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
-				using (var tenantRepository = new TenantRepository(platformDBContext))
+				using (var platformDBContext = new PlatformDBContext(_configuration))
+				using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
+				using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))
 				using (var tenantDBContext = new TenantDBContext(emailQueueItem.TenantId, _configuration))
 				{
 					/// get details of the email queue item.

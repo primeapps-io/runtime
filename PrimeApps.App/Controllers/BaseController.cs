@@ -30,6 +30,12 @@ namespace PrimeApps.App.Controllers
                 repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = AppUser.TenantId};
         }
 
+        public void SetCurrentUser(IRepositoryBasePlatform repository)
+        {
+            if (AppUser != null)
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+        }
+
         private UserItem GetUser()
         {
             var platformUser = (PlatformUser) HttpContext.Items["user"];

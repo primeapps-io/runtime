@@ -24,8 +24,8 @@ namespace PrimeApps.App.Jobs
         {
             IList<Tenant> trialTenants = new List<Tenant>();
 
-            using (var platformDBContext = new PlatformDBContext())
-            using (var tenantRepository = new TenantRepository(platformDBContext))
+            using (var platformDBContext = new PlatformDBContext(_configuration))
+            using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))
             {
                 trialTenants = await tenantRepository.GetTrialTenants();
             }

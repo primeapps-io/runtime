@@ -17,10 +17,12 @@ namespace PrimeApps.App.Helpers
     public class Auth : IDisposable
     {
         private PlatformDBContext _ctx;
+        private IConfiguration _configuration;
 
-        public Auth()
+        public Auth(IConfiguration configuration)
         {
-            _ctx = new PlatformDBContext();
+            _configuration = configuration;
+            _ctx = new PlatformDBContext(configuration);
         }
 		//TODO Removed
 		/*public async Task<bool> AddClient(Client client)

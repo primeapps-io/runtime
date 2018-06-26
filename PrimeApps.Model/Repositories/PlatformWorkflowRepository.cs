@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Model.Repositories
 {
     public class PlatformWorkflowRepository : RepositoryBasePlatform, IPlatformWorkflowRepository
     {
-        public PlatformWorkflowRepository(PlatformDBContext dbContext) : base(dbContext) { }
+        public PlatformWorkflowRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<AppWorkflow> GetById(int id)
         {

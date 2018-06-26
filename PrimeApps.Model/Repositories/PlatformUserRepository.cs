@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Enums;
@@ -17,7 +18,7 @@ namespace PrimeApps.Model.Repositories
 {
 	public class PlatformUserRepository : RepositoryBasePlatform, IPlatformUserRepository
 	{
-		public PlatformUserRepository(PlatformDBContext dbContext) : base(dbContext)
+		public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
 		{
 
 		}

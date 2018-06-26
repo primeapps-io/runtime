@@ -24,16 +24,16 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <param name="reminderMessage"></param>
         /// <returns>it will return false only when an error occured during the processing, not when the reminder revision is wrong or non-existant.</returns>
         [QueueCustom]
-        public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser, IConfiguration configuration)
+        public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser)
         {
             Model.Entities.Application.Reminder reminder;
             bool status = false;
             try
             {
-                using (var databaseContext = new TenantDBContext(reminderMessage.TenantId, configuration))
+                using (var databaseContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
                 {
 
-                    using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                    using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                     {
                         /// Get related reminder record from data store.
                         reminder = await _reminderRepository.GetById(Convert.ToInt32(reminderMessage.Id));
@@ -45,9 +45,9 @@ namespace PrimeApps.App.Jobs.Reminder
 
                         string reminderType = reminder.ReminderType;
 
-                        using (PlatformDBContext platformDbContext = new PlatformDBContext())
+                        using (PlatformDBContext platformDbContext = new PlatformDBContext(_configuration))
                         {
-                            using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDbContext))
+                            using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))
                             {
 
 
@@ -56,7 +56,7 @@ namespace PrimeApps.App.Jobs.Reminder
                                     switch (reminderType)
                                     {
                                         case "task":
-                                            await Task(reminder, reminderMessage, platformUserRepository, appUser, configuration);
+                                            await Task(reminder, reminderMessage, platformUserRepository, appUser, _configuration);
                                             break;
                                         case "event":
                                             await Event(reminder, reminderMessage, platformUserRepository, appUser);
@@ -264,7 +264,7 @@ namespace PrimeApps.App.Jobs.Reminder
                             {
                                 reminderMessage.Rev = result.Rev;
                                 DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
-                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser, configuration), dateOffset);
+                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser), dateOffset);
 
                             }
 

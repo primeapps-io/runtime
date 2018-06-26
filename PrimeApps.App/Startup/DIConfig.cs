@@ -18,7 +18,7 @@ namespace PrimeApps.App
         {
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
-
+            services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
 

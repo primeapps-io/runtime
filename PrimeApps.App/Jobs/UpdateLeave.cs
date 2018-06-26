@@ -27,9 +27,9 @@ namespace PrimeApps.App.Jobs
 		
         public async Task Update()
         {
-            using (var platformDatabaseContext = new PlatformDBContext())
-            using (var tenantRepository = new TenantRepository(platformDatabaseContext))
-            using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext))
+            using (var platformDatabaseContext = new PlatformDBContext(_configuration))
+            using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+            using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
             {
                 var tenants = await tenantRepository.GetAllActive();
 

@@ -38,6 +38,7 @@ namespace PrimeApps.App.Helpers
 				return null;
 
 			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
 
 			if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)

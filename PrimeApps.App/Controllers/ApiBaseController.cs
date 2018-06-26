@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
@@ -27,6 +28,7 @@ namespace PrimeApps.App.Controllers
                 context.Result = new UnauthorizedResult();
 
             var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
             var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)

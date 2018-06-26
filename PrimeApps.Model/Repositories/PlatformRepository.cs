@@ -6,13 +6,14 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using PrimeApps.Model.Entities.Platform;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
     public class PlatformRepository : RepositoryBasePlatform, IPlatformRepository
     {
-        public PlatformRepository(PlatformDBContext dbContext) : base(dbContext) { }
+        public PlatformRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
 		public App GetAppInfo(string domain)
 		{

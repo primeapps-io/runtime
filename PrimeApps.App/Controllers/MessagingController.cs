@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -22,11 +23,13 @@ namespace PrimeApps.App.Controllers
     {
         private IMessagingRepository _messagingRepository;
         private ISettingRepository _settingRepository;
+        private IConfiguration _configuration;
 
-        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository)
+        public MessagingController(IMessagingRepository messagingRepository, ISettingRepository settingRepository, IConfiguration configuration)
         {
             _messagingRepository = messagingRepository;
             _settingRepository = settingRepository;
+            _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -172,7 +175,7 @@ namespace PrimeApps.App.Controllers
                 //TODO Removed
                 foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
-                    var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody);
+                    var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
                     externalEmail.AddRecipient(emailRecipient);
                     externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc);
                 }

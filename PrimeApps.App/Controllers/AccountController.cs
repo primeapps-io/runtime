@@ -237,7 +237,7 @@ namespace PrimeApps.App.Controllers
                     content = content.Replace("{:Email}", activateBindingModel.Email);
                     content = content.Replace("{:Url}", Request.Scheme + "://" + app.Setting.AuthDomain + "/user/confirm_email?email=" + activateBindingModel.Email + "&token=" + WebUtility.UrlEncode(activateBindingModel.Token));
 
-                    Email notification = new Email(template.Subject, content);
+                    Email notification = new Email(template.Subject, content, _configuration);
 
                     var senderEmail = template.MailSenderEmail ?? app.Setting.MailSenderEmail;
                     var senderName = template.MailSenderName ?? app.Setting.MailSenderName;

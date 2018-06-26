@@ -25,8 +25,8 @@ namespace PrimeApps.App.Jobs
 
         public async Task Calculate()
         {
-            using (var platformDatabaseContext = new PlatformDBContext())
-            using (var tenantRepository = new TenantRepository(platformDatabaseContext))
+            using (var platformDatabaseContext = new PlatformDBContext(_configuration))
+            using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
             {
                 var tenants = await tenantRepository.GetAllActive();
 
@@ -38,7 +38,7 @@ namespace PrimeApps.App.Jobs
                     try
                     {
                         using (var databaseContext = new TenantDBContext(tenant.Id, _configuration))
-                        using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext))
+                        using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
                         using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                         {
                             var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);

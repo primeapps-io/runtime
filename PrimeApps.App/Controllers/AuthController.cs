@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,7 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
@@ -106,8 +103,8 @@ namespace PrimeApps.App.Controllers
             int appId;
             //SignInStatus result;
             var result = false;
-            using (var platformDBContext = new PlatformDBContext())
-            using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
+            using (var platformDBContext = new PlatformDBContext(_configuration))
+            using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
             {
                 user = await platformUserRepository.Get(model.Email);
                 appId = GetAppId(url);
@@ -257,8 +254,8 @@ namespace PrimeApps.App.Controllers
                 }
                 if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
-                    using (var platformDBContext = new PlatformDBContext())
-                    using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
+                    using (var platformDBContext = new PlatformDBContext(_configuration))
+                    using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
                     {
                         var user = await platformUserRepository.Get(registerBindingModel.Email);
                         if (user != null)
@@ -431,7 +428,7 @@ namespace PrimeApps.App.Controllers
             template.Content.Replace("{{:Email}}", sendActivationBindingModel.Email);
             template.Content.Replace("{{:URL}}", sendActivationBindingModel.Email);
 
-            Email notification = new Email(template.Subject, template.Content);
+            Email notification = new Email(template.Subject, template.Content, _configuration);
 
             notification.AddRecipient(template.MailSenderEmail);
             notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);

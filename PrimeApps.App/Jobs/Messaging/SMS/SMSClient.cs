@@ -185,9 +185,9 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 notAllowed = 0;
 
 			Tenant subscriber = null;
-            using (PlatformDBContext platformDBContext = new PlatformDBContext())
+            using (PlatformDBContext platformDBContext = new PlatformDBContext(_configuration))
             {
-                using (TenantRepository platformUserRepository = new TenantRepository(platformDBContext))
+                using (TenantRepository platformUserRepository = new TenantRepository(platformDBContext, _configuration))
                 {
 
                     subscriber = await platformUserRepository.GetWithSettingsAsync(messageDto.TenantId);

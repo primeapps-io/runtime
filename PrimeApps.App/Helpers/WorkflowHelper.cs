@@ -753,9 +753,9 @@ namespace PrimeApps.App.Helpers
 								lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
 
 								PlatformUser subscriber = null;
-								using (PlatformDBContext platformDBContext = new PlatformDBContext())
+								using (PlatformDBContext platformDBContext = new PlatformDBContext(_configuration))
 								{
-									using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDBContext))
+									using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
 									{
 										subscriber = await platformUserRepository.GetWithTenant(appUser.TenantId, appUser.TenantId);
 									}
