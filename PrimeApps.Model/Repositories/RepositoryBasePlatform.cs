@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Repositories
                 var dbConnection = _dbContext.Database.GetDbConnection();
                 dbConnection.ConnectionString = _configuration.GetConnectionString("PlatformDBConnection");
 
-                _dbContext.UserId = CurrentUser.UserId;
+                _dbContext.UserId = CurrentUser != null ? CurrentUser.UserId : 0;
 
                 return _dbContext;
             }
