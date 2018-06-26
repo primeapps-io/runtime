@@ -224,7 +224,7 @@ namespace PrimeApps.App.Jobs.Email
             }
 
 
-            using (var databaseContext = new TenantDBContext(tenantId))
+            using (var databaseContext = new TenantDBContext(tenantId, _configuration))
             using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
             using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
             using (var recordRepository = new RecordRepository(databaseContext, _configuration))

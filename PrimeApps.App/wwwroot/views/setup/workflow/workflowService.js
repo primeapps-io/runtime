@@ -662,6 +662,13 @@ angular.module('primeapps')
 
                                 if (field.data_type === 'checkbox')
                                     filter.value = filter.value.system_code;
+
+                                if (field.data_type === 'date') {
+                                    if (filter.value === undefined || filter.value === null)
+                                        return;
+
+                                    filter.value = new Date(filter.value);
+                                }
                             }
                             else {
                                 filter.value = '-';

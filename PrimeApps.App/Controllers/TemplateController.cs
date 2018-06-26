@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -70,8 +70,9 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]TemplateBindingModel template)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            //TODO Removed - Storage atılamadığı için hata dönüyor veritabanına eklenmesini engelliyor.
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
 
             var templateEntity = await TemplateHelper.CreateEntity(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);
@@ -91,9 +92,9 @@ namespace PrimeApps.App.Controllers
         [Route("create_excel"), HttpPost]
         public async Task<IActionResult> CreateExcel(TemplateBindingModel template)
         {
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            //TODO Removed - Storage atılamadığı için hata dönüyor veritabanına eklenmesini engelliyor.
+            //if (!ModelState.IsValid)
+            //    return BadRequest(ModelState);
 
             var templateEntity = await TemplateHelper.CreateEntityExcel(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);

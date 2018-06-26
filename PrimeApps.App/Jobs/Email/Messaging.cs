@@ -31,7 +31,7 @@ namespace PrimeApps.App.Jobs.Email
         {
             string formattedDate = "";
 
-            using (var dbContext = new TenantDBContext(tenantId))
+            using (var dbContext = new TenantDBContext(tenantId, configuration))
             {
                 CultureInfo cultureInfo = new CultureInfo(owner.Culture);
                 formattedDate = smsDate.ToString("dd.MM.yyyy", cultureInfo);

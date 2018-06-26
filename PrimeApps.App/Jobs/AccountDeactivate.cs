@@ -28,7 +28,7 @@ namespace PrimeApps.App.Jobs
 
                     foreach (var tenant in tenants)
                     {
-                        using (var databaseContext = new TenantDBContext(tenant.Id))
+                        using (var databaseContext = new TenantDBContext(tenant.Id, _configuration))
                         using (var userRepository = new UserRepository(databaseContext, _configuration))
                         {
                             var users = await userRepository.GetAllAsync();

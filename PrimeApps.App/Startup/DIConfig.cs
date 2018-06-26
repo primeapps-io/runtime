@@ -77,6 +77,8 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-        }
+
+			services.AddHttpContextAccessor();
+		}
     }
 }

@@ -1921,7 +1921,11 @@ namespace PrimeApps.Model.Helpers
                     continue;
 
                 if (field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
-                    lookupModuleNames.Add(field.LookupType);
+                {
+                    var lookupModule = await moduleRepository.GetByNameBasic(field.LookupType);
+                    if (lookupModule != null)
+                        lookupModuleNames.Add(field.LookupType);
+                }
             }
 
             if (!string.IsNullOrEmpty(additionalModule))

@@ -63,7 +63,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				using (var platformDBContext = new PlatformDBContext())
 				using (var platformUserRepository = new PlatformUserRepository(platformDBContext))
 				using (var tenantRepository = new TenantRepository(platformDBContext))
-				using (var tenantDBContext = new TenantDBContext(emailQueueItem.TenantId))
+				using (var tenantDBContext = new TenantDBContext(emailQueueItem.TenantId, _configuration))
 				{
 					/// get details of the email queue item.
 					///
@@ -258,7 +258,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 					//Set find request limit to our maximum value 3000 unlike filter default
 					findRequest.Limit = 30000;
 
-					using (var databaseContext = new TenantDBContext(messageDto.TenantId))
+					using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
 					{
 						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
@@ -283,7 +283,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 				if (ids?.Length > 0)
 				{
-					using (var databaseContext = new TenantDBContext(messageDto.TenantId))
+					using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
 					using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
 					using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 					using (var recordRepository = new RecordRepository(databaseContext, _configuration))

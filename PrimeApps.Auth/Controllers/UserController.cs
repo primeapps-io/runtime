@@ -97,7 +97,7 @@ namespace PrimeApps.Auth.Controllers
 
 			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.App.Setting.Culture;
 
-			var url = Request.Scheme + "://" + appInfo.App.Setting.Domain + "/api/account/activate";
+			var url = Request.Scheme + "://" + appInfo.App.Setting.Domain.Replace("/ik", "") + "/api/account/create";
 
 			var activateModel = new ActivateBindingModels
 			{

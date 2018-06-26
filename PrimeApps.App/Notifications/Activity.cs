@@ -23,7 +23,7 @@ namespace PrimeApps.App.Notifications
             if (!string.IsNullOrEmpty(activityType))
             {
 
-                using (var dbContext = new TenantDBContext(appUser.TenantId))
+                using (var dbContext = new TenantDBContext(appUser.TenantId, configuration))
                 {
                     var recordId = record["id"]?.ToString();
 
@@ -98,7 +98,7 @@ namespace PrimeApps.App.Notifications
                 TimeZoneOffset = timezoneOffset
             };
 
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
@@ -137,7 +137,7 @@ namespace PrimeApps.App.Notifications
             DateTime callStartDate = (DateTime)record["call_time"];
             DateTime nextReminder = callStartDate.AddMinutes(-1 * remindBefore);
 
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
@@ -196,7 +196,7 @@ namespace PrimeApps.App.Notifications
                 /// set reminder end to the last minute of the day.
                 taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
 
-                using (var databaseContext = new TenantDBContext(appUser.TenantId))
+                using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
                 {
                     using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                     {
@@ -249,7 +249,7 @@ namespace PrimeApps.App.Notifications
         public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, IConfiguration configuration, int timezoneOffset = 180)
         {
             var recordId = record["id"].ToString();
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
 
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
@@ -330,7 +330,7 @@ namespace PrimeApps.App.Notifications
         /// <returns></returns>
         private static async Task EventUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
         {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
@@ -381,7 +381,7 @@ namespace PrimeApps.App.Notifications
         /// </summary>
         private static async Task CallUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
         {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
@@ -432,7 +432,7 @@ namespace PrimeApps.App.Notifications
         /// <returns></returns>
         private static async Task TaskUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
         {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {
@@ -519,7 +519,7 @@ namespace PrimeApps.App.Notifications
         public static async Task Delete(UserItem appUser, JObject record, Module module, IConfiguration configuration)
         {
 
-            using (var databaseContext = new TenantDBContext(appUser.TenantId))
+            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
             {
                 using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                 {

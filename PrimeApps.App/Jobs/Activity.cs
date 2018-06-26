@@ -30,7 +30,7 @@ namespace PrimeApps.App.Jobs.Reminder
             bool status = false;
             try
             {
-                using (var databaseContext = new TenantDBContext(reminderMessage.TenantId))
+                using (var databaseContext = new TenantDBContext(reminderMessage.TenantId, configuration))
                 {
 
                     using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
@@ -103,7 +103,7 @@ namespace PrimeApps.App.Jobs.Reminder
                 DateTime reminderStart = reminder.ReminderStart;
                 DateTime eventEnd = reminder.ReminderEnd;
 
-                using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
+                using (var dbContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
                 {
                     using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
@@ -154,7 +154,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
 
 
-                using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
+                using (var dbContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
                 {
                     using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
@@ -210,7 +210,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                 //var usr = crmUser.GetBasicProperties(email, session);IsTaskNotificationEnabled ?
 
-                using (var dbContext = new TenantDBContext(reminderMessage.TenantId))
+                using (var dbContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
                 {
                     using (var _userRepository = new UserRepository(dbContext, _configuration))
                     {
@@ -254,7 +254,7 @@ namespace PrimeApps.App.Jobs.Reminder
                     reminder.RemindedOn = remindOn;
 
                     //dynamic result = await cloudantClient.UpdateAsync((string)record._id, record);
-                    using (var databaseContext = new TenantDBContext(reminderMessage.TenantId))
+                    using (var databaseContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
                     {
                         using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
                         {

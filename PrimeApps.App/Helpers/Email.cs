@@ -87,7 +87,7 @@ namespace PrimeApps.App.Helpers
 
             LanguageType language = culture.Contains("tr") ? LanguageType.Tr : LanguageType.En;
             Template templateEntity;
-            using (TenantDBContext tdbCtx = new TenantDBContext(appUser.TenantId))
+            using (TenantDBContext tdbCtx = new TenantDBContext(appUser.TenantId, configuration))
             using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
             {               
                 templateEntity = tRepo.GetByCode(resourceTypeName, language);
