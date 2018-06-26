@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('TemplateFormController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$location', 'helper', 'config', '$localStorage', 'TemplateService',
-        function ($rootScope, $scope, $filter, $state, ngToast, $location, helper, config, $localStorage, TemplateService) {
+    .controller('TemplateFormController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$location', 'helper', 'config', '$localStorage', 'TemplateService', '$cookies',
+        function ($rootScope, $scope, $filter, $state, ngToast, $location, helper, config, $localStorage, TemplateService, $cookies) {
             $scope.id = $location.search().id;
             $scope.documentexcel = true;
             $scope.documentword = true;
@@ -93,7 +93,8 @@ angular.module('primeapps')
                     unique_names: true,
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     filters: {
                         mime_types: [

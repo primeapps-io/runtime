@@ -2,14 +2,15 @@
 
 angular.module('primeapps')
 
-    .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService',
-        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService) {
+    .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService','$cookies',
+        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService,$cookies) {
             $scope.company = {};
             $scope.company.instanceID = $rootScope.workgroup.instanceID;
             $scope.company.title = $rootScope.workgroup.title;
             $scope.company.currency = $rootScope.workgroup.currency;
             $scope.company.culture = $rootScope.workgroup.culture;
             $scope.company.logo = $rootScope.workgroup.logo;
+            $scope.company.tenant_id = $rootScope.users.tenant_id;
             $scope.bounds = {};
             $scope.bounds.left = 0;
             $scope.bounds.right = 0;
@@ -42,8 +43,9 @@ angular.module('primeapps')
             }
 
             var uploader = $scope.uploader = new FileUploader({
-                url: config.apiUrl + 'Instance/UploadLogo',
+                url: 'attach/upload_logo',
                 headers: {'Authorization': 'Bearer ' + $localStorage.read('access_token')},
+                'X-Tenant-Id': $cookies.get('tenant_id'),
                 queueLimit: 1
             });
 
