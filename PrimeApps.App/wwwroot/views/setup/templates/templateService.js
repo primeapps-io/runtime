@@ -12,7 +12,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'template/get_all?type=' + (type || ''));
                 },
                 getAllList: function (type, typeExcel) {
-                    return $http.get(config.apiUrl + 'template/get_all_list?type=' + type + '&typeExcel=' + typeExcel);
+                    return $http.get(config.apiUrl + 'template/get_all_list?type=' + type + '&excelType=' + typeExcel);
                 },
                 create: function (quoteTemplate) {
                     return $http.post(config.apiUrl + 'template/create', quoteTemplate);
