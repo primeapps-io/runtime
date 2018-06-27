@@ -5,8 +5,8 @@ angular.module('primeapps')
     .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state',
         function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies, $state) {
             $scope.userModel = {};
-            $scope.userModel.firstName = $rootScope.user.firstName;
-            $scope.userModel.lastName = $rootScope.user.lastName;
+            $scope.userModel.first_name = $rootScope.user.first_name;
+            $scope.userModel.last_name = $rootScope.user.last_name;
             $scope.userModel.email = $rootScope.user.email;
             $scope.selectedLanguage = angular.copy($rootScope.language);
             $scope.selectedLocale = angular.copy($rootScope.locale);
@@ -74,8 +74,8 @@ angular.module('primeapps')
 
                     SettingService.editUser(userModel)
                         .then(function () {
-                            $rootScope.user.firstName = userModel.firstName;
-                            $rootScope.user.lastName = userModel.lastName;
+                            $rootScope.user.firstName = userModel.first_name;
+                            $rootScope.user.lastName = userModel.last_name;
                             $rootScope.user.email = userModel.email;
                             $scope.userUpdating = false;
 
