@@ -70,7 +70,7 @@ namespace PrimeApps.Model.Repositories
 
             if (roleBasedEnabled && moduleName != "users")
                 GetRoleBasedInfo(moduleName, out owners, out userGroups);
-            
+
             var sql = RecordHelper.GenerateFindSql(moduleName, findRequest, owners, CurrentUser.UserId, userGroups, timezoneOffset: timezoneOffset);
             JArray records;
             try
@@ -232,8 +232,8 @@ namespace PrimeApps.Model.Repositories
                 for (int i = 0; i < records.Count; i++)
                 {
                     var record = records[i];
-                    command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName1 + i, NpgsqlValue = record[columnName1], NpgsqlDbType = NpgsqlDbType.Integer });
-                    command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName2 + i, NpgsqlValue = record[columnName2], NpgsqlDbType = NpgsqlDbType.Integer });
+                    command.Parameters.Add(new NpgsqlParameter{ ParameterName = columnName1 + i, NpgsqlValue = Convert.ToInt32(record[columnName1]),NpgsqlDbType = NpgsqlDbType.Integer});
+                    command.Parameters.Add(new NpgsqlParameter{ ParameterName = columnName2 + i, NpgsqlValue = Convert.ToInt32(record[columnName2]),NpgsqlDbType = NpgsqlDbType.Integer});
 
                     values.Add($"(@{columnName1 + i}, @{columnName2 + i})");
                 }
@@ -287,8 +287,8 @@ namespace PrimeApps.Model.Repositories
                 var columnName1 = moduleName + "_id";
                 var columnName2 = relatedModuleName + "_id";
 
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName1, NpgsqlValue = record[columnName1], NpgsqlDbType = NpgsqlDbType.Integer });
-                command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName2, NpgsqlValue = record[columnName2], NpgsqlDbType = NpgsqlDbType.Integer });
+                command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName1, NpgsqlValue = Convert.ToInt32(record[columnName1]), NpgsqlDbType = NpgsqlDbType.Integer });
+                command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName2, NpgsqlValue = Convert.ToInt32(record[columnName2]), NpgsqlDbType = NpgsqlDbType.Integer });
                 var tableName = moduleName + "_" + relatedModuleName;
 
                 if (relationId > 0)
@@ -368,7 +368,7 @@ namespace PrimeApps.Model.Repositories
 
             return result;
         }
-        
+
         public async Task<int> UpdateSampleData(PlatformUser user)
         {
             var modules = DbContext.Modules.ToList();

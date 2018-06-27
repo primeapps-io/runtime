@@ -238,7 +238,7 @@ angular.module('primeapps')
                                     $scope.$parent.notes.splice($scope.$parent.notes.indexOf(note), 1)
                                 }
 
-                                $scope.$parent.notesCount = $scope.$parent.notesCount - 1;
+                                $scope.$parent.$parent.notesCount = $scope.$parent.notesCount - 1;
                             });
                     };
 

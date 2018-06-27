@@ -275,7 +275,7 @@ angular.module('primeapps')
                 $scope.editModel.activeDirectoryEmail = user.activeDirectoryEmail;
                 $scope.userHaveActiveDirectoryEmail = user.activeDirectoryEmail !== null && user.activeDirectoryEmail !== "null" && user.activeDirectoryEmail !== '';
                 $scope.editModelState = angular.copy($scope.editModel);
-                $scope['editPopover' + user.id] = $scope['editPopover' + user.Id] || $popover(angular.element(document.getElementById('editButton' + user.Id)), {
+                $scope['editPopover' + user.id] = $scope['editPopover' + user.id] || $popover(angular.element(document.getElementById('editButton' + user.id)), {
                     templateUrl: 'views/setup/users/userEdit.html',
                     placement: 'left',
                     scope: $scope,
