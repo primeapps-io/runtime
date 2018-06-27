@@ -10,9 +10,9 @@
                     <option value="" ng-if="false"></option>
                 </select>
                 <ui-select ng-model="filter.assignedTo" ng-change="filterChanged()">
-                    <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.FullName}}</ui-select-match>
-                    <ui-select-choices repeat="user in users | filter:{FullName: $select.search}">
-                        <div ng-bind-html="user.FullName | highlight: $select.search"></div>
+                    <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.full_name}}</ui-select-match>
+                    <ui-select-choices repeat="user in users | filter:{full_name: $select.search}">
+                        <div ng-bind-html="user.full_name | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>
             </div>
@@ -73,9 +73,9 @@
                                 <div class="form-group">
                                     <div class="input-group">
                                         <ui-select ng-model="task.assignedTo">
-                                            <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.FullName}}</ui-select-match>
-                                            <ui-select-choices repeat="user in $root.users | filter:{FullName: $select.search} | orderBy:'FullName'">
-                                                <div ng-bind-html="user.FullName | highlight: $select.search"></div>
+                                            <ui-select-match placeholder="{{'Common.SearchUser' | translate}}">{{$select.selected.full_name}}</ui-select-match>
+                                            <ui-select-choices repeat="user in $root.users | filter:{full_name: $select.search} | orderBy:'full_name'">
+                                                <div ng-bind-html="user.full_name | highlight: $select.search"></div>
                                             </ui-select-choices>
                                         </ui-select>
                                     </div>

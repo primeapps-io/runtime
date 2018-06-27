@@ -227,20 +227,8 @@ namespace PrimeApps.Model.Repositories
                     }).OrderByDescending(x => x.isAdmin).ToList()
                 }).ToListAsync();
 
-            //return workgroup object.
-            return result;
-        }
-
-        public int GetAppIdByDomain(string domain)
-        {
-            var app = DbContext.AppSettings
-                .SingleOrDefault(x => x.Domain == domain);
-
-
-            if (app == null)
-                return 0;
-
-            return app.AppId;
-        }
-    }
+			//return workgroup object.
+			return result;
+		}
+	}
 }

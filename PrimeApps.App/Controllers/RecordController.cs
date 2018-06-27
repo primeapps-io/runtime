@@ -433,7 +433,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}/{id:int}"), HttpDelete]
-        public async Task<IActionResult> Delete(string module, [FromQuery(Name = "id")]int id)
+        public async Task<IActionResult> Delete(string module, int id)
         {
             var moduleEntity = await _moduleRepository.GetByName(module);
             var record = _recordRepository.GetById(moduleEntity, id, !AppUser.HasAdminProfile);

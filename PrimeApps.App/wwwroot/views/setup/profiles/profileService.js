@@ -36,7 +36,7 @@ angular.module('primeapps')
                             angular.forEach(profile.permissions, function (permission) {
                                 var addPermission = true;
 
-                                switch (permission.Type) {
+                                switch (permission.type) {
                                     case 1:/// Document
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Documents');
                                         permission.Order = 999;
@@ -47,7 +47,7 @@ angular.module('primeapps')
                                         break;
 
                                     case 0 :/// Module
-                                        var module = $filter('filter')($rootScope.modules, { id: permission.ModuleId }, true)[0];
+                                        var module = $filter('filter')($rootScope.modules, { id: permission.module_id }, true)[0];
 
                                         if (module && module.order > 0) {
                                             permission.EntityTypeName = module["label_" + $rootScope.language + "_plural"];

@@ -213,8 +213,8 @@ namespace PrimeApps.Auth.UI
 			}
 
 			App appInfo = null;
-			if(registerViewModel.AppId != null)
-				appInfo = _applicationRepository.Get(registerViewModel.AppId ?? 1);
+			if(!string.IsNullOrEmpty(Request.Form["AppId"].ToString()))
+				appInfo = _applicationRepository.Get(int.Parse(Request.Form["AppId"].ToString()));
 			else
 				appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
 
@@ -255,7 +255,7 @@ namespace PrimeApps.Auth.UI
 
 			}
 
-			var user = await _userManager.FindByNameAsync(registerViewModel.Email);
+			var user = await _userManager.FindByEmailAsync(registerViewModel.Email);
 			var token = "";
 
 			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.Setting.Culture;
@@ -287,6 +287,7 @@ namespace PrimeApps.Auth.UI
 
 				if (!response.IsSuccessStatusCode)
 				{
+					ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository, !string.IsNullOrEmpty(Request.Form["AppId"].ToString()) ? Request.Form["AppId"].ToString() : null);
 					if (response.StatusCode == HttpStatusCode.Conflict)
 					{
 						ViewBag.Error = "alreadyRegisterForApp";

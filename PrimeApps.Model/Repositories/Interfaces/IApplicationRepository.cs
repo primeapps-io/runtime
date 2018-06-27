@@ -11,5 +11,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		App GetWithAuth(string domain);
 		App Get(int id);
 		TeamApp Get(string organizationCode, string appCode);
+		int GetAppIdWithDomain(string domain);
 	}
 }
