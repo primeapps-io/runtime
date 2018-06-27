@@ -10,33 +10,67 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;
 using PrimeApps.Model.Helpers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PrimeApps.App.Notifications
 {
-    public class Activity
+    public interface IActivityHelper
     {
-        #region Create
-        public static async Task Create(UserItem appUser, JObject record, Module module, IConfiguration configuration, bool createForExisting = true, int timezoneOffset = 180)
+        Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180);
+
+        Task Event(UserItem appUser, JObject record, Module module, int timezoneOffset = 180);
+
+        Task Call(UserItem appUser, JObject record, Module module, int timezoneOffset = 180);
+
+        Task Task(UserItem appUser, JObject record, Module module, bool createForExisting = true, int timezoneOffset = 180);
+
+        Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, Warehouse warehouse, int timezoneOffset = 180);
+
+        Task EventUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180);
+
+        Task CallUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180);
+    }
+    public class ActivityHelper : IActivityHelper
+    {
+        private CurrentUser _currentUser;
+        private IHttpContextAccessor _context;
+        private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
+
+        public ActivityHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration)
         {
-            string activityType = record["activity_type_system"]?.ToString();
+            _context = context;
+            _currentUser = UserHelper.GetCurrentUser(_context);
+            _serviceScopeFactory = serviceScopeFactory;
+            _configuration = configuration;
+        }
 
-            if (!string.IsNullOrEmpty(activityType))
+        #region Create
+        public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
+                //Set warehouse database name
+                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                using (var dbContext = new TenantDBContext(appUser.TenantId, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+
+                string activityType = record["activity_type_system"]?.ToString();
+
+                if (!string.IsNullOrEmpty(activityType))
                 {
-                    var recordId = record["id"]?.ToString();
-
-                    using (var recordRepository = new RecordRepository(dbContext, configuration))
+                    using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                    using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                     {
-                        recordRepository.TenantId = appUser.TenantId;
-                        recordRepository.UserId = appUser.TenantId;
+                        recordRepository.CurrentUser = moduleRepository.CurrentUser = _currentUser;
+                        var recordId = record["id"]?.ToString();
 
                         var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
                         var listLookupModule = new List<Module>
-                        {
-                            userModule
-                        };
+                                {
+                                    userModule
+                                };
 
                         var fullRecord = recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
 
@@ -48,13 +82,13 @@ namespace PrimeApps.App.Notifications
                             switch (activityType)
                             {
                                 case "task":
-                                    await Task(appUser, fullRecord, module, configuration, createForExisting, timezoneOffset);
+                                    await Task(appUser, fullRecord, module, createForExisting, timezoneOffset);
                                     break;
                                 case "event":
-                                    await Event(appUser, fullRecord, module, configuration, timezoneOffset);
+                                    await Event(appUser, fullRecord, module, timezoneOffset);
                                     break;
                                 case "call":
-                                    await Call(appUser, fullRecord, module, configuration, timezoneOffset);
+                                    await Call(appUser, fullRecord, module, timezoneOffset);
                                     break;
                             }
                         }
@@ -70,42 +104,43 @@ namespace PrimeApps.App.Notifications
         /// <param name="appUser"></param>
         /// <param name="record"></param>
         /// <returns></returns>
-        private static async Task Event(UserItem appUser, JObject record, Module module, IConfiguration configuration, int timezoneOffset = 180)
+        public async Task Event(UserItem appUser, JObject record, Module module, int timezoneOffset = 180)
         {
-            if (record["event_reminder"].IsNullOrEmpty()) return;
-
-            long remindBefore = (long)record["event_reminder"]["value"];
-            DateTime eventEndDate = (DateTime)record["event_end_date"];
-            DateTime eventStartDate = (DateTime)record["event_start_date"];
-            DateTime nextReminder = eventStartDate.AddMinutes(-1 * remindBefore);
-
-            /// set reminder end to the last minute of the day.
-            eventEndDate = eventEndDate.AddHours(23).AddMinutes(59).AddSeconds(59);
-            record["event_end_date"] = eventEndDate;
-
-            Reminder reminder = new Reminder()
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                ModuleId = module.Id,
-                ReminderScope = module.Name,
-                RecordId = (int)record["id"],
-                ReminderType = (string)record["activity_type"]["value"],
-                ReminderFrequency = 0,
-                ReminderStart = eventStartDate,
-                ReminderEnd = eventEndDate,
-                Subject = (string)record["subject"],
-                Rev = Utils.CreateRandomString(20),
-                Owner = (int?)record["owner.id"],
-                TimeZoneOffset = timezoneOffset
-            };
-
-            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
-            {
-                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                 {
+                    _reminderRepository.CurrentUser = _currentUser;
+                    if (record["event_reminder"].IsNullOrEmpty()) return;
+
+                    long remindBefore = (long)record["event_reminder"]["value"];
+                    DateTime eventEndDate = (DateTime)record["event_end_date"];
+                    DateTime eventStartDate = (DateTime)record["event_start_date"];
+                    DateTime nextReminder = eventStartDate.AddMinutes(-1 * remindBefore);
+
+                    /// set reminder end to the last minute of the day.
+                    eventEndDate = eventEndDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    record["event_end_date"] = eventEndDate;
+
+                    Reminder reminder = new Reminder()
+                    {
+                        ModuleId = module.Id,
+                        ReminderScope = module.Name,
+                        RecordId = (int)record["id"],
+                        ReminderType = (string)record["activity_type"]["value"],
+                        ReminderFrequency = 0,
+                        ReminderStart = eventStartDate,
+                        ReminderEnd = eventEndDate,
+                        Subject = (string)record["subject"],
+                        Rev = Utils.CreateRandomString(20),
+                        Owner = (int?)record["owner.id"],
+                        TimeZoneOffset = timezoneOffset
+                    };
+
                     var newReminder = await _reminderRepository.Create(reminder);
                     if (newReminder != null)
                     {
-
                         /// create reminder object
                         ReminderDTO reminderDto = new ReminderDTO();
                         reminderDto.Id = newReminder.Id.ToString();
@@ -119,28 +154,28 @@ namespace PrimeApps.App.Notifications
                         Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
                     }
                 }
-
             }
-
         }
 
         /// <summary>
         /// Creates notifications for call typed activity records.
         /// </summary>
         /// <returns></returns>
-        private static async Task Call(UserItem appUser, JObject record, Module module, IConfiguration configuration, int timezoneOffset = 180)
+        public async Task Call(UserItem appUser, JObject record, Module module, int timezoneOffset = 180)
         {
-            if (record["event_reminder"].IsNullOrEmpty()) return;
-
-            long remindBefore = (long)record["event_reminder"]["value"];
-            DateTime callEndDate = (DateTime)record["call_time"];
-            DateTime callStartDate = (DateTime)record["call_time"];
-            DateTime nextReminder = callStartDate.AddMinutes(-1 * remindBefore);
-
-            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                 {
+                    _reminderRepository.CurrentUser = _currentUser;
+                    if (record["event_reminder"].IsNullOrEmpty()) return;
+
+                    long remindBefore = (long)record["event_reminder"]["value"];
+                    DateTime callEndDate = (DateTime)record["call_time"];
+                    DateTime callStartDate = (DateTime)record["call_time"];
+                    DateTime nextReminder = callStartDate.AddMinutes(-1 * remindBefore);
+
                     Reminder reminder = new Reminder()
                     {
                         RecordId = (int)record["id"],
@@ -173,7 +208,6 @@ namespace PrimeApps.App.Notifications
 
                     }
                 }
-
             }
         }
 
@@ -185,21 +219,23 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="createForExisting">if the record is being updated, but there is no previous notification defined.</param>
         /// <returns></returns>
-        private static async Task Task(UserItem appUser, JObject record, Module module, IConfiguration configuration, bool createForExisting = true, int timezoneOffset = 180)
+        public async Task Task(UserItem appUser, JObject record, Module module, bool createForExisting = true, int timezoneOffset = 180)
         {
-            if (!record["task_due_date"].IsNullOrEmpty() && !record["task_reminder"].IsNullOrEmpty() && !(!record["task_status"].IsNullOrEmpty() && (string)record["task_status"]["value"] == "completed"))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                DateTime now = DateTime.UtcNow;
-                DateTime taskDueDate = (DateTime)record["task_due_date"];
-                DateTime taskReminderDate = (DateTime)record["task_reminder"];
-
-                /// set reminder end to the last minute of the day.
-                taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
-
-                using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                 {
-                    using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                    _reminderRepository.CurrentUser = _currentUser;
+                    if (!record["task_due_date"].IsNullOrEmpty() && !record["task_reminder"].IsNullOrEmpty() && !(!record["task_status"].IsNullOrEmpty() && (string)record["task_status"]["value"] == "completed"))
                     {
+                        DateTime now = DateTime.UtcNow;
+                        DateTime taskDueDate = (DateTime)record["task_due_date"];
+                        DateTime taskReminderDate = (DateTime)record["task_reminder"];
+
+                        /// set reminder end to the last minute of the day.
+                        taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+
                         Reminder reminder = new Reminder()
                         {
                             ModuleId = module.Id,
@@ -246,14 +282,19 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public static async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, IConfiguration configuration, int timezoneOffset = 180)
+        public async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, Warehouse warehouse, int timezoneOffset = 180)
         {
-            var recordId = record["id"].ToString();
-            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
+                //Set warehouse database name
+                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
-                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
+                using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                 {
+                    _reminderRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    var recordId = record["id"].ToString();
                     var reminderExisting = await _reminderRepository.GetReminder(Convert.ToInt32(recordId), null, module.Id);
                     if (reminderExisting == null)
                     {
@@ -261,20 +302,16 @@ namespace PrimeApps.App.Notifications
                         switch (module.Name)
                         {
                             case "activities":
+                                var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                                var listLookupModule = new List<Module>();
+                                listLookupModule.Add(userModule);
+                                var databaseRecord = _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+                                _recordRepository.SetPicklists(module, databaseRecord, appUser.TenantLanguage);
 
-                                using (var _recordRepository = new RecordRepository(databaseContext, configuration))
-                                {
-                                    var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
-                                    var listLookupModule = new List<Module>();
-                                    listLookupModule.Add(userModule);
-                                    var databaseRecord = _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
-                                    _recordRepository.SetPicklists(module, databaseRecord, appUser.TenantLanguage);
+                                //create case activity system type needed
+                                databaseRecord["activity_type_system"] = databaseRecord["activity_type"]?["value"]?.ToString();
 
-                                    //create case activity system type needed
-                                    databaseRecord["activity_type_system"] = databaseRecord["activity_type"]?["value"]?.ToString();
-
-                                    await (Create(appUser, databaseRecord, module, configuration, timezoneOffset: timezoneOffset));
-                                }
+                                await (Create(appUser, databaseRecord, module, warehouse, true, timezoneOffset: timezoneOffset));
                                 break;
                                 //case "opportunities"://check here if any need on that
 
@@ -286,34 +323,31 @@ namespace PrimeApps.App.Notifications
                     else
                     {
                         /// there is an existing notification for this activity record. so just fetch it and send to the respective methods to update.
-                        using (var _recordRepository = new RecordRepository(databaseContext, configuration))
+                        _recordRepository.TenantId = appUser.TenantId;
+                        _recordRepository.UserId = appUser.TenantId;
+
+                        var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                        var listLookupModule = new List<Module>();
+                        listLookupModule.Add(userModule);
+                        var fullRecord = _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
+
+                        _recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
+
+                        string activityType = fullRecord["activity_type"]?["value"]?.ToString();
+
+                        switch (activityType)
                         {
-                            _recordRepository.TenantId = appUser.TenantId;
-                            _recordRepository.UserId = appUser.TenantId;
-
-                            var userModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
-                            var listLookupModule = new List<Module>();
-                            listLookupModule.Add(userModule);
-                            var fullRecord = _recordRepository.GetById(module, Convert.ToInt32(recordId), !appUser.HasAdminProfile, listLookupModule);
-
-                            _recordRepository.SetPicklists(module, fullRecord, appUser.TenantLanguage);
-
-                            string activityType = fullRecord["activity_type"]?["value"]?.ToString();
-
-                            switch (activityType)
-                            {
-                                case "task":
-                                    await TaskUpdate(appUser, fullRecord, reminderExisting, configuration, timezoneOffset);
-                                    break;
-                                case "event":
-                                    await EventUpdate(appUser, fullRecord, reminderExisting, configuration, timezoneOffset);
-                                    break;
-                                case "call":
-                                    await CallUpdate(appUser, fullRecord, reminderExisting, configuration, timezoneOffset);
-                                    break;
-                                default:
-                                    break;
-                            }
+                            case "task":
+                                await TaskUpdate(appUser, fullRecord, reminderExisting, timezoneOffset);
+                                break;
+                            case "event":
+                                await EventUpdate(appUser, fullRecord, reminderExisting, timezoneOffset);
+                                break;
+                            case "call":
+                                await CallUpdate(appUser, fullRecord, reminderExisting, timezoneOffset);
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
@@ -328,12 +362,14 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="eventNotification"></param>
         /// <returns></returns>
-        private static async Task EventUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
+        public async Task EventUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180)
         {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                 {
+                    _reminderRepository.CurrentUser = _currentUser;
                     if (record["event_reminder"].IsNullOrEmpty())
                     {
                         await _reminderRepository.Delete((int)reminderExisting.RecordId, (int)reminderExisting.ModuleId);
@@ -370,7 +406,6 @@ namespace PrimeApps.App.Notifications
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
                         Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser), dateOffset);
                     }
-
                 }
             }
 
@@ -379,12 +414,14 @@ namespace PrimeApps.App.Notifications
         /// <summary>
         /// Updates call typed notifications.
         /// </summary>
-        private static async Task CallUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
+        public async Task CallUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180)
         {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                 {
+                    _reminderRepository.CurrentUser = _currentUser;
                     if (record["call_time"].IsNullOrEmpty())
                     {
                         /// user removed call reminder, make it so.
@@ -416,10 +453,8 @@ namespace PrimeApps.App.Notifications
                         DateTimeOffset dateOffset = DateTime.SpecifyKind(callStartDate, DateTimeKind.Utc);
                         Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderDto, appUser), dateOffset);
                     }
-
                 }
             }
-
         }
 
         /// <summary>
@@ -430,12 +465,14 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="taskNotification"></param>
         /// <returns></returns>
-        private static async Task TaskUpdate(UserItem appUser, JObject record, Reminder reminderExisting, IConfiguration configuration, int timezoneOffset = 180)
+        public async Task TaskUpdate(UserItem appUser, JObject record, Reminder reminderExisting, int timezoneOffset = 180)
         {
-            using (var databaseContext = new TenantDBContext(appUser.TenantId, configuration))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
                 {
+                    _reminderRepository.CurrentUser = _currentUser;
                     if (!record["task_status"].IsNullOrEmpty() && (string)record["task_status"]["value"] == "completed")
                     {
                         /// even user completed task, we should also remove it.
@@ -511,7 +548,6 @@ namespace PrimeApps.App.Notifications
                     Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminder, appUser), dateOffset);
                 }
             }
-
         }
         #endregion
 

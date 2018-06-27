@@ -36,7 +36,5 @@ namespace PrimeApps.Auth.UI
 		[DataMember(Name = "last_name")]
 		public string LastName { get; set; }
 		//public string PhoneNumber { get; set; }
-
-		public int? AppId;
 	}
 }

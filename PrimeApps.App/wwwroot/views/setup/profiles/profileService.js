@@ -37,6 +37,7 @@ angular.module('primeapps')
 
                             angular.forEach(profile.permissions, function (permission) {
                                 var addPermission = true;
+
                                 switch (permission.type) {
                                     case 1:/// Document
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Documents');
@@ -46,7 +47,8 @@ angular.module('primeapps')
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Reports');
                                         permission.order = 1000;
                                         break;
-                                    case 0:/// Module
+
+                                    case 0 :/// Module
                                         var module = $filter('filter')($rootScope.modules, { id: permission.module_id }, true)[0];
 
                                         if (module && module.order > 0) {

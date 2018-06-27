@@ -63,9 +63,10 @@ namespace PrimeApps.App
 	        services.AddScoped<PrimeApps.App.Helpers.IWorkflowHelper, PrimeApps.App.Helpers.WorkflowHelper>();
 	        services.AddScoped<PrimeApps.App.Helpers.IPlatformWorkflowHelper, PrimeApps.App.Helpers.PlatformWorkflowHelper>();
 	        services.AddScoped<PrimeApps.App.Notifications.INotificationHelper, PrimeApps.App.Notifications.NotificationHelper>();
-	        //Background Tasks DI End
+	        services.AddScoped<PrimeApps.App.Notifications.IActivityHelper, PrimeApps.App.Notifications.ActivityHelper>();
+            //Background Tasks DI End
 
-			services.AddScoped<WarehouseHelper, WarehouseHelper>();
+            services.AddScoped<WarehouseHelper, WarehouseHelper>();
             services.AddScoped<Warehouse, Warehouse>();
             services.AddScoped<Jobs.Email.Email, Jobs.Email.Email>();
             services.AddScoped<Jobs.Messaging.EMail.EMailClient, Jobs.Messaging.EMail.EMailClient>();
