@@ -22,6 +22,7 @@ using PrimeApps.Model.Common.Cache;
 using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
 using Microsoft.Extensions.DependencyInjection;
+using Humanizer.Localisation;
 
 namespace PrimeApps.App.Helpers
 {
@@ -53,7 +54,6 @@ namespace PrimeApps.App.Helpers
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
-
                 //Set warehouse database name
                 warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
@@ -725,30 +725,33 @@ namespace PrimeApps.App.Helpers
 
                                 //checks custom domain 
                                 //TODO Removed
-                                 var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-								 if (!string.IsNullOrEmpty(instance.CustomDomain))
-								 {
-									 domain = "https://" + instance.CustomDomain + "/";
-								 }
+                                using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                                {
+                                    var app = _appRepository.Get(appUser.AppId);
+                                    if (app != null)
+                                    {
+                                        domain = "https://" + app.Setting.Domain + "/";
+                                    }
+                                }
 
-								 var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
+                                var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
-								 var emailData = new Dictionary<string, string>();
-								 emailData.Add("Subject", sendNotification.Subject);
-								 emailData.Add("Content", sendNotification.Message);
-								 emailData.Add("Url", url);
-								 
+                                var emailData = new Dictionary<string, string>();
+                                emailData.Add("Subject", sendNotification.Subject);
+                                emailData.Add("Content", sendNotification.Message);
+                                emailData.Add("Url", url);
+
 
 
                                 //TODO Removed
-                                var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
-								email.AddRecipient(recipient);
+                                //var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
+                                //email.AddRecipient(recipient);
 
-								if (sendNotification.Schedule.HasValue)
-									email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
+                                //if (sendNotification.Schedule.HasValue)
+                                //    email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-								email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
-							
+                                //email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+
                             }
                         }
 

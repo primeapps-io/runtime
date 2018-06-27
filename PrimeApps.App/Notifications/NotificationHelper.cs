@@ -22,8 +22,8 @@ namespace PrimeApps.App.Notifications
 
 	public interface INotificationHelper
 	{
-		Task Create(UserItem appUser, JObject record, Module module, int timezoneOffset);
-		Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timeZoneOffset = 180);
+		Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, int timezoneOffset);
+		Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, Warehouse warehouse, int timeZoneOffset = 180);
 		Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module);
 		Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module);
 		Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module);
@@ -34,13 +34,15 @@ namespace PrimeApps.App.Notifications
 	public class NotificationHelper : INotificationHelper
 	{
 		private CurrentUser _currentUser;
-		private IServiceScopeFactory _serviceScopeFactory;
+		private IActivityHelper _activityHelper;
+        private IServiceScopeFactory _serviceScopeFactory;
 		private IHttpContextAccessor _context;
 		private IConfiguration _configuration;
-		public NotificationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context)
+		public NotificationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IActivityHelper activityHelper)
 		{
 			_context = context;
-			_configuration = configuration;
+            _activityHelper = activityHelper;
+            _configuration = configuration;
 			_serviceScopeFactory = serviceScopeFactory;
 			_currentUser = UserHelper.GetCurrentUser(_context);
 		}
@@ -53,14 +55,14 @@ namespace PrimeApps.App.Notifications
 		/// <param name="record"></param>
 		/// <param name="module"></param>
 		/// <returns></returns>
-		public async Task Create(UserItem appUser, JObject record, Module module, int timezoneOffset)
+		public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, int timezoneOffset)
 		{
 			string moduleName = module?.Name?.ToLower();
 
 			switch (moduleName)
 			{
 				case "activities":
-					await Activity.Create(appUser, record, module, _configuration, timezoneOffset: timezoneOffset);
+					await _activityHelper.Create(appUser, record, module, warehouse, true, timezoneOffset: timezoneOffset);
 					break;
 			}
 		}
@@ -76,14 +78,14 @@ namespace PrimeApps.App.Notifications
 		/// <param name="module"></param>
 		/// <param name="currentRecord"></param>
 		/// <returns></returns>
-		public async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, int timeZoneOffset = 180)
+		public async Task Update(UserItem appUser, JObject record, JObject currentRecord, Module module, Warehouse warehouse, int timeZoneOffset = 180)
 		{
 			string moduleName = module?.Name?.ToLower();
 
 			switch (moduleName)
 			{
 				case "activities":
-					await Activity.Update(appUser, record, currentRecord, module, _configuration, timezoneOffset: timeZoneOffset);
+					await _activityHelper.Update(appUser, record, currentRecord, module, warehouse, timezoneOffset: timeZoneOffset);
 					break;
 			}
 
@@ -255,7 +257,7 @@ namespace PrimeApps.App.Notifications
 			switch (moduleName)
 			{
 				case "activities":
-					await Activity.Delete(appUser, record, module, _configuration);
+					await ActivityHelper.Delete(appUser, record, module, _configuration);
 					break;
 			}
 		}
