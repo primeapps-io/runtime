@@ -39,12 +39,12 @@ namespace PrimeApps.Model.Repositories
 		public async Task<PlatformUser> GetSettings(int platformUserId)
 		{
 			return await DbContext.Users
-				.Include(x=> x.Setting)
+				.Include(x => x.Setting)
 				.Where(x => x.Id == platformUserId)
 				.SingleOrDefaultAsync();
 		}
 
-		
+
 		public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
 		{
 			return await DbContext.Users.Include(x => x.TenantsAsUser.Where(z => z.TenantId == tenantId)).Where(x => x.Id == platformUserId).SingleOrDefaultAsync();
@@ -78,7 +78,7 @@ namespace PrimeApps.Model.Repositories
 		public async Task<Tenant> GetTenantWithOwner(int tenantId)
 		{
 			return await DbContext.Tenants
-				.Include(x=> x.Owner).ThenInclude(x=> x.Setting)
+				.Include(x => x.Owner).ThenInclude(x => x.Setting)
 				.Where(x => x.Id == tenantId).SingleOrDefaultAsync();
 		}
 
@@ -221,18 +221,6 @@ namespace PrimeApps.Model.Repositories
 
 			//return workgroup object.
 			return result;
-		}
-
-		public int GetAppIdByDomain(string domain)
-		{
-			var app = DbContext.AppSettings
-				.SingleOrDefault(x => x.Domain == domain);
-
-
-			if (app == null)
-				return 0;
-
-			return app.AppId;
 		}
 	}
 }

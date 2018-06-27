@@ -9,7 +9,7 @@ using System.Text;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-    public class ApplicationRepository : RepositoryBasePlatform, IApplicationRepository
+	public class ApplicationRepository : RepositoryBasePlatform, IApplicationRepository
 	{
 		public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 		public App Get(string domain)
@@ -45,6 +45,17 @@ namespace PrimeApps.Model.Repositories.Interfaces
 				.FirstOrDefault(x => x.Setting.AuthDomain == domain);
 
 			return app;
+		}
+
+		public int GetAppIdWithDomain(string domain)
+		{
+			var app = DbContext.AppSettings
+				.FirstOrDefault(x => x.Domain == domain);
+
+			if (app == null)
+				return 0;
+
+			return app.AppId;
 		}
 
 	}

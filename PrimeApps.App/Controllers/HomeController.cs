@@ -21,11 +21,13 @@ namespace PrimeApps.App.Controllers
         {
             if (string.IsNullOrEmpty(Request.Cookies["tenant_id"]))
             {
+                var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
                 var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                var appId = platformUserRepository.GetAppIdByDomain(Request.Host.Value);
 
-                if (appId == 0 && localAppId != 0)
-                    appId = localAppId;
+				var appId = localAppId != 0 ? localAppId : applicationRepository.GetAppIdWithDomain(Request.Host.Value);
+
+				if (appId == 0)
+					appId = 1;
 
                 var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 

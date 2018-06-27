@@ -4,7 +4,7 @@
 @{
 	ViewBag.Title = "Register";
 	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
-	
+
 	string customLanguage = null;
 	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
 
@@ -49,7 +49,7 @@
 	</span>
 
 	<form asp-route="Register" class="login-form" role="form" id="register-form">
-		<input type="hidden" asp-for="AppId" value="@ViewBag.AppInfo["appId"].Value">
+		<input type="hidden" name="AppId" value="@ViewBag.AppInfo["appId"].Value">
 		<div class="form-group">
 			<div class="input-group input-group-first">
 				<span class="input-group-addon">
@@ -67,15 +67,8 @@
 					<span class="flaticon-email26"></span>
 				</span>
 				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
-				@if (ViewBag.ReadOnly)
-				{
+				<input class="form-control" placeholder="@Localizer["Email"]" asp-for="Email" id="Email" autofocus autocomplete="off">
 
-					<input class="form-control" placeholder="@Localizer["Email"]" asp-for="Email" id="Email" autofocus autocomplete="off" readonly="readonly">
-				}
-				else
-				{
-					<input class="form-control" placeholder="@Localizer["Email"]" asp-for="Email" id="Email" autofocus autocomplete="off">
-				}
 			</div>
 		</div>
 		<div class="form-group">
