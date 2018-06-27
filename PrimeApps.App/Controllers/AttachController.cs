@@ -21,13 +21,15 @@ using PrimeApps.App.Extensions;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using System.Net.Http.Headers;
+using MimeMapping;
 
 namespace PrimeApps.App.Controllers
 {
     [Route("attach")]
     public class AttachController : MvcBaseController
     {
-        private IHostingEnvironment _hostingEnvironment;
+        
         private ITenantRepository _tenantRepository;
         private ITemplateRepository _templateRepository;
         private IModuleRepository _modulepository;
@@ -36,7 +38,7 @@ namespace PrimeApps.App.Controllers
 
         public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IConfiguration configuration,IHostingEnvironment hostingEnvironment)
         {
-            _hostingEnvironment = hostingEnvironment;
+           
             _tenantRepository = tenantRepository;
             _modulepository = moduleRepository;
             _recordpository = recordRepository;
@@ -49,6 +51,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_modulepository);
             SetCurrentUser(_recordpository);
+            SetCurrentUser(_tenantRepository);
             SetCurrentUser(_templateRepository);
             base.OnActionExecuting(context);
         }
@@ -329,19 +332,14 @@ namespace PrimeApps.App.Controllers
             }
 
             worksheetData.Cells.ImportDataTable(dt, true, "A1");
-            
+
             Stream memory = new MemoryStream();
+
             var fileName = nameModule + ".xlsx";
 
-            var sWebRootFolder = _hostingEnvironment.WebRootPath.Replace("wwwroot","");
-
-            workbook.Save(fileName,SaveFormat.Xlsx); 
-           
-            using (var stream = new FileStream(Path.Combine(sWebRootFolder, fileName), FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
+            workbook.Save(memory, SaveFormat.Xlsx);
             memory.Position = 0;
+            
             return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
