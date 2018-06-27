@@ -4,16 +4,12 @@
 @{
 	ViewBag.Title = "Register";
 	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
-
-	var app = "primeapps";
-	var logo = "";
+	
 	string customLanguage = null;
 	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
 
 	if (ViewBag.AppInfo != null)
 	{
-		logo = ViewBag.AppInfo["logo"].Value;
-		app = ViewBag.AppInfo["app"].Value;
 		ViewBag.Title = ViewBag.AppInfo["title"].Value;
 		customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
 	}
@@ -47,18 +43,20 @@
 
 
 <div class="col-md-4 login-sec">
-	<img class="logo-img" src="@logo" />
+	<img class="logo-img" src="@ViewBag.AppInfo["logo"].Value" />
 	<span class="free-info-header">
 		@Localizer["Free"]
 	</span>
 
 	<form asp-route="Register" class="login-form" role="form" id="register-form">
+		<input type="hidden" asp-for="AppId" value="@ViewBag.AppInfo["appId"].Value">
 		<div class="form-group">
 			<div class="input-group input-group-first">
 				<span class="input-group-addon">
 					<span class="flaticon-profile7"></span>
 				</span>
 				<!--<label for="exampleInputEmail1" class="text-uppercase">Ad</label>-->
+
 				<input class="form-control input-group-firstname" placeholder="@Localizer["FirstName"]" asp-for="FirstName" id="FirstName" autofocus autocomplete="off">
 				<input class="form-control" placeholder="@Localizer["LastName"]" asp-for="LastName" id="LastName" autofocus autocomplete="off">
 			</div>

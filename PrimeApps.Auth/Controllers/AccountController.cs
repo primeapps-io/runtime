@@ -45,6 +45,7 @@ namespace PrimeApps.Auth.UI
 		private readonly IEventService _events;
 		private IPlatformRepository _platformRepository;
 		private IPlatformUserRepository _platformUserRepository;
+		private IApplicationRepository _applicationRepository;
 		public IConfiguration Configuration { get; }
 
 		public AccountController(
@@ -56,17 +57,20 @@ namespace PrimeApps.Auth.UI
 			IEventService events,
 			IPlatformRepository platformRepository,
 			IPlatformUserRepository platformUserRepository,
+			IApplicationRepository applicationRepository,
 			IConfiguration configuration)
 		{
+			Configuration = configuration;
+
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_interaction = interaction;
 			_clientStore = clientStore;
 			_schemeProvider = schemeProvider;
 			_events = events;
-			Configuration = configuration;
 			_platformRepository = platformRepository;
 			_platformUserRepository = platformUserRepository;
+			_applicationRepository = applicationRepository;
 		}
 
 		/// <summary>
@@ -88,7 +92,7 @@ namespace PrimeApps.Auth.UI
 		/// Show login page
 		/// </summary>
 		[HttpGet]
-		public async Task<IActionResult> Login(string returnUrl, string success = "")
+		public async Task<IActionResult> Login(string returnUrl, string success = "", string appId = null)
 		{
 			/*Response.Cookies.Append(
 				CookieRequestCultureProvider.DefaultCookieName,
@@ -99,7 +103,7 @@ namespace PrimeApps.Auth.UI
 			//AuthHelper.SetLanguage(Response, Request, language);
 
 			ViewBag.Success = success;
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _platformRepository);
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository, appId);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
@@ -129,7 +133,7 @@ namespace PrimeApps.Auth.UI
 			//AuthHelper.SetLanguage(Response, Request, language);
 			//ViewBag.Language = language;
 
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, model.ReturnUrl, _platformRepository);
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, model.ReturnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 
 			if (button != "login")
@@ -183,11 +187,12 @@ namespace PrimeApps.Auth.UI
 		}
 
 		[HttpGet]
-		public IActionResult Register(string returnUrl = null)
+		public IActionResult Register(string returnUrl = null, string appId = null)
 		{
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _platformRepository);
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository, appId);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			ViewBag.ReadOnly = false;
+			ViewBag.AppId = appId ?? ViewBag.AppInfo["appId"];
 
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
@@ -197,7 +202,7 @@ namespace PrimeApps.Auth.UI
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Register(RegisterViewModel registerViewModel, string organization, string app, string returnUrl = null)
+		public async Task<IActionResult> Register(RegisterViewModel registerViewModel, string returnUrl = null)
 		{
 			registerViewModel.SendActivation = true;
 			registerViewModel.Culture = CultureInfo.CurrentCulture.Name;
@@ -207,8 +212,11 @@ namespace PrimeApps.Auth.UI
 				return View(registerViewModel);
 			}
 
-
-			var appInfo = _platformRepository.GetAppInfoWithAuth(Request.Host.Value);
+			App appInfo = null;
+			if(registerViewModel.AppId != null)
+				appInfo = _applicationRepository.Get(registerViewModel.AppId ?? 1);
+			else
+				appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
 
 			if (appInfo == null)
 			{

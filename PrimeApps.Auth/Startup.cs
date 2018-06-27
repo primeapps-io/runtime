@@ -119,6 +119,7 @@ namespace PrimeApps.Auth
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddTransient<IPlatformRepository, PlatformRepository>();
 			services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
+			services.AddTransient<IApplicationRepository, ApplicationRepository>();
 
 			var builder = services.AddIdentityServer(options =>
 				{

@@ -27,11 +27,13 @@ namespace PrimeApps.App.Controllers
         private IRecordRepository _recordRepository;
         private ITenantRepository _tenantRepository;
         private IPlatformUserRepository _platformUserRepository;
+		private IApplicationRepository _applicationRepository;
         private Warehouse _warehouse;
 
-        public PlatformController(IPlatformRepository platformRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse)
+        public PlatformController(IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IUserRepository userRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, ITenantRepository tenantRepository, IPlatformUserRepository platformUserRepository, Warehouse warehouse)
         {
             _platformRepository = platformRepository;
+			_applicationRepository = applicationRepository;
            /* _userRepository = userRepository;
             _profileRepository = profileRepository;
             _roleRepository = roleRepository;
@@ -44,7 +46,7 @@ namespace PrimeApps.App.Controllers
 		[Route("get_domain_info"), HttpGet]
 		public JsonResult GetApp([FromQuery(Name = "domain")] string domain)
 		{
-			var appEntity = _platformRepository.GetAppInfo(domain);
+			var appEntity = _applicationRepository.Get(domain);
 
 			return Json(appEntity);
 		}

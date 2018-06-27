@@ -15,37 +15,6 @@ namespace PrimeApps.Model.Repositories
     {
         public PlatformRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-		public App GetAppInfo(string domain)
-		{
-			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Setting.Domain == domain);
-
-			return app;
-		}
-
-		public App GetAppInfoWithAuth(string domain)
-		{
-			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Setting.AuthDomain == domain);
-
-			return app;
-		}
-
-		public App GetAppInfo(int id)
-		{
-			var app = DbContext.Apps.Include(x => x.Setting).SingleOrDefault(x => x.Id == id);
-
-			return app;
-		}
-
-		public TeamApp GetAppInfo(string organizationName, string appName)
-		{
-			var app = DbContext.TeamApps
-				.Include(y => y.App).ThenInclude(x => x.Setting)
-				.Include(y => y.Team).ThenInclude(x => x.Organization)
-				.SingleOrDefault(x => x.Team.Organization.Name == organizationName && x.App.Name == appName);
-
-			return app == null ? null : app;
-		}
-
 		public Tenant GetTenant(int tenantId)
 		{
 			var tenant = DbContext.Tenants

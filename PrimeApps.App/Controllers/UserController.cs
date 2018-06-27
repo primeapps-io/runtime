@@ -41,13 +41,14 @@ namespace PrimeApps.App.Controllers
         private IRecordRepository _recordRepository;
         private IPlatformUserRepository _platformUserRepository;
         private IPlatformRepository _platformRepository;
+		private IApplicationRepository _applicationRepository;
         private ITenantRepository _tenantRepository;
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
         public IBackgroundTaskQueue Queue { get; }
-        public UserController(IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration)
+        public UserController(IApplicationRepository applicationRepository, IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -59,8 +60,9 @@ namespace PrimeApps.App.Controllers
             _platformRepository = platformRepository;
             _tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
+			_applicationRepository = applicationRepository;
 
-            Queue = queue;
+			Queue = queue;
 
             //Set warehouse database name Ofisim to integration
             //_warehouse.DatabaseName = "Ofisim";
@@ -508,7 +510,7 @@ namespace PrimeApps.App.Controllers
                 applicationUser = await _platformUserRepository.Get(addUserBindingModel.Email);
             }
 
-            var appInfo = _platformRepository.GetAppInfo(appId);
+            var appInfo = _applicationRepository.Get(appId);
 
             using (var httpClient = new HttpClient())
             {
