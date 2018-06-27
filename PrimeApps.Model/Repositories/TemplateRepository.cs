@@ -50,7 +50,7 @@ namespace PrimeApps.Model.Repositories
             return await templates.ToListAsync();
         }
 
-        public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelTemplateType = TemplateType.NotSet, string moduleName = "")
+        public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
         {
 
             var templates = DbContext.Templates
@@ -58,9 +58,8 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Permissions)
                 .Where(x => x.Deleted == false);
 
-            if (templateType != TemplateType.NotSet && excelTemplateType != TemplateType.NotSet)
-                templates = templates.Where(x => x.TemplateType == templateType)
-                    .Where(x => x.TemplateType == excelTemplateType);
+            if (templateType != TemplateType.NotSet && excelType != TemplateType.NotSet)
+                templates = templates.Where(x => x.TemplateType == templateType || x.TemplateType == excelType);
 
             if (!string.IsNullOrEmpty(moduleName))
                 templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
