@@ -35,8 +35,8 @@ namespace PrimeApps.App.Controllers
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-	    private IRecordHelper _recordHelper;
-	    private IModuleHelper _moduleHelper;
+        private IRecordHelper _recordHelper;
+        private IModuleHelper _moduleHelper;
         public OutlookController(ISettingRepository settingRepository, IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, IPicklistRepository picklistRepository, IRecordRepository recordRepository, Model.Helpers.Warehouse warehouse, IMenuRepository menuRepository, IRecordHelper recordHelper, IModuleHelper moduleHelper, IConfiguration configuration)
         {
             _settingRepository = settingRepository;
@@ -48,8 +48,8 @@ namespace PrimeApps.App.Controllers
             _warehouse = warehouse;
             _menuRepository = menuRepository;
 
-	        _recordHelper = recordHelper;
-	        _moduleHelper = moduleHelper;
+            _recordHelper = recordHelper;
+            _moduleHelper = moduleHelper;
             _configuration = configuration;
         }
 
@@ -468,8 +468,18 @@ namespace PrimeApps.App.Controllers
                     Operator = Operator.Is,
                     Value = (string)mail["sender"],
                     No = 1
+
+                },
+                new Filter
+                {
+                    Field = outlookEmailFieldSetting.Value,
+                    Operator = Operator.Is,
+                    Value = (string)mail["recipient"],
+                    No = 1
                 }}
             };
+
+            findRequest.LogicType = LogicType.Or;
 
             var records = _recordRepository.Find(outlookModuleSetting.Value, findRequest);
 

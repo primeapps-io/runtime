@@ -31,9 +31,9 @@ angular.module('primeapps')
                         $scope.pagingIcon = 'fa-chevron-right';
                         $scope.currentPage = 1;
                         var copyUsers = angular.copy($rootScope.users);
-                        $scope.users = $filter('filter')(copyUsers, { IsActive: 'true' });
-                        $scope.users = $filter('orderBy')($scope.users, 'FullName');
-                        var userAll = { id: 0, FullName: $filter('translate')('Tasks.AllUsers') };
+                        $scope.users = $filter('filter')(copyUsers, { is_active: 'true' });
+                        $scope.users = $filter('orderBy')($scope.users, 'full_name');
+                        var userAll = { id: 0, full_name: $filter('translate')('Tasks.AllUsers') };
                         $scope.users.unshift(userAll);
                         $scope.filter.assignedTo = userAll;
 
@@ -159,7 +159,7 @@ angular.module('primeapps')
                             ModuleService.updateRecord('activities', taskModel)
                                 .then(function () {
                                     task['owner.users.id'] = task.assignedTo.id;
-                                    task['owner.users.full_name'] = task.assignedTo.FullName;
+                                    task['owner.users.full_name'] = task.assignedTo.full_name;
 
                                     TaskService.processTask(task, $scope.taskStatusCompletedPicklistItem);
 
