@@ -28,30 +28,30 @@ angular.module('primeapps')
                         }
 
                         if (clearPermissions) {
-                            delete profile.permissions;
+                            if (profile.permissions) {
+                                profile.permissions = [];
+                            }
                         }
                         else {
                             var permissions = [];
 
                             angular.forEach(profile.permissions, function (permission) {
                                 var addPermission = true;
-
-                                switch (permission.Type) {
+                                switch (permission.type) {
                                     case 1:/// Document
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Documents');
-                                        permission.Order = 999;
+                                        permission.order = 999;
                                         break;
                                     case 2:
                                         permission.EntityTypeName = $filter('translate')('Layout.Menu.Reports');
-                                        permission.Order = 1000;
+                                        permission.order = 1000;
                                         break;
-
-                                    case 0 :/// Module
-                                        var module = $filter('filter')($rootScope.modules, { id: permission.ModuleId }, true)[0];
+                                    case 0:/// Module
+                                        var module = $filter('filter')($rootScope.modules, { id: permission.module_id }, true)[0];
 
                                         if (module && module.order > 0) {
                                             permission.EntityTypeName = module["label_" + $rootScope.language + "_plural"];
-                                            permission.Order = module.order;
+                                            permission.order = module.order;
                                         }
                                         else {
                                             addPermission = false;
