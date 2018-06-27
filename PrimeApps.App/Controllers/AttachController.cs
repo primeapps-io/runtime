@@ -413,8 +413,14 @@ namespace PrimeApps.App.Controllers
 
             worksheetData.Cells.ImportDataTable(dt, true, "A1");
 
-             workbook.Save(nameModule + ".xlsx",new OoxmlSaveOptions());
-            return Ok();
+            Stream memory = new MemoryStream();
+
+            var fileName = nameModule + ".xlsx";
+
+            workbook.Save(memory, SaveFormat.Xlsx);
+            memory.Position = 0;
+
+            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         //public async Task<FileStreamResult> ExportExcelNoData(string module, int templateId, string templateName, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
