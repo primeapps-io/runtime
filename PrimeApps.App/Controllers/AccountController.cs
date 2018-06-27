@@ -47,6 +47,7 @@ namespace PrimeApps.App.Controllers
     {
         private const string LocalLoginProvider = "Local";
         private IRecordRepository _recordRepository;
+        private IApplicationRepository _applicationRepository;
         private IPlatformRepository _platformRepository;
         private IPlatformUserRepository _platformUserRepository;
         private ITenantRepository _tenantRepository;
@@ -62,8 +63,9 @@ namespace PrimeApps.App.Controllers
 	    private IDocumentHelper _documentHelper;
 
 		public IBackgroundTaskQueue Queue { get; }
-		public AccountController(IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IPlatformWorkflowRepository platformWorkflowRepository, IPlatformWorkflowHelper platformWorkflowHelper, IDocumentHelper documentHelper)
+		public AccountController(IApplicationRepository applicationRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IPlatformWorkflowRepository platformWorkflowRepository, IPlatformWorkflowHelper platformWorkflowHelper, IDocumentHelper documentHelper)
 		{
+			_applicationRepository = applicationRepository;
 			_recordRepository = recordRepository;
 			_warehouse = warehouse;
 			_platformUserRepository = platformUserRepository;
@@ -92,7 +94,7 @@ namespace PrimeApps.App.Controllers
 
             var userExist = true;
             PlatformUser user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
-            var app = _platformRepository.GetAppInfo(activateBindingModel.AppId);
+            var app = _applicationRepository.Get(activateBindingModel.AppId);
 
             if (user != null)
             {
@@ -275,7 +277,7 @@ namespace PrimeApps.App.Controllers
 			if(HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
 				return Unauthorized();
 
-			var appInfo = _platformRepository.GetAppInfo(Request.Host.Value);
+			var appInfo = _applicationRepository.Get(Request.Host.Value);
 			using (var httpClient = new HttpClient())
 			{
 
@@ -298,7 +300,7 @@ namespace PrimeApps.App.Controllers
 		[Route("logout")]
 		public async Task<IActionResult> Logout()
 		{
-			var appInfo = _platformRepository.GetAppInfo(Request.Host.Value);
+			var appInfo = _applicationRepository.Get(Request.Host.Value);
 
 			Response.Cookies.Delete("tenant_id");
 			await HttpContext.SignOutAsync();

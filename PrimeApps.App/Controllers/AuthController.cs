@@ -47,21 +47,6 @@ namespace PrimeApps.App.Controllers
             return Redirect(Request.Scheme + "://" + Request.Host.Value + "#access_token=" + token);
         }
 
-        [Authorize]
-        public ActionResult Test()
-        {
-            //return RedirectToLocal(returnUrl);
-            /*var tokenClient = new TokenClient("http://localhost:5000/connect/token", "primeapps.mvc", "secret");
-			var tokenResponse = await tokenClient.RequestClientCredentialsAsync("api1");
-
-			var client = new HttpClient();
-			client.SetBearerToken(tokenResponse.AccessToken);
-			var content = await client.GetStringAsync("http://localhost:5002/api/User/get_all");
-
-			ViewBag.Json = JArray.Parse(content).ToString();*/
-            return View();
-        }
-
         public async Task<ActionResult> Login(string returnUrl, string language = null, string error = null, string success = "")
         {
             var lang = GetLanguage();

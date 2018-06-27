@@ -29,13 +29,16 @@ namespace PrimeApps.Auth.Controllers
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private IPlatformRepository _platformRepository;
+		private IApplicationRepository _applicationRepository;
 		private readonly IEventService _events;
 		public UserController(
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager,
 			IEventService events,
-			IPlatformRepository platformRepository)
+			IPlatformRepository platformRepository,
+			IApplicationRepository applicationRepository)
 		{
+			_applicationRepository = applicationRepository;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_platformRepository = platformRepository;
@@ -73,7 +76,7 @@ namespace PrimeApps.Auth.Controllers
 				return BadRequest(ModelState);
 
 
-			var appInfo = _platformRepository.GetAppInfo(organization, app);
+			var appInfo = _applicationRepository.Get(organization, app);
 
 			if (appInfo == null)
 			{
