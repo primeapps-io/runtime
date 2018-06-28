@@ -7,70 +7,66 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-    public class HomeController : Controller
-    {
-        private IConfiguration _configuration;
+	public class HomeController : Controller
+	{
+		private IConfiguration _configuration;
 
-        public HomeController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+		public HomeController(IConfiguration configuration)
+		{
+			_configuration = configuration;
+		}
 
-        [Authorize]
-        public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
-        {
-            if (string.IsNullOrEmpty(Request.Cookies["tenant_id"]))
-            {
-                var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
-                var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+		[Authorize]
+		public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
+		{
+			var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
+			var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-				if (Request.Host.Value.Contains("localhost") && localAppId == 0)
-					localAppId = 1;
+			if (Request.Host.Value.Contains("localhost") && localAppId == 0)
+				localAppId = 1;
 
-				var appId = localAppId != 0 ? localAppId : applicationRepository.GetAppIdWithDomain(Request.Host.Value);
+			var appId = localAppId != 0 ? localAppId : applicationRepository.GetAppIdWithDomain(Request.Host.Value);
 
-				if (appId == 0)
-					appId = 1;
+			if (appId == 0)
+				appId = 1;
 
-                var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+			var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
-                if (tenant == null)
-                    return BadRequest();
+			if (tenant == null)
+				return BadRequest();
 
+			Response.Cookies.Append("tenant_id", tenant.Id.ToString());
 
-                Response.Cookies.Append("tenant_id", tenant.Id.ToString());
-            }
+			return View();
+		}
 
-            return View();
-        }
+		public async Task<ActionResult> Preview()
+		{
+			await SetValues();
 
-        public async Task<ActionResult> Preview()
-        {
-            await SetValues();
+			return View("Index");
+		}
 
-            return View("Index");
-        }
+		private async Task SetValues()
+		{
+			var lang = Request.Cookies["_lang"];
+			var language = lang ?? "tr";
 
-        private async Task SetValues()
-        {
-            var lang = Request.Cookies["_lang"];
-            var language = lang ?? "tr";
+			var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language, _configuration);
 
-            var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language, _configuration);
-
-            if (useCdn)
-            {
-                var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
-                var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-                ViewBag.CdnUrlDynamic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionDynamic + "/";
-                ViewBag.CdnUrlStatic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionStatic + "/";
-            }
-            else
-            {
-                ViewBag.CdnUrlDynamic = "";
-                ViewBag.CdnUrlStatic = "";
-            }
-        }
-    }
+			if (useCdn)
+			{
+				var versionDynamic = System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetName().Version.ToString();
+				var versionStatic = ((AssemblyVersionStaticAttribute)System.Reflection.Assembly.GetAssembly(typeof(HomeController)).GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+				ViewBag.CdnUrlDynamic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionDynamic + "/";
+				ViewBag.CdnUrlStatic = _configuration.GetSection("AppSettings")["CdnUrl"] + "/" + versionStatic + "/";
+			}
+			else
+			{
+				ViewBag.CdnUrlDynamic = "";
+				ViewBag.CdnUrlStatic = "";
+			}
+		}
+	}
 }

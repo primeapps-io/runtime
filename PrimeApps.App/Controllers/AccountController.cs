@@ -271,11 +271,10 @@ namespace PrimeApps.App.Controllers
 		[Route("change_password")]
 		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordBindingModel changePasswordBindingModel)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
 			if(HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
 				return Unauthorized();
+
+			changePasswordBindingModel.Email = HttpContext.User.FindFirst("email").Value;
 
 			var appInfo = _applicationRepository.Get(Request.Host.Value);
 			using (var httpClient = new HttpClient())
@@ -287,7 +286,7 @@ namespace PrimeApps.App.Controllers
 				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
 				var json = JsonConvert.SerializeObject(changePasswordBindingModel);
-				var response = await httpClient.PostAsJsonAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
 				if (!response.IsSuccessStatusCode)
 					return BadRequest(response);

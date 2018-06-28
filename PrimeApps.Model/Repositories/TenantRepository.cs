@@ -76,7 +76,9 @@ namespace PrimeApps.Model.Repositories
 
 		public async Task<IList<TenantInfo>> GetTenantInfo(int tenantId)
         {
-			var a = await DbContext.Tenants.Where(x => x.Id == tenantId)
+			var a = await DbContext.Tenants
+				.Include(x => x.License)
+				.Where(x => x.Id == tenantId)
 				 .Select(t => new TenantInfo() //get instances of this user.
 				 {
 					 tenantId = t.Id,
@@ -90,6 +92,7 @@ namespace PrimeApps.Model.Repositories
 					 //hasPhone = t.HasPhone,
 					 hasAnalytics = t.License.AnalyticsLicenseCount > 0,
 					 owner = t.Owner.Id,
+					 licenses = t.License,
 
 					 users = t.TenantUsers.Select(u => new UserList //get users for the instance.
 					 {

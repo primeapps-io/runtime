@@ -213,7 +213,7 @@ namespace PrimeApps.Auth.UI
 			}
 
 			App appInfo = null;
-			if(!string.IsNullOrEmpty(Request.Form["AppId"].ToString()))
+			if (!string.IsNullOrEmpty(Request.Form["AppId"].ToString()))
 				appInfo = _applicationRepository.Get(int.Parse(Request.Form["AppId"].ToString()));
 			else
 				appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
@@ -223,7 +223,7 @@ namespace PrimeApps.Auth.UI
 				ViewBag.Error = "appNotAvailable";
 				return View(registerViewModel);
 			}
-			
+
 			var userCheck = _userManager.FindByNameAsync(registerViewModel.Email).Result;
 
 			if (userCheck == null)
@@ -327,7 +327,7 @@ namespace PrimeApps.Auth.UI
 
 			if (user == null)
 				throw new ApplicationException($"Unable to load user with user '{email}'.");
-			
+
 			var result = await _userManager.ConfirmEmailAsync(user, code);
 
 			if (!result.Succeeded)
@@ -494,6 +494,21 @@ namespace PrimeApps.Auth.UI
 			return Redirect("~/");
 		}
 
+
+		[HttpGet]
+		public async Task<IActionResult> Info(string returnUrl)
+		{
+			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
+			ViewBag.Language = ViewBag.AppInfo["language"].Value;
+
+			if (User?.Identity.IsAuthenticated == true)
+				return View();
+
+
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+		}
+
 		/// <summary>
 		/// Show logout page
 		/// </summary>
@@ -512,7 +527,7 @@ namespace PrimeApps.Auth.UI
 
 			return View(vm);
 		}
-
+		
 		/// <summary>
 		/// Handle logout page postback
 		/// </summary>
@@ -522,6 +537,8 @@ namespace PrimeApps.Auth.UI
 		{
 			// build a model so the logged out page knows what to display
 			var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
+
+			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
 
 			if (User?.Identity.IsAuthenticated == true)
 			{
@@ -543,8 +560,8 @@ namespace PrimeApps.Auth.UI
 				// this triggers a redirect to the external provider for sign-out
 				return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
 			}
-
-			return View("LoggedOut", vm);
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+			//return View("LoggedOut", vm);
 		}
 
 		/*****************************************/
