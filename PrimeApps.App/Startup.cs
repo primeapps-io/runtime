@@ -93,6 +93,11 @@ namespace PrimeApps.App
                 .AddJsonOptions(opt =>
                 {
                     opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    opt.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+                    opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    opt.SerializerSettings.DateParseHandling = DateParseHandling.None;
+                    opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+
                     opt.SerializerSettings.ContractResolver = new DefaultContractResolver
                     {
                         NamingStrategy = new SnakeCaseNamingStrategy(),

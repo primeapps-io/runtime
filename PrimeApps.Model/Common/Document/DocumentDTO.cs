@@ -60,13 +60,13 @@ namespace PrimeApps.Model.Common.Document
         /// Parent entity id of the document.
         /// </summary>
         [DataMember]
-        public Guid ParentEntityID { get; set; }
+        public int ParentEntityID { get; set; }
 
         /// <summary>
         /// Parent entity type of the document.
         /// </summary>
         [DataMember]
-        public Guid ParentEntityType { get; set; }
+        public int ParentEntityType { get; set; }
 
         /// <summary>
         /// Which record is associated with this document.

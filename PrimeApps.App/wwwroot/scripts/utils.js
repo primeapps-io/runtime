@@ -687,7 +687,7 @@ angular.module('primeapps')
                     return true;
                 },
                 hasDocumentsPermission: function (operation) {
-                    var permission = $filter('filter')($rootScope.user.profile.permissions, { Type: 1 })[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, { type: 1 })[0];
 
                     if (!permission)
                         return false;
@@ -972,7 +972,7 @@ angular.module('primeapps')
                                 picklistItem.system_code = picklistResponseItem.system_code;
                                 picklistItem.order = picklistResponseItem.order;
                                 picklistItem.inactive = picklistResponseItem.inactive;
-                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenantLanguage];
+                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenant_language];
 
                                 picklistItems.push(picklistItem);
                             }
