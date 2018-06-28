@@ -24,6 +24,9 @@ namespace PrimeApps.App.Controllers
                 var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
                 var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
+				if (Request.Host.Value.Contains("localhost") && localAppId == 0)
+					localAppId = 1;
+
 				var appId = localAppId != 0 ? localAppId : applicationRepository.GetAppIdWithDomain(Request.Host.Value);
 
 				if (appId == 0)
