@@ -30,7 +30,7 @@ angular.module('primeapps')
                         $scope.moduleId = $scope.module.id;
 
 
-                        var instanceId = $scope.$root.workgroup.instanceID;
+                        var tenant_id = $scope.$root.workgroup.tenant_id;
                         var entityId = $scope.entityId;
                         var moduleId = $scope.moduleId;
 
@@ -52,7 +52,7 @@ angular.module('primeapps')
                             $scope.documentUpdating = true;
                             var documentName = $scope.editedDocument.NamePlain.trim() + '.' + $scope.editedDocument.Extension;
 
-                            DocumentService.update($scope.editedDocument.id, $scope.$root.workgroup.instanceID, documentName, $scope.editedDocument.description, $scope.editedDocument.RecordId, $scope.editedDocument.ModuleId)
+                            DocumentService.update($scope.editedDocument.id, $scope.$root.workgroup.tenant_id, documentName, $scope.editedDocument.description, $scope.editedDocument.RecordId, $scope.editedDocument.ModuleId)
                                 .then(function () {
                                     $scope.documentUpdating = false;
                                     $scope.editedDocument = null;
@@ -67,7 +67,7 @@ angular.module('primeapps')
                             DocumentService.remove(document)
                                 .then(function () {
                                     if ($scope.isAll) {
-                                        DocumentService.getDocuments(instanceId, entityId, moduleId)
+                                        DocumentService.getDocuments(tenant_id, entityId, moduleId)
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
@@ -77,7 +77,7 @@ angular.module('primeapps')
                                             });
                                     }
                                     else {
-                                        DocumentService.getEntityDocuments(instanceId, entityId, moduleId)
+                                        DocumentService.getEntityDocuments(tenant_id, entityId, moduleId)
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
@@ -192,8 +192,8 @@ angular.module('primeapps')
         }
     ])
 
-    .directive('documentForm', ['config', 'guidEmpty', '$localStorage', '$filter', '$q', 'ngToast', 'helper', 'FileUploader', 'resizeService', 'DocumentService', '$timeout', '$stateParams',
-        function (config, guidEmpty, $localStorage, $filter, $q, ngToast, helper, FileUploader, resizeService, DocumentService, $timeout, $stateParams) {
+    .directive('documentForm', ['config', 'guidEmpty', '$localStorage', '$filter', '$q', 'ngToast', 'helper', 'FileUploader', 'resizeService', 'DocumentService', '$timeout', '$stateParams', '$cookies',
+        function (config, guidEmpty, $localStorage, $filter, $q, ngToast, helper, FileUploader, resizeService, DocumentService, $timeout, $stateParams, $cookies) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -212,7 +212,7 @@ angular.module('primeapps')
                 controller: ['$scope', '$timeout',
                     function ($scope, $timeout) {
                         $scope.documentCreating = false;
-                        var instanceId = $scope.$root.workgroup.instanceID;
+                        var tenant_id = $scope.$root.workgroup.tenant_id;
                         var entityId = $scope.entityId;
                         var stateType = $stateParams.type;
                         $scope.module = $filter('filter')($scope.$root.modules, { name: stateType }, true)[0];
@@ -222,26 +222,27 @@ angular.module('primeapps')
                             url: config.apiUrl + 'Document/upload_large',
                             headers: {
                                 'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                "Content-Type": "application/json", "Accept": "application/json"
+                                "Content-Type": "application/json", "Accept": "application/json",
+                                'X-Tenant-Id': $cookies.get('tenant_id')
                             }
                         });
 
                         uploader.onCompleteItem = function (fileItem, response, status, headers) {
                             if (status === 200) {
-                                var uniqueName = response.UniqueName;
-                                var chunkSize = response.Chunks;
-                                var fileName = fileItem.file.name;
-                                var mimeType = response.ContentType;
-                                var fileSize = fileItem.file.size;
+                                var uniqueName = response.unique_name;
+                                var chunkSize = response.chunks;
+                                var fileName = fileItem.file.name
+                                var mimeType = response.content_type;
+                                var fileSize = fileItem._file.size;
                                 var description = '';
 
                                 if (!$scope.customUploader) {
-                                    DocumentService.create(instanceId, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize)
+                                    DocumentService.create(tenant_id, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize)
                                 }
                                 else {
                                     entityId = $scope.entityIdFunc();
 
-                                    DocumentService.create(instanceId, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize);
+                                    DocumentService.create(tenant_id, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize);
                                 }
                             }
                         };
@@ -250,7 +251,7 @@ angular.module('primeapps')
                             uploader.onCompleteAll = function () {
                                 $timeout(function () {
                                     if ($scope.isAll) {
-                                        DocumentService.getDocuments(instanceId, entityId, moduleId)
+                                        DocumentService.getDocuments(tenant_id, entityId, moduleId)
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
@@ -258,7 +259,7 @@ angular.module('primeapps')
                                             });
                                     }
                                     else {
-                                        DocumentService.getEntityDocuments(instanceId, entityId, moduleId)
+                                        DocumentService.getEntityDocuments(tenant_id, entityId, moduleId)
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;

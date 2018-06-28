@@ -5,19 +5,19 @@ angular.module('primeapps')
     .factory('DocumentService', ['$http', 'config', 'guidEmpty', '$filter', 'helper',
         function ($http, config, guidEmpty, $filter, helper) {
             return {
-                getDocuments: function (instanceId, recordId, moduleId) {
+                getDocuments: function (tenantId, recordId, moduleId) {
                     return $http.post(config.apiUrl + 'Document/GetDocuments', {
-                        RecordId: recordId,
-                        InstanceID: instanceId,
-                        ModuleId:moduleId
+                        record_id: recordId,
+                        tenant_id: tenantId,
+                        module_id:moduleId
                     });
                 },
 
-                getEntityDocuments: function (instanceId, recordId, moduleId) {
+                getEntityDocuments: function (tenantId, recordId, moduleId) {
                     return $http.post(config.apiUrl + 'Document/GetEntityDocuments', {
-                        InstanceID: instanceId,
-                        ModuleId: moduleId,
-                        RecordId: recordId
+                        tenant_id: tenantId,
+                        module_id: moduleId,
+                        record_id: recordId
                     });
                 },
                 getDocument: function (fileId) {
@@ -37,28 +37,28 @@ angular.module('primeapps')
                     });
                 },
 
-                create: function (instanceId, uniqueName, fileName, mimeType, fileSize, description, recordId, moduleId, chunkSize) {
+                create: function (tenant_id, uniqueName, fileName, mimeType, fileSize, description, recordId, moduleId, chunkSize) {
                     return $http.post(config.apiUrl + 'Document/Create', {
-                        UniqueFileName: uniqueName,
-                        FileName: fileName,
-                        MimeType: mimeType,
-                        FileSize: fileSize,
-                        ChunkSize: chunkSize || 1,
-                        Description: description,
-                        InstanceID: instanceId,
-                        RecordId : recordId,
-                        ModuleId : moduleId
+                        unique_file_name: uniqueName,
+                        file_name: fileName,
+                        mime_type: mimeType,
+                        file_size: fileSize,
+                        chunk_size: chunkSize || 1,
+                        description: description,
+                        tenant_id: tenant_id,
+                        record_id : recordId,
+                        module_id : moduleId
                     });
                 },
 
                 update: function (id, instanceId, name, description, recordId, moduleId) {
                     return $http.post(config.apiUrl + 'Document/Modify', {
                         id: id,
-                        FileName: name,
-                        Description: description,
-                        InstanceID: instanceId,
-                        RecordId:recordId,
-                        ModuleId:moduleId
+                        file_name: name,
+                        description: description,
+                        instance_id: instanceId,
+                        record_id:recordId,
+                        module_id:moduleId
                     });
                 },
 

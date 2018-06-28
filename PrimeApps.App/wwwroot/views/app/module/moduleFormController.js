@@ -579,7 +579,8 @@ angular.module('primeapps')
                 url: config.apiUrl + 'Document/upload_large',
                 headers: {
                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                    "Content-Type": "application/json", "Accept": "application/json"
+                    "Content-Type": "application/json", "Accept": "application/json",
+                    'X-Tenant-Id': $cookies.get('tenant_id')
                 }
             });
 
@@ -2229,7 +2230,7 @@ angular.module('primeapps')
                 if (!helper.hasDocumentsPermission($scope.operations.read))
                     return;
 
-                DocumentService.getEntityDocuments($rootScope.workgroup.instanceID, $scope.id, $scope.module.id)
+                DocumentService.getEntityDocuments($rootScope.workgroup.tenant_id, $scope.id, $scope.module.id)
                     .then(function (data) {
                         $scope.documentsResultSet = DocumentService.processDocuments(data.data, $rootScope.users);
                         $scope.documents = $scope.documentsResultSet.documentList;

@@ -936,7 +936,7 @@ angular.module('primeapps')
                 if (!helper.hasDocumentsPermission($scope.operations.read))
                     return;
 
-                DocumentService.getEntityDocuments($rootScope.workgroup.instanceID, $scope.id, $scope.module.id)
+                DocumentService.getEntityDocuments($rootScope.workgroup.tenant_id, $scope.id, $scope.module.id)
                     .then(function (data) {
                         $scope.documentsResultSet = DocumentService.processDocuments(data.data, $rootScope.users);
                         $scope.documents = $scope.documentsResultSet.documentList;

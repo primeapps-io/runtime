@@ -30,6 +30,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using PrimeApps.App.Storage;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.App.Models;
 
 namespace PrimeApps.App.Controllers
 {
@@ -458,7 +459,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="InstanceID">The instance identifier.</param>
         /// <returns>IList{DTO.DocumentResult}.</returns>
         [Route("GetEntityDocuments"), HttpPost]
-        public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentRequest req)
+        public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentBindingModels req)
         {
             //validate instance id for the request.
             if (AppUser.TenantId != req.TenantId)
