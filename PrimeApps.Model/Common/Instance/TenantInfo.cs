@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.Runtime.Serialization;
 using PrimeApps.Model.Common.User;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.Model.Common.Instance
 {
@@ -39,10 +40,13 @@ namespace PrimeApps.Model.Common.Instance
         [DataMember]
         public string logo { get; set; }
 
-        /// <summary>
-        /// Logo Url
-        /// </summary>
-        [DataMember]
+		[DataMember]
+		public TenantLicense licenses { get; set; }
+
+		/// <summary>
+		/// Logo Url
+		/// </summary>
+		[DataMember]
         public string logoUrl { get; set; }
 
         /// <summary>

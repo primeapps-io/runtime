@@ -199,13 +199,13 @@ namespace PrimeApps.Auth.Controllers
 			return Ok();
 		}
 
-		[Route("change_password"), HttpPost, Authorize]
+		[Route("change_password"), HttpPost]
 		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel)
 		{
-			if (HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
+			if (!ModelState.IsValid)
 				return Unauthorized();
 
-			var user = await _userManager.FindByEmailAsync(HttpContext.User.FindFirst("email").Value);
+			var user = await _userManager.FindByEmailAsync(changePasswordViewModel.Email);
 			var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
 
 			return result.Succeeded ? Ok() : StatusCode(400);

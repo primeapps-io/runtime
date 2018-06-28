@@ -292,8 +292,8 @@ namespace PrimeApps.App.Controllers
                 acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture, _configuration);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
                 acc.imageUrl = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
-                //acc.user.userLicenseCount = AppUser.UserLicenseCount;
-                //acc.user.moduleLicenseCount = AppUser.ModuleLicenseCount;
+                acc.user.userLicenseCount = tenant[0].licenses.UserLicenseCount;
+                acc.user.moduleLicenseCount = tenant[0].licenses.ModuleLicenseCount;
                 //acc.user.isPaidCustomer = AppUser.IsPaidCustomer;
                 //acc.user.deactivated = AppUser.IsDeactivated;
                 acc.user.tenantId = AppUser.TenantId;

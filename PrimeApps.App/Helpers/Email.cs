@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Hangfire;
+﻿using Hangfire;
+using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Jobs.Messaging;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Common.Resources;
-using System.Reflection;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PrimeApps.App.Helpers
 {
@@ -338,7 +337,7 @@ namespace PrimeApps.App.Helpers
                     QueueTime = DateTime.UtcNow,
                     SendOn = SendOn
                 };
-                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
+                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
             }
         }
 
@@ -360,7 +359,7 @@ namespace PrimeApps.App.Helpers
                     QueueTime = DateTime.UtcNow,
                     SendOn = SendOn
                 };
-                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
+                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
             }
         }
 
@@ -406,7 +405,7 @@ namespace PrimeApps.App.Helpers
                     QueueTime = DateTime.UtcNow,
                     SendOn = SendOn
                 };
-                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary), TimeSpan.FromSeconds(5));
+                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary));
             }
         }
 

@@ -8,6 +8,9 @@ namespace PrimeApps.Auth.UI
 {
     public class ChangePasswordViewModel
     {
+		[Required]
+		public string Email { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]

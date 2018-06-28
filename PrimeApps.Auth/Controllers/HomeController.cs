@@ -4,6 +4,7 @@
 
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Mvc;
+using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.UI
@@ -12,15 +13,19 @@ namespace PrimeApps.Auth.UI
     public class HomeController : Controller
     {
         private readonly IIdentityServerInteractionService _interaction;
+		private IApplicationRepository _applicationRepository;
 
-        public HomeController(IIdentityServerInteractionService interaction)
+        public HomeController(IIdentityServerInteractionService interaction, IApplicationRepository applicationRepository)
         {
+			_applicationRepository = applicationRepository;
             _interaction = interaction;
         }
 
         public IActionResult Index()
         {
-            return View();
+			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+			//return View();
         }
 
         /// <summary>

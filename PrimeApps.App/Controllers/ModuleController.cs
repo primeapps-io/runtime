@@ -50,6 +50,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_moduleRepository);
             SetCurrentUser(_viewRepository);
+            SetCurrentUser(_menuRepository);
             SetCurrentUser(_profileRepository);
             SetCurrentUser(_settingRepository);
 

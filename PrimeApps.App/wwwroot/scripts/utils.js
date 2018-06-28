@@ -972,7 +972,7 @@ angular.module('primeapps')
                                 picklistItem.system_code = picklistResponseItem.system_code;
                                 picklistItem.order = picklistResponseItem.order;
                                 picklistItem.inactive = picklistResponseItem.inactive;
-                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenantLanguage];
+                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenant_language];
 
                                 picklistItems.push(picklistItem);
                             }

@@ -1,59 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using PrimeApps.Model.Context;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using Npgsql;
+using PrimeApps.Model.Common.Record;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
-using Newtonsoft.Json.Linq;
-using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PrimeApps.App.Jobs
 {
     public class EmployeeCalculation
     {
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-        public EmployeeCalculation(IConfiguration configuration)
+        public EmployeeCalculation(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task Calculate()
         {
-            using (var platformDatabaseContext = new PlatformDBContext(_configuration))
-            using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var tenants = await tenantRepository.GetAllActive();
+                var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                foreach (var tenant in tenants)
+                using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
                 {
-                    if (tenant.AppId != 4)
-                        continue;
+                    var tenants = await tenantRepository.GetAllActive();
 
-                    try
+                    foreach (var tenant in tenants)
                     {
-                        using (var databaseContext = new TenantDBContext(tenant.Id, _configuration))
-                        using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
-                        using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
+                        if (tenant.AppId != 4)
+                            continue;
+
+                        try
                         {
-                            var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
-
-                            var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
-
-                            if (warehouseEntity != null)
-                                warehouse.DatabaseName = warehouseEntity.DatabaseName;
-                            else
-                                warehouse.DatabaseName = "0";
-
-                            using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                            using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+                            using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                             {
+                                platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };
+                                var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
+
+                                var warehouseEntity = await platformWarehouseRepository.GetByTenantId(tenant.Id);
+
+                                if (warehouseEntity != null)
+                                    warehouse.DatabaseName = warehouseEntity.DatabaseName;
+                                else
+                                    warehouse.DatabaseName = "0";
+
+                                using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                                 using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                 {
+                                    moduleRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };
                                     var module = await moduleRepository.GetByName("calisanlar");
 
                                     if (module == null)
@@ -149,20 +156,19 @@ namespace PrimeApps.App.Jobs
                                 }
                             }
                         }
-
-                    }
-                    //TODO: ex.InnerException.InnerException olabilir
-                    catch (DataException ex)
-                    {
-                        if (ex.InnerException is PostgresException)
+                        //TODO: ex.InnerException.InnerException olabilir
+                        catch (DataException ex)
                         {
-                            var innerEx = (PostgresException)ex.InnerException;
+                            if (ex.InnerException is PostgresException)
+                            {
+                                var innerEx = (PostgresException)ex.InnerException;
 
-                            if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
-                                continue;
+                                if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
+                                    continue;
+                            }
+
+                            throw;
                         }
-
-                        throw;
                     }
                 }
             }

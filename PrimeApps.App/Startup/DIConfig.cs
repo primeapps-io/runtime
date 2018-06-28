@@ -21,6 +21,7 @@ namespace PrimeApps.App
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
+            services.AddHttpContextAccessor();
 
             // Register Repositories
             foreach (var a in new string[] { "PrimeApps.Model" })
@@ -79,7 +80,6 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
 
-			services.AddHttpContextAccessor();
 		}
     }
 }
