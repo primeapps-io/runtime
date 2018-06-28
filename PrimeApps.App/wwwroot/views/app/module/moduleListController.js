@@ -749,13 +749,13 @@ angular.module('primeapps')
                             if (record.process_status === 1) {
                                 processOrderParam = record.process_status_order;
                                 if (record.process_status_order === 1) {
-                                    currentApprover = $filter('filter')($rootScope.users, { Email: record.custom_approver }, true)[0].FullName;
+                                    currentApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
                                 } else {
-                                    currentApprover = $filter('filter')($rootScope.users, { Email: record['custom_approver_' + record.process_status_order] }, true)[0].FullName;
-                                    var firstApprover = $filter('filter')($rootScope.users, { Email: record.custom_approver }, true)[0].FullName;
+                                    currentApprover = $filter('filter')($rootScope.users, { email: record['custom_approver_' + record.process_status_order] }, true)[0].full_name;
+                                    var firstApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
                                     previousApprovers.push(firstApprover)
                                     for (var i = 2; i < record.process_status_order; i++) {
-                                        previousApprovers.push($filter('filter')($rootScope.users, { Email: record['custom_approver_' + i] }, true)[0].FullName);
+                                        previousApprovers.push($filter('filter')($rootScope.users, { email: record['custom_approver_' + i] }, true)[0].full_name);
                                     }
                                     $scope.previousApprovers = previousApprovers;
                                 }
@@ -763,16 +763,16 @@ angular.module('primeapps')
                                 $scope.currentApprover = currentApprover;
                             } else if (record.process_status === 2) {
                                 updateTime = record["process_request_updated_at"];
-                                var firstApprover = $filter('filter')($rootScope.users, { Email: record.custom_approver }, true)[0].FullName;
+                                var firstApprover = $filter('filter')($rootScope.users, { email: record.custom_approver }, true)[0].full_name;
                                 previousApprovers.push(firstApprover)
                                 for (var i = 2; i < record.process_status_order + 1; i++) {
-                                    previousApprovers.push($filter('filter')($rootScope.users, { Email: record['custom_approver_' + i] }, true)[0].FullName);
+                                    previousApprovers.push($filter('filter')($rootScope.users, { email: record['custom_approver_' + i] }, true)[0].full_name);
                                 }
                                 $scope.previousApprovers = previousApprovers;
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
                             } else if (record.process_status === 3) {
                                 updateTime = record["process_request_updated_at"];
-                                rejectApprover = $filter('filter')($rootScope.users, { Id: record["process_request_updated_by"] }, true)[0].FullName;
+                                rejectApprover = $filter('filter')($rootScope.users, { id: record["process_request_updated_by"] }, true)[0].full_name;
                                 $scope.rejectApprover = rejectApprover;
                                 $scope.updateTime = moment(updateTime).utc().format("DD-MM-YYYY HH:mm");
                             }

@@ -22,7 +22,6 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _moduleRepository;
         private IViewRepository _viewRepository;
         private IPicklistRepository _picklistRepository;
-
 	    private IProcessHelper _processHelper;
         public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IProcessHelper processHelper)
         {

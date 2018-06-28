@@ -305,7 +305,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
             }
 
 
@@ -325,7 +325,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
 
                 //if (currentRecord["process_id"].IsNullOrEmpty())
                 //{
@@ -352,7 +352,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
             }
 
 
