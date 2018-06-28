@@ -78,7 +78,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("approve"), HttpPut]
-        public async Task<IActionResult> ApproveRequest(ProcessRequestModel request)
+        public async Task<IActionResult> ApproveRequest([FromBody]ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -97,7 +97,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("reject"), HttpPut]
-        public async Task<IActionResult> RejectRequest(ProcessRequestRejectModel request)
+        public async Task<IActionResult> RejectRequest([FromBody]ProcessRequestRejectModel request)
         {
 
             var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
@@ -114,17 +114,17 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("delete"), HttpPut]
-        public async Task<IActionResult> DeleteRequest(ProcessRequestDeleteModel request)
+        public async Task<IActionResult> DeleteRequest([FromBody]ProcessRequestDeleteModel request)
         {
             var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
+            await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
 
             return Ok();
         }
 
         [Route("send_approval"), HttpPut]
-        public async Task<IActionResult> ReApprovalRequest(ProcessRequestModel request)
+        public async Task<IActionResult> ReApprovalRequest([FromBody]ProcessRequestModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -143,7 +143,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("send_approval_manuel"), HttpPost]
-        public async Task<IActionResult> ManuelApprovalRequest(ProcessRequestManuelModel request)
+        public async Task<IActionResult> ManuelApprovalRequest([FromBody]ProcessRequestManuelModel request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -152,7 +152,7 @@ namespace PrimeApps.App.Controllers
             var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
             try
             {
-                await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
+                await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
             }
             catch (ProcessFilterNotMatchException ex)
             {

@@ -74,10 +74,10 @@ angular.module('primeapps')
                     return profiles;
                 },
 
-                changeUserProfile: function (userId, instanceId, transferedProfileId) {
+                changeUserProfile: function (userId, tenantId, transferedProfileId) {
                     return $http.post(config.apiUrl + 'Profile/ChangeUserProfile', {
                         UserID: userId,
-                        InstanceID: instanceId,
+                        tenant_id: tenantId,
                         TransferedProfileID: transferedProfileId
                     });
                 },
@@ -90,11 +90,11 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'Profile/Update', profile);
                 },
 
-                remove: function (removedProfileId, transferProfileId, instanceId) {
+                remove: function (removedProfileId, transferProfileId, tenantId) {
                     return $http.post(config.apiUrl + 'Profile/Remove',
                         {
-                            RemovedProfile: { id: removedProfileId, InstanceID: instanceId },
-                            TransferProfile: { id: transferProfileId, InstanceID: instanceId }
+                            removed_profile: { id: removedProfileId, InstanceID: tenantId },
+                            transfer_profile: { id: transferProfileId, InstanceID: tenantId }
                         });
                 }
             };
