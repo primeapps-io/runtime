@@ -12,11 +12,9 @@ namespace PrimeApps.Model.Context
     {
         public int? UserId { get; set; }
 
-        public PlatformDBContext() { }
-
         public PlatformDBContext(DbContextOptions<PlatformDBContext> options) : base(options) { }
 
-        public PlatformDBContext(IConfiguration configuration) : this()
+        public PlatformDBContext(IConfiguration configuration)
         {
             Database.GetDbConnection().ConnectionString = configuration.GetConnectionString("PlatformDBConnection");
         }
