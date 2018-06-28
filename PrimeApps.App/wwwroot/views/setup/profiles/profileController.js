@@ -27,7 +27,7 @@ angular.module('primeapps')
                 transferProfiles.splice(index, 1);
                 $scope.transferProfiles = transferProfiles;
 
-                $scope['deletePopover' + profile.id] = $scope['deletePopover' + profile.ID] || $popover(angular.element(document.getElementById('deleteButton' + profile.ID)), {
+                $scope['deletePopover' + profile.id] = $scope['deletePopover' + profile.id] || $popover(angular.element(document.getElementById('deleteButton' + profile.id)), {
                         templateUrl: 'views/setup/profiles/profileDelete.html',
                         placement: 'left',
                         scope: $scope,

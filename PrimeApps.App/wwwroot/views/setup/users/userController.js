@@ -327,7 +327,7 @@ angular.module('primeapps')
                         });
                 };
 
-                ProfileService.changeUserProfile($scope.selectedUser.id, $rootScope.workgroup.instanceID, $scope.editModel.profile)
+                ProfileService.changeUserProfile($scope.selectedUser.id, $rootScope.workgroup.tenant_id, $scope.editModel.profile)
                     .then(function onSuccess() {
                         RoleService.updateUserRole($scope.selectedUser.id, $scope.editModel.role)
                             .then(function onSuccess() {
@@ -350,7 +350,7 @@ angular.module('primeapps')
             $scope.dismiss = function (user, index) {
                 $scope.userDeleting = true;
 
-                UserService.dismiss(user, $rootScope.workgroup.instanceID)
+                UserService.dismiss(user, $rootScope.workgroup.tenant_id)
                     .then(function onSuccess() {
                         $scope.users.splice(index, 1);
                         $scope.userDeleting = false;
