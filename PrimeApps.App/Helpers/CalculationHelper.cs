@@ -21,7 +21,7 @@ namespace PrimeApps.App.Helpers
     public interface ICalculationHelper
     {
         Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
-        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId);
+        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, int tenantId = 0);
         Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record);
         Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule);
         Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module);
@@ -2467,7 +2467,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId)
+        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, int tenantId = 0)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -2475,6 +2475,9 @@ namespace PrimeApps.App.Helpers
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 {
+                    if (tenantId > 0)
+                        _currentUser.TenantId = tenantId;
+
                     _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
                     var calisanlarModule = await _moduleRepository.GetByName("calisanlar");
