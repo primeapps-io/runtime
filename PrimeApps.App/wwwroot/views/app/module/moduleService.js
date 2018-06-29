@@ -2458,7 +2458,7 @@ angular.module('primeapps')
                                     }
                                 }
 
-                                if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && calculatedField < 2)
+								if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && toDate.diff(fromDate, 'days') < 2)
                                     calculatedField -= 1;
 
                                 //Bitiş tarihini işe tekrar başlama olarak gördüğümüz için ve aşşağıdaki kontrol bunu bize sagladığı için bu tarihi manuel çıkarıyoruz.
@@ -2470,7 +2470,7 @@ angular.module('primeapps')
                                 if (fridays) {
                                     if (fridays.length) {
                                         for (var x = 0; x < fridays.length; x++) {
-                                            if (moment(fridays.length[x]).isBusinessDay()) {
+                                            if (moment(fridays[x]).isBusinessDay()) {
                                                 calculatedField += 1;
                                             }
                                         }

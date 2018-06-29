@@ -73,6 +73,20 @@ namespace PrimeApps.Auth.UI
 			_applicationRepository = applicationRepository;
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> Index(string returnUrl)
+		{
+			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			/*ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
+			ViewBag.Language = ViewBag.AppInfo["language"].Value;
+
+			if (User?.Identity.IsAuthenticated == true)
+				return View();*/
+			
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+		}
+
+
 		/// <summary>
 		/// Change Language
 		/// </summary>
@@ -92,8 +106,11 @@ namespace PrimeApps.Auth.UI
 		/// Show login page
 		/// </summary>
 		[HttpGet]
-		public async Task<IActionResult> Login(string returnUrl, string success = "", string appId = null)
+		public async Task<IActionResult> Login(string returnUrl, string success = "")
 		{
+			if (User?.Identity.IsAuthenticated == true)
+				return RedirectToAction(nameof(AccountController.Index), "Account");
+
 			/*Response.Cookies.Append(
 				CookieRequestCultureProvider.DefaultCookieName,
 				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture("en-US")),
@@ -103,7 +120,7 @@ namespace PrimeApps.Auth.UI
 			//AuthHelper.SetLanguage(Response, Request, language);
 
 			ViewBag.Success = success;
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository, appId);
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
@@ -187,12 +204,14 @@ namespace PrimeApps.Auth.UI
 		}
 
 		[HttpGet]
-		public IActionResult Register(string returnUrl = null, string appId = null)
+		public IActionResult Register(string returnUrl = null)
 		{
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository, appId);
+			if (User?.Identity.IsAuthenticated == true)
+				return RedirectToAction(nameof(AccountController.Index), "Account");
+
+			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			ViewBag.ReadOnly = false;
-			ViewBag.AppId = appId ?? ViewBag.AppInfo["appId"];
 
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
@@ -212,11 +231,7 @@ namespace PrimeApps.Auth.UI
 				return View(registerViewModel);
 			}
 
-			App appInfo = null;
-			if (!string.IsNullOrEmpty(Request.Form["AppId"].ToString()))
-				appInfo = _applicationRepository.Get(int.Parse(Request.Form["AppId"].ToString()));
-			else
-				appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
 
 			if (appInfo == null)
 			{
@@ -287,7 +302,7 @@ namespace PrimeApps.Auth.UI
 
 				if (!response.IsSuccessStatusCode)
 				{
-					ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository, !string.IsNullOrEmpty(Request.Form["AppId"].ToString()) ? Request.Form["AppId"].ToString() : null);
+					ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
 					if (response.StatusCode == HttpStatusCode.Conflict)
 					{
 						ViewBag.Error = "alreadyRegisterForApp";
@@ -492,21 +507,6 @@ namespace PrimeApps.Auth.UI
 			}
 
 			return Redirect("~/");
-		}
-
-
-		[HttpGet]
-		public async Task<IActionResult> Info(string returnUrl)
-		{
-			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
-			ViewBag.Language = ViewBag.AppInfo["language"].Value;
-
-			if (User?.Identity.IsAuthenticated == true)
-				return View();
-
-
-			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
 		}
 
 		/// <summary>
