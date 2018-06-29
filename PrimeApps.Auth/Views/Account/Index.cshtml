@@ -25,20 +25,21 @@
 	<img class="logo-img" src="@logo" />
 	@if (!customDomain)
 	{
-		<span class="free-info-header">
+		<span class="free-info-header" style="font-size: 20px;padding-bottom: 10px;">
 			@Localizer["Hello"]
+			<span class="free-info-header" style="font-weight: 500;font-size: 30px;text-transform: uppercase;padding-bottom: 10px;">
+				@Context.User?.GetDisplayName()
+			</span>
 		</span>
 
-		<span class="free-info-header">
-			@Context.User?.GetDisplayName()
-		</span>
-		<span class="free-info-header">
+
+		<span class="free-info-header" style="padding-bottom: 10px;font-size: 20px;">
 			( @Context.User.FindFirst("email").Value )
 		</span>
 	}
 
-	<div class="login-form" role="form">
-		<button type="submit" class="btn btn-login btn-block ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["Logout"]</button>
+	<div class="login-form" role="form" style="padding-top: 10px;">
+		<a href="@Url.Action("Logout", "Account")" class="btn btn-login btn-block ladda-button" data-style="slide-right" tabindex="3">@Localizer["Logout"]</a>
 
 		<div class="language">
 			@if (otherLang == "tr")

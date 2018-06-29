@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,9 +25,26 @@ namespace PrimeApps.App
 			services.AddAuthentication("Bearer")
 				.AddIdentityServerAuthentication(options =>
 				{
-					options.Authority = "http://localhost:5000";
+					#region CRM için kullanılacak bilgiler
+					options.Authority = "http://localhost:5002"; 
+					#endregion
+
+					#region İK için kullanılacak bilgiler
+					//options.Authority = "http://localhost:5004"; 
+					#endregion
 					options.RequireHttpsMetadata = false;
 					options.ApiName = "api1";
+					options.Events = new OpenIdConnectEvents
+					{
+						
+						OnRedirectToIdentityProvider = n =>
+						{
+							/*var applicationRepository = (IApplicationRepository)n.HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
+							var appInfo = applicationRepository.Get(n.Request.Host.Value);
+							n.Options.Authority = n.Request.Scheme + "://" + appInfo.Setting.AuthDomain;*/
+							return Task.FromResult(0);
+						}
+					};
 				});
 
 			services.AddAuthentication(options =>
@@ -40,10 +58,16 @@ namespace PrimeApps.App
 					options.TokenValidationParameters.NameClaimType = "email";
 					options.SignInScheme = "Cookies";
 
-					options.Authority = "http://localhost:5000";
-					options.RequireHttpsMetadata = false;
+					#region CRM için kullanılacak bilgiler
+					options.Authority = "http://localhost:5002";
+					options.ClientId = "ofisim.crm"; 
+					#endregion
 
-					options.ClientId = "primeapps.mvc";
+					#region İK için kullanılacak bilgiler
+					//options.Authority = "http://localhost:5004";
+					//options.ClientId = "ofisim.ik";
+					#endregion
+					options.RequireHttpsMetadata = false;
 					options.ClientSecret = "secret";
 					options.ResponseType = "code id_token";
 
@@ -55,6 +79,17 @@ namespace PrimeApps.App
 
 					options.Events = new OpenIdConnectEvents
 					{
+						OnRedirectToIdentityProvider = n =>
+						{
+							/*var applicationRepository = (IApplicationRepository)n.HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
+							var appInfo = applicationRepository.Get(n.Request.Host.Value);
+							var newMeta = new Uri(n.Options.MetadataAddress);
+
+							n.Options.ClientId = "ofisim." + appInfo.Name;
+							n.Options.Authority = n.Request.Scheme + "://" + appInfo.Setting.AuthDomain;
+							n.Options.MetadataAddress = newMeta.Scheme + "://" + appInfo.Setting.AuthDomain + newMeta.AbsolutePath;*/
+							return Task.FromResult(0);
+						},
 						/*OnAuthorizationCodeReceived = async ctx =>
 						{
 							var request = ctx.HttpContext.Request;

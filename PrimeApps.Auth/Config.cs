@@ -86,7 +86,58 @@ namespace PrimeApps.Auth
                         "api1"
                     }
                 },
+				// OpenID Connect hybrid flow and client credentials client (MVC)
+                new Client
+				{
+					ClientId = "ofisim.crm",
+					ClientName = "Ofisim CRM MVC Client",
+					AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+					AllowRememberConsent = false, // Permission ı hatırlıyor
+					AlwaysSendClientClaims = true,
+					RequireConsent = false,
 
+					ClientSecrets =
+					{
+						new Secret("secret".Sha256())
+					},
+
+					RedirectUris = { "http://localhost:5001/signin-oidc" },
+					PostLogoutRedirectUris = { "http://localhost:5001/signout-callback-oidc" },
+
+					AllowedScopes =
+					{
+						IdentityServerConstants.StandardScopes.OpenId,
+						IdentityServerConstants.StandardScopes.Profile,
+						IdentityServerConstants.StandardScopes.Email,
+						"api1"
+					}
+				},
+				// OpenID Connect hybrid flow and client credentials client (MVC)
+                new Client
+				{
+					ClientId = "ofisim.ik",
+					ClientName = "Ofisim IK Client",
+					AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+					AllowRememberConsent = false, // Permission ı hatırlıyor
+					AlwaysSendClientClaims = true,
+					RequireConsent = false,
+
+					ClientSecrets =
+					{
+						new Secret("secret".Sha256())
+					},
+
+					RedirectUris = { "http://localhost:5003/signin-oidc" },
+					PostLogoutRedirectUris = { "http://localhost:5003/signout-callback-oidc" },
+
+					AllowedScopes =
+					{
+						IdentityServerConstants.StandardScopes.OpenId,
+						IdentityServerConstants.StandardScopes.Profile,
+						IdentityServerConstants.StandardScopes.Email,
+						"api1"
+					}
+				},
 				 // JavaScript Client
                 new Client
 				{

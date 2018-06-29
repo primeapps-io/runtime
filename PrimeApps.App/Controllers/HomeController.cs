@@ -17,18 +17,12 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Authorize]
-		public ActionResult Index([FromQuery(Name = "appId")] int localAppId = 0)
+		public ActionResult Index()
 		{
 			var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
 			var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-			if (Request.Host.Value.Contains("localhost") && localAppId == 0)
-				localAppId = 1;
-
-			var appId = localAppId != 0 ? localAppId : applicationRepository.GetAppIdWithDomain(Request.Host.Value);
-
-			if (appId == 0)
-				appId = 1;
+			var appId = applicationRepository.GetAppIdWithDomain(Request.Host.Value);
 
 			var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
