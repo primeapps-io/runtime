@@ -45,7 +45,7 @@ angular.module('primeapps')
                 },
 
                 findRecords: function (module, request) {
-                    $rootScope.ParentModuleName = null;
+                    $rootScope.activeModuleName = null;
                     if (module === 'current_accounts' || module === 'kasa_hareketleri' || module === 'banka_hareketleri' || module === 'stock_transactions') {
                         if (module === 'stock_transactions' && request.sort_field) {
                             request.sort_field = 'transaction_date,id';

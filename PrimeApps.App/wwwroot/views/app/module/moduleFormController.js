@@ -30,7 +30,7 @@ angular.module('primeapps')
             $scope.lookupUserAndGroup = helper.lookupUserAndGroup;
             $scope.loading = true;
             $scope.image = {};
-            $rootScope.ParentModuleName = $scope.parentType;
+            
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
@@ -42,6 +42,7 @@ angular.module('primeapps')
                 $window.scrollTo(0, 0);
 
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
+            $rootScope.activeModuleName = $scope.parentType;
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');

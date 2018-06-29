@@ -155,7 +155,7 @@
                     </a>
                 </li>
                 <li ng-repeat="module in modules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(module.name, operations.read) && module.display">
-                    <a href="#/app/modules/{{module.name}}" ng-click="routingPrism('#/app/modules/' + module.name)" ng-class="{'active': ((currentPath.indexOf('modules/' + module.name) > -1 || currentPath.indexOf('module/' + module.name) > -1 || module.name.indexOf(ParentModuleName)>-1) && currentPath.indexOf('/setup') <= -1)}">
+                    <a href="#/app/modules/{{module.name}}" ng-click="routingPrism('#/app/modules/' + module.name)" ng-class="{'active': ((currentPath.indexOf('modules/' + module.name) > -1 || currentPath.indexOf('module/' + module.name) > -1 || module.name.indexOf(activeModuleName) > -1) && currentPath.indexOf('/setup') <= -1)}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{module['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{module.menu_icon}}"></i></div>
                         <span class="sidebar-menu-label">{{module['label_' + language + '_plural']}}</span>
                     </a>
