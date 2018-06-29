@@ -376,7 +376,7 @@
                                                    onbeforesave="validate($data, field.data_type, field.validation)"
                                                    onaftersave="update()"
                                                    ng-if="field.data_type === 'time'">
-                                                    {{record[field.name] ? (record[field.name] | date:'shortTime') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
+                                                    {{record[field.name] ? (record[field.name] | utc | date:'shortTime') : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
                                                 </a>
                                                 <span ng-if="(field.data_type === 'picklist' || field.data_type === 'rating') && field.custom_label"
                                                       19171917 1917 style="line-height: 24px;">

@@ -150,8 +150,8 @@ namespace PrimeApps.Auth
 					options.TokenCleanupInterval = 3600; //3600 (1 hour)
 				})
 				.AddAspNetIdentity<ApplicationUser>()
-				.AddProfileService<CustomProfileService>();
-				//.AddRedirectUriValidator<CustomRedirectUriValidator>();
+				.AddProfileService<CustomProfileService>()
+				.AddRedirectUriValidator<CustomRedirectUriValidator>();
 
 			if (Environment.IsDevelopment())
 			{

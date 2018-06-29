@@ -125,7 +125,7 @@ namespace PrimeApps.App
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
-            AuthConfiguration(services, Configuration);
+            AuthConfiguration(services, Configuration, HostingEnvironment);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

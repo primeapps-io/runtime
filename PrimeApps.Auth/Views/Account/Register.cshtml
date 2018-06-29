@@ -7,11 +7,12 @@
 
 	string customLanguage = null;
 	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
-
+	bool multiLanguage = true;
 	if (ViewBag.AppInfo != null)
 	{
 		ViewBag.Title = ViewBag.AppInfo["title"].Value;
 		customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
+		multiLanguage = Convert.ToBoolean(ViewBag.AppInfo["multiLanguage"].Value.ToLower());
 	}
 	var otherLang = ViewBag.AppInfo["language"] == "tr" ? "en" : "tr";
 	var error = ViewBag.Error;
@@ -94,14 +95,18 @@
 				<hr />
 				<button type="button" onclick="location.href = '@Url.Action("SignInAd", "Auth")'" class="btn btn-block office-button">@Localizer["RegisterWithOffice"]</button>
 			}
+
 			<div class="language">
-				@if (otherLang == "tr")
+				@if (multiLanguage)
 				{
-					<a href="@Url.Action("ChangeLanguage", "Account", new { language = "tr", ReturnUrl = path })">@Localizer["TR"]</a> <span>|</span>
-				}
-				else if (otherLang == "en")
-				{
-					<a href="@Url.Action("ChangeLanguage", "Account", new { language = "en", ReturnUrl = path })">@Localizer["EN"]</a> <span>|</span>
+					@if (otherLang == "tr")
+					{
+						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "tr", ReturnUrl = path })">@Localizer["TR"]</a> <span>|</span>
+					}
+					else if (otherLang == "en")
+					{
+						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "en", ReturnUrl = path })">@Localizer["EN"]</a> <span>|</span>
+					}
 				}
 				<a href="@Url.Action("Login", "Account", new {ReturnUrl = ViewBag.ReturnUrl})" class="">@Localizer["LoginForm"]</a>
 			</div>
