@@ -7,6 +7,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Entities.Application;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
@@ -14,6 +15,7 @@ namespace PrimeApps.App.Controllers
     public class MenuController : ApiBaseController
     {
         private IMenuRepository _menuRepository;
+       
         public MenuController(IMenuRepository menuRepository)
         {
             _menuRepository = menuRepository;
@@ -38,16 +40,20 @@ namespace PrimeApps.App.Controllers
             if (menuEntity == null)
                 return Ok();
 
+            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+            tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+            var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
             var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
             //TODO Removed
             //var instance = await Workgroup.Get(AppUser.InstanceId);
             var instance = new InstanceItem();
-            var profile = instance.Profiles.Single(x => x.UserIDs.Contains(AppUser.Id));
+           
+           
             var menuItems = new List<MenuItem>();
 
             foreach (var menuItem in menuItemsData)
             {
-                var hasPermission = await CheckPermission(menuItem, profile, instance);
+                var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
                 if (hasPermission)
                     menuItems.Add(menuItem);
@@ -61,7 +67,7 @@ namespace PrimeApps.App.Controllers
 
                 foreach (var menuItem in menuCategory.MenuItems)
                 {
-                    var hasPermission = await CheckPermission(menuItem, profile, instance);
+                    var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
                     if (hasPermission)
                         menuCategoryItems.Add(menuItem);
@@ -79,7 +85,7 @@ namespace PrimeApps.App.Controllers
             return Ok(menuItems);
         }
 
-        private async Task<bool> CheckPermission(MenuItem menuItem, ProfileLightDTO profile, InstanceItem instance)
+        private async Task<bool> CheckPermission(MenuItem menuItem, Profile profile, InstanceItem instance)
         {
             if (!menuItem.ModuleId.HasValue && string.IsNullOrEmpty(menuItem.Route))
                 return true;
