@@ -10,12 +10,18 @@ angular.module('primeapps')
             $scope.lookupUser = helper.lookupUser;
 
             function getUserGroup() {
-                UserGroupService.getAll()
-                    .then(function (userGroups) {
-                        $scope.userGroups = userGroups.data;
+				UserGroupService.getAll()
+					.then(function (userGroups) {
+						$scope.userGroups = userGroups.data;
 
-                        if (id) {
-                            $scope.userGroup = angular.copy($filter('filter')($scope.userGroups, { id: id }, true)[0]);
+						if (id) {
+							$scope.userGroup = angular.copy($filter('filter')($scope.userGroups, { id: id }, true)[0]);
+							var users = angular.copy($scope.userGroup.users);
+							$scope.userGroup.users = [];
+							for (var i = 0; i < users.length; i++) {
+								var user = users[i].user;
+								$scope.userGroup.users.push(user);
+							}
                         }
                         else {
                             if (clone)
