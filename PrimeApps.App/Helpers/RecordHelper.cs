@@ -137,7 +137,41 @@ namespace PrimeApps.App.Helpers
 
                             picklistItemIds.Add((int)prop.Value);
                         }
+                        if (field.DataType == DataType.Tag)
+                        {
+                            var tagLabel = new List<string>();
 
+                            string str = (string)prop.Value;
+
+                            string[] tags = str.Split(',');
+                    
+
+                            using (var _tagRepository = new TagRepository(databaseContext, _configuration))
+                            {
+                                _tagRepository.CurrentUser = _currentUser;
+                                var fieldTags = await _tagRepository.GetByFieldId(field.Id);
+
+                                foreach (string tag in tags)
+                                {
+                                    tagLabel.Add(tag);
+                                    var fieldTag = fieldTags.Where(x => x.Text == tag).ToList();
+
+                                    if (fieldTag.Count <= 0)
+                                    {
+                                        var creatTag = new Tag
+                                        {
+                                            Text = tag,
+                                            FieldId = field.Id
+                                        };
+
+                                        await _tagRepository.Create(creatTag);
+                                    }
+                                }
+                            }
+
+
+                            record[prop.Key] = string.Join("|", tagLabel);
+                        }
                         if (field.DataType == DataType.Multiselect && convertPicklists)
                         {
                             if (!(prop.Value is JArray))
@@ -305,7 +339,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
             }
 
 
@@ -325,7 +359,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
 
                 //if (currentRecord["process_id"].IsNullOrEmpty())
                 //{
@@ -352,7 +386,7 @@ namespace PrimeApps.App.Helpers
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
             }
 
 
@@ -637,7 +671,7 @@ namespace PrimeApps.App.Helpers
                     return fields;
                 }
             }
-            
+
         }
     }
 }

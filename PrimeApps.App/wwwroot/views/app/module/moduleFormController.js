@@ -30,6 +30,7 @@ angular.module('primeapps')
             $scope.lookupUserAndGroup = helper.lookupUserAndGroup;
             $scope.loading = true;
             $scope.image = {};
+            $rootScope.ParentModuleName = $scope.parentType;
 
             if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });

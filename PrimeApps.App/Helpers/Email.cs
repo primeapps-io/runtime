@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Hangfire;
+﻿using Hangfire;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.Jobs.Messaging;
 using PrimeApps.Model.Common.Cache;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Common.Resources;
-using System.Reflection;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace PrimeApps.App.Helpers
 {
@@ -26,6 +27,8 @@ namespace PrimeApps.App.Helpers
     public class Email
     {
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
+
         /// <summary>
         /// The pattern of template placeholders.
         /// </summary>
@@ -69,9 +72,10 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, IConfiguration configuration, int appId = 1, UserItem appUser = null)
+        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, int appId = 1, UserItem appUser = null)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
 
             string tmpl = "",
                    appUrl = "",
@@ -90,93 +94,100 @@ namespace PrimeApps.App.Helpers
 
             LanguageType language = culture.Contains("tr") ? LanguageType.Tr : LanguageType.En;
             Template templateEntity;
-            using (TenantDBContext tdbCtx = new TenantDBContext(appUser.TenantId, configuration))
-            using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
-            {
-                templateEntity = tRepo.GetByCode(resourceTypeName, language);
-            }
 
-            switch (appId)
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                case 1:
-                    appUrl = "http://www.ofisim.com/mail/crm/logo.png";
-                    appCodeUrl = "http://www.ofisim.com/crm/";
-                    appName = "Ofisim CRM";
-                    appColor = "2560f6";
-                    socialMediaIcons = "true";
-                    footer = "Ofisim.com";
-                    appLogo = "true";
-                    break;
-                case 2:
-                    appUrl = "http://www.ofisim.com/mail/kobi/logo.png";
-                    appCodeUrl = "http://www.ofisim.com/kobi/";
-                    appName = "Ofisim KOBİ";
-                    appColor = "20cb9a";
-                    socialMediaIcons = "true";
-                    footer = "Ofisim.com";
-                    appLogo = "true";
-                    break;
-                case 3:
-                    appUrl = "http://www.ofisim.com/mail/asistan/logo.png";
-                    appCodeUrl = "http://www.ofisim.com/asistan/";
-                    appName = "Ofisim ASİSTAN";
-                    appColor = "ef604e";
-                    socialMediaIcons = "true";
-                    footer = "Ofisim.com";
-                    appLogo = "true";
-                    break;
-                case 4:
-                    appUrl = "http://www.ofisim.com/mail/ik/logo.png";
-                    appCodeUrl = "http://www.ofisim.com/ik/";
-                    appName = "Ofisim İK";
-                    appColor = "454191";
-                    socialMediaIcons = "true";
-                    footer = "Ofisim.com";
-                    appLogo = "true";
-                    break;
-                case 5:
-                    appUrl = "http://www.ofisim.com/mail/cagri/logo.png";
-                    appCodeUrl = "http://www.ofisim.com/cagri/";
-                    appName = "Ofisim ÇAĞRI";
-                    appColor = "79a7fd";
-                    socialMediaIcons = "true";
-                    footer = "Ofisim.com";
-                    appLogo = "true";
-                    break;
-                default:
-                    appUrl = "http://www.ofisim.com/mail/crm/logo.png";
-                    appCodeUrl = "http://www.ofisim.com/crm/";
-                    appName = "Ofisim CRM";
-                    appColor = "2560f6";
-                    socialMediaIcons = "true";
-                    footer = "Ofisim.com";
-                    appLogo = "true";
-                    break;
+                var tdbCtx = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
-            }
-
-            if (appUser != null)
-            {
-                using (PlatformDBContext pdbCtx = new PlatformDBContext(configuration))
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
+                using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
                 {
-                    var instance = tRepo.Get(appUser.TenantId);
-                    if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
+                    tRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    templateEntity = tRepo.GetByCode(resourceTypeName, language);
+                }
+
+                switch (appId)
+                {
+                    case 1:
+                        appUrl = "http://www.ofisim.com/mail/crm/logo.png";
+                        appCodeUrl = "http://www.ofisim.com/crm/";
+                        appName = "Ofisim CRM";
+                        appColor = "2560f6";
+                        socialMediaIcons = "true";
+                        footer = "Ofisim.com";
+                        appLogo = "true";
+                        break;
+                    case 2:
+                        appUrl = "http://www.ofisim.com/mail/kobi/logo.png";
+                        appCodeUrl = "http://www.ofisim.com/kobi/";
+                        appName = "Ofisim KOBİ";
+                        appColor = "20cb9a";
+                        socialMediaIcons = "true";
+                        footer = "Ofisim.com";
+                        appLogo = "true";
+                        break;
+                    case 3:
+                        appUrl = "http://www.ofisim.com/mail/asistan/logo.png";
+                        appCodeUrl = "http://www.ofisim.com/asistan/";
+                        appName = "Ofisim ASİSTAN";
+                        appColor = "ef604e";
+                        socialMediaIcons = "true";
+                        footer = "Ofisim.com";
+                        appLogo = "true";
+                        break;
+                    case 4:
+                        appUrl = "http://www.ofisim.com/mail/ik/logo.png";
+                        appCodeUrl = "http://www.ofisim.com/ik/";
+                        appName = "Ofisim İK";
+                        appColor = "454191";
+                        socialMediaIcons = "true";
+                        footer = "Ofisim.com";
+                        appLogo = "true";
+                        break;
+                    case 5:
+                        appUrl = "http://www.ofisim.com/mail/cagri/logo.png";
+                        appCodeUrl = "http://www.ofisim.com/cagri/";
+                        appName = "Ofisim ÇAĞRI";
+                        appColor = "79a7fd";
+                        socialMediaIcons = "true";
+                        footer = "Ofisim.com";
+                        appLogo = "true";
+                        break;
+                    default:
+                        appUrl = "http://www.ofisim.com/mail/crm/logo.png";
+                        appCodeUrl = "http://www.ofisim.com/crm/";
+                        appName = "Ofisim CRM";
+                        appColor = "2560f6";
+                        socialMediaIcons = "true";
+                        footer = "Ofisim.com";
+                        appLogo = "true";
+                        break;
+
+                }
+
+                if (appUser != null)
+                {
+                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+
+                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
                     {
-                        appUrl = instance.Setting.Logo;
-                        appCodeUrl = "#";
-                        appName = instance.Setting.MailSenderName;
-                        socialMediaIcons = "none";
-                        footer = instance.Setting.MailSenderName;
-                        //TODO Removed
-                        /*if (instance.MailSenderEmail.Contains("@etiya.com"))
+                        var instance = tRepo.Get(appUser.TenantId);
+
+                        if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
                         {
-                            appLogo = "none";
-                        }*/
+                            appUrl = instance.Setting.Logo;
+                            appCodeUrl = "#";
+                            appName = instance.Setting.MailSenderName;
+                            socialMediaIcons = "none";
+                            footer = instance.Setting.MailSenderName;
+
+                            if (instance.Setting.MailSenderEmail.Contains("@etiya.com"))
+                            {
+                                appLogo = "none";
+                            }
+                        }
                     }
                 }
             }
-
 
             tmpl = templateEntity.Content;
             tmpl = tmpl.Replace("{{URL}}", appUrl);
@@ -190,15 +201,11 @@ namespace PrimeApps.App.Helpers
             // fill this value with data parameters if any of them in it.
             tmpl = FillData(tmpl, dataFields);
 
-
             this.Template = tmpl;
             this.Subject = templateEntity.Subject; /*lcl.GetString("Subject");*/
 
-
             /// fill subject with data if there are any data fields.
             this.Subject = FillData(this.Subject, dataFields);
-
-
         }
 
         /// <summary>
@@ -310,14 +317,18 @@ namespace PrimeApps.App.Helpers
 
             if (appUser != null)
             {
-                using (PlatformDBContext pdbCtx = new PlatformDBContext(_configuration))
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var tenant = tRepo.Get(appUser.TenantId);
-                    if (!string.IsNullOrEmpty(tenant.Setting.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting.MailSenderEmail))
+                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+
+                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
                     {
-                        from = tenant.Setting.MailSenderEmail;
-                        fromName = tenant.Setting.MailSenderName;
+                        var tenant = tRepo.Get(appUser.TenantId);
+                        if (!string.IsNullOrEmpty(tenant.Setting?.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting?.MailSenderEmail))
+                        {
+                            from = tenant.Setting.MailSenderEmail;
+                            fromName = tenant.Setting.MailSenderName;
+                        }
                     }
                 }
             }
@@ -338,7 +349,7 @@ namespace PrimeApps.App.Helpers
                     QueueTime = DateTime.UtcNow,
                     SendOn = SendOn
                 };
-                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
+                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
             }
         }
 
@@ -360,7 +371,7 @@ namespace PrimeApps.App.Helpers
                     QueueTime = DateTime.UtcNow,
                     SendOn = SendOn
                 };
-                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue), TimeSpan.FromSeconds(5));
+                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
             }
         }
 
@@ -374,18 +385,21 @@ namespace PrimeApps.App.Helpers
 
             if (appUser != null)
             {
-                using (PlatformDBContext pdbCtx = new PlatformDBContext(_configuration))
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var instance = tRepo.Get(appUser.TenantId);
-                    if (!string.IsNullOrEmpty(instance.Setting.MailSenderName) && !string.IsNullOrEmpty(instance.Setting.MailSenderEmail))
+                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
                     {
-                        //TODO Removed
-                        /*if (!string.IsNullOrEmpty(fromEmail))
-                            from = fromEmail;
-                        else*/
-                        from = instance.Setting.MailSenderEmail;
-                        fromName = instance.Setting.MailSenderName;
+                        var instance = tRepo.Get(appUser.TenantId);
+                        if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
+                        {
+                            //TODO Removed
+                            /*if (!string.IsNullOrEmpty(fromEmail))
+                                from = fromEmail;
+                            else*/
+                            from = instance.Setting.MailSenderEmail;
+                            fromName = instance.Setting.MailSenderName;
+                        }
                     }
                 }
             }
@@ -406,7 +420,7 @@ namespace PrimeApps.App.Helpers
                     QueueTime = DateTime.UtcNow,
                     SendOn = SendOn
                 };
-                BackgroundJob.Schedule<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary), TimeSpan.FromSeconds(5));
+                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary));
             }
         }
 

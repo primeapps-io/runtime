@@ -25,7 +25,7 @@ namespace PrimeApps.App.Helpers
 	public interface IProcessHelper
 	{
 		Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse,
-			ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
+			ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
 		Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage);
 		Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage);
 		Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
@@ -40,7 +40,7 @@ namespace PrimeApps.App.Helpers
 		private CurrentUser _currentUser;
 		private IHttpContextAccessor _context;
 		private IWorkflowHelper _workflowHelper;
-		private ICalculationHelper _calculationHelper;
+        private ICalculationHelper _calculationHelper;
 		private IServiceScopeFactory _serviceScopeFactory;
 		private IConfiguration _configuration;
 
@@ -50,16 +50,17 @@ namespace PrimeApps.App.Helpers
 			_currentUser = UserHelper.GetCurrentUser(_context);
 			_configuration = configuration;
 			_workflowHelper = workflowHelper;
-			_serviceScopeFactory = serviceScopeFactory;
+            _serviceScopeFactory = serviceScopeFactory;
 			_calculationHelper = calculationHelper;
 		}
 
-		public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
+		public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _processRequestRepository = new ProcessRequestRepository(databaseContext, _configuration))
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var _processRequestRepository = new ProcessRequestRepository(databaseContext, _configuration))
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
@@ -366,13 +367,16 @@ namespace PrimeApps.App.Helpers
 
 						//checks custom domain 
 						//TODO Removed
-						/*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-						if (!string.IsNullOrEmpty(instance.CustomDomain))
-						{
-							domain = "https://" + instance.CustomDomain + "/";
-						}
+                        using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                        {
+                            var app = _appRepository.Get(appUser.AppId);
+                            if (app != null)
+                            {
+                                domain = "https://" + app.Setting.Domain + "/";
+                            }
+                        }
 
-						string url = "";
+                        string url = "";
 						if (module.Name == "timetrackers")
 						{
 							url = domain + "#/app/timetracker?user=" + (int)record["created_by.id"] + "&year=" + (int)record["year"] + "&month=" + (int)record["month"] + "&week=" + (int)record["week"];
@@ -424,22 +428,22 @@ namespace PrimeApps.App.Helpers
 						if (!string.IsNullOrWhiteSpace(appUser.Culture) && Constants.CULTURES.Contains(appUser.Culture))
 							Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
-						if (operationType == OperationType.insert)
-						{
-							var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-							notification.AddRecipient(user.Email);
-							notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-						}
-						else if (operationType == OperationType.update)
-						{
-							var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-							notification.AddRecipient(user.Email);
-							notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-						}
-						else if (operationType == OperationType.delete)
-						{
+						//if (operationType == OperationType.insert)
+						//{
+						//	var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+						//	notification.AddRecipient(user.Email);
+						//	notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+						//}
+						//else if (operationType == OperationType.update)
+						//{
+						//	var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+						//	notification.AddRecipient(user.Email);
+						//	notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+						//}
+						//else if (operationType == OperationType.delete)
+						//{
 
-						}
+						//}
 
 						var processRequest = new ProcessRequest
 						{
@@ -456,18 +460,18 @@ namespace PrimeApps.App.Helpers
 
 						try
 						{
-							var resultRequestLog = await processRepository.CreateRequest(processRequest);
+							var resultRequestLog = await _processRepository.CreateRequest(processRequest);
 
 							//if (resultRequestLog < 1)
 							//    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString())));
 
-							var newRecord = recordRepository.GetById(module, (int)record["id"], false);
-							await WorkflowHelper.Run(operationType, newRecord, module, appUser, warehouse);
+							var newRecord = _recordRepository.GetById(module, (int)record["id"], false);
+							await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
 						}
 						catch (Exception ex)
 						{
 							//ErrorLog.GetDefault(null).Log(new Error(ex));
-						}*/
+						}
 
 
 						var processLog = new ProcessLog
@@ -720,7 +724,10 @@ namespace PrimeApps.App.Helpers
 			warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
-				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                //Set warehouse database name
+                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))

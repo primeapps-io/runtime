@@ -1,33 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
+using PrimeApps.App.Services;
+using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Common.UserApps;
-using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using User = PrimeApps.Model.Entities.Application.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
-using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using Hangfire;
-using PrimeApps.Model.Entities.Platform;
-using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.Model.Common.Resources;
-using PrimeApps.App.Storage;
-using System.Net.Http;
-using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Enums;
-using Newtonsoft.Json;
-using System.Text;
-using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Controllers
 {
@@ -41,14 +38,15 @@ namespace PrimeApps.App.Controllers
         private IRecordRepository _recordRepository;
         private IPlatformUserRepository _platformUserRepository;
         private IPlatformRepository _platformRepository;
-		private IApplicationRepository _applicationRepository;
+        private IApplicationRepository _applicationRepository;
         private ITenantRepository _tenantRepository;
         private IPlatformWarehouseRepository _platformWarehouseRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
         public IBackgroundTaskQueue Queue { get; }
-        public UserController(IApplicationRepository applicationRepository, IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration)
+        public UserController(IApplicationRepository applicationRepository, IUserRepository userRepository, ISettingRepository settingRepository, IProfileRepository profileRepository, IRoleRepository roleRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, ITenantRepository tenantRepository, IPlatformWarehouseRepository platformWarehouseRepository, IBackgroundTaskQueue queue, Warehouse warehouse, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _userRepository = userRepository;
             _settingRepository = settingRepository;
@@ -60,9 +58,10 @@ namespace PrimeApps.App.Controllers
             _platformRepository = platformRepository;
             _tenantRepository = tenantRepository;
             _platformWarehouseRepository = platformWarehouseRepository;
-			_applicationRepository = applicationRepository;
+            _applicationRepository = applicationRepository;
+            _serviceScopeFactory = serviceScopeFactory;
 
-			Queue = queue;
+            Queue = queue;
 
             //Set warehouse database name Ofisim to integration
             //_warehouse.DatabaseName = "Ofisim";
@@ -147,43 +146,6 @@ namespace PrimeApps.App.Controllers
             tenantUserToEdit.FirstName = user.firstName;
             tenantUserToEdit.LastName = user.lastName;
             tenantUserToEdit.FullName = user.firstName + " " + user.lastName;
-
-            if (user.email != userToEdit.Email && user.email != "")
-            {
-                //if email has changed, we need a special procedure here.
-                //we won't apply the changes on the email address of user,
-                //before they confirm it from the email address which they have changed.
-
-                //generate a code to apply changes on users table.
-                string passcode = Crypto.GenerateRandomCode(16);
-
-                //TODO: Pending User Edit
-                ////if this user had any pending user edit requests before, clean time.
-                //crmPendingUserEdits.ClearPendingRequests(userToEdit.ID, user.defaultInstanceID, session);
-
-                ////create database entry
-                //crmPendingUserEdits req = new crmPendingUserEdits()
-                //{
-                //    email = user.email,
-                //    passcode = passcode,
-                //    isApproved = true,
-                //    isUsed = false,
-                //    instanceId = user.defaultInstanceID,
-                //    userID = AppUser.GlobalId,
-                //    requestTime = DateTime.UtcNow
-                //};
-                //session.Save(req);
-
-                var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "api-test" : "api";
-
-                //compose a new email to the new email address of the user.
-                Dictionary<string, string> emailData = new Dictionary<string, string>();
-                emailData.Add("EmailResetUrl", string.Format("https://{0}.ofisim.com/REST/Public/ConfirmEmail/{1}", subdomain, passcode));
-
-                Email removalNotification = new Email(EmailResource.EmailReset, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, AppUser.AppId);
-                //removalNotification.AddRecipient(req.email);
-                removalNotification.AddToQueue();
-            }
 
             //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;

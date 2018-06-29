@@ -1,23 +1,29 @@
-﻿using PrimeApps.App.Helpers;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.ActionFilters;
+using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Notification;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace PrimeApps.App.Jobs.Reminder
 {
     public class Activity
     {
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-        public Activity(IConfiguration configuration)
+        public Activity(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
+
         /// <summary>
         /// Processes reminder object and classifies the type of the reminder.
         /// </summary>
@@ -28,15 +34,21 @@ namespace PrimeApps.App.Jobs.Reminder
         {
             Model.Entities.Application.Reminder reminder;
             bool status = false;
+
             try
             {
-                using (var databaseContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
+                    var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                    var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    databaseContext.TenantId = reminderMessage.TenantId;
 
-                    using (var _reminderRepository = new ReminderRepository(databaseContext, _configuration))
+                    using (var reminderRepository = new ReminderRepository(databaseContext, _configuration))
+                    using (var userRepository = new UserRepository(databaseContext, _configuration))
                     {
+                        reminderRepository.CurrentUser = userRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
                         /// Get related reminder record from data store.
-                        reminder = await _reminderRepository.GetById(Convert.ToInt32(reminderMessage.Id));
+                        reminder = await reminderRepository.GetById(Convert.ToInt32(reminderMessage.Id));
 
                         if (reminder == null) return true;
 
@@ -45,41 +57,37 @@ namespace PrimeApps.App.Jobs.Reminder
 
                         string reminderType = reminder.ReminderType;
 
-                        using (PlatformDBContext platformDbContext = new PlatformDBContext(_configuration))
+                        using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
                         {
-                            using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDbContext, _configuration))
+                            platformUserRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+
+                            try
                             {
-
-
-                                try
+                                switch (reminderType)
                                 {
-                                    switch (reminderType)
-                                    {
-                                        case "task":
-                                            await Task(reminder, reminderMessage, platformUserRepository, appUser, _configuration);
-                                            break;
-                                        case "event":
-                                            await Event(reminder, reminderMessage, platformUserRepository, appUser);
-                                            break;
-                                        case "call":
-                                            await Call(reminder, reminderMessage, platformUserRepository, appUser);
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    status = true;
+                                    case "task":
+                                        await Task(reminder, reminderMessage, userRepository, platformUserRepository, reminderRepository, appUser, _configuration);
+                                        break;
+                                    case "event":
+                                        await Event(reminder, reminderMessage, userRepository, platformUserRepository, appUser);
+                                        break;
+                                    case "call":
+                                        await Call(reminder, reminderMessage, userRepository, platformUserRepository, appUser);
+                                        break;
+                                    default:
+                                        break;
                                 }
-                                catch (Exception ex)
-                                {
-                                    /// rollback the transaction and log error.
-                                    ErrorHandler.LogError(ex, "Error while processing activity notification.");
-                                    status = false;
-                                }
-
+                                status = true;
                             }
+                            catch (Exception ex)
+                            {
+                                /// rollback the transaction and log error.
+                                ErrorHandler.LogError(ex, "Error while processing activity notification.");
+                                status = false;
+                            }
+
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -94,44 +102,35 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for event typed activity records.
         /// </summary>
-        private async Task Event(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser)
+        private async Task Event(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
-
             try
             {
                 DateTime now = DateTime.UtcNow;
                 DateTime reminderStart = reminder.ReminderStart;
                 DateTime eventEnd = reminder.ReminderEnd;
 
-                using (var dbContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
+                var usr = await userRepository.GetById((int)reminder.Owner);
+
+                string email = usr.Email;
+                string subject = reminder.Subject;
+
+                string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
+                startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm"),
+                endDate = eventEnd.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
+
+                var user = await platformUserRepository.Get(usr.Email);
+                var appUser = new UserItem
                 {
-                    using (var _userRepository = new UserRepository(dbContext, _configuration))
-                    {
-                        var usr = await _userRepository.GetById((int)reminder.Owner);
+                    AppId = _appUser.AppId,
+                    TenantId = _appUser.TenantId,
+                    Id = user.Id,
+                    UserName = user.Email,
+                    Email = user.Email
+                };
 
-                        string email = usr.Email;
-                        string subject = reminder.Subject;
-
-                        string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
-                        startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm"),
-                        endDate = eventEnd.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
-
-                        var user = await platformUserRepository.Get(usr.Email);
-                        var appUser = new UserItem
-                        {
-                            AppId = _appUser.AppId,
-                            TenantId = _appUser.TenantId,
-                            Id = user.Id,
-                            UserName = user.Email,
-                            Email = user.Email
-                        };
-
-                        Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, _appUser.AppId, appUser, _configuration);
-                        /// program notification email for the reminder date.
-
-
-                    }
-                }
+                Email.Notification.Event(userName, subject, email, usr.Culture, startDate, endDate, _appUser.AppId, appUser, _configuration, _serviceScopeFactory);
+                /// program notification email for the reminder date.
             }
             catch (Exception ex)
             {
@@ -142,57 +141,45 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for call typed activity records.
         /// </summary>
-        private async Task Call(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser)
+        private async Task Call(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
-
-
             try
             {
                 DateTime now = DateTime.UtcNow;
                 DateTime reminderStart = reminder.ReminderStart;
                 DateTime eventEnd = reminder.ReminderEnd;
 
+                var usr = await userRepository.GetById((int)reminder.Owner);
 
+                string email = usr.Email;
+                string subject = reminder.Subject;
 
-                using (var dbContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
+                string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
+                    startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
+
+                var user = await platformUserRepository.Get(usr.Email);
+                var appUser = new UserItem
                 {
-                    using (var _userRepository = new UserRepository(dbContext, _configuration))
-                    {
-                        var usr = await _userRepository.GetById((int)reminder.Owner);
+                    AppId = _appUser.AppId,
+                    TenantId = _appUser.TenantId,
+                    Id = user.Id,
+                    UserName = user.Email,
+                    Email = user.Email
+                };
 
-                        string email = usr.Email;
-                        string subject = reminder.Subject;
-
-                        string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName),
-                            startDate = reminderStart.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy HH:mm");
-
-                        var user = await platformUserRepository.Get(usr.Email);
-                        var appUser = new UserItem
-                        {
-                            AppId = _appUser.AppId,
-                            TenantId = _appUser.TenantId,
-                            Id = user.Id,
-                            UserName = user.Email,
-                            Email = user.Email
-                        };
-                        Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser, _configuration);
-
-                        /// program notification email for the reminder date.
-
-                    };
-                }
+                Email.Notification.Call(userName, subject, email, usr.Culture, startDate, _appUser.AppId, appUser, _configuration, _serviceScopeFactory);
+                /// program notification email for the reminder date.
             }
             catch (Exception ex)
             {
                 ErrorHandler.LogError(ex, $"Reminder Call has failed while running id: {reminderMessage.Id} rev: {reminderMessage.Rev} tenant: {reminderMessage.TenantId}.");
             }
-
         }
 
         /// <summary>
         /// Creates notifications for task typed activity records.
         /// </summary>
-        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, PlatformUserRepository platformUserRepository, UserItem _appUser, IConfiguration configuration)
+        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, ReminderRepository reminderRepository, UserItem _appUser, IConfiguration configuration)
         {
 
             try
@@ -208,35 +195,27 @@ namespace PrimeApps.App.Jobs.Reminder
                     reminderFrequency = (long)reminder.ReminderFrequency;
                 }
 
-                //var usr = crmUser.GetBasicProperties(email, session);IsTaskNotificationEnabled ?
+                var usr = await userRepository.GetById((int)reminder.Owner);
 
-                using (var dbContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
+                string email = usr.Email;
+                string subject = reminder.Subject;
+                string deadline = reminderEnd.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy");
+
+                string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName);
+
+                var user = await platformUserRepository.Get(usr.Email);
+
+                /// send notification email.
+                var appUser = new UserItem
                 {
-                    using (var _userRepository = new UserRepository(dbContext, _configuration))
-                    {
-                        var usr = await _userRepository.GetById((int)reminder.Owner);
+                    AppId = _appUser.AppId,
+                    TenantId = _appUser.TenantId,
+                    Id = user.Id,
+                    UserName = user.Email,
+                    Email = user.Email
+                };
 
-                        string email = usr.Email;
-                        string subject = reminder.Subject;
-                        string deadline = reminderEnd.AddMinutes(reminder.TimeZoneOffset).ToString("dd.MM.yyyy");
-
-                        string userName = string.Format("{0} {1}", usr.FirstName, usr.LastName);
-
-                        var user = await platformUserRepository.Get(usr.Email);
-
-                        /// send notification email.
-                        var appUser = new UserItem
-                        {
-                            AppId = _appUser.AppId,
-                            TenantId = _appUser.TenantId,
-                            Id = user.Id,
-                            UserName = user.Email,
-                            Email = user.Email
-                        };
-
-                        Email.Notification.Task(userName, subject, email, usr.Culture, deadline, _appUser.AppId, appUser, _configuration);
-                    };
-                }
+                Email.Notification.Task(userName, subject, email, usr.Culture, deadline, _appUser.AppId, appUser, _configuration, _serviceScopeFactory);
 
 
                 while (remindOn <= now && reminderFrequency != 0)
@@ -244,7 +223,6 @@ namespace PrimeApps.App.Jobs.Reminder
                     /// safety mechanism to prevent reminder message flood to the user.
                     remindOn = remindOn.AddMinutes(reminderFrequency);
                 }
-
 
                 if (reminderFrequency != 0 && (reminderEnd >= remindOn))
                 {
@@ -254,23 +232,14 @@ namespace PrimeApps.App.Jobs.Reminder
                     reminder.RemindedOn = remindOn;
 
                     //dynamic result = await cloudantClient.UpdateAsync((string)record._id, record);
-                    using (var databaseContext = new TenantDBContext(reminderMessage.TenantId, _configuration))
+                    var result = await reminderRepository.Update(reminder);
+                    if (result != null)
                     {
-                        using (var _reminderRepository = new ReminderRepository(databaseContext, configuration))
-                        {
+                        reminderMessage.Rev = result.Rev;
+                        DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
+                        Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser), dateOffset);
 
-                            var result = await _reminderRepository.Update(reminder);
-                            if (result != null)
-                            {
-                                reminderMessage.Rev = result.Rev;
-                                DateTimeOffset dateOffset = DateTime.SpecifyKind(remindOn, DateTimeKind.Utc);
-                                Hangfire.BackgroundJob.Schedule<Jobs.Reminder.Activity>(activity => activity.Process(reminderMessage, _appUser), dateOffset);
-
-                            }
-
-                        }
                     }
-
                 }
             }
             catch (Exception ex)

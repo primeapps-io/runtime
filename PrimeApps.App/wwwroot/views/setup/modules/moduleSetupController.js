@@ -122,8 +122,8 @@ angular.module('primeapps')
             $scope.moduleLicenseCopyCountLimit = function (moduleItem) {
                 $scope.moduleLicenseCount = 0;
 
-                if ($rootScope.user.moduleLicenseCount && $rootScope.user.moduleLicenseCount > 0) {
-                    $scope.moduleLicenseCount = $rootScope.user.moduleLicenseCount;
+                if ($rootScope.user.module_license_count && $rootScope.user.module_license_count > 0) {
+                    $scope.moduleLicenseCount = $rootScope.user.module_license_count;
                 }
                 else {
                     switch ($rootScope.user.appId) {
@@ -149,8 +149,8 @@ angular.module('primeapps')
             $scope.moduleLicenseCountLimit = function () {
                 $scope.moduleLicenseCount = 0;
 
-                if ($rootScope.user.moduleLicenseCount && $rootScope.user.moduleLicenseCount > 0) {
-                    $scope.moduleLicenseCount = $rootScope.user.moduleLicenseCount;
+                if ($rootScope.user.module_license_count && $rootScope.user.module_license_count > 0) {
+                    $scope.moduleLicenseCount = $rootScope.user.module_license_count;
                 }
                 else {
                     switch ($rootScope.user.appId) {
