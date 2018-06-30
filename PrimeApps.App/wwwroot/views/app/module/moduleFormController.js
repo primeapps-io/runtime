@@ -2021,6 +2021,7 @@ angular.module('primeapps')
                     url: config.apiUrl + 'document/upload_large',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
+                        'X-Tenant-Id': $cookies.get('tenant_id'),
                         'Accept': 'application/json' /// we have to set accept header to provide consistency between browsers.
                     },
                     queueLimit: 1,
