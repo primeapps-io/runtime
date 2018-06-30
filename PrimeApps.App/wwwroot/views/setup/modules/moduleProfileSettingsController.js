@@ -23,7 +23,7 @@ angular.module('primeapps')
                         var data = $filter('filter')(response.data, { module_id: $scope.module.id }, true);
                         for(var i = 0; i < data.length ; i++){
                             for(var j=0; j<data[i].profile_list.length ; j++){
-                                var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].Name;
+                                var profileName = $filter('filter')($rootScope.profiles, { id: parseInt(data[i].profile_list[j]) }, true)[0].name;
                                 if(!data[i].profileName)
                                     data[i].profileName = profileName;
                                 else
