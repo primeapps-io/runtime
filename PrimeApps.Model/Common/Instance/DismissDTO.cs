@@ -12,25 +12,25 @@ namespace PrimeApps.Model.Common.Instance
         /// <summary>
         /// User Id to dismiss
         /// </summary>
-        [DataMember]
-        public Guid UserID { get; set; }
+        [DataMember(Name = "user_id")]
+        public int UserID { get; set; }
 
         /// <summary>
         /// Instance ID to dismiss
         /// </summary>
-        [DataMember]
-        public Guid InstanceID { get; set; }
+        [DataMember(Name = "instance_id")]
+        public int InstanceID { get; set; }
 
         /// <summary>
         /// Email address to dismiss.
         /// </summary>
-        [DataMember]
-        public string EMail { get; set; }
+        [DataMember(Name = "email")]
+        public string Email { get; set; }
 
         /// <summary>
         /// Is this user has an account?
         /// </summary>
-        [DataMember]
+        [DataMember(Name = "has_account")]
         public bool HasAccount { get; set; }
     }
 }

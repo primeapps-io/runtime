@@ -12,6 +12,8 @@ using PrimeApps.Model.Common.Instance;
 using PrimeApps.App.Storage;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Entities.Platform;
+using System.Linq;
 
 namespace PrimeApps.App.Controllers
 {
@@ -112,7 +114,7 @@ namespace PrimeApps.App.Controllers
         [HttpPost]
         public async Task<IActionResult> Dismiss([FromBody]DismissDTO relation)
         {
-            TenantUser user = await _userRepository.GetByEmail(relation.EMail);
+            TenantUser user = await _userRepository.GetByEmail(relation.Email);
 
             if (user != null)
             {
@@ -122,7 +124,13 @@ namespace PrimeApps.App.Controllers
                 _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
                 await _userRepository.UpdateAsync(user);
-            }
+
+				var platformUser = await _platformUserRepository.Get(user.Id);
+
+				platformUser.TenantsAsUser.Remove(platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == AppUser.TenantId & x.UserId == user.Id));
+
+				await _platformUserRepository.UpdateAsync(platformUser);
+			}
 
             return Ok();
         }
