@@ -10,11 +10,12 @@
                 <div class="modal-body">
                     <div class="form-group row" ng-class="{'has-error': moduleProfileSettingForm.$submitted && moduleProfileSettingForm.profiles.$invalid}">
                         <label class="col-sm-4 control-label required-field">* {{'Setup.Modules.ModuleProfileSettingProfiles' | translate}} </label>
-                        <div style="width: 81%">
+                        <div class="col-sm-6" style="padding-left: 0px !important;">
                             <tags-input name="profiles"
                                         tabindex="999"
+                                        style="width: 280px !important;"
                                         ng-model="currentProfileSetting.profiles"
-                                        display-property="Name"
+                                        display-property="name"
                                         key-property="id"
                                         placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
                                         replace-spaces-with-dashes="false"

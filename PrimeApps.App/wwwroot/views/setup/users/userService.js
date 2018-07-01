@@ -28,6 +28,9 @@ angular.module('primeapps')
 
                     return users;
                 },
+                getAllUser: function(){
+                    return $http.get(config.apiUrl + 'User/get_users');
+                },
                 sendPasswordToOfficeUser: function (requestMail) {
                     return $http.post(config.apiUrl + 'messaging/send_external_email', requestMail);
                 },
@@ -59,10 +62,10 @@ angular.module('primeapps')
 
                 dismiss: function (user, instanceId) {
                     return $http.post(config.apiUrl + 'Instance/Dismiss', {
-                        UserID: user.id,
-                        EMail: user.email,
-                        HasAccount: user.hasAccount,
-                        InstanceID: instanceId
+                        user_id: user.id,
+                        email: user.email,
+                        has_account: user.has_account,
+                        instance_id: instanceId
                     });
                 }
             };
