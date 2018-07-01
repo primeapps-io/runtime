@@ -8,13 +8,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Messaging;
 
 namespace PrimeApps.App.Jobs.Messaging
 {
     public abstract class MessageClient
     {
-        public abstract Task<bool> Process(MessageDTO messageQueueItem);
+        public abstract Task<bool> Process(MessageDTO messageQueueItem, UserItem appUser);
 
         /// <summary>
         /// Formats messages by replacing actual field values.

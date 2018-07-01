@@ -72,7 +72,7 @@ namespace PrimeApps.App.Helpers
         /// <param name="resourceType">Type of the resource.</param>
         /// <param name="culture">The culture (tr-TR / en-US).</param>
         /// <param name="dataFields">The data fields of email</param>
-        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, int appId = 1, UserItem appUser = null)
+        public Email(EmailResource resourceType, string culture, Dictionary<string, string> dataFields, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, int appId, UserItem appUser)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
@@ -164,26 +164,23 @@ namespace PrimeApps.App.Helpers
 
                 }
 
-                if (appUser != null)
+                var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
                 {
-                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    var instance = tRepo.Get(appUser.TenantId);
 
-                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
+                    if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
                     {
-                        var instance = tRepo.Get(appUser.TenantId);
+                        appUrl = instance.Setting.Logo;
+                        appCodeUrl = "#";
+                        appName = instance.Setting.MailSenderName;
+                        socialMediaIcons = "none";
+                        footer = instance.Setting.MailSenderName;
 
-                        if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
+                        if (instance.Setting.MailSenderEmail.Contains("@etiya.com"))
                         {
-                            appUrl = instance.Setting.Logo;
-                            appCodeUrl = "#";
-                            appName = instance.Setting.MailSenderName;
-                            socialMediaIcons = "none";
-                            footer = instance.Setting.MailSenderName;
-
-                            if (instance.Setting.MailSenderEmail.Contains("@etiya.com"))
-                            {
-                                appLogo = "none";
-                            }
+                            appLogo = "none";
                         }
                     }
                 }
