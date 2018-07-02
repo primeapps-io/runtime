@@ -61,14 +61,14 @@
                                                               ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Calendar' | translate}}</span></label>
                             <label class="ui-checkbox"><input type="checkbox" ng-model="profile.newsfeed"
                                                               ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>
-                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.Dashboard" ng-disabled="profile.has_admin_rights" /><span>Pano</span></label>
+                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.dashboard" ng-disabled="profile.has_admin_rights" /><span>Pano</span></label>
                             <label class="ui-checkbox" ng-if="moduleRehber"><input type="checkbox"
                                                                                          ng-model="profile.home"
                                                                                          ng-disabled="profile.has_admin_rights"/><span>{{'Common.Homepage' | translate}}</span></label>
 
                             <label class="ui-checkbox" ng-if="moduleIzinler"><input type="checkbox"
                                                                                          ng-model="profile.collective_annual_leave"
-                                                                                         ng-disabled="profile.has_admin_rights"/><span>{{'Leave.collective_annual_leave' | translate}}</span></label>
+                                                                                         ng-disabled="profile.has_admin_rights"/><span>{{'Leave.CollectiveAnnualLeave' | translate}}</span></label>
                         </div>
                         <h5 ng-show="!profile || !(profile.has_admin_rights && profile.is_persistent)">
                             {{'Setup.Profiles.StarPage' | translate}} :</h5>

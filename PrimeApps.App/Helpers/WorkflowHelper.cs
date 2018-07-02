@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web;
-using System.Configuration;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Common.Cache;
-using Newtonsoft.Json;
-using PrimeApps.Model.Entities.Platform;
-using Microsoft.Extensions.DependencyInjection;
-using Humanizer.Localisation;
 
 namespace PrimeApps.App.Helpers
 {
@@ -540,14 +537,14 @@ namespace PrimeApps.App.Helpers
 
                                 using (var client = new HttpClient())
                                 {
-                                    var jsonData = new JObject();
                                     var recordId = (int)record["id"];
+                                    var jsonData = new JObject();
+                                    jsonData["id"] = recordId;
 
                                     if (webHook.Parameters != null)
                                     {
                                         var data = webHook.Parameters.Split(',');
                                         lookupModuleNames = new List<string>();
-                                        lookupModules = null;
 
                                         foreach (var field in module.Fields)
                                         {
@@ -584,10 +581,7 @@ namespace PrimeApps.App.Helpers
                                                 else
                                                     jsonData[parameterName] = recordData[fieldName];
                                             }
-
                                         }
-
-                                        jsonData["id"] = recordId;
                                     }
 
                                     switch (webHook.MethodType)

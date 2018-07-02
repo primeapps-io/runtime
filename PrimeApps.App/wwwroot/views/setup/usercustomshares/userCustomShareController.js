@@ -12,7 +12,7 @@ angular.module('primeapps')
                         $scope.userowners = response.data;
                         for(var i =0 ; i < response.data.length ; i++){
                             var item = response.data[i];
-                            $scope.userowners[i].userName = $filter('filter')($rootScope.users, { id: item.user_id }, true)[0].FullName;
+                            $scope.userowners[i].userName = $filter('filter')($rootScope.users, { id: item.user_id }, true)[0].full_name;
                         }
                         $scope.loading = false;
                     })

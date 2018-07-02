@@ -4,6 +4,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -13,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
+using PrimeApps.Model.Repositories.Interfaces;
 using System.Globalization;
 
 namespace PrimeApps.App
@@ -123,7 +125,7 @@ namespace PrimeApps.App
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
-            AuthConfiguration(services, Configuration);
+            AuthConfiguration(services, Configuration, HostingEnvironment);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

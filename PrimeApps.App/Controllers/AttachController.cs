@@ -1,28 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using Aspose.Cells;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.Model.Context;
+using Microsoft.Extensions.Configuration;
+using PrimeApps.App.Extensions;
+using PrimeApps.App.Helpers;
+using PrimeApps.App.Storage;
+using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Repositories.Interfaces;
-using System.Data;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
-using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Repositories;
-using Aspose.Cells;
-using Newtonsoft.Json.Linq;
-using System.Net.Mime;
-using PrimeApps.App.Storage;
-using System;
-using Microsoft.Extensions.Configuration;
-using PrimeApps.App.Helpers;
-using System.IO;
-using PrimeApps.App.Extensions;
-using System.Net;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
-using System.Net.Http.Headers;
-using MimeMapping;
+using System.Threading.Tasks;
 
 namespace PrimeApps.App.Controllers
 {
@@ -35,15 +27,17 @@ namespace PrimeApps.App.Controllers
         private IModuleRepository _modulepository;
         private IRecordRepository _recordpository;
         private IConfiguration _configuration;
-
-        public AttachController(ITenantRepository tenantRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        private IDocumentRepository _documentRepository;
+        private IUnifiedStorage _unifiedStorage;
+        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage)
         {
-
             _tenantRepository = tenantRepository;
+            _documentRepository = documentRepository;
             _modulepository = moduleRepository;
             _recordpository = recordRepository;
             _templateRepository = templateRepository;
             _configuration = configuration;
+            _unifiedStorage = unifiedStorage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -53,16 +47,15 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_recordpository);
             SetCurrentUser(_tenantRepository);
             SetCurrentUser(_templateRepository);
+            SetCurrentUser(_documentRepository);
             base.OnActionExecuting(context);
         }
 
         [Route("UploadAvatar"), HttpPost]
         public async Task<IActionResult> UploadAvatar()
         {
-            // try to parse stream.
-            Stream requestStream = await Request.ReadAsStreamAsync();
-
-            HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
+ 
+            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
 
             if (parser.Success)
             {
@@ -87,7 +80,9 @@ namespace PrimeApps.App.Controllers
 
                     //get the file name from parser
                     if (parser.Parameters.ContainsKey("name"))
+                    {
                         uniqueName = parser.Parameters["name"];
+                    }
                 }
 
                 if (string.IsNullOrEmpty(uniqueName))
@@ -97,14 +92,14 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //upload file to the temporary AzureStorage.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
                 if (chunk == chunks - 1)
                 {
                     //if this is last chunk, then move the file to the permanent storage by commiting it.
                     //as a standart all avatar files renamed to UserID_UniqueFileName format.
                     var user_image = string.Format("{0}_{1}", AppUser.Id, uniqueName);
-                    AzureStorage.CommitFile(uniqueName, user_image, parser.ContentType, "user-images", chunks, _configuration);
+                    await AzureStorage.CommitFile(uniqueName, user_image, parser.ContentType, "user-images", chunks, _configuration);
                     return Ok(user_image);
                 }
 
@@ -147,7 +142,9 @@ namespace PrimeApps.App.Controllers
 
                     //get the file name from parser
                     if (parser.Parameters.ContainsKey("name"))
+                    {
                         uniqueName = parser.Parameters["name"];
+                    }
                 }
 
                 if (string.IsNullOrEmpty(uniqueName))
@@ -157,14 +154,14 @@ namespace PrimeApps.App.Controllers
                 }
 
                 //upload file to the temporary AzureStorage.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
+                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
                 if (chunk == chunks - 1)
                 {
                     //if this is last chunk, then move the file to the permanent storage by commiting it.
                     //as a standart all avatar files renamed to UserID_UniqueFileName format.
                     var logo = string.Format("{0}_{1}", AppUser.TenantGuid, uniqueName);
-                    AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "company-logo", chunks, _configuration);
+                    await AzureStorage.CommitFile(uniqueName, logo, parser.ContentType, "app-logo", chunks, _configuration);
                     return Ok(logo);
                 }
 
@@ -175,56 +172,46 @@ namespace PrimeApps.App.Controllers
             return Ok("Fail");
         }
 
-        //[Route("download")]
-        //public async Task<FileStreamResult> Download([FromQuery(Name = "FileId")] int FileId)
-        //{
-
-        //    //var tenant = await _tenantRepository.GetAsync(AppUser.TenantId);
-
-        //    using (var tenantDbContext = new TenantDBContext(AppUser.TenantId))
-        //    {
-        //        var publicName = "";
-        //        var doc = await tenantDbContext.Documents.FirstOrDefaultAsync(x =>
-        //            x.Id == FileId && x.Deleted == false);
-        //        if (doc != null)
-        //        {
-        //            //if there is a document with this id, try to get it from blob AzureStorage.
-        //            var blob = AzureStorage.GetBlob(string.Format("inst-{0}", tenant.GuidId), doc.UniqueName);
-        //            try
-        //            {
-        //                //try to get the attributes of blob.
-        //                await blob.FetchAttributesAsync();
-        //            }
-        //            catch (Exception)
-        //            {
-        //                //if there is an exception, it means there is no such file.
-        //                throw new Exception("Something happened");
-        //            }
-
-        //            //Is bandwidth enough to download this file?
-        //            //Bandwidth is enough, send the AzureStorage.
-        //            publicName = doc.Name;
+        [Route("download")]
+        public async Task<EmptyResult> Download([FromQuery(Name = "fileId")] int FileId)
+        {
+            var doc = await _documentRepository.GetById(FileId);
+            if (doc != null)
+            {
+                //if there is a document with this id, try to get it from blob AzureStorage.
+                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName, _configuration);
+                try
+                {
+                    //try to get the attributes of blob.
+                    await blob.FetchAttributesAsync();
+                }
+                catch (Exception ex)
+                {
+                    //if there is an exception, it means there is no such file.
+                    throw ex;
+                }
 
 
-        //            /*var file = new FileDownloadResult()
-        //            {
-        //                Blob = blob,
-        //                PublicName = doc.Name
-        //            };*/
-        //            Stream rtn = null;
-        //            var aRequest = (HttpWebRequest)WebRequest.Create(blob.Uri.AbsoluteUri);
-        //            var aResponse = (HttpWebResponse)aRequest.GetResponse();
-        //            rtn = aResponse.GetResponseStream();
-        //            return File(rtn, DocumentHelper.GetType(publicName), publicName);
-        //        }
-        //        else
-        //        {
-        //            //there is no such file, return
-        //            throw new Exception("Something happened");
-        //        }
-        //    }
+                //return Redirect(blob.Uri.AbsoluteUri + blob.GetSharedAccessSignature(new Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPolicy()
+                //{
+                //    Permissions = Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions.Read,
+                //    SharedAccessExpiryTime = DateTime.UtcNow.AddSeconds(5),
+                //    SharedAccessStartTime = DateTime.UtcNow.AddSeconds(-5)
+                //}));
 
-        //}
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + doc.Name); // force download
+                await blob.DownloadToStreamAsync(Response.Body);
+
+                return new EmptyResult();
+            }
+            else
+            {
+                //there is no such file, return
+                throw new Exception("Document does not exist in the storage!");
+            }
+
+
+        }
 
         [Route("download_template"), HttpGet]
         public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "template_id")]int templateId)
@@ -254,8 +241,10 @@ namespace PrimeApps.App.Controllers
                 string[] splittedFileName = template.Content.Split('.');
                 string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "xlsx";
 
-                return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + $"{template.Name}.{extension}"); // force download
+                await blob.DownloadToStreamAsync(Response.Body);
 
+                return new EmptyResult();
             }
             else
             {
@@ -268,7 +257,9 @@ namespace PrimeApps.App.Controllers
         public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module)
         {
             if (string.IsNullOrWhiteSpace(module))
+            {
                 throw new HttpRequestException("Module field is required");
+            }
 
             var moduleEntity = await _modulepository.GetByName(module);
             var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
@@ -349,7 +340,9 @@ namespace PrimeApps.App.Controllers
         public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
+            {
                 throw new HttpRequestException("Module field is required");
+            }
 
             var moduleEntity = await _modulepository.GetByName(module);
             var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
@@ -426,7 +419,9 @@ namespace PrimeApps.App.Controllers
         public async Task<FileStreamResult> ExportExcelNoData(string module, int templateId, string templateName, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
+            {
                 throw new HttpRequestException("Module field is required");
+            }
 
             var moduleEntity = await _modulepository.GetByName(module);
             var Module = await _modulepository.GetByName(module);
@@ -530,8 +525,9 @@ namespace PrimeApps.App.Controllers
         public async Task<FileStreamResult> ExportExcelData(string module, string templateName, int templateId, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
+            {
                 throw new HttpRequestException("Module field is required");
-
+            }
 
             var moduleEntity = await _modulepository.GetByName(module);
             var template = await _templateRepository.GetById(templateId);

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @using System.Reflection;
+@using Newtonsoft.Json;
 
 @inject IViewLocalizer Localizer
 @{
@@ -9,7 +10,6 @@
 	if (ViewBag.AppInfo != null)
 	{
 		app = ViewBag.AppInfo["app"].Value;
-		desc = ViewBag.AppInfo["desc_" + ViewBag.Language].Value;
 		color = ViewBag.AppInfo["color"].Value;
 	}
 	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
@@ -17,6 +17,7 @@
 	var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
 	var customImage = ViewBag.AppInfo["customImage"] != null ? ViewBag.AppInfo["customImage"].Value.ToString() : "";
 	var favicon = ViewBag.AppInfo["favicon"].Value;
+	var banner = JsonConvert.DeserializeObject(ViewBag.AppInfo["banner"].Value);
 }
 
 <!DOCTYPE html>
@@ -26,7 +27,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true"/>
+	<link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
+	<link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />
 	@*Styles.Render("~/bundles-css/auth")*@
 	<style>
 		.login-block {
@@ -83,7 +85,7 @@
 		}
 
 		.banner-sec {
-			background: url(@Url.Content(cdnUrlStatic + String.Format("/images/login/banner/{0}-background.jpg", app))) no-repeat center center;
+			background: url(@banner["images"][0].Value) no-repeat center center;
 			background-size: cover;
 			min-height: 500px;
 			padding: 0;
@@ -302,7 +304,7 @@
 							<div class="carousel-item active">
 								<div class="carousel-caption d-none d-md-block">
 									<div class="banner-text">
-										<p>@desc</p>
+										<p>@banner["descriptions"][0][ViewBag.Language].Value</p>
 									</div>
 								</div>
 							</div>

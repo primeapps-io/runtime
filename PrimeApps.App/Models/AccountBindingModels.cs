@@ -216,8 +216,8 @@ namespace PrimeApps.App.Models
         [Required]
         public int RoleId { get; set; }
 
-		[Required]
-		public int AppId { get; set; }
+		/*[Required]
+		public int AppId { get; set; }*/
 
         public int? TenantId { get; set; }
 

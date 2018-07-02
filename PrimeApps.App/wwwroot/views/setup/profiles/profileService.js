@@ -76,9 +76,9 @@ angular.module('primeapps')
 
                 changeUserProfile: function (userId, tenantId, transferedProfileId) {
                     return $http.post(config.apiUrl + 'Profile/ChangeUserProfile', {
-                        UserID: userId,
+                        User_ID: userId,
                         tenant_id: tenantId,
-                        TransferedProfileID: transferedProfileId
+                        Transfered_Profile_ID: transferedProfileId
                     });
                 },
 
