@@ -5,7 +5,7 @@ var app = angular.module('primeapps', []);
 app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$modal', '$filter', '$location', 'ModuleService', 'config', '$http', '$state', 'helper', 'ngToast',
     function ($rootScope, $scope, moment, $modal, $filter, $location, ModuleService, config, $http, $state, helper, ngToast) {
         $scope.loggedInUser = $rootScope.user.id;
-        $scope.owner = $filter('filter')($rootScope.users, { Id: ($location.search().user ? parseInt($location.search().user) : $rootScope.user.id) }, true)[0];
+        $scope.owner = $filter('filter')($rootScope.users, { id: ($location.search().user ? parseInt($location.search().user) : $rootScope.user.id) }, true)[0];
         $scope.userWeek = parseInt($location.search().week);
         $scope.userYear = parseInt($location.search().year);
         $scope.userMonth = parseInt($location.search().month);
@@ -190,7 +190,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                             return;
                         }
 
-                        var calisanEmail = $scope.owner.Email;
+                        var calisanEmail = $scope.owner.email;
                         var calisanRequest = {};
                         calisanRequest.fields = ['id'];
                         calisanRequest.filters = [
