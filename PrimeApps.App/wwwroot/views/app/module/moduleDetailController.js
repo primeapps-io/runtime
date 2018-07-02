@@ -1477,9 +1477,14 @@ angular.module('primeapps')
             };
 
             $scope.getDownloadUrl = function (format) {
-                var url = config.apiUrl + 'Document/export?module=' + $scope.type + '&id=' + $scope.id + "&templateId=" + $scope.quoteTemplate.id + '&access_token=' + $localStorage.read('access_token') + '&format=' + format + '&locale=' + $rootScope.locale + '&timezoneOffset=' + new Date().getTimezoneOffset() * -1;
-                $window.open(url, '_blank');
+                $window.open("/attach/export?module=" + $scope.type + "&id=" + $scope.id + "&templateId=" + $scope.quoteTemplate.id + "&access_token=" + $localStorage.read('access_token') + '&format=' + format + '&locale=' + $rootScope.locale + '&timezoneOffset=' + new Date().getTimezoneOffset() * -1, "_blank");
+                ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
             };
+
+            // $scope.getDownloadUrl = function (format) {
+            //     var url = config.apiUrl + 'attach/export?module=' + $scope.type + '&id=' + $scope.id + "&templateId=" + $scope.quoteTemplate.id + '&access_token=' + $localStorage.read('access_token') + '&format=' + format + '&locale=' + $rootScope.locale + '&timezoneOffset=' + new Date().getTimezoneOffset() * -1;
+            //     $window.open(url, '_blank');
+            // };
 
             $scope.openAddModal = function (relatedModule) {
                 $scope.selectedRelatedModule = relatedModule;
