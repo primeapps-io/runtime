@@ -967,8 +967,8 @@ angular.module('primeapps')
                                 picklistItem.label_en = picklistResponseItem.label_en;
                                 picklistItem.label_tr = picklistResponseItem.label_tr;
                                 picklistItem.value = picklistResponseItem.value;
-                                picklistItem.value2 = picklistResponseItem.value_2;
-                                picklistItem.value3 = picklistResponseItem.value_3;
+                                picklistItem.value2 = picklistResponseItem.value2;
+                                picklistItem.value3 = picklistResponseItem.value3;
                                 picklistItem.system_code = picklistResponseItem.system_code;
                                 picklistItem.order = picklistResponseItem.order;
                                 picklistItem.inactive = picklistResponseItem.inactive;
