@@ -18,7 +18,7 @@ namespace PrimeApps.Auth.Helpers
 {
 	public class AuthHelper
 	{
-		public static JObject GetApplicationInfo(IConfiguration configuration, HttpRequest request, HttpResponse response, string returnUrl, IApplicationRepository applicationRepository)
+		public static async Task<JObject> GetApplicationInfoAsync(IConfiguration configuration, HttpRequest request, HttpResponse response, string returnUrl, IApplicationRepository applicationRepository)
 		{
 			var _language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
@@ -31,22 +31,22 @@ namespace PrimeApps.Auth.Helpers
 			}
 
 			var primeLang = _language ?? "tr";
+			var b = "{\"images\": [\"/images/login/banner/primeapps-background.jpg\"], \"descriptions\": [{\"en\": \"\", \"tr\": \"Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.\"}]}";
 			var json = @"{
 							app: 'primeapps',
 							title: 'PrimeApps',
-							multi_language: true,
+							multiLanguage: 'true',
 							logo: '" + cdnUrlStatic + "/images/login/logos/login_primeapps.png', " +
 							"description: { banner1: { image: '', desc_tr: '', desc_en: '' }}," +
 							"desc_tr:'BUILD POWERFUL BUSINESS APPS 10X FASTER', " +
 							"desc_en:'BUILD POWERFUL BUSINESS APPS 10X FASTER', " +
 							"color: '#555198', " +
-							"banner: { images: ['/images/login/banner/primeapps-background.jpg'], descriptions: [{tr:'Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.', en: ''}]}," +
+							"banner: '" + b + "'," +
 							"customDomain: false, " +
 							"language: '" + primeLang + "', " +
 							"favicon: '" + cdnUrlStatic + "/images/favicon/primeapps.ico'," +
 							"cdnUrl: '" + cdnUrlStatic + "'" +
 						"}";
-
 
 			Uri url = null;
 
@@ -57,7 +57,7 @@ namespace PrimeApps.Auth.Helpers
 			{
 				App result = null;
 
-				result = applicationRepository.Get(url.Authority);
+				result = await applicationRepository.Get(url.Authority);
 
 				if (string.IsNullOrWhiteSpace(_language))
 					_language = result.Setting.Language ?? "tr";
@@ -80,9 +80,9 @@ namespace PrimeApps.Auth.Helpers
 						"desc_tr:'" + description + "', " +
 						"desc_en:'" + description + "', " +
 						"color: '" + color + "', " +
-						"customDomain: true, " +
+						"customDomain: false, " +
 						"language: '" + _language + "'," +
-						"banner: '"+ banner +"'," +
+						"banner: '" + banner + "'," +
 						"favicon: '" + favicon + "'," +
 						"customImage: '" + image + "'," +
 						"multiLanguage: '" + multiLanguage + "'," +
@@ -93,7 +93,7 @@ namespace PrimeApps.Auth.Helpers
 
 				}
 			}
-			
+
 			//SetLanguage(response, request, _language);
 			return JObject.Parse(json);
 		}
