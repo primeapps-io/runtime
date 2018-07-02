@@ -278,7 +278,12 @@ namespace PrimeApps.App.Controllers
 				acc.user.appId = AppUser.AppId;
 				acc.apps = apps;
 
-				if (acc.user.deactivated)
+                foreach (var inst in acc.instances)
+                {
+                    inst.logoUrl = AzureStorage.GetLogoUrl(inst.logoUrl, _configuration);
+                }
+
+                if (acc.user.deactivated)
 					throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
 				//throw new HttpResponseException(HttpStatusCode.Status409Conflict);
 
@@ -287,46 +292,6 @@ namespace PrimeApps.App.Controllers
 
 			acc = null;
 			return Ok(acc); //Success service request - but no account data - disabled user(inactive)
-		}
-
-		//TODO Removed
-		/*[Route("ActiveDirectoryInfo"), HttpGet]
-        public async Task<IActionResult> GetAdInfo()
-        {
-            PlatformUser accountOwner = await _platformUserRepository.GetUserByAutoId(AppUser.TenantId);
-
-            if (accountOwner == null || accountOwner.ActiveDirectoryTenantId < 1) return Ok(false);
-            using (var dbContext = new PlatformDBContext())
-            {
-                var tenantId = accountOwner.ActiveDirectoryTenantId;
-                var adTenant = dbContext.ActiveDirectoryTenants.FirstOrDefault(a => a.Id == tenantId);
-
-                var data = new
-                {
-                    info = adTenant,
-                    email = accountOwner.ActiveDirectoryEmail
-
-                };
-
-                return Ok(data);
-            }
-        }*/
-
-
-				if (chunk == chunks - 1)
-				{
-					//if this is last chunk, then move the file to the permanent storage by commiting it.
-					//as a standart all avatar files renamed to UserID_UniqueFileName format.
-					var user_image = string.Format("{0}_{1}", AppUser.Id, uniqueName);
-					AzureStorage.CommitFile(uniqueName, user_image, parser.ContentType, "user-images", chunks, _configuration);
-					return Ok(user_image);
-				}
-
-				//return content type.
-				return Ok(parser.ContentType);
-			}
-			//this is not a valid request so return fail.
-			return Ok("Fail");
 		}
 
 		[Route("get_all"), HttpGet]
@@ -378,30 +343,6 @@ namespace PrimeApps.App.Controllers
 				_recordRepository.TenantId = tenantId;
 			}
 
-			//TODO Removed
-			/*if (!request.notCheckIsAdmin)
-			{
-				//get the instance that invitation request will be created on.
-				var isOperationAllowed = await Cache.Tenant.CheckProfilesAdministrativeRights(tenantId, adminUserLocalId);
-
-				if (!isOperationAllowed)
-				{
-					//if current user is not the admin of the instance then reject that request and send a forbidden http request.
-					return StatusCode(HttpStatusCode.Forbidden);
-				}
-				
-			}*/
-
-			//if (!crmLicenseUsage.HasUserCapacity(tenantId))
-			//         {
-			//             //if capacity is exceeded, return payment required status code and cancel process.
-			//             return StatusCode(HttpStatusCode.PaymentRequired);
-			//         }
-
-			//var hasAccount = crmPendingShareRequests.Invite(request.Email, instanceId, adminUserGlobalId, request.ProfileId, request.RoleId, createdBy);
-
-			//if (hasAccount)
-			//    return StatusCode(HttpStatusCode.Conflict);
 
 			//Register
 			var tenant = _platformRepository.GetTenant(tenantId);
