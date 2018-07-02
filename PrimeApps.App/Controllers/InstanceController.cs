@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using PrimeApps.App.Helpers;
@@ -53,6 +53,7 @@ namespace PrimeApps.App.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit([FromBody]TenantDTO tenantDto)
         {
+            //TODO Control TenantDTO model'i değişmesi gerekiyor.
             //check if the tenant id is valid, within the current session's context.
             var tenantToUpdate = await _tenantRepository.GetAsync(AppUser.TenantId);
 
