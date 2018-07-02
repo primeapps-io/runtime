@@ -17,6 +17,7 @@ using PrimeApps.Model.Common.Record;
 using RecordHelper = PrimeApps.Model.Helpers.RecordHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS
@@ -38,7 +39,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
         /// </summary>
         /// <param name="smsQueueItem"></param>
         /// <returns></returns>
-        public override async Task<bool> Process(MessageDTO smsQueueItem)
+        public override async Task<bool> Process(MessageDTO smsQueueItem, UserItem appUser)
         {
 
             string[] ids;

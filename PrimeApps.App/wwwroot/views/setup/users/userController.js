@@ -14,6 +14,7 @@ angular.module('primeapps')
             $scope.addUserModel = {};
             $scope.addUserForm = true;
             $scope.submitting = false;
+            $scope.hideSendEmailToUser = false;
 
             $scope.officeUserChanged = function (selectedOfficeUser) {
                 $scope.addUserModel.email = selectedOfficeUser.email;
@@ -74,6 +75,7 @@ angular.module('primeapps')
                 $scope.submitting = false;
                 $scope.addUserForm = true;
                 $scope.userPassword = null;
+                $scope.hideSendEmailToUser = false;
                 if ($scope.createOfficePopover) {
                     $scope.createOfficePopover.hide();
                 } else if ($scope.createPopover) {
@@ -106,23 +108,24 @@ angular.module('primeapps')
             function getUsers() {
                 var promises = [];
 
-                //promises.push(WorkgroupService.getWorkgoup());
+                promises.push(UserService.getAllUser());
                 promises.push(ProfileService.getAll());
                 promises.push(RoleService.getAll());
                 promises.push(LicenseService.getUserLicenseStatus());
 
 
                 $q.all(promises).then(function (data) {
-                    var //workgroupData = data[0].data,
-                        responseProfiles = data[0].data,
-                        responseRoles = data[1].data,
-                        license = data[2].data;
+                    var users = data[0].data,
+                        responseProfiles = data[1].data,
+                        responseRoles = data[2].data,
+                        license = data[3].data;
 
                     //var workgroup = $filter('filter')($rootScope.workgroups, { tenant_id: $rootScope.user.tenant_id }, true)[0];
+                    $rootScope.workgroup.users = users;
 
                     $scope.profiles = ProfileService.getProfiles(responseProfiles, $rootScope.workgroup.tenant_id, true);
                     $scope.roles = responseRoles;
-                    $scope.users = UserService.getUsers($rootScope.workgroup.users, $scope.profiles, $scope.roles);
+                    $scope.users = UserService.getUsers(users, $scope.profiles, $scope.roles);
                     $scope.licensesBought = license.total || 0;
                     $scope.licensesUsed = license.used || 0;
                     $scope.licenseAvailable = $scope.licensesBought - $scope.licensesUsed;
@@ -186,6 +189,7 @@ angular.module('primeapps')
                             });
 
                             $scope.userPassword = response.data;
+                            $scope.hideSendEmailToUser = response.data.contains("***");
                             $scope.addUserForm = false;
                             $scope.addUserModel = {};
                         }

@@ -7,6 +7,7 @@ using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -23,14 +24,16 @@ namespace PrimeApps.App.Jobs.Email
         /// <param name="successful"></param>
         /// <param name="notAllowed"></param>
         /// <param name="missingAddresses"></param>
-        public static void SendEMailStatusNotification(TenantUser owner, string template, string moduleName, DateTime smsDate, NotificationStatus status, int successful, int notAllowed, int missingAddresses, int tenantId, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public static void SendEMailStatusNotification(TenantUser owner, string template, string moduleName, DateTime smsDate, NotificationStatus status, int successful, int notAllowed, int missingAddresses, int tenantId, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, UserItem appUser)
         {
             string formattedDate = "";
 
-            using (var dbContext = new TenantDBContext(tenantId, configuration))
+            using (var scope = serviceScopeFactory.CreateScope())
             {
-                CultureInfo cultureInfo = new CultureInfo(owner.Culture);
-                formattedDate = smsDate.ToString("dd.MM.yyyy", cultureInfo);
+                var dbContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                dbContext.TenantId = tenantId;
+
+                formattedDate = smsDate.ToString("dd.MM.yyyy");
                 //create email mesage with its parameters.
                 Dictionary<string, string> emailData = new Dictionary<string, string>();
                 Helpers.Email email = null;
@@ -45,21 +48,18 @@ namespace PrimeApps.App.Jobs.Email
                     emailData.Add("MissingNumbers", missingAddresses.ToString());
                     emailData.Add("NotAllowed", notAllowed.ToString());
 
-                    email = new Helpers.Email(EmailResource.EMailStatusSuccessful, owner.Culture, emailData, configuration, serviceScopeFactory);
+                    email = new Helpers.Email(EmailResource.EMailStatusSuccessful, owner.Culture, emailData, configuration, serviceScopeFactory, appUser.AppId, appUser);
                 }
                 else
                 {
                     emailData.Add("ErrorReason", $"{{{status.ToString()}}}");
-                    email = new Helpers.Email(EmailResource.EMailStatusFailed, owner.Culture, emailData, configuration, serviceScopeFactory);
+                    email = new Helpers.Email(EmailResource.EMailStatusFailed, owner.Culture, emailData, configuration, serviceScopeFactory, appUser.AppId, appUser);
                 }
 
                 /// send the email.
                 email.AddRecipient(owner.Email);
                 email.AddToQueue();
-
-                //transaction.Commit();//TODO : Not working before now, Why?..
             }
-
         }
     }
 }
