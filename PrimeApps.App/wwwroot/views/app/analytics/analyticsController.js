@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.filterPaneEnabled = false;
             $scope.analyticsLoading = true;
 
-            if (!$rootScope.user.hasAnalytics) {
+            if (!$rootScope.user.has_analytics) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
                 $state.go('app.dashboard');
                 return;

@@ -76,8 +76,8 @@
                         <div class="col-sm-offset-3 col-sm-9">
                             <span class="long-message" ng-if="saving && (!id ? true : reportFileCleared)">{{'Setup.Report.LongMessage' | translate}}</span>
                             <button type="button" class="btn btn-custom" ng-click="cancel()" ng-disabled="saving">{{'Common.Cancel' | translate}}</button>
-                            <span title="{{!workgroup.hasAnalytics ? ('Analytics.DemoDisabled' | translate) : ''}}">
-                                <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving" ng-disabled="!workgroup.hasAnalytics"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                            <span title="{{!workgroup.has_analytics ? ('Analytics.DemoDisabled' | translate) : ''}}">
+                                <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving" ng-disabled="!workgroup.has_analytics"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
                             </span>
                         </div>
                     </div>

@@ -127,7 +127,7 @@ angular.module('primeapps')
                     $scope.sipUsers = $scope.sipSettings.sipUsers;
                     angular.forEach($scope.sipUsers, function (sipUser) {
                         var user = $filter('filter')($scope.users, { id: parseInt(sipUser.userId) }, true)[0];
-                        sipUser.name = user.FullName;
+                        sipUser.name = user.full_name;
                     });
                     $scope.sipCompanyKey = $scope.sipSettings.sipCompanyKey;
 
@@ -143,7 +143,7 @@ angular.module('primeapps')
                         $scope.sipUsers = response.data.sipUsers;
                         angular.forEach($scope.sipUsers, function (sipUser) {
                             var user = $filter('filter')($scope.users, { id: parseInt(sipUser.userId) }, true)[0];
-                            sipUser.name = user.FullName;
+                            sipUser.name = user.full_name;
 
                         });
                         $scope.sipCompanyKey = $scope.sipSettings.sipCompanyKey;

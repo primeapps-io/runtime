@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, ngToast, $state, AnalyticsService) {
             $scope.loading = true;
 
-            if (!$rootScope.workgroup.hasAnalytics) {
+            if (!$rootScope.workgroup.has_analytics) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
                 $state.go('app.dashboard');
                 $rootScope.app = 'crm';
