@@ -23,12 +23,12 @@ namespace PrimeApps.App.Helpers
 		Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
 		Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0);
 		Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record);
-		Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule);
-		Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module);
-		Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module);
-		Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module kasaHareketiModule);
-		Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule);
-		Task<decimal> CalculateStock(JObject record, UserItem appUser, Module stockTransactionModule);
+		Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule, Warehouse warehouse);
+		Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module, Warehouse warehouse);
+		Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module, Warehouse warehouse);
+		Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module kasaHareketiModule, Warehouse warehouse);
+		Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule, Warehouse _warehouse);
+		Task<decimal> CalculateStock(JObject record, UserItem appUser, Module stockTransactionModule, Warehouse warehouse);
 	}
 
 	public class CalculationHelper : ICalculationHelper
@@ -240,7 +240,7 @@ namespace PrimeApps.App.Helpers
 														await recordRepository.Update(recordCurrentAccount, currentAccountModule);
 													}
 
-													recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
+													recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module, warehouse);
 													recordAccount["balance"] = recordAccountBalance;
 
 													break;
@@ -256,7 +256,7 @@ namespace PrimeApps.App.Helpers
 														await recordRepository.Update(recordCurrentAccount, currentAccountModule);
 													}
 
-													recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
+													recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module, warehouse);
 													recordAccount["bakiye_eur"] = recordAccountBalance;
 
 													break;
@@ -272,7 +272,7 @@ namespace PrimeApps.App.Helpers
 														await recordRepository.Update(recordCurrentAccount, currentAccountModule);
 													}
 
-													recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
+													recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module, warehouse);
 													recordAccount["bakiye_usd"] = recordAccountBalance;
 
 													break;
@@ -288,15 +288,15 @@ namespace PrimeApps.App.Helpers
 												switch (currencySalesInvoice)
 												{
 													case "try":
-														recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
+														recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module, warehouse);
 														recordAccount["balance"] = recordAccountBalance;
 														break;
 													case "eur":
-														recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
+														recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module, warehouse);
 														recordAccount["bakiye_eur"] = recordAccountBalance;
 														break;
 													case "usd":
-														recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module);
+														recordAccountBalance = await CalculateAccountBalance(record, currencySalesInvoice, appUser, currentAccountModule, currencyPicklistSalesInvoice, module, warehouse);
 														recordAccount["bakiye_usd"] = recordAccountBalance;
 														break;
 												}
@@ -357,7 +357,7 @@ namespace PrimeApps.App.Helpers
 														await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
 													}
 
-													recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+													recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module, warehouse);
 													recordSupplier["balance"] = recordSupplierBalance;
 
 													break;
@@ -373,7 +373,7 @@ namespace PrimeApps.App.Helpers
 														await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
 													}
 
-													recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+													recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module, warehouse);
 													recordSupplier["bakiye_euro"] = recordSupplierBalance;
 
 													break;
@@ -389,7 +389,7 @@ namespace PrimeApps.App.Helpers
 														await recordRepository.Update(recordCurrentAccount, currentSupplierModule);
 													}
 
-													recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+													recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module, warehouse);
 													recordSupplier["bakiye_usd"] = recordSupplierBalance;
 
 													break;
@@ -405,15 +405,15 @@ namespace PrimeApps.App.Helpers
 												switch (currencyPurchaseInvoice)
 												{
 													case "try":
-														recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+														recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module, warehouse);
 														recordSupplier["balance"] = recordSupplierBalance;
 														break;
 													case "eur":
-														recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+														recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module, warehouse);
 														recordSupplier["bakiye_euro"] = recordSupplierBalance;
 														break;
 													case "usd":
-														recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module);
+														recordSupplierBalance = await CalculateSupplierBalance(record, currencyPurchaseInvoice, appUser, currentSupplierModule, currencyPicklistPurchaseInvoice, module, warehouse);
 														recordSupplier["bakiye_usd"] = recordSupplierBalance;
 														break;
 												}
@@ -445,15 +445,15 @@ namespace PrimeApps.App.Helpers
 											switch (currencyCurrentAccount)
 											{
 												case "try":
-													parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+													parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
 													parentAccountRecord["balance"] = parentAccountRecordBalance;
 													break;
 												case "eur":
-													parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+													parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
 													parentAccountRecord["bakiye_eur"] = parentAccountRecordBalance;
 													break;
 												case "usd":
-													parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+													parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
 													parentAccountRecord["bakiye_usd"] = parentAccountRecordBalance;
 													break;
 											}
@@ -474,15 +474,15 @@ namespace PrimeApps.App.Helpers
 											switch (currencyCurrentAccount)
 											{
 												case "try":
-													parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+													parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
 													parentSupplierRecord["balance"] = parentSupplierRecordBalance;
 													break;
 												case "eur":
-													parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+													parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
 													parentSupplierRecord["bakiye_euro"] = parentSupplierRecordBalance;
 													break;
 												case "usd":
-													parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module);
+													parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
 													parentSupplierRecord["bakiye_usd"] = parentSupplierRecordBalance;
 													break;
 											}
@@ -548,7 +548,7 @@ namespace PrimeApps.App.Helpers
 													await recordRepository.Create(kasaHareketiRecord, kasaHareketiModule);
 
 												//kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
-												decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule);
+												decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule, warehouse);
 												var kasaRecord = new JObject();
 												kasaRecord["id"] = record["kasa"];
 												kasaRecord["guncel_bakiye"] = kasaBalance;
@@ -604,7 +604,7 @@ namespace PrimeApps.App.Helpers
 													await recordRepository.Create(bankaHareketiRecord, bankaHareketiModule);
 
 												//banka hareketlerinin ve ana bankanın bakiyesini güncelleme
-												decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule);
+												decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule, warehouse);
 												var bankaRecord = new JObject();
 												bankaRecord["id"] = record["banka"];
 												bankaRecord["guncel_bakiye"] = bankaBalance;
@@ -628,7 +628,7 @@ namespace PrimeApps.App.Helpers
 													await recordRepository.Delete(kasaHareketiObj, kasaHareketiModule);
 
 													//kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
-													decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule);
+													decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule, warehouse);
 													var kasaRecord = new JObject();
 													kasaRecord["id"] = record["kasa"];
 													kasaRecord["guncel_bakiye"] = kasaBalance;
@@ -650,7 +650,7 @@ namespace PrimeApps.App.Helpers
 													await recordRepository.Delete(bankaHareketiObj, bankaHareketiModule);
 
 													//banka hareketlerinin ve ana kasanın bakiyesini güncelleme
-													decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule);
+													decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule, warehouse);
 													var bankaRecord = new JObject();
 													bankaRecord["id"] = record["banka"];
 													bankaRecord["guncel_bakiye"] = bankaBalance;
@@ -669,7 +669,7 @@ namespace PrimeApps.App.Helpers
 										var recordKasa = new JObject();
 										decimal kasaRecordBalance;
 
-										kasaRecordBalance = await CalculateKasaBalance(record, kasaHareketTipleri, appUser, kasaHareketleriModule);
+										kasaRecordBalance = await CalculateKasaBalance(record, kasaHareketTipleri, appUser, kasaHareketleriModule, warehouse);
 										recordKasa["guncel_bakiye"] = kasaRecordBalance;
 
 										//bankanın balance'ını güncelleme
@@ -686,7 +686,7 @@ namespace PrimeApps.App.Helpers
 										var bankRecord = new JObject();
 										decimal bankaRecordBalance;
 
-										bankaRecordBalance = await CalculateBankaBalance(record, bankaHareketTipleri, appUser, bankaHareketleriModule);
+										bankaRecordBalance = await CalculateBankaBalance(record, bankaHareketTipleri, appUser, bankaHareketleriModule, warehouse);
 										bankRecord["guncel_bakiye"] = bankaRecordBalance;
 
 										//bankanın balance'ını güncelleme
@@ -1599,7 +1599,7 @@ namespace PrimeApps.App.Helpers
 												{
 													await recordRepository.Delete(stockTransObj, stockModObj);
 													var prodItemObj = new JObject();
-													decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, stockModObj);
+													decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, stockModObj, warehouse);
 													prodItemObj["stock_quantity"] = productStockQuantity;
 													prodItemObj["id"] = stockTransObj["product"];
 													await recordRepository.Update(prodItemObj, prodModObj);
@@ -1623,7 +1623,7 @@ namespace PrimeApps.App.Helpers
 												{
 													await recordRepository.Delete(stockTransObj, stockModObj2);
 													var prodItemObj = new JObject();
-													decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, stockModObj2);
+													decimal productStockQuantity = await CalculateStock(stockTransObj, appUser, stockModObj2, warehouse);
 													prodItemObj["stock_quantity"] = productStockQuantity;
 													prodItemObj["id"] = stockTransObj["product"];
 													await recordRepository.Update(prodItemObj, prodModObj2);
@@ -1702,7 +1702,7 @@ namespace PrimeApps.App.Helpers
 												prodItem["stock_quantity"] = 0;
 
 
-											decimal productStockQuantity = await CalculateStock(record, appUser, stockModule);
+											decimal productStockQuantity = await CalculateStock(record, appUser, stockModule, warehouse);
 											prodItem["stock_quantity"] = productStockQuantity;
 
 											await recordRepository.Update(prodItem, prodMod);
@@ -1719,7 +1719,7 @@ namespace PrimeApps.App.Helpers
 
 										var stockModuleObj = await moduleRepository.GetByName("stock_transactions");
 										var transactionTypePicklist = stockModuleObj.Fields.Single(x => x.Name == "stock_transaction_type");
-										decimal stockQuantity = await CalculateStock(record, appUser, stockModuleObj);
+										decimal stockQuantity = await CalculateStock(record, appUser, stockModuleObj, warehouse);
 										product["stock_quantity"] = stockQuantity;
 
 										await recordRepository.Update(product, productModuleObj);
@@ -2114,7 +2114,7 @@ namespace PrimeApps.App.Helpers
 											}
 
 
-											await CalculateTimesheet(timesheetItemsRecords, appUser, module, timesheetModule);
+											await CalculateTimesheet(timesheetItemsRecords, appUser, module, timesheetModule, warehouse);
 										}
 										break;
 									case "human_resources":
@@ -2721,13 +2721,13 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public async Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule)
+		public async Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule, Warehouse _warehouse)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, _warehouse, _configuration))
 				using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
 				{
 					_moduleRepository.CurrentUser = _recordRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
@@ -2879,12 +2879,12 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public async Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module)
+		public async Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module, Warehouse _warehouse)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, _warehouse, _configuration))
 				{
 					_recordRepository.CurrentUser = _currentUser;
 
@@ -2953,12 +2953,12 @@ namespace PrimeApps.App.Helpers
 
 		}
 
-		public async Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module)
+		public async Task<decimal> CalculateSupplierBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistPurchaseInvoice, Module module, Warehouse _warehouse)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, _warehouse, _configuration))
 				{
 					_recordRepository.CurrentUser = _currentUser;
 
@@ -3026,13 +3026,13 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public async Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module kasaHareketiModule)
+		public async Task<decimal> CalculateKasaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module kasaHareketiModule, Warehouse _warehouse)
 		{
 
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, _warehouse, _configuration))
 				{
 					_recordRepository.CurrentUser = _currentUser;
 
@@ -3060,12 +3060,12 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public async Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule)
+		public async Task<decimal> CalculateBankaBalance(JObject record, Picklist hareketTipleri, UserItem appUser, Module bankaHareketiModule, Warehouse _warehouse)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
-				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+				using (var _recordRepository = new RecordRepository(databaseContext, _warehouse, _configuration))
 				{
 					_recordRepository.CurrentUser = _currentUser;
 
@@ -3093,12 +3093,12 @@ namespace PrimeApps.App.Helpers
 			}
 		}
 
-		public async Task<decimal> CalculateStock(JObject record, UserItem appUser, Module stockTransactionModule)
+		public async Task<decimal> CalculateStock(JObject record, UserItem appUser, Module stockTransactionModule, Warehouse _warehouse)
 		{
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+				using (var _recordRepository = new RecordRepository(databaseContext, _warehouse, _configuration))
 				using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
 				{
 					_recordRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
