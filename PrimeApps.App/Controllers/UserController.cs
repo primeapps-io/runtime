@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
@@ -17,7 +16,6 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -93,13 +91,16 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> Avatar([FromQuery(Name = "fileName")]string fileName)
         {
             //get uploaded file from storage
-            var file = AzureStorage.GetBlob("user-images", fileName, _configuration);
+            var blob = AzureStorage.GetBlob("user-images", fileName, _configuration);
             try
             {
                 //if the file exists, fetchattributes method will fetch the attributes, otherwise it'll throw an exception/
-                await file.FetchAttributesAsync();
+                await blob.FetchAttributesAsync();
 
-                return await AzureStorage.DownloadToFileStreamResultAsync(file, fileName);
+                //return await AzureStorage.DownloadToFileStreamResultAsync(file, fileName);
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + fileName); // force download
+                await blob.DownloadToStreamAsync(Response.Body);
+                return new EmptyResult();
 
             }
             catch (Exception)
@@ -251,6 +252,11 @@ namespace PrimeApps.App.Controllers
 
                 acc.user.tenantLanguage = AppUser.TenantLanguage;
                 acc.instances = tenant;
+
+                foreach (var inst in acc.instances)
+                {
+                    inst.logoUrl = AzureStorage.GetLogoUrl(inst.logoUrl, _configuration);
+                }
                 acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture, _configuration);
                 //acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
                 acc.imageUrl = _configuration.GetSection("AppSettings")["BlobUrl"] + "/record-detail-" + tenant[0].tenantId + "/";
@@ -263,7 +269,9 @@ namespace PrimeApps.App.Controllers
                 acc.apps = apps;
 
                 if (acc.user.deactivated)
+                {
                     throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
+                }
                 //throw new HttpResponseException(HttpStatusCode.Status409Conflict);
 
                 return Ok(acc);
@@ -297,70 +305,6 @@ namespace PrimeApps.App.Controllers
         }*/
 
 
-        /// <summary>
-        /// Uploads a new avatar for the user.
-        /// </summary>
-        /// <param name="fileContents">The file contents.</param>
-        /// <returns>System.String.</returns>
-        [Route("UploadAvatar"), HttpPost]
-        public async Task<IActionResult> UploadAvatar()
-        {
-            // try to parse stream.
-            Stream requestStream = await Request.ReadAsStreamAsync();
-
-            HttpMultipartParser parser = new HttpMultipartParser(requestStream, "file");
-
-            if (parser.Success)
-            {
-                //if succesfully parsed, then continue to thread.
-                if (parser.FileContents.Length <= 0)
-                {
-                    //if file is invalid, then stop thread and return bad request status code.
-                    return BadRequest();
-                }
-
-                //initialize chunk parameters for the upload.
-                int chunk = 0;
-                int chunks = 1;
-
-                var uniqueName = string.Empty;
-
-                if (parser.Parameters.Count > 1)
-                {
-                    //this is a chunked upload process, calculate how many chunks we have.
-                    chunk = int.Parse(parser.Parameters["chunk"]);
-                    chunks = int.Parse(parser.Parameters["chunks"]);
-
-                    //get the file name from parser
-                    if (parser.Parameters.ContainsKey("name"))
-                        uniqueName = parser.Parameters["name"];
-                }
-
-                if (string.IsNullOrEmpty(uniqueName))
-                {
-                    var ext = Path.GetExtension(parser.Filename);
-                    uniqueName = Guid.NewGuid() + ext;
-                }
-
-                //upload file to the temporary AzureStorage.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
-
-                if (chunk == chunks - 1)
-                {
-                    //if this is last chunk, then move the file to the permanent storage by commiting it.
-                    //as a standart all avatar files renamed to UserID_UniqueFileName format.
-                    var user_image = string.Format("{0}_{1}", AppUser.Id, uniqueName);
-                    AzureStorage.CommitFile(uniqueName, user_image, parser.ContentType, "user-images", chunks, _configuration);
-                    return Ok(user_image);
-                }
-
-                //return content type.
-                return Ok(parser.ContentType);
-            }
-            //this is not a valid request so return fail.
-            return Ok("Fail");
-        }
-
         [Route("get_all"), HttpGet]
         public async Task<ICollection<User>> GetAll()
         {
@@ -373,7 +317,9 @@ namespace PrimeApps.App.Controllers
             var checkEmail = await _platformUserRepository.IsEmailAvailable(addUserBindingModel.Email, addUserBindingModel.AppId);
 
             if (checkEmail == EmailAvailableType.NotAvailable)
+            {
                 return StatusCode(HttpStatusCode.Status409Conflict);
+            }
 
             //Set warehouse database name
             //_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -391,7 +337,9 @@ namespace PrimeApps.App.Controllers
             if (addUserBindingModel.TenantId.HasValue)
             {
                 if (!AppUser.Email.EndsWith("@ofisim.com"))
+                {
                     return StatusCode(HttpStatusCode.Status403Forbidden);
+                }
 
                 var tenantWithOwner = await _platformUserRepository.GetTenantWithOwner(addUserBindingModel.TenantId.Value);
 
@@ -439,7 +387,9 @@ namespace PrimeApps.App.Controllers
             var tenant = _platformRepository.GetTenant(tenantId);
 
             if (tenant.TenantUsers.Count >= tenant.License.UserLicenseCount)
+            {
                 return StatusCode(HttpStatusCode.Status402PaymentRequired);
+            }
 
             var randomPassword = Utils.GenerateRandomUnique(8);
 
@@ -569,17 +519,23 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetUser([FromQuery(Name = "email")]string email, [FromQuery(Name = "tenantId")] int tenantId)
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
+            {
                 return StatusCode(HttpStatusCode.Status403Forbidden);
+            }
 
             var userEntity = await _platformUserRepository.Get(email);
 
             if (userEntity == null)
+            {
                 return NotFound();
+            }
 
             var userTenant = userEntity.TenantsAsUser.Where(x => x.TenantId == tenantId);
 
             if (userTenant == null)
+            {
                 return NotFound();
+            }
 
             _userRepository.TenantId = tenantId;
             var user = await _userRepository.GetById(userEntity.Id);

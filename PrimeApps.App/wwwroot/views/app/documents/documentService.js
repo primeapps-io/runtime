@@ -91,25 +91,25 @@ angular.module('primeapps')
                         if (newFilter.CreatedBy == guidEmpty){
                             delete newFilter.CreatedBy;
                         }
-                        documentsResultSet.Documents = $filter('filter')(documentsResultSet.Documents, newFilter, false);
+                        documentsResultSet.documents = $filter('filter')(documentsResultSet.documents, newFilter, false);
                     }
 
                     var documentsResults = {
                         documentList: [],
-                        totalDocumentCount:documentsResultSet.TotalDocumentsCount,
-                        filteredDocumentCount:documentsResultSet.FilteredDocumentsCount
-                    }
+                        totalDocumentCount: documentsResultSet.total_documents_count,
+                        filteredDocumentCount: documentsResultSet.filtered_documents_count
+                    };
 
-                    angular.forEach(documentsResultSet.Documents, function (document) {
-                        var compareData = document.CreatedBy.id;
+                    angular.forEach(documentsResultSet.documents, function (document) {
+                        var compareData = document.created_by.id;
                         if(!compareData){
-                            compareData = document.CreatedBy;
+                            compareData = document.created_by;
                         }
                         var createdBy = $filter('filter')(users, {id: compareData}, true)[0];
-                        document.CreatedBy = createdBy;
-                        document.Timestamp = helper.getTime(document.CreatedTime);
-                        document.Extension = helper.getFileExtension(document.Name);
-                        document.NamePlain = document.Name.slice(0, document.Name.indexOf(document.Extension) - 1);
+                        document.created_by = createdBy;
+                        document.timestamp = helper.getTime(document.created_time);
+                        document.extension = helper.getFileExtension(document.name);
+                        document.name_plain = document.name.slice(0, document.name.indexOf(document.Extension) - 1);
 
                         documentsResults.documentList.push(document);
                     }, documentsResults.documentList);

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.RetryPolicies;
@@ -9,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Storage
 {
@@ -32,7 +30,7 @@ namespace PrimeApps.App.Storage
         /// <param name="containerName">Container name for the block blob</param>
         /// <param name="tempName">Temporary file name</param>
         /// <param name="contentType">Content Type of file</param>
-        public static void UploadFile(int chunk, Stream fileContent, string containerName, string tempName, string contentType, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob)
+        public static async Task UploadFile(int chunk, Stream fileContent, string containerName, string tempName, string contentType, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob)
         {
             //get/create blob container
             var blobContainer = GetBlobContainer(containerName, configuration, accessType);
@@ -47,7 +45,7 @@ namespace PrimeApps.App.Storage
             fileContent.Seek(0, SeekOrigin.Begin);
 
             //put block to the blob AzureStorage.
-            tempBlob.PutBlockAsync(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3) }, new OperationContext());
+            await tempBlob.PutBlockAsync(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3) }, new OperationContext());
         }
 
         /// <summary>
@@ -60,7 +58,7 @@ namespace PrimeApps.App.Storage
         /// <param name="containerName">Container name for the uploaded file</param>
         /// <param name="chunks">Total chunks for the uploaded file</param>
         /// <param name="tempblobContainerName">Temporary blob container name for the uploaded file to move/copy on selected container. Default 'temp'</param>
-        public static CloudBlockBlob CommitFile(string tempName, string newName, string contentType, string containerName, int chunks, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob, string tempblobContainerName = "temp", string relatedMetadataRecordIdForBlob = null, string relatedMetadataModuleNameForBlob = null, string relatedMetadataViewFileName = null, string relatedMetadataFullFileName = null)
+        public static async Task<CloudBlockBlob> CommitFile(string tempName, string newName, string contentType, string containerName, int chunks, IConfiguration configuration, BlobContainerPublicAccessType accessType = BlobContainerPublicAccessType.Blob, string tempblobContainerName = "temp", string relatedMetadataRecordIdForBlob = null, string relatedMetadataModuleNameForBlob = null, string relatedMetadataViewFileName = null, string relatedMetadataFullFileName = null)
         {
             //get temporary blob container which reserved for uploads.
             var tempBlobContainer = GetBlobContainer(tempblobContainerName, configuration);
@@ -75,7 +73,7 @@ namespace PrimeApps.App.Storage
             var tempBlob = tempBlobContainer.GetBlockBlobReference(tempName);
 
             //commit id's for the temporary blob
-            tempBlob.PutBlockListAsync(blockList);
+            await tempBlob.PutBlockListAsync(blockList);
 
             //create a new blob with real file name
             var newBlob = blobContainer.GetBlockBlobReference(newName);
@@ -98,17 +96,15 @@ namespace PrimeApps.App.Storage
             {
                 newBlob.Metadata.Add("viewfilename", relatedMetadataViewFileName);
             }
-            //copy data from temprorary blob to  blob
-            newBlob.StartCopyAsync(tempBlob);
+            //copy data from temprorary blob to the new blob.
+            await MoveBlockBlobAsync(tempBlob, newBlob);
 
             //set content type
             newBlob.Properties.ContentType = contentType;
 
             //apply properties
-            newBlob.SetPropertiesAsync();
+            await newBlob.SetPropertiesAsync();
 
-            //delete temprorary blob
-            tempBlob.DeleteAsync();
 
             return newBlob;
         }
@@ -203,7 +199,9 @@ namespace PrimeApps.App.Storage
         public static string GetAvatarUrl(string avatar, IConfiguration configuration)
         {
             if (string.IsNullOrWhiteSpace(avatar))
+            {
                 return string.Empty;
+            }
 
             var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
@@ -213,33 +211,80 @@ namespace PrimeApps.App.Storage
         public static string GetLogoUrl(string logo, IConfiguration configuration)
         {
             if (string.IsNullOrWhiteSpace(logo))
+            {
                 return string.Empty;
+            }
 
             var blobUrl = configuration.GetSection("AppSettings")["BlobUrl"];
 
             return $"{blobUrl}/app-logo/{logo}";
         }
 
-
-        public static async Task<FileStreamResult> DownloadToFileStreamResultAsync(CloudBlockBlob blob, string fileName)
+        private static async Task MoveBlockBlobAsync(CloudBlockBlob sourceBlob, CloudBlockBlob destBlob)
         {
-            Stream outputStream = null;
+            string leaseId = null;
 
-            await blob.DownloadToStreamAsync(outputStream, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions()
+            try
             {
-                ServerTimeout = TimeSpan.FromDays(1),
-                RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3)
-            }, null);
 
-            await blob.FetchAttributesAsync();
-            FileStreamResult result = new FileStreamResult(outputStream, blob.Properties.ContentType)
+                // Lease the source blob for the copy operation to prevent another client from modifying it.
+                // Specifying null for the lease interval creates an infinite lease.
+                leaseId = await sourceBlob.AcquireLeaseAsync(null);
+
+                // Ensure that the source blob exists.
+                if (await sourceBlob.ExistsAsync())
+                {
+                    // Get the ID of the copy operation.
+                    string copyId = await destBlob.StartCopyAsync(sourceBlob);
+
+                    // Fetch the destination blob's properties before checking the copy state.
+                    await destBlob.FetchAttributesAsync();
+                }
+            }
+            catch (StorageException e)
             {
-                FileDownloadName = fileName,
-                LastModified = blob.Properties.LastModified,
-                EntityTag = new EntityTagHeaderValue(blob.Properties.ETag)
-            };
-            return result;
+                throw;
+            }
+            finally
+            {
+                // Break the lease on the source blob.
+                if (sourceBlob != null)
+                {
+                    await sourceBlob.FetchAttributesAsync();
+
+                    if (sourceBlob.Properties.LeaseState != LeaseState.Available)
+                    {
+                        await sourceBlob.BreakLeaseAsync(new TimeSpan(0));
+                        await sourceBlob.DeleteIfExistsAsync();
+                    }
+                }
+            }
         }
+
+
+        //public static async Task<FileStreamResult> DownloadToFileStreamResultAsync(CloudBlockBlob blob, string fileName)
+        //{
+        //    MemoryStream outputStream = new MemoryStream();
+        //    outputStream.Position = 0;
+        //    using (outputStream)
+        //    {
+        //    await blob.DownloadToStreamAsync(outputStream, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions()
+        //    {
+        //        ServerTimeout = TimeSpan.FromDays(1),
+        //        RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3)
+        //    }, null);
+        //    }
+
+
+        //    await blob.FetchAttributesAsync();
+        //    FileStreamResult result = new FileStreamResult(outputStream, blob.Properties.ContentType)
+        //    {
+        //        FileDownloadName = fileName,
+        //        LastModified = blob.Properties.LastModified,
+        //        EntityTag = new EntityTagHeaderValue(blob.Properties.ETag)
+        //    };
+        //    return result;
+        //}
 
     }
 

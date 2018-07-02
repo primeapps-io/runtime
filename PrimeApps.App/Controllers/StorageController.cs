@@ -157,7 +157,7 @@ namespace PrimeApps.App.Controllers
 
                 if (chunk == chunks - 1)
                 {
-                    CloudBlockBlob blob = AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks, _configuration);
+                    CloudBlockBlob blob = await AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks, _configuration);
                     result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
                 }
 
@@ -269,7 +269,7 @@ namespace PrimeApps.App.Controllers
                 result.UniqueName = fullFileName;
 
 
-                CloudBlockBlob blob = AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, _configuration, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
+                CloudBlockBlob blob = await AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, _configuration, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
                 result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
 
 
@@ -382,7 +382,11 @@ namespace PrimeApps.App.Controllers
                 //}
 
 
-                return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
+                //return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
+
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + publicName); // force download
+                await blob.DownloadToStreamAsync(Response.Body);
+                return new EmptyResult();
             }
             else
             {
@@ -399,8 +403,6 @@ namespace PrimeApps.App.Controllers
         [Route("download_module_document"), HttpGet]
         public async Task<IActionResult> DownloadModuleDocument([FromQuery(Name = "module")] string module, [FromQuery(Name = "fileName")] string fileName, [FromQuery(Name = "fileNameExt")] string fileNameExt, [FromQuery(Name = "fieldName")] string fieldName, [FromQuery(Name = "recordId")] string recordId)
         {
-            var publicName = "";
-
             if (!string.IsNullOrEmpty(module) && !string.IsNullOrEmpty(fileNameExt) && !string.IsNullOrEmpty(fieldName))
             {
 
@@ -424,10 +426,10 @@ namespace PrimeApps.App.Controllers
                     //if there is an exception, it means there is no such file.
                     return NotFound();
                 }
-                publicName = docName;
 
-                return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
-
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + docName); // force download
+                await blob.DownloadToStreamAsync(Response.Body);
+                return new EmptyResult();
             }
             else
             {
@@ -483,8 +485,10 @@ namespace PrimeApps.App.Controllers
                 string[] splittedFileName = template.Content.Split('.');
                 string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
 
-                return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
-
+                //return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
+                Response.Headers.Add("Content-Disposition", "attachment; filename=" + $"{template.Name}.{extension}"); // force download
+                await blob.DownloadToStreamAsync(Response.Body);
+                return new EmptyResult();
             }
             else
             {

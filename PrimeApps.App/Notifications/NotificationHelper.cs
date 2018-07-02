@@ -27,7 +27,7 @@ namespace PrimeApps.App.Notifications
         Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module);
         Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module);
         Task Delete(UserItem appUser, JObject record, Module module);
-        void SendTaskNotification(JObject record, UserItem appUser, Module module);
+        Task SendTaskNotification(JObject record, UserItem appUser, Module module);
     }
 
     public class NotificationHelper : INotificationHelper
@@ -263,7 +263,7 @@ namespace PrimeApps.App.Notifications
         }
         #endregion
 
-        public void SendTaskNotification(JObject record, UserItem appUser, Module module)
+        public async Task SendTaskNotification(JObject record, UserItem appUser, Module module)
         {
             // Get full record and set picklists
             JObject fullRecord;

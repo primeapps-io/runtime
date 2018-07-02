@@ -85,7 +85,6 @@ namespace PrimeApps.Model.Repositories
 					 title = t.Title,
 					 currency = t.Setting.Currency,
 					 language = t.Setting.Language,
-					 logo = t.Setting.Logo,
 					 logoUrl = t.Setting.Logo,
 					 //TODO Removed
 					 //hasSampleData = t.HasSampleData,

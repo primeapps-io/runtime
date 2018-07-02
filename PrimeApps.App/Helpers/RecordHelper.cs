@@ -331,35 +331,35 @@ namespace PrimeApps.App.Helpers
         {
             if (runDefaults)
             {
-                Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
-                Queue.QueueBackgroundWorkItem(async token => _notificationHelper.Create(appUser, record, module, warehouse, timeZoneOffset));
-                Queue.QueueBackgroundWorkItem(async token => _notificationHelper.SendTaskNotification(record, appUser, module));
+                Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Inserted, null, module));
+                Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Create(appUser, record, module, warehouse, timeZoneOffset));
+                Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.SendTaskNotification(record, appUser, module));
             }
 
             if (runWorkflows)
             {
-                Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
             }
 
 
             if (runCalculations)
             {
-                Queue.QueueBackgroundWorkItem(async token => _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest));
             }
         }
 
         public void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
-            Queue.QueueBackgroundWorkItem(async token => _changeLogHelper.CreateLog(appUser, currentRecord, module));
-            Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
-            Queue.QueueBackgroundWorkItem(async token => _notificationHelper.Update(appUser, record, currentRecord, module, warehouse, timeZoneOffset));
-            Queue.QueueBackgroundWorkItem(async token => _notificationHelper.SendTaskNotification(record, appUser, module));
+            Queue.QueueBackgroundWorkItem(async token => await _changeLogHelper.CreateLog(appUser, currentRecord, module));
+            Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(currentRecord, module), AuditType.Record, RecordActionType.Updated, null, module));
+            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Update(appUser, record, currentRecord, module, warehouse, timeZoneOffset));
+            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.SendTaskNotification(record, appUser, module));
 
             if (runWorkflows)
             {
-                Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
 
                 //if (currentRecord["process_id"].IsNullOrEmpty())
                 //{
@@ -380,19 +380,19 @@ namespace PrimeApps.App.Helpers
 
         public void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true)
         {
-            Queue.QueueBackgroundWorkItem(async token => _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
-            Queue.QueueBackgroundWorkItem(async token => _notificationHelper.Delete(appUser, record, module));
+            Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
+            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Delete(appUser, record, module));
 
             if (runWorkflows)
             {
-                Queue.QueueBackgroundWorkItem(async token => _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
-                Queue.QueueBackgroundWorkItem(async token => _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
             }
 
 
             if (runCalculations)
             {
-                Queue.QueueBackgroundWorkItem(async token => _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete, BeforeCreateUpdate, GetAllFieldsForFindRequest));
             }
         }
 
