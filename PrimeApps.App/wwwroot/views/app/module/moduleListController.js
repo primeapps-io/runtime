@@ -517,7 +517,7 @@ angular.module('primeapps')
                     var module = $scope.module.name;
                     var templateId = $scope.quoteTemplate.id;
                     var templateName = $scope.quoteTemplate.name;
-                    $window.open("/attach/ExportExcelNoData?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
+                    $window.open("/attach/export_excel_no_data?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
                     ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
                 };
 
@@ -525,7 +525,7 @@ angular.module('primeapps')
                     var module = $scope.module.name;
                     var templateId = $scope.quoteTemplate.id;
                     var templateName = $scope.quoteTemplate.name;
-                    $window.open("/attach/ExportExcelData?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
+                    $window.open("/attach/export_excel_data?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
                     ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
                 };
 
