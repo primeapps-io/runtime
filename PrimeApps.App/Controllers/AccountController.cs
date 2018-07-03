@@ -91,10 +91,9 @@ namespace PrimeApps.App.Controllers
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-
-            var userExist = true;
+			var userExist = true;
             PlatformUser user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
-            var app = _applicationRepository.Get(activateBindingModel.AppId);
+            var app = await _applicationRepository.Get(activateBindingModel.AppId);
 
             if (user != null)
             {
@@ -276,7 +275,7 @@ namespace PrimeApps.App.Controllers
 
 			changePasswordBindingModel.Email = HttpContext.User.FindFirst("email").Value;
 
-			var appInfo = _applicationRepository.Get(Request.Host.Value);
+			var appInfo = await _applicationRepository.Get(Request.Host.Value);
 			using (var httpClient = new HttpClient())
 			{
 
@@ -299,7 +298,7 @@ namespace PrimeApps.App.Controllers
 		[Route("logout")]
 		public async Task<IActionResult> Logout()
 		{
-			var appInfo = _applicationRepository.Get(Request.Host.Value);
+			var appInfo = await _applicationRepository.Get(Request.Host.Value);
 
 			Response.Cookies.Delete("tenant_id");
 			await HttpContext.SignOutAsync();

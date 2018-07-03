@@ -76,7 +76,7 @@ namespace PrimeApps.Auth.Controllers
 				return BadRequest(ModelState);
 
 
-			var appInfo = _applicationRepository.Get(organization, app);
+			var appInfo = await _applicationRepository.Get(organization, app);
 
 			if (appInfo == null)
 			{
