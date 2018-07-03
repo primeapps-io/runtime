@@ -27,7 +27,7 @@ angular.module('primeapps')
                         { link: '#/app/setup/help', label: 'Setup.Nav.HelpGuide', order: 11, app: 'crm' }
                     ];
 
-                    if ($rootScope.workgroup.hasAnalytics)
+                    if ($rootScope.workgroup.has_analytics)
                         menuItemsAdmin.push({ link: '#/app/setup/warehouse', label: 'Setup.Nav.Warehouse', order: 11, app: 'crm' });
 
                     var allMenuItemsAdmin = $scope.menuItems.concat(menuItemsAdmin);

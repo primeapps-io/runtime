@@ -108,7 +108,7 @@ angular.module('primeapps')
                             promises.push($http.get(config.apiUrl + 'help/get_all'));
                             promises.push($http.get(config.apiUrl + 'help/get_first_screen?templateType=' + 'modal' + '&firstscreen=' + true));
                             promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
-
+                            promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId=' + responseAccount.data.user.id));
                             $q.all(promises)
                                 .then(function (response) {
                                     if (response.length < 6
@@ -138,6 +138,7 @@ angular.module('primeapps')
 
                                     var moduleSettings = response[4].data;
                                     var phoneSettings = response[5].data;
+                                    var userSettings = response[11].data;
 
                                     if (account.instances.length < 1) {
                                         $state.go('join');
@@ -187,6 +188,13 @@ angular.module('primeapps')
                                     $rootScope.approvalProcesses = response[6].data;
                                     $rootScope.helpPageFirstScreen = response[9].data;
 
+                                    $rootScope.user.settings = [];
+                                    for (var i = 0; i < userSettings.length; i++) {
+                                        $rootScope.user.settings[userSettings[i].key] = userSettings[i];
+                                    }
+
+                                    if ($rootScope.user.settings['has_analytics'])
+                                        $rootScope.user.settings['has_analytics'].value === 'True' ?  $rootScope.user.has_analytics = true : $rootScope.user.has_analytics=false ;
                                     $rootScope.openFirtScreenHelpModal = function () {
                                         $rootScope.isMobile = function () {
                                             var check = false;
@@ -245,7 +253,7 @@ angular.module('primeapps')
                                     //custom menü
                                     $rootScope.customMenu = false;
                                     var menu = response[10].data;
-                                    if(menu){
+                                    if (menu) {
                                         $rootScope.customMenu = true;
                                         $rootScope.menu = $filter('orderBy')(menu, 'order', false);
                                     }
@@ -260,28 +268,28 @@ angular.module('primeapps')
                                                 if (parseInt(profile) === $rootScope.user.profile.id) {
                                                     var moduleSetting = $filter('filter')($rootScope.modules, { id: profileSetting.module_id }, true)[0];
                                                     if (moduleSetting) {
-                                                        if($rootScope.customMenu){
+                                                        if ($rootScope.customMenu) {
                                                             var customMenuItem;
                                                             customMenuItem = $filter('filter')($rootScope.menu, { route: moduleSetting.name }, true)[0];
-                                                            if(!customMenuItem){
-                                                                for(var z = 0; z<$rootScope.menu.length; z++){
-                                                                    if(!customMenuItem){
+                                                            if (!customMenuItem) {
+                                                                for (var z = 0; z < $rootScope.menu.length; z++) {
+                                                                    if (!customMenuItem) {
                                                                         var menuItem = $rootScope.menu[z];
                                                                         customMenuItem = $filter('filter')(menuItem.menu_items, { route: moduleSetting.name }, true)[0];
                                                                     }
                                                                 }
                                                             }
 
-                                                            if(!customMenuItem)
+                                                            if (!customMenuItem)
                                                                 var customMenuItem = {};
 
                                                             customMenuItem.label_tr = profileSetting.label_tr_plural;
                                                             customMenuItem.label_en = profileSetting.label_en_plural;
                                                             customMenuItem.menu_icon = profileSetting.menu_icon;
-                                                            if(!profileSetting.display)
+                                                            if (!profileSetting.display)
                                                                 customMenuItem.hide = true;
                                                         }
-                                                        else{
+                                                        else {
                                                             moduleSetting.label_en_plural = profileSetting.label_en_plural;
                                                             moduleSetting.label_en_singular = profileSetting.label_en_singular;
                                                             moduleSetting.label_tr_plural = profileSetting.label_tr_plural;
@@ -295,10 +303,10 @@ angular.module('primeapps')
                                         }
                                     }
 
-                                    if($rootScope.customMenu){
-                                        for(var a = 0; a < $rootScope.menu.length; a++){
+                                    if ($rootScope.customMenu) {
+                                        for (var a = 0; a < $rootScope.menu.length; a++) {
                                             var mainMenuItem = $rootScope.menu[a];
-                                            if($filter('filter')(mainMenuItem.menu_items, { hide: true }, true).length === mainMenuItem.menu_items.length)
+                                            if ($filter('filter')(mainMenuItem.menu_items, { hide: true }, true).length === mainMenuItem.menu_items.length)
                                                 mainMenuItem.hide = true;
                                         }
                                     }
@@ -345,9 +353,10 @@ angular.module('primeapps')
                                         $rootScope.system.messaging = messaging;
                                     }
 
-                                    if (phoneSettings) {
-                                        $rootScope.phoneSettings = phoneSettings;
 
+                                    if ($rootScope.workgroup.licenses.sip_license_count > 0) {
+                                        $rootScope.phoneSettings = phoneSettings;
+                                        $rootScope.phoneSettings.sipLicenseCount = $rootScope.workgroup.licenses.sip_license_count;
                                         //getUserSpecific sipAccount Info
                                         if (phoneSettings.sipUsers) {
                                             var sipData = $filter('filter')(phoneSettings.sipUsers, { userId: account.user.id.toString(), isActive: 'true' }, true)[0];

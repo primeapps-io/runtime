@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Jobs.Messaging.EMail.Providers;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
@@ -37,7 +38,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
         /// </summary>
         /// <param name="emailQueueItem"></param>
         /// <returns></returns>
-        public override async Task<bool> Process(MessageDTO emailQueueItem)
+        public override async Task<bool> Process(MessageDTO emailQueueItem, UserItem appUser)
         {
 
             string[] ids;
@@ -61,126 +62,134 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
             EMailResponse emailResponse = new EMailResponse();
             IList<dynamic> messageStatuses = new List<dynamic>();
             TenantUser emailOwner = new TenantUser();
+
             try
             {
-                using (var platformDBContext = new PlatformDBContext(_configuration))
-                using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
-                using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))
-                using (var tenantDBContext = new TenantDBContext(emailQueueItem.TenantId, _configuration))
+                using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    /// get details of the email queue item.
-                    ///
-                    var notificationId = Convert.ToInt32(emailQueueItem.Id);
+                    var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                    var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    databaseContext.TenantId = emailQueueItem.TenantId;
 
-                    var emailNotification = tenantDBContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
-
-                    /// this request has already been removed, do nothing and return success.
-                    if (emailNotification == null) return true;
-
-                    var emailSet = tenantDBContext.Settings.Include(x => x.CreatedBy).Where(r =>
-                    r.Type == Model.Enums.SettingType.Email &&
-                    r.Deleted == false &&
-                    r.UserId == ((emailQueueItem.AccessLevel == AccessLevelEnum.Personal) ? (int?)emailNotification.CreatedById : null))
-                    .ToList();
-
-                    /// email settings are null just return and do nothing.
-                    if (emailSet == null)
+                    using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+                    using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
                     {
-                        bulkEMailStatus = NotificationStatus.InvalidProvider;
-                    }
 
-                    var provider = emailSet.FirstOrDefault(r => r.Key == "provider")?.Value;
-                    var userName = emailSet.FirstOrDefault(r => r.Key == "user_name")?.Value;
-                    var password = emailSet.FirstOrDefault(r => r.Key == "password")?.Value;
-                    var host = emailSet.FirstOrDefault(r => r.Key == "host")?.Value;
-                    var sslValue = emailSet.FirstOrDefault(r => r.Key == "enable_ssl")?.Value;
-                    var portValue = emailSet.FirstOrDefault(r => r.Key == "port")?.Value;
+                        /// get details of the email queue item.
+                        ///
+                        var notificationId = Convert.ToInt32(emailQueueItem.Id);
 
-                    bool sslEnabled = false;
-                    int port = 0;
-                    if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(sslValue) || string.IsNullOrWhiteSpace(portValue))
-                    {
-                        bulkEMailStatus = NotificationStatus.InvalidProvider;
-                    }
-                    else
-                    {
-                        sslEnabled = sslValue == "True" ? true : false;
-                        port = Convert.ToInt32(portValue);
-                    }
+                        var emailNotification = databaseContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
 
-                    using (EMailProvider emailClient = EMailProvider.Initialize(provider, userName, password))
-                    {
-                        emailClient.SetHost(host, port);
+                        /// this request has already been removed, do nothing and return success.
+                        if (emailNotification == null) return true;
 
-                        /// enable secure connection if it is enabled by client config.
-                        emailClient.EnableSSL = sslEnabled;
+                        var emailSet = databaseContext.Settings.Include(x => x.CreatedBy).Where(r =>
+                                r.Type == Model.Enums.SettingType.Email &&
+                                r.Deleted == false &&
+                                r.UserId == ((emailQueueItem.AccessLevel == AccessLevelEnum.Personal) ? (int?)emailNotification.CreatedById : null))
+                            .ToList();
 
-                        //is selected all and its query..
-                        ids = null;
-                        if (emailNotification.Ids != "ALL") //If all will be queried at composeprepare method with filter query
+                        /// email settings are null just return and do nothing.
+                        if (emailSet == null)
                         {
-                            ids = emailNotification.Ids.Split(new char[] { ',' }, options: StringSplitOptions.RemoveEmptyEntries);
+                            bulkEMailStatus = NotificationStatus.InvalidProvider;
+                        }
+
+                        var provider = emailSet.FirstOrDefault(r => r.Key == "provider")?.Value;
+                        var userName = emailSet.FirstOrDefault(r => r.Key == "user_name")?.Value;
+                        var password = emailSet.FirstOrDefault(r => r.Key == "password")?.Value;
+                        var host = emailSet.FirstOrDefault(r => r.Key == "host")?.Value;
+                        var sslValue = emailSet.FirstOrDefault(r => r.Key == "enable_ssl")?.Value;
+                        var portValue = emailSet.FirstOrDefault(r => r.Key == "port")?.Value;
+
+                        bool sslEnabled = false;
+                        int port = 0;
+                        if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(sslValue) || string.IsNullOrWhiteSpace(portValue))
+                        {
+                            bulkEMailStatus = NotificationStatus.InvalidProvider;
                         }
                         else
                         {
-                            isAllSelected = true;
+                            sslEnabled = sslValue == "True" ? true : false;
+                            port = Convert.ToInt32(portValue);
                         }
 
-                        query = emailNotification.Query;
-                        emailTemplate = emailNotification.Template;
-                        moduleId = emailNotification.ModuleId.ToString();
-                        language = emailNotification.Lang;
-                        emailId = emailNotification.Id.ToString();
-                        emailRev = emailNotification.Rev;
-                        owner = emailNotification.CreatedBy.Email;
-                        emailOwner = emailNotification.CreatedBy;
-                        emailField = emailNotification.EmailField;
-                        subject = emailNotification.Subject;
-                        senderAlias = emailNotification.SenderAlias;
-                        senderEMail = emailNotification.SenderEmail;
-                        emailClient.SetSender(senderAlias, senderEMail);
-                        Module module;
-
-                        if (emailQueueItem.Rev != emailRev) return true;
-
-                        using (var moduleRepository = new ModuleRepository(tenantDBContext, _configuration))
+                        using (EMailProvider emailClient = EMailProvider.Initialize(provider, userName, password))
                         {
-                            module = await moduleRepository.GetById(emailNotification.ModuleId);
+                            emailClient.SetHost(host, port);
+
+                            /// enable secure connection if it is enabled by client config.
+                            emailClient.EnableSSL = sslEnabled;
+
+                            //is selected all and its query..
+                            ids = null;
+                            if (emailNotification.Ids != "ALL") //If all will be queried at composeprepare method with filter query
+                            {
+                                ids = emailNotification.Ids.Split(new char[] { ',' }, options: StringSplitOptions.RemoveEmptyEntries);
+                            }
+                            else
+                            {
+                                isAllSelected = true;
+                            }
+
+                            query = emailNotification.Query;
+                            emailTemplate = emailNotification.Template;
+                            moduleId = emailNotification.ModuleId.ToString();
+                            language = emailNotification.Lang;
+                            emailId = emailNotification.Id.ToString();
+                            emailRev = emailNotification.Rev;
+                            owner = emailNotification.CreatedBy.Email;
+                            emailOwner = emailNotification.CreatedBy;
+                            emailField = emailNotification.EmailField;
+                            subject = emailNotification.Subject;
+                            senderAlias = emailNotification.SenderAlias;
+                            senderEMail = emailNotification.SenderEmail;
+                            emailClient.SetSender(senderAlias, senderEMail);
+                            Module module;
+
+                            if (emailQueueItem.Rev != emailRev) return true;
+
+                            using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                            {
+                                module = await moduleRepository.GetById(emailNotification.ModuleId);
+                            }
+
+                            moduleName = emailNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
+
+                            if (module == null) return true;
+
+                            if (bulkEMailStatus == NotificationStatus.Successful)
+                            {
+
+                                /// compose bulk messages for sending.
+                                //composerResult = await Compose(emailTemplate, module, emailField, subject, query, ids, language, emailId, cloudantClient, emailClient);
+                                composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, databaseContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName);
+
+                                /// send composed messages through selected provider.
+                                emailResponse = await emailClient.Send(composerResult.Messages);
+
+                                /// set main status to the response status.
+                                bulkEMailStatus = emailResponse.Status;
+                            }
+
+                            /// set status and update short message record.
+                            ///
+                            emailNotification.Status = bulkEMailStatus;
+
+                            databaseContext.Entry(emailNotification).State = EntityState.Modified;
+                            composerResult.ProviderResponse = emailResponse.Status.ToString();
+
+                            emailNotification.Result = JsonConvert.SerializeObject(composerResult);
+                            databaseContext.SaveChanges();
+
+                            ///Cleanup
+                            composerResult.DetailedMessageStatusList?.Clear();
+                            composerResult.Messages?.Clear();
+
                         }
-
-                        moduleName = emailNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
-
-                        if (module == null) return true;
-
-                        if (bulkEMailStatus == NotificationStatus.Successful)
-                        {
-
-                            /// compose bulk messages for sending.
-                            //composerResult = await Compose(emailTemplate, module, emailField, subject, query, ids, language, emailId, cloudantClient, emailClient);
-                            composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, tenantDBContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName);
-
-                            /// send composed messages through selected provider.
-                            emailResponse = await emailClient.Send(composerResult.Messages);
-
-                            /// set main status to the response status.
-                            bulkEMailStatus = emailResponse.Status;
-                        }
-                        /// set status and update short message record.
-                        ///
-                        emailNotification.Status = bulkEMailStatus;
-
-                        tenantDBContext.Entry(emailNotification).State = EntityState.Modified;
-                        composerResult.ProviderResponse = emailResponse.Status.ToString();
-
-                        emailNotification.Result = JsonConvert.SerializeObject(composerResult);
-                        tenantDBContext.SaveChanges();
-
-                        ///Cleanup
-                        composerResult.DetailedMessageStatusList?.Clear();
-                        composerResult.Messages?.Clear();
 
                     }
-
                 }
             }
             catch (Exception ex)
@@ -188,7 +197,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                 ErrorHandler.LogError(ex, $"EMail Client has failed while sending a short message template with id:{emailId} of tenant: {emailQueueItem.TenantId}.");
                 bulkEMailStatus = NotificationStatus.SystemError;
             }
-            Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory);
+            Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
 
             /// always return true to say queue that the job has done.
             return true;

@@ -250,7 +250,7 @@ namespace PrimeApps.App.Controllers
 
 				//TODO Integration
 				//Queue.QueueBackgroundWorkItem(async token => _integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _recordHelper.AfterUpdate));
-				Queue.QueueBackgroundWorkItem(async token => _platformWorkflowHelper.Run(OperationType.insert, app));
+				Queue.QueueBackgroundWorkItem(async token => await _platformWorkflowHelper.Run(OperationType.insert, app));
 
             }
             catch (Exception ex)

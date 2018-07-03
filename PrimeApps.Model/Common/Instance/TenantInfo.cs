@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Configuration;
-using System.Runtime.Serialization;
-using PrimeApps.Model.Common.User;
+﻿using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Entities.Platform;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace PrimeApps.Model.Common.Instance
 {
@@ -34,19 +33,13 @@ namespace PrimeApps.Model.Common.Instance
         [DataMember]
         public string language { get; set; }
 
+        [DataMember]
+        public TenantLicense licenses { get; set; }
+
         /// <summary>
-        /// Has Logo
+        /// Logo Url
         /// </summary>
         [DataMember]
-        public string logo { get; set; }
-
-		[DataMember]
-		public TenantLicense licenses { get; set; }
-
-		/// <summary>
-		/// Logo Url
-		/// </summary>
-		[DataMember]
         public string logoUrl { get; set; }
 
         /// <summary>

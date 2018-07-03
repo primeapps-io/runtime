@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .directive('noteList', ['convert', '$localStorage', 'NoteService', 'FileUploader', 'config', 'ngToast', '$filter', 'helper', '$modal',
-        function (convert, $localStorage, NoteService, FileUploader, config, ngToast, $filter, helper, $modal) {
+    .directive('noteList', ['convert', '$localStorage', 'NoteService', 'FileUploader', 'config', 'ngToast', '$filter', 'helper', '$modal', '$cookies',
+        function (convert, $localStorage, NoteService, FileUploader, config, ngToast, $filter, helper, $modal, $cookies) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -313,7 +313,8 @@ angular.module('primeapps')
                             url: config.apiUrl + 'Document/upload_attachment',
                             headers: {
                                 'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'X-Tenant-Id': $cookies.get('tenant_id')
                             },
                             multipart_params: {
                                 container: dialog_uid
@@ -349,7 +350,7 @@ angular.module('primeapps')
                             fileUploaded: function (uploader, file, response) {
                                 tinymce.activeEditor.windowManager.close();
                                 var resp = JSON.parse(response.response);
-                                uploadSuccessCallback(resp.PublicURL, { alt: file.name });
+                                uploadSuccessCallback(resp.public_url, { alt: file.name });
                                 uploadSuccessCallback = null;
                             },
                             error: function (file, error) {
@@ -374,7 +375,8 @@ angular.module('primeapps')
                             url: config.apiUrl + 'Document/upload_attachment',
                             headers: {
                                 'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'X-Tenant-Id': $cookies.get('tenant_id')
                             },
                             multipart_params: {
                                 container: dialog_uid
@@ -408,7 +410,7 @@ angular.module('primeapps')
                             },
                             fileUploaded: function (uploader, file, response) {
                                 var resp = JSON.parse(response.response);
-                                uploadSuccessCallback(resp.PublicURL, { alt: file.name });
+                                uploadSuccessCallback(resp.public_url, { alt: file.name });
                                 uploadSuccessCallback = null;
                                 tinymce.activeEditor.windowManager.close();
                             },
@@ -435,9 +437,9 @@ angular.module('primeapps')
                             // put logic here for keypress and cut/paste changes
                         },
                         valid_elements: "@[id|class|title|style]," +
-                        "a[name|href|target|title|alt|ng-click]," +
-                        "#p,blockquote,-ol,-ul,-li,br,img[src|height|width],-sub,-sup,-b,-i,-u," +
-                        "-span,hr",
+                            "a[name|href|target|title|alt|ng-click]," +
+                            "#p,blockquote,-ol,-ul,-li,br,img[src|height|width],-sub,-sup,-b,-i,-u," +
+                            "-span,hr",
                         inline: false,
                         height: 125,
                         language: $rootScope.language,
@@ -598,8 +600,8 @@ angular.module('primeapps')
             };
         }])
 
-    .directive('noteForm', ['$filter', '$localStorage', 'FileUploader', 'config', 'convert', 'entityTypes', 'NoteService', 'ngToast',
-        function ($filter, $localStorage, FileUploader, config, convert, entityTypes, NoteService, ngToast) {
+    .directive('noteForm', ['$filter', '$localStorage', 'FileUploader', 'config', 'convert', 'entityTypes', 'NoteService', 'ngToast', '$cookies',
+        function ($filter, $localStorage, FileUploader, config, convert, entityTypes, NoteService, ngToast, $cookies) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -656,7 +658,8 @@ angular.module('primeapps')
                                 url: config.apiUrl + 'Document/upload_attachment',
                                 headers: {
                                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                    'Accept': 'application/json'
+                                    'Accept': 'application/json',
+                                    'X-Tenant-Id': $cookies.get('tenant_id')
                                 },
                                 multipart_params: {
                                     container: dialog_uid
@@ -692,7 +695,7 @@ angular.module('primeapps')
                                 fileUploaded: function (uploader, file, response) {
                                     tinymce.activeEditor.windowManager.close();
                                     var resp = JSON.parse(response.response);
-                                    uploadSuccessCallback(resp.PublicURL, { alt: file.name });
+                                    uploadSuccessCallback(resp.public_url, { alt: file.name });
                                     uploadSuccessCallback = null;
                                 },
                                 error: function (file, error) {
@@ -718,7 +721,8 @@ angular.module('primeapps')
                                 url: config.apiUrl + 'Document/upload_attachment',
                                 headers: {
                                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                                    'Accept': 'application/json'
+                                    'Accept': 'application/json',
+                                    'X-Tenant-Id': $cookies.get('tenant_id')
                                 },
                                 multipart_params: {
                                     container: dialog_uid
@@ -752,7 +756,7 @@ angular.module('primeapps')
                                 },
                                 fileUploaded: function (uploader, file, response) {
                                     var resp = JSON.parse(response.response);
-                                    uploadSuccessCallback(resp.PublicURL, { alt: file.name });
+                                    uploadSuccessCallback(resp.public_url, { alt: file.name });
                                     uploadSuccessCallback = null;
                                     tinymce.activeEditor.windowManager.close();
                                 },

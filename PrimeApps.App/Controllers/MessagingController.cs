@@ -1,19 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Jobs.Messaging.EMail;
 using PrimeApps.App.Jobs.Messaging.SMS;
+using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using PrimeApps.Model.Common.Messaging;
-using PrimeApps.Model.Enums;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -80,7 +80,7 @@ namespace PrimeApps.App.Controllers
                 {
                     /// send message to the queue.
                     //await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
-                    Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.Process(queuedMessage));
+                    Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.Process(queuedMessage, AppUser));
                 }
                 catch (Exception ex)
                 {
@@ -140,7 +140,7 @@ namespace PrimeApps.App.Controllers
                 {
                     /// send message to the queue.(Same queue with sms, does not affect something on service bus)
                     //await ServiceBus.SendMessage("sms", queuedMessage, DateTime.UtcNow);
-                    Hangfire.BackgroundJob.Enqueue<EMailClient>(email => email.Process(queuedMessage));
+                    Hangfire.BackgroundJob.Enqueue<EMailClient>(email => email.Process(queuedMessage, AppUser));
 
                 }
                 catch (Exception ex)

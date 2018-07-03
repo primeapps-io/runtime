@@ -12,9 +12,9 @@ namespace PrimeApps.App.Helpers
 	{
 		bool Upload(Stream stream, out DocumentUploadResult result);
 		bool UploadExcel(Stream stream, out DocumentUploadResult result);
-		string Save(DocumentUploadResult result, string containerName);
+		Task<string> Save(DocumentUploadResult result, string containerName);
 		Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language);
-		string GetType(string name);
+		string GetMimeType(string name);
 	}
     public class DocumentHelper : IDocumentHelper
     {
@@ -127,9 +127,9 @@ namespace PrimeApps.App.Helpers
             return true;
         }
 
-        public string Save(DocumentUploadResult result, string containerName)
+        public async Task<string> Save(DocumentUploadResult result, string containerName)
         {
-            var blob = AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks, _configuration);
+            var blob = await AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks, _configuration);
             var fileUrl = $"{_configuration.GetSection("AppSettings")["BlobUrl"]}{blob.Uri.AbsolutePath}";
 
             return fileUrl;
@@ -360,7 +360,7 @@ namespace PrimeApps.App.Helpers
             return 0;
         }
 
-        public string GetType(string name)
+        public string GetMimeType(string name)
         {
             var type = name.Split('.')[1];
             switch (type)

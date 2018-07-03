@@ -69,7 +69,7 @@ angular.module('primeapps')
                 return;
             }
 
-            $scope.timesheetTitle = $scope.owner.id != $rootScope.user.id ? $scope.owner.FullName + '\'s Timesheet' : '';
+            $scope.timesheetTitle = $scope.owner.id != $rootScope.user.id ? $scope.owner.full_name + '\'s Timesheet' : '';
 
             $templateCache.put('views/app/timesheet/templates/calendarMonthCell.html', "<div mwl-droppable on-drop=\"vm.handleEventDrop(dropData.event, day.date, dropData.draggedFromDate)\" mwl-drag-select=\"!!vm.onDateRangeSelect\" on-drag-select-start=\"vm.onDragSelectStart(day)\" on-drag-select-move=\"vm.onDragSelectMove(day)\" on-drag-select-end=\"vm.onDragSelectEnd(day)\" class=\"cal-month-day {{ day.cssClass }}\" ng-class=\"{ 'cal-day-outmonth': !day.inMonth, 'cal-day-inmonth': day.inMonth, 'cal-day-weekend': day.isWeekend, 'cal-day-past': day.isPast, 'cal-day-today': day.isToday, 'cal-day-future': day.isFuture, 'cal-day-selected': vm.dateRangeSelect && vm.dateRangeSelect.startDate <= day.date && day.date <= vm.dateRangeSelect.endDate, 'cal-day-open': dayIndex === vm.openDayIndex }\">  <span class=\"pull-right\" data-cal-date ng-click=\"vm.calendarCtrl.dateClicked(day.date)\" ng-bind=\"day.label\"> </span>  <div class=\"add-button\" style='z-index: 999'  ng-if=\"!day.isWeekend\"> <a href class=\"btn btn-xs btn-default\" ng-click=\"vm.templateScope.openCreateModal($event, day, 'timesheet_item', null)\" ng-if=\"(!$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet || $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet.statusValue==='draft') && $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.owner.id == $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.user.id\">+</a> </div>   <div class=\"add-button\" style='z-index: 999'  ng-if=\"day.isWeekend\"> <a href class=\"btn btn-xs btn-default\" confirm-click action=\"vm.templateScope.openCreateModal($event, day, 'timesheet_item', null)\" placement=\"left\" confirm-message=\"Weekend, are you sure?\" confirm-yes=\"Yes\" confirm-no=\"No\" title=\"Sil\" ng-if=\"(!$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet || $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet.statusValue==='draft') && $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.owner.id == $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.user.ID\">+</a> </div><span ng-repeat=\"(type, group) in day.groups track by type\" data-trigger=\"hover\" data-placement=\"top\" bs-tooltip> <div class='text-center'> <span ng-if=\"group.events[0].daysWorked=='0.5'\" ng-style=\"{'background-color': group.events[0].colorCode}\" class='morning-box'></span><span ng-if=\"group.events[0].daysWorked=='1'\" ng-style=\"{'background-color': group.events[0].colorCode}\" class='full-day-box'></span><span ng-if='group.events[1].type' ng-style=\"{'background-color': group.events[1].colorCode}\" class='afternoon-box'></span>&nbsp; </span> </div>  <div class=\"cal-day-tick\" ng-show=\"dayIndex === vm.openDayIndex && (vm.cellAutoOpenDisabled || vm.view[vm.openDayIndex].events.length > 0) && !vm.slideBoxDisabled\"> <i class=\"glyphicon glyphicon-chevron-up\"></i> <i class=\"fa fa-chevron-up\"></i> </div>  <ng-include src=\"vm.customTemplateUrls.calendarMonthCellEvents || vm.calendarConfig.templates.calendarMonthCellEvents\"></ng-include></div>");
             $templateCache.put('views/app/timesheet/templates/calendarSlideBox.html', "<div class=\"cal-slide-box\" uib-collapse=\"vm.isCollapsed\" mwl-collapse-fallback=\"vm.isCollapsed\"> <div class=\"cal-slide-content cal-event-list\"> <table class=\"table table-striped\"> <thead> <tr> <th>Days Worked</th><th>Entry Type</th> <th>Place of Performance</th> <th>Comments</th> <th>Status</th><th style='width: 60px;'></th></tr></thead> <tbody> <tr ng-style=\"{'background-color': event.colorCode}\" ng-repeat=\"event in vm.events | orderBy:'startsAt' track by event.calendarEventId\" class=\"event-line\" ng-class=\"event.cssClass\" mwl-draggable=\"event.draggable===true\" drop-data=\"{event: event}\"><td>{{event.daysWorked}} <span ng-if=\"event.per_diem\">( Per Diem )</span></td><td>{{event.entry_type}}</td><td ng-if=\"event.place_of_performance\"><span>{{event.place_of_performance}}</span></td><td ng-if=\"!event.place_of_performance\"><span>{{event.please_specify_country}} - {{event.please_specify}}</span></td><td> <b>{{event.selectedAction}}:</b> {{event.comment}}</td> <td>{{event.status}}</td> <td><span class='action-buttons' ng-if=\"(!$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet || $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet.statusValue==='draft' || $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet.statusValue.indexOf('rejected')>-1) && $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.owner.id == $parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.user.id\"> <a ng-click=\"vm.templateScope.openEditModal($event, vm.cell, 'timesheet_item', event)\" class=\"action-icon\" title=\"{{'Common.Edit' | translate}}\"><i class=\"flaticon-pencil124\" ng-if=\"event.statusValue === 'draft' || event.statusValue.indexOf('rejected') > -1 \"></i></a>&nbsp; <i style='cursor: pointer' class=\"action-icon flaticon-bin9\" confirm-click action=\"vm.templateScope.delete(event)\" placement=\"left\" confirm-message=\"{{'Common.AreYouSure' | translate}}\" confirm-yes=\"{{'Common.Yes' | translate}}\" confirm-no=\"{{'Common.No' | translate}}\" title=\"{{'Common.Delete' | translate}}\" ng-if=\"$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.currentTimesheet.statusValue==='draft' && event.statusValue === 'draft' \"></i> </span></td></tr></tbody> </table></div></div>");
@@ -490,7 +490,7 @@ angular.module('primeapps')
 
             var getCurrentStaff = function () {
                 var requestHumanResources = {};
-                requestHumanResources.filters = [{ field: 'e_mail1', operator: 'is', value: $scope.owner.Email, no: 1 }];
+                requestHumanResources.filters = [{ field: 'e_mail1', operator: 'is', value: $scope.owner.email, no: 1 }];
 
                 ModuleService.findRecords('human_resources', requestHumanResources)
                     .then(function (respose) {
@@ -775,16 +775,16 @@ angular.module('primeapps')
                                 }
 
                                 if (timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') {
-                                    approvalRequest.fullName = approver['first_approver_expert.experts.name_surname.primary'];
+                                    approvalRequest.full_name = approver['first_approver_expert.experts.name_surname.primary'];
                                     approvalRequest.email = approver['first_approver_expert.experts.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingFirstPicklistItem.id;
-                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 else if (timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingSecondPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 break;
                             case 'nonbillable':
@@ -796,29 +796,29 @@ angular.module('primeapps')
                                     break;
                                 }
 
-                                if ((timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') && $scope.owner.Email == approver['first_approver.human_resources.e_mail1']) {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                if ((timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') && $scope.owner.email == approver['first_approver.human_resources.e_mail1']) {
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingSecondPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 else if (timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') {
-                                    approvalRequest.fullName = approver['first_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['first_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['first_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingFirstPicklistItem.id;
-                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
-                                else if ((timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') && $scope.owner.Email !== approver['first_approver.human_resources.e_mail1']) {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                else if ((timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') && $scope.owner.email !== approver['first_approver.human_resources.e_mail1']) {
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = approvedPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 else if (timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingSecondPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 break;
                             case 'business':
@@ -830,29 +830,29 @@ angular.module('primeapps')
                                     break;
                                 }
 
-                                if ((timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') && $scope.owner.Email == approver['first_approver.human_resources.e_mail1']) {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                if ((timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') && $scope.owner.email == approver['first_approver.human_resources.e_mail1']) {
+                                    approvalRequest.fullfull_nameName = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingSecondPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 else if (timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') {
-                                    approvalRequest.fullName = approver['first_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['first_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['first_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingFirstPicklistItem.id;
-                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
-                                else if ((timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') && $scope.owner.Email !== approver['first_approver.human_resources.e_mail1']) {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                else if ((timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') && $scope.owner.email !== approver['first_approver.human_resources.e_mail1']) {
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = approvedPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 else if (timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingSecondPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 break;
                             case 'management':
@@ -864,16 +864,16 @@ angular.module('primeapps')
                                 }
 
                                 if (timesheetItem.statusValue === 'draft' || timesheetItem.statusValue === 'rejected_first') {
-                                    approvalRequest.fullName = approver['first_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['first_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['first_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingFirstPicklistItem.id;
-                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['1_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 else if (timesheetItem.statusValue === 'approved_first' || timesheetItem.statusValue === 'rejected_second') {
-                                    approvalRequest.fullName = approver['second_approver.human_resources.name_surname.primary'];
+                                    approvalRequest.full_name = approver['second_approver.human_resources.name_surname.primary'];
                                     approvalRequest.email = approver['second_approver.human_resources.e_mail1'];
                                     approvalRequest.timesheetItemStatus = waitingSecondPicklistItem.id;
-                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { Email: approvalRequest.email }, true)[0].id;
+                                    approvalRequest['2_approver'] = $filter('filter')($rootScope.users, { email: approvalRequest.email }, true)[0].id;
                                 }
                                 break;
                         }
@@ -894,7 +894,7 @@ angular.module('primeapps')
                     }
 
                     var template = '<!DOCTYPE html> <html> <head> <meta name="viewport" content="width=device-width"> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <style type="text/css"> @media only screen and (max-width: 620px) { table[class=body] h1 { font-size: 28px !important; margin-bottom: 10px !important; } table[class=body] p, table[class=body] ul, table[class=body] ol, table[class=body] td, table[class=body] span, table[class=body] a { font-size: 16px !important; } table[class=body] .wrapper, table[class=body] .article { padding: 10px !important; } table[class=body] .content { padding: 0 !important; } table[class=body] .container { padding: 0 !important; width: 100% !important; } table[class=body] .main { border-left-width: 0 !important; border-radius: 0 !important; border-right-width: 0 !important; } table[class=body] .btn table { width: 100% !important; } table[class=body] .btn a { width: 100% !important; } table[class=body] .img-responsive { height: auto !important; max-width: 100% !important; width: auto !important; }} @media all { .ExternalClass { width: 100%; } .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; } .apple-link a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; font-weight: inherit !important; line-height: inherit !important; text-decoration: none !important; } .btn-primary table td:hover { background-color: #34495e !important; } .btn-primary a:hover { background-color: #34495e !important; border-color: #34495e !important; } } </style> </head> <body class="" style="background-color:#f6f6f6;font-family:sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.4;margin:0;padding:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;"> <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#f6f6f6;width:100%;"> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">&nbsp;</td> <td class="container" style="font-family:sans-serif;font-size:14px;vertical-align:top;display:block;max-width:580px;padding:10px;width:580px;Margin:0 auto !important;"> <div class="content" style="box-sizing:border-box;display:block;Margin:0 auto;max-width:580px;padding:10px;"> <!-- START CENTERED WHITE CONTAINER --> <table class="main" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background:#fff;border-radius:3px;width:100%;"> <!-- START MAIN CONTENT AREA --> <tr> <td class="wrapper" style="font-family:sans-serif;font-size:14px;vertical-align:top;box-sizing:border-box;padding:20px;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;"> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;"> Dear {approver}, <br><br><b>{owner}</b> has requested to check the relevant Timesheet. For checking, please click on the button below. <br>{firstApprover}<br><br>Regards,<br>PGInternational<br><br><table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;box-sizing:border-box;width:100%;"> <tbody> <tr> <td align="left" style="font-family:sans-serif;font-size:14px;vertical-align:top;padding-bottom:15px;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;width:auto;"> <tbody> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;background-color:#ffffff;border-radius:5px;text-align:center;background-color:#3498db;"> <a href="https://bee.pginternational.com/#/app/timesheet?user={user}&project={project}&month={month}{chargeType}" target="_blank" style="text-decoration:underline;background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;background-color:#3498db;border-color:#3498db;color:#ffffff;">Go to {owner}\'s Timesheet</a> </td> </tr> </tbody> </table> </td> </tr> </tbody> </table></td> </tr> </table> </td> </tr> <!-- END MAIN CONTENT AREA --> </table> <!-- START FOOTER --> <div class="footer" style="clear:both;padding-top:10px;text-align:center;width:100%;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;"> <tr> <td class="content-block" style="font-family:sans-serif;font-size:14px;vertical-align:top;color:#999999;font-size:12px;text-align:center;"> <br><span class="apple-link" style="color:#999999;font-size:12px;text-align:center;"></span> </td> </tr> </table> </div> <!-- END FOOTER --> <!-- END CENTERED WHITE CONTAINER --> </div> </td> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">&nbsp;</td> </tr> </table> </body> </html>';
-                    template = template.replaceAll('{owner}', user.FullName);
+                    template = template.replaceAll('{owner}', user.full_name);
                     template = template.replaceAll('{month}', moment($scope.calendarDay).month());
                     var promises = [];
                     var logs = [];
@@ -908,7 +908,7 @@ angular.module('primeapps')
 
                         if (!currentLog || !currentLog.length) {
                             var templateItem = angular.copy(template);
-                            templateItem = templateItem.replaceAll('{approver}', approvalRequest.fullName);
+                            templateItem = templateItem.replaceAll('{approver}', approvalRequest.full_name);
                             templateItem = templateItem.replaceAll('{user}', user.id);
                             templateItem = templateItem.replaceAll('{project}', approvalRequest.projectId || '');
 
@@ -929,9 +929,9 @@ angular.module('primeapps')
                                 templateItem = templateItem.replaceAll('{firstApprover}', '<br>');
 
                             var requestMail = {};
-                            requestMail.Subject = user.FullName + ' has requested that you approve the Timesheet (' + $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term + ')';
-                            requestMail.TemplateWithBody = templateItem;
-                            requestMail.ToAddresses = [approvalRequest.email];
+                            requestMail.Subject = user.full_name + ' has requested that you approve the Timesheet (' + $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term + ')';
+                            requestMail.Template_With_Body = templateItem;
+                            requestMail.To_Addresses = [approvalRequest.email];
 
                             if (approvalRequest.timesheetItemStatus !== approvedPicklistItem.id)
                                 promises.push($http.post(config.apiUrl + 'messaging/send_external_email', requestMail));
@@ -1261,17 +1261,17 @@ angular.module('primeapps')
                                                 }
 
                                                 var template = '<!DOCTYPE html> <html> <head> <meta name="viewport" content="width=device-width"> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <title></title> <style type="text/css"> @media only screen and (max-width: 620px) { table[class=body] h1 { font-size: 28px !important; margin-bottom: 10px !important; } table[class=body] p, table[class=body] ul, table[class=body] ol, table[class=body] td, table[class=body] span, table[class=body] a { font-size: 16px !important; } table[class=body] .wrapper, table[class=body] .article { padding: 10px !important; } table[class=body] .content { padding: 0 !important; } table[class=body] .container { padding: 0 !important; width: 100% !important; } table[class=body] .main { border-left-width: 0 !important; border-radius: 0 !important; border-right-width: 0 !important; } table[class=body] .btn table { width: 100% !important; } table[class=body] .btn a { width: 100% !important; } table[class=body] .img-responsive { height: auto !important; max-width: 100% !important; width: auto !important; }} @media all { .ExternalClass { width: 100%; } .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; } .apple-link a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; font-weight: inherit !important; line-height: inherit !important; text-decoration: none !important; } .btn-primary table td:hover { background-color: #34495e !important; } .btn-primary a:hover { background-color: #34495e !important; border-color: #34495e !important; } } </style> </head> <body class="" style="background-color:#f6f6f6;font-family:sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.4;margin:0;padding:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;"> <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#f6f6f6;width:100%;"> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">&nbsp;</td> <td class="container" style="font-family:sans-serif;font-size:14px;vertical-align:top;display:block;max-width:580px;padding:10px;width:580px;Margin:0 auto !important;"> <div class="content" style="box-sizing:border-box;display:block;Margin:0 auto;max-width:580px;padding:10px;"> <!-- START CENTERED WHITE CONTAINER --> <table class="main" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background:#fff;border-radius:3px;width:100%;"> <!-- START MAIN CONTENT AREA --> <tr> <td class="wrapper" style="font-family:sans-serif;font-size:14px;vertical-align:top;box-sizing:border-box;padding:20px;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;"> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;"> Dear {owner}, <br><br><b>{approver}</b> has rejected {timesheetOwner} ({timesheet}). Please see the message below and revise the Timesheet by clicking on the button below. <br><br> Message: &nbsp;{message}<br><br><br><br><table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;box-sizing:border-box;width:100%;"> <tbody> <tr> <td align="left" style="font-family:sans-serif;font-size:14px;vertical-align:top;padding-bottom:15px;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;width:auto;"> <tbody> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;background-color:#ffffff;border-radius:5px;text-align:center;background-color:#3498db;"> <a href="https://bee.pginternational.com/#/app/timesheet?month={month}" target="_blank" style="text-decoration:underline;background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;background-color:#3498db;border-color:#3498db;color:#ffffff;">Go to {timesheetOwner}</a> </td> </tr> </tbody> </table> </td> </tr> </tbody> </table></td> </tr> </table> </td> </tr> <!-- END MAIN CONTENT AREA --> </table> <!-- START FOOTER --> <div class="footer" style="clear:both;padding-top:10px;text-align:center;width:100%;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;"> <tr> <td class="content-block" style="font-family:sans-serif;font-size:14px;vertical-align:top;color:#999999;font-size:12px;text-align:center;"> <br><span class="apple-link" style="color:#999999;font-size:12px;text-align:center;"></span> </td> </tr> </table> </div> <!-- END FOOTER --> <!-- END CENTERED WHITE CONTAINER --> </div> </td> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">&nbsp;</td> </tr> </table> </body> </html>';
-                                                template = template.replaceAll('{owner}', ownerUser.FullName);
-                                                template = template.replaceAll('{approver}', $rootScope.user.fullName);
+                                                template = template.replaceAll('{owner}', ownerUser.full_name);
+                                                template = template.replaceAll('{approver}', $rootScope.user.full_name);
                                                 template = template.replaceAll('{message}', message.replace(/(?:\r\n|\r|\n)/g, '<br>'));
                                                 template = template.replaceAll('{timesheet}', $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term);
                                                 template = template.replaceAll('{month}', moment($scope.calendarDay).month());
                                                 template = template.replaceAll('{timesheetOwner}', 'Your Timesheet');
 
                                                 var requestMail = {};
-                                                requestMail.Subject = $rootScope.user.fullName + ' has rejected your Timesheet (' + $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term + ')';
-                                                requestMail.TemplateWithBody = template;
-                                                requestMail.ToAddresses = [ownerUser.Email];
+                                                requestMail.Subject = $rootScope.user.full_name + ' has rejected your Timesheet (' + $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term + ')';
+                                                requestMail.Template_With_Body = template;
+                                                requestMail.To_Addresses = [ownerUser.email];
 
                                                 $http.post(config.apiUrl + 'messaging/send_external_email', requestMail)
                                                     .then(function () {
@@ -1293,19 +1293,19 @@ angular.module('primeapps')
 
                                                             var success = function (firstApproverInfo) {
                                                                 var templateReject = '<!DOCTYPE html> <html> <head> <meta name="viewport" content="width=device-width"> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <title></title> <style type="text/css"> @media only screen and (max-width: 620px) { table[class=body] h1 { font-size: 28px !important; margin-bottom: 10px !important; } table[class=body] p, table[class=body] ul, table[class=body] ol, table[class=body] td, table[class=body] span, table[class=body] a { font-size: 16px !important; } table[class=body] .wrapper, table[class=body] .article { padding: 10px !important; } table[class=body] .content { padding: 0 !important; } table[class=body] .container { padding: 0 !important; width: 100% !important; } table[class=body] .main { border-left-width: 0 !important; border-radius: 0 !important; border-right-width: 0 !important; } table[class=body] .btn table { width: 100% !important; } table[class=body] .btn a { width: 100% !important; } table[class=body] .img-responsive { height: auto !important; max-width: 100% !important; width: auto !important; }} @media all { .ExternalClass { width: 100%; } .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div { line-height: 100%; } .apple-link a { color: inherit !important; font-family: inherit !important; font-size: inherit !important; font-weight: inherit !important; line-height: inherit !important; text-decoration: none !important; } .btn-primary table td:hover { background-color: #34495e !important; } .btn-primary a:hover { background-color: #34495e !important; border-color: #34495e !important; } } </style> </head> <body class="" style="background-color:#f6f6f6;font-family:sans-serif;-webkit-font-smoothing:antialiased;font-size:14px;line-height:1.4;margin:0;padding:0;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;"> <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background-color:#f6f6f6;width:100%;"> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">&nbsp;</td> <td class="container" style="font-family:sans-serif;font-size:14px;vertical-align:top;display:block;max-width:580px;padding:10px;width:580px;Margin:0 auto !important;"> <div class="content" style="box-sizing:border-box;display:block;Margin:0 auto;max-width:580px;padding:10px;"> <!-- START CENTERED WHITE CONTAINER --> <table class="main" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;background:#fff;border-radius:3px;width:100%;"> <!-- START MAIN CONTENT AREA --> <tr> <td class="wrapper" style="font-family:sans-serif;font-size:14px;vertical-align:top;box-sizing:border-box;padding:20px;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;"> <tr> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;"> Dear {owner}, <br><br><b>{approver}</b> has rejected {timesheetOwner} ({timesheet}). {timesheetOwner} will be requested  that you approve the Timesheet.  <br><br> Message: &nbsp; {message}<br><br><br><br><!-- START FOOTER --> <div class="footer" style="clear:both;padding-top:10px;text-align:center;width:100%;"> <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:separate;mso-table-lspace:0pt;mso-table-rspace:0pt;width:100%;"> <tr> <td class="content-block" style="font-family:sans-serif;font-size:14px;vertical-align:top;color:#999999;font-size:12px;text-align:center;"> <br><span class="apple-link" style="color:#999999;font-size:12px;text-align:center;"></span> </td> </tr> </table> </div> <!-- END FOOTER --> <!-- END CENTERED WHITE CONTAINER --> </div> </td> <td style="font-family:sans-serif;font-size:14px;vertical-align:top;">&nbsp;</td> </tr> </table> </body> </html>';
-                                                                templateReject = templateReject.replaceAll('{owner}', ownerUser.FullName);
-                                                                templateReject = templateReject.replaceAll('{approver}', $rootScope.user.fullName);
+                                                                templateReject = templateReject.replaceAll('{owner}', ownerUser.full_name);
+                                                                templateReject = templateReject.replaceAll('{approver}', $rootScope.user.full_name);
                                                                 templateReject = templateReject.replaceAll('{message}', message.replace(/(?:\r\n|\r|\n)/g, '<br>'));
                                                                 templateReject = templateReject.replaceAll('{timesheet}', $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term);
                                                                 templateReject = templateReject.replaceAll('{month}', moment($scope.calendarDay).month());
                                                                 templateReject = templateReject.replaceAll('{timesheetOwner}', 'Your Timesheet');
-                                                                templateReject = templateReject.replaceAll(ownerUser.FullName, firstApproverInfo.data[0].name_surname);
+                                                                templateReject = templateReject.replaceAll(ownerUser.full_name, firstApproverInfo.data[0].name_surname);
                                                                 templateReject = templateReject.replaceAll('Your Timesheet', '<b>' + $scope.timesheetTitle + '</b>');
 
                                                                 var requestMailToFirstApprover = {};
-                                                                requestMailToFirstApprover.Subject = $rootScope.user.fullName + ' has rejected ' + $scope.timesheetTitle + '(' + $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term + ')';
-                                                                requestMailToFirstApprover.TemplateWithBody = templateReject;
-                                                                requestMailToFirstApprover.ToAddresses = [firstApproverInfo.data[0].e_mail1];
+                                                                requestMailToFirstApprover.Subject = $rootScope.user.full_name + ' has rejected ' + $scope.timesheetTitle + '(' + $scope.currentTimesheet.year + '-' + $scope.currentTimesheet.term + ')';
+                                                                requestMailToFirstApprover.Template_With_Body = templateReject;
+                                                                requestMailToFirstApprover.To_Addresses = [firstApproverInfo.data[0].e_mail1];
 
                                                                 $http.post(config.apiUrl + 'messaging/send_external_email', requestMailToFirstApprover)
                                                                     .then(function () {
@@ -1327,7 +1327,7 @@ angular.module('primeapps')
                                                             } else {
                                                                 ModuleService.findRecords('human_resources', requestFirstApproverInfo)
                                                                     .then(function (firstApproverInfo) {
-                                                                        if (ownerUser.Email != firstApproverInfo.data[0].e_mail1)
+                                                                        if (ownerUser.email != firstApproverInfo.data[0].e_mail1)
                                                                             success(firstApproverInfo)
                                                                         else {
                                                                             ngToast.create({

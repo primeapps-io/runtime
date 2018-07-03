@@ -135,7 +135,7 @@ namespace PrimeApps.App.Controllers
             if (!isUploaded)
                 return BadRequest();
 
-            var excelUrl = _documentHelper.Save(result, "import-" + AppUser.TenantId);
+            var excelUrl = await _documentHelper.Save(result, "import-" + AppUser.TenantId);
 
             import.ExcelUrl = excelUrl;
             await _importRepository.Update(import);

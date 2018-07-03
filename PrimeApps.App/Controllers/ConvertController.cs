@@ -779,7 +779,7 @@ namespace PrimeApps.App.Controllers
         }
         [Route("convert_sales_orders")]
         [HttpPost]
-        public async Task<IActionResult> ConvertSalesOrders(JObject request)
+        public async Task<IActionResult> ConvertSalesOrders([FromBody]JObject request)
         {
             var salesOrderModule = await _moduleRepository.GetByName("sales_orders");
             var salesInvoiceModule = await _moduleRepository.GetByName("sales_invoices");

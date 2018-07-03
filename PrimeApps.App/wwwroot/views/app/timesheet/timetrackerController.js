@@ -190,7 +190,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                             return;
                         }
 
-                        var calisanEmail = $scope.owner.Email;
+                        var calisanEmail = $scope.owner.email;
                         var calisanRequest = {};
                         calisanRequest.fields = ['id'];
                         calisanRequest.filters = [

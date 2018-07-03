@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Resources;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
@@ -53,7 +54,8 @@ namespace PrimeApps.App.Jobs
                 if (!string.IsNullOrWhiteSpace(culture) && Helpers.Constants.CULTURES.Contains(culture))
                     Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
 
-                var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, tenant.AppId);
+                var appUser = new UserItem { AppId = tenant.AppId, Id = tenant.OwnerId };
+                var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                 notification.AddRecipient(user.Email);
                 notification.AddToQueue();
             }

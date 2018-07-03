@@ -27,7 +27,7 @@ namespace PrimeApps.App.Notifications
         Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module);
         Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module);
         Task Delete(UserItem appUser, JObject record, Module module);
-        void SendTaskNotification(JObject record, UserItem appUser, Module module);
+        Task SendTaskNotification(JObject record, UserItem appUser, Module module);
     }
 
     public class NotificationHelper : INotificationHelper
@@ -181,7 +181,7 @@ namespace PrimeApps.App.Notifications
                     emailData.Add("OldOwner", oldOwnerName);
                     emailData.Add("DueDate", formattedDueDate);
 
-                    Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId);
+                    Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                     email.AddRecipient(newOwner.Email);
                     email.AddToQueue(appUser: appUser);
                 }
@@ -231,7 +231,7 @@ namespace PrimeApps.App.Notifications
 
                     emailData.Add("PrimaryValue", moduleRecordPrimary[modulePkey]?.ToString()); //?wtf to change
 
-                    Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId);
+                    Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                     email.AddRecipient(newOwner.Email);
                     email.AddToQueue(appUser: appUser);
                 }
@@ -263,7 +263,7 @@ namespace PrimeApps.App.Notifications
         }
         #endregion
 
-        public void SendTaskNotification(JObject record, UserItem appUser, Module module)
+        public async Task SendTaskNotification(JObject record, UserItem appUser, Module module)
         {
             // Get full record and set picklists
             JObject fullRecord;
@@ -298,7 +298,7 @@ namespace PrimeApps.App.Notifications
                         emailData.Add("DueDate", ((DateTime)fullRecord["task_due_date"]).ToString(appUser.TenantLanguage == "tr" ? "dd.MM.yyyy" : "MM/dd/yyyy"));
                         emailData.Add("Subject", (string)fullRecord["subject"]);
 
-                        var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId);
+                        var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                         email.AddRecipient((string)fullRecord["owner.email"]);
                         email.AddToQueue(appUser: appUser);
                     }

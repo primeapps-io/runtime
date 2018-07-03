@@ -239,7 +239,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.showAppLauncher = function () {
-            return $rootScope.user.hasAnalytics;
+            return $rootScope.user.has_analytics;
         };
 
         $rootScope.showSipPhone = function () {
