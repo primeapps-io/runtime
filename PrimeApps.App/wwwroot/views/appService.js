@@ -193,8 +193,8 @@ angular.module('primeapps')
                                         $rootScope.user.settings[userSettings[i].key] = userSettings[i];
                                     }
 
-                                    if ($rootScope.user.settings['has_analytics'].value === 'True')
-                                        $rootScope.user.has_analytics = true;
+                                    if ($rootScope.user.settings['has_analytics'])
+                                        $rootScope.user.settings['has_analytics'].value === 'True' ?  $rootScope.user.has_analytics = true : $rootScope.user.has_analytics=false ;
                                     $rootScope.openFirtScreenHelpModal = function () {
                                         $rootScope.isMobile = function () {
                                             var check = false;
