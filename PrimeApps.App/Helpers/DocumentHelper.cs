@@ -8,22 +8,22 @@ using PrimeApps.Model.Common.Document;
 
 namespace PrimeApps.App.Helpers
 {
-	public interface IDocumentHelper
-	{
-		bool Upload(Stream stream, out DocumentUploadResult result);
-		bool UploadExcel(Stream stream, out DocumentUploadResult result);
-		Task<string> Save(DocumentUploadResult result, string containerName);
-		Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language);
-		string GetMimeType(string name);
-	}
+    public interface IDocumentHelper
+    {
+        bool Upload(Stream stream, out DocumentUploadResult result);
+        bool UploadExcel(Stream stream, out DocumentUploadResult result);
+        Task<string> Save(DocumentUploadResult result, string containerName);
+        Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language);
+        string GetMimeType(string name);
+    }
     public class DocumentHelper : IDocumentHelper
     {
-	    private IConfiguration _configuration;
+        private IConfiguration _configuration;
 
-		public DocumentHelper(IConfiguration configuration)
-		{
-			_configuration = configuration;
-		}
+        public DocumentHelper(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public bool Upload(Stream stream, out DocumentUploadResult result)
         {
             var parser = new HttpMultipartParser(stream, "file");
@@ -62,7 +62,7 @@ namespace PrimeApps.App.Helpers
                 uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
             //send stream and parameters to storage upload helper method for temporary upload.
-            AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
+            AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
             result = new DocumentUploadResult
             {
@@ -113,8 +113,7 @@ namespace PrimeApps.App.Helpers
                 uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
             //send stream and parameters to storage upload helper method for temporary upload.
-            //TODO Removed
-            //Storage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType);
+            AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
             result = new DocumentUploadResult
             {
