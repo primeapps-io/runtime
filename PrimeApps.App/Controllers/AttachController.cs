@@ -45,7 +45,6 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IConfiguration _configuration;
         private IDocumentRepository _documentRepository;
-        private IUnifiedStorage _unifiedStorage;
 
         private IRecordHelper _recordHelper;
         public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage)
@@ -60,7 +59,6 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _recordHelper = recordHelper;
             _configuration = configuration;
-            _unifiedStorage = unifiedStorage;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -71,6 +69,10 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_tenantRepository);
             SetCurrentUser(_templateRepository);
             SetCurrentUser(_documentRepository);
+            SetCurrentUser(_picklistRepository);
+            SetCurrentUser(_settingsRepository);
+            SetCurrentUser(_noteRepository);
+            SetCurrentUser(_moduleRepository);
             base.OnActionExecuting(context);
         }
 
@@ -157,8 +159,18 @@ namespace PrimeApps.App.Controllers
             // Open a template document.
             using (var template = new MemoryStream())
             {
-                await templateBlob.DownloadToStreamAsync(template);
-                doc = new Aspose.Words.Document(template);
+                try
+                {
+                    await templateBlob.DownloadToStreamAsync(template, Microsoft.WindowsAzure.Storage.AccessCondition.GenerateEmptyCondition(), new Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions(), new Microsoft.WindowsAzure.Storage.OperationContext());
+
+                    doc = new Aspose.Words.Document(template);
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
             }
 
             // Add related module records.
@@ -209,7 +221,7 @@ namespace PrimeApps.App.Controllers
             if (save)
             {
 
-                AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType, _configuration);
+                await AzureStorage.UploadFile(0, outputStream, "temp", fileName, mimeType, _configuration);
                 var blob = await AzureStorage.CommitFile(fileName, Guid.NewGuid().ToString().Replace("-", "") + "." + format, mimeType, "pub", 1, _configuration);
 
                 outputStream.Position = 0;
