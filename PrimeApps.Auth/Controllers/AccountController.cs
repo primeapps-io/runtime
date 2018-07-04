@@ -31,6 +31,7 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Auth.Models.UserViewModels;
 using System.Text;
 using System.Net;
+using IdentityServer4;
 
 namespace PrimeApps.Auth.UI
 {
@@ -76,13 +77,13 @@ namespace PrimeApps.Auth.UI
 		[HttpGet]
 		public async Task<IActionResult> Index(string returnUrl)
 		{
-			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			var appInfo = await _applicationRepository.GetWithAuth(Request.Host.Value);
 			/*ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 
 			if (User?.Identity.IsAuthenticated == true)
 				return View();*/
-			
+
 			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
 		}
 
@@ -120,7 +121,7 @@ namespace PrimeApps.Auth.UI
 			//AuthHelper.SetLanguage(Response, Request, language);
 
 			ViewBag.Success = success;
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, Response, returnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			var cookieLang = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 			if (cookieLang != ViewBag.Language)
@@ -150,7 +151,7 @@ namespace PrimeApps.Auth.UI
 			//AuthHelper.SetLanguage(Response, Request, language);
 			//ViewBag.Language = language;
 
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, model.ReturnUrl, _applicationRepository);
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, Response, model.ReturnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 
 			if (button != "login")
@@ -204,12 +205,12 @@ namespace PrimeApps.Auth.UI
 		}
 
 		[HttpGet]
-		public IActionResult Register(string returnUrl = null)
+		public async Task<IActionResult> Register(string returnUrl = null)
 		{
 			if (User?.Identity.IsAuthenticated == true)
 				return RedirectToAction(nameof(AccountController.Index), "Account");
 
-			ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
+			ViewBag.AppInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, Response, returnUrl, _applicationRepository);
 			ViewBag.Language = ViewBag.AppInfo["language"].Value;
 			ViewBag.ReadOnly = false;
 
@@ -231,7 +232,7 @@ namespace PrimeApps.Auth.UI
 				return View(registerViewModel);
 			}
 
-			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			var appInfo = await _applicationRepository.GetWithAuth(Request.Host.Value);
 
 			if (appInfo == null)
 			{
@@ -302,7 +303,7 @@ namespace PrimeApps.Auth.UI
 
 				if (!response.IsSuccessStatusCode)
 				{
-					ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
+					ViewBag.AppInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, Response, returnUrl, _applicationRepository);
 					if (response.StatusCode == HttpStatusCode.Conflict)
 					{
 						ViewBag.Error = "alreadyRegisterForApp";
@@ -462,7 +463,7 @@ namespace PrimeApps.Auth.UI
 		public async Task<IActionResult> ExternalLoginCallback()
 		{
 			// read external identity from the temporary cookie
-			var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+			var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 			if (result?.Succeeded != true)
 			{
 				throw new Exception("External authentication error");
@@ -470,6 +471,7 @@ namespace PrimeApps.Auth.UI
 
 			// lookup our user and external provider info
 			var (user, provider, providerUserId, claims) = await FindUserFromExternalProviderAsync(result);
+
 			if (user == null)
 			{
 				// this might be where you might initiate a custom workflow for user registration
@@ -478,6 +480,62 @@ namespace PrimeApps.Auth.UI
 				user = await AutoProvisionUserAsync(provider, providerUserId, claims);
 			}
 
+			if (user != null)
+			{
+				Uri url = null;
+
+				if (!string.IsNullOrEmpty(result.Properties.Items["returnUrl"]) && (result.Properties.Items["returnUrl"].Split("&")).Length > 1)
+					url = new Uri(HttpUtility.UrlDecode((result.Properties.Items["returnUrl"].Split("&")).Where(x => x.Contains("redirect_uri")).FirstOrDefault().Split("redirect_uri=")[1]));
+
+				if (url != null)
+				{
+					var platformUser = await _platformUserRepository.GetWithTenants(user.UserName);
+					var appInfo = await _applicationRepository.Get(url.Authority);
+					var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
+					if (platformUser == null || userApp == null)
+					{
+						var createUrl = Request.Scheme + "://" + appInfo.Setting.Domain + "/api/account/create";
+
+						var activateModel = new ActivateBindingModels
+						{
+							email = user.UserName,
+							app_id = appInfo.Id,
+							culture = CultureInfo.CurrentCulture.Name,
+							first_name = result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"),
+							last_name = result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"),
+							email_confirmed = user.EmailConfirmed
+						};
+
+						using (var httpClient = new HttpClient())
+						{
+							httpClient.BaseAddress = new Uri(createUrl);
+							httpClient.DefaultRequestHeaders.Accept.Clear();
+							httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+							var response = await httpClient.PostAsync(createUrl, new StringContent(JsonConvert.SerializeObject(activateModel), Encoding.UTF8, "application/json"));
+
+							/*if (!response.IsSuccessStatusCode)
+							{
+								ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
+								if (response.StatusCode == HttpStatusCode.Conflict)
+								{
+									ViewBag.Error = "alreadyRegisterForApp";
+									return View(registerViewModel);
+								}
+								else
+								{
+									ViewBag.Error = "unexpectedError";
+									return View(registerViewModel);
+								}
+							}*/
+						}
+					}
+				}
+			}
+
+			/*await _userManager.AddClaimAsync(user, new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantId", result.Principal.FindFirstValue("http://schemas.microsoft.com/identity/claims/tenantid")));
+			await _userManager.AddClaimAsync(user, new Claim("http://schemas.microsoft.com/identity/claims/objectidentifier", result.Principal.FindFirstValue("http://schemas.microsoft.com/identity/claims/objectidentifier")));
+			await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, result.Principal.FindFirstValue(ClaimTypes.NameIdentifier)));
+            */
 			// this allows us to collect any additonal claims or properties
 			// for the specific prtotocols used and store them in the local auth cookie.
 			// this is typically used to store data needed for signout from those protocols.
@@ -527,7 +585,7 @@ namespace PrimeApps.Auth.UI
 
 			return View(vm);
 		}
-		
+
 		/// <summary>
 		/// Handle logout page postback
 		/// </summary>
@@ -538,7 +596,7 @@ namespace PrimeApps.Auth.UI
 			// build a model so the logged out page knows what to display
 			var vm = await BuildLoggedOutViewModelAsync(model.LogoutId);
 
-			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			var appInfo = await _applicationRepository.GetWithAuth(Request.Host.Value);
 
 			if (User?.Identity.IsAuthenticated == true)
 			{
@@ -817,27 +875,32 @@ namespace PrimeApps.Auth.UI
 				}
 			}
 
-			var user = new ApplicationUser
+			var platformUser = await _userManager.FindByEmailAsync(email);
+			IdentityResult identityResult = null;
+			if (platformUser == null)
 			{
-				EmailConfirmed = true,
-				UserName = email,
-				NormalizedUserName = name ?? first + " " + last
-			};
+				platformUser = new ApplicationUser
+				{
+					EmailConfirmed = true,
+					UserName = email,
+					NormalizedUserName = name ?? first + " " + last
+				};
 
+				identityResult = await _userManager.CreateAsync(platformUser);
+				if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 
-			var identityResult = await _userManager.CreateAsync(user);
-			if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
+			}
 
 			if (filtered.Any())
 			{
-				identityResult = await _userManager.AddClaimsAsync(user, filtered);
+				identityResult = await _userManager.AddClaimsAsync(platformUser, filtered);
 				if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 			}
 
-			identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerUserId, provider));
+			identityResult = await _userManager.AddLoginAsync(platformUser, new UserLoginInfo(provider, providerUserId, provider));
 			if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 
-			return user;
+			return platformUser;
 		}
 
 		private void ProcessLoginCallbackForOidc(AuthenticateResult externalResult, List<Claim> localClaims, AuthenticationProperties localSignInProps)

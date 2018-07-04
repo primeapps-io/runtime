@@ -369,7 +369,7 @@ namespace PrimeApps.App.Helpers
 						//TODO Removed
                         using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
                         {
-                            var app = _appRepository.Get(appUser.AppId);
+                            var app = await _appRepository.Get(appUser.AppId);
                             if (app != null)
                             {
                                 domain = "https://" + app.Setting.Domain + "/";

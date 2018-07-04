@@ -74,8 +74,8 @@ angular.module('primeapps')
 
                     SettingService.editUser(userModel)
                         .then(function () {
-                            $rootScope.user.firstName = userModel.first_name;
-                            $rootScope.user.lastName = userModel.last_name;
+                            $rootScope.user.first_name = userModel.first_name;
+                            $rootScope.user.last_name = userModel.last_name;
                             $rootScope.user.email = userModel.email;
                             $scope.userUpdating = false;
 
@@ -174,12 +174,12 @@ angular.module('primeapps')
 
             $scope.showNewSenderForm = function () {
                 $scope.senderPopover = $scope.senderPopover || $popover(angular.element(document.getElementsByName('addSender')), {
-                    templateUrl: 'views/setup/messaging/senderAdd.html',
-                    placement: 'left',
-                    scope: $scope,
-                    autoClose: true,
-                    show: true
-                });
+                        templateUrl: 'views/setup/messaging/senderAdd.html',
+                        placement: 'left',
+                        scope: $scope,
+                        autoClose: true,
+                        show: true
+                    });
             };
 
             $scope.addNewSender = function (alias, email) {

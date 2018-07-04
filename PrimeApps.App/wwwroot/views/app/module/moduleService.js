@@ -195,7 +195,7 @@ angular.module('primeapps')
                         "Message": message,
                         "e_mail_field": emailField,
                         "sender_alias": senderAlias,
-                        "provide_type": providerType,
+                        "provider_type": providerType,
                         "sender_e_mail": senderEMail,
                         "attachment_container": attachmentContainer,
                         "subject": subject,

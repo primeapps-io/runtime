@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,18 +10,14 @@ using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using IdentityServer4.Services;
 using System.Reflection;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.Options;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using PrimeApps.Model.Context;
@@ -30,8 +25,11 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Repositories;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
-using Microsoft.AspNetCore.Localization.Routing;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using System.Security.Claims;
+using IdentityServer4;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace PrimeApps.Auth
 {
@@ -39,7 +37,6 @@ namespace PrimeApps.Auth
 	{
 		public IConfiguration Configuration { get; }
 		public IHostingEnvironment Environment { get; }
-
 
 		public Startup(IConfiguration configuration, IHostingEnvironment environment)
 		{
@@ -50,14 +47,14 @@ namespace PrimeApps.Auth
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-		    services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
-		    services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
+			services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
+			services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
 			services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
 
 
 			services.AddSingleton(Configuration);
 
-		    services.AddIdentity<ApplicationUser, IdentityRole>(config =>
+			services.AddIdentity<ApplicationUser, IdentityRole>(config =>
 			{
 				config.Password.RequiredLength = 6;
 				config.Password.RequireLowercase = false;
@@ -165,43 +162,96 @@ namespace PrimeApps.Auth
 			services.AddAuthentication()
 				.AddOpenIdConnect("aad", "Azure AD", options =>
 				{
+					options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+					options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+
 					options.Authority = "https://login.microsoftonline.com/common/";
 					options.ClientId = "7697cae4-0291-4449-8046-7b1cae642982";
+					options.ClientSecret = "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=";
 					options.GetClaimsFromUserInfoEndpoint = true;
+					options.ResponseType = "code id_token";
 					options.TokenValidationParameters = new TokenValidationParameters
 					{
 						ValidateIssuer = false,
-
+						NameClaimType = "name",
+						RoleClaimType = "role"
 					};
 
 					options.Events = new OpenIdConnectEvents
 					{
 						OnAuthorizationCodeReceived = async ctx =>
 						{
-							var request = ctx.HttpContext.Request;
-							var currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+							/*HttpRequest request = ctx.HttpContext.Request;
+							//We need to also specify the redirect URL used
+							string currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+							//Credentials for app itself
 							var credential = new ClientCredential(ctx.Options.ClientId, ctx.Options.ClientSecret);
 
-							var distributedCache = ctx.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
-							string userId = ctx.Principal.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
-
-							/*var cache = new AdalDistributedTokenCache(distributedCache, userId);
+							//Construct token cache
+							ITokenCacheFactory cacheFactory = ctx.HttpContext.RequestServices.GetRequiredService<ITokenCacheFactory>();
+							TokenCache cache = cacheFactory.CreateForUser(ctx.Principal);
 
 							var authContext = new AuthenticationContext(ctx.Options.Authority, cache);
 
-							var result = await authContext.AcquireTokenByAuthorizationCodeAsync(
-								ctx.ProtocolMessage.Code, new Uri(currentUri), credential, ctx.Options.Resource);
+							//Get token for Microsoft Graph API using the authorization code
+							string resource = "https://graph.microsoft.com";
+							AuthenticationResult result = await authContext.AcquireTokenByAuthorizationCodeAsync(
+								ctx.ProtocolMessage.Code, new Uri(currentUri), credential, resource);
 
+							//Tell the OIDC middleware we got the tokens, it doesn't need to do anything
 							ctx.HandleCodeRedemption(result.AccessToken, result.IdToken);*/
+							/*var claims = new List<Claim>
+							{
+								new Claim("validated_code", ctx.ProtocolMessage.Code)
+							};
+
+							var appIdentity = new ClaimsIdentity(claims);
+
+							ctx.Principal.AddIdentity(appIdentity);
+							ctx.HttpContext.User.AddIdentity(appIdentity);*/
+
+							/*HttpRequest request = ctx.HttpContext.Request;
+							//We need to also specify the redirect URL used
+							string currentUri = UriHelper.BuildAbsolute(request.Scheme, request.Host, request.PathBase, request.Path);
+							//Credentials for app itself
+							var credential = new ClientCredential(ctx.Options.ClientId, ctx.Options.ClientSecret);
+
+							//Construct token cache
+							ITokenCacheFactory cacheFactory = ctx.HttpContext.RequestServices.GetRequiredService<ITokenCacheFactory>();
+							TokenCache cache = cacheFactory.CreateForUser(ctx.JwtSecurityToken.Claims.First(c => c.Type == "sub").Value);
+
+							var authContext = new AuthenticationContext(ctx.Options.Authority, cache);
+
+							//Get token for Microsoft Graph API using the authorization code
+							string resource = "https://graph.microsoft.com";
+							AuthenticationResult result = await authContext.AcquireTokenByAuthorizationCodeAsync(
+								ctx.ProtocolMessage.Code, new Uri(currentUri), credential, resource);
+
+							//Tell the OIDC middleware we got the tokens, it doesn't need to do anything
+							//ctx.HandleCodeRedemption(result.AccessToken, result.IdToken);
+
+							var claims = new List<Claim>
+							{
+								new Claim("validated_code", result.AccessToken)
+							};
+
+							var appIdentity = new ClaimsIdentity(claims);
+
+							ctx.Principal.AddIdentity(appIdentity);
+							ctx.HttpContext.User.AddIdentity(appIdentity);*/
 						}
 					};
 				})
-				.AddGoogle(options =>
+				/*.AddGoogle(options =>
 				{
 					options.ClientId = "708996912208-9m4dkjb5hscn7cjrn5u0r4tbgkbj1fko.apps.googleusercontent.com";
 					options.ClientSecret = "wdfPY6t8H8cecgjlxud__4Gh";
-				});
-
+				})
+				.AddMicrosoftAccount(options => {
+					options.ClientId = "9a44a984-84f8-417b-b39a-a312b87ddfea";
+					options.SignInScheme = "Identity.External";
+					options.ClientSecret = "aihswrSTL699=*^wXHDY42$";
+				})*/;
 			//dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
 			//dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
 		}

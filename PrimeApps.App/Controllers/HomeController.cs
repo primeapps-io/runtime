@@ -17,12 +17,12 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Authorize]
-		public ActionResult Index()
+		public async Task<ActionResult> Index()
 		{
 			var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
 			var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-			var appId = applicationRepository.GetAppIdWithDomain(Request.Host.Value);
+			var appId = await applicationRepository.GetAppIdWithDomain(Request.Host.Value);
 
 			var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
