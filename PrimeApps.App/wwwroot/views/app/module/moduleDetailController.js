@@ -184,7 +184,7 @@ angular.module('primeapps')
                                 delete relation.total;
                             if (relation.detail_view_type === 'flat') {
                                 $scope.changeTab(relation);
-                                if ($scope.returnPreviousReturnTab == relation.id) {
+                                if ($scope.returnParentType == relation.id) {
                                     $scope.activeType = 'tab';
                                     $scope.tab = 'general';
                                 }

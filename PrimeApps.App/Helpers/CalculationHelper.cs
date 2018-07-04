@@ -775,13 +775,6 @@ namespace PrimeApps.App.Helpers
 												}
 											}
 										}
-										else if (stepPicklistItem.Value == "offer_selection")
-										{
-											if (!record["selected_offer"].IsNullOrEmpty())
-											{
-												record["shared_users_edit"] = null;
-											}
-										}
 
 										if (!record["approver"].IsNullOrEmpty())
 										{
