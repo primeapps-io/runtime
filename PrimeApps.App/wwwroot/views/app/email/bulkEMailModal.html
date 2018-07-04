@@ -125,7 +125,7 @@
             <div ng-show="formType === 'template'">
                 <form name="emailModalFormTemplateEdit" class="form-horizontal form-custom" autocomplete="off" novalidate>
                     <div class="modal-header clearfix">
-                        <h4 class="modal-title pull-left" ng-show="!template">{{'Template.Title' | translate}}</h4>
+                        <h4 class="modal-title pull-left"  ng-show="!template">{{'Template.Title' | translate}}</h4>
                         <h4 class="modal-title pull-left" ng-show="template">{{'Template.EditTemplate' | translate}}</h4>
                         <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
                     </div>
@@ -225,7 +225,7 @@
                             <div class="col-sm-8 text-right">
                                 <button type="button" class="btn btn-custom" ng-click="formType = 'email';backTemplate()" ng-disabled="saving">{{'Template.Back' | translate}}</button>
                                 <button type="button" class="btn btn-danger" ng-show="template" action="templateDelete();formType = 'email';" confirm-click placement="top" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ladda="emailUpdating">{{'Template.TemplateDelete' | translate}}</button>
-                                <button type="submit" class="btn btn-w-md btn-primary" ng-click="templateSave()" ng-show="!template" ladda="submittingModal" ng-disabled="submitting">{{'Template.TemplateSave' | translate}}</button>
+                                <button type="submit" class="btn btn-w-md btn-primary" ng-click="templateSave()" ng-show="!template" ladda="submittingModal" ng-disabled="!(newtemplate.template_name && newtemplate.template_subject && newtemplate.tinymce_content)">{{'Template.TemplateSave' | translate}}</button>
                                 <button type="submit" class="btn btn-w-md btn-primary" ng-click="templateSave()" ng-show="template" ladda="submittingModal" ng-disabled="submitting">{{'Template.UpdateTemplate' | translate}}</button>
                             </div>
                         </div>
