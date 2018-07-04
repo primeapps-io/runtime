@@ -28,6 +28,7 @@ namespace PrimeApps.Model.Repositories
 		{
 			return await DbContext.Tenants
 				.Include(x => x.Setting)
+                .Include(x => x.App).ThenInclude(x=> x.Setting)
 				.Where(x => x.Id == tenantId)
 				.SingleOrDefaultAsync();
 		}

@@ -72,7 +72,7 @@ angular.module('primeapps')
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
                                                 if ($scope.$parent.documentsResultSet) {
-                                                    $scope.$parent.documentsResultSet.totalDocumentCount = data.data.TotalDocumentsCount;
+                                                    $scope.$parent.documentsResultSet.totalDocumentCount = data.data.total_documents_count;
                                                 }
                                             });
                                     }
@@ -81,7 +81,7 @@ angular.module('primeapps')
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
-                                                $scope.$parent.documentsResultSet.totalDocumentCount = data.data.TotalDocumentsCount;
+                                                $scope.$parent.documentsResultSet.totalDocumentCount = data.data.total_documents_count;
                                             });
                                     }
                                 });
@@ -255,7 +255,7 @@ angular.module('primeapps')
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
-                                                $scope.$parent.documentsResultSet.totalDocumentCount = data.data.TotalDocumentsCount;
+                                                $scope.$parent.documentsResultSet.totalDocumentCount = data.data.total_documents_count;
                                             });
                                     }
                                     else {
@@ -263,7 +263,7 @@ angular.module('primeapps')
                                             .then(function (data) {
                                                 var processResults = DocumentService.processDocuments(data.data, $scope.$root.users);
                                                 $scope.$parent.documents = processResults.documentList;
-                                                $scope.$parent.documentsResultSet.totalDocumentCount = data.data.TotalDocumentsCount;
+                                                $scope.$parent.documentsResultSet.totalDocumentCount = data.data.total_documents_count;
                                             });
                                     }
                                 }, 2000);
