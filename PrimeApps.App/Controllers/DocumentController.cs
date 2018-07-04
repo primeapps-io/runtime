@@ -104,9 +104,8 @@ namespace PrimeApps.App.Controllers
         [Route("Upload_Excel"), HttpPost]
         public async Task<IActionResult> UploadExcel()
         {
-            var requestStream = await Request.ReadAsStreamAsync();
             DocumentUploadResult result;
-            var isUploaded = _documentHelper.UploadExcel(requestStream, out result);
+            var isUploaded = _documentHelper.UploadExcel(Request.Body, out result);
 
             if (!isUploaded && result == null)
             {
