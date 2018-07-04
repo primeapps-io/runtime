@@ -1,0 +1,46 @@
+<div class="page">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h4 class="pull-left">{{title}}</h4>
+            <div class="pull-right">
+                <a href="{{'#/app/module/' + entityType + '?id=' + entityId}}" class="btn btn-sm btn-custom"><i
+                        class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
+                <a href class="btn btn-sm btn-custom" data-template-url="view/app/documents/documentSearch.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-search"></i> {{'Common.Search'
+                    | translate}}</a>
+                <a href class="btn btn-sm btn-custom" data-template-url="view/app/documents/documentFilter.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-filter"></i> {{'Common.Filter'
+                    | translate}}</a>
+                <a href class="btn btn-sm btn-custom" data-template-url="view/app/documents/documentSort.html"
+                   data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-sort-alpha-asc"></i>
+                    {{'Common.Sort' | translate}}</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <div class="empty-message" ng-if="documents.length < 1 &&!loading">{{'Documents.Message'|translate}}</div>
+            <div class="subpanel" ng-show="showDocumentForm" >
+                <h5 class="subpanel-heading">{{'Documents.AddDocument' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="documents">
+                        <div document-form entity-id="entityId" entity-type="entityType" is-all="true" show="showDocumentForm"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="subpanel" ng-show="documents.length && !loading">
+                <h5 class="subpanel-heading">{{'Documents.DocumentList' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="documents">
+                        <div document-list entity-id="entityId" entity-type="entityType" is-all="true" documents="documents" ></div>
+                    </div>
+                </div>
+            </div>
+            <div class="callout callout-info" ng-if="documents.length && !loading">
+                <p>{{'Common.Tips' | translate}}:</p>
+                <p> - {{'Documents.Tip1' | translate}}</p>
+                <p> - {{'Documents.Tip2' | translate}}</p>
+                <p> - {{'Documents.Tip3' | translate}}</p>
+            </div>
+        </div>
+    </div>
+</div>

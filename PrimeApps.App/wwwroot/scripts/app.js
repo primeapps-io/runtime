@@ -90,7 +90,7 @@ angular.module('primeapps',
 
             blockUIConfig.autoBlock = false;
             blockUIConfig.message = '';
-            blockUIConfig.templateUrl = cdnUrl + 'views/common/blockui.html';
+            blockUIConfig.templateUrl = cdnUrl + 'view/common/blockui.html';
 
             $animateProvider.classNameFilter(/^(?:(?!ng-animate-disabled).)*$/);
 

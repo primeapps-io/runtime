@@ -528,7 +528,7 @@ angular.module('primeapps')
                         if (!$rootScope.sipPhone) {
                             $rootScope.sipPhone = {};
                             $rootScope.sipPhone[$rootScope.app] = $rootScope.sipPhone[$rootScope.app] || $popover(angular.element(document.getElementById('sipPhoneBtn')), {
-                                templateUrl: cdnUrl + 'views/app/phone/sipPhone.html',
+                                templateUrl: cdnUrl + 'view/app/phone/sipPhone.html',
                                 placement: 'bottom',
                                 animation: "am-flip-x",
                                 scope: $rootScope,
