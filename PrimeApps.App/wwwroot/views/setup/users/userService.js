@@ -38,7 +38,7 @@ angular.module('primeapps')
                   return $http.post(config.apiUrl + 'User/add_user',user);
                 },
                 getOfficeUsers: function(){
-                    return $http.get(config.apiUrl + 'User/GetOfficeUsers');
+                    return $http.get(config.apiUrl + 'User/get_office_users');
                 },
                 isAvailableToInvite: function (email, instanceId) {
                     return $http.post(config.apiUrl + 'User/IsAvailableToInvite', {

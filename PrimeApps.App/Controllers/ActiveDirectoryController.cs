@@ -17,7 +17,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 namespace PrimeApps.App.Controllers
 {
 	//TODO Removed
-    /*[Route("active_directory"), Authorize]
+    [Authorize]
     public class ActiveDirectoryController : Controller
     {
         private IPlatformUserRepository _platformUserRepository;
@@ -25,11 +25,10 @@ namespace PrimeApps.App.Controllers
         {
             _platformUserRepository = platformUserRepository;
         }
-
-        [Route("sign_up")]
+		
         public async Task<ActionResult> SignUp()
         {
-            UserItem result = null;
+            /*UserItem result = null;
             var userId = await Cache.ApplicationUser.GetId(User.Identity.Name);
             // try to get user object only if user id exists in session cache.
             if (userId != 0)
@@ -48,14 +47,14 @@ namespace PrimeApps.App.Controllers
             {
                 dbContext.ActiveDirectoryTenants.Add(adTenant);
                 dbContext.SaveChanges();
-            }
+            }*/
 
             var authorizationRequest = string.Format(
                 "https://login.microsoftonline.com/common/oauth2/authorize?response_type=code&client_id={0}&resource={1}&redirect_uri={2}&state={3}",
-                Uri.EscapeDataString(ConfigurationManager.AppSettings["ida:ClientID"]),
-                Uri.EscapeDataString("https://graph.windows.net"),
+                Uri.EscapeDataString("7697cae4-0291-4449-8046-7b1cae642982"),
+				Uri.EscapeDataString("https://graph.windows.net"),
                 Uri.EscapeDataString(new Uri(Request.GetDisplayUrl()).GetLeftPart(UriPartial.Authority) + "/ActiveDirectory/ProcessCode"),
-                Uri.EscapeDataString(adTenant.Issuer)
+                Uri.EscapeDataString(Guid.NewGuid().ToString())
             );
 
             authorizationRequest += string.Format("&prompt={0}", Uri.EscapeDataString("admin_consent"));
@@ -63,10 +62,17 @@ namespace PrimeApps.App.Controllers
             return new RedirectResult(authorizationRequest);
         }
 
-        [Route("process_code"), HttpGet]
+        [HttpGet]
         public async Task<ActionResult> ProcessCode(string code, string error, string error_description, string resource, string state)
         {
-            var langCookie = Request.Cookies["_lang"];
+
+			if (error == "access_denied")
+			{
+				ViewBag.Error = "accessDenied";
+			}
+			return View();
+			/*
+			var langCookie = Request.Cookies["_lang"];
             var language = langCookie != null ? langCookie : "tr";
             Thread.CurrentThread.CurrentUICulture = language == "tr" ? new CultureInfo("tr-TR") : new CultureInfo("en-GB");
             using (var dbContext = new PlatformDBContext())
@@ -89,11 +95,11 @@ namespace PrimeApps.App.Controllers
                 if (adTenant == null)
                     return View("Error");
 
-                var credential = new ClientCredential(ConfigurationManager.AppSettings["ida:ClientID"], ConfigurationManager.AppSettings["ida:Password"]);
+                var credential = new ClientCredential("7697cae4-0291-4449-8046-7b1cae642982", "J2YHu8tqkM8YJh8zgSj8XP0eJpZlFKgshTehIe5ITvU=");
                 var authContext = new AuthenticationContext("https://login.microsoftonline.com/common/");
                 var result = await authContext.AcquireTokenByAuthorizationCodeAsync(code, new Uri(new Uri(Request.GetDisplayUrl()).GetLeftPart(UriPartial.Path)), credential);
 
-                var isEmailAvailable = await _platformUserRepository.IsEmailAvailable(result.UserInfo.DisplayableId);
+                var isEmailAvailable = await _platformUserRepository.IsEmailAvailable(result.UserInfo.DisplayableId, 1);
                 var crmUserInfo = await _platformUserRepository.Get(userId);
 
                 if (crmUserInfo.Email != result.UserInfo.DisplayableId && !isEmailAvailable)
@@ -134,7 +140,7 @@ namespace PrimeApps.App.Controllers
                 dbContext.SaveChanges();
 
                 return View();
-            }
-        }
-    }*/
+            }*/
+		}
+    }
 }

@@ -2,15 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IApplicationRepository : IRepositoryBasePlatform
 	{
-		App Get(string domain);
-		App GetWithAuth(string domain);
-		App Get(int id);
-		TeamApp Get(string organizationCode, string appCode);
-		int GetAppIdWithDomain(string domain);
+		Task<App> Get(string domain);
+		Task<App> GetWithAuth(string domain);
+		Task<App> Get(int id);
+		Task<TeamApp> Get(string organizationCode, string appCode);
+		Task<int> GetAppIdWithDomain(string domain);
 	}
 }

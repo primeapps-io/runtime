@@ -108,7 +108,7 @@ angular.module('primeapps')
                             promises.push($http.get(config.apiUrl + 'help/get_all'));
                             promises.push($http.get(config.apiUrl + 'help/get_first_screen?templateType=' + 'modal' + '&firstscreen=' + true));
                             promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
-                            promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId' + responseAccount.data.user.id));
+                            promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId=' + responseAccount.data.user.id));
                             $q.all(promises)
                                 .then(function (response) {
                                     if (response.length < 6
@@ -194,7 +194,7 @@ angular.module('primeapps')
                                     }
 
                                     if ($rootScope.user.settings['has_analytics'])
-                                        $rootScope.user.settings['has_analytics'].value === 'True' ?  $rootScope.user.has_analytics = true : $rootScope.user.has_analytics=false
+                                        $rootScope.user.settings['has_analytics'].value === 'True' ?  $rootScope.user.has_analytics = true : $rootScope.user.has_analytics=false ;
                                     $rootScope.openFirtScreenHelpModal = function () {
                                         $rootScope.isMobile = function () {
                                             var check = false;

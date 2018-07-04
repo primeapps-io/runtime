@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.isConnected = false;
             $scope.loading = true;
 
-            officeHelper.officeTenantInfo()
+            /*officeHelper.officeTenantInfo()
                 .then(function(adInfo){
                     $scope.loading = false;
                     if(adInfo.data){
@@ -18,7 +18,7 @@ angular.module('primeapps')
                         $scope.adInfo = adInfo.data;
                         $scope.isConnected = true;
                     }
-                });
+                });*/
 
             $scope.popupClosed = function () {
                 OfficeService.activeDirectoryInfo()

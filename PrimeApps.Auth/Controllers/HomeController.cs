@@ -21,9 +21,9 @@ namespace PrimeApps.Auth.UI
             _interaction = interaction;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-			var appInfo = _applicationRepository.GetWithAuth(Request.Host.Value);
+			var appInfo = await _applicationRepository.GetWithAuth(Request.Host.Value);
 			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
 			//return View();
         }

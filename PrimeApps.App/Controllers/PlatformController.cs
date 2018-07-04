@@ -44,9 +44,9 @@ namespace PrimeApps.App.Controllers
         }
 
 		[Route("get_domain_info"), HttpGet]
-		public JsonResult GetApp([FromQuery(Name = "domain")] string domain)
+		public async Task<JsonResult> GetApp([FromQuery(Name = "domain")] string domain)
 		{
-			var appEntity = _applicationRepository.Get(domain);
+			var appEntity = await _applicationRepository.Get(domain);
 
 			return Json(appEntity);
 		}

@@ -75,14 +75,12 @@
 					@foreach (var provider in Model.VisibleExternalProviders)
 					{
 						<hr />
-						<button type="button"
-								asp-class=""
-								asp-action="ExternalLogin"
-								asp-route-provider="@provider.AuthenticationScheme"
-								asp-route-returnUrl="@Model.ReturnUrl"
-								class="btn btn-block add-button">
+						<a class="btn btn-block add-button"
+						   asp-action="ExternalLogin"
+						   asp-route-provider="@provider.AuthenticationScheme"
+						   asp-route-returnUrl="@Model.ReturnUrl">
 							@Localizer[provider.DisplayName]
-						</button>
+						</a>
 					}
 				}
 			}
