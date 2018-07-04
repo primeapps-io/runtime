@@ -903,7 +903,7 @@ namespace PrimeApps.App.Helpers
 						}
 						string beforeCc = "";
 						var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
-						if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com"))
+						if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com") && process.Module.Name == "ise_alim_talepleri")
 						{
 							switch ((int)record["process_status_order"])
 							{
@@ -1101,7 +1101,7 @@ namespace PrimeApps.App.Helpers
 
 					string beforeCc = "";
 					var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
-					if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com"))
+					if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com") && process.Module.Name == "ise_alim_talepleri")
 					{
 						switch ((int)record["process_status_order"])
 						{

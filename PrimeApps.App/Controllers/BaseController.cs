@@ -38,7 +38,7 @@ namespace PrimeApps.App.Controllers
 
         private UserItem GetUser()
         {
-            var platformUser = (PlatformUser) HttpContext.Items["user"];
+            var platformUser = (PlatformUser)HttpContext.Items["user"];
             var tenant = platformUser.TenantsAsUser.Single().Tenant;
 
             var appUser = new UserItem
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Controllers
                 TenantGuid = tenant.GuidId,
                 TenantLanguage = tenant.Setting?.Language,
                 Email = platformUser.Email,
-                UserName = platformUser.FirstName + " " + platformUser.LastName
+                FullName = platformUser.FirstName + " " + platformUser.LastName
             };
 
             if (!tenant.App.UseTenantSettings)
@@ -78,7 +78,7 @@ namespace PrimeApps.App.Controllers
             tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = appUser.TenantId};
             var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-            appUser.Role = tenantUser.RoleId ?? 0;
+            appUser.RoleId = tenantUser.RoleId ?? 0;
             appUser.ProfileId = tenantUser.RoleId ?? 0;
             appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 

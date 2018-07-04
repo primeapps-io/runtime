@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -26,7 +27,6 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
-
         public EMailClient(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
@@ -73,22 +73,26 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
                     using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
                     using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+                    using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
                     {
-
+                        notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
                         /// get details of the email queue item.
                         ///
                         var notificationId = Convert.ToInt32(emailQueueItem.Id);
 
-                        var emailNotification = databaseContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
+                        //  var emailNotification = databaseContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
+
+                        var emailNotification = await notifitionRepository.GetNotification(notificationId);
 
                         /// this request has already been removed, do nothing and return success.
                         if (emailNotification == null) return true;
 
-                        var emailSet = databaseContext.Settings.Include(x => x.CreatedBy).Where(r =>
-                                r.Type == Model.Enums.SettingType.Email &&
-                                r.Deleted == false &&
-                                r.UserId == ((emailQueueItem.AccessLevel == AccessLevelEnum.Personal) ? (int?)emailNotification.CreatedById : null))
-                            .ToList();
+                        var emailSet = await notifitionRepository.GetSetting(emailQueueItem, notificationId);
+                        // = databaseContext.Settings.Include(x => x.CreatedBy).Where(r =>
+                        //        r.Type == Model.Enums.SettingType.Email &&
+                        //        r.Deleted == false &&
+                        //        r.UserId == ((emailQueueItem.AccessLevel == AccessLevelEnum.Personal) ? (int?)emailNotification.CreatedById : null))
+                        //    .ToList();
 
                         /// email settings are null just return and do nothing.
                         if (emailSet == null)
@@ -152,6 +156,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
                             using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                             {
+                                moduleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
                                 module = await moduleRepository.GetById(emailNotification.ModuleId);
                             }
 
@@ -269,9 +274,10 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
                     //Set find request limit to our maximum value 3000 unlike filter default
                     findRequest.Limit = 30000;
-
-                    using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
+                    using (var _scope = _serviceScopeFactory.CreateScope())
                     {
+                        var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+
                         using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                         {
                             recordRepository.UserId = userId;
@@ -295,75 +301,80 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
                 if (ids?.Length > 0)
                 {
-                    using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
-                    using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
-                    using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
-                    using (var recordRepository = new RecordRepository(databaseContext, _configuration))
+                    using (var _scope = _serviceScopeFactory.CreateScope())
                     {
-                        foreach (string recordId in ids)
+                        var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                        using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                        using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                        using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                         {
-                            var status = MessageStatusEnum.Successful;
-                            var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
-                            var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
+                            moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser {TenantId = messageDto.TenantId, UserId = userId }; 
 
-                            if (!record[emailField].IsNullOrEmpty())
+                            foreach (string recordId in ids)
                             {
-                                if (!Utils.IsValidEmail(record[emailField].ToString()))
+                                var status = MessageStatusEnum.Successful;
+                                var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
+                                var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
+
+                                if (!record[emailField].IsNullOrEmpty())
                                 {
-                                    status = MessageStatusEnum.InvalidField;
+                                    if (!Utils.IsValidEmail(record[emailField].ToString()))
+                                    {
+                                        status = MessageStatusEnum.InvalidField;
+                                        noAddress++;
+                                    }
+                                }
+                                else
+                                {
+                                    status = MessageStatusEnum.MissingField;
                                     noAddress++;
                                 }
-                            }
-                            else
-                            {
-                                status = MessageStatusEnum.MissingField;
-                                noAddress++;
-                            }
 
-                            if (!record["email_opt_out"].IsNullOrEmpty() && status == MessageStatusEnum.Successful)
-                            {
-                                var isAllowedEmail = (bool)record["email_opt_out"];
-
-                                if (isAllowedEmail)
+                                if (!record["email_opt_out"].IsNullOrEmpty() && status == MessageStatusEnum.Successful)
                                 {
-                                    status = MessageStatusEnum.OptedOut;
-                                    notAllowed++;
+                                    var isAllowedEmail = (bool)record["email_opt_out"];
+
+                                    if (isAllowedEmail)
+                                    {
+                                        status = MessageStatusEnum.OptedOut;
+                                        notAllowed++;
+                                    }
+                                }
+
+                                record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, language, culture, 180, lookupModules, true);
+                                string formattedMessage = FormatMessage(messageFields, messageBody, record);
+
+                                JObject messageStatus = new JObject();
+                                messageStatus["email"] = record[emailField]?.ToString();
+                                messageStatus["message"] = formattedMessage;
+                                messageStatus["status"] = status.ToString();
+                                messageStatus["email_id"] = emailId;
+                                messageStatus["record_primary_value"] = record[emailField]?.ToString();
+                                messageStatus["module_id"] = module.Id;
+                                messageStatus["type"] = "email_detail";
+                                messageStatus["record_id"] = record["id"].ToString();
+
+                                /// add status object to the status list.
+                                messageStatusList.Add(messageStatus);
+
+                                if (status == MessageStatusEnum.Successful)
+                                {
+                                    /// create a message object and add it to the list.
+                                    Message emailMessage = new Message();
+                                    emailMessage.Recipients.Add(record[emailField].ToString());
+                                    emailMessage.Body = formattedMessage;
+                                    emailMessage.Subject = subject;
+                                    emailMessage.AttachmentLink = attachmentLink;
+                                    emailMessage.AttachmentName = attachmentName;
+                                    messages.Add(emailMessage);
+                                    successful++;
                                 }
                             }
-
-                            record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, language, culture, 180, lookupModules, true);
-                            string formattedMessage = FormatMessage(messageFields, messageBody, record);
-
-                            JObject messageStatus = new JObject();
-                            messageStatus["email"] = record[emailField]?.ToString();
-                            messageStatus["message"] = formattedMessage;
-                            messageStatus["status"] = status.ToString();
-                            messageStatus["email_id"] = emailId;
-                            messageStatus["record_primary_value"] = record[emailField]?.ToString();
-                            messageStatus["module_id"] = module.Id;
-                            messageStatus["type"] = "email_detail";
-                            messageStatus["record_id"] = record["id"].ToString();
-
-                            /// add status object to the status list.
-                            messageStatusList.Add(messageStatus);
-
-                            if (status == MessageStatusEnum.Successful)
-                            {
-                                /// create a message object and add it to the list.
-                                Message emailMessage = new Message();
-                                emailMessage.Recipients.Add(record[emailField].ToString());
-                                emailMessage.Body = formattedMessage;
-                                emailMessage.Subject = subject;
-                                emailMessage.AttachmentLink = attachmentLink;
-                                emailMessage.AttachmentName = attachmentName;
-                                messages.Add(emailMessage);
-                                successful++;
-                            }
                         }
+
+
+
                     }
-
-
-
                 }
             }
 
