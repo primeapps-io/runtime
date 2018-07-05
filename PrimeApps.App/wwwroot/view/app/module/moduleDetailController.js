@@ -1867,7 +1867,8 @@ angular.module('primeapps')
                         ngToast.create({
                             //content: $filter('translate')('Module.SuccessMessage', { title: $scope.module['label_' + $rootScope.language + '_singular'] }),
                             content: val,
-                            className: 'warning'
+                            className: 'warning',
+                            timeout: 8000
                         });
                         return;
                     }
