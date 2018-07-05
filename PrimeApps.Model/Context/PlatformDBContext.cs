@@ -318,6 +318,10 @@ namespace PrimeApps.Model.Context
             //AppWorkflowLog
             modelBuilder.Entity<AppWorkflowLog>().HasIndex(x => x.AppWorkflowId);
             modelBuilder.Entity<AppWorkflowLog>().HasIndex(x => x.AppId);
+
+            //Cache
+            modelBuilder.Entity<Cache>().HasIndex(x => x.Key);
+      
         }
 
         public DbSet<PlatformUser> Users { get; set; }
@@ -339,5 +343,6 @@ namespace PrimeApps.Model.Context
         public DbSet<AppWorkflow> AppWorkflows { get; set; }
         public DbSet<AppWorkflowLog> AppWorkflowLogs { get; set; }
         public DbSet<AppWorkflowWebhook> AppWorkflowWebhooks { get; set; }
+        public DbSet<Cache> Cache { get; set; }
     }
 }

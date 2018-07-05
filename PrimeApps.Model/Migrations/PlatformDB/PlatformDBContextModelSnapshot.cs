@@ -356,6 +356,23 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.ToTable("workflow_webhooks");
                 });
 
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Cache", b =>
+                {
+                    b.Property<string>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("key")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Value")
+                        .HasColumnName("value");
+
+                    b.HasKey("Key");
+
+                    b.HasIndex("Key");
+
+                    b.ToTable("cache");
+                });
+
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
                 {
                     b.Property<int>("Id")
