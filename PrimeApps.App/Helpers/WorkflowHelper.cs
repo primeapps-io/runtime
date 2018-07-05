@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Humanizer.Localisation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Cache;
+using PrimeApps.Model.Common.Resources;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
@@ -251,20 +253,70 @@ namespace PrimeApps.App.Helpers
                                             mismatchedCount++;
                                         break;
                                     case Operator.Greater:
-                                        if (fieldValueNumber <= filterValueNumber)
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                            if (recordDate <= filterDate)
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber <= filterValueNumber)
+                                        {
                                             mismatchedCount++;
+                                        }
                                         break;
                                     case Operator.GreaterEqual:
-                                        if (fieldValueNumber < filterValueNumber)
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                            if (recordDate < filterDate)
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber < filterValueNumber)
+                                        {
                                             mismatchedCount++;
+                                        }
+
                                         break;
                                     case Operator.Less:
-                                        if (fieldValueNumber >= filterValueNumber)
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                            if (recordDate >= filterDate)
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber >= filterValueNumber)
+                                        {
                                             mismatchedCount++;
+                                        }
                                         break;
                                     case Operator.LessEqual:
-                                        if (fieldValueNumber > filterValueNumber)
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                            if (recordDate >= filterDate)
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber > filterValueNumber)
+                                        {
                                             mismatchedCount++;
+                                        }
+
                                         break;
                                 }
                             }
@@ -716,9 +768,7 @@ namespace PrimeApps.App.Helpers
                                 domain = string.Format(domain, subdomain);
 
                                 //domain = "http://localhost:5554/";
-
-                                //checks custom domain 
-                                //TODO Removed
+                                
                                 using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
                                 {
                                     var app = await _appRepository.Get(appUser.AppId);
@@ -735,16 +785,14 @@ namespace PrimeApps.App.Helpers
                                 emailData.Add("Content", sendNotification.Message);
                                 emailData.Add("Url", url);
 
+                                
+                                var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                                email.AddRecipient(recipient);
 
+                                if (sendNotification.Schedule.HasValue)
+                                    email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                                //TODO Removed
-                                //var email = new Email(typeof(Resources.Email.WorkflowNotification), appUser.Culture, emailData, appUser.AppId, appUser);
-                                //email.AddRecipient(recipient);
-
-                                //if (sendNotification.Schedule.HasValue)
-                                //    email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
-
-                                //email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                                email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
 
                             }
                         }

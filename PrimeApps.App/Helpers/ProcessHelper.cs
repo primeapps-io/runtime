@@ -363,10 +363,6 @@ namespace PrimeApps.App.Helpers
 						var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 						domain = string.Format(domain, subdomain);
 
-						//domain = "http://localhost:5554/";
-
-						//checks custom domain 
-						//TODO Removed
                         using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
                         {
                             var app = await _appRepository.Get(appUser.AppId);
@@ -403,7 +399,6 @@ namespace PrimeApps.App.Helpers
 								(int)record["hesaplanan_alinacak_toplam_izin"] < 0)
 							{
 								if (appUser.TenantLanguage == "tr")
-									// if (appUser.Culture.Contains("tr"))
 									emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışan izin borçlanma talep etmektedir.İzin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
 								else
 									emailData.Add("ExtraLeave", "Employee" + " " + (string)record["calisan.ad_soyad"] + ", with the details below requests leave of absence. It has been submitted for your approval as the manager.");
@@ -411,7 +406,6 @@ namespace PrimeApps.App.Helpers
 							else
 							{
 								if (appUser.TenantLanguage == "tr")
-									//if (appUser.Culture.Contains("tr"))
 									emailData.Add("ExtraLeave", "Aşağıda detayları bulunan" + " " + (string)record["calisan.ad_soyad"] + " " + "isimli çalışana ait izin talebi, yöneticisi olarak sizin onayınıza sunulmuştur.");
 								else
 								{
@@ -428,24 +422,24 @@ namespace PrimeApps.App.Helpers
 						if (!string.IsNullOrWhiteSpace(appUser.Culture) && Constants.CULTURES.Contains(appUser.Culture))
 							Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
-						//if (operationType == OperationType.insert)
-						//{
-						//	var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-						//	notification.AddRecipient(user.Email);
-						//	notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-						//}
-						//else if (operationType == OperationType.update)
-						//{
-						//	var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
-						//	notification.AddRecipient(user.Email);
-						//	notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-						//}
-						//else if (operationType == OperationType.delete)
-						//{
+                        if (operationType == OperationType.insert)
+                        {
+                            var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            notification.AddRecipient(user.Email);
+                            notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+                        }
+                        else if (operationType == OperationType.update)
+                        {
+                            var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            notification.AddRecipient(user.Email);
+                            notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+                        }
+                        else if (operationType == OperationType.delete)
+                        {
 
-						//}
+                        }
 
-						var processRequest = new ProcessRequest
+                        var processRequest = new ProcessRequest
 						{
 							ProcessId = process.Id,
 							RecordId = (int)record["id"],
@@ -728,7 +722,8 @@ namespace PrimeApps.App.Helpers
                 warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
@@ -802,22 +797,20 @@ namespace PrimeApps.App.Helpers
 						var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 						domain = string.Format(domain, subdomain);
 
-						//domain = "http://localhost:5554/";
+                        using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                        {
+                            var app = await _appRepository.Get(appUser.AppId);
+                            if (app != null)
+                            {
+                                domain = "https://" + app.Setting.Domain + "/";
+                            }
+                        }
 
-						//checks custom domain 
-
-						//TODO Removed
-						/*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-						if (!string.IsNullOrEmpty(instance.CustomDomain))
-						{
-							domain = "https://" + instance.CustomDomain + "/";
-						}
-
-						string url = "";
+                        string url = "";
 						if (process.Module.Name == "timetrackers")
 						{
 							var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-							var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+							var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
 							url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
 						}
 						else
@@ -826,7 +819,7 @@ namespace PrimeApps.App.Helpers
 						}
 
 						if (appUser.TenantLanguage == "tr")
-							// if (appUser.Culture.Contains("tr"))
+							 if (appUser.Culture.Contains("tr"))
 							emailData.Add("ModuleName", process.Module.LabelTrSingular);
 						else
 							emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -836,7 +829,7 @@ namespace PrimeApps.App.Helpers
 
 						if (process.ApproverType == ProcessApproverType.StaticApprover)
 						{
-							emailData.Add("UserName", appUser.UserName);
+							emailData.Add("UserName", appUser.FullName);
 						}
 						else
 						{
@@ -849,23 +842,23 @@ namespace PrimeApps.App.Helpers
 
 						if (request.OperationType == OperationType.insert)
 						{
-							var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+							var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
 							notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 						}
 						else if (request.OperationType == OperationType.update)
 						{
-							var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+							var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
 							notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 						}
 						else if (request.OperationType == OperationType.delete)
 						{
 
-						}*/
+						}
 
-					}
-					else
+                    }
+                    else
 					{
 
 						if (request.OperationType == OperationType.delete)
@@ -952,20 +945,20 @@ namespace PrimeApps.App.Helpers
 							var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 							domain = string.Format(domain, subdomain);
 
-							//domain = "http://localhost:5554/";
-							//TODO Removed
-							//checks custom domain 
-							/*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-							if (!string.IsNullOrEmpty(instance.CustomDomain))
-							{
-								domain = "https://" + instance.CustomDomain + "/";
-							}
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            {
+                                var app = await _appRepository.Get(appUser.AppId);
+                                if (app != null)
+                                {
+                                    domain = "https://" + app.Setting.Domain + "/";
+                                }
+                            }
 
-							string url = "";
+                            string url = "";
 							if (process.Module.Name == "timetrackers")
 							{
 								var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-								var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+								var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
 								url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
 							}
 							else
@@ -983,7 +976,7 @@ namespace PrimeApps.App.Helpers
 
 							if (process.ApproverType == ProcessApproverType.StaticApprover)
 							{
-								emailData.Add("UserName", appUser.UserName);
+								emailData.Add("UserName", appUser.FullName);
 							}
 							else
 							{
@@ -996,22 +989,22 @@ namespace PrimeApps.App.Helpers
 
 							if (request.OperationType == OperationType.insert)
 							{
-								var notification = new Email(typeof(Resources.Email.ApprovalProcessCreateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+								var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 								notification.AddRecipient(user.Email);
 								notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
 							}
 							else if (request.OperationType == OperationType.update)
 							{
-								var notification = new Email(typeof(Resources.Email.ApprovalProcessUpdateNotification), Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+								var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 								notification.AddRecipient(user.Email);
 								notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 							}
 							else if (request.OperationType == OperationType.delete)
 							{
 
-							}*/
-						}
-						else
+							}
+                        }
+                        else
 						{
 							var user = await _userRepository.GetById(request.CreatedById);
 							request.Status = Model.Enums.ProcessStatus.Approved;
@@ -1041,20 +1034,20 @@ namespace PrimeApps.App.Helpers
 							var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 							domain = string.Format(domain, subdomain);
 
-							//checks custom domain 
-							//TODO Removed
-							/*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-							if (!string.IsNullOrEmpty(instance.CustomDomain))
-							{
-								domain = "https://" + instance.CustomDomain + "/";
-							}
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            {
+                                var app = await _appRepository.Get(appUser.AppId);
+                                if (app != null)
+                                {
+                                    domain = "https://" + app.Setting.Domain + "/";
+                                }
+                            }
 
-							//domain = "http://localhost:5554/";
-							string url = "";
+                            string url = "";
 							if (process.Module.Name == "timetrackers")
 							{
 								var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-								var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+								var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
 								url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
 							}
 							else
@@ -1063,7 +1056,7 @@ namespace PrimeApps.App.Helpers
 							}
 
 							if (appUser.TenantLanguage == "tr")
-								// if (appUser.Culture.Contains("tr"))
+								 if (appUser.Culture.Contains("tr"))
 								emailData.Add("ModuleName", process.Module.LabelTrSingular);
 							else
 								emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -1074,12 +1067,11 @@ namespace PrimeApps.App.Helpers
 							if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
 								Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
-							var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+							var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 							notification.AddRecipient(user.Email);
 							notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
-							*/
-						}
-					}
+                        }
+                    }
 				}
 			}
 		}
@@ -1090,7 +1082,8 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
 				{
@@ -1151,20 +1144,20 @@ namespace PrimeApps.App.Helpers
 					var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 					domain = string.Format(domain, subdomain);
 
-					//checks custom domain 
-					//TODO Removed
-					/*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-					if (!string.IsNullOrEmpty(instance.CustomDomain))
-					{
-						domain = "https://" + instance.CustomDomain + "/";
-					}
+                    using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                    {
+                        var app = await _appRepository.Get(appUser.AppId);
+                        if (app != null)
+                        {
+                            domain = "https://" + app.Setting.Domain + "/";
+                        }
+                    }
 
-					//domain = "http://localhost:5554/";
-					string url = "";
+                    string url = "";
 					if (process.Module.Name == "timetrackers")
 					{
 						var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-						var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+						var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
 						url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
 					}
 					else
@@ -1173,7 +1166,7 @@ namespace PrimeApps.App.Helpers
 					}
 
 					if (appUser.TenantLanguage == "tr")
-						// if (appUser.Culture.Contains("tr"))
+						 if (appUser.Culture.Contains("tr"))
 						emailData.Add("ModuleName", process.Module.LabelTrSingular);
 					else
 						emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -1181,26 +1174,25 @@ namespace PrimeApps.App.Helpers
 					emailData.Add("Url", url);
 					emailData.Add("UserName", user.FullName);
 					emailData.Add("Message", message);
-					emailData.Add("RejectedUser", appUser.UserName);
+					emailData.Add("RejectedUser", appUser.FullName);
 
 					if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
 						Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
 					if (request.OperationType == OperationType.insert)
 					{
-						var notification = new Email(EmailResource.ApprovalProcessRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+						var notification = new Email(EmailResource.ApprovalProcessRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
 						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
 					}
 					else if (request.OperationType == OperationType.update)
 					{
-						var notification = new Email(EmailResource.ApprovalProcessUpdateRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+						var notification = new Email(EmailResource.ApprovalProcessUpdateRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
 						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 					}
-					*/
-				}
-			}
+                }
+            }
 		}
 
 		public async Task SendToApprovalAgain(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest)
@@ -1210,7 +1202,8 @@ namespace PrimeApps.App.Helpers
 			using (var _scope = _serviceScopeFactory.CreateScope())
 			{
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-				using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
 				using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
 				using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
 				using (var _userRepository = new UserRepository(databaseContext, _configuration))
@@ -1282,21 +1275,24 @@ namespace PrimeApps.App.Helpers
 					var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
 					domain = string.Format(domain, subdomain);
 
-					//checks custom domain 
-					//TODO Removed
-					/*var instance = crmInstance.GetInstanceById(appUser.InstanceId);
-					if (!string.IsNullOrEmpty(instance.CustomDomain))
-					{
-						domain = "https://" + instance.CustomDomain + "/";
-					}
+                    using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                    {
+                        var app = await _appRepository.Get(appUser.AppId);
+                        if (app != null)
+                        {
+                            domain = "https://" + app.Setting.Domain + "/";
+                        }
+                    }
 
-					//domain = "http://localhost:5554/";
-					string url = "";
+                    string url = "";
 					if (process.Module.Name == "timetrackers")
 					{
-						var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-						var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
-						url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                        using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                        {
+                            var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
+                            var timetrackerRecord = recordRepository.Find("timetrackers", findTimetracker);
+                            url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
+                        }
 					}
 					else
 					{
@@ -1304,7 +1300,6 @@ namespace PrimeApps.App.Helpers
 					}
 
 					if (appUser.TenantLanguage == "tr")
-						//if (appUser.Culture.Contains("tr"))
 						emailData.Add("ModuleName", process.Module.LabelTrSingular);
 					else
 						emailData.Add("ModuleName", process.Module.LabelEnSingular);
@@ -1313,7 +1308,7 @@ namespace PrimeApps.App.Helpers
 					emailData.Add("ApproverName", user.FullName);
 					if (process.ApproverType == ProcessApproverType.StaticApprover)
 					{
-						emailData.Add("UserName", appUser.UserName);
+						emailData.Add("UserName", appUser.FullName);
 					}
 					else
 					{
@@ -1325,20 +1320,20 @@ namespace PrimeApps.App.Helpers
 
 					if (request.OperationType == OperationType.insert)
 					{
-						var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+						var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
 						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 					}
 					else if (request.OperationType == OperationType.update)
 					{
-						var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, appUser.AppId, appUser);
+						var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
 						notification.AddRecipient(user.Email);
 						notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
 					}
 					else if (request.OperationType == OperationType.delete)
 					{
 
-					}*/
+					}
 
 				}
 			}
