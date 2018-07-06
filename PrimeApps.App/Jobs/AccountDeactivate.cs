@@ -5,54 +5,55 @@ using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories;
 using System.Data;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace PrimeApps.App.Jobs
 {
     public class AccountDeactivate
     {
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-        public AccountDeactivate(IConfiguration configuration)
+        public AccountDeactivate(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task Deactivate()
         {
-            using (var platformDbContext = new PlatformDBContext(_configuration))
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
+                var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+                using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-
                     var tenants = await tenantRepository.GetExpiredTenants();
-
                     foreach (var tenant in tenants)
                     {
-                        using (var databaseContext = new TenantDBContext(tenant.Id, _configuration))
-                        using (var userRepository = new UserRepository(databaseContext, _configuration))
+                        userRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = tenant.Id, UserId = 1 };
+                        var users = await userRepository.GetAllAsync();
+
+                        foreach (var user in users)
                         {
-                            var users = await userRepository.GetAllAsync();
-
-                            foreach (var user in users)
+                            try
                             {
-                                try
+                                user.IsActive = false;
+                                databaseContext.SaveChanges();
+                            }
+                            //TODO: ex.InnerException.InnerException olabilir
+                            catch (DataException ex)
+                            {
+                                if (ex.InnerException is PostgresException)
                                 {
-                                    user.IsActive = false;
-                                    databaseContext.SaveChanges();
-                                }
-                                //TODO: ex.InnerException.InnerException olabilir
-                                catch (DataException ex)
-                                {
-                                    if (ex.InnerException is PostgresException)
-                                    {
-                                        var innerEx = (PostgresException)ex.InnerException;
+                                    var innerEx = (PostgresException)ex.InnerException;
 
-                                        if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
-                                            continue;
-                                    }
-
-                                    throw;
+                                    if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
+                                        continue;
                                 }
+
+                                throw;
                             }
                         }
 
