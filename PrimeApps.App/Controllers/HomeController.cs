@@ -2,7 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.Helpers;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
@@ -10,10 +15,12 @@ namespace PrimeApps.App.Controllers
 	public class HomeController : Controller
 	{
 		private IConfiguration _configuration;
+		private IServiceScopeFactory _serviceScopeFactory;
 
-		public HomeController(IConfiguration configuration)
+		public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
 		{
 			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
 		}
 
 		[Authorize]
@@ -24,10 +31,14 @@ namespace PrimeApps.App.Controllers
 
 			var appId = await applicationRepository.GetAppIdWithDomain(Request.Host.Value);
 
-			var tenant = platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+			var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
 			if (tenant == null)
 				return BadRequest();
+
+			/*var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
+
+			await SetValues(userId, tenant.Id);*/
 
 			Response.Cookies.Append("tenant_id", tenant.Id.ToString());
 
@@ -36,12 +47,12 @@ namespace PrimeApps.App.Controllers
 
 		public async Task<ActionResult> Preview()
 		{
-			await SetValues();
+			//await SetValues();
 
 			return View("Index");
 		}
 
-		private async Task SetValues()
+		private async Task SetValues(int userId, int tenantId)
 		{
 			var lang = Request.Cookies["_lang"];
 			var language = lang ?? "tr";
@@ -61,6 +72,11 @@ namespace PrimeApps.App.Controllers
 				ViewBag.CdnUrlDynamic = "";
 				ViewBag.CdnUrlStatic = "";
 			}
+
+			var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
+			componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = tenantId };
+			await componentRepository.GetByType(ComponentType.Component);
+
 		}
 	}
 }

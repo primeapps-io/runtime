@@ -34,11 +34,14 @@ namespace PrimeApps.Model.Entities.Application
 
 	public enum ComponentType
 	{
-		Script = 1
+		NonSet = 0,
+		Script = 1,
+		Component = 2
 	}
 
 	public enum ComponentPlace
 	{
+		NonSet = 0,
 		FieldChange = 1,
 		BeforeCreate = 2,
 		AfterCreate = 3,

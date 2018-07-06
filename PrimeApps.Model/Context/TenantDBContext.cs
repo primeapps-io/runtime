@@ -637,6 +637,7 @@ namespace PrimeApps.Model.Context
         public DbSet<ProfilePermission> ProfilePermissions { get; set; }
         public DbSet<Calculation> Calculations { get; set; }
         public DbSet<Dependency> Dependencies { get; set; }
+        public DbSet<Components> Components { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<FieldCombination> FieldCombinations { get; set; }
         public DbSet<FieldValidation> FieldValidations { get; set; }

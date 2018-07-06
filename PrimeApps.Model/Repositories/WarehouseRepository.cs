@@ -70,7 +70,7 @@ namespace PrimeApps.Model.Repositories
 
             _warehouse.CreateUser(warehouseEntity);
             _warehouse.CreateSchema(warehouseEntity, modules, tenantLanguage, _configuration.GetConnectionString("WarehouseConnection"));
-            _warehouse.SyncData(modules, warehouseEntity.DatabaseName, TenantId.Value, tenantLanguage);
+            _warehouse.SyncData(modules, warehouseEntity.DatabaseName, CurrentUser, tenantLanguage);
 
             _platformWarehouseRepository.SetCompleted(warehouseEntity, userEmail);
         }

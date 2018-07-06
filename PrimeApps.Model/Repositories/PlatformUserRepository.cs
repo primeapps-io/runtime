@@ -119,15 +119,15 @@ namespace PrimeApps.Model.Repositories
             return user?.PlatformUser;
         }
 
-        public Tenant GetTenantByEmailAndAppId(string email, int appId)
+        public async Task<Tenant> GetTenantByEmailAndAppId(string email, int appId)
         {
-            var userTenant = DbContext.UserTenants
+            var userTenant = await DbContext.UserTenants
                 .Include(x => x.PlatformUser)
                 .Include(x => x.Tenant).ThenInclude(z => z.App)
                 /*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
 				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
 				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
-                .SingleOrDefault(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
+                .SingleOrDefaultAsync(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
 
 
             return userTenant?.Tenant;
