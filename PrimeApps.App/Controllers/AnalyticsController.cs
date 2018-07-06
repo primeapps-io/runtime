@@ -167,6 +167,8 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]AnalyticBindingModel analytic)
         {
+			if (!ModelState.IsValid)
+				return BadRequest();
             var analyticEntity = await AnalyticsHelper.CreateEntity(analytic, _userRepository);
             var result = await _analyticRepository.Create(analyticEntity);
 
