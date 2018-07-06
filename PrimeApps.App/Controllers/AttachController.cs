@@ -73,6 +73,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_settingsRepository);
             SetCurrentUser(_noteRepository);
             SetCurrentUser(_moduleRepository);
+            _recordHelper.SetCurrentUser(AppUser);
             base.OnActionExecuting(context);
         }
 
@@ -159,18 +160,10 @@ namespace PrimeApps.App.Controllers
             // Open a template document.
             using (var template = new MemoryStream())
             {
-                try
-                {
                     await templateBlob.DownloadToStreamAsync(template, Microsoft.WindowsAzure.Storage.AccessCondition.GenerateEmptyCondition(), new Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions(), new Microsoft.WindowsAzure.Storage.OperationContext());
 
                     doc = new Aspose.Words.Document(template);
 
-                }
-                catch (Exception ex)
-                {
-
-                    throw ex;
-                }
             }
 
             // Add related module records.
@@ -230,25 +223,26 @@ namespace PrimeApps.App.Controllers
 
                 return Ok(result);
             }
-            rMessage.Content = new StreamContent(outputStream);
-            rMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
-            rMessage.StatusCode = HttpStatusCode.OK;
-            rMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
-            {
-                FileNameStar = fileName
-            };
+            //rMessage.Content = new StreamContent(outputStream);
+            //rMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+            //rMessage.StatusCode = HttpStatusCode.OK;
+            //rMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            //{
+            //    FileNameStar = fileName
+            //};
 
-            // TODO: Test this !
-            var response = new ContentResult
-            {
-                Content = rMessage.Content.ToString(),
-                ContentType = rMessage.Content.GetType().ToString(),
-                StatusCode = (int)rMessage.StatusCode
-            };
+            //// TODO: Test this !
 
-            //var response = ResponseMessage(rMessage);
+            //var response = new ContentResult
+            //{
+            //    Content = rMessage.Content.ToString(),
+            //    ContentType = rMessage.Content.GetType().ToString(),
+            //    StatusCode = (int)rMessage.StatusCode
+            //};
 
-            return response;
+            ////var response = ResponseMessage(rMessage);
+
+            return File(outputStream, mimeType, fileName, true);
         }
 
         private async Task<bool> AddRelatedModuleRecords(Dictionary<string, JArray> relatedModuleRecords, List<Note> notes, Module moduleEntity, ICollection<Module> lookupModules, Aspose.Words.Document doc, JObject record, string module, int recordId, string currentCulture, int timezoneOffset)

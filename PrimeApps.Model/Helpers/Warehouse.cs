@@ -375,7 +375,7 @@ namespace PrimeApps.Model.Helpers
                 existingTable.Drop();
             }
 
-            var module = GetModule(moduleName, currentUser.TenantId);
+            var module = GetModule(moduleName, currentUser);
             CreateTables(database, module, tenantLanguage);
         }
 
@@ -386,7 +386,7 @@ namespace PrimeApps.Model.Helpers
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
             var table = database.Tables[moduleName + "_d"];
-            var module = GetModule(moduleName, currentUser.TenantId);
+            var module = GetModule(moduleName, currentUser);
 
             foreach (var fieldId in fieldIds)
             {
@@ -404,7 +404,7 @@ namespace PrimeApps.Model.Helpers
             var serverConnection = new ServerConnection(connection);
             var server = new Server(serverConnection);
             var database = server.Databases[warehouseDatabaseName];
-            var module = GetModule(moduleName, currentUser.TenantId);
+            var module = GetModule(moduleName, currentUser);
             var relation = module.Relations.Single(x => x.Id == relationId);
             var junctionTableNames = new List<string>();
             var relations = module.Relations.OrderBy(x => x.Id).ToList();
@@ -428,9 +428,10 @@ namespace PrimeApps.Model.Helpers
             CreateJunctionTable(database, module, relation, junctionTableNames);
         }
 
-        public void SyncData(ICollection<Module> modules, string databaseName, int tenantId, string tenantLanguage)
+        public void SyncData(ICollection<Module> modules, string databaseName, CurrentUser currentUser, string tenantLanguage)
         {
-            _analyticRepository.TenantId = tenantId;
+			_analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             // Insert roles
             var roles = _analyticRepository.DbContext.Roles.ToList();
@@ -564,12 +565,12 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public void CreateRole(int roleId, string databaseName, int tenantId, string tenantLanguage)
+        public void CreateRole(int roleId, string databaseName, CurrentUser currentUser, string tenantLanguage)
         {
             if (string.IsNullOrEmpty(tenantLanguage))
                 tenantLanguage = "tr";
 
-            var role = GetRole(roleId, tenantId);
+            var role = GetRole(roleId, currentUser);
             CreateRole(role, databaseName, tenantLanguage);
         }
 
@@ -642,12 +643,12 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public void CreateTenantUser(int userId, string databaseName, int tenantId, string tenantLanguage)
+        public void CreateTenantUser(int userId, string databaseName, CurrentUser currentUser, string tenantLanguage)
         {
             if (string.IsNullOrEmpty(tenantLanguage))
                 tenantLanguage = "tr";
 
-            var user = GetTenantUser(userId, tenantId);
+            var user = GetTenantUser(userId, currentUser);
             CreateTenantUser(user, databaseName, tenantLanguage);
         }
         public void UpdateTenantUser(Entities.Application.TenantUser user, string databaseName, string tenantLanguage, bool delete = false)
@@ -726,9 +727,9 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public void UpdateTenantUser(int userId, string databaseName, int tenantId)
+        public void UpdateTenantUser(int userId, string databaseName, CurrentUser currentUser)
         {
-            var user = GetTenantUser(userId, tenantId);
+            var user = GetTenantUser(userId, currentUser);
             UpdateTenantUser(user, databaseName, user.Culture.Contains("tr") ? "tr" : "en", false);
         }
 
@@ -800,7 +801,7 @@ namespace PrimeApps.Model.Helpers
 
         public void CreateRecord(JObject record, string databaseName, string moduleName, CurrentUser currentUser)
         {
-            var module = GetModule(moduleName, currentUser.TenantId);
+            var module = GetModule(moduleName, currentUser);
             CreateRecord(record, databaseName, module);
         }
 
@@ -839,7 +840,7 @@ namespace PrimeApps.Model.Helpers
 
         public void UpdateRecord(JObject record, string databaseName, string moduleName, CurrentUser currentUser, bool delete = false)
         {
-            var module = GetModule(moduleName, currentUser.TenantId);
+            var module = GetModule(moduleName, currentUser);
             UpdateRecord(record, databaseName, module, delete);
         }
 
@@ -971,8 +972,9 @@ namespace PrimeApps.Model.Helpers
 
         public void CreateRecordBulk(int importId, string databaseName, string moduleName, CurrentUser currentUser)
         {
-            var module = GetModule(moduleName, currentUser.TenantId);
+            var module = GetModule(moduleName, currentUser);
             var sqlRecords = $"SELECT * FROM {moduleName}_d WHERE \"import_id\" = '{importId}'";
+			_analyticRepository.CurrentUser = currentUser;
             _analyticRepository.TenantId = currentUser.TenantId;
             var records = _analyticRepository.DbContext.Database.SqlQueryDynamic(sqlRecords);
 
@@ -982,7 +984,9 @@ namespace PrimeApps.Model.Helpers
         public void ImportRevert(int importId, string databaseName, string moduleName, CurrentUser currentUser)
         {
             var sql = $"UPDATE {moduleName}_d SET deleted = true WHERE import_id = {importId}";
-            _analyticRepository.TenantId = currentUser.TenantId;
+
+			_analyticRepository.CurrentUser = currentUser;
+			_analyticRepository.TenantId = currentUser.TenantId;
             _analyticRepository.DbContext.Database.ExecuteSqlCommand(sql);
         }
 
@@ -1576,9 +1580,10 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        private Role GetRole(int roleId, int tenantId)
+        private Role GetRole(int roleId, CurrentUser currentUser)
         {
-            _analyticRepository.TenantId = tenantId;
+			_analyticRepository.CurrentUser = currentUser;
+			_analyticRepository.TenantId = currentUser.TenantId;
 
             var role = _analyticRepository.DbContext.Roles
                 .Single(x => x.Id == roleId);
@@ -1586,9 +1591,10 @@ namespace PrimeApps.Model.Helpers
             return role;
         }
 
-        private Entities.Application.TenantUser GetTenantUser(int userId, int tenantId)
+        private Entities.Application.TenantUser GetTenantUser(int userId, CurrentUser currentUser)
         {
-            _analyticRepository.TenantId = tenantId;
+			_analyticRepository.CurrentUser = currentUser;
+			_analyticRepository.TenantId = currentUser.TenantId;
 
             var user = _analyticRepository.DbContext.Users
                 .Include(x => x.Profile)
@@ -1598,16 +1604,16 @@ namespace PrimeApps.Model.Helpers
             return user;
         }
 
-        private Module GetModule(string moduleName, int tenantId)
+        private Module GetModule(string moduleName, CurrentUser currentUser)
         {
-            _analyticRepository.TenantId = tenantId;
+			_analyticRepository.CurrentUser = currentUser;
+			_analyticRepository.TenantId = currentUser.TenantId;
 
             var module = _analyticRepository.DbContext.Modules
                 .Include(x => x.Sections)
-                .Include(x => x.Fields)
-                .Include(x => x.Fields.Select(z => z.Validation))
-                .Include(x => x.Fields.Select(z => z.Combination))
-                .Include(x => x.Relations)
+				.Include(x => x.Fields).ThenInclude(y => (y as Field).Validation)
+				.Include(x => x.Fields).ThenInclude(y => (y as Field).Combination)
+				.Include(x => x.Relations)
                 .Include(x => x.Dependencies)
                 .Include(x => x.Calculations)
                 .FirstOrDefault(x => x.Name == moduleName && !x.Deleted);
@@ -1640,7 +1646,7 @@ namespace PrimeApps.Model.Helpers
         private string GetConnectionString(string databaseName)
         {
             var connectionStringBuilder = new DbConnectionStringBuilder(false);
-            connectionStringBuilder.ConnectionString = _configuration.GetSection("AppSettings")["WarehouseConnection"];
+            connectionStringBuilder.ConnectionString = _configuration.GetConnectionString("WarehouseConnection");
             connectionStringBuilder["Database"] = databaseName;
 
             return connectionStringBuilder.ConnectionString;

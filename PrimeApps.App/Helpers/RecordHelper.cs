@@ -45,6 +45,7 @@ namespace PrimeApps.App.Helpers
         JObject CreateStageHistoryRecord(JObject record, JObject currentRecord);
         string GetRecordPrimaryValue(JObject record, Module module);
         Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true);
+        void SetCurrentUser(UserItem appUser);
     }
 
     public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState,
@@ -144,7 +145,7 @@ namespace PrimeApps.App.Helpers
                             string str = (string)prop.Value;
 
                             string[] tags = str.Split(',');
-                    
+
 
                             using (var _tagRepository = new TagRepository(databaseContext, _configuration))
                             {
@@ -672,6 +673,20 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Sets current user in case if it's unavailable from context.
+        /// </summary>
+        /// <param name="currentUser"></param>
+        public void SetCurrentUser(UserItem appUser)
+        {
+            _currentUser = new CurrentUser()
+            {
+                TenantId = appUser.TenantId,
+                UserId = appUser.Id
+
+            };
         }
     }
 }

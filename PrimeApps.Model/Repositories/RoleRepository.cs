@@ -167,7 +167,7 @@ namespace PrimeApps.Model.Repositories
                 if (result > 0 && string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
                 {
                     if (_warehouse.DatabaseName != "0")
-                        BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser.TenantId));
+                        BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser));
                 }
             }
         }

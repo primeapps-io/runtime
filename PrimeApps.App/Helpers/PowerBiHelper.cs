@@ -15,174 +15,209 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using Microsoft.PowerBI.Api.V1;
 using Microsoft.PowerBI.Api.V1.Models;
+using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Helpers
 {
-    public class PowerBiHelper
-    {
-        private static string _powerBiApiEndpoint = "https://api.powerbi.com";
-        private static string _powerBiEmbedUrl = "https://embedded.powerbi.com/appTokenReportEmbed?reportId={0}";
+	public interface IPowerBiHelper
+	{
+		Task<Microsoft.PowerBI.Api.V1.Models.Workspace> CreateWorkspace();
+		Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(UserItem appUser, string name);
+		Task<List<ReportViewModel>> GetReports(UserItem appUser, ICollection<Analytic> analytics);
+		Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, UserItem appUser);
+		Task UpdateConnectionString(int analyticId, UserItem appUser);
+		Task DeleteReport(UserItem appUser, int analyticId);
+	}
 
-        public static async Task<Microsoft.PowerBI.Api.V1.Models.Workspace> CreateWorkspace(IConfiguration configuration)
-        {
-            using (var client = CreateClient(configuration))
-            {
-                return await client.Workspaces.PostWorkspaceAsync(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"]);
-            }
-        }
+	public class PowerBiHelper : IPowerBiHelper
+	{
+		private IServiceScopeFactory _serviceScopeFactory;
+		private IConfiguration _configuration;
 
-        public static async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(int tenantId, string name, IConfiguration configuration)
-        {
-            Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
-            {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
-                {
-                    warehouse = await warehouseRepo.GetByTenantId(tenantId);
-                }
-            }
+		private static string _powerBiApiEndpoint = "https://api.powerbi.com";
+		private static string _powerBiEmbedUrl = "https://embedded.powerbi.com/appTokenReportEmbed?reportId={0}";
 
-            using (var client = CreateClient(configuration))
-            {
-                var reportsResponse = await client.Reports.GetReportsAsync(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId);
-                var report = reportsResponse.Value.SingleOrDefault(x => x.Name == name);
+		public PowerBiHelper(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+		{
+			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
+		}
 
-                return report;
-            }
-        }
+		public async Task<Microsoft.PowerBI.Api.V1.Models.Workspace> CreateWorkspace()
+		{
+			using (var client = CreateClient())
+			{
+				return await client.Workspaces.PostWorkspaceAsync(_configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"]);
+			}
+		}
 
-        public static async Task<List<ReportViewModel>> GetReports(int tenantId, ICollection<Analytic> analytics, IConfiguration configuration)
-        {
-            var reports = new List<ReportViewModel>();
-            Model.Entities.Platform.PlatformWarehouse warehouse;
+		public async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(UserItem appUser, string name)
+		{
+			Model.Entities.Platform.PlatformWarehouse warehouse;
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+				{
+					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+					warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
+				}
+			}
 
-            using (var dbContext = new PlatformDBContext(configuration))
-            {
-                using (var warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
-                {
-                    warehouse = await warehouseRepo.GetByTenantId(tenantId);
+			using (var client = CreateClient())
+			{
+				var reportsResponse = await client.Reports.GetReportsAsync(_configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId);
+				var report = reportsResponse.Value.SingleOrDefault(x => x.Name == name);
 
-                    if (warehouse == null)
-                        return null;
-                }
-            }
+				return report;
+			}
+		}
 
-            foreach (var analytic in analytics)
-            {
-                if (string.IsNullOrEmpty(analytic.PowerBiReportId))
-                    continue;
+		public async Task<List<ReportViewModel>> GetReports(UserItem appUser, ICollection<Analytic> analytics)
+		{
+			var reports = new List<ReportViewModel>();
+			Model.Entities.Platform.PlatformWarehouse warehouse;
 
-                var report = new ReportViewModel();
-                report.Id = analytic.Id;
-                report.Label = analytic.Label;
-                report.ReportId = analytic.PowerBiReportId;
-                report.MenuIcon = analytic.MenuIcon;
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+				{
+					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+					warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
 
-                var embedToken = PowerBIToken.CreateReportEmbedToken(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId, analytic.PowerBiReportId, TimeSpan.FromDays(15));
-                var accessToken = embedToken.Generate(configuration.GetSection("AppSettings")["PowerbiAccessKey"]);
+					if (warehouse == null)
+						return null;
+				}
+			}
+			
 
-                report.AccessToken = accessToken;
-                report.EmbedUrl = string.Format(_powerBiEmbedUrl, analytic.PowerBiReportId);
+			foreach (var analytic in analytics)
+			{
+				if (string.IsNullOrEmpty(analytic.PowerBiReportId))
+					continue;
 
-                reports.Add(report);
-            }
+				var report = new ReportViewModel();
+				report.Id = analytic.Id;
+				report.Label = analytic.Label;
+				report.ReportId = analytic.PowerBiReportId;
+				report.MenuIcon = analytic.MenuIcon;
 
-            return reports;
-        }
+				var embedToken = PowerBIToken.CreateReportEmbedToken(_configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId, analytic.PowerBiReportId, TimeSpan.FromDays(15));
+				var accessToken = embedToken.Generate(_configuration.GetSection("AppSettings")["PowerbiAccessKey"]);
 
-        public static async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, int tenantId, IConfiguration configuration)
-        {
-            Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
-            {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
-                {
-                    warehouse = await warehouseRepo.GetByTenantId(tenantId);
-                }
-            }
+				report.AccessToken = accessToken;
+				report.EmbedUrl = string.Format(_powerBiEmbedUrl, analytic.PowerBiReportId);
 
-            using (var webClient = new WebClient())
-            {
-                using (var fileStream = webClient.OpenRead(pbixUrl))
-                {
-                    using (var client = CreateClient(configuration))
-                    {
-                        client.HttpClient.Timeout = TimeSpan.FromMinutes(5);
-                        client.HttpClient.DefaultRequestHeaders.Add("ActivityId", Guid.NewGuid().ToString());
+				reports.Add(report);
+			}
 
-                        var import = client.Imports.PostImportWithFile(configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId, fileStream, reportName);
+			return reports;
+		}
 
-                        return import;
-                    }
-                }
-            }
-        }
+		public async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, UserItem appUser)
+		{
+			Model.Entities.Platform.PlatformWarehouse warehouse;
+			
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+				{
+					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+					warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
+				}
+			}
 
-        public static async Task UpdateConnectionString(int analyticId, int tenantId, IConfiguration configuration)
-        {
-            Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
-            {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
-                {
-                    warehouse = await warehouseRepo.GetByTenantId(tenantId);
-                }
-            }
+			using (var webClient = new WebClient())
+			{
+				using (var fileStream = webClient.OpenRead(pbixUrl))
+				{
+					using (var client = CreateClient())
+					{
+						client.HttpClient.Timeout = TimeSpan.FromMinutes(5);
+						client.HttpClient.DefaultRequestHeaders.Add("ActivityId", Guid.NewGuid().ToString());
 
-            using (var client = CreateClient(configuration))
-            {
-                var workspaceCollection = configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"];
-                var datasets = await client.Datasets.GetDatasetsAsync(workspaceCollection, warehouse.PowerbiWorkspaceId);
-                var dataset = datasets.Value.Single(x => x.Name == analyticId.ToString());
-                var datasources = await client.Datasets.GetGatewayDatasourcesAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, dataset.Id);
+						var import = client.Imports.PostImportWithFile(_configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"], warehouse.PowerbiWorkspaceId, fileStream, reportName);
 
-                var delta = new GatewayDatasource
-                {
-                    CredentialType = "Basic",
-                    BasicCredentials = new BasicCredentials
-                    {
-                        Username = configuration.GetSection("AppSettings")["WarehouseMasterUser"],
-                        Password = configuration.GetSection("AppSettings")["WarehouseMasterPassword"]
-                    }
-                };
+						return import;
+					}
+				}
+			}
+		}
 
-                await client.Gateways.PatchDatasourceAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, datasources.Value[0].GatewayId, datasources.Value[0].Id, delta);
-            }
-        }
+		public async Task UpdateConnectionString(int analyticId, UserItem appUser)
+		{
+			Model.Entities.Platform.PlatformWarehouse warehouse;
 
-        public static async Task DeleteReport(int tenantId, int analyticId, IConfiguration configuration)
-        {
-            Model.Entities.Platform.PlatformWarehouse warehouse;
-            using (PlatformDBContext dbContext = new PlatformDBContext(configuration))
-            {
-                using (PlatformWarehouseRepository warehouseRepo = new PlatformWarehouseRepository(dbContext, configuration))
-                {
-                    warehouse = await warehouseRepo.GetByTenantId(tenantId);
-                }
-            }
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+				{
+					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+					warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
+				}
+			}
 
-            using (var client = CreateClient(configuration))
-            {
-                var workspaceCollection = configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"];
-                var datasets = await client.Datasets.GetDatasetsAsync(workspaceCollection, warehouse.PowerbiWorkspaceId);
-                var reports = datasets.Value.Where(x => x.Name == analyticId.ToString());
+			using (var client = CreateClient())
+			{
+				var workspaceCollection = _configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"];
+				var datasets = await client.Datasets.GetDatasetsAsync(workspaceCollection, warehouse.PowerbiWorkspaceId);
+				var dataset = datasets.Value.Single(x => x.Name == analyticId.ToString());
+				var datasources = await client.Datasets.GetGatewayDatasourcesAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, dataset.Id);
 
-                foreach (var report in reports)
-                {
-                    var result = await client.Datasets.DeleteDatasetByIdAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, report.Id);
-                }
-            }
-        }
+				var delta = new GatewayDatasource
+				{
+					CredentialType = "Basic",
+					BasicCredentials = new BasicCredentials
+					{
+						Username = _configuration.GetSection("AppSettings")["WarehouseMasterUser"],
+						Password = _configuration.GetSection("AppSettings")["WarehouseMasterPassword"]
+					}
+				};
 
-        private static PowerBIClient CreateClient(IConfiguration configuration)
-        {
-            var credentials = new TokenCredentials(configuration.GetSection("AppSettings")["PowerbiAccessKey"], "AppKey");
-            var client = new PowerBIClient(credentials)
-            {
-                BaseUri = new Uri(_powerBiApiEndpoint)
-            };
+				await client.Gateways.PatchDatasourceAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, datasources.Value[0].GatewayId, datasources.Value[0].Id, delta);
+			}
+		}
 
-            return client;
-        }
-    }
+		public async Task DeleteReport(UserItem appUser, int analyticId)
+		{
+			Model.Entities.Platform.PlatformWarehouse warehouse;
+			
+			using (var _scope = _serviceScopeFactory.CreateScope())
+			{
+				var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+				{
+					_warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+					warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
+				}
+			}
+
+			using (var client = CreateClient())
+			{
+				var workspaceCollection = _configuration.GetSection("AppSettings")["PowerbiWorkspaceCollection"];
+				var datasets = await client.Datasets.GetDatasetsAsync(workspaceCollection, warehouse.PowerbiWorkspaceId);
+				var reports = datasets.Value.Where(x => x.Name == analyticId.ToString());
+
+				foreach (var report in reports)
+				{
+					var result = await client.Datasets.DeleteDatasetByIdAsync(workspaceCollection, warehouse.PowerbiWorkspaceId, report.Id);
+				}
+			}
+		}
+
+		private PowerBIClient CreateClient()
+		{
+			var credentials = new TokenCredentials(_configuration.GetSection("AppSettings")["PowerbiAccessKey"], "AppKey");
+			var client = new PowerBIClient(credentials)
+			{
+				BaseUri = new Uri(_powerBiApiEndpoint)
+			};
+
+			return client;
+		}
+	}
 }

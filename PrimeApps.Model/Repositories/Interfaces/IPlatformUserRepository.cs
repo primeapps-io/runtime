@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         //Task<PlatformUser> GetUserByActiveDirectoryTenantEmail(string email);
         Task<string> GetEmail(int userId);
         Task<IList<Workgroup>> MyWorkgroups(int globalId);
-        PlatformUser GetByEmailAndTenantId(string email, int tenantId);
-        Tenant GetTenantByEmailAndAppId(string email, int appId);
+		PlatformUser GetByEmailAndTenantId(string email, int tenantId);
+		Task<Tenant> GetTenantByEmailAndAppId(string email, int appId);
 	}
 }

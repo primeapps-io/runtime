@@ -29,14 +29,16 @@ namespace PrimeApps.App.Controllers
         private IPlatformWarehouseRepository _warehousePlatformRepository;
         private IConfiguration _configuration;
 	    private IDocumentHelper _documentHelper;
+	    private IPowerBiHelper _powerBiHelper;
 
-        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration, IDocumentHelper documentHelper)
+        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration, IDocumentHelper documentHelper, IPowerBiHelper powerBiHelper)
         {
             _warehouseHelper = warehouseHelper;
             _analyticRepository = analyticRepository;
             _userRepository = userRepository;
             _warehousePlatformRepository = warehousePlatformRepository;
 	        _documentHelper = documentHelper;
+			_powerBiHelper = powerBiHelper;
             _configuration = configuration;
         }
 
@@ -68,7 +70,7 @@ namespace PrimeApps.App.Controllers
             if (warehouse != null)
                 return BadRequest("Already exists");
 
-            var powerBiWorkspace = await PowerBiHelper.CreateWorkspace(_configuration);
+            var powerBiWorkspace = await _powerBiHelper.CreateWorkspace();
             request.PowerBiWorkspaceId = powerBiWorkspace.WorkspaceId;
 
             var jobId = BackgroundJob.Enqueue(() => _warehouseHelper.Create(request, AppUser));
@@ -139,7 +141,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetReports()
         {
             var analytics = await _analyticRepository.GetReports();
-            var reports = await PowerBiHelper.GetReports(AppUser.TenantId, analytics, _configuration);
+            var reports = await _powerBiHelper.GetReports(AppUser, analytics);
 
             return Ok(reports);
         }
@@ -173,7 +175,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var powerBiReportName = analyticEntity.Id.ToString();
-            var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId, _configuration);
+            var import = await _powerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser);
 
             if (string.IsNullOrWhiteSpace(import.Id))
             {
@@ -184,7 +186,7 @@ namespace PrimeApps.App.Controllers
             // Wait 5 second for PowerBI Embedded import pbix completed
             await Task.Delay(5000);
 
-            var report = await PowerBiHelper.GetReportByName(AppUser.TenantId, powerBiReportName, _configuration);
+            var report = await _powerBiHelper.GetReportByName(AppUser, powerBiReportName);
 
             if (report == null)
             {
@@ -195,7 +197,7 @@ namespace PrimeApps.App.Controllers
             analyticEntity.PowerBiReportId = report.Id;
 
             await _analyticRepository.Update(analyticEntity);
-            BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId, _configuration));
+            BackgroundJob.Enqueue(() => _powerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser));
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/analytics/get_reports", analyticEntity);
@@ -212,10 +214,10 @@ namespace PrimeApps.App.Controllers
 
             if (analyticEntity.PbixUrl != analytic.PbixUrl)
             {
-                await PowerBiHelper.DeleteReport(AppUser.TenantId, analyticEntity.Id, _configuration);
+                await _powerBiHelper.DeleteReport(AppUser, analyticEntity.Id);
 
                 var powerBiReportName = analyticEntity.Id.ToString();
-                var import = await PowerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser.TenantId, _configuration);
+                var import = await _powerBiHelper.ImportPbix(analytic.PbixUrl, powerBiReportName, AppUser);
 
                 if (string.IsNullOrWhiteSpace(import.Id))
                     throw new Exception("Pbix import not succeeded");
@@ -223,14 +225,14 @@ namespace PrimeApps.App.Controllers
                 // Wait 5 second for PowerBI Embedded import pbix completed
                 await Task.Delay(5000);
 
-                var report = await PowerBiHelper.GetReportByName(AppUser.TenantId, powerBiReportName, _configuration);
+                var report = await _powerBiHelper.GetReportByName(AppUser, powerBiReportName);
 
                 if (report == null)
                     throw new Exception("Pbix import not succeeded");
 
                 analyticEntity.PowerBiReportId = report.Id;
 
-                BackgroundJob.Enqueue(() => PowerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser.TenantId, _configuration));
+                BackgroundJob.Enqueue(() => _powerBiHelper.UpdateConnectionString(analyticEntity.Id, AppUser));
             }
 
             if (analyticEntity.Shares != null && analyticEntity.Shares.Count > 0)
