@@ -110,11 +110,7 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Tenant).ThenInclude(z => z.License)
                 .Include(x => x.Tenant).ThenInclude(z => z.App).ThenInclude(z => z.Setting)
                 .Include(x => x.PlatformUser).ThenInclude(z => z.Setting)
-                /*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
-				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
                 .SingleOrDefault(x => x.PlatformUser.Email == email && x.TenantId == tenantId);
-
 
             return user?.PlatformUser;
         }
@@ -128,7 +124,6 @@ namespace PrimeApps.Model.Repositories
 				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
 				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
                 .SingleOrDefaultAsync(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
-
 
             return userTenant?.Tenant;
         }

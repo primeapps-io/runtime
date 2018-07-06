@@ -125,7 +125,6 @@ namespace PrimeApps.App.Jobs.Reminder
                     AppId = _appUser.AppId,
                     TenantId = _appUser.TenantId,
                     Id = user.Id,
-                    UserName = user.Email,
                     Email = user.Email
                 };
 
@@ -163,7 +162,6 @@ namespace PrimeApps.App.Jobs.Reminder
                     AppId = _appUser.AppId,
                     TenantId = _appUser.TenantId,
                     Id = user.Id,
-                    UserName = user.Email,
                     Email = user.Email
                 };
 
@@ -211,12 +209,10 @@ namespace PrimeApps.App.Jobs.Reminder
                     AppId = _appUser.AppId,
                     TenantId = _appUser.TenantId,
                     Id = user.Id,
-                    UserName = user.Email,
                     Email = user.Email
                 };
 
                 Email.Notification.Task(userName, subject, email, usr.Culture, deadline, _appUser.AppId, appUser, _configuration, _serviceScopeFactory);
-
 
                 while (remindOn <= now && reminderFrequency != 0)
                 {

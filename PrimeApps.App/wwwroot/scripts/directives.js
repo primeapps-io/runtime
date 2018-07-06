@@ -165,7 +165,7 @@ angular.module('primeapps')
                                 placement: placement,
                                 trigger: 'manual',
                                 autoClose: true,
-                                contentTemplate: 'views/common/confirm.html' + '?v=' + version
+                                contentTemplate: 'view/common/confirm.html' + '?v=' + version
                             });
 
                             popover.$promise.then(function () {
@@ -454,7 +454,7 @@ angular.module('primeapps')
                     disableSelectAll: '@',
                     disableLinks: '@'
                 },
-                templateUrl: 'views/common/subtable.html?v=' + version,
+                templateUrl: 'view/common/subtable.html?v=' + version,
                 controller: ['$scope',
                     function ($scope) {
                         $scope.loading = true;
@@ -1343,7 +1343,7 @@ angular.module('primeapps')
         function ($rootScope, $modal, $http, config, $filter, ngToast) {
             return {
                 restrict: 'EA',
-                templateUrl: 'views/app/trial/trial-box.html?v=' + version,
+                templateUrl: 'view/app/trial/trial-box.html?v=' + version,
                 controller: ['$scope',
                     function ($scope) {
                         if (window.host.indexOf("ofisim.com") > -1 || window.host.indexOf("localhost") > -1) {
@@ -1505,7 +1505,7 @@ angular.module('primeapps')
                                 $scope.trailType = type;
                                 $scope.promotionModal = $scope.promotionModal || $modal({
                                     scope: $scope,
-                                    templateUrl: '/views/app/trial/promotionFormModal.html',
+                                    templateUrl: '/view/app/trial/promotionFormModal.html',
                                     size: 'modal-sm',
                                     controller: function () {
 
@@ -1560,7 +1560,7 @@ angular.module('primeapps')
                         $scope.openHelpModal = function () {
                             $scope.helpModal = $scope.helpModal || $modal({
                                 scope: $scope,
-                                templateUrl: 'views/setup/help/helpPageModal.html',
+                                templateUrl: 'view/setup/help/helpPageModal.html',
                                 animation: 'am-fade',
                                 backdrop: true,
                                 show: false,
@@ -1743,7 +1743,7 @@ angular.module('primeapps')
                 value: "=",
                 max: "@?"
             },
-            templateUrl: 'views/common/password-meter.html?v=' + version,
+            templateUrl: 'view/common/password-meter.html?v=' + version,
             link: function (scope) {
                 scope.type = '';
                 scope.max = (!scope.max) ? 4 : scope.max;
