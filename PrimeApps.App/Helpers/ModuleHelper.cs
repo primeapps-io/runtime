@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using DalSoft.Hosting.BackgroundQueue;
-using Hangfire;
-using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Common.Cache;
@@ -12,7 +9,7 @@ using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Helpers
 {
-	public interface IModuleHelper
+    public interface IModuleHelper
 	{
 		Module CreateEntity(ModuleBindingModel moduleModel);
 		ModuleChanges UpdateEntity(ModuleBindingModel moduleModel, Module moduleEntity);
