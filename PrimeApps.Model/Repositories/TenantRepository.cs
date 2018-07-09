@@ -24,7 +24,15 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Tenants.Where(x => x.Id == tenantId).SingleOrDefaultAsync();
         }
 
-		public async Task<Tenant> GetWithSettingsAsync(int tenantId)
+        public async Task<Tenant> GetWithLicenseAsync(int tenantId)
+        {
+            return await DbContext.Tenants
+                .Include(x => x.License)
+                .Where(x => x.Id == tenantId)
+                .SingleOrDefaultAsync();
+        }
+
+        public async Task<Tenant> GetWithSettingsAsync(int tenantId)
 		{
 			return await DbContext.Tenants
 				.Include(x => x.Setting)

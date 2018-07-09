@@ -200,7 +200,7 @@ namespace PrimeApps.App.Controllers
         {
             UserLicenseDTO userLicense = new UserLicenseDTO();
 
-            Model.Entities.Platform.Tenant tenant = await _tenantRepository.GetAsync(AppUser.TenantId);
+            Model.Entities.Platform.Tenant tenant = await _tenantRepository.GetWithLicenseAsync(AppUser.TenantId);
             userLicense.Total = tenant.License.UserLicenseCount;
             int usedLicenseCount = await _userRepository.GetTenantUserCount();
             userLicense.Used = usedLicenseCount;

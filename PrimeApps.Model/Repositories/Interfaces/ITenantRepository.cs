@@ -9,6 +9,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Tenant Get(int tenantId);
         Task<Tenant> GetAsync(int tenantId);
+        Task<Tenant> GetWithLicenseAsync(int tenantId);
         Task<Tenant> GetWithSettingsAsync(int tenantId);
         Task<IList<Tenant>> GetAllActive();
         Task<IList<TenantInfo>> GetTenantInfo(int tenantId);
