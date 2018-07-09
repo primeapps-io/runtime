@@ -35,10 +35,13 @@ namespace PrimeApps.CLI
                 .AddLogging(config=>config.SetMinimumLevel(LogLevel.Error))
                 .AddEntityFrameworkNpgsql()
                 .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")))
-                .AddDbContext<PlatformDBContext>(options=>options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")))
+                .AddDbContext<PlatformDBContext>(options=> options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")))
+                .AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()))
+                .AddHttpContextAccessor()
                 .AddSingleton<IDatabaseService, DatabaseService>()
                 .AddSingleton<IConfiguration>(Configuration)
                 .BuildServiceProvider();
+
 
             LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
 

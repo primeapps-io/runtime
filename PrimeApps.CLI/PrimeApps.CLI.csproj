@@ -25,4 +25,8 @@
     </Compile>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="" />
+  </Target>
+
 </Project>
