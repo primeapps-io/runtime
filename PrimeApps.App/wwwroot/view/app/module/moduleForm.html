@@ -194,7 +194,7 @@
                                                    max-value="field.validation.max || Number.MAX_VALUE"
                                                    places="field.decimal_places || 2"
                                                    rounding="field.rounding"
-                                                   currency-symbol="currencySymbol || field.currency_symbol"
+                                                   currency-symbol="field.currency_symbol || currencySymbol"
                                                    number-currency
                                                    ng-if="field.data_type === 'currency'" />
 
