@@ -659,7 +659,7 @@ angular.module('primeapps')
 
                         if (record.shared_user_groups_edit && $rootScope.user.groups.length) {
                             for (var userGroupId in record.shared_user_groups_edit) {
-                                if ($rootScope.user.groups.indexOf(userGroupId) > -1)
+                                if ($rootScope.user.groups.indexOf(record.shared_user_groups_edit[userGroupId]) > -1)
                                     return true;
                             }
                         }
@@ -673,13 +673,13 @@ angular.module('primeapps')
 
                         if (record.shared_user_groups_edit) {
                             for (var userGroupId in record.shared_user_groups_edit) {
-                                if ($rootScope.user.groups.indexOf(userGroupId) > -1)
+                                if ($rootScope.user.groups.indexOf(record.shared_user_groups_edit[userGroupId]) > -1)
                                     return true;
                             }
                         }
 
                         for (var userGroupId in record.shared_user_groups) {
-                            if ($rootScope.user.groups.indexOf(userGroupId) > -1)
+                            if ($rootScope.user.groups.indexOf(record.shared_user_groups[userGroupId]) > -1)
                                 return false;
                         }
                     }
