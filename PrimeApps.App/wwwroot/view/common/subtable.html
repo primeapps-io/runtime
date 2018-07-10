@@ -62,7 +62,7 @@
        class="btn btn-sm btn-custom" title="{{'Common.Refresh' | translate}}">
         <i class="fa fa-refresh"></i>
     </a>
-    <span class="dropdown list-dropdown-menu" ng-if="relatedModule.relation_type != 'many_to_many' && $parent.hasPermission(relatedModule.related_module, $parent.operations.remove) && relatedModule.related_module !== 'current_accounts' && relatedModule.related_module !== 'stock_transactions' && relatedModule.related_module !== 'kasa_hareketleri' && relatedModule.related_module !== 'banka_hareketleri' && !$parent.$parent.$parent.record.freeze">
+    <span class="dropdown list-dropdown-menu" ng-if="relatedModule.relation_type != 'many_to_many' && $parent.hasPermission(relatedModule.related_module, $parent.operations.remove) && relatedModule.related_module !== 'current_accounts' && relatedModule.related_module !== 'masraf_kalemleri' && relatedModule.related_module !== 'kasa_hareketleri' && relatedModule.related_module !== 'banka_hareketleri' && !$parent.$parent.$parent.record.freeze">
         <button id="moreButton" type="button" class="btn btn-sm btn-custom dropdown-toggle" bs-dropdown data-placement="bottom-right" ng-disabled="loading"><i class="fa fa-ellipsis-h"></i></button>
         <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="moreButton">
            <li>

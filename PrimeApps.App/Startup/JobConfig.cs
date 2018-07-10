@@ -26,7 +26,6 @@ namespace PrimeApps.App
 
             ConfigureRecurringJobs();
 
-            //GlobalJobFilters.Filters.Add(new QueueFilterAttribute());
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 

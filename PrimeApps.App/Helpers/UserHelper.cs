@@ -23,6 +23,7 @@ namespace PrimeApps.App.Helpers
 	{
 		public static CurrentUser GetCurrentUser(IHttpContextAccessor context)
 		{
+
 			if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
 				return null;
 
@@ -37,13 +38,24 @@ namespace PrimeApps.App.Helpers
 			if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
 				return null;
 
-			var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
-			var platformUser = platformUserRepository.GetByEmailAndTenantId(context.HttpContext.User.FindFirst("email").Value, tenantId);
+            var cacheRepository = (ICacheRepository)context.HttpContext.RequestServices.GetService(typeof(ICacheRepository));
 
-			if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-				return null;
+            string email = context.HttpContext.User.FindFirst("email").Value;
 
+            string key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
+            var platformUser =  cacheRepository.Get<PlatformUser>(key);
+
+            if (platformUser == null)
+            {
+                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+
+                var data = cacheRepository.Add(key, platformUser);
+            }
+                if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
+                    return null;
+            
 			return new CurrentUser { TenantId = tenantId, UserId = platformUser.Id };
 		}
 

@@ -1,14 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Helpers;
-using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Reflection;
-using System.Linq;
-using System;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.App.Services;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Helpers;
+using System;
+using System.Linq;
+using System.Reflection;
+using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
 
 namespace PrimeApps.App
 {
@@ -48,26 +48,22 @@ namespace PrimeApps.App
                 }
             }
 
-	        //Background Tasks DI
-	        services.AddHostedService<QueuedHostedService>();
-	        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-	        services.AddScoped<PrimeApps.App.Helpers.IRecordHelper, PrimeApps.App.Helpers.RecordHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IAuditLogHelper, PrimeApps.App.Helpers.AuditLogHelper>();
-            services.AddScoped<PrimeApps.App.Helpers.IDocumentHelper, PrimeApps.App.Helpers.DocumentHelper>();
-            services.AddScoped<PrimeApps.App.Helpers.ICalculationHelper, PrimeApps.App.Helpers.CalculationHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IChangeLogHelper, PrimeApps.App.Helpers.ChangeLogHelper>();
-	        //services.AddScoped<PrimeApps.App.Helpers.IIntegration, PrimeApps.App.Helpers.Integration>();
-	        services.AddScoped<PrimeApps.App.Helpers.IModuleHelper, PrimeApps.App.Helpers.ModuleHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IProcessHelper, PrimeApps.App.Helpers.ProcessHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IReportHelper, PrimeApps.App.Helpers.ReportHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IPowerBiHelper, PrimeApps.App.Helpers.PowerBiHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IWorkflowHelper, PrimeApps.App.Helpers.WorkflowHelper>();
-	        services.AddScoped<PrimeApps.App.Helpers.IPlatformWorkflowHelper, PrimeApps.App.Helpers.PlatformWorkflowHelper>();
-	        services.AddScoped<PrimeApps.App.Notifications.INotificationHelper, PrimeApps.App.Notifications.NotificationHelper>();
-	        services.AddScoped<PrimeApps.App.Notifications.IActivityHelper, PrimeApps.App.Notifications.ActivityHelper>();
-            //Background Tasks DI End
-
+            services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
+            services.AddScoped<Helpers.IAuditLogHelper, Helpers.AuditLogHelper>();
+            services.AddScoped<Helpers.IDocumentHelper, Helpers.DocumentHelper>();
+            services.AddScoped<Helpers.ICalculationHelper, Helpers.CalculationHelper>();
+            services.AddScoped<Helpers.IChangeLogHelper, Helpers.ChangeLogHelper>();
+            services.AddScoped<Helpers.IModuleHelper, Helpers.ModuleHelper>();
+            services.AddScoped<Helpers.IProcessHelper, Helpers.ProcessHelper>();
+            services.AddScoped<Helpers.IReportHelper, Helpers.ReportHelper>();
+            services.AddScoped<Helpers.IPowerBiHelper, Helpers.PowerBiHelper>();
+            services.AddScoped<Helpers.IWorkflowHelper, Helpers.WorkflowHelper>();
+            services.AddScoped<Helpers.IPlatformWorkflowHelper, Helpers.PlatformWorkflowHelper>();
+            services.AddScoped<Notifications.INotificationHelper, Notifications.NotificationHelper>();
+            services.AddScoped<Notifications.IActivityHelper, Notifications.ActivityHelper>();
             services.AddScoped<WarehouseHelper, WarehouseHelper>();
             services.AddScoped<Warehouse, Warehouse>();
             services.AddScoped<Jobs.Email.Email, Jobs.Email.Email>();
@@ -80,7 +76,6 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
-
-		}
+        }
     }
 }
