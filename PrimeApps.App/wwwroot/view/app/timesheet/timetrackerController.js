@@ -351,6 +351,8 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
                     delete timetrackerRecord['process.process_requests.process_id'];
                     delete timetrackerRecord['process.process_requests.process_status'];
                     delete timetrackerRecord['process.process_requests.process_status_order'];
+                    delete timetrackerRecord['process.process_requests_updated_at'];
+                    delete timetrackerRecord['process.process_requests_updated_by'];
                     timetrackerRecord['toplam_saat'] = totalWeekHour;
                     if (!totalWeekHour)
                         totalWeekHour = 0;
