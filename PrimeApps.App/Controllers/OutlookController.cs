@@ -19,6 +19,9 @@ using PrimeApps.Model.Helpers;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
+using PrimeApps.Model.Helpers.QueryTranslation;
+using ModuleHelper = PrimeApps.Model.Helpers.ModuleHelper;
 
 namespace PrimeApps.App.Controllers
 {
@@ -148,7 +151,7 @@ namespace PrimeApps.App.Controllers
                     LabelTrPlural = "E-Postalar",
                     LabelTrSingular = "E-Posta",
                     Order = (short)(module.Relations.Count + 1),
-                    DisplayFieldsArray = new[] { "subject", "sender", "recipients", "sending_date", "body", "created_at" }
+                    DisplayFieldsArray = new[] { "subject", "sender", "recipients", "sending_date", "body", "created_at", "state" }
                 };
 
                 var resultCreate = await _moduleRepository.CreateRelation(relation);
@@ -164,6 +167,16 @@ namespace PrimeApps.App.Controllers
         [Route("create_mail_module"), HttpPost]
         public async Task<IActionResult> CreateMailModule()
         {
+            var picklist = new PicklistBindingModel { LabelTr = "Mail Yönü", LabelEn = "Mail Direction", Items = new List<PicklistItemBindingModel>() };
+            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Giden E-posta", LabelEn = "Out", Value = "out", Order = 1 });
+            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Gelen E-posta", LabelEn = "In", Value = "in", Order = 2 });
+
+            var picklistEntity = PicklistHelper.CreateEntity(picklist);
+            var result = await _picklistRepository.Create(picklistEntity);
+
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
             var moduleJson = @"{
                                 'display': false,
                                 'fields': [
@@ -393,6 +406,22 @@ namespace PrimeApps.App.Controllers
                                             'readonly': true,
                                             'required': true
                                         }
+                                    },
+                                    {
+										'data_type': 'picklist',
+                                        'display_detail': true,
+                                        'display_form': true,
+                                        'display_list': true,
+                                        'inline_edit': false,
+                                        'label_en': 'State',
+                                        'label_tr': 'Durum',
+                                        'name': 'state',
+                                        'order': 13,
+                                        'picklist_id':" + picklistEntity.Id + "," +
+                                       @"'primary': false,
+                                        'section': 'mail_information',
+                                        'section_column': 2,
+                                        'show_label':true,
                                     }
                                 ],
                                 'label_en_plural': 'Mails',
@@ -436,19 +465,88 @@ namespace PrimeApps.App.Controllers
 
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             var module = JsonConvert.DeserializeObject<ModuleBindingModel>(moduleJson, serializerSettings);
-            //TODO Change
-            var moduleController = new ModuleController(_moduleRepository, _viewRepository, _profileRepository, _settingRepository, _warehouse, _menuRepository, _moduleHelper, _configuration)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            //Create module
+            var moduleEntity = _moduleHelper.CreateEntity(module);
+            var resultCreate = await _moduleRepository.Create(moduleEntity);
+
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+
+            //Create default views
+            try
             {
-                /*Request = new HttpRequestMessage(HttpMethod.Post, new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create_mail_module", "/api/module/create"))*/
-            };
+                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository);
+                var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
 
-            /*moduleController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
-            moduleController.Configuration.Formatters.Clear();
-            moduleController.Configuration.Formatters.Add(new JsonMediaTypeFormatter { SerializerSettings = serializerSettings });
-            moduleController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());
-			*/
+                if (resultCreateViewAllRecords < 1)
+                {
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    
+                }
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-            return await moduleController.Create(module);
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+            //Create dynamic table
+            try
+            {
+                var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
+
+                if (resultCreateTable != -1)
+                {
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
+
+            //Create dynamic table indexes
+            try
+            {
+                var resultCreateIndexes = await _moduleRepository.CreateIndexes(moduleEntity);
+
+                if (resultCreateIndexes != -1)
+                {
+                    await _moduleRepository.DeleteTable(moduleEntity);
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
+
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteTable(moduleEntity);
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
+
+            //Create default permissions for the new module.
+            await _profileRepository.AddModuleAsync(moduleEntity.Id);
+            await _menuRepository.AddModuleToMenuAsync(moduleEntity);
+
+            _moduleHelper.AfterCreate(AppUser, moduleEntity);
+
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+
+           
         }
 
         [Route("create"), HttpPost]
@@ -493,22 +591,111 @@ namespace PrimeApps.App.Controllers
             mail["owner"] = AppUser.Id;
             mail["related_module"] = 900000 + module.Id;
             mail["related_to"] = records[0]["id"];
-
+           
+            int timezoneOffset = 180; bool? normalize = false; string locale = "";
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
 
-            //TODO Change
-            var recordController = new RecordController(_recordRepository, _moduleRepository, _picklistRepository, _recordHelper, _warehouse, _configuration)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var moduleEntity = await _moduleRepository.GetByName(module.Name);
+
+            if (moduleEntity == null || mail == null)
+                return BadRequest();
+
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage);
+
+            if (resultBefore < 0 && !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
+            int resultCreate;
+
+            try
             {
-                /*Request = new HttpRequestMessage(HttpMethod.Post,
-	                new Uri(Request.GetDisplayUrl()).AbsoluteUri.Replace("/api/outlook/create", "/api/record/create"))*/
-            };
+                resultCreate = await _recordRepository.Create(mail, moduleEntity);
 
-            /*recordController.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = new HttpConfiguration();
-            recordController.Configuration.Formatters.Clear();
-            recordController.Configuration.Formatters.Add(new JsonMediaTypeFormatter { SerializerSettings = serializerSettings });
-            recordController.Configuration.Services.Replace(typeof(IHttpActionSelector), new SnakeCaseActionSelector());*/
+                // If module is opportunities create stage history
+                if (module.Name == "opportunities")
+                    await _recordHelper.CreateStageHistory(mail);
+            }
+            catch (PostgresException ex)
+            {
+                if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                    return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
 
-            return await recordController.Create("mails", mail);
+                if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+
+                if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                    return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+
+                throw;
+            }
+
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+
+            //Check number auto fields and combinations and update record with combined values
+            var numberAutoFields = moduleEntity.Fields.Where(x => x.DataType == DataType.NumberAuto).ToList();
+
+            if (numberAutoFields.Count > 0)
+            {
+                var currentRecord = _recordRepository.GetById(moduleEntity, (int)mail["id"], AppUser.HasAdminProfile);
+                var hasUpdate = false;
+
+                foreach (var numberAutoField in numberAutoFields)
+                {
+                    var combinationFields = moduleEntity.Fields.Where(x => x.Combination != null && (x.Combination.Field1 == numberAutoField.Name || x.Combination.Field2 == numberAutoField.Name)).ToList();
+
+                    if (combinationFields.Count > 0)
+                    {
+                        foreach (var combinationField in combinationFields)
+                        {
+                            _recordHelper.SetCombinations(currentRecord, null, combinationField);
+                        }
+
+                        hasUpdate = true;
+                    }
+                }
+
+                if (hasUpdate)
+                {
+                    var recordUpdate = new JObject();
+                    recordUpdate["id"] = (int)mail["id"];
+
+                    var combinationFields = moduleEntity.Fields.Where(x => x.Combination != null).ToList();
+
+                    foreach (var combinationField in combinationFields)
+                    {
+                        recordUpdate[combinationField.Name] = currentRecord[combinationField.Name];
+                    }
+
+                    await _recordRepository.Update(recordUpdate, moduleEntity);
+                }
+            }
+
+            //After create
+            _recordHelper.AfterCreate(moduleEntity, mail, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
+
+            //Format records if has locale
+            if (!string.IsNullOrWhiteSpace(locale))
+            {
+                ICollection<Module> lookupModules = new List<Module> { ModuleHelper.GetFakeUserModule() };
+                var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+                mail = _recordRepository.GetById(moduleEntity, (int)mail["id"], !AppUser.HasAdminProfile, lookupModules);
+                mail = await Model.Helpers.RecordHelper.FormatRecordValues(moduleEntity, mail, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+
+                if (normalize.HasValue && normalize.Value)
+                    mail = Model.Helpers.RecordHelper.NormalizeRecordValues(mail);
+            }
+
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/record/get/" + module + "/?id=" + mail["id"], mail);
+
         }
     }
 }
