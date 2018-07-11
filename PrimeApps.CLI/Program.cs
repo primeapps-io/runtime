@@ -1,22 +1,23 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Linq;
-using PrimeApps.CLI.Migration;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using PrimeApps.CLI.Migration;
 using PrimeApps.Model.Context;
+using System;
+using System.IO;
+using System.Linq;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.CLI
 {
-    class Program
+    internal class Program
     {
         public static ILoggerFactory LoggerFactory;
         public static IConfigurationRoot Configuration;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args == null || args.Length < 2 || string.IsNullOrEmpty(args[0]) || string.IsNullOrEmpty(args[1]))
             {
@@ -25,17 +26,18 @@ namespace PrimeApps.CLI
             }
 
             // Adding JSON file into IConfiguration.
-            var builder = new ConfigurationBuilder()
+            IConfigurationBuilder builder = new ConfigurationBuilder()
                             .SetBasePath(Directory.GetCurrentDirectory())
                             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
             Configuration = builder.Build();
 
             // Setup DI
-            var serviceProvider = new ServiceCollection()
-                .AddLogging(config=>config.SetMinimumLevel(LogLevel.Error))
+            ServiceProvider serviceProvider = new ServiceCollection()
+                .AddLogging(config => config.SetMinimumLevel(LogLevel.Error))
                 .AddEntityFrameworkNpgsql()
                 .AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")))
-                .AddDbContext<PlatformDBContext>(options=> options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")))
+                .AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")))
                 .AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()))
                 .AddHttpContextAccessor()
                 .AddSingleton<IDatabaseService, DatabaseService>()
@@ -45,10 +47,10 @@ namespace PrimeApps.CLI
 
             LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
 
-            var logger = LoggerFactory.CreateLogger<Program>();
+            ILogger<Program> logger = LoggerFactory.CreateLogger<Program>();
             logger.LogDebug("Starting application");
 
-            var databaseMigration = serviceProvider.GetService<IDatabaseService>();
+            IDatabaseService databaseMigration = serviceProvider.GetService<IDatabaseService>();
 
 
 
@@ -59,9 +61,9 @@ namespace PrimeApps.CLI
             string connStr = null;
             string version = null;
 
-            var result = new JObject();
+            JObject result = new JObject();
             Exception exception = null;
-            var deploy = false;
+            bool deploy = false;
 
             try
             {
@@ -90,7 +92,7 @@ namespace PrimeApps.CLI
 
                                 break;
                             default:
-                                var tenantDatabaseName = command;
+                                string tenantDatabaseName = command;
                                 result = databaseMigration.MigrateDatabase(tenantDatabaseName, param1);
                                 break;
                         }
@@ -145,7 +147,7 @@ namespace PrimeApps.CLI
             }
         }
 
-        static void PrintResult(JObject result, bool deploy, string version = null, Exception ex = null)
+        private static void PrintResult(JObject result, bool deploy, string version = null, Exception ex = null)
         {
             if (version != null)
             {
@@ -155,9 +157,15 @@ namespace PrimeApps.CLI
             {
                 Console.WriteLine("DbStatus:" + result.ToString());
             }
-            if (((JArray)result["failed"]).Count() > 0 && deploy) throw new Exception("Aborted deployment because of unsuccesful migration.");
+            if (!result["failed"].IsNullOrEmpty() && ((JArray)result["failed"]).Any() && deploy)
+            {
+                throw new Exception("Aborted deployment because of unsuccesful migration.");
+            }
 
-            if (ex != null) throw ex;
+            if (ex != null)
+            {
+                throw ex;
+            }
         }
     }
 }

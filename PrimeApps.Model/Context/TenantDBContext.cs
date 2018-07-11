@@ -23,11 +23,6 @@ namespace PrimeApps.Model.Context
             Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId);
         }
 
-        public TenantDBContext(string databaseName)
-        {
-            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(Database.GetDbConnection().ConnectionString, databaseName);
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateModelMapping(modelBuilder);
@@ -55,29 +50,42 @@ namespace PrimeApps.Model.Context
             return UserId ?? (TenantId ?? 0);
         }
 
+        public void SetCustomConnectionDatabaseName(string databaseName)
+        {
+            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(Database.GetDbConnection().ConnectionString, databaseName);
+        }
+
         private void SetDefaultValues()
         {
-            var currentUserId = GetCurrentUserId();
+            int currentUserId = GetCurrentUserId();
 
-            var entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
+            System.Collections.Generic.IEnumerable<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry> entities = ChangeTracker.Entries().Where(x => x.Entity is BaseEntity && (x.State == EntityState.Added || x.State == EntityState.Modified));
 
-            foreach (var entity in entities)
+            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entity in entities)
             {
                 if (entity.State == EntityState.Added)
                 {
                     if (((BaseEntity)entity.Entity).CreatedAt == DateTime.MinValue)
+                    {
                         ((BaseEntity)entity.Entity).CreatedAt = DateTime.UtcNow;
+                    }
 
                     if (((BaseEntity)entity.Entity).CreatedById < 1 && currentUserId > 0)
+                    {
                         ((BaseEntity)entity.Entity).CreatedById = currentUserId;
+                    }
                 }
                 else
                 {
                     if (!((BaseEntity)entity.Entity).UpdatedAt.HasValue)
+                    {
                         ((BaseEntity)entity.Entity).UpdatedAt = DateTime.UtcNow;
+                    }
 
                     if (!((BaseEntity)entity.Entity).UpdatedById.HasValue && currentUserId > 0)
+                    {
                         ((BaseEntity)entity.Entity).UpdatedById = currentUserId;
+                    }
                 }
             }
         }
