@@ -36,6 +36,9 @@ namespace PrimeApps.Model.Common.Instance
         [DataMember]
         public TenantLicense licenses { get; set; }
 
+        [DataMember]
+        public virtual TenantSetting setting { get; set; }
+
         /// <summary>
         /// Logo Url
         /// </summary>

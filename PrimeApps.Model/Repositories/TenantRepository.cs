@@ -1,15 +1,14 @@
-﻿using System;
-using PrimeApps.Model.Context;
-using PrimeApps.Model.Repositories.Interfaces;
-using System.Collections.Generic;
-using System.Configuration;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Common.User;
+using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Repositories.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -33,25 +32,25 @@ namespace PrimeApps.Model.Repositories
         }
 
         public async Task<Tenant> GetWithSettingsAsync(int tenantId)
-		{
-			return await DbContext.Tenants
-				.Include(x => x.Setting)
-                .Include(x => x.App).ThenInclude(x=> x.Setting)
-				.Where(x => x.Id == tenantId)
-				.SingleOrDefaultAsync();
-		}
+        {
+            return await DbContext.Tenants
+                .Include(x => x.Setting)
+                .Include(x => x.App).ThenInclude(x => x.Setting)
+                .Where(x => x.Id == tenantId)
+                .SingleOrDefaultAsync();
+        }
 
-		public async Task<Tenant> GetWithAllAsync(int tenantId)
-		{
-			return await DbContext.Tenants
-				.Include(x => x.Setting)
-				.Include(x => x.App)
-				.Include(x => x.App.Setting)
-				.Where(x => x.Id == tenantId)
-				.SingleOrDefaultAsync();
-		}
+        public async Task<Tenant> GetWithAllAsync(int tenantId)
+        {
+            return await DbContext.Tenants
+                .Include(x => x.Setting)
+                .Include(x => x.App)
+                .Include(x => x.App.Setting)
+                .Where(x => x.Id == tenantId)
+                .SingleOrDefaultAsync();
+        }
 
-		public async Task<Tenant> GetWithOwnerAsync(int tenantId)
+        public async Task<Tenant> GetWithOwnerAsync(int tenantId)
         {
             return await DbContext.Tenants.Include(x => x.Owner).Where(x => x.Id == tenantId).SingleOrDefaultAsync();
         }
@@ -71,51 +70,52 @@ namespace PrimeApps.Model.Repositories
             await DbContext.SaveChangesAsync();
         }
 
-		public async Task<int> CreateAsync(Tenant tenant)
-		{
-			DbContext.Tenants.Add(tenant);
-			return await DbContext.SaveChangesAsync();
-		}
-
-		public async Task<int> DeleteAsync(Tenant tenant)
-		{
-			DbContext.Tenants.Remove(tenant);
-			return await DbContext.SaveChangesAsync();
-		}
-
-		public async Task<IList<TenantInfo>> GetTenantInfo(int tenantId)
+        public async Task<int> CreateAsync(Tenant tenant)
         {
-			var a = await DbContext.Tenants
-				.Include(x => x.License)
-				.Where(x => x.Id == tenantId)
-				 .Select(t => new TenantInfo() //get instances of this user.
-				 {
-					 tenantId = t.Id,
-					 title = t.Title,
-					 currency = t.Setting.Currency,
-					 language = t.Setting.Language,
-					 logoUrl = t.Setting.Logo,
-					 //TODO Removed
-					 //hasSampleData = t.HasSampleData,
-					 //hasPhone = t.HasPhone,
-					 hasAnalytics = t.License.AnalyticsLicenseCount > 0,
-					 owner = t.Owner.Id,
-					 licenses = t.License,
-
-					 users = t.TenantUsers.Select(u => new UserList //get users for the instance.
-					 {
-						 Id = u.UserId,
-						 userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
-						 email = u.PlatformUser.Email,
-						 hasAccount = true,
-						 isAdmin = t.Owner.Id == u.UserId
-					 }).ToList()
-
-				 }).ToListAsync();
-			
-			return a;
+            DbContext.Tenants.Add(tenant);
+            return await DbContext.SaveChangesAsync();
         }
-        
+
+        public async Task<int> DeleteAsync(Tenant tenant)
+        {
+            DbContext.Tenants.Remove(tenant);
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<IList<TenantInfo>> GetTenantInfo(int tenantId)
+        {
+            var a = await DbContext.Tenants
+                .Include(x => x.License)
+                .Include(x => x.Setting)
+                .Where(x => x.Id == tenantId)
+                 .Select(t => new TenantInfo() //get instances of this user.
+                 {
+                     tenantId = t.Id,
+                     title = t.Title,
+                     currency = t.Setting.Currency,
+                     language = t.Setting.Language,
+                     logoUrl = t.Setting.Logo,
+                     //TODO Removed
+                     //hasSampleData = t.HasSampleData,
+                     //hasPhone = t.HasPhone,
+                     hasAnalytics = t.License.AnalyticsLicenseCount > 0,
+                     owner = t.Owner.Id,
+                     licenses = t.License,
+                     setting=t.Setting,
+                     users = t.TenantUsers.Select(u => new UserList //get users for the instance.
+                     {
+                         Id = u.UserId,
+                         userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
+                         email = u.PlatformUser.Email,
+                         hasAccount = true,
+                         isAdmin = t.Owner.Id == u.UserId
+                     }).ToList()
+
+                 }).ToListAsync();
+
+            return a;
+        }
+
         public async Task<Tenant> GetByCustomDomain(string customDomain)
         {
             return await DbContext.Tenants.Where(x => x.Setting.CustomDomain == customDomain).SingleOrDefaultAsync();
@@ -144,8 +144,8 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.License)
                 .Include(x => x.TenantUsers.Where(z => z.UserId == x.Id))
                 .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
-				.Include(x => x.App)
-				.Include(x => x.App.Setting)
+                .Include(x => x.App)
+                .Include(x => x.App.Setting)
                 .Where(x => x.CreatedAt > minusFourteenDays && x.CreatedAt <= minusFourteenDaysPlusOneHours && !x.License.IsPaidCustomer)
                 .ToListAsync();
         }
