@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.Elasticsearch;
 using System;
 using System.IO;
 using System.Linq;
@@ -56,16 +55,12 @@ namespace PrimeApps.Auth
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(Configuration.GetConnectionString("ElasticConnection")))
-                {
-                    AutoRegisterTemplate = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
-                })
+                .WriteTo.Console()
                 .CreateLogger();
 
             return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .UseSerilog();
+                .UseStartup<Startup>();
+            //.UseSerilog();
         }
     }
 }
