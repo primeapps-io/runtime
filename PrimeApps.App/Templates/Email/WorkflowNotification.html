@@ -140,7 +140,9 @@
                                                     <table cellspacing="0" cellpadding="0" border="0">
                                                         <tr>
                                                             <td style="BORDER-TOP: medium none; BORDER-RIGHT: medium none;  BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; BACKGROUND-COLOR: transparent; text-align:center;">
-                                                                <a href="{{APP_URL}}" target="_blank"><img style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; DISPLAY: block" alt="" src="{{URL}}" width="200" hspace="0" vspace="0" border="0" /></a>
+                                                                <div style="display: {{APP_LOGO}}">
+                                                                    <a href="{{APP_URL}}" target="_blank"><img style="BORDER-TOP: medium none; BORDER-RIGHT: medium none; BORDER-BOTTOM: medium none; BORDER-LEFT: medium none; DISPLAY: block" alt="" src="{{URL}}" width="200" hspace="0" vspace="0" border="0" /></a>
+                                                                </div>
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -198,8 +200,9 @@
                                         </div>
                                         <p style="FONT-SIZE: 16px; MARGIN-BOTTOM: 1em; FONT-FAMILY: arial, helvetica, sans-serif; MARGIN-TOP: 0px; COLOR: #575757; LINE-HEIGHT: 24px; BACKGROUND-COLOR: transparent; mso-line-height-rule: exactly"
                                            align="center">
-                                            <a href="{url}" target="_blank" style="text-decoration:underline; background-color:#ffffff;border:solid 1px #3498db;border-radius:5px;box-sizing:border-box;color:#3498db;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;margin:0;padding:12px 25px;text-decoration:none;background-color:#3498db;border-color:#3498db;color:#ffffff;"> {RecordLink} </a>
+                                            <a href="{url}" target="_blank" style="color: white; background-color: #3498db;border: none;padding: 10px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;margin-bottom:10px; cursor: pointer;border-radius:5px;"> {RecordLink} </a>
                                         </p>
+                                        <br />
                                         <p style="FONT-SIZE: 12px;MARGIN-BOTTOM: 1em; FONT-FAMILY: arial, helvetica, sans-serif; MARGIN-TOP: 0px; COLOR: #333330; LINE-HEIGHT: 14px; BACKGROUND-COLOR: #fff; mso-line-height-rule: exactly"
                                            align="center">
                                             {{FOOTER}}
