@@ -1229,7 +1229,8 @@
       "ContentFormat": "İçerik Formatı",
       "Cancel": "Vazgeç",
       "ConnectionLogout": "Bağlantı Çıkışı",
-      "Save": "Kaydet"
+      "Save": "Kaydet",
+      "OutlookPlugin":"Outlook Eklentisi"
     },
     "HelpGuide": {
       "Module": "Modül",
