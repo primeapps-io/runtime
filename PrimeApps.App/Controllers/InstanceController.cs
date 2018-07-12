@@ -43,11 +43,11 @@ namespace PrimeApps.App.Controllers
 			base.OnActionExecuting(context);
 		}
 
-		/// <summary>
-		/// Updates instance.
-		/// </summary>
-		/// <param name="tenantDto">The instance.</param>
-		[Route("Edit")]
+        /// <summary>
+        /// Updates instance.
+        /// </summary>
+        /// <param name="tenantDto">The instance.</param>
+        [Route("Edit")]
         [ProducesResponseType(typeof(void), 200)]
         //[ResponseType(typeof(void))]
         [HttpPost]
@@ -66,23 +66,28 @@ namespace PrimeApps.App.Controllers
 
             //if it is valid, then update the changed fields.
             tenantToUpdate.Title = tenantDto.Title;
-            tenantToUpdate.Setting.Currency = tenantDto.Currency;
-            tenantToUpdate.Setting.Logo = tenantDto.Logo;
+            tenantToUpdate.Setting = new TenantSetting
+            {
+                Currency = tenantDto.Currency,
+                Logo = tenantDto.Logo
+            };
+
+            //TODO Burda hata veriyor. Migration ile ilgili..
             await _tenantRepository.UpdateAsync(tenantToUpdate);
 
             if (!string.IsNullOrEmpty(tenantDto.Language))
             {
-                using (var dbContext = _userRepository.DbContext)
+                var dbContext = _userRepository.DbContext;
+
+                var culture = tenantDto.Language == "en" ? "en-US" : "tr-TR";
+
+                foreach (var usr in dbContext.Users)
                 {
-                    var culture = tenantDto.Language == "en" ? "en-US" : "tr-TR";
-
-                    foreach (var usr in dbContext.Users)
-                    {
-                        usr.Culture = culture;
-                    }
-
-                    dbContext.SaveChanges();
+                    usr.Culture = culture;
                 }
+
+                dbContext.SaveChanges();
+
             }
 
             return Ok();

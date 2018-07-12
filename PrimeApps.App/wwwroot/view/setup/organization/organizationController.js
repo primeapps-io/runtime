@@ -8,10 +8,10 @@ angular.module('primeapps')
             $scope.company.instanceID = $rootScope.workgroup.instanceID;
             $scope.company.title = $rootScope.workgroup.title;
             $scope.company.currency = $rootScope.workgroup.currency;
-            $scope.company.culture = $rootScope.workgroup.licenses.tenant.setting.culture;
+            $scope.company.culture = $rootScope.workgroup.setting.culture;
             $scope.company.logo = $rootScope.workgroup.logo;
             $scope.company.tenant_id = $rootScope.user.tenant_id;
-            $scope.company.language = $rootScope.workgroup.licenses.tenant.setting.language;
+            $scope.company.language = $rootScope.workgroup.setting.language;
             $scope.bounds = {};
             $scope.bounds.left = 0;
             $scope.bounds.right = 0;
