@@ -67,7 +67,7 @@ namespace PrimeApps.App.Controllers
                 var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], moduleName, 0);
                 if (requestEntity == null)
                     continue;
-                await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
+                await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
                 await _processRequestRepository.Update(requestEntity);
 
                 await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
@@ -88,7 +88,7 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
+            await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
             await _processRequestRepository.Update(requestEntity);
 
             await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
@@ -134,7 +134,7 @@ namespace PrimeApps.App.Controllers
             if (requestEntity == null)
                 return NotFound();
 
-            await _processHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest);
+            await _processHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
             await _processRequestRepository.Update(requestEntity);
 
             await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
