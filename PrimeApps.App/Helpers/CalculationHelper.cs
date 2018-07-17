@@ -37,11 +37,14 @@ namespace PrimeApps.App.Helpers
 		private IHttpContextAccessor _context;
 		private IConfiguration _configuration;
 		private CurrentUser _currentUser;
-		public CalculationHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        private IRecordHelper _recordHelper;
+
+		public CalculationHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory,IRecordHelper recordHelper)
 		{
 			_context = context;
 			_configuration = configuration;
 			_serviceScopeFactory = serviceScopeFactory;
+            _recordHelper = recordHelper;
 			_currentUser = UserHelper.GetCurrentUser(_context);
 		}
 
@@ -94,7 +97,10 @@ namespace PrimeApps.App.Helpers
 										if (!record["unvan"].IsNullOrEmpty())
 											calisanUpdate["unvan"] = record["unvan"];
 
-										if (!record["1yoneticisi.id"].IsNullOrEmpty())
+                                        if (!record["ingilizce_unvan"].IsNullOrEmpty())
+                                            calisanUpdate["ingilizce_unvan"] = record["ingilizce_unvan"];
+
+                                        if (!record["1yoneticisi.id"].IsNullOrEmpty())
 											calisanUpdate["yoneticisi"] = record["1yoneticisi.id"];
 
 										if (!record["2_yoneticisi.id"].IsNullOrEmpty())
@@ -107,8 +113,9 @@ namespace PrimeApps.App.Helpers
 											calisanUpdate["gmy"] = record["gmy.id"];
 
 										await recordRepository.Update(calisanUpdate, calisanlarModule);
+                                        _recordHelper.AfterUpdate(calisanlarModule, calisanUpdate, calisan, appUser, warehouse, false);
 
-										string mailSubject;
+                                        string mailSubject;
 										string mailBody;
 
 										using (var templateRepostory = new TemplateRepository(databaseContext, _configuration))
@@ -1185,7 +1192,36 @@ namespace PrimeApps.App.Helpers
 											var pettyCashRequisitionPicklist = pettyCashRequisitionModule.Fields.Single(x => x.Name == "status");
 											var pettyCashRequisitionPicklistItem = await picklistRepository.FindItemByLabel(pettyCashRequisitionPicklist.PicklistId.Value, (string)record["status"], appUser.TenantLanguage);
 
-											if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
+                                            var pettyCashFindRequest = new FindRequest { Fields = new List<string> { "project_code" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = record["related_petty_cash_2"], No = 1 } }, Limit = 1 };
+                                            var pettyCash = recordRepository.Find("petty_cash", pettyCashFindRequest);
+                                            var projectFindRequest = new FindRequest { Fields = new List<string> { "project_director.human_resources.e_mail1" }, Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)pettyCash.First()["project_code"], No = 1 } }, Limit = 1 };
+                                            var project = recordRepository.Find("projects", projectFindRequest);
+                                            var directorFindRequest = new FindRequest { Fields = new List<string> { "id" }, Filters = new List<Filter> { new Filter { Field = "email", Operator = Operator.Equals, Value = (string)project.First()["project_director.human_resources.e_mail1"], No = 1 } }, Limit = 1 };
+                                            var director = recordRepository.Find("users", directorFindRequest);
+
+                                            if (!record["shared_users_edit"].IsNullOrEmpty())
+                                            {
+                                                int id = (int)director.First()["id"];
+                                                var sharedUsers = (JArray)record["shared_users_edit"];
+                                                foreach (var item in sharedUsers.ToList())
+                                                {
+                                                    if ((int)item != id)
+                                                    {
+                                                        sharedUsers.Add(director.First()["id"]);
+                                                        record["shared_users_edit"] = sharedUsers;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var sharedUsers = new JArray();
+                                                sharedUsers.Add(director.First()["id"]);
+                                                record["shared_users_edit"] = sharedUsers;
+                                            }
+
+                                            await recordRepository.Update(record, pettyCashRequisitionModule);
+
+                                            if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
 											{
 												var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
 												var pettyCashRequisitionRecords = recordRepository.Find(module.Name, findRequestPettyCashRequisition);
@@ -2280,7 +2316,13 @@ namespace PrimeApps.App.Helpers
 													record["deneyim_ay"] = Math.Floor(timespan.TotalDays / 30);
 												}
 
-												var deneyimAyStr = (string)record["deneyim_ay"];
+                                                if ((double)record["deneyim_yil"] < 0)
+                                                    record["deneyim_yil"] = 0;
+
+                                                if ((double)record["deneyim_ay"] < 0)
+                                                    record["deneyim_ay"] = 0;
+
+                                                var deneyimAyStr = (string)record["deneyim_ay"];
 
 												record["toplam_deneyim_firma"] = record["deneyim_yil"] + "." + (deneyimAyStr.Length == 1 ? "0" + deneyimAyStr : deneyimAyStr);
 												record["toplam_deneyim_firma_yazi"] = record["deneyim_yil"] + " yıl " + deneyimAyStr + " ay";
@@ -2300,7 +2342,13 @@ namespace PrimeApps.App.Helpers
 													deneyimYil += 1;
 												}
 
-												record["toplam_deneyim"] = deneyimYil + "." + (deneyimAy.ToString().Length == 1 ? "0" + deneyimAy : deneyimAy.ToString());
+                                                if (deneyimYil < 0)
+                                                    deneyimYil = 0;
+
+                                                if (deneyimAy < 0)
+                                                    deneyimAy = 0;
+
+                                                record["toplam_deneyim"] = deneyimYil + "." + (deneyimAy.ToString().Length == 1 ? "0" + deneyimAy : deneyimAy.ToString());
 												record["toplam_deneyim_yazi"] = deneyimYil + " yıl " + deneyimAy + " ay";
 											}
 
@@ -2337,10 +2385,24 @@ namespace PrimeApps.App.Helpers
 											Offset = 0
 										};
 
-										var izinler = recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
+                                        var izinTuruModule = await moduleRepository.GetByName("izin_turleri");
+                                        var izinTuru = recordRepository.GetById(izinTuruModule, (int)record["izin_turu"], false);
+                                        var izinler = recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
 
-										//await YillikIzinHesaplama((int)record["calisan"], izinTuru, recordRepository, moduleRepository);
-										if (record["process_status"] != null)
+                                        //İzin türüne göre izinler de gün veya saat olduğunu belirtme.
+                                        if (!izinTuru["gunluk"].IsNullOrEmpty() && !record["gunsaat"].IsNullOrEmpty())
+                                        {
+                                            if ((string)izinTuru["gunluk"] == "Evet")
+                                                record["gunsaat"] = "Gün";
+                                            else
+                                                record["gunsaat"] = "Saat";
+
+                                            var izinlerModule = await moduleRepository.GetByName("izinler");
+                                            await recordRepository.Update(record, izinlerModule);
+                                        }
+
+                                        //await YillikIzinHesaplama((int)record["calisan"], izinTuru, recordRepository, moduleRepository);
+                                        if (record["process_status"] != null)
 										{
 											if ((bool)izinler["yillik_izin"] && operationType == OperationType.update && !record["process_status"].IsNullOrEmpty() && (int)record["process_status"] == 2)
 												await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], warehouse);

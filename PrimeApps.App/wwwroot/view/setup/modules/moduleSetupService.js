@@ -56,6 +56,8 @@ angular.module('primeapps')
                                 break;
                             case 'tag':
                                 break;
+                            case 'json':
+                                break;
                         }
 
                         dataTypeList.push(dataType);

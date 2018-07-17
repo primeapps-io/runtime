@@ -422,22 +422,22 @@ namespace PrimeApps.App.Helpers
 						if (!string.IsNullOrWhiteSpace(appUser.Culture) && Constants.CULTURES.Contains(appUser.Culture))
 							Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
-                        if (operationType == OperationType.insert)
-                        {
-                            var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-                            notification.AddRecipient(user.Email);
-                            notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-                        }
-                        else if (operationType == OperationType.update)
-                        {
-                            var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-                            notification.AddRecipient(user.Email);
-                            notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-                        }
-                        else if (operationType == OperationType.delete)
-                        {
+                        //if (operationType == OperationType.insert)
+                        //{
+                        //    var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        //    notification.AddRecipient(user.Email);
+                        //    notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+                        //}
+                        //else if (operationType == OperationType.update)
+                        //{
+                        //    var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        //    notification.AddRecipient(user.Email);
+                        //    notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+                        //}
+                        //else if (operationType == OperationType.delete)
+                        //{
 
-                        }
+                        //}
 
                         var processRequest = new ProcessRequest
 						{

@@ -244,7 +244,7 @@ angular.module('primeapps')
             var setRecordValidationData = function () {
                 if ($scope.module.name === 'izinler' &&
                     (
-                        ($scope.hasManuelProcess && $scope.record.owner.id === $scope.currentUser.id && !$scope.record.process_id) ||
+                    ($scope.hasManuelProcess && ($scope.record.owner.id === $scope.currentUser.id || $scope.hasProcessRights) && !$scope.record.process_id) ||
                         ($scope.record.process_status === 3 && $scope.record.owner.id === $scope.currentUser.id && !$scope.waitingForApproval)
                     ) && $scope.record['izin_turu']) {
                     var startOf = moment().date(1).month(1).year(moment().year()).format('YYYY-MM-DD');
@@ -424,6 +424,14 @@ angular.module('primeapps')
 
                                 components.run('AfterRecordLoaded', 'Script', $scope, $scope.record);
                                 getProducts($scope.type);
+
+                                if ($scope.currentModuleProcess && $scope.currentModuleProcess.profile_list) {
+                                    if ($scope.currentModuleProcess.profile_list.indexOf($rootScope.user.profile.ID.toString()) > -1)
+                                        $scope.hasProcessRights = true;
+                                    else
+                                        $scope.hasProcessRights = false;
+                                }
+
                                 if ($scope.module.name === 'izinler')
                                     setRecordValidationData();
                             };

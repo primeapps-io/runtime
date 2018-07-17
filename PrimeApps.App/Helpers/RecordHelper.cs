@@ -27,7 +27,7 @@ namespace PrimeApps.App.Helpers
     {
         Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState,
             string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
-        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser);
+        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser,IProcessRepository processRepository);
         void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true,
             bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
         void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse,
@@ -312,15 +312,23 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser)
+        public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser,IProcessRepository processRepository)
         {
             //TODO: Profile permission check
 
             // Check freeze
             if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
             {
+                var process = await processRepository.GetById((int)record["process_id"]);
+                var hasPermission = false;
+                var profiles = process.Profiles.Split(',').Select(Int32.Parse).ToList();
+                foreach (var item in profiles)
+                {
+                    if (item == appUser.ProfileId)
+                        hasPermission = true;
+                }
 
-                if (appUser != null && !appUser.HasAdminProfile)
+                if (appUser != null && !appUser.HasAdminProfile && !hasPermission && !hasPermission)
                     record["freeze"] = true;
                 else
                     record["freeze"] = false;

@@ -28,17 +28,19 @@ namespace PrimeApps.App.Controllers
     {
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;
-        private IPicklistRepository _picklistRepository;
+        private IPicklistRepository _picklistRepository; 
+        private IProcessRepository _processRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
 	    private IRecordHelper _recordHelper;
 
-        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
+        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration,IProcessRepository processRepository)
         {
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
-            _picklistRepository = picklistRepository;
+            _picklistRepository = picklistRepository; 
+            _processRepository = processRepository;
             _warehouse = warehouse;
 
 	        _recordHelper = recordHelper;
@@ -441,7 +443,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser);
+            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser,_processRepository);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -527,7 +529,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser);
+                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser,_processRepository);
 
 
                 if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])

@@ -476,6 +476,14 @@ angular.module('primeapps')
                         case 'rating':
                             $scope.currentField.validation.min_length = 5;
                             break;
+                        case 'json':
+                            $scope.currentField.validation.required = true;
+                            $scope.currentField.display_form = false;
+                            $scope.currentField.display_list = false;
+                            $scope.currentField.display_detail = false;
+                            $scope.currentField.editable = false;
+                            $scope.currentField.inline_edit = false;
+                            break;
                     }
                 }
             };

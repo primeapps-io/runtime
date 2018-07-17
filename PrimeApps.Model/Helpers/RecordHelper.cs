@@ -708,7 +708,13 @@ namespace PrimeApps.Model.Helpers
 						else
 							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Numeric });
 						break;
-				}
+                    case DataType.Json:
+                        if (!string.IsNullOrWhiteSpace(value))
+                            command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = Decimal.Parse(value), NpgsqlDbType = NpgsqlDbType.Json });
+                        else
+                            command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Json });
+                        break;
+                }
 			}
 		}
 
