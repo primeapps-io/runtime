@@ -6,6 +6,9 @@
             <div ng-show="hasAdminRights" class="btn-group pull-right">
                 <a ng-click="settingsModal()" style="cursor: pointer"><i class="fa fa-cog fa-2x" aria-hidden="true" style="color:#d6d9de"></i></a>
             </div>
+            <div class="btn-group pull-right" style="margin-right: 10px;">
+                <a href="#/app/crm/modules/timetrackers" class="btn btn-sm btn-default ng-animate-disabled"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
+            </div>
         </div>
         <div class="panel-body">
             <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
@@ -33,7 +36,7 @@
                             <h4 style="margin: 0; text-align: center; color:#635fb3; font-weight: 700">{{currentMonth | uppercase}} {{year}} - {{week}}. {{'Timetracker.Week'|translate}}</h4>
                         </div>
                         <div class="col-md-4 pull-right" ng-show="!loadingForm">
-                            <div class="btn-group pull-right">
+                            <div class="btn-group pull-right"> 
                                 <button style="margin-left: 15px" ng-click="sendToProcessApproval()" ng-show="hasManuelProcess && !currentTimetracker.process_id && currentTimetracker.owner == currentUser.id" class="btn btn-sm btn-success ng-animate-disabled" ladda="manuelApproveRequest">{{'Setup.Workflow.ApprovelProcess.SendToApproval' | translate}}</button>
                                 <button style="margin-left: 15px" ng-click="approveProcess()" ng-show="isApprovalRecord && currentTimetracker.process_status == 1" ng-if="!waitingForApproval" class="btn btn-sm btn-success ng-animate-disabled" ladda="approving">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>
                                 <button style="margin-left: 15px" ng-click="openRejectApprovalModal()" ng-show="isApprovalRecord && currentTimetracker.process_status == 1" ng-if="!waitingForApproval" class="btn btn-sm btn-danger ng-animate-disabled" ladda="rejecting">{{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>
@@ -50,7 +53,7 @@
                     <div ng-if="!loadingForm">
                         <div class="subpanel ng-scope" ng-repeat="day in days">
                             <div class="btn-group">
-                                <div class="btn btn-sm btn-custom" style="width: 150px; background-color:inherit !important; border-top: none; border-left : none">
+                                <div class="btn btn-sm btn-custom" style="width: auto; background-color:inherit !important; border-top: none; border-left : none">
                                     <span style="color:#635fb3; font-weight: bold !important; text-transform: uppercase; float: left">{{day.date}}</span>
                                 </div>
                                 <a ng-hide="(day.dayOrder === 0 && !settings.includeWeekend) || (day.dayOrder === 6 && !settings.includeWeekend) || (currentTimetracker.process_id && currentTimetracker.process_status != 3) || freeze || (settings.includeHoliday && day.holiday) || day.notDayOfCurrentMonth" ng-click="openCreateModal(day)" style="border-top: none"
