@@ -1510,6 +1510,8 @@ angular.module('primeapps')
                                                     var lookupRecord = data[0];
                                                     lookupRecord.primary_value = lookupRecord[childField.lookupModulePrimaryField.name];
                                                     record[dependency.child_field] = lookupRecord;
+                                                    childField.valueChangeDontRun = true;
+
                                                     that.customActions(module, record, scope.moduleForm);
                                                     scope.$broadcast('angucomplete-alt:changeInput', dependency.child_field, lookupRecord);
                                                 }

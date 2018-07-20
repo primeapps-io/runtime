@@ -24,7 +24,7 @@ namespace PrimeApps.App.Jobs.Email
         /// <param name="successful"></param>
         /// <param name="notAllowed"></param>
         /// <param name="missingAddresses"></param>
-        public static void SendEMailStatusNotification(TenantUser owner, string template, string moduleName, DateTime smsDate, NotificationStatus status, int successful, int notAllowed, int missingAddresses, int tenantId, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, UserItem appUser)
+        public static void SendEMailStatusNotification(TenantUser owner, string template,string senderAlias,string senderFrom, string moduleName, DateTime smsDate, NotificationStatus status, int successful, int notAllowed, int missingAddresses, int tenantId, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, UserItem appUser)
         {
             string formattedDate = "";
 
@@ -58,7 +58,7 @@ namespace PrimeApps.App.Jobs.Email
 
                 /// send the email.
                 email.AddRecipient(owner.Email);
-                email.AddToQueue();
+                email.AddToQueue(from:senderFrom,fromName:senderAlias, appUser: appUser);
             }
         }
     }

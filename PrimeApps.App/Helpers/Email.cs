@@ -309,8 +309,11 @@ namespace PrimeApps.App.Helpers
         /// </summary>
         public void AddToQueue(int recordId = 0, int tenantId = 0, string from = "", string fromName = "", string cc = "", string bcc = "", UserItem appUser = null)
         {
-            from = "destek@ofisim.com";
-            fromName = "Ofisim.com";
+            if (string.IsNullOrEmpty(from))
+            {
+                from = "destek@ofisim.com";
+                fromName = "Ofisim.com";
+            }
 
             if (appUser != null)
             {
@@ -338,8 +341,8 @@ namespace PrimeApps.App.Helpers
                     EmailFrom = Regex.Replace(from, "^pre__", ""),
                     ReplyTo = Regex.Replace(from, "^pre__", ""),
                     FromName = fromName,
-                    CC = Regex.Replace(cc, "^pre__", ""),
-                    Bcc = Regex.Replace(bcc, "^pre__", ""),
+                    CC = !string.IsNullOrEmpty(cc) ? Regex.Replace(cc, "^pre__", "") : cc,
+                    Bcc = !string.IsNullOrEmpty(bcc) ? Regex.Replace(bcc, "^pre__", "") : bcc,
                     Subject = Subject,
                     Body = Template,
                     UniqueID = null,
@@ -409,8 +412,8 @@ namespace PrimeApps.App.Helpers
                     EmailFrom = Regex.Replace(from, "^pre__", ""),
                     ReplyTo = Regex.Replace(from, "^pre__", ""),
                     FromName = fromName,
-                    CC = Regex.Replace(cc, "^pre__", ""),
-                    Bcc = Regex.Replace(bcc, "^pre__", ""),
+                    CC = !string.IsNullOrEmpty(cc) ? Regex.Replace(cc, "^pre__", "") : cc,
+                    Bcc = !string.IsNullOrEmpty(bcc) ? Regex.Replace(bcc, "^pre__", "") : bcc,
                     Subject = Subject,
                     Body = Template,
                     UniqueID = null,

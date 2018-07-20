@@ -27,15 +27,11 @@ namespace PrimeApps.App.Helpers
 {
     public interface IRecordHelper
     {
-        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState,
-            string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
-        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser);
-        void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true,
-            bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
-        void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse,
-            bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
-        void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true,
-            bool runCalculations = true);
+        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository);
+        void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
+        void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
+        void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true);
         JObject PrepareConflictError(PostgresException ex);
         bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
         Task CreateStageHistory(JObject record, JObject currentRecord = null);
@@ -50,16 +46,13 @@ namespace PrimeApps.App.Helpers
         void SetCurrentUser(UserItem appUser);
     }
 
-    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState,
-        string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
 
     public delegate Task UpdateStageHistory(JObject record, JObject currentRecord);
 
-    public delegate void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser,
-        Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
+    public delegate void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
 
-    public delegate void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse,
-        bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
+    public delegate void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
 
     public delegate Task<List<string>> GetAllFieldsForFindRequest(string moduleName, bool withLookups = true);
 
@@ -67,7 +60,6 @@ namespace PrimeApps.App.Helpers
 
     public class RecordHelper : IRecordHelper
     {
-
         private CurrentUser _currentUser;
         private IServiceScopeFactory _serviceScopeFactory;
         private IConfiguration _configuration;
@@ -97,6 +89,7 @@ namespace PrimeApps.App.Helpers
 
             Queue = queue;
         }
+
         public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
@@ -330,15 +323,23 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser)
+        public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository)
         {
             //TODO: Profile permission check
 
             // Check freeze
             if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
             {
+                var process = await processRepository.GetById((int)record["process_id"]);
+                var hasPermission = false;
+                var profiles = process.Profiles.Split(',').Select(Int32.Parse).ToList();
+                foreach (var item in profiles)
+                {
+                    if (item == appUser.ProfileId)
+                        hasPermission = true;
+                }
 
-                if (appUser != null && !appUser.HasAdminProfile)
+                if (appUser != null && !appUser.HasAdminProfile && !hasPermission && !hasPermission)
                     record["freeze"] = true;
                 else
                     record["freeze"] = false;
@@ -364,7 +365,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest));
             }
         }
 
@@ -393,7 +394,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                Queue.QueueBackgroundWorkItem(async token => _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest));
             }
         }
 
@@ -411,7 +412,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete, BeforeCreateUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.delete, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest));
             }
         }
 

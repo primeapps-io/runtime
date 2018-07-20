@@ -255,10 +255,17 @@ namespace PrimeApps.App.Helpers
                                     case Operator.Greater:
                                         if (filterField.DataType == DataType.Date)
                                         {
-                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
-                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
 
-                                            if (recordDate <= filterDate)
+                                                if (recordDate <= filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
                                             {
                                                 mismatchedCount++;
                                             }
@@ -271,10 +278,17 @@ namespace PrimeApps.App.Helpers
                                     case Operator.GreaterEqual:
                                         if (filterField.DataType == DataType.Date)
                                         {
-                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
-                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
 
-                                            if (recordDate < filterDate)
+                                                if (recordDate < filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
                                             {
                                                 mismatchedCount++;
                                             }
@@ -288,10 +302,17 @@ namespace PrimeApps.App.Helpers
                                     case Operator.Less:
                                         if (filterField.DataType == DataType.Date)
                                         {
-                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
-                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
 
-                                            if (recordDate >= filterDate)
+                                                if (recordDate >= filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
                                             {
                                                 mismatchedCount++;
                                             }
@@ -304,10 +325,17 @@ namespace PrimeApps.App.Helpers
                                     case Operator.LessEqual:
                                         if (filterField.DataType == DataType.Date)
                                         {
-                                            DateTime filterDate = Convert.ToDateTime(filter.Value);
-                                            DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
 
-                                            if (recordDate >= filterDate)
+                                                if (recordDate >= filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
                                             {
                                                 mismatchedCount++;
                                             }
@@ -355,7 +383,7 @@ namespace PrimeApps.App.Helpers
 
                                         foreach (var field in module.Fields)
                                         {
-                                            if (field.LookupType != null && field.LookupType != "users" && field.LookupType == secondModuleName && !record[field.Name + "." + fieldUpdate.Field].IsNullOrEmpty())
+                                            if (field.LookupType != null && field.LookupType != "users" && field.LookupType == secondModuleName && !record[fieldUpdate.Value].IsNullOrEmpty())
                                             {
                                                 fieldUpdateRecords.Add(secondModuleName, (int)record[field.Name + ".id"]);
                                             }
@@ -368,7 +396,7 @@ namespace PrimeApps.App.Helpers
 
                                         foreach (var field in module.Fields)
                                         {
-                                            if (field.LookupType != null && field.LookupType != "users" && field.LookupType == firstModuleName && !record[field.Name + "." + fieldUpdate.Value].IsNullOrEmpty())
+                                            if (field.LookupType != null && field.LookupType != "users" && field.LookupType == firstModuleName && !record[fieldUpdate.Value].IsNullOrEmpty())
                                             {
                                                 fieldUpdateRecords.Add(secondModule, (int)record["id"]);
                                             }
@@ -729,8 +757,8 @@ namespace PrimeApps.App.Helpers
                                     }
                                 }
 
-                                var sendNotificationCC = "";
-                                var sendNotificationBCC = "";
+                                var sendNotificationCC = sendNotification.CC;
+                                var sendNotificationBCC = sendNotification.Bcc;
 
                                 if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
                                 {

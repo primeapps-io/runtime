@@ -202,7 +202,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                 ErrorHandler.LogError(ex, $"EMail Client has failed while sending a short message template with id:{emailId} of tenant: {emailQueueItem.TenantId}.");
                 bulkEMailStatus = NotificationStatus.SystemError;
             }
-            Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
+            Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate,senderAlias, senderEMail,moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
 
             /// always return true to say queue that the job has done.
             return true;

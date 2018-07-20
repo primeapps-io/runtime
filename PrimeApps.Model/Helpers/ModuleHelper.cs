@@ -61,7 +61,8 @@ namespace PrimeApps.Model.Helpers
             DataType.Email,
             DataType.Picklist,
             DataType.Multiselect,
-            DataType.Tag
+            DataType.Tag,
+            DataType.Json,
         };
 
         public static List<string> ModuleSpecificFields(Module module)
@@ -451,6 +452,8 @@ namespace PrimeApps.Model.Helpers
                     return "VARCHAR (100) ARRAY";
                 case DataType.Tag:
                     return "VARCHAR (400) ARRAY";
+                case DataType.Json:
+                    return "json";
                 case DataType.Lookup:
                     return "INTEGER";
                 case DataType.Checkbox:
@@ -466,7 +469,7 @@ namespace PrimeApps.Model.Helpers
 
             foreach (var field in fields)
             {
-                if (SystemFieldsExtended.Contains(field.Name))
+                if (SystemFieldsExtended.Contains(field.Name) || field.DataType == DataType.Json)
                     continue;
 
                 if (!(field.DataType == DataType.TextMulti && field.MultilineType == MultilineType.Large))

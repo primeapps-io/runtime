@@ -21,13 +21,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<PlatformUser> GetUserByAutoId(int tenantID);
 		Task<EmailAvailableType> IsEmailAvailable(string email, int appId);
 		Task<Tenant> GetTenantWithOwner(int tenantId);
-
-		Task<bool> IsActiveDirectoryEmailAvailable(string email);
+		
         Task<int> GetIdByEmail(string email);
         Task<List<PlatformUser>> GetAllByTenant(int tenantId);
-		//TODO Removed
-        //Task<ActiveDirectoryTenant> GetConfirmedActiveDirectoryTenant(int tenantId);
-        //Task<PlatformUser> GetUserByActiveDirectoryTenantEmail(string email);
         Task<string> GetEmail(int userId);
         Task<IList<Workgroup>> MyWorkgroups(int globalId);
 		PlatformUser GetByEmailAndTenantId(string email, int tenantId);

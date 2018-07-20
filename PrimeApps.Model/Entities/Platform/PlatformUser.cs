@@ -17,14 +17,7 @@ namespace PrimeApps.Model.Entities.Platform
         /// </summary>
         [Column("id"), Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-		//TODO Removed
-		/*[Column("app_id"), ForeignKey("App"), Required]//]//, Index] 
-        public int AppId { get; set; }
-
-        [Column("tenant_id"), ForeignKey("Tenant")]//]//, Index]
-        public int? TenantId { get; set; }*/
-
+	
         /// <summary>
         /// Email address
         /// </summary>
@@ -42,21 +35,7 @@ namespace PrimeApps.Model.Entities.Platform
 
 		[Column("updated_at")]//]//, Index]
 		public DateTime UpdatedAt { get; set; }
-
-		//TODO Removed
-		/*[Column("active_directory_tenant_id")]//]//, Index]
-        public int ActiveDirectoryTenantId { get; set; }
-
-        [Column("active_directory_email")]//]//, Index]
-        public string ActiveDirectoryEmail { get; set; }*/
-
-		//TODO Removed
-		///public virtual App App { get; set; }
-
-		//TODO Removed
-		//public virtual Tenant Tenant { get; set; }
-		//public virtual ICollection<Tenant> Tenant { get; set; }
-
+		
 		[JsonIgnore]
 		public virtual ICollection<TeamUser> UserTeams { get; set; }
 

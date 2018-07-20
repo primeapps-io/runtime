@@ -67,5 +67,8 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "tag")]
         Tag = 20,
 
+        [EnumMember(Value = "json")]
+        Json = 21,
+
     }
 }

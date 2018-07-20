@@ -486,7 +486,7 @@
                             <input type="checkbox" ng-model="currentField.document_search">
                         </div>
                         <div class="form-group"
-                             ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'checkbox'">
+                             ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'checkbox'  && currentField.dataType.name !='json' ">
                             <label class="col-sm-4">{{'Setup.Modules.UniqueValue' | translate}}: </label>
                             <input type="checkbox" ng-model="currentField.validation.unique" ng-disabled="!currentField.isNew && currentField.validation.unique != true">
                         </div>

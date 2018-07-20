@@ -157,11 +157,15 @@ namespace PrimeApps.App.Jobs
 													}
 												}
 
-												if (!izinKurali["sonraki_doneme_devredilen_izin_gun"].IsNullOrEmpty() &&
-													(int)izinKurali["sonraki_doneme_devredilen_izin_gun"] <= kalanIzinHakki)
+												if (!izinKurali["sonraki_doneme_devredilen_izin_gun"].IsNullOrEmpty())
 												{
-													devredecekIzin = (int)izinKurali["sonraki_doneme_devredilen_izin_gun"];
+													if ((int)izinKurali["sonraki_doneme_devredilen_izin_gun"] <= kalanIzinHakki)
+														devredecekIzin = (int)izinKurali["sonraki_doneme_devredilen_izin_gun"];
+													else
+														devredecekIzin = kalanIzinHakki;
 												}
+												else
+													devredecekIzin = kalanIzinHakki;
 
 												calisan["sabit_devreden_izin"] = devredecekIzin;
 												calisan["devreden_izin"] = devredecekIzin;

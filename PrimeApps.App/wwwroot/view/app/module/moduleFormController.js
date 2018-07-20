@@ -1469,6 +1469,11 @@ angular.module('primeapps')
             };
 
             $scope.fieldValueChange = function (field) {
+                if (field.valueChangeDontRun) {
+                    delete field.valueChangeDontRun;
+                    return;
+                }
+
                 ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule, $scope);
                 ModuleService.setDisplayDependency($scope.module, $scope.record);
                 ModuleService.setCustomCalculations($scope.module, $scope.record, $scope.picklistsModule, $scope);

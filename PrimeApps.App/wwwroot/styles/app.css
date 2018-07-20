@@ -1871,6 +1871,14 @@ select option[disabled] {
   .collapse-menu .collapse.am-collapse.in-add {
     animation-name: expand; }
 
+.time-tracker-modal-content .dropdown-menu {
+    position: inherit !important;
+}
+
+.time-tracker-modal-content .ui-select-choices {
+    width: calc(100% - 48px) !important;
+}
+
 .template-document {
   background: #fbfbfb;
   border-radius: 5px; }

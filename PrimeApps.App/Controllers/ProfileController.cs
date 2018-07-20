@@ -1,15 +1,13 @@
 using System.Threading.Tasks;
-using PrimeApps.App.Results;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Profile;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/Profile")]
+	[Route("api/Profile")]
     public class ProfileController : ApiBaseController
     {
         private IProfileRepository _profileRepository;

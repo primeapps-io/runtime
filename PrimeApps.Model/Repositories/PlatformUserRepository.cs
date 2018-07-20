@@ -44,7 +44,6 @@ namespace PrimeApps.Model.Repositories
                 .SingleOrDefaultAsync();
         }
 
-
         public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
         {
             var user = await DbContext.Users
@@ -135,8 +134,6 @@ namespace PrimeApps.Model.Repositories
         /// <returns></returns>
         public async Task<EmailAvailableType> IsEmailAvailable(string email, int appId)
         {
-            //get session and check the email address
-            //TODO Removed
             var user = await DbContext.Users.Include(x => x.TenantsAsUser).Include(x => x.TenantsAsOwner).Where(x => x.Email == email).SingleOrDefaultAsync();
             if (user != null)
             {
@@ -149,29 +146,6 @@ namespace PrimeApps.Model.Repositories
             return EmailAvailableType.Available;
         }
 
-        /// <summary>
-        /// Checks if that active directory email address is available.
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        public async Task<bool> IsActiveDirectoryEmailAvailable(string email)
-        {
-            bool status = true;
-
-            //get session and check the email address
-            //TODO Removed
-            var result = false;//await DbContext.Users.Where(x => x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
-
-            if (result != null)
-            {
-                //the email address exists so set the variable to false.
-                status = false;
-            }
-
-            //return status.
-            return status;
-        }
-
         public async Task<List<PlatformUser>> GetAllByTenant(int tenantId)
         {
             var tenant = await DbContext.Tenants
@@ -181,18 +155,6 @@ namespace PrimeApps.Model.Repositories
 
             return tenant?.TenantUsers.Select(x => x.PlatformUser).ToList();
         }
-
-        //TODO Removed
-        /*public async Task<ActiveDirectoryTenant> GetConfirmedActiveDirectoryTenant(int tenantId)
-        {
-            return await DbContext.ActiveDirectoryTenants.FirstOrDefaultAsync(x => x.TenantId == tenantId && x.Confirmed);
-        }
-
-        public async Task<PlatformUser> GetUserByActiveDirectoryTenantEmail(string email)
-        {
-            return await DbContext.Users.Where(x => x.ActiveDirectoryEmail == email).SingleOrDefaultAsync();
-
-        }*/
 
         public async Task<string> GetEmail(int userId)
         {
