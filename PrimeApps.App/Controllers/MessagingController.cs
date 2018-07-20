@@ -171,8 +171,7 @@ namespace PrimeApps.App.Controllers
 
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
-
-                //TODO Removed
+				
                 foreach (var emailRecipient in emailRequest.ToAddresses)
                 {
                     var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);

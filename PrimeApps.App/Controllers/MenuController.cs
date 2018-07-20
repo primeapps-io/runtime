@@ -8,6 +8,8 @@ using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Entities.Application;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Helpers;
+using PrimeApps.App.Helpers;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
@@ -15,16 +17,21 @@ namespace PrimeApps.App.Controllers
     public class MenuController : ApiBaseController
     {
         private IMenuRepository _menuRepository;
-       
-        public MenuController(IMenuRepository menuRepository)
+		private IProfileRepository _profileRepository;
+		private ISettingRepository _settingsRepository;
+
+        public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository, ISettingRepository settingsRepository)
         {
-            _menuRepository = menuRepository;
+			_profileRepository = profileRepository;
+			_menuRepository = menuRepository;
+			_settingsRepository = settingsRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
             SetCurrentUser(_menuRepository);
+            SetCurrentUser(_profileRepository);
 
             base.OnActionExecuting(context);
         }
@@ -89,7 +96,7 @@ namespace PrimeApps.App.Controllers
         {
             if (!menuItem.ModuleId.HasValue && string.IsNullOrEmpty(menuItem.Route))
                 return true;
-
+			Profile currentProfile = null;
             if (!menuItem.ModuleId.HasValue && !string.IsNullOrEmpty(menuItem.Route))
             {
                 switch (menuItem.Route)
@@ -123,22 +130,22 @@ namespace PrimeApps.App.Controllers
                             return true;
                         break;
                     case "timesheet":
-                        //TODO Removed
-                        //var hasTimesheetPermission = await Workgroup.CheckPermission(PermissionEnum.Write, 29, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);//29 is timesheet module id
+						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
+                        var hasTimesheetPermission = UserHelper.CheckPermission(PermissionEnum.Write, 29, EntityType.Module, currentProfile);//29 is timesheet module id
 
-                        //if (hasTimesheetPermission)
+                        if (hasTimesheetPermission)
                             return true;
                         break;
                     case "timetrackers":
-                        //TODO Removed
-                        //var hasTimetrackersPermission = await Workgroup.CheckPermission(PermissionEnum.Write, 35, EntityType.Module, AppUser.InstanceId, AppUser.LocalId);//35 is timetrackers module id
+						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
+						var hasTimetrackersPermission = UserHelper.CheckPermission(PermissionEnum.Write, 35, EntityType.Module, currentProfile);//35 is timetrackers module id
 
-                        //if (hasTimetrackersPermission)
-                            return true;
+						if (hasTimetrackersPermission)
+							return true;
                         break;
                     case "analytics":
-                        //TODO Removed
-                        if (instance.HasAnalytics.HasValue && instance.HasAnalytics.Value /*&& AppUser.HasAnalyticsLicense*/)
+						//TODO Removed
+						if (instance.HasAnalytics.HasValue && instance.HasAnalytics.Value /*&& AppUser.HasAnalyticsLicense*/)
                             return true;
                         break;
                 }

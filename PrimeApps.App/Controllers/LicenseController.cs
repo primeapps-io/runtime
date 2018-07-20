@@ -331,8 +331,7 @@ namespace PrimeApps.App.Controllers
             foreach (var user in users)
             {
                 await _platformUserRepository.UpdateAsync(user);
-                //TODO Removed
-                var userTenant = await _userRepository.GetById(/*user.TenantId.Value*/ tenantId);
+                var userTenant = await _userRepository.GetById(tenantId);
 
                 if (userTenant != null)
                 {

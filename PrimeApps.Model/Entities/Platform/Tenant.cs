@@ -34,13 +34,6 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("use_user_settings")]
 		public bool UseUserSettings { get; set; }
 
-		/// <summary>
-		/// Platform users that belongs to this tenant.
-		/// </summary>
-		/// TODO Removed
-		/// 
-		//[InverseProperty("Tenant")]
-		//public virtual IList<PlatformUser> Users { get; set; }
 
 		//Apps and Tenants One to Many 
 		//[JsonIgnore]

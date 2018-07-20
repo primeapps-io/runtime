@@ -1,39 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using System.Web;
-using System.Threading;
-using System.Globalization;
 using System.Net;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.App.Providers;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Repositories.Interfaces;
-using Npgsql;
-using PrimeApps.App.Extensions;
-using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Model.Helpers.QueryTranslation;
-using ChallengeResult = PrimeApps.App.Results.ChallengeResult;
-using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using Hangfire;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using PrimeApps.App.Services;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +21,7 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/account")]
+	[Route("api/account")]
     public class AccountController : Controller
     {
         private const string LocalLoginProvider = "Local";

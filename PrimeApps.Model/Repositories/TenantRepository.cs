@@ -95,9 +95,6 @@ namespace PrimeApps.Model.Repositories
                      currency = t.Setting.Currency,
                      language = t.Setting.Language,
                      logoUrl = t.Setting.Logo,
-                     //TODO Removed
-                     //hasSampleData = t.HasSampleData,
-                     //hasPhone = t.HasPhone,
                      hasAnalytics = t.License.AnalyticsLicenseCount > 0,
                      owner = t.Owner.Id,
                      licenses = t.License,
