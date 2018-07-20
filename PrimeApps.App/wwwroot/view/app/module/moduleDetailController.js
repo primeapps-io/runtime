@@ -291,6 +291,25 @@ angular.module('primeapps')
                                     $scope.currentModuleProcess = currentProcess;
                             }
 
+                            //encrypted field
+                            for (var f = 0; f < $scope.module.fields.length; f++) {
+                                var field = $scope.module.fields[f];
+                                var showEncryptedInput = false;
+                                if (field.encrypted && field.encryption_authorized_users_list.length > 0 && record[field.name]) {
+                                    for (var p = 0; p < field.encryption_authorized_users_list.length; p++) {
+                                        var encryrptionPermission = field.encryption_authorized_users_list[p];
+                                        if ($rootScope.user.id == parseInt(encryrptionPermission))
+                                            showEncryptedInput = true;
+                                    }
+                                }
+
+                                if (field.encrypted && !showEncryptedInput)
+                                    field.show_lock = true;
+                                else
+                                    field.show_lock = false;
+                            }
+
+
                             //Approval Process
                             if (record.process_status) {
                                 if (record.process_status === 2)

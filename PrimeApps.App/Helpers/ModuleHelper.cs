@@ -119,6 +119,23 @@ namespace PrimeApps.App.Helpers
                 }
 
                 moduleEntity.Fields.Add(fieldEntity);
+
+                if (fieldModel.Encrypted)
+                {
+                    var encryptedField = new FieldBindingModel
+                    {
+                        Name = fieldModel.Name + "__encrypted",
+                        LabelEn = fieldModel.Name + "__encrypted",
+                        LabelTr = fieldModel.Name + "__encrypted",
+                        DataType = DataType.TextSingle,
+                        DisplayDetail = false,
+                        DisplayForm = false,
+                        DisplayList = false
+                    };
+
+                    var encryptedFieldEntity = NewFieldEntity(encryptedField);
+                    moduleEntity.Fields.Add(encryptedFieldEntity);
+                }
             }
 
             if (moduleModel.Relations != null && moduleModel.Relations.Count > 0)
@@ -280,6 +297,24 @@ namespace PrimeApps.App.Helpers
 
                         moduleEntity.Fields.Add(fieldEntity);
                         moduleChanges.FieldsAdded.Add(fieldEntity);
+
+                        if (fieldModel.Encrypted)
+                        {
+                            var encryptedField = new FieldBindingModel
+                            {
+                                Name = fieldModel.Name + "__encrypted",
+                                LabelEn = fieldModel.Name + "__encrypted",
+                                LabelTr = fieldModel.Name + "__encrypted",
+                                DataType = DataType.TextSingle,
+                                DisplayDetail = false,
+                                DisplayForm = false,
+                                DisplayList = false
+                            };
+
+                            var encryptedFieldEntity = NewFieldEntity(encryptedField);
+                            moduleEntity.Fields.Add(encryptedFieldEntity);
+                            moduleChanges.FieldsAdded.Add(encryptedFieldEntity);
+                        }
                     }
                 }
 
@@ -309,6 +344,8 @@ namespace PrimeApps.App.Helpers
                     fieldEntity.InlineEdit = fieldModel.InlineEdit;
                     fieldEntity.ShowLabel = fieldModel.ShowLabel;
                     fieldEntity.Editable = fieldModel.Editable;
+                    fieldEntity.Encrypted = fieldModel.Encrypted;
+                    fieldEntity.EncryptionAuthorizedUsers = fieldModel.EncryptionAuthorizedUsers;
                     fieldEntity.AddressType = fieldModel.AddressType;
                     fieldEntity.MultilineType = fieldModel.MultilineType;
                     fieldEntity.MultilineTypeUseHtml = fieldModel.MultilineTypeUseHtml;
@@ -678,6 +715,8 @@ namespace PrimeApps.App.Helpers
                 DefaultValue = fieldModel.DefaultValue,
                 InlineEdit = fieldModel.InlineEdit,
                 Editable = fieldModel.Editable,
+                Encrypted = fieldModel.Encrypted,
+                EncryptionAuthorizedUsers = fieldModel.EncryptionAuthorizedUsers,
                 ShowLabel = fieldModel.ShowLabel,
                 AddressType = fieldModel.AddressType,
                 MultilineType = fieldModel.MultilineType,

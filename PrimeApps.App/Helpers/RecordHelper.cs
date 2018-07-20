@@ -20,6 +20,8 @@ using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using Microsoft.Extensions.Configuration;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PrimeApps.App.Helpers
 {
@@ -107,7 +109,8 @@ namespace PrimeApps.App.Helpers
                     //TODO: Validate metadata
                     //TODO: Profile permission check
                     var picklistItemIds = new List<int>();
-
+                    JObject recordNew = new JObject();
+                    
                     // Check all fields is valid and prepare for related data types
                     foreach (var prop in record)
                     {
@@ -127,6 +130,13 @@ namespace PrimeApps.App.Helpers
 
                         if (prop.Value.IsNullOrEmpty())
                             continue;
+                        
+
+                        if (field.Encrypted)
+                        {
+                            recordNew[prop.Key] = null;
+                            recordNew[prop.Key + "__encrypted"] = EncryptionHelper.Encrypt((string)prop.Value, field.Id, appUser, _configuration);
+                        }
 
                         if (field.DataType == DataType.Picklist && convertPicklists)
                         {
@@ -195,6 +205,14 @@ namespace PrimeApps.App.Helpers
                             }
 
                             picklistItemIds.AddRange(multiselectPicklistItemIds);
+                        }
+                    }
+
+                    if (!recordNew.IsNullOrEmpty())
+                    {
+                        foreach (var prop in recordNew)
+                        {
+                            record[prop.Key] = recordNew[prop.Key];
                         }
                     }
 

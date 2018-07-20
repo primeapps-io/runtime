@@ -42,6 +42,17 @@ angular.module('primeapps')
                 $window.scrollTo(0, 0);
 
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
+
+            //allow encrypted fields
+            if (!$scope.id) {
+                for (var f = 0; f < $scope.module.fields.length; f++) {
+                    var field = $scope.module.fields[f];
+                    if (field.show_lock) {
+                        field.show_lock = false;
+                    }
+                }
+            }
+
             $rootScope.activeModuleName = $scope.parentType;
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -427,6 +438,24 @@ angular.module('primeapps')
 
                             setFieldDependencies();
 
+                            //encrypted fields
+                            for (var f = 0; f < $scope.module.fields.length; f++) {
+                                var field = $scope.module.fields[f];
+                                var showEncryptedInput = false;
+                                if (field.encrypted && field.encryption_authorized_users_list.length > 0 && record[field.name]) {
+                                    for (var p = 0; p < field.encryption_authorized_users_list.length; p++) {
+                                        var encryrptionPermission = field.encryption_authorized_users_list[p];
+                                        if ($rootScope.user.id == parseInt(encryrptionPermission))
+                                            showEncryptedInput = true;
+                                    }
+                                }
+
+                                if (field.encrypted && !showEncryptedInput)
+                                    field.show_lock = true;
+                                else
+                                    field.show_lock = false;
+                            }
+
                             if ($scope.relatedToField && record['related_to']) {
                                 var lookupModule = $filter('filter')($rootScope.modules, { id: record[$scope.relatedToField.lookup_relation].id - 900000 }, true)[0];
                                 var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
@@ -755,6 +784,22 @@ angular.module('primeapps')
                         });
                 }
                 else {
+                    //encrypted field
+                    for (var f = 0; f < $scope.module.fields.length; f++) {
+                        var field = $scope.module.fields[f];
+                        var showEncryptedInput = false;
+                        if (field.encrypted && field.encryption_authorized_users_list.length > 0 && record[field.name]) {
+                            for (var p = 0; p < field.encryption_authorized_users_list.length; p++) {
+                                var encryrptionPermission = field.encryption_authorized_users_list[p];
+                                if ($rootScope.user.id == parseInt(encryrptionPermission))
+                                    showEncryptedInput = true;
+                            }
+                        }
+
+                        if (field.encrypted && !showEncryptedInput)
+                            delete record[field.name];
+                    }
+
                     if ($scope.clone) {
                         if ($scope.revise) {
                             record.master_id = record.id;

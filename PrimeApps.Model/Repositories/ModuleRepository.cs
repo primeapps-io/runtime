@@ -64,6 +64,7 @@ namespace PrimeApps.Model.Repositories
         {
             var module = await DbContext.Modules
                 .Include(x => x.Fields)
+                    .ThenInclude(field => field.Permissions)
                 .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
 
             return module;

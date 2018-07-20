@@ -5,12 +5,18 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Linq;
 
 namespace PrimeApps.Model.Entities.Application
 {
     [Table("fields")]
     public class Field : BaseEntity
     {
+        public Field()
+        {
+            _encryptionAuthorizedUsersList = new List<string>();
+        }
+
         [JsonIgnore]
         [Column("module_id"), ForeignKey("Module"), /*Index("fields_IX_module_id_name", 1, IsUnique = true)*/]
         public int ModuleId { get; set; }
@@ -44,6 +50,9 @@ namespace PrimeApps.Model.Entities.Application
 
         [Column("editable")]
         public bool Editable { get; set; }
+
+        [Column("encrypted")]
+        public bool Encrypted { get; set; }
 
         [Column("show_label")]
         public bool ShowLabel { get; set; }
@@ -144,6 +153,19 @@ namespace PrimeApps.Model.Entities.Application
         [Column("show_as_dropdown")]
         public bool ShowAsDropdown { get; set; }
 
+        [Column("encryption_authorized_users")]
+        public string EncryptionAuthorizedUsers
+        {
+            get
+            {
+                return string.Join(",", _encryptionAuthorizedUsersList);
+            }
+            set
+            {
+                _encryptionAuthorizedUsersList = value?.Trim().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList() ?? new List<string>();
+            }
+        }
+
         public virtual FieldValidation Validation { get; set; }
 
         public virtual FieldCombination Combination { get; set; }
@@ -155,5 +177,21 @@ namespace PrimeApps.Model.Entities.Application
         public virtual Picklist Picklist { get; set; }
 
         public virtual ICollection<FieldPermission> Permissions { get; set; }
+
+        [NotMapped]
+        private List<string> _encryptionAuthorizedUsersList { get; set; }
+
+        [NotMapped]
+        public List<string> EncryptionAuthorizedUsersList
+        {
+            get
+            {
+                return _encryptionAuthorizedUsersList;
+            }
+            set
+            {
+                _encryptionAuthorizedUsersList = value;
+            }
+        }
     }
 }

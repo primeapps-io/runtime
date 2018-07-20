@@ -230,7 +230,12 @@ relatedModule['label_'
                                             <td ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label, 'link-container': (((field.data_type === 'lookup' && field.lookup_type != 'users') || field.data_type === 'email' || field.data_type === 'url' || (field.data_type === 'text_single' && (field.name ==='phone' || field.name ==='mobile'))) && record[field.name])}"
                                                 ng-if="hasPermission(type, operations.modify) && !field.validation.readonly && field.inline_edit && !record.freeze && field.editable && hasFieldFullPermission(field) && hasRecordEditPermission(record)"
                                                 ng-init="editLookup[field.name] = false">
-                                                <div ng-if="field.data_type === 'text_single'" class="clearfix">
+
+                                                <div ng-if="field.show_lock" class="clearfix">
+                                                    <i style="margin-left:20px" class="fa fa-lock fa-2x"></i>
+                                                </div>
+
+                                                <div ng-if="field.data_type === 'text_single' && !field.show_lock" class="clearfix">
                                                     <a href
                                                        editable-text="record[field.name]"
                                                        e-ng-change="record[field.name] = $data; fieldValueChange(field);"
@@ -244,10 +249,10 @@ relatedModule['label_'
                                                     </a>
                                                 </div>
                                                 <a href ng-click="showHideSipPhone(record[field.name])" class="link"
-                                                   ng-if="(field.name ==='phone' || field.name ==='mobile') && field.data_type === 'text_single' && sipUser.userAgent.isRegistered() && sipUser.lineInfo.State == 'Ready' && record[field.name]">
+                                                   ng-if="(field.name ==='phone' || field.name ==='mobile') && field.data_type === 'text_single' && !field.show_lock && sipUser.userAgent.isRegistered() && sipUser.lineInfo.State == 'Ready' && record[field.name]">
                                                     <i class="fa fa-phone"></i>
                                                 </a>
-                                                <div ng-if="field.data_type === 'email'" class="clearfix">
+                                                <div ng-if="field.data_type === 'email' && !field.show_lock" class="clearfix">
                                                     <a href
                                                        editable-text="record[field.name]"
                                                        e-ng-change="record[field.name] = $data; fieldValueChange(field);"
@@ -259,7 +264,7 @@ relatedModule['label_'
                                                         {{record[field.name] ? record[field.name] : 'Common.Empty' | translate}}<span><i class="fa fa-pencil"></i></span>
                                                     </a>
                                                 </div>
-                                                <a href ng-click="showEMailModal(false,record[field.name])" class="link" ng-if="field.data_type === 'email' && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-envelope-o"></i></a>
+                                                <a href ng-click="showEMailModal(false,record[field.name])" class="link" ng-if="field.data_type === 'email' && !field.show_lock && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-envelope-o"></i></a>
                                                 <a href
                                                    editable-textarea="record[field.name]"
                                                    e-ng-change="record[field.name] = $data; fieldValueChange(field);"
@@ -285,7 +290,7 @@ relatedModule['label_'
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
                                                    onbeforesave="validate($data, field.data_type, field.validation)"
                                                    onaftersave="update()"
-                                                   ng-if="field.data_type === 'number'">
+                                                   ng-if="field.data_type === 'number' && !field.show_lock">
                                                     {{record[field.name] != undefined ? record[field.name].toString() : 'Common.Empty' | translate}} <span><i class="fa fa-pencil"></i></span>
                                                 </a>
                                                 <a href
@@ -299,7 +304,7 @@ relatedModule['label_'
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
                                                    onbeforesave="validate($data, field.data_type, field.validation)"
                                                    onaftersave="update()"
-                                                   ng-if="field.data_type === 'number_decimal'">
+                                                   ng-if="field.data_type === 'number_decimal' && !field.show_lock">
                                                     {{record[field.name] != undefined ? (record[field.name] | number:(field.decimal_places || 2)) : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
                                                 </a>
                                                 <a href
@@ -315,7 +320,7 @@ relatedModule['label_'
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
                                                    onbeforesave="validate($data, field.data_type, field.validation)"
                                                    onaftersave="update()"
-                                                   ng-if="field.data_type === 'currency'">
+                                                   ng-if="field.data_type === 'currency' && !field.show_lock">
                                                     {{record[field.name] != undefined ? (record[field.name] | currency:(field.currency_symbol || currencySymbol):(field.decimal_places || 2)) : ('Common.Empty' | translate)}} <span><i class="fa fa-pencil"></i></span>
                                                 </a>
                                                 <a href
@@ -531,7 +536,7 @@ relatedModule['label_'
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
                                                    onbeforesave="validate($data, field.data_type, field.validation)"
                                                    onaftersave="update()"
-                                                   ng-if="field.data_type === 'url'">
+                                                   ng-if="field.data_type === 'url' && !field.show_lock">
                                                     {{record[field.name] ? record[field.name] : 'Common.Empty' | translate}}<span><i class="fa fa-pencil"></i></span>
                                                 </a>
                                                 <a href="{{record[field.name]}}" target="_blank" class="link" ng-if="field.data_type === 'url' && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-chain"></i></a>

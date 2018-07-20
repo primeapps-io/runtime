@@ -565,6 +565,25 @@ angular.module('primeapps')
                             field.inline_edit = false;
                         }
 
+                        if (field.encrypted && field.encryption_authorized_users && field.encryption_authorized_users.length > 0) {
+                            var encryptionAuthorizedUsers = null;
+                            for (var j = 0; j < field.encryption_authorized_users.length; j++) {
+                                var user = field.encryption_authorized_users[j];
+                                if (encryptionAuthorizedUsers === null)
+                                    encryptionAuthorizedUsers = user.id;
+                                else
+                                    encryptionAuthorizedUsers += ',' + user.id;
+                            }
+                            field.encryption_authorized_users = encryptionAuthorizedUsers;
+                        }
+
+                        if (!field.encrypted || (field.encrypted && field.encryption_authorized_users.length < 1)) {
+                            field.encryption_authorized_users = null;
+                            field.encryption_authorized_users_list = null;
+                        }
+
+                        delete field.show_lock;
+
                         //permissions
                         var fieldPermissions = angular.copy(field.permissions);
                         var permissions = [];

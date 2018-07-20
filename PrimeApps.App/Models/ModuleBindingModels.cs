@@ -133,6 +133,10 @@ namespace PrimeApps.App.Models
 
         public bool Editable { get; set; }
 
+        public bool Encrypted { get; set; }
+
+        public string EncryptionAuthorizedUsers { get; set; }
+
         public MultilineType MultilineType { get; set; }
 
         public bool MultilineTypeUseHtml { get; set; }

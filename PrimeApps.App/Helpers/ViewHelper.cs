@@ -144,7 +144,9 @@ namespace PrimeApps.App.Helpers
 
             var i = 2;
 
-            foreach (var field in module.Fields)
+            var fields = module.Fields.Where(x => x.DisplayList);
+
+            foreach (var field in fields)
             {
                 if (i > 3 || field.Name == primaryField.Name || field.Name == "created_at" || field.Name == "owner")
                     continue;

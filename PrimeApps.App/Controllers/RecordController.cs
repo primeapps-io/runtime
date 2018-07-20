@@ -117,6 +117,27 @@ namespace PrimeApps.App.Controllers
                     if (normalize.HasValue && normalize.Value)
                         record = Model.Helpers.RecordHelper.NormalizeRecordValues(record);
                 }
+
+                //if field encrypted, controls permission and decrypts
+                foreach (var field in moduleEntity.Fields)
+                {
+                    if (field.Encrypted && !record[field.Name+"__encrypted"].IsNullOrEmpty())
+                    {
+                        bool hasEncryptPermission = false;
+                        if(field.EncryptionAuthorizedUsersList.Count > 0)
+                        {
+                            foreach (var user in field.EncryptionAuthorizedUsersList)
+                            {
+                                if (user == AppUser.Id.ToString())
+                                    hasEncryptPermission = true;
+                            }
+                        }
+
+                        if (hasEncryptPermission)
+                            record[field.Name] = EncryptionHelper.Decrypt((string)record[field.Name+"__encrypted"], field.Id, AppUser, _configuration);
+                        else record[field.Name] = "***************";
+                    }
+                }
             }
             catch (PostgresException ex)
             {
@@ -258,7 +279,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, appUser: AppUser);
 
             if (resultBefore < 0 && !ModelState.IsValid)
                 return BadRequest(ModelState);

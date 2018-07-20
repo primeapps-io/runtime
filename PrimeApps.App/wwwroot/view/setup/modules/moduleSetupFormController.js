@@ -409,6 +409,17 @@ angular.module('primeapps')
                         else
                             field.default_value = false;
                     }
+
+                    if (field.encrypted && field.encryption_authorized_users_list.length > 0) {
+                        var userList = [];
+                        for (var k = 0; k < field.encryption_authorized_users_list.length; k++) {
+                            var user = $filter('filter')($rootScope.users, { id: parseInt(field.encryption_authorized_users_list[k]) }, true)[0];
+                            userList.push(user);
+                        }
+                        console.log(userList)
+                        field.encryption_authorized_users = userList;
+                        console.log(field)
+                    }
                 }
 
                 $scope.currentField = field;
@@ -429,6 +440,17 @@ angular.module('primeapps')
                 });
             };
 
+            $scope.multiselectEncryptionUsers = function () {
+                return $filter('filter')($rootScope.users, function (value, index, array) {
+                    return (value.order !== 0);
+                }, true);
+            };
+
+            $scope.encryptedFieldChange = function () {
+                console.log($scope)
+                if ($scope.currentField.encrypted)
+                    $scope.currentField.display_list = false;
+            }
 
             $scope.changeShowLabel = function () {
                 if (!$scope.currentField.show_label) {

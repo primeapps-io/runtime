@@ -90,6 +90,10 @@
                                         <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-9': section.column_count === 1 && field.position !='left', 'checkbox': field.data_type === 'checkbox','col-sm-12':field.position==='left'}"
                                              style="{{field.style_input}}">
 
+                                            <div ng-if="field.show_lock" class="clearfix">
+                                                <i style="margin-left:20px" class="fa fa-lock fa-2x"></i>
+                                            </div>
+
                                             <input type="text"
                                                    name="{{field.name}}"
                                                    class="form-control ng-animate-disabled"
@@ -106,13 +110,12 @@
                                                    ui-mask="{{field.mask}}"
                                                    ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && (!field.editable ? field.show_label : true)" />
 
-                                            <pre
-                                                    name="{{field.name}}"
-                                                    class="form-control ng-animate-disabled"
-                                                    style="{{'padding-top: 5px; padding-left: 1px; border: 0px;height: 100% ' + field.style.input}}"
-                                                    tabindex="{{field.order}}"
-                                                    ng-bind-html="field.placeholder"
-                                                    ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label"></pre>
+                                            <pre name="{{field.name}}"
+                                                 class="form-control ng-animate-disabled"
+                                                 style="{{'padding-top: 5px; padding-left: 1px; border: 0px;height: 100% ' + field.style.input}}"
+                                                 tabindex="{{field.order}}"
+                                                 ng-bind-html="field.placeholder"
+                                                 ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label  && !field.show_lock"></pre>
 
                                             <textarea name="{{field.name}}"
                                                       class="form-control ng-animate-disabled"
@@ -159,7 +162,7 @@
                                                    min-value="field.validation.min || 0"
                                                    max-value="field.validation.max || Number.MAX_VALUE"
                                                    numeric
-                                                   ng-if="field.data_type === 'number'" />
+                                                   ng-if="field.data_type === 'number' && !field.show_lock" />
 
                                             <input type="text"
                                                    name="{{field.name}}"
@@ -177,7 +180,7 @@
                                                    places="field.decimal_places || 2"
                                                    rounding="field.rounding"
                                                    number-decimal
-                                                   ng-if="field.data_type === 'number_decimal'" />
+                                                   ng-if="field.data_type === 'number_decimal' && !field.show_lock" />
 
                                             <input type="text"
                                                    name="{{field.name}}"
@@ -196,7 +199,7 @@
                                                    rounding="field.rounding"
                                                    currency-symbol="field.currency_symbol || currencySymbol"
                                                    number-currency
-                                                   ng-if="field.data_type === 'currency'" />
+                                                   ng-if="field.data_type === 'currency' && !field.show_lock" />
 
                                             <input type="email"
                                                    name="{{field.name}}"
@@ -210,7 +213,7 @@
                                                    ng-readonly="field.validation.readonly || (id && !field.editable)"
                                                    ng-minlength="field.validation.min_length || 0"
                                                    maxlength="{{field.validation.max_length || 100}}"
-                                                   ng-if="field.data_type === 'email'" />
+                                                   ng-if="field.data_type === 'email' && !field.show_lock" />
 
                                             <input type="text"
                                                    name="{{field.name}}"
@@ -274,8 +277,7 @@
                                                         ng-change="fieldValueChange(customLeaveFields[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']);"
                                                         ng-required="{{true}}"
                                                         ng-options="o as o.label[language] for o in picklistsModule[customLeaveFields[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type'].picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
-                                                        ng-if="module.name == 'izinler' && izinTuruData && !izinTuruData['saatlik_kullanim_yapilir'] && !izinTuruData['sadece_tam_gun_olarak_kullanilir'] && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi')">
-                                                </select>
+                                                        ng-if="module.name == 'izinler' && izinTuruData && !izinTuruData['saatlik_kullanim_yapilir'] && !izinTuruData['sadece_tam_gun_olarak_kullanilir'] && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi')"></select>
                                             </div>
 
                                             <input type="text"
@@ -297,13 +299,12 @@
                                                    placeholder="{{'Common.Time' | translate}}"
                                                    bs-timepicker
                                                    ng-if="field.data_type === 'time'">
-                                            <div
-                                                    style="text-align: justify; text-justify: inter-word; margin-bottom: 6px;"
-                                                    class="ng-animate-disabled"
-                                                    tabindex="{{cell.field.order}}"
-                                                    ng-model="field.custom_label"
-                                                    ng-class="{'required-field':field.validation.required, 'col-sm-12':field.position==='left'} "
-                                                    ng-if="(field.data_type === 'picklist' ||field.data_type === 'rating') && field.custom_label">
+                                            <div style="text-align: justify; text-justify: inter-word; margin-bottom: 6px;"
+                                                 class="ng-animate-disabled"
+                                                 tabindex="{{cell.field.order}}"
+                                                 ng-model="field.custom_label"
+                                                 ng-class="{'required-field':field.validation.required, 'col-sm-12':field.position==='left'} "
+                                                 ng-if="(field.data_type === 'picklist' ||field.data_type === 'rating') && field.custom_label">
                                                 {{field.custom_label}}
                                             </div>
 
@@ -331,19 +332,19 @@
                                             <div ng-repeat="radio in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'}"
                                                  ng-if="field.data_type === 'picklist' &&  field.view_type ==='radio'"
                                                  ng-class="{'col-sm-12':field.position==='left'}">
-                                                <input
-                                                        id="{{field.name+radio.id}}"
-                                                        tabindex="{{field.order}}"
-                                                        ng-disabled="field.validation.readonly || (id && !field.editable)"
-                                                        ng-required="{{field.validation.required}}"
-                                                        name="{{field.name}}"
-                                                        type="radio"
-                                                        ng-model="record[field.name]"
-                                                        ng-change="fieldValueChange(field);"
-                                                        ng-value="radio">
+                                                <input id="{{field.name+radio.id}}"
+                                                       tabindex="{{field.order}}"
+                                                       ng-disabled="field.validation.readonly || (id && !field.editable)"
+                                                       ng-required="{{field.validation.required}}"
+                                                       name="{{field.name}}"
+                                                       type="radio"
+                                                       ng-model="record[field.name]"
+                                                       ng-change="fieldValueChange(field);"
+                                                       ng-value="radio">
                                                 <label for="{{field.name+radio.id}}"
                                                        style="font-size: 16px;font-weight: 300 !important;">
-                                                    {{radio.label[language]}}</label>
+                                                    {{radio.label[language]}}
+                                                </label>
                                             </div>
 
                                             <input type="checkbox"
@@ -369,7 +370,7 @@
                                                    tabindex="{{field.order}}"
                                                    ng-value="record[field.combination.field_1] && record[field.combination.field_2] ? record[field.combination.field_1] + ' ' + record[field.combination.field_2] : null"
                                                    ng-readonly="true"
-                                                   ng-if="field.data_type === 'text_single' && field.combination" />
+                                                   ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock" />
 
                                             <tags-input name="{{field.name}}"
                                                         tabindex="{{field.order}}"
@@ -403,40 +404,39 @@
                                             </tags-input>
                                             <span class="file-input btn btn-primary btn-sm btn-file" ng-if="field.data_type === 'document'">
                                                 {{'Documents.ChooseFiles' | translate}}
-                                                <input
-                                                        id="fileDocument_{{field.name}}"
-                                                        type="file"
-                                                        name="{{field.name}}"
-                                                        class="fileInput"
-                                                        tabindex="{{field.order}}"
-                                                        nv-file-select uploader="uploaderBasic(field)"
-                                                        ng-model='record[field.name]'
-                                                        ng-required="{{field.validation.required}}"
-                                                        ng-if="field.data_type === 'document'" />
-
-                                            </span>
-                                            <label for="fileDocument_{{field.name}}" ng-if="field.data_type === 'document'" ng-value='record[field.name]' id="lbl_fileDocument_{{field.name}}">{{record[field.name]}}</label>
-                                            <span ng-show="record[field.name]" ng-if="field.data_type === 'document'">
-                                                    <a href ng-if="field.data_type === 'document'" ng-click="removeDocument(field)">
-                                                        <i class="fa fa-minus-circle"></i>
-                                                    </a>
-                                             </span>
-
-                                            <div ng-if="field.data_type === 'image'" class="image-type">
-                                                <span class="file-input btn btn-primary btn-sm btn-file"
-                                                      ng-disabled="fileLoadingCounter>0">
-                                                 {{'Documents.ChooseFiles' | translate}}
-                                                <input id="fileImage_{{field.name}}"
+                                                <input id="fileDocument_{{field.name}}"
                                                        type="file"
                                                        name="{{field.name}}"
                                                        class="fileInput"
                                                        tabindex="{{field.order}}"
-                                                       nv-file-select uploader="uploaderImage(field)"
+                                                       nv-file-select uploader="uploaderBasic(field)"
                                                        ng-model='record[field.name]'
                                                        ng-required="{{field.validation.required}}"
-                                                       ng-if="field.data_type === 'image'" />
+                                                       ng-if="field.data_type === 'document'" />
 
-                                                 </span>
+                                            </span>
+                                            <label for="fileDocument_{{field.name}}" ng-if="field.data_type === 'document'" ng-value='record[field.name]' id="lbl_fileDocument_{{field.name}}">{{record[field.name]}}</label>
+                                            <span ng-show="record[field.name]" ng-if="field.data_type === 'document'">
+                                                <a href ng-if="field.data_type === 'document'" ng-click="removeDocument(field)">
+                                                    <i class="fa fa-minus-circle"></i>
+                                                </a>
+                                            </span>
+
+                                            <div ng-if="field.data_type === 'image'" class="image-type">
+                                                <span class="file-input btn btn-primary btn-sm btn-file"
+                                                      ng-disabled="fileLoadingCounter>0">
+                                                    {{'Documents.ChooseFiles' | translate}}
+                                                    <input id="fileImage_{{field.name}}"
+                                                           type="file"
+                                                           name="{{field.name}}"
+                                                           class="fileInput"
+                                                           tabindex="{{field.order}}"
+                                                           nv-file-select uploader="uploaderImage(field)"
+                                                           ng-model='record[field.name]'
+                                                           ng-required="{{field.validation.required}}"
+                                                           ng-if="field.data_type === 'image'" />
+
+                                                </span>
                                                 <label for="fileImage_{{field.name}}"
                                                        ng-if="field.data_type === 'image'"
                                                        ng-value='record[field.name]'
@@ -452,17 +452,16 @@
                                                 </span>
                                             </div>
 
-                                            <input-stars
-                                                    style="margin-left: 11px;"
-                                                    ng-if="field.data_type === 'rating'"
-                                                    max="{{field.validation.min_length}}"
-                                                    allow-half
-                                                    icon-base="fa fa-fw"
-                                                    icon-empty="fa-star-o"
-                                                    icon-half="fa-star-half-o"
-                                                    icon-full="fa-star"
-                                                    icon-hover-full="fa-star"
-                                                    ng-model="record[field.name]">
+                                            <input-stars style="margin-left: 11px;"
+                                                         ng-if="field.data_type === 'rating'"
+                                                         max="{{field.validation.min_length}}"
+                                                         allow-half
+                                                         icon-base="fa fa-fw"
+                                                         icon-empty="fa-star-o"
+                                                         icon-half="fa-star-half-o"
+                                                         icon-full="fa-star"
+                                                         icon-hover-full="fa-star"
+                                                         ng-model="record[field.name]">
                                             </input-stars>
 
                                             <input type="text"
@@ -477,7 +476,7 @@
                                                    ng-minlength="field.validation.min_length || 0"
                                                    maxlength="{{field.validation.max_length || 400}}"
                                                    pattern="{{field.validation.pattern}}"
-                                                   ng-if="field.data_type === 'url' " />
+                                                   ng-if="field.data_type === 'url'  && !field.show_lock" />
 
                                             <ui-select name="{{field.name}}" ng-change="fieldValueChange(field);" ng-required="{{field.validation.required}}" ng-disabled="field.validation.readonly || (id && !field.editable)" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
                                                 <ui-select-match placeholder="{{('Common.Select' | translate)}}">{{$select.selected.primary_value}}</ui-select-match>
