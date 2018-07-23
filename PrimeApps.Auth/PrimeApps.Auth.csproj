@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-PrimeApps.Auth-04C6939F-E672-4E56-B4A5-5F064EB67F23</UserSecretsId>
     <Version>1.1.0</Version>
-    <DockerTargetOS>Windows</DockerTargetOS>
+    <DockerTargetOS>Linux</DockerTargetOS>
   </PropertyGroup>
   
   <ItemGroup>
