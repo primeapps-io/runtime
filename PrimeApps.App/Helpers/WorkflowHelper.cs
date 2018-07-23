@@ -796,7 +796,7 @@ namespace PrimeApps.App.Helpers
                                 domain = string.Format(domain, subdomain);
 
                                 //domain = "http://localhost:5554/";
-                                
+
                                 using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
                                 {
                                     var app = await _appRepository.Get(appUser.AppId);
@@ -813,7 +813,7 @@ namespace PrimeApps.App.Helpers
                                 emailData.Add("Content", sendNotification.Message);
                                 emailData.Add("Url", url);
 
-                                
+
                                 var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                                 email.AddRecipient(recipient);
 
@@ -1105,8 +1105,23 @@ namespace PrimeApps.App.Helpers
                         workflow.SendNotification.Subject = workflowModel.Actions.SendNotification.Subject;
                         workflow.SendNotification.Message = workflowModel.Actions.SendNotification.Message;
                         workflow.SendNotification.RecipientsArray = workflowModel.Actions.SendNotification.Recipients;
-                        workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
-                        workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
+                        if (workflowModel.Actions.SendNotification.CC.Length > 0)
+                            workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
+                        else
+                        {
+                            string[] emptyCC = new string[] { "" };
+                            workflow.SendNotification.CCArray = emptyCC;
+                        }
+                        if (workflowModel.Actions.SendNotification.Bcc.Length > 0)
+                            workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
+                        else
+                        {
+                            string[] emptyBcc = new string[] { "" };
+                            workflow.SendNotification.BccArray = emptyBcc;
+                        }
+                        //Bcc ve Cc silinip güncellendiğinde boş setlemiyordu.
+                        //workflow.SendNotification.BccArray = workflowModel.Actions.SendNotification.Bcc;
+                        //workflow.SendNotification.CCArray = workflowModel.Actions.SendNotification.CC;
                         workflow.SendNotification.Schedule = workflowModel.Actions.SendNotification.Schedule;
                     }
                     else

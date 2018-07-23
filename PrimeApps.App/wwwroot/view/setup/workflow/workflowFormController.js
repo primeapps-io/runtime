@@ -760,6 +760,9 @@ angular.module('primeapps')
             };
 
             $scope.SendNotificationCCModuleChanged = function () {
+                if ($scope.workflowModel.send_notification.cc.length == 0)
+                    $scope.workflowModel.send_notification.cc = null;
+
                 if ($scope.workflowModel.send_notification_ccmodule && $scope.workflowModel.send_notification) {
                     if ($scope.workflowModel.send_notification.cc)
                         $scope.workflowModel.send_notification.cc = null;
@@ -770,6 +773,9 @@ angular.module('primeapps')
             };
 
             $scope.SendNotificationBccModuleChanged = function () {
+                if ($scope.workflowModel.send_notification.bcc.length == 0)
+                    $scope.workflowModel.send_notification.bcc = null;
+
                 if ($scope.workflowModel.send_notification_bccmodule && $scope.workflowModel.send_notification) {
                     if ($scope.workflowModel.send_notification.bcc)
                         $scope.workflowModel.send_notification.bcc = null;
