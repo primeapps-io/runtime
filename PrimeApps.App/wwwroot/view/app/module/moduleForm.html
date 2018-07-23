@@ -91,7 +91,7 @@
                                              style="{{field.style_input}}">
 
                                             <div ng-if="field.show_lock" class="clearfix">
-                                                <i style="margin-left:20px" class="fa fa-lock fa-2x"></i>
+                                                <i style="margin-left: 5px; margin-top: 10px;" class="fa fa-lock fa-lg"></i>
                                             </div>
 
                                             <input type="text"
@@ -108,7 +108,7 @@
                                                    maxlength="{{field.validation.max_length || 50}}"
                                                    pattern="{{field.validation.pattern}}"
                                                    ui-mask="{{field.mask}}"
-                                                   ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && (!field.editable ? field.show_label : true)" />
+                                                   ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && (!field.editable ? field.show_label : true) && !field.show_lock" />
 
                                             <pre name="{{field.name}}"
                                                  class="form-control ng-animate-disabled"

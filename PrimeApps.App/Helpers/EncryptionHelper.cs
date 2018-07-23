@@ -28,6 +28,7 @@ namespace PrimeApps.App.Helpers
             //saves the key to elastic server
             var elasticConnectionSettings = new Nest.ConnectionSettings(new Uri(_configuration.GetConnectionString("ElasticConnection")));
             elasticConnectionSettings.DefaultIndex("encrypted_fields");
+            elasticConnectionSettings.BasicAuthentication("elastic", "uC4yW8JABl63IVBUOlXeQFoX");
             var elasticClient = new Nest.ElasticClient(elasticConnectionSettings);
             var keyObj = new EncryptedKey();
 
@@ -71,6 +72,7 @@ namespace PrimeApps.App.Helpers
         {
             var elasticConnectionSettings = new Nest.ConnectionSettings(new Uri(_configuration.GetConnectionString("ElasticConnection")));
             elasticConnectionSettings.DefaultIndex("encrypted_fields");
+            elasticConnectionSettings.BasicAuthentication("elastic", "uC4yW8JABl63IVBUOlXeQFoX");
             var elasticClient = new Nest.ElasticClient(elasticConnectionSettings);
 
             var response = elasticClient.Search<EncryptedKey>(s => s
