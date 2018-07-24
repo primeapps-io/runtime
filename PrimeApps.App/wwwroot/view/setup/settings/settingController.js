@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state',
-        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies, $state) {
+    .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state', 'officeHelper',
+        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies, $state, officeHelper) {
             $scope.userModel = {};
             $scope.userModel.first_name = $rootScope.user.first_name;
             $scope.userModel.last_name = $rootScope.user.last_name;
@@ -11,6 +11,14 @@ angular.module('primeapps')
             $scope.selectedLanguage = angular.copy($rootScope.language);
             $scope.selectedLocale = angular.copy($rootScope.locale);
             $scope.customLanguage = customLanguage;
+            $scope.changePassword = false;
+
+            officeHelper.officeTenantInfo()
+                .then(function (adInfo) {
+                    if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
+                        $scope.changePassword = true;
+                    }
+                });
 
             /// email configuration
             $scope.emailModel = angular.copy($rootScope.system.messaging.PersonalEMail);
@@ -28,9 +36,9 @@ angular.module('primeapps')
             }
 
             $scope.tableParams = new ngTableParams({
-                    page: 1,            // show first page
-                    count: 10           // count per page
-                },
+                page: 1,            // show first page
+                count: 10           // count per page
+            },
                 {
                     total: 0, // length of data
                     getData: function ($defer, params) {
@@ -174,12 +182,12 @@ angular.module('primeapps')
 
             $scope.showNewSenderForm = function () {
                 $scope.senderPopover = $scope.senderPopover || $popover(angular.element(document.getElementsByName('addSender')), {
-                        templateUrl: 'view/setup/messaging/senderAdd.html',
-                        placement: 'left',
-                        scope: $scope,
-                        autoClose: true,
-                        show: true
-                    });
+                    templateUrl: 'view/setup/messaging/senderAdd.html',
+                    placement: 'left',
+                    scope: $scope,
+                    autoClose: true,
+                    show: true
+                });
             };
 
             $scope.addNewSender = function (alias, email) {
