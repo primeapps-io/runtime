@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="subpanel">
+        <div class="subpanel" ng-show="!$scope.changePassword">
             <h5 class="subpanel-heading">{{'Setup.Settings.Title2' | translate}}</h5>
             <div class="subpanel-body">
                 <form name="passwordForm" ng-submit="changePassword(passwordModel)" class="form-horizontal" novalidate>
