@@ -580,6 +580,13 @@ relatedModule['label_'
                                                     <span ng-if="field.custom_label">{{field.custom_label}}</span>
                                                     <span ng-if="!field.custom_label">{{ field.valueFormatted }}</span>
                                                 </span>
+                                                <span ng-switch-when="document">
+                                                    <a target="_blank" href
+                                                       ng-click="documentDownload(record[field.name],field.name)"
+                                                       ng-if="field.data_type ==='document'">
+                                                        {{record[field.name]}}
+                                                    </a>
+                                                </span>
                                                 <span ng-switch-default ng-if="module.name !== 'izinler' || (module.name === 'izinler' && field.name !== 'baslangic_tarihi' && field.name !== 'bitis_tarihi')">{{field.valueFormatted}}</span>
                                                 <span ng-switch-default ng-if="module.name === 'izinler' && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi') && record['izin_turu'].id !== 1">{{field.valueFormatted}}</span>
                                                 <span ng-switch-default ng-if="module.name === 'izinler' && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi') && record['izin_turu'].id === 1">{{field.valueFormatted.split(" ")[0] + " " + record[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']['label_'+ language]}}</span>
