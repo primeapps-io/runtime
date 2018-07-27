@@ -151,6 +151,7 @@ namespace PrimeApps.App.Controllers
             tenantUserToEdit.FirstName = user.firstName;
             tenantUserToEdit.LastName = user.lastName;
             tenantUserToEdit.FullName = user.firstName + " " + user.lastName;
+            tenantUserToEdit.Phone = user.phone;
 
             //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
@@ -459,6 +460,7 @@ namespace PrimeApps.App.Controllers
                     FirstName = addUserBindingModel.FirstName,
                     LastName = addUserBindingModel.LastName,
                     FullName = $"{addUserBindingModel.FirstName} {addUserBindingModel.LastName}",
+                    Phone = addUserBindingModel.Phone,
                     Picture = "",
                     IsActive = true,
                     IsSubscriber = false,
@@ -520,6 +522,7 @@ namespace PrimeApps.App.Controllers
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 FullName = user.FullName,
+                Phone    = user.Phone,
                 IsSubscriber = user.IsSubscriber,
                 IsActive = user.IsActive,
                 Deleted = user.Deleted,

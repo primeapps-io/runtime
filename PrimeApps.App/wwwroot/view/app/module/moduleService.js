@@ -177,12 +177,12 @@ angular.module('primeapps')
 
                 sendSMS: function (moduleId, ids, query, isAllSelected, message, phoneField) {
                     return $http.post(config.apiUrl + 'messaging/send_sms', {
-                        "ModuleId": moduleId,
+                        "module_id": moduleId,
                         "Ids": ids,
                         "Query": query,
                         "IsAllSelected": isAllSelected,
                         "Message": message,
-                        "PhoneField": phoneField
+                        "phone_field": phoneField
                     });
                 },
 

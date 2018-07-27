@@ -17,26 +17,28 @@ namespace PrimeApps.Model.Repositories
     {
         public NotificationRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public async Task<Notification> GetNotification(int notificationId)
+        public async Task<Notification> GetById(int id)
         {
-            var emailNotification = DbContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == NotificationType.Email && r.Id == notificationId && r.Deleted == false);
+            var notification = DbContext.Notifications
+                .Include(x => x.CreatedBy)
+                .FirstOrDefault(r => r.Id == id && r.Deleted == false);
 
-            return emailNotification;
+            return notification;
         }
 
-        public async Task<List<Setting>> GetSetting(MessageDTO emailQueueItem, int notificationId)
+        public async Task<List<Setting>> GetSetting(MessageDTO queueItem, int notificationId)
         {
-            var emailNotification = await GetNotification(notificationId);
-            var emailSet = DbContext.Settings
+            var notification = await GetById(notificationId);
+            var settings = DbContext.Settings
                 .Include(x => x.CreatedBy)
                 .Where(r => r.Type == SettingType.Email && r.Deleted == false);
 
-            if (emailQueueItem.AccessLevel == AccessLevelEnum.Personal)
-                emailSet = emailSet.Where(r => r.UserId == emailNotification.CreatedById);
+            if (queueItem.AccessLevel == AccessLevelEnum.Personal)
+                settings = settings.Where(r => r.UserId == notification.CreatedById);
             else
-                emailSet = emailSet.Where(r => !r.UserId.HasValue);
+                settings = settings.Where(r => !r.UserId.HasValue);
 
-            return emailSet.ToList();
+            return settings.ToList();
         }
     }
 }

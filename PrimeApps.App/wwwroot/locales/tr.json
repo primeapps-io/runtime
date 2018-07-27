@@ -637,6 +637,7 @@
       "Email": "E-posta Adresi",
       "FirstName": "Ad",
       "LastName": "Soyad",
+      "Phone":"Telefon",
       "DeleteUserSuccess": "Hesabınız başarıyla silinmiştir.",
       "ErrorEmpty": "Lütfen tüm alanları eksiksiz bir şekilde doldurunuz.",
       "ErrorEmail": "Lütfen girmiş olduğunuz e-posta adresini kontrol ediniz.",

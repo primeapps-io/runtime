@@ -13,6 +13,7 @@ using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -91,6 +92,7 @@ namespace PrimeApps.Model.Repositories
                                firstName = user.FirstName,
                                lastName = user.LastName,
                                fullName = user.FullName,
+                               phone = user.Phone,
                                ID = user.Id,
                                currency = user.Currency,
                                createdAt = user.CreatedAt,

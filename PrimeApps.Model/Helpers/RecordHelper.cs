@@ -78,7 +78,7 @@ namespace PrimeApps.Model.Helpers
 
 					foreach (var lookupField in lookupModuleFields)
 					{
-						if (lookupModule.Name == "users" && lookupField.Name != "id" && lookupField.Name != "email" && lookupField.Name != "full_name")
+						if (lookupModule.Name == "users" && lookupField.Name != "id" && lookupField.Name != "email" && lookupField.Name != "phone" && lookupField.Name != "full_name")
 							continue;
 
 						fieldsSql += $"\"{alias}\".\"{lookupField.Name}\" AS \"{field.Name}.{lookupField.Name}\", ";

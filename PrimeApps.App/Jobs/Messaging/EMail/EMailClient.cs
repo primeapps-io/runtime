@@ -82,7 +82,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
                         //  var emailNotification = databaseContext.Notifications.Include(x => x.CreatedBy).FirstOrDefault(r => r.NotificationType == Model.Enums.NotificationType.Email && r.Id == notificationId && r.Deleted == false);
 
-                        var emailNotification = await notifitionRepository.GetNotification(notificationId);
+                        var emailNotification = await notifitionRepository.GetById(notificationId);
 
                         /// this request has already been removed, do nothing and return success.
                         if (emailNotification == null) return true;

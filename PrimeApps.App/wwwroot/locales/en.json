@@ -637,6 +637,7 @@
       "Email": "E-mail",
       "FirstName": "First Name",
       "LastName": "Last Name",
+      "Phone":"Phone",
       "DeleteUserSuccess": "Your account is deleted.",
       "ErrorEmpty": "All fields are required.",
       "ErrorEmail": "Invalid e-mail address.",

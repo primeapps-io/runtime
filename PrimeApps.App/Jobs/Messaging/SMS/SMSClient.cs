@@ -19,6 +19,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Platform;
+using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Jobs.Messaging.SMS
 {
@@ -28,10 +30,13 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
     public class SMSClient : MessageClient
     {
         private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
+        private ITenantRepository _tenantRepository;
 
-        public SMSClient(IConfiguration configuration)
+        public SMSClient(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration, ITenantRepository tenantRepository)
         {
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         /// <summary>
@@ -62,101 +67,111 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 
             try
             {
-
-				using (var dbContext = new TenantDBContext(smsQueueItem.TenantId, _configuration))
+                using (var _scope = _serviceScopeFactory.CreateScope())
                 {
-                    /// get sms settings.
-                    var smsSettings = dbContext.Settings.Include(x => x.CreatedBy).Where(r => r.Type == Model.Enums.SettingType.SMS && r.Deleted == false).ToList();
-                    /// email settings are null just return and do nothing.
-                    if (smsSettings == null)
+                    var dbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                    dbContext.TenantId = smsQueueItem.TenantId;
+
+                    using (var settingReporsitory = new SettingRepository(dbContext, _configuration))
+                    using (var notifitionRepository = new NotificationRepository(dbContext, _configuration))
                     {
-                        bulkSMSStatus = NotificationStatus.InvalidProvider;
+                        settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                        /// get sms settings.
+                        var smsSettings = settingReporsitory.Get(SettingType.SMS);
+
+                        /// email settings are null just return and do nothing.
+                        if (smsSettings == null)
+                        {
+                            bulkSMSStatus = NotificationStatus.InvalidProvider;
+                        }
+
+                        var provider = smsSettings.FirstOrDefault(r => r.Key == "provider")?.Value;
+                        var userName = smsSettings.FirstOrDefault(r => r.Key == "user_name")?.Value;
+                        var password = smsSettings.FirstOrDefault(r => r.Key == "password")?.Value;
+                        var alias = smsSettings.FirstOrDefault(r => r.Key == "alias")?.Value;
+
+
+                        if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(alias))
+                        {
+                            bulkSMSStatus = NotificationStatus.InvalidProvider;
+                        }
+
+
+
+                        using (SMSProvider smsClient = SMSProvider.Initialize(provider, userName, password))
+                        {
+                            smsClient.Alias = alias;
+
+                            var notificationId = Convert.ToInt32(smsQueueItem.Id);
+                            /// get details of the sms queue item.
+                            var smsNotification = await notifitionRepository.GetById(notificationId);
+
+                            /// this request has already been removed, do nothing and return success.
+                            if (smsNotification == null) return true;
+
+                            //is selected all and its query..
+                            ids = null;
+                            if (smsNotification.Ids != "ALL") //If all will be queried at composeprepare method with filter query
+                            {
+                                ids = smsNotification.Ids.Split(new char[] { ',' }, options: StringSplitOptions.RemoveEmptyEntries);
+                            }
+                            else
+                            {
+                                isAllSelected = true;
+                            }
+
+                            query = smsNotification.Query;
+                            messageTemplate = smsNotification.Template;
+                            moduleId = smsNotification.ModuleId.ToString();
+                            language = smsNotification.Lang;
+                            smsId = smsNotification.Id.ToString();
+                            smsRev = smsNotification.Rev;
+                            owner = smsNotification.CreatedBy.Email;
+                            phoneField = smsNotification.PhoneField;
+                            Module module;
+
+                            /// revisions are different, that means this record has already been processed.
+                            if (smsQueueItem.Rev != smsRev) return true;
+
+                            ///get related module
+                            using (var moduleRepository = new ModuleRepository(dbContext, _configuration))
+                            {
+                                moduleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+
+                                module = await moduleRepository.GetById(smsNotification.ModuleId);
+                            }
+
+                            moduleName = smsNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
+
+                            if (module == null) return true;
+
+                            /// process and send messages only if the provider is valid.
+                            if (bulkSMSStatus == NotificationStatus.Successful)
+                            {
+                                /// compose bulk messages for sending.
+                                composerResult = await Compose(smsQueueItem, messageTemplate, module, phoneField, query, ids, isAllSelected, smsNotification.CreatedById, language, smsId, dbContext, smsClient);
+
+                                /// send composed messages through selected provider.
+                                smsResponse = await smsClient.Send(composerResult.Messages);
+
+                                /// set main status to the response status.
+                                bulkSMSStatus = smsResponse.Status;
+                            }
+
+
+                            smsNotification.Status = bulkSMSStatus;
+                            composerResult.ProviderResponse = smsResponse.Status.ToString();
+                            dbContext.Entry(smsNotification).State = EntityState.Modified;
+                            smsNotification.Result = JsonConvert.SerializeObject(composerResult);
+                            dbContext.SaveChanges();
+
+                            ///Cleanup
+                            composerResult.DetailedMessageStatusList.Clear();
+                            composerResult.Messages.Clear();
+
+                        }
+
                     }
-
-                    var provider = smsSettings.FirstOrDefault(r => r.Key == "provider")?.Value;
-                    var userName = smsSettings.FirstOrDefault(r => r.Key == "user_name")?.Value;
-                    var password = smsSettings.FirstOrDefault(r => r.Key == "password")?.Value;
-                    var alias = smsSettings.FirstOrDefault(r => r.Key == "alias")?.Value;
-
-
-                    if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(alias))
-                    {
-                        bulkSMSStatus = NotificationStatus.InvalidProvider;
-                    }
-
-
-
-                    using (SMSProvider smsClient = SMSProvider.Initialize(provider, userName, password))
-                    {
-                        smsClient.Alias = alias;
-
-                        var notificationId = Convert.ToInt32(smsQueueItem.Id);
-                        /// get details of the sms queue item.
-                        var smsNotification = dbContext.Notifications.Include(x => x.CreatedBy).Where(r => r.NotificationType == NotificationType.Sms && r.Id == notificationId && r.Deleted == false).FirstOrDefault();
-
-                        /// this request has already been removed, do nothing and return success.
-                        if (smsNotification == null) return true;
-
-                        //is selected all and its query..
-                        ids = null;
-                        if (smsNotification.Ids != "ALL") //If all will be queried at composeprepare method with filter query
-                        {
-                            ids = smsNotification.Ids.Split(new char[] { ',' }, options: StringSplitOptions.RemoveEmptyEntries);
-                        }
-                        else
-                        {
-                            isAllSelected = true;
-                        }
-
-                        query = smsNotification.Query;
-                        messageTemplate = smsNotification.Template;
-                        moduleId = smsNotification.ModuleId.ToString();
-                        language = smsNotification.Lang;
-                        smsId = smsNotification.Id.ToString();
-                        smsRev = smsNotification.Rev;
-                        owner = smsNotification.CreatedBy.Email;
-                        phoneField = smsNotification.PhoneField;
-                        Module module;
-
-                        /// revisions are different, that means this record has already been processed.
-                        if (smsQueueItem.Rev != smsRev) return true;
-
-                        ///get related module
-                        using (var moduleRepository = new ModuleRepository(dbContext, _configuration))
-                        {
-                            module = await moduleRepository.GetById(smsNotification.ModuleId);
-                        }
-
-                        moduleName = smsNotification.Lang == "en" ? module.LabelEnSingular : module.LabelTrSingular;
-
-                        if (module == null) return true;
-
-                        /// process and send messages only if the provider is valid.
-                        if (bulkSMSStatus == NotificationStatus.Successful)
-                        {
-                            /// compose bulk messages for sending.
-                            composerResult = await Compose(smsQueueItem, messageTemplate, module, phoneField, query, ids, isAllSelected, smsNotification.CreatedById, language, smsId, dbContext, smsClient);
-
-                            /// send composed messages through selected provider.
-                            smsResponse = await smsClient.Send(composerResult.Messages);
-
-                            /// set main status to the response status.
-                            bulkSMSStatus = smsResponse.Status;
-                        }
-
-
-                        smsNotification.Status = bulkSMSStatus;
-                        composerResult.ProviderResponse = smsResponse.Status.ToString();
-                        dbContext.Entry(smsNotification).State = EntityState.Modified;
-                        smsNotification.Result = JsonConvert.SerializeObject(composerResult);
-                        dbContext.SaveChanges();
-
-                        ///Cleanup
-                        composerResult.DetailedMessageStatusList.Clear();
-                        composerResult.Messages.Clear();
-
-                    }
-
                 }
             }
             catch (Exception ex)
@@ -185,25 +200,25 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 noAddress = 0,
                 notAllowed = 0;
 
-			Tenant subscriber = null;
-            using (PlatformDBContext platformDBContext = new PlatformDBContext(_configuration))
+            Tenant subscriber = null;
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                using (TenantRepository platformUserRepository = new TenantRepository(platformDBContext, _configuration))
+                var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+
+                using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration))
                 {
-
                     subscriber = await platformUserRepository.GetWithSettingsAsync(messageDto.TenantId);
-
                 }
             }
 
-			string culture = subscriber.Setting.Culture;
-			string lang = subscriber.Setting.Language;
+            string culture = subscriber.Setting.Culture;
+            string lang = subscriber.Setting.Language;
 
-			if (!subscriber.App.UseTenantSettings)
-			{
-				culture = subscriber.App.Setting.Culture;
-				lang = subscriber.App.Setting.Language;
-			}
+            if (!subscriber.App.UseTenantSettings)
+            {
+                culture = subscriber.App.Setting.Culture;
+                lang = subscriber.App.Setting.Language;
+            }
 
             /// get all required fields from template.
             MatchCollection matches = templatePattern.Matches(messageBody);
@@ -253,14 +268,16 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 
                 if (ids?.Length > 0)
                 {
-                    using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
+                    using (var _scope = _serviceScopeFactory.CreateScope())
                     {
+                        var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                         using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                         {
                             using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
                             {
                                 using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                                 {
+                                    moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId };
                                     foreach (string recordId in ids)
                                     {
                                         var status = MessageStatusEnum.Successful;
@@ -352,6 +369,97 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 Messages = messages,
                 DetailedMessageStatusList = messageStatusList
             };
+        }
+
+        public async Task<bool> SendSingleSms(string messageBody, string phone, string language, UserItem appUser)
+        {
+            /// create required parameters for composing.
+            Regex templatePattern = new Regex(@"{(.*?)}");
+            IList<string> messageFields = new List<string>();
+            JArray messageStatusList = new JArray();
+            Tenant subscriber = null;
+
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+
+                using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration))
+                {
+                    subscriber = await platformUserRepository.GetWithSettingsAsync(appUser.TenantId);
+                }
+            }
+
+            string culture = subscriber.Setting.Culture;
+            string lang = subscriber.Setting.Language;
+
+            if (!subscriber.App.UseTenantSettings)
+            {
+                culture = subscriber.App.Setting.Culture;
+                lang = subscriber.App.Setting.Language;
+            }
+
+            /*//TODO: Record alacak şekilde yazılmalı, böylece recorddaki dinamik değerler kullanılabilir.
+            MatchCollection matches = templatePattern.Matches(messageBody);
+
+            foreach (object match in matches)
+            {
+                string fieldName = match.ToString().Replace("{", "").Replace("}", "");
+
+                if (!messageFields.Contains(fieldName))
+                {
+                    messageFields.Add(fieldName);
+                }
+            }
+
+            string formattedMessage = FormatMessage(messageFields, messageBody, record);
+            */
+
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                var dbContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                dbContext.TenantId = appUser.TenantId;
+
+                using (var settingReporsitory = new SettingRepository(dbContext, _configuration))
+                using (var notifitionRepository = new NotificationRepository(dbContext, _configuration))
+                {
+                    settingReporsitory.CurrentUser = notifitionRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    /// get sms settings.
+                    var smsSettings = settingReporsitory.Get(SettingType.SMS);
+
+                    /// email settings are null just return and do nothing.
+                    if (smsSettings == null)
+                        return false;
+
+                    var provider = smsSettings.FirstOrDefault(r => r.Key == "provider")?.Value;
+                    var userName = smsSettings.FirstOrDefault(r => r.Key == "user_name")?.Value;
+                    var password = smsSettings.FirstOrDefault(r => r.Key == "password")?.Value;
+                    var alias = smsSettings.FirstOrDefault(r => r.Key == "alias")?.Value;
+
+
+                    if (string.IsNullOrWhiteSpace(provider) || string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(alias))
+                        return false;
+
+                    using (SMSProvider smsClient = SMSProvider.Initialize(provider, userName, password))
+                    {
+                        var phoneNumber = smsClient.ParsePhoneNumber(phone);
+
+                        if (string.IsNullOrWhiteSpace(phoneNumber))
+                            return false;
+
+                        // create a message object and add it to the list.
+                        Message smsMessage = new Message();
+                        smsMessage.Recipients.Add(phoneNumber);
+                        smsMessage.Body = messageBody;
+
+                        var smsResponse = await smsClient.Send(new List<Message> { smsMessage });
+
+                        if (smsResponse.Status != NotificationStatus.Successful)
+                            return false;
+                        else
+                            return true;
+                    }
+                }
+            }
         }
     }
 }

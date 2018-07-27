@@ -385,7 +385,8 @@ namespace PrimeApps.Model.Helpers
             userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "full_name", Primary = true });
             userModule.Fields.Add(new Field { DataType = DataType.Checkbox, Name = "is_active" });
             userModule.Fields.Add(new Field { DataType = DataType.Checkbox, Name = "is_subscriber" });
-
+            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "phone" });
+            
             return userModule;
         }
 
