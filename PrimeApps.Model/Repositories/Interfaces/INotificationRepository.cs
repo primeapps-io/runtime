@@ -8,8 +8,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface INotificationRepository  :IRepositoryBaseTenant
     {
-        Task<Notification> GetNotification(int notificationId);
+        Task<Notification> GetById(int id);
 
-        Task<List<Setting>> GetSetting(MessageDTO emailQueueItem, int notificationId);
+        Task<List<Setting>> GetSetting(MessageDTO queueItem, int notificationId);
     }
 }

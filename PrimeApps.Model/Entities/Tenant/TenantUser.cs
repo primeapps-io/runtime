@@ -67,11 +67,14 @@ namespace PrimeApps.Model.Entities.Application
         [Column("role_id"), ForeignKey("Role")]
         public int? RoleId { get; set; }
 
+       [Column("phone"), MaxLength(50)]
+        public string Phone { get; set; }
+
         public Role Role { get; set; }
 
         public virtual ICollection<UsersUserGroup> Groups { get; set; }
 
-		[JsonIgnore]
+        [JsonIgnore]
         public virtual ICollection<ViewShares> SharedViews { get; set; }
 
         [JsonIgnore]

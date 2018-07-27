@@ -103,7 +103,7 @@ namespace PrimeApps.App.Helpers
                     //TODO: Profile permission check
                     var picklistItemIds = new List<int>();
                     JObject recordNew = new JObject();
-                    
+
                     // Check all fields is valid and prepare for related data types
                     foreach (var prop in record)
                     {
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Helpers
 
                         if (prop.Value.IsNullOrEmpty())
                             continue;
-                        
+
 
                         if (field.Encrypted)
                         {

@@ -15,6 +15,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using PrimeApps.App.Jobs.Messaging.SMS;
+using PrimeApps.Model.Common.Messaging;
+using PrimeApps.Model.Enums;
+using PrimeApps.App.Jobs.Messaging;
+using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Notifications
 {
@@ -302,8 +307,17 @@ namespace PrimeApps.App.Notifications
                         email.AddRecipient((string)fullRecord["owner.email"]);
                         email.AddToQueue(appUser: appUser);
                     }
+
+                    // Send task notification_sms if it is true
+                    if (!fullRecord["task_notification_sms"].IsNullOrEmpty() && (bool)fullRecord["task_notification_sms"])
+                    {
+                        Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.SendSingleSms((string)fullRecord["subject"], (string)fullRecord["owner.phone"],appUser.TenantLanguage,appUser));
+                    }
                 }
             }
         }
     }
 }
+
+
+
