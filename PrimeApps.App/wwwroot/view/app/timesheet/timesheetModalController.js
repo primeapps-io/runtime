@@ -285,11 +285,10 @@ angular.module('primeapps')
                             var currentYear = moment($scope.$parent.calendarDay).year();
 
                             angular.forEach(response, function (eventItem) {
-                                if (eventItem.term == currentMonth)
+                                if (eventItem.term == currentMonth && eventItem.year == currentYear) {
                                     month = true;
-
-                                if (eventItem.year == currentYear)
                                     year = true;
+                                }
                             });
 
                             var daysWorkedExist = false;
