@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         JObject GetById(Module module, int recordId, bool roleBasedEnabled = true, ICollection<Module> lookupModules = null, bool deleted = false); JArray GetAllById(string moduleName, List<int> recordIds, bool roleBasedEnabled = true);
         JArray Find(string moduleName, FindRequest findRequest, bool roleBasedEnabled = true, int timezoneOffset = 180);
         Task<int> Create(JObject record, Module module);
-        Task<int> Update(JObject record, Module module, bool delete = false);
+        Task<int> Update(JObject record, Module module, bool delete = false, bool isUtc = true);
         Task<int> Delete(JObject record, Module module);
         Task<int> AddRelations(JArray records, string moduleName, string relatedModuleName, int relationId = 0, bool twoway = false);
         Task<int> DeleteRelation(JObject record, string moduleName, string relatedModuleName, int relationId = 0, bool twoway = false);

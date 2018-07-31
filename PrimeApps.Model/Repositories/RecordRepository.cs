@@ -161,8 +161,8 @@ namespace PrimeApps.Model.Repositories
             return result;
         }
 
-        public async Task<int> Update(JObject record, Module module, bool delete = false)
-        {
+		public async Task<int> Update(JObject record, Module module, bool delete = false, bool isUtc = true)
+		{
             int result;
 
             using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
@@ -172,9 +172,9 @@ namespace PrimeApps.Model.Repositories
                 var now = DateTime.UtcNow;
                 var recordId = (int)record["id"];
 
-                RecordHelper.AddCommandParameters(command, record, module);
+				RecordHelper.AddCommandParameters(command, record, module, isUtc);
 
-                foreach (NpgsqlParameter parameter in command.Parameters)
+				foreach (NpgsqlParameter parameter in command.Parameters)
                 {
                     sets.Add("\"" + parameter.ParameterName + "\" = @" + parameter.ParameterName);
                 }

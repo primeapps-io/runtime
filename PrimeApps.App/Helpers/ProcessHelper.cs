@@ -325,8 +325,8 @@ namespace PrimeApps.App.Helpers
                                     record["custom_approver_2"] = secondUserMail;
                                 }
 
-                                await _recordRepository.Update(record, module);
-                                user = await _userRepository.GetByEmail(userMail);
+								await _recordRepository.Update(record, module, isUtc: false);
+								user = await _userRepository.GetByEmail(userMail);
                             }
                             else
                             {

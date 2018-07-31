@@ -1892,10 +1892,13 @@ angular.module('primeapps')
                         //Aynı Tarihlerde Başka izin varmı diye kontrol ediliyor.
                         if (record["alinan_izinler"] && record["alinan_izinler"].length > 0) {
                             for (var i = 0; i < record["alinan_izinler"].length; i++) {
-                                if (moment(record['baslangic_tarihi']).isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '[)') ||
-                                    moment(record['bitis_tarihi']).isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
-                                    (moment(record['baslangic_tarihi']).isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && moment(record['bitis_tarihi']).isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
-                                ) {
+								var startDate = moment(moment(Date.parse(moment(record['baslangic_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+								var endDate = moment(moment(Date.parse(moment(record['bitis_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+
+								if (startDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '[)') ||
+									endDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
+									(startDate.isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && endDate.isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
+								) {
                                     if (record["alinan_izinler"][i].id != record.id) {
                                         return $filter('translate')('Leave.Validations.AlreadyHave');
                                     }

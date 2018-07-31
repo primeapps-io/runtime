@@ -621,7 +621,7 @@ namespace PrimeApps.Model.Helpers
 			}
 		}
 
-		public static void AddCommandParameters(NpgsqlCommand command, JObject record, Module module)
+		public static void AddCommandParameters(NpgsqlCommand command, JObject record, Module module, bool isUtc = true)
 		{
 			foreach (var property in record)
 			{
@@ -686,7 +686,7 @@ namespace PrimeApps.Model.Helpers
 					case DataType.DateTime:
 					case DataType.Time:
 						if (!string.IsNullOrWhiteSpace(value))
-							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DateTime.Parse(value).ToUniversalTime(), NpgsqlDbType = NpgsqlDbType.Timestamp });
+							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = !isUtc ? DateTime.Parse(value) : DateTime.Parse(value).ToUniversalTime(), NpgsqlDbType = NpgsqlDbType.Timestamp });
 						else
 							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Timestamp });
 						break;
