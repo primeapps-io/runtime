@@ -12,14 +12,15 @@ angular.module('primeapps')
             $scope.selectedLanguage = angular.copy($rootScope.language);
             $scope.selectedLocale = angular.copy($rootScope.locale);
             $scope.customLanguage = customLanguage;
-            $scope.changePassword = false;
+            $scope.showPasswordControl = false;
 
-            officeHelper.officeTenantInfo()
-                .then(function (adInfo) {
-                    if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
-                        $scope.changePassword = true;
-                    }
-                });
+            //TODO Atakan..
+            //officeHelper.officeTenantInfo()
+            //    .then(function (adInfo) {
+            //        if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
+            //            $scope.changePassword = true;
+            //        }
+            //    });
 
             /// email configuration
             $scope.emailModel = angular.copy($rootScope.system.messaging.PersonalEMail);
