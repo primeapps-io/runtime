@@ -925,6 +925,7 @@
       "ShareDataYes": "Yes",
       "ShareDataNo": "No",
       "SaveSuccess": "Role is successfully saved.",
+      "LongSaveSuccess": "Role is successfully saved.<br>Role tree update process can take time. Please wait...",
       "RoleDelete": "Delete Role",
       "RoleDeleteLabel": "Role to transfer users",
       "TransferAndDelete": "Transfer and Delete",

@@ -21,13 +21,14 @@
                 <div class="col-sm-12">
                     <label class="col-sm-12">{{'Setup.Users.Role' | translate}}:</label>
                     <div class="col-sm-12">
-                        <select
-                                class="form-control"
-                                name="role"
-                                ng-model="editModel.role"
-                                required
-                                ng-options="o.id as o['label_'+language] for o in roles">
-                        </select>
+                        <ui-select name="role"
+                                   ng-model="editModel.role"
+                                   ng-required="true">
+                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                            <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
             </div>

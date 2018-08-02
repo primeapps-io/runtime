@@ -926,6 +926,7 @@
       "ShareDataYes": "Var",
       "ShareDataNo": "Yok",
       "SaveSuccess": "Rol başarılı bir şekilde kaydedildi.",
+      "LongSaveSuccess": "Rol başarılı bir şekilde kaydedildi.<br>Rol ağacı güncelleme işlemi zaman alabilir. Lütfen bekleyiniz...",
       "RoleDelete": "Role Silme",
       "RoleDeleteLabel": "Kullanıcıların Aktarılacağı Rol",
       "TransferAndDelete": "Aktar ve Sil",

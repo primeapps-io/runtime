@@ -14,8 +14,8 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'role/create', role);
                 },
 
-                update: function (role) {
-                    return $http.put(config.apiUrl + 'role/update', role);
+                update: function (role, role_change) {
+                    return $http.put(config.apiUrl + 'role/update?roleChange=' + role_change, role);
                 },
 
                 delete: function (id, transferRoleId) {
