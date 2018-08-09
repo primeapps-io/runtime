@@ -14,8 +14,9 @@ namespace PrimeApps.Model.Enums
         {
             Detail = 1,
             Form = 2,
-            All = 3
-        }
+            All = 3,
+			List = 4
+		}
         public enum WebhhookHttpMethod
         {
             [EnumMember(Value = "")]

@@ -51,7 +51,11 @@ angular.module('primeapps')
                     {
                         name: 'Form',
                         value: 2
-                    },
+					},
+					{
+						name: $filter('translate')('Setup.Modules.List'),
+						value: 4
+					},
                     {
                         name: $filter('translate')('Setup.Modules.All'),
                         value: 3
@@ -71,7 +75,10 @@ angular.module('primeapps')
                     actionButton.triggerType = 2;
 
                 if (actionButton.trigger === 'All')
-                    actionButton.triggerType = 3;
+					actionButton.triggerType = 3;
+
+				if (actionButton.trigger === 'List')
+					actionButton.triggerType = 4;
 
                 if (actionButton.type === 3) {
                     $scope.hookParameters = [];

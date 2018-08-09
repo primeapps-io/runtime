@@ -3645,7 +3645,15 @@ angular.module('primeapps')
 
                 getDailyRates: function () {
                     return $http.get(config.apiUrl + 'exchange_rates/get_daily_rates');
-                }
+				},
+
+				getAllTenantSettingsByType: function (settingType, userId) {
+					return $http.get(config.apiUrl + 'settings/get_all/' + settingType + (userId ? '?user_id=' + userId : ''));
+				},
+
+				tenantSettingUpdate: function (setting) {
+					return $http.put(config.apiUrl + 'settings/update/' + setting.id, setting);
+				}
             };
         }]);
 

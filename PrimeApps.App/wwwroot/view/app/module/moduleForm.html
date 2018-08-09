@@ -316,7 +316,7 @@
                                                     ng-change="fieldValueChange(field);"
                                                     ng-required="{{field.validation.required}}"
                                                     ng-disabled="field.validation.readonly || (id && !field.editable)"
-                                                    ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
+                                                    ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:picklistFilter() track by o.id"
                                                     ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !(module.name == 'izinler' && (field.name == 'from_entry_type' || field.name == 'to_entry_type'))">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>

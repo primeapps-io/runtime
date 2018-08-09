@@ -190,7 +190,18 @@ angular.module('primeapps')
                 $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
                 $scope.purchaseInvoiceProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_invoices_products' }, true)[0];
                 $scope.productCurrencyField = $filter('filter')($scope.productModule.fields, { name: 'currency' }, true)[0];
-            }
+			}
+
+			$scope.picklistFilter = function (param) {
+				return function (item) {
+					$scope.componentFilter = {};
+					$scope.componentFilter.item = item;
+					$scope.componentFilter.result = true;
+					components.run('PicklistFilter', 'Script', $scope);
+					return !item.hidden && !item.inactive && $scope.componentFilter.result;
+				};
+			};
+
             var isFreeze = function (record) {
                 var type = false;
 
@@ -1929,10 +1940,12 @@ angular.module('primeapps')
                     });
             }
 
-            ModuleService.getActionButtons($scope.module.id)
-                .then(function (actionButtons) {
-                    $scope.actionButtons = $filter('filter')(actionButtons, { trigger: '!Detail' }, true);
-                });
+			ModuleService.getActionButtons($scope.module.id)
+				.then(function (actionButtons) {
+					$scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
+						return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'List';
+					}, true);
+				});
 
             $scope.showModuleFrameModal = function (url) {
                 if (new RegExp("https:").test(url)) {

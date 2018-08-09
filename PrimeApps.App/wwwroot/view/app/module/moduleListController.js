@@ -14,6 +14,7 @@ angular.module('primeapps')
             $scope.lookupUser = helper.lookupUser;
             $scope.searchingDocuments = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
+			$scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
 
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -28,7 +29,14 @@ angular.module('primeapps')
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
                 $state.go('app.dashboard');
                 return;
-            }
+			}
+
+			ModuleService.getActionButtons($scope.module.id)
+				.then(function (actionButtons) {
+					$scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
+						return actionButton.trigger !== 'Detail' && actionButton.trigger !== 'Form';
+					}, true);
+				});
 
             $scope.fields = [];
             $scope.selectedRows = [];
@@ -142,6 +150,122 @@ angular.module('primeapps')
                         show: true
                     });
             };
+
+			$scope.showModuleFrameModal = function (url) {
+				if (new RegExp("https:").test(url)) {
+					var title, w, h;
+					title = 'myPop1';
+					w = document.body.offsetWidth - 200;
+					h = document.body.offsetHeight - 200;
+					var left = (screen.width / 2) - (w / 2);
+					var top = (screen.height / 2) - (h / 2);
+					window.open(url, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+				}
+				else {
+					$scope.frameUrl = url;
+					$scope.frameModal = $scope.frameModal || $modal({
+						scope: $scope,
+						controller: 'ActionButtonFrameController',
+						templateUrl: 'views/app/crm/actionbutton/actionButtonFrameModal.html',
+						backdrop: 'static',
+						show: false
+					});
+
+					$scope.frameModal.$promise.then($scope.frameModal.show);
+				}
+
+			};
+
+			//webhook request func for action button
+			$scope.webhookRequest = function (action) {
+				var jsonData = {};
+				var params = action.parameters.split(',');
+				$scope.webhookRequesting = {};
+
+				$scope.webhookRequesting[action.id] = true;
+
+				angular.forEach(params, function (data) {
+
+					var dataObject = data.split('|');
+					var parameterName = dataObject[0];
+					var moduleName = dataObject[1];
+					var fieldName = dataObject[2];
+
+					if (moduleName != $scope.module.name) {
+						if ($scope.record[moduleName])
+							jsonData[parameterName] = $scope.record[moduleName][fieldName];
+						else
+							jsonData[parameterName] = null;
+
+						// if page is form;
+						// if($scope.record[moduleName][fieldName]){
+						//     jsonData[parameterName] = $scope.record[moduleName][fieldName];
+						// }
+						// else{
+						//     ModuleService.getRecord('accounts', $scope.record[moduleName].id)
+						//         .then(function (response) {
+						//             jsonData[parameterName] = response.data[fieldName];
+						//         })
+						// }
+					}
+					else {
+						if ($scope.record[fieldName])
+							jsonData[parameterName] = $scope.record[fieldName];
+						else
+							jsonData[parameterName] = null;
+					}
+
+				});
+
+				if (action.method_type === 'post') {
+
+					$http.post(action.url, jsonData, { headers: { 'Content-Type': 'application/json' } })
+						.then(function () {
+							ngToast.create({
+								content: $filter('translate')('Module.ActionButtonWebhookSuccess'),
+								className: 'success'
+							});
+							$scope.webhookRequesting[action.id] = false;
+						})
+						.catch(function () {
+							ngToast.create({
+								content: $filter('translate')('Module.ActionButtonWebhookFail'),
+								className: 'warning'
+							});
+							$scope.webhookRequesting[action.id] = false;
+						});
+
+				}
+				else if (action.method_type === 'get') {
+
+					var query = "";
+
+					for (var key in jsonData) {
+						query += key + "=" + jsonData[key] + "&";
+					}
+					if (query.length > 0) {
+						query = query.substring(0, query.length - 1);
+					}
+
+					$http.get(action.url + "?" + query)
+						.then(function () {
+							ngToast.create({
+								content: $filter('translate')('Module.ActionButtonWebhookSuccess'),
+								className: 'success'
+							});
+							$scope.webhookRequesting[action.id] = false;
+						})
+						.catch(function () {
+							ngToast.create({
+								content: $filter('translate')('Module.ActionButtonWebhookFail'),
+								className: 'warning'
+							});
+							$scope.webhookRequesting[action.id] = false;
+						});
+
+				}
+			};
 
             $scope.delete = function (id) {
                 ModuleService.getRecord($scope.module.name, id)

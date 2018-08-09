@@ -1075,8 +1075,8 @@ angular.module('primeapps')
             });
         }])
 
-    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config',
-        function ($timeout, ngToast, ModuleService, $modal, $http, config) {
+	.directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config', '$filter',
+		function ($timeout, ngToast, ModuleService, $modal, $http, config, $filter) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {

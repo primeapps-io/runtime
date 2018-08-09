@@ -458,7 +458,9 @@ angular.module('primeapps')
                             //generate action buttons
                             ModuleService.getActionButtons($scope.module.id)
                                 .then(function (actionButtons) {
-                                    $scope.actionButtons = $filter('filter')(actionButtons, { trigger: '!Form' }, true);
+									$scope.actionButtons = $filter('filter')(actionButtons, function (actionButton) {
+										return actionButton.trigger !== 'List' && actionButton.trigger !== 'Form';
+									}, true);
                                     //dependency control for action buttons
                                     angular.forEach($scope.actionButtons, function (item) {
                                         item.isShown = false;

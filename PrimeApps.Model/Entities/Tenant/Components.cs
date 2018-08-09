@@ -49,6 +49,8 @@ namespace PrimeApps.Model.Entities.Application
 		AfterUpdate = 5,
 		BeforeDelete = 6,
 		AfterDelete = 7,
-        AfterRecordLoaded = 8
-    }
+        AfterRecordLoaded = 8,
+		BeforeLookup = 9,
+		PicklistFilter = 10
+	}
 }
