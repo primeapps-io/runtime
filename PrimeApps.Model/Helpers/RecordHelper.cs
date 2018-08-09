@@ -658,7 +658,22 @@ namespace PrimeApps.Model.Helpers
 						break;
 					case DataType.Tag:
 					case DataType.Multiselect:
-						if (!string.IsNullOrWhiteSpace(value))
+                        if (value.IndexOf("\n") > -1 || value.IndexOf("\r") > -1)
+                        {
+                            value = string.Empty;
+                            if (!property.Value.HasValues)
+                                value = property.Value.ToString();
+                            else
+                            {
+                                foreach (var item in property.Value)
+                                {
+                                    value += item.ToString();
+                                    if (!item.Next.IsNullOrEmpty())
+                                        value += "|";
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(value))
 							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = value.Split('|'), NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Varchar });
 						else
 							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Array | NpgsqlDbType.Varchar });
