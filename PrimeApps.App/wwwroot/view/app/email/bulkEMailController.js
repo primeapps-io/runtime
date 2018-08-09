@@ -488,7 +488,7 @@ angular.module('primeapps')
                             $scope.templates = listResponse.data;
                             $scope.template = saveResponse.data.id;
                             ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
-                            $scope.currentTemplate = $scope.templates[0];
+                            
                         });
                 });
             }
