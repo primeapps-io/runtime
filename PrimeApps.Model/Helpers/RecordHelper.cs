@@ -447,22 +447,42 @@ namespace PrimeApps.Model.Helpers
 						if (filter.Value.ToString().Contains("date_trunc(") || filter.Value.ToString().Contains("now("))
 							continue;
 
-						if (filter.Value.ToString().Contains("ı") && filter.Value.ToString().Contains("I"))
-						{
-							filter.Value = filter.Value.ToString().ToLower();
-						}
+                        //Filterlarda Multiselect alanlarda ki TR karakter sorunu ile gelen bu Array tipindeki data'nın 
+                        //string'e parse edilirken ki karakter sorununu düzeltmek için eklendi.
+                        if (filter.Value.GetType() == typeof(JArray))
+                        {
+                            var myArray = (JArray)filter.Value;
 
-						if (filter.Value.ToString().Contains("ı"))
-						{
-							filter.Value = filter.Value.ToString().Replace("ı", "i");
-							selectQuery += GetQueryParameterValue(filter) + ", ";
-						}
+                            for (int i = 0; i < myArray.Count; i++)
+                            {
+                                myArray[i] = myArray[i].ToString();
+                                if (myArray[i].ToString().ToLower().Contains("ı"))
+                                    myArray.Add(myArray[i].ToString().Replace("ı", "i").Replace("I", "i"));
+                            }
+                            filter.Value = myArray;
 
-						if (filter.Value.ToString().Contains("I"))
-						{
-							filter.Value = filter.Value.ToString().Replace("I", "ı");
-							selectQuery += GetQueryParameterValue(filter, timezoneOffset) + ", ";
-						}
+                            selectQuery += GetQueryParameterValue(filter, timezoneOffset) + ", ";
+                        } //end
+                        else
+                        {
+
+                            if (filter.Value.ToString().Contains("ı") && filter.Value.ToString().Contains("I"))
+                            {
+                                filter.Value = filter.Value.ToString().ToLower();
+                            }
+
+                            if (filter.Value.ToString().Contains("ı"))
+                            {
+                                filter.Value = filter.Value.ToString().Replace("ı", "i");
+                                selectQuery += GetQueryParameterValue(filter) + ", ";
+                            }
+
+                            if (filter.Value.ToString().Contains("I"))
+                            {
+                                filter.Value = filter.Value.ToString().Replace("I", "ı");
+                                selectQuery += GetQueryParameterValue(filter, timezoneOffset) + ", ";
+                            }
+                        }
 					}
 				}
 				else
