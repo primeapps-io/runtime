@@ -10,7 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IRoleRepository : IRepositoryBaseTenant
     {
-        Task AddOwnersRecursiveAsync(Role role, ICollection<string> owners, int? tenantId = null);
+        Task AddOwnersRecursiveAsync(Role role, ICollection<string> owners, int? tenantId = null, int? oldParentRoleID = null);
         Task AddUserAsync(int userId, int roleID, bool saveChanges = true, int? tenantId = null);
         Task CreateAsync(Role newRole);
         Task GenerateDefaultRolesAsync(int userId);
