@@ -7,6 +7,7 @@ namespace PrimeApps.Model.Common.Cache
         public int Id { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
+        public string Phone { get; set; }
         public string Culture { get; set; }
         public string Currency { get; set; }
         public string TimeZone { get; set; }

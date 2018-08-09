@@ -555,7 +555,23 @@ angular.module('primeapps')
                     fieldFullName.combination = {};
                     fieldFullName.combination.field_1 = 'first_name';
                     fieldFullName.combination.field_2 = 'last_name';
-                    userModule.fields.push(fieldFullName);
+					userModule.fields.push(fieldFullName);
+
+					var fieldPhone = {};
+					fieldPhone.name = 'phone';
+					fieldPhone.system_type = 'system';
+					fieldPhone.data_type = 'text_single';
+					fieldPhone.order = 6;
+					fieldPhone.section = 1;
+					fieldPhone.section_column = 1;
+					fieldPhone.primary = false;
+					fieldPhone.inline_edit = true;
+					fieldPhone.label_en = 'Phone';
+					fieldPhone.label_tr = 'Telefon';
+					fieldPhone.display_list = true;
+					fieldPhone.display_form = true;
+					fieldPhone.display_detail = true;
+					userModule.fields.push(fieldPhone);
 
                     return userModule;
                 },

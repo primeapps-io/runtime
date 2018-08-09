@@ -25,6 +25,13 @@
                         </div>
                     </div>
 
+                    <div class="form-group" show-errors>
+                        <label class="col-sm-3 control-label">{{'Setup.Settings.Phone' | translate}}</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="phone"  class="form-control" ui-mask="{{locale === 'tr' ? '0 (999) 999 99-99' : ''}}" ng-model="userModel.phone" />
+                        </div>
+                    </div>
+
                     <div class="form-group am-fade-and-slide-top" ng-show="userForm.$submitted && userForm.$invalid">
                         <div class="col-sm-offset-3 col-sm-8">
                             <div class="callout callout-danger">
@@ -32,23 +39,24 @@
                                 <p ng-if="userForm.$error.email">{{'Setup.Settings.ErrorEmail' | translate}}</p>
                                 <p ng-if="userForm.$error.uniqueEmail">{{'Setup.Settings.ErrorUniqueEmail' | translate}}</p>
                                 <p ng-if="userForm.$error.minlength">{{'Setup.Settings.NameMinimum' | translate}}</p>
+
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-sm-offset-3 col-sm-9">
-                            <button type="submit" class="btn btn-primary btn-w-lg" ladda="userUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                            <button type="submit" class="btn btn-primary btn-w-lg" ng-disabled="!userModel.phone"  ladda="userUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="subpanel" ng-show="!$scope.changePassword">
+        <div class="subpanel" ng-show="!$scope.showPasswordControl">
             <h5 class="subpanel-heading">{{'Setup.Settings.Title2' | translate}}</h5>
             <div class="subpanel-body">
-                <form name="passwordForm" ng-submit="changePassword(passwordModel)" class="form-horizontal" novalidate>
+                <form name="passwordForm" ng-submit="showPasswordControl(passwordModel)" class="form-horizontal" novalidate>
                     <div class="form-group" ng-class="{'has-error': passwordForm.$submitted && passwordForm.current.$invalid}">
                         <label class="col-sm-3 control-label">{{'Setup.Settings.CurrentPassword' | translate}}</label>
                         <div class="col-sm-9">

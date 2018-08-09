@@ -10,7 +10,7 @@ angular.module('primeapps')
             $scope.roleUsers = [];
             $scope.role = {};
             $scope.role.share_data = false;
-
+            $scope.role_change = false;
             $scope.reportsTo_disabled = true;
             if (!$scope.id)
                 $scope.reportsTo_disabled = false;
@@ -53,6 +53,8 @@ angular.module('primeapps')
 
                     var role = angular.copy($scope.role);
                     var result = null;
+                    var roleChange = $scope.role_change;
+                    var successMess = 'Setup.Roles.SaveSuccess';
 
                     role.label_tr = role.label;
                     role.label_en = role.label;
@@ -63,12 +65,15 @@ angular.module('primeapps')
                         result = RoleService.create(role);
                     }
                     else {
-                        result = RoleService.update(role, $scope.role.id);
+                        result = RoleService.update(role, roleChange);
                     }
 
                     result.then(function () {
+                        if (roleChange)
+                            successMess = 'Setup.Roles.LongSaveSuccess';
+
                         ngToast.create({
-                            content: $filter('translate')('Setup.Roles.SaveSuccess'),
+                            content: $filter('translate')(successMess),
                             className: 'success'
                         });
                         $state.go('app.setup.roles');
@@ -76,6 +81,10 @@ angular.module('primeapps')
                         $scope.saving = false;
                     });
                 }
+            };
+
+            $scope.roleUpdateChange = function () {
+                $scope.role_change = true;
             };
 
             $scope.cancel = function () {

@@ -39,14 +39,12 @@
             </div>
             <div class="form-group" ng-class="{'has-error': userForm.$submitted && userForm['role'].$invalid}">
                 <div class="col-sm-12">
-                    <select
-                            class="form-control"
-                            name="role"
-                            ng-model="addUserModel.role"
-                            required
-                            ng-options="o.id as o['label_' + language] for o in roles">
-                        <option value="">{{'Setup.Users.NewUserRole' | translate}}</option>
-                    </select>
+                    <ui-select ng-model="addUserModel.role">
+                        <ui-select-match placeholder="{{'Setup.Users.NewUserRole' | translate}}">{{$select.selected[('label_'+language)] }}</ui-select-match>
+                        <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]: $select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                            <div ng-bind-html="item[('label_'+language)] | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
             </div>
             <div class="form-group" ng-show="userForm.$submitted && userForm.$invalid">

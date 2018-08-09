@@ -30,11 +30,15 @@
                         <div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
                             <label class="col-sm-3 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
                             <div class="col-sm-9">
-                                <select class="form-control" ng-model="role.reports_to"
-                                        name="reportsTo"
-                                        ng-required="!role.master"
-                                        ng-disabled="reportsTo_disabled"
-                                        ng-options="o.id as o['label_'+language] for o in roles"></select>
+                               <ui-select name="reportsTo" style="width:300px;" 
+                                           on-select="roleUpdateChange()"
+                                           ng-model="role.reports_to" 
+                                           ng-required="!role.master">
+                                    <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                                    <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                        <div  ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                                    </ui-select-choices>
+                                </ui-select>
                             </div>
                         </div>
                         <div class="row form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">

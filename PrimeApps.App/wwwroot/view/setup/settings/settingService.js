@@ -12,7 +12,8 @@ angular.module('primeapps')
                         last_name: user.last_name,
                         email: user.email,
                         password: user.password,
-                        picture: user.picture
+                        picture: user.picture,
+                        phone: user.phone
                     });
                 },
 

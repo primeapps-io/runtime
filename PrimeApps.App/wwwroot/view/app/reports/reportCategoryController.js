@@ -144,18 +144,17 @@ angular.module('primeapps')
                     ModuleService.findRecords($scope.getReportData.module.name, $scope.currentTable.request).then(function (response) {
                         var response = response.data;
                         $scope.currentTable.displayFileds = $scope.getReportData.displayFileds;
+                        ModuleService.getPicklists($scope.getReportData.module).then(function (picklist) {
 
-                        $scope.currentTable.data = ModuleService.processRecordMulti(response, $scope.currentTable.module, null, $scope.reportView, $scope.currentTable.module.name);
+                            $scope.currentTable.data = ModuleService.processRecordMulti(response, $scope.currentTable.module, picklist, $scope.reportView, $scope.currentTable.module.name);
 
-                        $scope.aggregations = report.aggregations;
+                            $scope.aggregations = report.aggregations;
 
-                        $scope.currentTable.aggregationsFields = ReportsService.getAggregationsFields($scope.aggregations, $scope.getReportData.module.name, $scope.getReportData.displayFileds, report.filters);
-                        myBlockUI.stop();
+                            $scope.currentTable.aggregationsFields = ReportsService.getAggregationsFields($scope.aggregations, $scope.getReportData.module.name, $scope.getReportData.displayFileds, report.filters);
+                            myBlockUI.stop();
+                        });
                     });
-
-
                 });
-
             };
 
             $scope.setSummary = function (report) {

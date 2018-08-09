@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Hangfire;
 
 namespace PrimeApps.App.Controllers
 {
@@ -65,12 +66,15 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update"), HttpPut]
-        public async Task Update([FromBody]RoleDTO role)
+        public async Task Update([FromQuery]bool roleChange, [FromBody]RoleDTO role)
         {
             Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
             if (roleToUpdate == null) return;
 
             await _roleRepository.UpdateAsync(roleToUpdate, role);
+
+            if (roleChange)
+                BackgroundJob.Enqueue(() => UpdateUserRoleBulk());
         }
 
         [Route("delete"), HttpDelete]

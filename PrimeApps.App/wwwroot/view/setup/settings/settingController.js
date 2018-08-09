@@ -8,17 +8,19 @@ angular.module('primeapps')
             $scope.userModel.first_name = $rootScope.user.first_name;
             $scope.userModel.last_name = $rootScope.user.last_name;
             $scope.userModel.email = $rootScope.user.email;
+            $scope.userModel.phone = $rootScope.user.phone;
             $scope.selectedLanguage = angular.copy($rootScope.language);
             $scope.selectedLocale = angular.copy($rootScope.locale);
             $scope.customLanguage = customLanguage;
-            $scope.changePassword = false;
+            $scope.showPasswordControl = false;
 
-            officeHelper.officeTenantInfo()
-                .then(function (adInfo) {
-                    if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
-                        $scope.changePassword = true;
-                    }
-                });
+            //TODO Atakan..
+            //officeHelper.officeTenantInfo()
+            //    .then(function (adInfo) {
+            //        if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
+            //            $scope.changePassword = true;
+            //        }
+            //    });
 
             /// email configuration
             $scope.emailModel = angular.copy($rootScope.system.messaging.PersonalEMail);
@@ -85,6 +87,7 @@ angular.module('primeapps')
                             $rootScope.user.first_name = userModel.first_name;
                             $rootScope.user.last_name = userModel.last_name;
                             $rootScope.user.email = userModel.email;
+                            $rootScope.user.phone = userModel.phone;
                             $scope.userUpdating = false;
 
                             if (!emailChanged)

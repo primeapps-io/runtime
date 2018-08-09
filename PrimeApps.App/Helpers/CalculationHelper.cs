@@ -109,9 +109,9 @@ namespace PrimeApps.App.Helpers
                                         if (!record["gmy.id"].IsNullOrEmpty())
                                             calisanUpdate["gmy"] = record["gmy.id"];
 
-                                        await recordRepository.Update(calisanUpdate, calisanlarModule);
+										await recordRepository.Update(calisanUpdate, calisanlarModule, isUtc: false);
 
-                                        AfterUpdate(calisanlarModule, calisanUpdate, calisan, appUser, warehouse, false);
+										AfterUpdate(calisanlarModule, calisanUpdate, calisan, appUser, warehouse, false);
 
                                         string mailSubject;
                                         string mailBody;
@@ -194,8 +194,8 @@ namespace PrimeApps.App.Helpers
                                                     record["custom_approver_" + j] = null;
                                             }
                                         }
-                                        await recordRepository.Update(record, iseAlimTalebiModule);
-                                        break;
+										await recordRepository.Update(record, iseAlimTalebiModule, isUtc: false);
+										break;
                                     case "sales_invoices":
                                         var salesInvoiceModule = await moduleRepository.GetByName("sales_invoices");
                                         var accountModule = await moduleRepository.GetByName("accounts");
@@ -721,8 +721,8 @@ namespace PrimeApps.App.Helpers
                                             record["shared_users_edit"] = sharedUsers;
                                         }
 
-                                        await recordRepository.Update(record, countryTravelTracking);
-                                        break;
+										await recordRepository.Update(record, countryTravelTracking, isUtc: false);
+										break;
                                     case "referance_pool":
                                         var referancePoolModule = await moduleRepository.GetByName("referance_pool");
                                         var refObj = new JObject();
@@ -738,8 +738,8 @@ namespace PrimeApps.App.Helpers
                                             var relatedPartner = recordRepository.Find("accounts", relatedPartnerRequest);
                                             refObj["related_partner_text"] = (string)relatedPartner.First()["name"];
                                         }
-                                        await recordRepository.Update(refObj, referancePoolModule);
-                                        break;
+										await recordRepository.Update(refObj, referancePoolModule, isUtc: false);
+										break;
                                     case "procurement_requisition":
                                         var procurementRequisitionModule = await moduleRepository.GetByName("procurement_requisition");
                                         var stepPicklist = procurementRequisitionModule.Fields.Single(x => x.Name == "procurement_step");
@@ -1177,8 +1177,8 @@ namespace PrimeApps.App.Helpers
                                             }
                                         }
 
-                                        await recordRepository.Update(record, procurementRequisitionModule);
-                                        break;
+										await recordRepository.Update(record, procurementRequisitionModule, isUtc: false);
+										break;
                                     case "petty_cash_requisition":
                                     case "expenditure":
                                         var pettyCashModule = await moduleRepository.GetByName("petty_cash");
@@ -1217,9 +1217,9 @@ namespace PrimeApps.App.Helpers
                                                 record["shared_users_edit"] = sharedUsers;
                                             }
 
-                                            await recordRepository.Update(record, pettyCashRequisitionModule);
+											await recordRepository.Update(record, pettyCashRequisitionModule, isUtc: false);
 
-                                            if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
+											if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
                                             {
                                                 var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                 var pettyCashRequisitionRecords = recordRepository.Find(module.Name, findRequestPettyCashRequisition);
@@ -1316,8 +1316,8 @@ namespace PrimeApps.App.Helpers
                                                 pettyCashUpdateRecord["updated_by"] = (int)record["updated_by"];
                                             }
                                         }
-                                        await recordRepository.Update(pettyCashUpdateRecord, pettyCashModule);
-                                        break;
+										await recordRepository.Update(pettyCashUpdateRecord, pettyCashModule, isUtc: false);
+										break;
 
                                     case "expense_sheet":
                                     case "invoices":
@@ -1433,8 +1433,8 @@ namespace PrimeApps.App.Helpers
                                                             expense["shared_users_edit"] = expenseSharedUsers;
                                                         }
 
-                                                        await recordRepository.Update(expense, expModule);
-                                                    }
+														await recordRepository.Update(expense, expModule, isUtc: false);
+													}
                                                 }
                                             }
 
@@ -1477,14 +1477,14 @@ namespace PrimeApps.App.Helpers
                                                                 expense["shared_user_groups_edit"] = expenseSharedUsers;
                                                             }
 
-                                                            await recordRepository.Update(expense, expModule);
-                                                        }
+															await recordRepository.Update(expense, expModule, isUtc: false);
+														}
                                                     }
                                                 }
                                             }
 
-                                            await recordRepository.Update(record, expenseModule);
-                                        }
+											await recordRepository.Update(record, expenseModule, isUtc: false);
+										}
                                         else if (module.Name == "invoices")
                                         {
                                             var invoiceModule = await moduleRepository.GetByName("invoices");
@@ -1606,8 +1606,8 @@ namespace PrimeApps.App.Helpers
                                                 }
                                             }
 
-                                            await recordRepository.Update(record, invoiceModule);
-                                        }
+											await recordRepository.Update(record, invoiceModule, isUtc: false);
+										}
 
                                         break;
                                     case "sales_orders":
@@ -1732,8 +1732,8 @@ namespace PrimeApps.App.Helpers
                                             decimal productStockQuantity = await CalculateStock(record, appUser, stockModule, warehouse);
                                             prodItem["stock_quantity"] = productStockQuantity;
 
-                                            await recordRepository.Update(prodItem, prodMod);
-                                        }
+											await recordRepository.Update(prodItem, prodMod, isUtc: false);
+										}
 
                                         break;
 
@@ -1749,52 +1749,52 @@ namespace PrimeApps.App.Helpers
                                         decimal stockQuantity = await CalculateStock(record, appUser, stockModuleObj, warehouse);
                                         product["stock_quantity"] = stockQuantity;
 
-                                        await recordRepository.Update(product, productModuleObj);
-                                        break;
+										await recordRepository.Update(product, productModuleObj, isUtc: false);
+										break;
 
-                                    //case "current_accounts":
-                                    //    try
-                                    //    {
-                                    //        var currentTransactionType = (string)record["transaction_type_system"];
-                                    //        var recordUpdate = new JObject();
-                                    //        decimal balance;
-                                    //        Module moduleUpdate;
+									//case "current_accounts":
+									//    try
+									//    {
+									//        var currentTransactionType = (string)record["transaction_type_system"];
+									//        var recordUpdate = new JObject();
+									//        decimal balance;
+									//        Module moduleUpdate;
 
-                                    //        switch (currentTransactionType)
-                                    //        {
-                                    //            case "sales_invoice":
-                                    //            case "collection":
-                                    //                var customerId = (int)record["customer"];
-                                    //                balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
-                                    //                moduleUpdate = await moduleRepository.GetByName("accounts");
-                                    //                recordUpdate["id"] = customerId;
-                                    //                recordUpdate["balance"] = balance;
-                                    //                break;
-                                    //            case "purchase_invoice":
-                                    //            case "payment":
-                                    //                var supplierId = (int)record["supplier"];
-                                    //                balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
-                                    //                moduleUpdate = await moduleRepository.GetByName("suppliers");
-                                    //                recordUpdate["id"] = supplierId;
-                                    //                recordUpdate["balance"] = balance;
-                                    //                break;
-                                    //            default:
-                                    //                throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment.");
-                                    //        }
+									//        switch (currentTransactionType)
+									//        {
+									//            case "sales_invoice":
+									//            case "collection":
+									//                var customerId = (int)record["customer"];
+									//                balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
+									//                moduleUpdate = await moduleRepository.GetByName("accounts");
+									//                recordUpdate["id"] = customerId;
+									//                recordUpdate["balance"] = balance;
+									//                break;
+									//            case "purchase_invoice":
+									//            case "payment":
+									//                var supplierId = (int)record["supplier"];
+									//                balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
+									//                moduleUpdate = await moduleRepository.GetByName("suppliers");
+									//                recordUpdate["id"] = supplierId;
+									//                recordUpdate["balance"] = balance;
+									//                break;
+									//            default:
+									//                throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment.");
+									//        }
 
-                                    //        recordUpdate["updated_by"] = (int)record["updated_by"];
+									//        recordUpdate["updated_by"] = (int)record["updated_by"];
 
-                                    //        var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
+									//		var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate, isUtc: false);
 
-                                    //        //if (resultUpdate < 1)
-                                    //        //ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
-                                    //    }
-                                    //    catch (Exception ex)
-                                    //    {
-                                    //        //ErrorLog.GetDefault(null).Log(new Error(ex));
-                                    //    }
-                                    //    break;
-                                    case "project_indicators":
+									//        //if (resultUpdate < 1)
+									//        //ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
+									//    }
+									//    catch (Exception ex)
+									//    {
+									//        //ErrorLog.GetDefault(null).Log(new Error(ex));
+									//    }
+									//    break;
+									case "project_indicators":
                                         var projectScopeModule = await moduleRepository.GetByName("project_scope");
                                         var projectScopeRecord = recordRepository.GetById(projectScopeModule, (int)record["related_result"]);
                                         var findRequestProjectIndicator = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_result", Operator = Operator.Equals, Value = (int)record["related_result"], No = 1 } }, Limit = 9999 };
@@ -1834,9 +1834,9 @@ namespace PrimeApps.App.Helpers
 
                                         try
                                         {
-                                            var resultUpdateProjectScope = await recordRepository.Update(projectScopeUpdateRecord, projectScopeModule);
+											var resultUpdateProjectScope = await recordRepository.Update(projectScopeUpdateRecord, projectScopeModule, isUtc: false);
 
-                                            if (resultUpdateProjectScope < 1)
+											if (resultUpdateProjectScope < 1)
                                             {
                                                 //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectScope cannot be updated! Object: " + projectScopeUpdateRecord)));
                                                 return;
@@ -1885,9 +1885,9 @@ namespace PrimeApps.App.Helpers
 
                                             try
                                             {
-                                                var resultUpdateProjectIndicator = await recordRepository.Update(projectIndicatorUpdateRecord, module);
+												var resultUpdateProjectIndicator = await recordRepository.Update(projectIndicatorUpdateRecord, module, isUtc: false);
 
-                                                if (resultUpdateProjectIndicator < 1)
+												if (resultUpdateProjectIndicator < 1)
                                                 {
                                                     //ErrorLog.GetDefault(null).Log(new Error(new Exception("ProjectIndicator cannot be updated! Object: " + projectScopeUpdateRecord)));
                                                 }
@@ -1930,9 +1930,9 @@ namespace PrimeApps.App.Helpers
 
                                         try
                                         {
-                                            var resultUpdateProject = await recordRepository.Update(projectUpdateRecord, projectModule);
+											var resultUpdateProject = await recordRepository.Update(projectUpdateRecord, projectModule, isUtc: false);
 
-                                            if (resultUpdateProject < 1)
+											if (resultUpdateProject < 1)
                                             {
                                                 //ErrorLog.GetDefault(null).Log(new Error(new Exception("Project cannot be updated! Object: " + projectUpdateRecord)));
                                             }
@@ -1996,9 +1996,9 @@ namespace PrimeApps.App.Helpers
 
                                         try
                                         {
-                                            var resultUpdateExpenseSheet = await recordRepository.Update(expenseSheetUpdateRecord, expenseSheetModule);
+											var resultUpdateExpenseSheet = await recordRepository.Update(expenseSheetUpdateRecord, expenseSheetModule, isUtc: false);
 
-                                            if (resultUpdateExpenseSheet < 1)
+											if (resultUpdateExpenseSheet < 1)
                                             {
                                                 //ErrorLog.GetDefault(null).Log(new Error(new Exception("ExpenseSheet cannot be updated! Object: " + expenseSheetUpdateRecord)));
                                             }
@@ -2113,9 +2113,9 @@ namespace PrimeApps.App.Helpers
 
                                             try
                                             {
-                                                var resultUpdate = await recordRepository.Update(timesheetRecordUpdate, timesheetModule);
+												var resultUpdate = await recordRepository.Update(timesheetRecordUpdate, timesheetModule, isUtc: false);
 
-                                                if (resultUpdate < 1)
+												if (resultUpdate < 1)
                                                 {
                                                     //ErrorLog.GetDefault(null).Log(new Error(new Exception("Timesheet cannot be updated! Object: " + timesheetRecordUpdate)));
                                                     return;
@@ -2275,11 +2275,11 @@ namespace PrimeApps.App.Helpers
                                                 {
                                                     try
                                                     {
-                                                        var resultUpdate = await recordRepository.Update(recordRehber, rehberModule);
-                                                        //TODO Removed
-                                                        /*if (resultUpdate < 1)
+														var resultUpdate = await recordRepository.Update(recordRehber, rehberModule, isUtc: false);
+														//TODO Removed
+														/*if (resultUpdate < 1)
 															ErrorLog.GetDefault(null).Log(new Error(new Exception("Rehber cannot be updated! Object: " + recordRehber)));*/
-                                                    }
+													}
                                                     catch (Exception ex)
                                                     {
                                                         //TODO Removed
@@ -2351,8 +2351,8 @@ namespace PrimeApps.App.Helpers
                                             }
 
                                             if (!record["dogum_tarihi"].IsNullOrEmpty() || !record["ise_baslama_tarihi"].IsNullOrEmpty())
-                                                await recordRepository.Update(record, calisanModule);
-                                        }
+												await recordRepository.Update(record, calisanModule, isUtc: false);
+										}
                                         else//delete
                                         {
                                             try
@@ -2396,8 +2396,8 @@ namespace PrimeApps.App.Helpers
                                                 record["gunsaat"] = "Saat";
 
                                             var izinlerModule = await moduleRepository.GetByName("izinler");
-                                            await recordRepository.Update(record, izinlerModule);
-                                        }
+											await recordRepository.Update(record, izinlerModule, isUtc: false);
+										}
 
                                         //await YillikIzinHesaplama((int)record["calisan"], izinTuru, recordRepository, moduleRepository);
                                         if (record["process_status"] != null)
@@ -2468,8 +2468,8 @@ namespace PrimeApps.App.Helpers
                                                     record["odenecek_tutar"] = record["tutar"];
                                                 }
 
-                                                await recordRepository.Update(record, masrafKalemiModule);
-                                            }
+												await recordRepository.Update(record, masrafKalemiModule, isUtc: false);
+											}
                                             var recordUpdate = new JObject();
                                             var masrafId = (int)record["masraf"];
                                             decimal totalAmount = 0;
@@ -2504,11 +2504,11 @@ namespace PrimeApps.App.Helpers
                                                 recordUpdate["odenecek_toplam_tutar"] = totalOdenecekTutar;
                                             }
 
-                                            var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate);
+											var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate, isUtc: false);
 
-                                            //if (resultUpdate < 1)
-                                            //    ErrorLog.GetDefault(null).Log(new Error(new Exception("toplam_tutar cannot be updated! Object: " + recordUpdate)));
-                                        }
+											//if (resultUpdate < 1)
+											//    ErrorLog.GetDefault(null).Log(new Error(new Exception("toplam_tutar cannot be updated! Object: " + recordUpdate)));
+										}
                                         catch (Exception ex)
                                         {
                                             //ErrorLog.GetDefault(null).Log(new Error(ex));

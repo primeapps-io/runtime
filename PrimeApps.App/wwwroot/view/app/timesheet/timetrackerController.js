@@ -28,6 +28,11 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
         $scope.secondConditionOfMonth = false;
         $scope.showFullName = $location.search().user ? true : false;
 
+        angular.forEach($scope.menu, function (item) {
+            if (item.menu_items.length > 0)
+                $scope.timeTrackerBackBottomShow = $filter('filter')(item.menu_items, { module_id: $scope.module.id }, true)[0];
+        });
+
         $scope.labels = [];
         for (var i = 0; i < $scope.relationModule.display_fields_array.length; i++) {
             var relationItem = $scope.relationModule.display_fields_array[i];
