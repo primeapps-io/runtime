@@ -640,7 +640,8 @@ angular.module('primeapps')
                 'date_time',
                 'time',
                 'email',
-                'picklist'
+				'picklist',
+				'combination'
             ];
 
             $scope.filterToCombinations = function (field) {
