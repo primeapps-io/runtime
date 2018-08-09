@@ -23,7 +23,7 @@ angular.module('primeapps')
                 },
 
                 updateUserRole: function (userId, roleId) {
-                    return $http.put(config.apiUrl + 'role/update_user_role?userId=' + userId + '&roleId=' + roleId);
+                    return $http.put(config.apiUrl + 'role/update_user_role?user_Id=' + userId + '&role_Id=' + roleId);
                 }
 
             };
