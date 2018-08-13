@@ -2451,11 +2451,17 @@ namespace PrimeApps.App.Helpers
                                                         var illerPicklistItem = await picklistRepository.FindItemByLabel(illerPicklist.PicklistId.Value, (string)record["iller"], appUser.TenantLanguage);
                                                         if (lokasyonPicklistItem.Value == illerPicklistItem.SystemCode)
                                                         {
-                                                            record["odenecek_tutar"] = 24;
+                                                            if ((int)record["tutar"] > 25)
+                                                                record["odenecek_tutar"] = 25;
+                                                            else
+                                                                record["odenecek_tutar"] = record["tutar"];
                                                         }
                                                         else
                                                         {
-                                                            record["odenecek_tutar"] = 30;
+                                                            if ((int)record["tutar"] > 30)
+                                                                record["odenecek_tutar"] = 30;
+                                                            else
+                                                                record["odenecek_tutar"] = record["tutar"];
                                                         }
                                                     }
                                                     else

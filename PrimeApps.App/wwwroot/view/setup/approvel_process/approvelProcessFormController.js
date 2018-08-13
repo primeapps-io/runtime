@@ -16,6 +16,7 @@ angular.module('primeapps')
             $scope.isChosenModule = true;
             $scope.users = angular.copy($rootScope.workgroup.users);
             $scope.$parent.collapsed = true;
+            $scope.allowEdit = true;
 
             if(!$filter('filter')($scope.users, { id: 0 }, true)[0])
                 $scope.users.unshift({id: 0, email: $filter('translate')('Setup.Workflow.ApprovelProcess.AllUsers')});
@@ -65,6 +66,13 @@ angular.module('primeapps')
                     else {
                         ApprovelProcessService.get($scope.id)
                             .then(function (workflow) {
+                                ApprovelProcessService.getAllProcessRequests($scope.id)
+                                    .then(function (response) {
+
+                                        if ($filter('filter')(response.data, { status: '!approved' }, true).length > 0) {
+                                            $scope.allowEdit = false;
+                                        }
+                                    });
                                 workflow = workflow.data;
                                 $scope.module = $filter('filter')($rootScope.modules, { id: workflow.module_id }, true)[0];
 

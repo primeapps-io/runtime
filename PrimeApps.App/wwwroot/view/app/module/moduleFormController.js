@@ -1480,6 +1480,11 @@ angular.module('primeapps')
             };
 
             $scope.fieldValueChange = function (field) {
+
+                if ($scope.module.name === 'activities' && field.name === 'related_module') {
+                    $scope.dropdownFieldDatas['related_to'] = [];
+                }
+
                 if (field.valueChangeDontRun) {
                     delete field.valueChangeDontRun;
                     return;

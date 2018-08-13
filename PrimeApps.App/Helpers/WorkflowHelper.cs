@@ -383,9 +383,10 @@ namespace PrimeApps.App.Helpers
 
                                         foreach (var field in module.Fields)
                                         {
-                                            if (field.LookupType != null && field.LookupType != "users" && field.LookupType == secondModuleName && !record[fieldUpdate.Value].IsNullOrEmpty())
+                                            if (field.LookupType != null && field.LookupType == secondModuleName && (!record[fieldUpdate.Value].IsNullOrEmpty() || !record[fieldUpdate.Value + ".id"].IsNullOrEmpty()))
                                             {
-                                                fieldUpdateRecords.Add(secondModuleName, (int)record[field.Name + ".id"]);
+                                                if (fieldUpdateRecords.Count < 1)
+                                                    fieldUpdateRecords.Add(secondModuleName, (int)record[field.Name + ".id"]);
                                             }
                                         }
                                     }
@@ -396,9 +397,10 @@ namespace PrimeApps.App.Helpers
 
                                         foreach (var field in module.Fields)
                                         {
-                                            if (field.LookupType != null && field.LookupType != "users" && field.LookupType == firstModuleName && !record[fieldUpdate.Value].IsNullOrEmpty())
+                                            if (field.LookupType != null && field.LookupType == firstModuleName && (!record[fieldUpdate.Value].IsNullOrEmpty() || !record[firstModule + "." + fieldUpdate.Value].IsNullOrEmpty()))
                                             {
-                                                fieldUpdateRecords.Add(secondModule, (int)record["id"]);
+                                                if (fieldUpdateRecords.Count < 1)
+                                                    fieldUpdateRecords.Add(secondModule, (int)record["id"]);
                                             }
                                         }
                                     }
