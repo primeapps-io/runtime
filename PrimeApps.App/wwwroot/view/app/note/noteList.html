@@ -35,7 +35,7 @@
                 <span class="action-buttons" ng-show="!$parent.$parent.$parent.record.freeze">
                     <a href ng-click="note.textCurrent = note.text; note.showFormEdit = true; note.showForm = false;" ng-if="note.created_by.id === user.id">{{'Common.Edit' | translate}}</a>
                     <span ng-if="note.created_by.id === user.id"> | </span>
-                    <a href ng-if="note.created_by.id === user.id" confirm-click action="deleteNote(note)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</a>
+                    <a href ng-if="note.created_by.id === user.ID || user.profile.HasAdminRights === true" confirm-click action="deleteNote(note)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</a>
                 </span>
             </h5>
             <div class="note-text">
