@@ -28,22 +28,22 @@ namespace PrimeApps.App.Controllers
     {
         private IRecordRepository _recordRepository;
         private IModuleRepository _moduleRepository;
-        private IPicklistRepository _picklistRepository; 
+        private IPicklistRepository _picklistRepository;
         private IProcessRepository _processRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-	    private IRecordHelper _recordHelper;
+        private IRecordHelper _recordHelper;
 
-        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration,IProcessRepository processRepository)
+        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IProcessRepository processRepository)
         {
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
-            _picklistRepository = picklistRepository; 
+            _picklistRepository = picklistRepository;
             _processRepository = processRepository;
             _warehouse = warehouse;
 
-	        _recordHelper = recordHelper;
+            _recordHelper = recordHelper;
             _configuration = configuration;
         }
 
@@ -123,10 +123,10 @@ namespace PrimeApps.App.Controllers
                 //if field encrypted, controls permission and decrypts
                 foreach (var field in moduleEntity.Fields)
                 {
-                    if (field.Encrypted && !record[field.Name+"__encrypted"].IsNullOrEmpty())
+                    if (field.Encrypted && !record[field.Name + "__encrypted"].IsNullOrEmpty())
                     {
                         bool hasEncryptPermission = false;
-                        if(field.EncryptionAuthorizedUsersList.Count > 0)
+                        if (field.EncryptionAuthorizedUsersList.Count > 0)
                         {
                             foreach (var user in field.EncryptionAuthorizedUsersList)
                             {
@@ -136,7 +136,7 @@ namespace PrimeApps.App.Controllers
                         }
 
                         if (hasEncryptPermission)
-                            record[field.Name] = EncryptionHelper.Decrypt((string)record[field.Name+"__encrypted"], field.Id, AppUser, _configuration);
+                            record[field.Name] = EncryptionHelper.Decrypt((string)record[field.Name + "__encrypted"], field.Id, AppUser, _configuration);
                         else record[field.Name] = "***************";
                     }
                 }
@@ -333,7 +333,7 @@ namespace PrimeApps.App.Controllers
                     {
                         foreach (var combinationField in combinationFields)
                         {
-	                        _recordHelper.SetCombinations(currentRecord, null, combinationField);
+                            _recordHelper.SetCombinations(currentRecord, null, combinationField);
                         }
 
                         hasUpdate = true;
@@ -356,8 +356,8 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-			//After create
-	        _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
+            //After create
+            _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, timeZoneOffset: timezoneOffset);
 
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
@@ -436,9 +436,9 @@ namespace PrimeApps.App.Controllers
 
             if (resultUpdate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	        _recordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
+            _recordHelper.AfterUpdate(moduleEntity, record, currentRecord, AppUser, _warehouse, runWorkflows, timeZoneOffset: timezoneOffset);
 
             //Format records if has locale
             if (!string.IsNullOrWhiteSpace(locale))
@@ -464,7 +464,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser,_processRepository);
+            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -474,7 +474,7 @@ namespace PrimeApps.App.Controllers
 
             var deletedRecordCount = await _recordRepository.Delete(record, moduleEntity);
 
-	        _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
+            _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
 
             return Ok(deletedRecordCount);
         }
@@ -526,10 +526,10 @@ namespace PrimeApps.App.Controllers
 
                 if (resultCreate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-				//After create
-	            _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
+                //After create
+                _recordHelper.AfterCreate(moduleEntity, record, AppUser, _warehouse, runDefaults: false, runWorkflows: false, runCalculations: true);
 
             }
 
@@ -550,7 +550,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser,_processRepository);
+                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository);
 
 
                 if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
@@ -560,6 +560,9 @@ namespace PrimeApps.App.Controllers
                 _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
                 await _recordRepository.Delete(record, moduleEntity);
+
+                _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
+
             }
 
             return Ok();
@@ -621,9 +624,9 @@ namespace PrimeApps.App.Controllers
 
                 if (resultUpdate < 1)
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-	            _recordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
+                _recordHelper.AfterUpdate(moduleEntity, recordUpdate, currentRecord, AppUser, _warehouse);
             }
 
             return Ok();

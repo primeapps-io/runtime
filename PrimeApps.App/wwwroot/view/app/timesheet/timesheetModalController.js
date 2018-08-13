@@ -22,11 +22,11 @@ angular.module('primeapps')
 
             $scope.dropdownFields = $filter('filter')($scope.moduleModal.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
             $scope.dropdownFieldDatas = {};
-            for(var i = 0; i < $scope.dropdownFields.length; i++) {
+            for (var i = 0; i < $scope.dropdownFields.length; i++) {
                 $scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
             }
 
-            $scope.setDropdownData = function(field){
+            $scope.setDropdownData = function (field) {
                 if (field.filters && field.filters.length > 0)
                     $scope.dropdownFieldDatas[field.name] = null;
                 else if ($scope.dropdownFieldDatas[field.name] && $scope.dropdownFieldDatas[field.name].length > 0)
@@ -34,14 +34,14 @@ angular.module('primeapps')
 
                 $scope.currentLookupFieldModal = field;
                 $scope.lookupModal()
-                    .then(function(response){
+                    .then(function (response) {
                         $scope.dropdownFieldDatas[field.name] = response;
                     });
 
             };
 
             $scope.timesheetArr = [];
-            var timesheetFields = ['entry_type', 'charge_type', 'selected_project', 'selected_company', 'place_of_performance', 'comment2', 'please_specify', 'please_specify_country', 'per_diem'];
+            var timesheetFields = ['entry_type', 'charge_type', 'activity_code2', 'selected_project', 'selected_company', 'place_of_performance', 'comment2', 'please_specify', 'please_specify_country', 'per_diem'];
             angular.forEach(timesheetFields, function (field) {
                 $scope.timesheetArr.push($filter('filter')($scope.moduleModal.fields, { name: field }, true)[0]);
             });
@@ -71,7 +71,7 @@ angular.module('primeapps')
             $scope.currentHour = helper.floorMinutes(new Date());
             $scope.recordModal = {};
             $scope.recordModal.owner = $scope.currentUser;
-            $scope.perDiemEntryTypeId = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {system_code: 'per_diem_only'}, true)[0].id;
+            $scope.perDiemEntryTypeId = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, { system_code: 'per_diem_only' }, true)[0].id;
             $scope.headerTitleCase = $scope.$parent.requestType;
 
             //if openEditModal func works, requestType becomes 'edit' to specify 'update' request.
@@ -143,14 +143,14 @@ angular.module('primeapps')
 
                     //Day görünümünde entry_type ın seçili gelmesi
                     if ($scope.$parent.$parent.$parent.calendarView === 'day') {
-                        var entryTypeField = $filter('filter')($scope.moduleModal.fields, {name: 'entry_type'}, true)[0];
+                        var entryTypeField = $filter('filter')($scope.moduleModal.fields, { name: 'entry_type' }, true)[0];
                         var entryTypePicklist = picklistsModuleModal[entryTypeField.picklist_id];
                         var entryTypeId;
                         if ($scope.$parent.$parent.$parent.selectedDayTime === '1') {
-                            entryTypeId = $filter('filter')(entryTypePicklist, {system_code: 'morning_only'}, true)[0];
+                            entryTypeId = $filter('filter')(entryTypePicklist, { system_code: 'morning_only' }, true)[0];
                             $scope.recordModal['entry_type'] = entryTypeId;
                         } else if ($scope.$parent.$parent.$parent.selectedDayTime === '2') {
-                            entryTypeId = $filter('filter')(entryTypePicklist, {system_code: 'afternoon_only'}, true)[0];
+                            entryTypeId = $filter('filter')(entryTypePicklist, { system_code: 'afternoon_only' }, true)[0];
                             $scope.recordModal['entry_type'] = entryTypeId;
                         }
                     }
@@ -233,10 +233,10 @@ angular.module('primeapps')
             var year = moment($scope.$parent.calendarDay).year();
             var date = angular.copy($scope.$parent.$parent.$parent.calendarDate);
             var day = moment(date).date();
-            for(var i =0; i<$scope.$parent.$parent.$parent.turkeyHolidays.length; i++){
+            for (var i = 0; i < $scope.$parent.$parent.$parent.turkeyHolidays.length; i++) {
                 var holiday = $scope.$parent.$parent.$parent.turkeyHolidays[i];
-                if(holiday.day === day && holiday.month === month && holiday.year === year){
-                    if(!holiday.half_time)
+                if (holiday.day === day && holiday.month === month && holiday.year === year) {
+                    if (!holiday.half_time)
                         $scope.isTurkeyHoliday = true;
                     else
                         $scope.isTurkeyHalfHoliday = true;
@@ -305,11 +305,11 @@ angular.module('primeapps')
                                 request.status = $scope.statusDraft.id;
                                 request.owner = $rootScope.user.id;
 
-                                if ($scope.$parent.$parent.$parent.day.events.length < 2 || ( $scope.$parent.$parent.$parent.day.events.length == 2 && !$scope.$parent.$parent.$parent.day.events[0].code )) {
-                                    var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {id: recordModal.entry_type}, true)[0].system_code;
+                                if ($scope.$parent.$parent.$parent.day.events.length < 2 || ($scope.$parent.$parent.$parent.day.events.length == 2 && !$scope.$parent.$parent.$parent.day.events[0].code)) {
+                                    var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, { id: recordModal.entry_type }, true)[0].system_code;
                                     angular.forEach($scope.$parent.$parent.$parent.day.events, function (workedTime) {
                                         if (workedTime.entry_type) {
-                                            var workType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {labelStr: workedTime.entry_type}, true)[0].system_code;
+                                            var workType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, { labelStr: workedTime.entry_type }, true)[0].system_code;
 
                                             if (workType == 'full_day' || workType == 'per_diem_only') {
                                                 daysWorkedExist = true;
@@ -385,11 +385,11 @@ angular.module('primeapps')
                                         recordModal.related_timesheet = eventItem.id;
                                 });
 
-                                if ($scope.$parent.$parent.$parent.day.events.length < 2 || ( $scope.$parent.$parent.$parent.day.events.length == 2 && !$scope.$parent.$parent.$parent.day.events[0].code )) {
-                                    var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {id: recordModal.entry_type}, true)[0].system_code;
+                                if ($scope.$parent.$parent.$parent.day.events.length < 2 || ($scope.$parent.$parent.$parent.day.events.length == 2 && !$scope.$parent.$parent.$parent.day.events[0].code)) {
+                                    var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, { id: recordModal.entry_type }, true)[0].system_code;
                                     angular.forEach($scope.$parent.$parent.$parent.day.events, function (workedTime) {
                                         if (workedTime.entry_type) {
-                                            var workType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {labelStr: workedTime.entry_type}, true)[0].system_code;
+                                            var workType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, { labelStr: workedTime.entry_type }, true)[0].system_code;
 
                                             if (workType == 'full_day' || workType == 'per_diem_only') {
                                                 daysWorkedExist = true;
@@ -465,10 +465,10 @@ angular.module('primeapps')
                     var daysWorkedExist = false;
                     var warnMessage = '';
 
-                    if ($scope.$parent.$parent.$parent.day.events.length < 2 || ( $scope.$parent.$parent.$parent.day.events.length === 2 && !$scope.$parent.$parent.$parent.day.events[0].code )) {
+                    if ($scope.$parent.$parent.$parent.day.events.length < 2 || ($scope.$parent.$parent.$parent.day.events.length === 2 && !$scope.$parent.$parent.$parent.day.events[0].code)) {
                         daysWorkedExist = false;
                     } else {
-                        var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, {id: $scope.recordModal.entry_type.id}, true)[0].system_code;
+                        var recordModelEntryType = $filter('filter')($scope.$parent.$parent.$parent.workedTimeItems, { id: $scope.recordModal.entry_type.id }, true)[0].system_code;
                         var currentEntryType = $scope.$parent.$parent.$parent.editData.code;
                         if (recordModelEntryType == 'full_day' || recordModelEntryType == 'per_diem_only') {
                             daysWorkedExist = true;
@@ -536,48 +536,49 @@ angular.module('primeapps')
                 var date = angular.copy($scope.$parent.$parent.$parent.calendarDate);
                 var day = moment(date).date();
 
-                if(field.name === 'charge_type'){
+                if (field.name === 'charge_type') {
                     $scope.isManagement = false;
-                    if(record.value === 'management'){
+                    if (record.value === 'management') {
                         $scope.isProjectHoliday = false;
                         $scope.isManagement = true;
                     }
 
                 }
 
-                if(field.name === 'place_of_performance'){
+                if (field.name === 'place_of_performance') {
                     $scope.specifyCountry = false;
                     $scope.isManagementHalfHoliday = false;
-                    $scope.recordModal.please_specify_country='';
-                    if(record.system_code === 'other')
+                    $scope.recordModal.please_specify_country = '';
+                    if (record.system_code === 'other')
                         $scope.specifyCountry = true;
                 }
 
-                if(field.name === 'please_specify_country'){
+                if (field.name === 'please_specify_country') {
                     $scope.isManagementHoliday = false;
                     $scope.isManagementHalfHoliday = false;
-                        var filter = {
-                            fields: ['total_count()','day','month','year','half_time'],
-                            filters: [{ field: 'country', operator: 'is', value: record.system_code, no: 1 }],
-                            limit: 1,
-                            offset: 0
-                        };
-                        ModuleService.findRecords('holidays', filter)
-                            .then(function (response) {
-                                if(response.data.length>0){
-                                    for(var i = 0; i<response.data.length; i++){
-                                        if(response.data[i]['day'] === day && response.data[i]['month'] === month && response.data[i]['year'] === year){
-                                            if(!response.data[i]['half_time'])
-                                                $scope.isManagementHoliday = true;
-                                            else
-                                                $scope.isManagementHalfHoliday = true;
-                                        }
+                    var filter = {
+                        fields: ['total_count()', 'day', 'month', 'year', 'half_time'],
+                        filters: [{ field: 'country', operator: 'is', value: record.system_code, no: 1 }],
+                        limit: 1,
+                        offset: 0
+                    };
+                    ModuleService.findRecords('holidays', filter)
+                        .then(function (response) {
+                            if (response.data.length > 0) {
+                                for (var i = 0; i < response.data.length; i++) {
+                                    if (response.data[i]['day'] === day && response.data[i]['month'] === month && response.data[i]['year'] === year) {
+                                        if (!response.data[i]['half_time'])
+                                            $scope.isManagementHoliday = true;
+                                        else
+                                            $scope.isManagementHalfHoliday = true;
                                     }
                                 }
-                            });
+                            }
+                        });
                 }
 
-                if(field.name === 'selected_project'){
+                if (field.name === 'selected_project') {
+                    $scope.recordModal['activity_code2'] = null;
                     $scope.isProjectHoliday = false;
                     $scope.isProjectHalfHoliday = false;
                     var filterRequest = {
@@ -590,10 +591,10 @@ angular.module('primeapps')
 
                     ModuleService.findRecords('holidays', filterRequest)
                         .then(function (response) {
-                            if(response.data.length>0){
-                                for(var i = 0; i<response.data.length; i++){
-                                    if(response.data[i]['holidays_id.holidays.day'] === day && response.data[i]['holidays_id.holidays.month'] === month && response.data[i]['holidays_id.holidays.year'] === year){
-                                        if(!response.data[i]['holidays_id.holidays.half_time'])
+                            if (response.data.length > 0) {
+                                for (var i = 0; i < response.data.length; i++) {
+                                    if (response.data[i]['holidays_id.holidays.day'] === day && response.data[i]['holidays_id.holidays.month'] === month && response.data[i]['holidays_id.holidays.year'] === year) {
+                                        if (!response.data[i]['holidays_id.holidays.half_time'])
                                             $scope.isProjectHoliday = true;
                                         else
                                             $scope.isProjectHalfHoliday = true;

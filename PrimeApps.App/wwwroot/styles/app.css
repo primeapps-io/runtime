@@ -787,10 +787,10 @@ img-crop canvas {
     position: relative; }
     .subpanel table .link-container .editable-click {
       margin-right: 10px; }
-    .subpanel table .link-container .link {
+    /*.subpanel table .link-container .link {
       position: absolute;
       right: 0;
-      top: 10px; }
+      top: 10px; }*/
   .subpanel .btn-custom {
     margin-left: 4px;
     font-weight: 500; }

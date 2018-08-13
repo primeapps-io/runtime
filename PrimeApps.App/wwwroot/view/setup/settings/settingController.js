@@ -14,13 +14,12 @@ angular.module('primeapps')
             $scope.customLanguage = customLanguage;
             $scope.showPasswordControl = false;
 
-            //TODO Atakan..
-            //officeHelper.officeTenantInfo()
-            //    .then(function (adInfo) {
-            //        if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
-            //            $scope.changePassword = true;
-            //        }
-            //    });
+            officeHelper.officeTenantInfo()
+                .then(function (adInfo) {
+                    if (!adInfo.data || (adInfo.data.email !== $rootScope.user.email)) {
+                        $scope.showPasswordControl = true;
+                    }
+                });
 
             /// email configuration
             $scope.emailModel = angular.copy($rootScope.system.messaging.PersonalEMail);

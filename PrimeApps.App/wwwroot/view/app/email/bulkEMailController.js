@@ -305,12 +305,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.addTemplatePopover = $scope.addTemplatePopover || $popover(angular.element(document.getElementById('addTemplate')), {
-                        templateUrl: 'view/app/email/addTemplate.html',
-                        placement: 'bottom-right',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'view/app/email/addTemplate.html',
+                    placement: 'bottom-right',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.addTemplate = function (type) {
@@ -381,17 +381,17 @@ angular.module('primeapps')
                     emailProviderType,
                     dialog_uid,
                     $scope.Subject).then(function (response) {
-                    $scope.submittingModal = false;
-                    $scope.mailModal.hide();
-                    $scope.$parent.$parent.$parent.isAllSelected = false;
-                    $scope.templateSubject = $scope.Subject;
-                    $scope.$parent.$parent.$parent.selectedRecords = [];
-                    $scope.$parent.$parent.$parent.selectedRows = [];
-                    if ($scope.$parent.$parent.emailSent) {
-                        $scope.$parent.$parent.emailSent();
-                    }
-                    ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
-                })
+                        $scope.submittingModal = false;
+                        $scope.mailModal.hide();
+                        $scope.$parent.$parent.$parent.isAllSelected = false;
+                        $scope.templateSubject = $scope.Subject;
+                        $scope.$parent.$parent.$parent.selectedRecords = [];
+                        $scope.$parent.$parent.$parent.selectedRows = [];
+                        if ($scope.$parent.$parent.emailSent) {
+                            $scope.$parent.$parent.emailSent();
+                        }
+                        ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
+                    })
                     .catch(function () {
                         $scope.submittingModal = false;
                         $scope.mailModal.hide();
@@ -405,8 +405,14 @@ angular.module('primeapps')
             $scope.setTemplate = function () {
                 $scope.newtemplate.template_subject = $scope.Subject;
                 $scope.newtemplate.tinymce_content = $scope.tinymceModel;
-                $scope.newtemplate.sharing_type = $scope.currentTemplate.sharing_type;
-                $scope.newtemplate.shares = $scope.currentTemplate.shares;
+                if ($scope.currentTemplate) {
+                    $scope.newtemplate.sharing_type = $scope.currentTemplate.sharing_type;
+                    $scope.newtemplate.shares = $scope.currentTemplate.shares;
+                }
+                else {
+                    $scope.newtemplate.sharing_type = 'me';
+                }
+
             };
 
 
@@ -483,15 +489,15 @@ angular.module('primeapps')
                 }
 
                 result.then(function (saveResponse) {
+                    $scope.currentTemplate = saveResponse.data;
                     TemplateService.getAll('email', $scope.module.name)
                         .then(function (listResponse) {
                             $scope.templates = listResponse.data;
                             $scope.template = saveResponse.data.id;
                             ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
-                            
                         });
                 });
             }
         }
     ])
-;
+    ;

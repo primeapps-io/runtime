@@ -336,26 +336,43 @@ namespace PrimeApps.App.Helpers
 
 		public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository)
 		{
-			//TODO: Profile permission check
+            //TODO: Profile permission check
 
-			// Check freeze
-			if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
-			{
-				var process = await processRepository.GetById((int)record["process_id"]);
-				var hasPermission = false;
-				var profiles = process.Profiles.Split(',').Select(Int32.Parse).ToList();
-				foreach (var item in profiles)
-				{
-					if (item == appUser.ProfileId)
-						hasPermission = true;
-				}
+            // Check freeze
+            if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
+            {
+                var process = await processRepository.GetById((int)record["process_id"]);
+                record["freeze"] = true;
 
-				if (appUser != null && !appUser.HasAdminProfile && !hasPermission && !hasPermission)
-					record["freeze"] = true;
-				else
-					record["freeze"] = false;
-			}
-			return 0;
+                if (appUser != null)
+                {
+                    if (appUser.HasAdminProfile)
+                    {
+                        record["freeze"] = false;
+                    }
+                    else
+                    {
+                        if (process.Profiles != "" && process.Profiles != null)
+                        {
+                            var profiles = process.Profiles.Split(',').Select(Int32.Parse).ToList();
+
+                            foreach (var item in profiles)
+                            {
+                                if (item == appUser.ProfileId)
+                                {
+                                    record["freeze"] = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            record["freeze"] = true;
+                        }
+                    }
+                }
+            }
+            return 0;
 		}
 
 		public void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
