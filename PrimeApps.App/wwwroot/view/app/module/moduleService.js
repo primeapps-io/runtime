@@ -3035,7 +3035,7 @@ angular.module('primeapps')
 
                                                                                 var currentFilter = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
 
-                                                                                if (currentFilter && !currentFilter.isView)
+                                                                                if (currentFilter && !angular.isUndefined(currentFilter.isView))
                                                                                     filters.splice(filters.indexOf(currentFilter), 1);
 
                                                                                 continue;
