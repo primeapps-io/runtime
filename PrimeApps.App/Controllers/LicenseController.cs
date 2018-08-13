@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.User;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.SqlServer.Management.Sdk.Differencing.SPI;
 
 namespace PrimeApps.App.Controllers
 {
@@ -206,6 +207,13 @@ namespace PrimeApps.App.Controllers
             userLicense.Used = usedLicenseCount;
 
             return Ok(userLicense);
+        }
+
+        [Route("GetModuleLicenseCount")]
+        [HttpPost]
+        public async Task<int> GetModuleLicenseCount()
+        {
+            return await _platformUserRepository.GetTenantModuleLicenseCount(AppUser.TenantId);
         }
 
         [Route("SetUserLicenseCount"), HttpGet]

@@ -184,8 +184,17 @@ namespace PrimeApps.Model.Repositories
                     }).OrderByDescending(x => x.isAdmin).ToList()
                 }).ToListAsync();
 
-			//return workgroup object.
-			return result;
-		}
-	}
+            //return workgroup object.
+            return result;
+        }
+
+        public async Task<int> GetTenantModuleLicenseCount(int tenantId)
+        {
+            var moduleLicenseCount = await DbContext.TenantLicenses.Where(x => x.TenantId == tenantId)
+                  .Select(x => x.ModuleLicenseCount).SingleOrDefaultAsync();
+
+            return moduleLicenseCount;
+        }
+
+    }
 }

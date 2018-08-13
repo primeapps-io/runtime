@@ -758,7 +758,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/modules/moduleSetupController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
+								cdnUrl + 'view/setup/modules/moduleSetupService.js',
+								cdnUrl + 'view/setup/license/licenseService.js'
                             ]);
                         }]
                     }
