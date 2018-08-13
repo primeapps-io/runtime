@@ -322,7 +322,7 @@ angular.module('primeapps')
                                             if (value != '-') {
                                                 var userItem =
                                                     $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0
-                                                        ];
+                                                    ];
                                                 user.id = userItem.id;
                                                 user.email = userItem.Email;
                                                 user.full_name = userItem.FullName;
@@ -359,7 +359,7 @@ angular.module('primeapps')
                                 case 'checkbox':
                                     fieldValue = $filter('filter')($scope.modulePicklists.yes_no, { system_code: value }, true)[0];
                                     break;
-                                default :
+                                default:
                                     fieldValue = value;
                                     break;
                             }
@@ -432,6 +432,7 @@ angular.module('primeapps')
                 var getNumberRegex = /[^\d.-]/g;
                 if (filter.value.indexOf('now(') > -1) {
                     filter.costumeDate = "now()";
+                    return true;
                 }
                 if (filter.value.indexOf('today(') > -1) {
                     if (/\d+/.test(filter.value)) {
