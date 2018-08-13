@@ -358,7 +358,7 @@
                             </div>
                             <div class="col-md-8 pull-right">
                                 <button type="button" class="btn btn-custom" ng-disabled="saving" ng-click="modalCancel(); $hide()">{{'Common.Cancel' | translate}}</button>
-                                <button type="submit" class="btn btn-primary" ng-if="bulkUpdate.field" ladda="submittingModal">{{'Common.Save' | translate}}</button>
+                                <button type="submit" class="btn btn-primary" ng-if="bulkUpdate.field" ng-disabled="bulkUpdate.value == null" ladda="submittingModal">{{'Common.Save' | translate}}</button>
                             </div>
                         </div>
                     </div>
