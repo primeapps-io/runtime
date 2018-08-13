@@ -69,7 +69,7 @@ namespace PrimeApps.App.Helpers
                     var requestInsert = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.insert);
                     var requestUpdate = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.update);
 
-                    if ((requestInsert != null && requestInsert.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected))
+                    if ((requestInsert != null && requestInsert.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected))
                         return;
 
 

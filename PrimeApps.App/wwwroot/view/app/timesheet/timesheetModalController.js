@@ -41,7 +41,7 @@ angular.module('primeapps')
             };
 
             $scope.timesheetArr = [];
-            var timesheetFields = ['entry_type', 'charge_type', 'selected_project', 'selected_company', 'place_of_performance', 'comment2', 'please_specify', 'please_specify_country', 'per_diem'];
+            var timesheetFields = ['entry_type', 'charge_type', 'activity_code2', 'selected_project', 'selected_company', 'place_of_performance', 'comment2', 'please_specify', 'please_specify_country', 'per_diem'];
             angular.forEach(timesheetFields, function (field) {
                 $scope.timesheetArr.push($filter('filter')($scope.moduleModal.fields, { name: field }, true)[0]);
             });

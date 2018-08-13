@@ -83,7 +83,7 @@
                                 <label class="col-sm-3 control-label">{{'Setup.Workflow.Status' | translate}}:</label>
                                 <div class="col-sm-9">
                                     <label class="checkbox-inline">
-                                        <input type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
+                                        <input ng-disabled="!allowEdit" type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
                                     </label>
                                 </div>
                             </div>
