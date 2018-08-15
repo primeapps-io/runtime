@@ -20,7 +20,7 @@ namespace PrimeApps.App.Helpers
     public interface ICalculationHelper
     {
         Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
-        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0);
+        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0, bool manuelEkIzin = false);
         Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record);
         Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule, Warehouse warehouse);
         Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module, Warehouse warehouse);
@@ -2369,7 +2369,7 @@ namespace PrimeApps.App.Helpers
                                             }
                                         }
 
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], warehouse, true);
+                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], warehouse,manuelEkIzin: true);
                                         break;
                                     case "izinler":
                                         if (record["calisan"].IsNullOrEmpty())
