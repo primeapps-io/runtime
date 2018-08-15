@@ -179,6 +179,7 @@ angular.module('primeapps')
                     workflowModel.name = workflow.name;
                     workflowModel.module = module;
                     workflowModel.active = workflow.active;
+                    workflowModel.delete_logs = workflow.delete_logs;
                     workflowModel.processFilter = workflow.process_filter;
                     workflowModel.frequency = workflow.frequency || 'one_time';
                     workflowModel.operation = {};
@@ -606,6 +607,7 @@ angular.module('primeapps')
                     workflow.name = workflowModel.name;
                     workflow.frequency = workflowModel.frequency;
                     workflow.active = workflowModel.active;
+                    workflow.delete_logs = workflowModel.delete_logs;
                     workflow.process_filter = workflowModel.processFilter;
                     workflow.operations = [];
 

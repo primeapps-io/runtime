@@ -23,6 +23,8 @@ namespace PrimeApps.App.Models
 
         public bool Active { get; set; }
 
+        public bool DeleteLogs { get; set; }
+
         [RequiredCollection]
         public string[] Operations { get; set; }
 

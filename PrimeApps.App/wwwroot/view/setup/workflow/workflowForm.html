@@ -53,8 +53,7 @@
                             <div class="row form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
                                 <label class="col-sm-3 control-label"><span class="required-field">*</span> {{'Setup.Workflow.Module' | translate}}:</label>
                                 <div class="col-sm-9">
-                                    <select
-                                            class="form-control"
+                                    <select class="form-control"
                                             name="module"
                                             required
                                             ng-model="workflowModel.module"
@@ -80,7 +79,7 @@
                                         <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></span>
                                     </label><br>
                                     <label class="checkbox-inline">
-                                        <input name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                                        <input ng-change="operationUpdateChanged(workflowModel.operation.update)" name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
                                     </label><br>
                                     <label class="checkbox-inline">
                                         <input name="operation" type="checkbox" ng-model="workflowModel.operation.delete" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.deleteLabel' | translate"></span>
@@ -90,13 +89,21 @@
                             <div class="row form-group">
                                 <label class="col-sm-3 control-label">{{'Setup.Workflow.ExecutionFrequency' | translate}}:</label>
                                 <div class="col-sm-9">
-                                    <label class="radio-inline">
-                                        <input name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
+                                    <label class="radio-inline" ng-show="workflowModel.operation.update">
+                                        <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="one_time">
                                         {{'Setup.Workflow.ExecutionFrequencies.OneTime' | translate}}
                                     </label>
                                     <label class="radio-inline">
-                                        <input name="operation" type="radio" ng-model="workflowModel.frequency" value="continuous">
+                                        <input ng-change="frequencyChanged(workflowModel.frequency)" name="operation" type="radio" ng-model="workflowModel.frequency" value="continuous">
                                         {{'Setup.Workflow.ExecutionFrequencies.Continuous' | translate}}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row form-group" ng-show="id && workflowModel.frequency == 'one_time'">
+                                <label class="col-sm-3 control-label">{{'Setup.Workflow.DeleteLogs' | translate}}:</label>
+                                <div class="col-sm-9">
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" ng-model="workflowModel.delete_logs">
                                     </label>
                                 </div>
                             </div>
@@ -111,8 +118,8 @@
                             <div class="wizard-buttons text-right">
                                 <a href="#/app/setup/workflows" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                                 <button type="button" class="btn btn-primary btn-w-sm"
-                                        ng-click="validate() ? wizardStep = 1 : false;"><i
-                                        class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
+                                        ng-click="validate() ? wizardStep = 1 : false;">
+                                    <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
                                     {{'Common.Next' | translate}}
                                 </button>
                             </div>

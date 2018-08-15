@@ -36,7 +36,7 @@ angular.module('primeapps')
                         $scope.workflowModel = {};
                         $scope.workflowModel.active = true;
                         $scope.workflowModel.process_filter = 'none';
-                        $scope.workflowModel.frequency = 'one_time';
+                        $scope.workflowModel.frequency = 'continuous';
                         $scope.loading = false;
                     }
                     else {
@@ -784,7 +784,23 @@ angular.module('primeapps')
                         $scope.workflowModel.send_notification.customBcc = null;
                 }
             };
+            $scope.operationUpdateChanged = function (status) {
+                if (!status) {
+                    $scope.workflowModel.frequency = 'continuous';
 
+                    if ($scope.id)
+                        $scope.workflowModel.delete_logs = false;
+                }
+
+            }
+
+            $scope.frequencyChanged = function (frequency) {
+                if ($scope.id) {
+                    if (frequency === 'continuous')
+                        $scope.workflowModel.delete_logs = false;
+                }
+
+            }
             $scope.updatableField = function (field) {
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
                     return false;

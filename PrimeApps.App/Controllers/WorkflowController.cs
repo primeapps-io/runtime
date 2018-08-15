@@ -104,7 +104,8 @@ namespace PrimeApps.App.Controllers
             await _workflowHelper.UpdateEntity(workflow, workflowEntity, AppUser.TenantLanguage);
             await _workflowRepository.Update(workflowEntity, currentFilterIds);
 
-            await _workflowRepository.DeleteLogs(id);
+            if (workflow.DeleteLogs)
+                await _workflowRepository.DeleteLogs(id);
 
             return Ok(workflowEntity);
         }
