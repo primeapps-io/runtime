@@ -118,7 +118,7 @@ namespace PrimeApps.App.Helpers
 
                                         using (var templateRepostory = new TemplateRepository(databaseContext, _configuration))
                                         {
-                                            var mailTemplate = await templateRepostory.GetById(48);//Organizasyonel değişiklik bildirimi
+                                            var mailTemplate = await templateRepostory.GetById(52);//Organizasyonel değişiklik bildirimi
                                             mailSubject = mailTemplate.Subject;
                                             mailBody = mailTemplate.Content;
                                         }
