@@ -181,7 +181,7 @@ angular.module('primeapps')
                 }
 
                 if ($scope.view.filter_logic && $rootScope.language === 'tr')
-                    $scope.view.filter_logic = $scope.view.filter_logic.replace('or', 'veya').replace('and', 've');
+                    $scope.view.filter_logic = $scope.view.filter_logic.replace(/or/g, 'veya').replace(/and/g, 've');
             }
             else {
                 $scope.view = {};
@@ -540,7 +540,7 @@ angular.module('primeapps')
                 view.filters = [];
 
                 if ($scope.view.filter_logic) {
-                    view.filter_logic = $scope.view.filter_logic.replace('veya', 'or').replace('ve', 'and');
+                    view.filter_logic = $scope.view.filter_logic.replace(/veya/g, 'or').replace(/ve/g, 'and');
 
                     if (!(view.filter_logic.charAt(0) === '(' && view.filter_logic.charAt(view.filter_logic.length - 1) === ')'))
                         view.filter_logic = '(' + view.filter_logic + ')';
