@@ -15,7 +15,7 @@ using static PrimeApps.App.Helpers.ProcessHelper;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/process_request"), Authorize]
-	public class ProcessRequestController : ApiBaseController
+    public class ProcessRequestController : ApiBaseController
     {
         private IProcessRequestRepository _processRequestRepository;
         private IModuleRepository _moduleRepository;
@@ -23,30 +23,32 @@ namespace PrimeApps.App.Controllers
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
-	    private IProcessHelper _processHelper;
-	    private IRecordHelper _recordHelper;
+        private ICalculationHelper _calculationHelper;
+        private IProcessHelper _processHelper;
+        private IRecordHelper _recordHelper;
 
-        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
+        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ICalculationHelper calculationHelper, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
         {
             _processRequestRepository = processRequestRepository;
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
             _warehouse = warehouse;
 
-	        _processHelper = processHelper;
-	        _recordHelper = recordHelper;
+            _calculationHelper = calculationHelper;
+            _processHelper = processHelper;
+            _recordHelper = recordHelper;
             _configuration = configuration;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_processRequestRepository);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_recordRepository);
+        {
+            SetContext(context);
+            SetCurrentUser(_processRequestRepository);
+            SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_recordRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
         [Route("get_requests/{id:int}"), HttpGet]
         public async Task<IActionResult> GetAll(int id)
@@ -93,6 +95,13 @@ namespace PrimeApps.App.Controllers
 
             await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
+            if (request.ModuleName == "izinler")
+            {
+                //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+                var moduleEntity = await _moduleRepository.GetByName(request.ModuleName);
+                await _calculationHelper.Calculate(request.RecordId, moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+            }
+
             return Ok(requestEntity);
         }
 
@@ -109,6 +118,13 @@ namespace PrimeApps.App.Controllers
             await _processRequestRepository.Update(requestEntity);
 
             await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+
+            if (request.ModuleName == "izinler")
+            {
+                //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+                var moduleEntity = await _moduleRepository.GetByName(request.ModuleName);
+                await _calculationHelper.Calculate(request.RecordId, moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+            }
 
             return Ok(requestEntity);
         }
@@ -153,6 +169,10 @@ namespace PrimeApps.App.Controllers
             try
             {
                 await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
+
+                //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+                if (moduleEntity.Name == "izinler")
+                    await _calculationHelper.Calculate((int)record["id"], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
             }
             catch (ProcessFilterNotMatchException ex)
             {

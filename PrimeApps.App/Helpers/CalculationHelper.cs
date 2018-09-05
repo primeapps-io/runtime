@@ -10,6 +10,7 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace PrimeApps.App.Helpers
     public interface ICalculationHelper
     {
         Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
-        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0, bool manuelEkIzin = false);
+        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, RecordRepository recordRepository, ModuleRepository moduleRepository, int tenantId = 0, bool manuelEkIzin = false);
         Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record);
         Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule, Warehouse warehouse);
         Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module, Warehouse warehouse);
@@ -2153,7 +2154,7 @@ namespace PrimeApps.App.Helpers
                                         };
 
                                         var izinlerCalisanPG = recordRepository.Find("izin_turleri", findRequestIzinlerCalisanPG, false).First;
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"], warehouse);
+                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"], warehouse, recordRepository, moduleRepository);
                                         break;
                                     case "calisanlar":
 
@@ -2369,7 +2370,7 @@ namespace PrimeApps.App.Helpers
                                             }
                                         }
 
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], warehouse,manuelEkIzin: true);
+                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], warehouse, recordRepository, moduleRepository, manuelEkIzin: true);
                                         break;
                                     case "izinler":
                                         if (record["calisan"].IsNullOrEmpty())
@@ -2399,25 +2400,7 @@ namespace PrimeApps.App.Helpers
                                             await recordRepository.Update(record, izinlerModule, isUtc: false);
                                         }
 
-                                        //await YillikIzinHesaplama((int)record["calisan"], izinTuru, recordRepository, moduleRepository);
-                                        if (record["process_status"] != null)
-                                        {
-                                            if ((bool)izinler["yillik_izin"] && operationType == OperationType.update && !record["process_status"].IsNullOrEmpty() && (int)record["process_status"] == 2)
-                                                await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], warehouse);
-                                            else if ((bool)izinler["yillik_izin"] && operationType == OperationType.delete && !record["process_status"].IsNullOrEmpty() && (int)record["process_status"] == 2)
-                                                await DeleteAnnualLeave((int)record["calisan"], (int)izinler["id"], record);
-                                        }
-                                        else
-                                        {
-                                            if (operationType == OperationType.delete)
-                                            {
-                                                await DeleteAnnualLeave((int)record["calisan"], (int)izinler["id"], record);
-                                            }
-                                            else
-                                            {
-                                                await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], warehouse);
-                                            }
-                                        }
+                                        await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], warehouse, recordRepository, moduleRepository);
                                         break;
                                     case "masraf_kalemleri":
                                         try
@@ -2533,7 +2516,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0, bool manuelEkIzin = false)
+        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, RecordRepository recordRepository, ModuleRepository moduleRepository, int tenantId = 0, bool manuelEkIzin = false)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -2662,6 +2645,13 @@ namespace PrimeApps.App.Helpers
                     if (new DateTime(DateTime.UtcNow.Year, calismayaBasladigiZaman.Month, calismayaBasladigiZaman.Day, 0, 0, 0) > DateTime.UtcNow)
                         year--;
 
+                    Filter filter;
+                    if (!izinKurali["izin_hakki_onay_sureci_sonunda_dusulsun"].IsNullOrEmpty() && !(bool)izinKurali["izin_hakki_onay_sureci_sonunda_dusulsun"])
+                        filter = new Filter { Field = "process.process_requests.process_status", Operator = Operator.NotEqual, Value = 3, No = 5 };
+                    else
+                        filter = new Filter { Field = "process.process_requests.process_status", Operator = Operator.Equals, Value = 2, No = 5 };
+
+
                     var findRequestIzinler = new FindRequest
                     {
                         Fields = new List<string> { "hesaplanan_alinacak_toplam_izin", "process.process_requests.process_status" },
@@ -2670,8 +2660,8 @@ namespace PrimeApps.App.Helpers
                     new Filter { Field = "calisan", Operator = Operator.Equals, Value = calisanId, No = 1 },
                     new Filter { Field = "baslangic_tarihi", Operator = Operator.GreaterEqual, Value = new DateTime(year, calismayaBasladigiZaman.Month, calismayaBasladigiZaman.Day, 0, 0, 0).ToString("yyyy-MM-dd h:mm:ss"), No = 2 },
                     new Filter { Field = "izin_turu", Operator = Operator.Equals, Value = izinTuruId, No = 3 },
-                    new Filter { Field = "deleted", Operator = Operator.Equals, Value = false, No = 4 },
-                    new Filter { Field = "process.process_requests.process_status", Operator = Operator.Equals, Value = 2, No = 5 }
+                    new Filter { Field = "deleted", Operator = Operator.Equals, Value = false, No = 4 }, 
+                    filter
                 },
                         Limit = 9999
                     };
