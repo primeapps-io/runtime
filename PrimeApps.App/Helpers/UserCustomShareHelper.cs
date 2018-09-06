@@ -28,7 +28,7 @@ namespace PrimeApps.App.Helpers
         public static UserCustomShare UpdateEntity(UserCustomShareBindingModels userOwnerModel, UserCustomShare userOwner, IUserCustomShareRepository userOwnerRepository)
         {
             userOwner.UserId = userOwnerModel.UserId;
-            userOwnerModel.SharedUserId = userOwnerModel.SharedUserId;
+            userOwner.SharedUserId = userOwnerModel.SharedUserId;
             //userOwner.Users = userOwnerModel.Users;
             //userOwner.UserGroups = "{" + userOwnerModel.UserGroups + "}";
             userOwner.Modules = userOwnerModel.Modules;
