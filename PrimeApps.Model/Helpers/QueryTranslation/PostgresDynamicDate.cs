@@ -98,6 +98,9 @@ namespace PrimeApps.Model.Helpers.QueryTranslation
                 match = funct.Value.Match(value);
                 if (match.Success)
                 {
+                    //SQL için eklendi.
+                    timezoneOffset = 0;
+
                     if (match.Groups.Count > 2)
                     {
                         int.TryParse(match.Groups[2].Value, out interval);
