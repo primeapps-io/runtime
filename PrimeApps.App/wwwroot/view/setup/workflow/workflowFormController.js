@@ -35,7 +35,7 @@ angular.module('primeapps')
                     if (!$scope.id) {
                         $scope.workflowModel = {};
                         $scope.workflowModel.active = true;
-                        $scope.workflowModel.process_filter = 'none';
+                        $scope.workflowModel.processFilter = 'none';
                         $scope.workflowModel.frequency = 'continuous';
                         $scope.loading = false;
                     }
@@ -110,10 +110,10 @@ angular.module('primeapps')
 
                 if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0]) {
                     $scope.showProcessFilter = true;
-                    $scope.workflowModel.process_filter = 'all';
+                    $scope.workflowModel.processFilter = 'all';
                 }
                 else {
-                    $scope.workflowModel.process_filter = 'none';
+                    $scope.workflowModel.processFilter = 'none';
                     $scope.showProcessFilter = false;
                 }
 

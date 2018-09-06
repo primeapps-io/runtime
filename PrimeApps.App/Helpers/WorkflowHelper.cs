@@ -98,7 +98,7 @@ namespace PrimeApps.App.Helpers
                         bool hasProcessFilter = true;
                         if (workflow.ProcessFilter != WorkflowProcessFilter.None)
                         {
-                            if (!record["process_id"].IsNullOrEmpty())
+                            if (!record["process_id"].IsNullOrEmpty() || (record["process_id"].IsNullOrEmpty() && workflow.ProcessFilter == WorkflowProcessFilter.All))
                             {
                                 switch (workflow.ProcessFilter)
                                 {
