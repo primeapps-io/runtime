@@ -2693,7 +2693,7 @@ select option[disabled] {
 }
 
 .moduleProfileSettings {
-  .setup-modal .modal-content .modal-body .autocomplete {
-    width: 280px !important;
-  }
+    .tags {
+        width: 280px !important;
+    }
 }
