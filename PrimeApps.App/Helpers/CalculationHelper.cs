@@ -2166,6 +2166,8 @@ namespace PrimeApps.App.Helpers
                                             Offset = 0
                                         };
 
+
+
                                         var izinlerCalisan = recordRepository.Find("izin_turleri", findRequestIzinlerCalisan, false).First;
 
                                         var rehberModule = await moduleRepository.GetByName("rehber");
@@ -2389,14 +2391,15 @@ namespace PrimeApps.App.Helpers
                                         var izinler = recordRepository.Find("izin_turleri", findRequestIzinler, false).First;
 
                                         //İzin türüne göre izinler de gün veya saat olduğunu belirtme.
-                                        if (!izinTuru["gunluk"].IsNullOrEmpty() && !record["gunsaat"].IsNullOrEmpty())
+                                        if (!izinTuru["saatlik_kullanim_yapilir"].IsNullOrEmpty())
                                         {
-                                            if ((string)izinTuru["gunluk"] == "Evet")
+                                            if (!(bool)izinTuru["saatlik_kullanim_yapilir"])
                                                 record["gunsaat"] = "Gün";
                                             else
                                                 record["gunsaat"] = "Saat";
 
                                             var izinlerModule = await moduleRepository.GetByName("izinler");
+
                                             await recordRepository.Update(record, izinlerModule, isUtc: false);
                                         }
 
