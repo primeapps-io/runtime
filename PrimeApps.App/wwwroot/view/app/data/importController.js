@@ -644,7 +644,7 @@ angular.module('primeapps')
 
                                 var recordFieldValue = getRecordFieldValueAndValidate(cellValue, field, i + 2, fieldMapValue);
 
-                                if (!recordFieldValue)
+                                if (angular.isUndefined(recordFieldValue))
                                     break;
 
                                 record[fieldMapKey] = recordFieldValue;
