@@ -2261,7 +2261,8 @@ angular.module('primeapps')
 
                                 if (baslangicTarihi.toISOString() === bitisTarihi.toISOString()) {
                                     record['from_entry_type'] = picklists[scope.customLeaveFields['from_entry_type'].picklist_id][0];
-                                    record['to_entry_type'] = picklists[scope.customLeaveFields['to_entry_type'].picklist_id][1];
+                                     //Yıllık izin alınmak istendiğinde Bitiş Tarihi aynı tarih atılıp öğleden sonraya çekiliyordu. Bunun yerine artık Sabah olarak basıcak.
+                                    //record['to_entry_type'] = picklists[scope.customLeaveFields['to_entry_type'].picklist_id][1];
                                 }
 
                                 if (record['to_entry_type'].system_code === 'entry_type_afternoon')
