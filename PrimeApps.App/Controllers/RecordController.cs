@@ -472,11 +472,11 @@ namespace PrimeApps.App.Controllers
             //Set warehouse database name
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            var deletedRecordCount = await _recordRepository.Delete(record, moduleEntity);
+            await _recordRepository.Delete(record, moduleEntity);
 
             _recordHelper.AfterDelete(moduleEntity, record, AppUser, _warehouse);
 
-            return Ok(deletedRecordCount);
+            return Ok();
         }
 
         [Route("create_bulk/{module:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpPost]
