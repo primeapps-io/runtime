@@ -171,7 +171,7 @@ namespace PrimeApps.App.Jobs
                                                 calisan["devreden_izin"] = devredecekIzin;
                                                 await _recordRepository.Update(calisan, module, isUtc: false);
 
-                                                await _calculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinler["id"], warehouse,manuelEkIzin: true);
+                                                await _calculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinler["id"], warehouse, manuelEkIzin: true);
                                             }
                                         }
                                     }

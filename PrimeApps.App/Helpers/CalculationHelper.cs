@@ -21,7 +21,7 @@ namespace PrimeApps.App.Helpers
     public interface ICalculationHelper
     {
         Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
-        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, RecordRepository recordRepository, ModuleRepository moduleRepository, int tenantId = 0, bool manuelEkIzin = false);
+        Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0, bool manuelEkIzin = false);
         Task<bool> DeleteAnnualLeave(int userId, int izinTuruId, JObject record);
         Task<bool> CalculateTimesheet(JArray timesheetItemsRecords, UserItem appUser, Module timesheetItemModule, Module timesheetModule, Warehouse warehouse);
         Task<decimal> CalculateAccountBalance(JObject record, string currency, UserItem appUser, Module currentAccountModule, Picklist currencyPicklistSalesInvoice, Module module, Warehouse warehouse);
@@ -2154,7 +2154,7 @@ namespace PrimeApps.App.Helpers
                                         };
 
                                         var izinlerCalisanPG = recordRepository.Find("izin_turleri", findRequestIzinlerCalisanPG, false).First;
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"], warehouse, recordRepository, moduleRepository);
+                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisanPG["id"], warehouse);
                                         break;
                                     case "calisanlar":
 
@@ -2370,7 +2370,7 @@ namespace PrimeApps.App.Helpers
                                             }
                                         }
 
-                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], warehouse, recordRepository, moduleRepository, manuelEkIzin: true);
+                                        await YillikIzinHesaplama((int)record["id"], (int)izinlerCalisan["id"], warehouse, manuelEkIzin: true);
                                         break;
                                     case "izinler":
                                         if (record["calisan"].IsNullOrEmpty())
@@ -2400,7 +2400,7 @@ namespace PrimeApps.App.Helpers
                                             await recordRepository.Update(record, izinlerModule, isUtc: false);
                                         }
 
-                                        await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], warehouse, recordRepository, moduleRepository);
+                                        await YillikIzinHesaplama((int)record["calisan"], (int)izinler["id"], warehouse);
                                         break;
                                     case "masraf_kalemleri":
                                         try
@@ -2516,7 +2516,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, RecordRepository recordRepository, ModuleRepository moduleRepository, int tenantId = 0, bool manuelEkIzin = false)
+        public async Task<bool> YillikIzinHesaplama(int userId, int izinTuruId, Warehouse warehouse, int tenantId = 0, bool manuelEkIzin = false)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -2660,7 +2660,7 @@ namespace PrimeApps.App.Helpers
                     new Filter { Field = "calisan", Operator = Operator.Equals, Value = calisanId, No = 1 },
                     new Filter { Field = "baslangic_tarihi", Operator = Operator.GreaterEqual, Value = new DateTime(year, calismayaBasladigiZaman.Month, calismayaBasladigiZaman.Day, 0, 0, 0).ToString("yyyy-MM-dd h:mm:ss"), No = 2 },
                     new Filter { Field = "izin_turu", Operator = Operator.Equals, Value = izinTuruId, No = 3 },
-                    new Filter { Field = "deleted", Operator = Operator.Equals, Value = false, No = 4 }, 
+                    new Filter { Field = "deleted", Operator = Operator.Equals, Value = false, No = 4 },
                     filter
                 },
                         Limit = 9999

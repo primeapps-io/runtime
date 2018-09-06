@@ -197,9 +197,9 @@ namespace PrimeApps.App.Controllers
 
             foreach (JObject calisan in calisanlar)
             {
-				//Set warehouse database name
-				_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
-				await _calculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinTuru["id"], _warehouse, tenantId);
+                //Set warehouse database name
+                _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+                await _calculationHelper.YillikIzinHesaplama((int)calisan["id"], (int)izinTuru["id"], _warehouse, tenantId);
             }
 
             return Ok("Updated all");
