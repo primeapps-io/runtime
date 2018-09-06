@@ -533,7 +533,7 @@ angular.module('primeapps')
                                 secondModuleObj.module = module;
                                 secondModuleObj.name = secondModuleObj.module['label_' + $rootScope.language + '_singular'];
                                 secondModuleObj.isSameModule = true;
-                                secondModuleObj.systemName = firstModule;
+                                secondModuleObj.systemName = secondModule;
                                 secondModuleObj.id = $filter('filter')(notificationFields, { name: secondModuleObj.name }, true)[0].id;
                             }
                             else {
