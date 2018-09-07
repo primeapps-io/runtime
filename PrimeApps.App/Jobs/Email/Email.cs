@@ -278,8 +278,7 @@ namespace PrimeApps.App.Jobs.Email
                         var recordTable = "";
                         var recordRow = "<table style=\"width:100%;height:30px\"; border=\"0\" cellpadding=\"0\" cellspacing=\"0\" ><tr><td style=\"border: solid 1px #e5e8ec; background-color:#f1f1f1;width:25%;padding-left: 10px;\">{label}</td><td style=\"border:solid 1px #e5e8ec;width:40%;padding-left: 10px;\">{value}</td></tr></table>" + "\n";
 
-                        var fields = module.Fields.Where(x => x.DisplayDetail && x.Validation != null && x.Validation.Required.HasValue && x.Validation.Required.Value && (x.Permissions == null || x.Permissions.Count < 1));
-
+                        var fields = module.Fields.Where(x => x.DisplayDetail && x.Validation != null && x.Validation.Required.HasValue && x.Validation.Required.Value && (x.Permissions == null || x.Permissions.Count < 1)).OrderBy(x => x.Order);
                         if (module.Name == "izinler" && !record["calisan.id"].IsNullOrEmpty())
                         {
                             var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + "Gün";

@@ -894,9 +894,9 @@ namespace PrimeApps.App.Helpers
                         }
                         string beforeCc = "";
                         var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
-                        if (!record["process_status_order"].IsNullOrEmpty() && (int)record["process_status_order"] != 1 && recordMail.Contains("@etiya.com") && process.Module.Name == "ise_alim_talepleri")
+                        if (!record["process_status_order"].IsNullOrEmpty() && processOrder != 1 && recordMail.Contains("@etiya.com"))
                         {
-                            switch ((int)record["process_status_order"])
+                            switch (processOrder)
                             {
                                 case 2:
                                     beforeCc = (string)record["custom_approver"] + "," + "hr@etiya.com";
@@ -995,7 +995,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
-                                notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
+                                notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                             }
                             else if (request.OperationType == OperationType.delete)
                             {
