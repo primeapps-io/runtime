@@ -32,7 +32,7 @@
                             name="profile"
                             ng-model="addUserModel.profile"
                             required
-                            ng-options="o.id as o.name for o in profiles">
+                            ng-options="o.id as o.name for o in profiles | orderBy:'name'">
                         <option value="">{{'Setup.Users.NewUserProfile' | translate}}</option>
                     </select>
                 </div>

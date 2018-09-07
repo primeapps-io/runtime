@@ -10,7 +10,7 @@ namespace PrimeApps.App.Jobs.Messaging
         /// <summary>
         /// Receiver Address
         /// </summary>
-        public string EmailTo { get; set; }
+        public IList<string> EmailTo { get; set; }
 
         /// <summary>
         /// Sender Addres

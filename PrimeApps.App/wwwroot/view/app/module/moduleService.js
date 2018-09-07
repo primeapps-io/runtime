@@ -893,7 +893,7 @@ angular.module('primeapps')
                         filters: filters,
                         sort_field: field.lookupModulePrimaryField.name,
                         sort_direction: 'asc',
-                        limit: 30,
+                        limit: 1000,
                         offset: 0
                     };
 

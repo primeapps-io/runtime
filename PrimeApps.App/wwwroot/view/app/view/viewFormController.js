@@ -254,7 +254,7 @@ angular.module('primeapps')
                     $scope.modulePicklists = picklists;
                     $scope.view.filterList = [];
 
-                    for (var i = 0; i < 5; i++) {
+                    for (var i = 0; i < 10; i++) {
                         var filter = {};
                         filter.field = null;
                         filter.operator = null;

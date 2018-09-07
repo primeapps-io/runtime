@@ -270,10 +270,12 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                 if (isAllSelected)
                 {
                     //Query with filtered or non filtered selectedAll ids..
-                    FindRequest findRequest = JsonConvert.DeserializeObject<FindRequest>(query);
+                    var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+                    var findRequest = JsonConvert.DeserializeObject<FindRequest>(query, serializerSettings);
 
                     //Set find request limit to our maximum value 3000 unlike filter default
                     findRequest.Limit = 30000;
+
                     using (var _scope = _serviceScopeFactory.CreateScope())
                     {
                         var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();

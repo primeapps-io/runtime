@@ -171,13 +171,13 @@ namespace PrimeApps.App.Controllers
 
                 if (emailRequest.Bcc == null)
                     emailRequest.Bcc = "";
-				
+                var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
                 foreach (var emailRecipient in emailRequest.ToAddresses)
-                {
-                    var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
+                {       
                     externalEmail.AddRecipient(emailRecipient);
-                    externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc);
                 }
+
+                externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc);
 
                 return Ok(emailRequest.ToAddresses.Count());
             }

@@ -742,7 +742,7 @@ angular.module('primeapps')
                         data_type: 'lookup',
                         deleted: false
                     }, true);
-                    if (lookupcount.length > 9) {
+                    if (lookupcount.length > 11) {
                         ngToast.create({
                             content: $filter('translate')('Setup.Modules.MaxLookupCount'),
                             className: 'warning'

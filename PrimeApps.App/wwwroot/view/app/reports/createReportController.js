@@ -222,17 +222,26 @@ angular.module('primeapps')
                 $scope.reportModel.aggregations = [];
                 $scope.module = angular.copy($filter('filter')($rootScope.modules, { id: $scope.reportModel.module_id }, true)[0]);
 
-                angular.forEach($scope.module.fields, function (item) {
-                    if (item.data_type === 'lookup') {
-                        item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
-                    }
-                });
-
-
                 $scope.fields = {
                     "availableFields": angular.copy($scope.module.fields),
                     "selectedFields": []
                 };
+
+                if (!$scope.ReportId) {
+                    angular.forEach($scope.module.fields, function (item) {
+                        if (item.deleted || !ModuleService.hasFieldDisplayPermission(item) && item.multiline_type != 'large')
+                            return;
+
+                        if (item.data_type === 'lookup' && item.lookup_type != 'users') {
+                            item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
+                        }
+
+                        $scope.fields.availableFields.push(item);
+
+                    });
+                    $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
+
+                }
 
                 ModuleService.getPicklists($scope.module, true)
                     .then(function (picklists) {
@@ -800,13 +809,18 @@ angular.module('primeapps')
                     $scope.fields.availableFields = [];
                     $scope.fields.selectedFields = [];
                     angular.forEach($scope.module.fields, function (item) {
+                        if (item.deleted || !ModuleService.hasFieldDisplayPermission(item) && item.multiline_type != 'large')
+                            return;
                         var field = $filter('filter')($scope.currentReport.fields, { field: item.name }, true)[0];
                         if (field) {
                             $scope.fields.selectedFields.push(item);
                         } else {
                             $scope.fields.availableFields.push(item);
                         }
-                    })
+                    });
+
+                    $scope.fields.availableFields = $filter('orderBy')($scope.fields.availableFields, 'order');
+
                 }
                 if ($scope.currentReport.group_field) {
                     $scope.reportModel.group_field = $scope.currentReport.group_field;
