@@ -1827,6 +1827,12 @@ angular.module('primeapps')
                  return;
                  }
                  }*/
+                $scope.executeCode = false;
+                components.run('BeforeApproveProcess', 'Script', $scope);
+
+                if ($scope.executeCode) {
+                    return;
+                }
 
                 $scope.approving = true;
 
@@ -1847,6 +1853,12 @@ angular.module('primeapps')
             }
 
             $scope.rejectProcess = function (message) {
+                $scope.executeCode = false;
+                components.run('BeforeRejectProcess', 'Script', $scope);
+
+                if ($scope.executeCode) {
+                    return;
+                }
                 $scope.rejecting = true;
 
                 ModuleService.rejectProcessRequest($scope.record.operation_type, $scope.module.name, message, $scope.record.id)

@@ -110,6 +110,9 @@ namespace PrimeApps.App.Helpers
                                         if (!record["gmy.id"].IsNullOrEmpty())
                                             calisanUpdate["gmy"] = record["gmy.id"];
 
+                                        if (!record["is_alani_yoneticisi_2.id"].IsNullOrEmpty())
+                                            calisanUpdate["departman_yoneticisi"] = record["is_alani_yoneticisi_2.id"];
+
                                         await recordRepository.Update(calisanUpdate, calisanlarModule, isUtc: false);
 
                                         AfterUpdate(calisanlarModule, calisanUpdate, calisan, appUser, warehouse, false);

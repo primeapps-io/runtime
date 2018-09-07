@@ -69,7 +69,7 @@ namespace PrimeApps.App.Helpers
                     var requestInsert = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.insert);
                     var requestUpdate = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.update);
 
-                    if ((requestInsert != null && requestInsert.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected))
+                    if ((requestInsert != null && requestInsert.Status == Model.Enums.ProcessStatus.Rejected) || (requestUpdate != null && requestUpdate.Status == Model.Enums.ProcessStatus.Rejected) || (operationType == OperationType.update && requestInsert != null && requestInsert.Status != Model.Enums.ProcessStatus.Rejected))
                         return;
 
 
@@ -894,7 +894,7 @@ namespace PrimeApps.App.Helpers
                         }
                         string beforeCc = "";
                         var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
-                        if (!record["process_status_order"].IsNullOrEmpty() && processOrder != 1 && recordMail.Contains("@etiya.com"))
+                        if (!record["process_status_order"].IsNullOrEmpty() && processOrder != 1 && recordMail.Contains("@etiya.com") && process.Module.Name == "ise_alim_talepleri")
                         {
                             switch (processOrder)
                             {
