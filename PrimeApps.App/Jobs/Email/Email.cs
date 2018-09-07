@@ -16,6 +16,8 @@ using PrimeApps.App.Jobs.Messaging;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -47,6 +49,9 @@ namespace PrimeApps.App.Jobs.Email
 
             if (mail != null)
             {
+                if (mail.EmailTo == null || mail.EmailTo.Count < 1)
+                    throw new Exception("EmailTo cannot be null.");
+
                 // create smtp client and mail message objects
                 SmtpClient smtpClient;
                 MailMessage myMessage;
@@ -74,22 +79,34 @@ namespace PrimeApps.App.Jobs.Email
                     EnableSsl = enableSsl
                 };
 
-                if (string.IsNullOrWhiteSpace(mail.EmailTo))
-                    return true;
+                var emailAddress = new EmailAddressAttribute();
+
 
                 // generate email message
-                myMessage = new MailMessage(new MailAddress(mail.EmailFrom, mail.FromName), new MailAddress(mail.EmailTo))
+                myMessage = new MailMessage
                 {
+                    From = new MailAddress(mail.EmailFrom, mail.FromName),
                     Subject = mail.Subject,
                     Body = mail.Body,
                     IsBodyHtml = true
                 };
+
+                foreach (var to in mail.EmailTo)
+                {
+                    if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
+                        continue;
+
+                    myMessage.To.Add(to);
+                }
 
                 if (!string.IsNullOrWhiteSpace(mail.CC))
                 {
                     var ccList = mail.CC.Split(',');
                     foreach (var cc in ccList)
                     {
+                        if (string.IsNullOrWhiteSpace(cc) || !emailAddress.IsValid(cc))
+                            continue;
+
                         myMessage.CC.Add(cc);
                     }
                 }
@@ -100,6 +117,9 @@ namespace PrimeApps.App.Jobs.Email
 
                     foreach (var bcc in bccList)
                     {
+                        if (string.IsNullOrWhiteSpace(bcc) || !emailAddress.IsValid(bcc))
+                            continue;
+
                         myMessage.Bcc.Add(bcc);
                     }
                 }
@@ -160,6 +180,11 @@ namespace PrimeApps.App.Jobs.Email
                     Body = body,
                     IsBodyHtml = true
                 };
+
+                if (myMessage.To.Count < 1)
+                {
+                    return true;
+                }
 
                 if (!string.IsNullOrWhiteSpace(email.CC))
                 {

@@ -733,98 +733,100 @@ namespace PrimeApps.App.Helpers
 
                             var sendNotification = workflow.SendNotification;
                             var recipients = sendNotification.RecipientsArray;
+                            var sendNotificationCC = sendNotification.CC;
+                            var sendNotificationBCC = sendNotification.Bcc;
 
-                            foreach (var recipientItem in recipients)
+                            if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
                             {
-                                var recipient = recipientItem;
-
-                                if (recipient == "[owner]")
-                                {
-                                    var recipientUser = await _userRepository.GetById((int)record["owner.id"]);
-
-                                    if (recipientUser == null)
-                                        continue;
-
-                                    recipient = recipientUser.Email;
-
-                                    if (recipients.Contains(recipient))
-                                        continue;
-                                }
-
-                                if (!recipient.Contains("@"))
-                                {
-                                    if (!record[recipient].IsNullOrEmpty())
-                                    {
-                                        recipient = (string)record[recipient];
-                                    }
-                                }
-
-                                var sendNotificationCC = sendNotification.CC;
-                                var sendNotificationBCC = sendNotification.Bcc;
-
-                                if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
-                                {
-                                    sendNotificationCC = (string)record[sendNotification.CC];
-                                }
-
-                                if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 && !sendNotification.Bcc.Contains("@"))
-                                {
-                                    sendNotificationBCC = (string)record[sendNotification.Bcc];
-                                }
-
-                                string domain;
-
-                                domain = "https://{0}.ofisim.com/";
-                                var appDomain = "crm";
-
-                                switch (appUser.AppId)
-                                {
-                                    case 2:
-                                        appDomain = "kobi";
-                                        break;
-                                    case 3:
-                                        appDomain = "asistan";
-                                        break;
-                                    case 4:
-                                        appDomain = "ik";
-                                        break;
-                                    case 5:
-                                        appDomain = "cagri";
-                                        break;
-                                }
-
-                                var subdomain = _configuration.GetSection("TestMode")["BlobUrl"] == "true" ? "test" : appDomain;
-
-                                domain = string.Format(domain, subdomain);
-
-                                //domain = "http://localhost:5554/";
-
-                                using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
-                                {
-                                    var app = await _appRepository.Get(appUser.AppId);
-                                    if (app != null)
-                                    {
-                                        domain = "https://" + app.Setting.Domain + "/";
-                                    }
-                                }
-
-                                var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
-
-                                var emailData = new Dictionary<string, string>();
-                                emailData.Add("Subject", sendNotification.Subject);
-                                emailData.Add("Content", sendNotification.Message);
-                                emailData.Add("Url", url);
-
-
-                                var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-                                email.AddRecipient(recipient);
-
-                                if (sendNotification.Schedule.HasValue)
-                                    email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
-
-                                email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
-
+                                sendNotificationCC = (string)record[sendNotification.CC];
                             }
+
+                            if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 && !sendNotification.Bcc.Contains("@"))
+                            {
+                                sendNotificationBCC = (string)record[sendNotification.Bcc];
+                            }
+
+                            string domain;
+
+                            domain = "https://{0}.ofisim.com/";
+                            var appDomain = "crm";
+
+                            switch (appUser.AppId)
+                            {
+                                case 2:
+                                    appDomain = "kobi";
+                                    break;
+                                case 3:
+                                    appDomain = "asistan";
+                                    break;
+                                case 4:
+                                    appDomain = "ik";
+                                    break;
+                                case 5:
+                                    appDomain = "cagri";
+                                    break;
+                            }
+
+                            var subdomain = _configuration.GetSection("TestMode")["BlobUrl"] == "true" ? "test" : appDomain;
+
+                            domain = string.Format(domain, subdomain);
+
+                            //domain = "http://localhost:5554/";
+
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            {
+                                var app = await _appRepository.Get(appUser.AppId);
+                                if (app != null)
+                                {
+                                    domain = "https://" + app.Setting.Domain + "/";
+                                }
+                            }
+
+                            var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
+
+                            var emailData = new Dictionary<string, string>();
+                            emailData.Add("Subject", sendNotification.Subject);
+                            emailData.Add("Content", sendNotification.Message);
+                            emailData.Add("Url", url);
+
+
+                            var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            foreach (var recipientItem in recipients)
+                                        {
+                                            var recipient = recipientItem;
+
+                                            if (recipient == "[owner]")
+                                            {
+                                                using (var userRepository = new UserRepository(databaseContext))
+                                                {
+                                                    var recipientUser = await userRepository.GetById((int)record["owner.id"]);
+
+                                                    if (recipientUser == null)
+                                                        continue;
+
+                                                    recipient = recipientUser.Email;
+                                                }
+
+                                                if (recipients.Contains(recipient))
+                                                    continue;
+                                            }
+
+                                            if (!recipient.Contains("@"))
+                                            {
+                                                if (!record[recipient].IsNullOrEmpty())
+                                                {
+                                                    recipient = (string)record[recipient];
+                                                }
+                                            }
+                                            email.AddRecipient(recipient);
+
+                                        }
+
+                            if (sendNotification.Schedule.HasValue)
+                                email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
+
+                            email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+
                         }
 
                         var workflowLog = new WorkflowLog

@@ -76,6 +76,14 @@ angular.module('primeapps')
                 { label: '600 px', value: 630 },
 
             ];
+
+            $scope.getUser = function (id) {
+                var user = $filter('filter')($rootScope.users, { 'Id': id }, true)[0];
+                if (user.FullName)
+                    return user.FullName;
+                return id;
+            };
+
             $scope.loadDashboard = function () {
 
                 var setDashboard = function () {
@@ -103,6 +111,17 @@ angular.module('primeapps')
                                     if ($scope.locale === 'tr') {
                                         dashlet.chart_item.chart.decimalSeparator = ',';
                                         dashlet.chart_item.chart.thousandSeparator = '.';
+                                    }
+
+                                    if (dashlet.dashlet_type === 'chart') {
+                                        if (dashlet.chart_item.chart.report_group_field === 'owner' && dashlet.chart_item.data) {
+                                            if (dashlet.chart_item.data.data) {
+                                                for (var j = 0; j < dashlet.chart_item.data.data.length; j++) {
+                                                    dashlet.chart_item.data.data[j].label = $scope.getUser(parseInt(dashlet.chart_item.data.data[j].label));
+                                                }
+                                            }
+
+                                        }
                                     }
 
                                     var module = $filter('filter')($rootScope.modules, { id: dashlet.chart_item.chart.report_module_id }, true)[0];

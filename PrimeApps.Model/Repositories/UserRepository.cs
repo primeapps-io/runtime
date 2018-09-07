@@ -21,6 +21,7 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
         private IConfiguration _configuration;
+        private TenantDBContext databaseContext;
 
         public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
         {
@@ -31,6 +32,11 @@ namespace PrimeApps.Model.Repositories
         {
             _warehouse = warehouse;
             _configuration = configuration;
+        }
+
+        public UserRepository(TenantDBContext databaseContext)
+        {
+            this.databaseContext = databaseContext;
         }
 
         /// <summary>

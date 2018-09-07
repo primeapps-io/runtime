@@ -365,6 +365,22 @@ angular.module('primeapps')
             ],
             order: 20
         }
+        // json: {
+        //     name: 'json',
+        //     label: {
+        //         en: 'Json',
+        //         tr: 'Json'
+        //     },
+        //     operators: [
+        //         'contains',
+        //         'not_contain',
+        //         'is',
+        //         'is_not',
+        //         'empty',
+        //         'not_empty'
+        //     ],
+        //     order: 21
+        // }
     })
 
     .constant('operators', {

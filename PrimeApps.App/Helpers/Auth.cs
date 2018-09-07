@@ -187,7 +187,7 @@ namespace PrimeApps.App.Helpers
             }
             else if (url.Contains("ik.ofisim.com") || url.Contains("ik-test.ofisim.com") || url.Contains("ik-dev.ofisim.com"))
             {
-                json = @"{app: 'ik', title: 'Ofisim İK', logo: '" + cdnUrlStatic + "/images/login/logos/login_ik.png', desc_tr:'Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.', desc_en:'Manage your employees leaves, advances, expenses, trainings and personal information easily.', color: '#46428f', language: 'tr', favicon: '" + cdnUrlStatic + "/images/favicon/ofisim.ico' }";
+                json = @"{app: 'ik', title: 'Ofisim İK', logo: '" + cdnUrlStatic + "/images/login/logos/login_ik.png', desc_tr:'Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.', desc_en:'Manage your employees leaves, advances, expenses, trainings and personal information easily.', color: '#46428f', language: '', favicon: '" + cdnUrlStatic + "/images/favicon/ofisim.ico' }";
             }
             else if (url.Contains("hr.ofisim.com") || url.Contains("hr-test.ofisim.com") || url.Contains("hr-dev.ofisim.com"))
             {

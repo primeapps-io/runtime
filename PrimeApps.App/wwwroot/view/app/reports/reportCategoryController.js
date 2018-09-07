@@ -169,7 +169,6 @@ angular.module('primeapps')
                     field: "",
                     direction: ""
                 };
-
                 ReportsService.getChart(report.id).then(function (response) {
                     $scope.reportSummary = response.data;
                     $scope.reportSummary.config = {
@@ -224,10 +223,24 @@ angular.module('primeapps')
 
                         if (fieldAggregation && (fieldAggregation.data_type === 'currency' || fieldAggregation.data_type === 'number_decimal'))
                             $scope.reportSummary.chart.forceDecimals = '1';
-                    }
 
+                        if (fieldGroup.lookup_type === 'users') {
+                            for (var i = 0; i < $scope.reportSummary.data.length; i++) {
+                                $scope.reportSummary.data[i].label = $scope.getUser(parseInt($scope.reportSummary.data[i].label));
+                            }
+
+                        }
+                    }
                     myBlockUI.stop();
-                });
+                }
+                );
+            };
+
+            $scope.getUser = function (id) {
+                var user = $filter('filter')($rootScope.users, { 'Id': id }, true)[0];
+                if (user.FullName)
+                    return user.FullName;
+                return id;
             };
 
             $scope.setSingleReport = function (report) {
@@ -244,6 +257,8 @@ angular.module('primeapps')
                 });
 
             };
+
+      
 
             $scope.table = {
                 limitChange: function (limit) {

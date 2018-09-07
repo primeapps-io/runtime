@@ -240,9 +240,12 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                 if (isAllSelected)
                 {
                     //Query with filtered or non filtered selectedAll ids..
-                    FindRequest findRequest = JsonConvert.DeserializeObject<FindRequest>(query);
+                    var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+                    var findRequest = JsonConvert.DeserializeObject<FindRequest>(query, serializerSettings);
 
                     //Set find request limit to our maximum value 3000 unlike filter default
+                    findRequest.Limit = 30000;
+
                     using (var databaseContext = new TenantDBContext(messageDto.TenantId, _configuration))
                     {
                         using (var recordRepository = new RecordRepository(databaseContext, _configuration))

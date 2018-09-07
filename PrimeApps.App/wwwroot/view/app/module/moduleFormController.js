@@ -365,9 +365,10 @@ angular.module('primeapps')
                                         $scope.record.exchange_rate_try_usd = dailyRates.usd;
                                         $scope.record.exchange_rate_try_eur = dailyRates.eur;
                                         $scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
-                                        $scope.record.exchange_rate_usd_eur = dailyRates.eur / dailyRates.usd;
+                                        $scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
                                         $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
-                                        $scope.record.exchange_rate_eur_usd = dailyRates.usd / dailyRates.eur;
+                                        $scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
+
                                     })
                             }
                         }
@@ -1436,9 +1437,9 @@ angular.module('primeapps')
                                         $scope.record.exchange_rate_try_usd = dailyRates.usd;
                                         $scope.record.exchange_rate_try_eur = dailyRates.eur;
                                         $scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
-                                        $scope.record.exchange_rate_usd_eur = dailyRates.eur / dailyRates.usd;
+                                        $scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
                                         $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
-                                        $scope.record.exchange_rate_eur_usd = dailyRates.usd / dailyRates.eur;
+                                        $scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
                                     })
                             }
 
