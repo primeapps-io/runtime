@@ -114,7 +114,7 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/module/moduleFormController.js',
                                 cdnUrl + 'view/app/email/bulkEMailController.js',
 								cdnUrl + 'view/app/sms/bulkSMSController.js',
-								cdnUrl + 'views/app/actionbutton/actionButtonFrameController.js',
+								cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/email/templateService.js',
                                 cdnUrl + 'view/app/leave/collectiveLeaveController.js'
                             ]);
