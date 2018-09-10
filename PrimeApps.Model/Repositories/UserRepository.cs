@@ -20,25 +20,14 @@ namespace PrimeApps.Model.Repositories
     public class UserRepository : RepositoryBaseTenant, IUserRepository
     {
         private Warehouse _warehouse;
-        private IConfiguration _configuration;
-        private TenantDBContext databaseContext;
 
-        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
-        {
-            _configuration = configuration;
-        }
+        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration){}
 
         public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
-            _configuration = configuration;
         }
-
-        public UserRepository(TenantDBContext databaseContext)
-        {
-            this.databaseContext = databaseContext;
-        }
-
+        
         /// <summary>
         /// Creates a new user.
         /// </summary>

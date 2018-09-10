@@ -791,36 +791,37 @@ namespace PrimeApps.App.Helpers
 
 
                             var email = new Email(EmailResource.WorkflowNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+
                             foreach (var recipientItem in recipients)
-                                        {
-                                            var recipient = recipientItem;
+                            {
+                                var recipient = recipientItem;
 
-                                            if (recipient == "[owner]")
-                                            {
-                                                using (var userRepository = new UserRepository(databaseContext))
-                                                {
-                                                    var recipientUser = await userRepository.GetById((int)record["owner.id"]);
+                                if (recipient == "[owner]")
+                                {
+                                    using (var userRepository = new UserRepository(databaseContext, _configuration))
+                                    {
+                                        var recipientUser = await userRepository.GetById((int)record["owner.id"]);
 
-                                                    if (recipientUser == null)
-                                                        continue;
+                                        if (recipientUser == null)
+                                            continue;
 
-                                                    recipient = recipientUser.Email;
-                                                }
+                                        recipient = recipientUser.Email;
+                                    }
 
-                                                if (recipients.Contains(recipient))
-                                                    continue;
-                                            }
+                                    if (recipients.Contains(recipient))
+                                        continue;
+                                }
 
-                                            if (!recipient.Contains("@"))
-                                            {
-                                                if (!record[recipient].IsNullOrEmpty())
-                                                {
-                                                    recipient = (string)record[recipient];
-                                                }
-                                            }
-                                            email.AddRecipient(recipient);
+                                if (!recipient.Contains("@"))
+                                {
+                                    if (!record[recipient].IsNullOrEmpty())
+                                    {
+                                        recipient = (string)record[recipient];
+                                    }
+                                }
+                                email.AddRecipient(recipient);
 
-                                        }
+                            }
 
                             if (sendNotification.Schedule.HasValue)
                                 email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
