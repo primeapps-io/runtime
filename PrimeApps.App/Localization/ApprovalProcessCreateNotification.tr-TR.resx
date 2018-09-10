@@ -124,7 +124,7 @@
     <value>Detayları görmek  ve onaylamak için tıklayınız</value>
   </data>
   <data name="Subject" xml:space="preserve">
-    <value>Yeni {:ModuleName} Talebi</value>
+    <value>Yeni "{:ModuleName}" Talebi</value>
   </data>
   <data name="url" xml:space="preserve">
     <value>{:Url}</value>
