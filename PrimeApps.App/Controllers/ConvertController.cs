@@ -415,6 +415,7 @@ namespace PrimeApps.App.Controllers
             salesOrder["discount_type"] = quote["discount_type"];
             salesOrder["vat_list"] = quote["vat_list"];
             salesOrder["quote"] = quote["id"];
+            salesOrder["approved"] = false;
 
             if (!salesOrder["currency"].IsNullOrEmpty() && !quote["currency"].IsNullOrEmpty())
                 salesOrder["currency"] = quote["currency"];
