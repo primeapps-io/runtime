@@ -301,6 +301,27 @@ namespace PrimeApps.App.Controllers
             return Ok(acc); //Success service request - but no account data - disabled user(inactive)
         }
 
+        [Route("ActiveDirectoryInfo"), HttpGet]
+        public async Task<IActionResult> GetAdInfo()
+        {
+            var accountOwner = await _platformUserRepository.GetUserByAutoId(AppUser.TenantId);
+
+            if (accountOwner == null || accountOwner.Id < 1) return Ok(false);
+
+            var tenantId = accountOwner.Id;
+            var adTenant = await _tenantRepository.GetTenantInfo(tenantId);
+
+            var data = new
+            {
+                info = adTenant,
+                email = accountOwner.Email
+
+            };
+
+            return Ok(data);
+
+        }
+
         [Route("get_all"), HttpGet]
         public async Task<ICollection<User>> GetAll()
         {
