@@ -333,46 +333,42 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            foreach (string to in toList)
+            var queue = new EmailEntry()
             {
-                var queue = new EmailEntry()
-                {
-                    EmailTo = Regex.Replace(to, "^pre__", ""),
-                    EmailFrom = Regex.Replace(from, "^pre__", ""),
-                    ReplyTo = Regex.Replace(from, "^pre__", ""),
-                    FromName = fromName,
-                    CC = !string.IsNullOrEmpty(cc) ? Regex.Replace(cc, "^pre__", "") : cc,
-                    Bcc = !string.IsNullOrEmpty(bcc) ? Regex.Replace(bcc, "^pre__", "") : bcc,
-                    Subject = Subject,
-                    Body = Template,
-                    UniqueID = null,
-                    QueueTime = DateTime.UtcNow,
-                    SendOn = SendOn
-                };
-                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
-            }
+                EmailTo = toList,
+                EmailFrom = Regex.Replace(from, "^pre__", ""),
+                ReplyTo = Regex.Replace(from, "^pre__", ""),
+                FromName = fromName,
+                CC = !string.IsNullOrEmpty(cc) ? Regex.Replace(cc, "^pre__", "") : cc,
+                Bcc = !string.IsNullOrEmpty(bcc) ? Regex.Replace(bcc, "^pre__", "") : bcc,
+                Subject = Subject,
+                Body = Template,
+                UniqueID = null,
+                QueueTime = DateTime.UtcNow,
+                SendOn = SendOn
+            };
+            BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
+
         }
 
         public void AddToQueue(string from, string fromName, string cc = "", string bcc = "")
         {
-            foreach (string to in toList)
+            var queue = new EmailEntry()
             {
-                var queue = new EmailEntry()
-                {
-                    EmailTo = to,
-                    EmailFrom = from,
-                    ReplyTo = from,
-                    FromName = fromName,
-                    CC = cc,
-                    Bcc = bcc,
-                    Subject = Subject,
-                    Body = Template,
-                    UniqueID = null,
-                    QueueTime = DateTime.UtcNow,
-                    SendOn = SendOn
-                };
-                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
-            }
+                EmailTo = toList,
+                EmailFrom = from,
+                ReplyTo = from,
+                FromName = fromName,
+                CC = cc,
+                Bcc = bcc,
+                Subject = Subject,
+                Body = Template,
+                UniqueID = null,
+                QueueTime = DateTime.UtcNow,
+                SendOn = SendOn
+            };
+            BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue));
+
         }
 
         /// <summary>
@@ -404,24 +400,22 @@ namespace PrimeApps.App.Helpers
                 }
             }
 
-            foreach (string to in toList)
+            var queue = new EmailEntry()
             {
-                var queue = new EmailEntry()
-                {
-                    EmailTo = Regex.Replace(to, "^pre__", ""),
-                    EmailFrom = Regex.Replace(from, "^pre__", ""),
-                    ReplyTo = Regex.Replace(from, "^pre__", ""),
-                    FromName = fromName,
-                    CC = !string.IsNullOrEmpty(cc) ? Regex.Replace(cc, "^pre__", "") : cc,
-                    Bcc = !string.IsNullOrEmpty(bcc) ? Regex.Replace(bcc, "^pre__", "") : bcc,
-                    Subject = Subject,
-                    Body = Template,
-                    UniqueID = null,
-                    QueueTime = DateTime.UtcNow,
-                    SendOn = SendOn
-                };
-                BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary));
-            }
+                EmailTo = toList,
+                EmailFrom = Regex.Replace(from, "^pre__", ""),
+                ReplyTo = Regex.Replace(from, "^pre__", ""),
+                FromName = fromName,
+                CC = !string.IsNullOrEmpty(cc) ? Regex.Replace(cc, "^pre__", "") : cc,
+                Bcc = !string.IsNullOrEmpty(bcc) ? Regex.Replace(bcc, "^pre__", "") : bcc,
+                Subject = Subject,
+                Body = Template,
+                UniqueID = null,
+                QueueTime = DateTime.UtcNow,
+                SendOn = SendOn
+            };
+            BackgroundJob.Enqueue<Jobs.Email.Email>(email => email.TransmitMail(queue, tenantId, moduleId, recordId, addRecordSummary));
+
         }
 
     }

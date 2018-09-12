@@ -83,7 +83,7 @@ namespace PrimeApps.App.Jobs.Email
 
 
                 // generate email message
-                myMessage = new MailMessage
+                myMessage = new MailMessage()
                 {
                     From = new MailAddress(mail.EmailFrom, mail.FromName),
                     Subject = mail.Subject,
@@ -174,8 +174,9 @@ namespace PrimeApps.App.Jobs.Email
                 var body = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Body, tenantId, moduleId, recordId, addRecordSummary));
 
                 // generate email message
-                myMessage = new MailMessage(new MailAddress(email.EmailFrom, email.FromName), new MailAddress(email.EmailTo))
+                myMessage = new MailMessage()
                 {
+                    From = new MailAddress(email.EmailFrom, email.FromName),
                     Subject = subject,
                     Body = body,
                     IsBodyHtml = true
