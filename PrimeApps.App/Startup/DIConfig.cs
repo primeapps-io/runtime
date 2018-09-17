@@ -8,6 +8,7 @@ using PrimeApps.Model.Helpers;
 using System;
 using System.Linq;
 using System.Reflection;
+using PrimeApps.App.Bpm.Steps;
 using WarehouseHelper = PrimeApps.App.Jobs.Warehouse;
 
 namespace PrimeApps.App
@@ -76,6 +77,17 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
+            services.AddTransient<ApprovalStep>();
+            services.AddTransient<DataCreateStep>();
+            services.AddTransient<DataDeleteStep>();
+            services.AddTransient<DataReadStep>();
+            services.AddTransient<DataUpdateStep>();
+            services.AddTransient<EmailStep>();
+            services.AddTransient<FormStep>();
+            services.AddTransient<NotificationStep>();
+            services.AddTransient<SmsStep>();
+            services.AddTransient<TaskStep>();
+            services.AddTransient<WebhookStep>();
         }
     }
 }

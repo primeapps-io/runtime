@@ -14,7 +14,6 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
 using System.Globalization;
-using WorkflowCore.Interface;
 
 namespace PrimeApps.App
 {
@@ -37,10 +36,13 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
+            //Add Hangfire service
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
+            //Add Workflow service
+            //services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
             services.AddWorkflow();
 
             //Register DI
@@ -156,6 +158,7 @@ namespace PrimeApps.App
             );
 
             JobConfiguration(app, Configuration);
+            BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {

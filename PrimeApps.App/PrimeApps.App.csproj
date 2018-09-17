@@ -30,6 +30,7 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.0" />
     <PackageReference Include="WorkflowCore" Version="1.6.6" />
+    <PackageReference Include="WorkflowCore.Persistence.PostgreSQL" Version="1.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
