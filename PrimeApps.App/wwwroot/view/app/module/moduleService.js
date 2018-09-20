@@ -3,6 +3,9 @@ angular.module('primeapps')
     .factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo',
         function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo) {
             return {
+                get: function (id) {
+                    return $http.get(config.apiUrl + 'template/get/' + id);
+                },
 
                 create: function (module) {
                     return $http.post(config.apiUrl + 'module/create', module);
@@ -1092,7 +1095,7 @@ angular.module('primeapps')
                                     else
                                         newCurrentRecord[field.name] = null;
                                     break;
-                                case  "tag":
+                                case "tag":
                                     var tags = [];
                                     angular.forEach(newRecord[field.name], function (item) {
                                         tags.push(item["text"]);
@@ -1658,7 +1661,7 @@ angular.module('primeapps')
                         var calculate = function (that) {
                             if (record['calisan'] && record['izin_turu'] && record['izin_turu_data']) {
                                 var startOf = moment().date(1).month(0).year(moment().year()).format('YYYY-MM-DD');
-                                if(record['izin_turu_data']['her_ay_yenilenir']) {
+                                if (record['izin_turu_data']['her_ay_yenilenir']) {
                                     startOf = moment().date(1).month(moment().month()).year(moment().year()).format('YYYY-MM-DD');
                                 }
 
@@ -1769,7 +1772,7 @@ angular.module('primeapps')
                         }
                     }
 
-                    if(module.name === 'current_accounts'){
+                    if (module.name === 'current_accounts') {
                         if (scope.subtype === 'collection') {
                             switch (record.currency.system_code) {
                                 case 'try':
@@ -1777,10 +1780,10 @@ angular.module('primeapps')
                                     $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = false;
                                     $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = false;
 
-                                    if(record.alacak_euro)
+                                    if (record.alacak_euro)
                                         delete record.alacak_euro;
 
-                                    if(record.alacak_usd)
+                                    if (record.alacak_usd)
                                         delete record.alacak_usd;
                                     break;
                                 case 'usd':
@@ -1788,10 +1791,10 @@ angular.module('primeapps')
                                     $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = true;
                                     $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = false;
 
-                                    if(record.alacak)
+                                    if (record.alacak)
                                         delete record.alacak;
 
-                                    if(record.alacak_euro)
+                                    if (record.alacak_euro)
                                         delete record.alacak_euro;
                                     break;
                                 case 'eur':
@@ -1799,15 +1802,15 @@ angular.module('primeapps')
                                     $filter('filter')(scope.module.fields, { name: 'alacak_usd' }, true)[0].display_form = false;
                                     $filter('filter')(scope.module.fields, { name: 'alacak_euro' }, true)[0].display_form = true;
 
-                                    if(record.alacak)
+                                    if (record.alacak)
                                         delete record.alacak;
 
-                                    if(record.alacak_usd)
+                                    if (record.alacak_usd)
                                         delete record.alacak_usd;
                                     break;
                             }
-                        }else if(scope.subtype === 'payment'){
-                            switch (record.currency.system_code){
+                        } else if (scope.subtype === 'payment') {
+                            switch (record.currency.system_code) {
                                 case 'try':
                                     $filter('filter')(scope.module.fields, { name: 'borc_tl' }, true)[0].display_form = true;
                                     $filter('filter')(scope.module.fields, { name: 'borc_usd' }, true)[0].display_form = false;
@@ -1831,16 +1834,15 @@ angular.module('primeapps')
                         $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
                         $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
                         $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
-                        if(record.payment_method){
-                            switch (record.payment_method.system_code)
-                            {
+                        if (record.payment_method) {
+                            switch (record.payment_method.system_code) {
                                 case 'cash':
                                     $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = true;
                                     $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].validation.required = true;
                                     $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = false;
                                     $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = false;
                                     $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
-                                    if(record.banka)
+                                    if (record.banka)
                                         delete record.banka;
                                     break;
                                 case 'bank_transfer':
@@ -1850,7 +1852,7 @@ angular.module('primeapps')
                                     $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = false;
                                     $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = true;
                                     $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].validation.required = true;
-                                    if(record.kasa)
+                                    if (record.kasa)
                                         delete record.kasa;
                                     break;
                                 case 'cheque':
@@ -1859,7 +1861,7 @@ angular.module('primeapps')
                                     $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = false;
                                     $filter('filter')(scope.module.fields, { name: 'payment_due' }, true)[0].display_form = true;
                                     $filter('filter')(scope.module.fields, { name: 'odendi' }, true)[0].display_form = true;
-                                    if(record.odendi){
+                                    if (record.odendi) {
                                         $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].display_form = true;
                                         $filter('filter')(scope.module.fields, { name: 'kasa' }, true)[0].display_form = true;
                                         $filter('filter')(scope.module.fields, { name: 'banka' }, true)[0].validation.required = false;
@@ -1892,13 +1894,13 @@ angular.module('primeapps')
                         //Aynı Tarihlerde Başka izin varmı diye kontrol ediliyor.
                         if (record["alinan_izinler"] && record["alinan_izinler"].length > 0) {
                             for (var i = 0; i < record["alinan_izinler"].length; i++) {
-								var startDate = moment(moment(Date.parse(moment(record['baslangic_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
-								var endDate = moment(moment(Date.parse(moment(record['bitis_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+                                var startDate = moment(moment(Date.parse(moment(record['baslangic_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+                                var endDate = moment(moment(Date.parse(moment(record['bitis_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
 
-								if (startDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '[)') ||
-									endDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
-									(startDate.isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && endDate.isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
-								) {
+                                if (startDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '[)') ||
+                                    endDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
+                                    (startDate.isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && endDate.isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
+                                ) {
                                     if (record["alinan_izinler"][i].id != record.id) {
                                         return $filter('translate')('Leave.Validations.AlreadyHave');
                                     }
@@ -1982,13 +1984,13 @@ angular.module('primeapps')
                                     var maxLimit = workHour * izin_turu['yillik_hakedilen_limit_gun'];
 
                                     if (maxLimit < totalUsed + record['hesaplanan_alinacak_toplam_izin']) {
-                                        if(record['izin_turu_data']['her_ay_yenilenir']) {
+                                        if (record['izin_turu_data']['her_ay_yenilenir']) {
                                             return $filter('translate')('Leave.Validations.NotHaveLimitHourMonth', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
                                         }
                                         return $filter('translate')('Leave.Validations.NotHaveLimitHour', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
                                     }
                                 } else if (totalUsed + record['hesaplanan_alinacak_toplam_izin'] > izin_turu["yillik_hakedilen_limit_gun"]) {
-                                    if(record['izin_turu_data']['her_ay_yenilenir']) {
+                                    if (record['izin_turu_data']['her_ay_yenilenir']) {
                                         return $filter('translate')('Leave.Validations.NotHaveLimitDayMonth', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
                                     }
                                     return $filter('translate')('Leave.Validations.NotHaveLimitDay', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
@@ -2261,7 +2263,7 @@ angular.module('primeapps')
 
                                 if (baslangicTarihi.toISOString() === bitisTarihi.toISOString()) {
                                     record['from_entry_type'] = picklists[scope.customLeaveFields['from_entry_type'].picklist_id][0];
-                                     //Yıllık izin alınmak istendiğinde Bitiş Tarihi aynı tarih atılıp öğleden sonraya çekiliyordu. Bunun yerine artık Sabah olarak basıcak.
+                                    //Yıllık izin alınmak istendiğinde Bitiş Tarihi aynı tarih atılıp öğleden sonraya çekiliyordu. Bunun yerine artık Sabah olarak basıcak.
                                     //record['to_entry_type'] = picklists[scope.customLeaveFields['to_entry_type'].picklist_id][1];
                                 }
 
@@ -2339,27 +2341,27 @@ angular.module('primeapps')
                                         sBitis = moment(toDate).format(format);
 
                                     var di = 0;
-									if (moment(oBaslangic, format).isSameOrBefore(moment(sBaslangic, format))) {
-										if (moment(oBitis, format).isSameOrBefore(moment(sBaslangic, format))) {
-											//console.log("t1 t2 ba bi")
-											di = 0;
-										} else if (moment(oBitis, format).isSameOrBefore(moment(sBitis, format))) {
-											di = moment(oBitis, format).diff(moment(sBaslangic, format), 'minutes') / 60;
-											//console.log("t1 ba t2 bi");
-										} else {
-											di = calculatedField;
-											//console.log("t1 ba bi t2");
-										}
-									} else if (moment(oBaslangic, format).isSameOrBefore(moment(sBitis, format))) {
-										// t1 bi
-										if (moment(oBitis, format).isSameOrBefore(moment(sBitis, format))) {
-											//console.log("ba t1 t2 bi");
-											di = moment(oBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
-										} else if (moment(oBitis, format).isSameOrAfter(moment(sBitis, format))) {
-											//console.log("ba t1 bi t2");
-											di = moment(sBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
-										}
-									}
+                                    if (moment(oBaslangic, format).isSameOrBefore(moment(sBaslangic, format))) {
+                                        if (moment(oBitis, format).isSameOrBefore(moment(sBaslangic, format))) {
+                                            //console.log("t1 t2 ba bi")
+                                            di = 0;
+                                        } else if (moment(oBitis, format).isSameOrBefore(moment(sBitis, format))) {
+                                            di = moment(oBitis, format).diff(moment(sBaslangic, format), 'minutes') / 60;
+                                            //console.log("t1 ba t2 bi");
+                                        } else {
+                                            di = calculatedField;
+                                            //console.log("t1 ba bi t2");
+                                        }
+                                    } else if (moment(oBaslangic, format).isSameOrBefore(moment(sBitis, format))) {
+                                        // t1 bi
+                                        if (moment(oBitis, format).isSameOrBefore(moment(sBitis, format))) {
+                                            //console.log("ba t1 t2 bi");
+                                            di = moment(oBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
+                                        } else if (moment(oBitis, format).isSameOrAfter(moment(sBitis, format))) {
+                                            //console.log("ba t1 bi t2");
+                                            di = moment(sBitis, format).diff(moment(oBaslangic, format), 'minutes') / 60;
+                                        }
+                                    }
                                     /*else if(moment(oBaslangictime, format).isAfter(moment(sBitis, format))){
                                      console.log("ba bi t1 t2");
                                      } else {
@@ -2464,7 +2466,7 @@ angular.module('primeapps')
                                     }
                                 }
 
-								if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && toDate.diff(fromDate, 'days') < 2)
+                                if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && toDate.diff(fromDate, 'days') < 2)
                                     calculatedField -= 1;
 
                                 //Bitiş tarihini işe tekrar başlama olarak gördüğümüz için ve aşşağıdaki kontrol bunu bize sagladığı için bu tarihi manuel çıkarıyoruz.
@@ -2945,19 +2947,19 @@ angular.module('primeapps')
                                                                     sortDirection = viewState.sort_direction;
                                                                 }
                                                                 else {
-                                                                    if(scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri'){
+                                                                    if (scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri') {
                                                                         sortField = 'islem_tarihi,id';
                                                                         sortDirection = 'desc';
                                                                     }
-                                                                    else if(scope.module.name === 'current_accounts'){
+                                                                    else if (scope.module.name === 'current_accounts') {
                                                                         sortField = 'date,id';
                                                                         sortDirection = 'desc';
                                                                     }
                                                                     else if (scope.module.name === 'stock_transactions') {
                                                                         sortField = 'transaction_date,id';
                                                                         sortDirection = 'desc';
-                                                                    } 
-                                                                    else{
+                                                                    }
+                                                                    else {
                                                                         sortField = 'created_at';
                                                                         sortDirection = 'desc';
                                                                     }
@@ -2967,19 +2969,19 @@ angular.module('primeapps')
                                                             }
                                                             else {
                                                                 if (viewState) {
-                                                                    if(scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri'){
+                                                                    if (scope.module.name === 'kasa_hareketleri' || scope.module.name === 'banka_hareketleri') {
                                                                         sortField = 'islem_tarihi,id';
                                                                         sortDirection = 'desc';
                                                                     }
-                                                                    else if(scope.module.name === 'current_accounts'){
+                                                                    else if (scope.module.name === 'current_accounts') {
                                                                         sortField = 'date,id';
                                                                         sortDirection = 'desc';
                                                                     }
                                                                     else if (scope.module.name === 'stock_transactions') {
                                                                         sortField = 'transaction_date,id';
                                                                         sortDirection = 'desc';
-                                                                    } 
-                                                                    else{
+                                                                    }
+                                                                    else {
                                                                         viewState.sort_field = sortField;
                                                                         viewState.sort_direction = sortDirection;
                                                                     }
@@ -3646,15 +3648,15 @@ angular.module('primeapps')
 
                 getDailyRates: function () {
                     return $http.get(config.apiUrl + 'exchange_rates/get_daily_rates');
-				},
+                },
 
-				getAllTenantSettingsByType: function (settingType, userId) {
-					return $http.get(config.apiUrl + 'settings/get_all/' + settingType + (userId ? '?user_id=' + userId : ''));
-				},
+                getAllTenantSettingsByType: function (settingType, userId) {
+                    return $http.get(config.apiUrl + 'settings/get_all/' + settingType + (userId ? '?user_id=' + userId : ''));
+                },
 
-				tenantSettingUpdate: function (setting) {
-					return $http.put(config.apiUrl + 'settings/update/' + setting.id, setting);
-				}
+                tenantSettingUpdate: function (setting) {
+                    return $http.put(config.apiUrl + 'settings/update/' + setting.id, setting);
+                }
             };
         }]);
 
