@@ -70,7 +70,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="field in selectedModule.fields | filter:{deleted:'!true'} | filter:filterReferences | filter:filterUsers | orderBy:'order'">
+                                    <tr ng-repeat="field in selectedModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
                                         <td> {{field['label_' + language]}}</td>
                                         <td>
                                             <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
@@ -89,7 +89,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | filter:filterReferences | orderBy:'order'">
+                                    <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
                                         <td> {{field['label_'+language]}}</td>
                                         <td>
                                             <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
@@ -119,7 +119,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="field in selectedSubModule.fields | filter:{deleted:'!true'} | filter:filterReferences | filter:filterUsers | orderBy:'order'">
+                                    <tr ng-repeat="field in selectedSubModule.fields | filter:{deleted:'!true'} | filter:filterUsers | orderBy:'order'">
                                         <td> {{field['label_'+language]}}</td>
                                         <td>
                                             <span><code>{{'{\{' + (field.multiline_type_use_html ? 'html__' : field.data_type == 'image' ? 'img__' : '') + field.name + '}\}'}}</code></span>
@@ -138,7 +138,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | filter:filterReferences | orderBy:'order'">
+                                    <tr ng-repeat="field in lookupModule.fields | filter:{deleted:'!true'} | orderBy:'order'">
                                         <td>{{field['label_'+language]}}</td>
                                         <td>
                                             <span><code>{{'{\{' + getRelatedFieldName(field, lookupModule) + '}\}'}}</code></span>
