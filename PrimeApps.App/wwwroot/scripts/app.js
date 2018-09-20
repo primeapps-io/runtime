@@ -132,7 +132,7 @@ angular.module('primeapps',
                 $translate.use(lang);
                 $rootScope.language = lang;
             }
-             
+
             if (!isAuthenticated) {
                 $window.location.href = '/auth/authorize';
                 return;
@@ -140,12 +140,13 @@ angular.module('primeapps',
 
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-
+                try {
                     $rootScope.currentPath = $location.path();
-                   // $window.yaCounter47616517.hit($location.path());
-
-
-
+                    $window.yaCounter47616517.hit($location.path());
+                }
+                catch (error) {
+                    return;
+                }
             });
 
             $rootScope.app = 'crm';
