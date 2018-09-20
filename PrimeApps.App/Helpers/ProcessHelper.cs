@@ -325,8 +325,8 @@ namespace PrimeApps.App.Helpers
                                     record["custom_approver_2"] = secondUserMail;
                                 }
 
-								await _recordRepository.Update(record, module, isUtc: false);
-								user = await _userRepository.GetByEmail(userMail);
+                                await _recordRepository.Update(record, module, isUtc: false);
+                                user = await _userRepository.GetByEmail(userMail);
                             }
                             else
                             {
@@ -393,6 +393,8 @@ namespace PrimeApps.App.Helpers
 
                         if (module.Name == "izinler")
                         {
+                            await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
+
                             if ((bool)record["izin_turu.yillik_izin"] && (int)record["mevcut_kullanilabilir_izin"] -
                                 (int)record["hesaplanan_alinacak_toplam_izin"] < 0)
                             {
@@ -1189,6 +1191,10 @@ namespace PrimeApps.App.Helpers
                         notification.AddRecipient(user.Email);
                         notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                     }
+
+                    //TODO 
+                    //if (process.Module.Name == "izinler")
+                    //    await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
                 }
             }
         }
@@ -1332,7 +1338,8 @@ namespace PrimeApps.App.Helpers
                     {
 
                     }
-
+                    if (process.Module.Name == "izinler")
+                        await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
                 }
             }
         }
@@ -1440,7 +1447,7 @@ namespace PrimeApps.App.Helpers
                     var record = _recordRepository.GetById(process.Module, request.RecordId, false);
                     await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
 
-                    if (process.Module.Name == "izinler" && request.Status == Model.Enums.ProcessStatus.Approved)
+                    if (process.Module.Name == "izinler")
                         await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
                 }
             }

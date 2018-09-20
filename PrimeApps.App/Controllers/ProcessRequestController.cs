@@ -74,6 +74,13 @@ namespace PrimeApps.App.Controllers
 
                 await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
+                if (moduleName == "izinler")
+                {
+                    //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+                    var moduleEntity = await _moduleRepository.GetByName(moduleName);
+                    await _calculationHelper.Calculate(RecordIds[i], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+                }
+
             }
 
             return Ok();
