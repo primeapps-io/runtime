@@ -376,6 +376,8 @@ angular.module('primeapps')
                     $scope.$parent.$parent.$parent.isAllSelected,
                     $scope.tinymceModel,
                     $scope.emailField.name,
+                    $scope.Cc,
+                    $scope.Bcc,
                     $scope.senderAlias.alias,
                     $scope.senderAlias.email,
                     emailProviderType,

@@ -203,7 +203,9 @@ angular.module('primeapps')
 						"attachment_container": attachmentContainer,
 						"subject": subject,
 						"attachment_link": attachmentLink,
-						"attachment_name": attachmentName
+                        "attachment_name": attachmentName,
+                        "Cc": Cc,
+                        "Bcc": Bcc
 					});
 				},
 

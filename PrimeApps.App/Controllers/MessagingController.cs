@@ -124,7 +124,9 @@ namespace PrimeApps.App.Controllers
                 SenderEmail = request.SenderEMail,
                 QueueDate = DateTime.UtcNow,
                 AttachmentLink = request.AttachmentLink,
-                AttachmentName = request.AttachmentName
+                AttachmentName = request.AttachmentName,
+                Cc = request.Cc,
+                Bcc = request.Bcc
             };
 
             var emailMessage = await _messagingRepository.Create(emailNotification);
@@ -173,7 +175,7 @@ namespace PrimeApps.App.Controllers
                     emailRequest.Bcc = "";
                 var externalEmail = new Email(emailRequest.Subject, emailRequest.TemplateWithBody, _configuration);
                 foreach (var emailRecipient in emailRequest.ToAddresses)
-                {       
+                {
                     externalEmail.AddRecipient(emailRecipient);
                 }
 

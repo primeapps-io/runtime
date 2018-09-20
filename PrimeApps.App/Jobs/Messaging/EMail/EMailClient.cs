@@ -54,7 +54,9 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                 emailField = "",
                 subject = "",
                 senderAlias = "",
-                senderEMail = "";
+                senderEMail = "",
+                Cc = "",
+                Bcc = "";
             DateTime queueDate = DateTime.UtcNow;
 
             EMailComposerResult composerResult = new EMailComposerResult();
@@ -149,6 +151,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                             subject = emailNotification.Subject;
                             senderAlias = emailNotification.SenderAlias;
                             senderEMail = emailNotification.SenderEmail;
+                            Cc = emailNotification.Cc;
+                            Bcc = emailNotification.Bcc;
                             emailClient.SetSender(senderAlias, senderEMail);
                             Module module;
 
@@ -169,7 +173,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
                                 /// compose bulk messages for sending.
                                 //composerResult = await Compose(emailTemplate, module, emailField, subject, query, ids, language, emailId, cloudantClient, emailClient);
-                                composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, databaseContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName);
+                                composerResult = await Compose(emailQueueItem, emailTemplate, module, emailField, subject, query, ids, isAllSelected, emailNotification.CreatedById, language, emailId, databaseContext, platformUserRepository, tenantRepository, _configuration, emailClient, emailNotification.AttachmentLink, emailNotification.AttachmentName, Cc, Bcc);
 
                                 /// send composed messages through selected provider.
                                 emailResponse = await emailClient.Send(composerResult.Messages);
@@ -202,7 +206,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                 ErrorHandler.LogError(ex, $"EMail Client has failed while sending a short message template with id:{emailId} of tenant: {emailQueueItem.TenantId}.");
                 bulkEMailStatus = NotificationStatus.SystemError;
             }
-            Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate,senderAlias, senderEMail,moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
+            Email.Messaging.SendEMailStatusNotification(emailOwner, emailTemplate, senderAlias, senderEMail, moduleName, queueDate, bulkEMailStatus, composerResult.Successful, composerResult.NotAllowed, composerResult.NoAddress, emailQueueItem.TenantId, _configuration, _serviceScopeFactory, appUser);
 
             /// always return true to say queue that the job has done.
             return true;
@@ -218,7 +222,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
         /// <param name="language"></param>
         /// <param name="cloudantClient"></param>
         /// <returns></returns>
-        public async Task<EMailComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string emailField, string subject, string query, string[] ids, bool isAllSelected, int userId, string language, string emailId, TenantDBContext dbContext, PlatformUserRepository platformUserRepository, TenantRepository tenantRepository, IConfiguration configuration, EMailProvider emailClient, string attachmentLink, string attachmentName)
+        public async Task<EMailComposerResult> Compose(MessageDTO messageDto, string messageBody, Module module, string emailField, string subject, string query, string[] ids, bool isAllSelected, int userId, string language, string emailId, TenantDBContext dbContext, PlatformUserRepository platformUserRepository, TenantRepository tenantRepository, IConfiguration configuration, EMailProvider emailClient, string attachmentLink, string attachmentName, string Cc, string Bcc)
         {
             /// create required parameters for composing.
             Regex templatePattern = new Regex(@"{(.*?)}");
@@ -310,7 +314,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                         using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
                         using (var recordRepository = new RecordRepository(databaseContext, _configuration))
                         {
-                            moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser {TenantId = messageDto.TenantId, UserId = userId }; 
+                            moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId };
 
                             foreach (string recordId in ids)
                             {
@@ -368,6 +372,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                                     emailMessage.Subject = subject;
                                     emailMessage.AttachmentLink = attachmentLink;
                                     emailMessage.AttachmentName = attachmentName;
+                                    emailMessage.Cc = Cc;
+                                    emailMessage.Bcc = Bcc;
                                     messages.Add(emailMessage);
                                     successful++;
                                 }

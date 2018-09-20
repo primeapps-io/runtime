@@ -69,6 +69,12 @@ namespace PrimeApps.Model.Entities.Application
         [Column("result")]
         public string Result { get; set; }
 
+        [Column("cc")]
+        public string Cc { get; set; }
+
+        [Column("bcc")]
+        public string Bcc { get; set; }
+
         public virtual Module Module { get; set; }
     }
 }
