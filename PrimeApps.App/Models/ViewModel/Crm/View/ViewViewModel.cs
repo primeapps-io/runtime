@@ -8,6 +8,7 @@ namespace PrimeApps.App.Models.ViewModel.Crm.View
     {
         public int Id { get; set; }
         public int ModuleId { get; set; }
+        public string SystemCode { get; set; }
         public SystemType SystemType { get; set; }
         public string LabelEn { get; set; }
         public string LabelTr { get; set; }
