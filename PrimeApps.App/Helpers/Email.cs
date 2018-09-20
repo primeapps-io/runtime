@@ -114,7 +114,7 @@ namespace PrimeApps.App.Helpers
                         appColor = "2560f6";
                         socialMediaIcons = "true";
                         footer = "Ofisim.com";
-                        appLogo = "true";
+                        appLogo = "";
                         break;
                     case 2:
                         appUrl = "http://www.ofisim.com/mail/kobi/logo.png";
@@ -123,7 +123,7 @@ namespace PrimeApps.App.Helpers
                         appColor = "20cb9a";
                         socialMediaIcons = "true";
                         footer = "Ofisim.com";
-                        appLogo = "true";
+                        appLogo = "";
                         break;
                     case 3:
                         appUrl = "http://www.ofisim.com/mail/asistan/logo.png";
@@ -132,7 +132,7 @@ namespace PrimeApps.App.Helpers
                         appColor = "ef604e";
                         socialMediaIcons = "true";
                         footer = "Ofisim.com";
-                        appLogo = "true";
+                        appLogo = "";
                         break;
                     case 4:
                         appUrl = "http://www.ofisim.com/mail/ik/logo.png";
@@ -141,7 +141,7 @@ namespace PrimeApps.App.Helpers
                         appColor = "454191";
                         socialMediaIcons = "true";
                         footer = "Ofisim.com";
-                        appLogo = "true";
+                        appLogo = "";
                         break;
                     case 5:
                         appUrl = "http://www.ofisim.com/mail/cagri/logo.png";
@@ -150,7 +150,7 @@ namespace PrimeApps.App.Helpers
                         appColor = "79a7fd";
                         socialMediaIcons = "true";
                         footer = "Ofisim.com";
-                        appLogo = "true";
+                        appLogo = "";
                         break;
                     default:
                         appUrl = "http://www.ofisim.com/mail/crm/logo.png";
@@ -159,7 +159,7 @@ namespace PrimeApps.App.Helpers
                         appColor = "2560f6";
                         socialMediaIcons = "true";
                         footer = "Ofisim.com";
-                        appLogo = "true";
+                        appLogo = "";
                         break;
 
                 }
