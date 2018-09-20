@@ -282,14 +282,30 @@ namespace PrimeApps.App.Jobs.Email
                         var fields = module.Fields.Where(x => x.DisplayDetail && x.Validation != null && x.Validation.Required.HasValue && x.Validation.Required.Value && (x.Permissions == null || x.Permissions.Count < 1)).OrderBy(x => x.Order);
                         if (module.Name == "izinler" && !record["calisan.id"].IsNullOrEmpty())
                         {
-                            var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + "Gün";
+                            var format = "Gün";
+                            if (!record["izin_turu.saatlik_kullanim_yapilir"].IsNullOrEmpty() && (bool)record["izin_turu.saatlik_kullanim_yapilir"])
+                                format = "Saat";
 
-                            recordTable += recordRow.Replace("{label}", "Adı Soyadı").Replace("{value}", record["calisan.ad_soyad"].ToString());
-                            recordTable += recordRow.Replace("{label}", "Unvanı").Replace("{value}", record["calisan.unvan"].ToString());
-                            recordTable += recordRow.Replace("{label}", "Departman").Replace("{value}", record["calisan.departman"].ToString());
-                            recordTable += recordRow.Replace("{label}", "İzin Türü").Replace("{value}", record["izin_turu.adi"].ToString());
-                            recordTable += recordRow.Replace("{label}", "Tarih").Replace("{value}", tarih);
-                            recordTable += recordRow.Replace("{label}", "Açıklama").Replace("{value}", record["izin_turu.aciklama"].ToString());
+                            var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + format;
+
+                            if (record["calisan.name_surname"].IsNullOrEmpty())
+                            {
+                                recordTable += recordRow.Replace("{label}", "Adı Soyadı").Replace("{value}", !record["calisan.ad_soyad"].IsNullOrEmpty() ? record["calisan.ad_soyad"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Unvanı").Replace("{value}", !record["calisan.unvan"].IsNullOrEmpty() ? record["calisan.unvan"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Departman").Replace("{value}", !record["calisan.departman"].IsNullOrEmpty() ? record["calisan.departman"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "İzin Türü").Replace("{value}", !record["izin_turu.adi"].IsNullOrEmpty() ? record["izin_turu.adi"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Tarih").Replace("{value}", tarih);
+                                recordTable += recordRow.Replace("{label}", "Açıklama").Replace("{value}", !record["aciklama"].IsNullOrEmpty() ? record["aciklama"].ToString() : "");
+                            }
+                            else
+                            {
+                                recordTable += recordRow.Replace("{label}", "Name Surname").Replace("{value}", !record["calisan.name_surname"].IsNullOrEmpty() ? record["calisan.name_surname"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Position").Replace("{value}", !record["calisan.position"].IsNullOrEmpty() ? record["calisan.position"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Departmant").Replace("{value}", !record["calisan.department"].IsNullOrEmpty() ? record["calisan.department"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Leave Type").Replace("{value}", !record["izin_turu.adi"].IsNullOrEmpty() ? record["izin_turu.adi"].ToString() : "");
+                                recordTable += recordRow.Replace("{label}", "Date").Replace("{value}", tarih);
+                                recordTable += recordRow.Replace("{label}", "Description").Replace("{value}", !record["aciklama"].IsNullOrEmpty() ? record["aciklama"].ToString() : "");
+                            }
 
                         }
                         else
