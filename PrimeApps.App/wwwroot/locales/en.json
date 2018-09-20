@@ -981,6 +981,7 @@
 				"FieldType": "Field Type",
 				"FieldRequired": "Required Field",
 				"LookupType": "Lookup Type",
+				"SearchType": "Search Type",
 				"PicklistType": "Picklist",
 				"PicklistNew": "New Picklist",
 				"PicklistEdit": "Edit Picklist",

@@ -82,7 +82,7 @@ namespace PrimeApps.App.Models
         public byte ColumnCount { get; set; }
 
         public string CustomLabel { get; set; }
-        
+
         public bool Deleted { get; set; }
 
         public List<SectionPermissionBindingModel> Permissions { get; set; }
@@ -177,6 +177,7 @@ namespace PrimeApps.App.Models
         public string UniqueCombine { get; set; }
 
         public AddressType AddressType { get; set; }
+        public LookupSearchType LookupSearchType { get; set; }
 
         public bool ShowOnlyEdit { get; set; }
 
