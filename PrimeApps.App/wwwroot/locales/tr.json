@@ -308,6 +308,8 @@
 		"LookupCreateNew": "Yeni Oluştur",
 		"SendEMail": "E-Posta Gönder",
 		"SendSMS": "SMS Gönder",
+		"CollectiveApproval": "Seçilenleri Onayla",
+		"ApprovedRecordCount": "  Adet Kayıt Onaylandı",
 		"DeleteSelecteds": "Seçilenleri Sil",
 		"NoRecordSelected": "Lütfen öncelikle kayıt seçiniz.",
 		"RecordLimit": "Tek seferde maksimum 50 adet kayıt güncellenebilir.",

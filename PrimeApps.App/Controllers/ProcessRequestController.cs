@@ -11,6 +11,7 @@ using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using static PrimeApps.App.Helpers.ProcessHelper;
+using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.App.Controllers
 {
@@ -59,14 +60,20 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("approve_multiple_request"), HttpPut]
-        public async Task<IActionResult> ApproveMultipleRequest(int[] RecordIds, string moduleName)
+        public async Task<IActionResult> ApproveMultipleRequest(JObject request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            for (int i = 0; i < RecordIds.Length; i++)
+            if (!request["record_ids"].HasValues && request["module_name"].IsNullOrEmpty())
+                return BadRequest();
+
+            if (request["record_ids"].Type != JTokenType.Array)
+                return BadRequest("Plesae send record_ids array.");
+
+            for (int i = 0; i < ((JArray)request["record_ids"]).Count; i++)
             {
-                var requestEntity = await _processRequestRepository.GetByRecordId(RecordIds[i], moduleName, 0);
+                var requestEntity = await _processRequestRepository.GetByRecordIdWithOutOperationType((int)request["record_ids"][i], request["module_name"].ToString());
                 if (requestEntity == null)
                     continue;
                 await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
@@ -74,13 +81,12 @@ namespace PrimeApps.App.Controllers
 
                 await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
-                if (moduleName == "izinler")
+                if (request["module_name"].ToString() == "izinler")
                 {
                     //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
-                    var moduleEntity = await _moduleRepository.GetByName(moduleName);
-                    await _calculationHelper.Calculate(RecordIds[i], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+                    var moduleEntity = await _moduleRepository.GetByName(request["module_name"].ToString());
+                    await _calculationHelper.Calculate((int)request["record_ids"][i], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
                 }
-
             }
 
             return Ok();

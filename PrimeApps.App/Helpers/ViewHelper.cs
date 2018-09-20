@@ -48,6 +48,7 @@ namespace PrimeApps.App.Helpers
             {
                 Id = view.Id,
                 ModuleId = view.ModuleId,
+                SystemCode = view.SystemCode,
                 SystemType = view.SystemType,
                 LabelEn = view.LabelEn,
                 LabelTr = view.LabelTr,
@@ -362,6 +363,7 @@ namespace PrimeApps.App.Helpers
                 SystemType = SystemType.System,
                 LabelEn = "Pending " + module.LabelEnPlural + " From Me",
                 LabelTr = "Benden Onay Bekleyen " + module.LabelTrPlural,
+                SystemCode = "pending_approval_from_me_view",
                 SharingType = ViewSharingType.Everybody,
                 Fields = new List<ViewField>(),
                 Filters = new List<ViewFilter>()

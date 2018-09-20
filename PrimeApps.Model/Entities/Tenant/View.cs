@@ -11,6 +11,9 @@ namespace PrimeApps.Model.Entities.Application
         [Column("module_id"), ForeignKey("Module")]//, Index]
         public int ModuleId { get; set; }
 
+        [Column("system_code"), MaxLength(50)]
+        public string SystemCode { get; set; }
+
         [Column("system_type"), Required]
         public SystemType SystemType { get; set; }
 

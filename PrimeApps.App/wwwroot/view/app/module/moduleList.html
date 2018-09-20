@@ -118,6 +118,11 @@
 								<i class="fa fa-pencil-square-o pull-left"></i> {{'Module.UpdateSelecteds' | translate }}
 							</a>
 						</li>
+						<li ng-show="hasPermission(type, operations.read) && view.system_code === 'pending_approval_from_me_view'">
+							<a href ng-click="showCollectiveApproval()">
+								<i class="fa fa-check-circle-o"></i> {{'Module.CollectiveApproval' | translate }}
+							</a>
+						</li>
 						<li ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)">
 							<a href ng-click="showEMailModal()">
 								<i class="fa fa-envelope-o pull-left"></i> {{'Module.SendEMail' | translate }}

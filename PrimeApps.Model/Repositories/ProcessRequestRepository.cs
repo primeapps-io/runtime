@@ -41,6 +41,14 @@ namespace PrimeApps.Model.Repositories
             return request;
         }
 
+        public async Task<ProcessRequest> GetByRecordIdWithOutOperationType(int id, string moduleName)
+        {
+            var request = await DbContext.ProcessRequests
+                .FirstOrDefaultAsync(x => x.RecordId == id && x.Module == moduleName && x.Active == true);
+
+            return request;
+        }
+
         public async Task<int> Update(ProcessRequest request)
         {
             return await DbContext.SaveChangesAsync();
