@@ -19,8 +19,7 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/bpm")]
-    [Authorize]
+    [Route("api/bpm"), Authorize]
     public class BpmController : ApiBaseController
     {
         private IBpmRepository _bpmRepository;
@@ -74,21 +73,23 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]BpmWorkflowBindingModel bpmWorkflow)
+        public async Task<IActionResult> Create([FromBody]BpmWorkflowBindingModel bpmWorkflow) //BpmWorkflowBindingModel bpmWorkflow)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var bpmWorkflowEntity = await BpmHelper.CreateEntity(bpmWorkflow);
-            var result = await _bpmRepository.Create(bpmWorkflowEntity);
+            //var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
-            if (result < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //if (result < 1)
+            //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            var str = bpmWorkflow.DefinitionJson.ToString();
+            _definitionLoader.LoadDefinition(str);
 
-            _definitionLoader.LoadDefinition(bpmWorkflow.DefinitionJson);
+            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString());
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
+            return null;//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

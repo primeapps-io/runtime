@@ -11,8 +11,9 @@ namespace PrimeApps.App.Helpers
             var bpmWorkflow = new BpmWorkflow
             {
                 Name = bpmWorkflowModel.Name,
-                DefinitionJson = bpmWorkflowModel.DefinitionJson
-            };
+                DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString()
+            //other fields to be added
+        };
 
             return bpmWorkflow;
         }
@@ -20,7 +21,7 @@ namespace PrimeApps.App.Helpers
         public static async Task<BpmWorkflow> UpdateEntity(BpmWorkflowBindingModel bpmWorkflowModel, BpmWorkflow bpmWorkflow)
         {
             bpmWorkflow.Name = bpmWorkflowModel.Name;
-            bpmWorkflow.DefinitionJson = bpmWorkflowModel.DefinitionJson;
+            bpmWorkflow.DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString();
 
             return bpmWorkflow;
         }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.App.Bpm.Steps;
+using System;
 using WorkflowCore.Interface;
 
 namespace PrimeApps.App.Bpm.Workflows
@@ -15,9 +16,9 @@ namespace PrimeApps.App.Bpm.Workflows
             builder
                 .StartWith<DataReadStep>()
                 .Input(step => step.Request, data => data)
-                .Output(data => data["record"], step => step.Response)
+                 //.Output(data => data, step => step)
                 .Then<TaskStep>()
-                .Input(step => step.Record, data => data["record"]);
+                .Input(step => step.Record, data => data);
         }
     }
 }

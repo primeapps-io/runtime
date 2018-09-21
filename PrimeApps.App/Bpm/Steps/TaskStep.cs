@@ -1,5 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Linq;
+using System.Threading.Tasks; 
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
@@ -9,32 +12,32 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Bpm.Steps
 {
-    public class TaskStep : StepBodyAsync
+    public class TaskStep : StepBody
     {
         private IRecordRepository _recordRepository;
-        private IModuleRepository _moduleRepository;
+        private ICalculationHelper _calculationHelper;
         private IRecordHelper _recordHelper;
 
         public JObject Record { get; set; }
 
-        public TaskStep(IRecordRepository recordRepository, IModuleRepository moduleRepository, IRecordHelper recordHelper)
+        public TaskStep(IRecordHelper recordHelper)
         {
-            _recordRepository = recordRepository;
-            _moduleRepository = moduleRepository;
             _recordHelper = recordHelper;
         }
 
-        public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
+        public override ExecutionResult Run(IStepExecutionContext context)
         {
-            var moduleEntity = await _moduleRepository.GetByNameBasic("activities");
+            // _moduleRepository=(IModuleRepository)System.Reflection.Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IServiceProvider).Name) == typeof(IModuleRepository)).FirstOrDefault();
+            
+            //var moduleEntity =  _moduleRepository.GetByNameBasic("activities");
             var record = new JObject();
             record["owner"] = (int)Record["record"]["owner"];
-            record["subject"] = "The subject is " + (string)Record["record"]["name"];
+            record["subject"] = "The subject is Real!"; //+ (string)Record["record"]["name"];
 
-            var resultCreate = await _recordRepository.Create(record, moduleEntity);
+            //////var resultCreate =  _recordRepository.Create(record, moduleEntity);
 
-            if (resultCreate < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //////if (resultCreate < 1)
+            //////    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             return ExecutionResult.Next();
         }

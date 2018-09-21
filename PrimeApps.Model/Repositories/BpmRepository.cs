@@ -16,22 +16,31 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<BpmWorkflow> Get(int id)
         {
-            return null;
+            var bpmWorkFlow = await DbContext.BpmWorkflows.Where(q => q.Id == id && !q.Deleted).FirstOrDefaultAsync();
+
+            return bpmWorkFlow;
         }
 
         public async Task<ICollection<BpmWorkflow>> Find(BpmFindRequest request)
         {
-            return null;
+            var bpmWorkFlow = await DbContext.BpmWorkflows.Where(q => !q.Deleted).Take(request.Limit).ToListAsync();
+
+            if (bpmWorkFlow.Count() < 1)
+                return null;
+
+            return bpmWorkFlow;
         }
 
         public async Task<int> Count(BpmFindRequest request)
         {
-            return 0;
+            var count = await DbContext.BpmWorkflows.Where(q => !q.Deleted).CountAsync();
+
+            return count;
         }
 
         public async Task<int> Create(BpmWorkflow BpmWorkflow)
         {
-            //DbContext.BpmWorkflows.Add(BpmWorkflow);
+            DbContext.BpmWorkflows.Add(BpmWorkflow);
 
             return await DbContext.SaveChangesAsync();
         }
@@ -50,7 +59,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> DeleteHard(BpmWorkflow BpmWorkflow)
         {
-            //DbContext.BpmWorkflows.Remove(BpmWorkflow);
+            DbContext.BpmWorkflows.Remove(BpmWorkflow);
 
             return await DbContext.SaveChangesAsync();
         }
