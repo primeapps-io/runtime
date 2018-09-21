@@ -18,6 +18,7 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
+using NUglify.Helpers;
 
 namespace PrimeApps.App.Jobs.Email
 {
@@ -172,6 +173,9 @@ namespace PrimeApps.App.Jobs.Email
                 // parse subject and body
                 var subject = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Subject, tenantId, moduleId, recordId, false));
                 var body = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Body, tenantId, moduleId, recordId, addRecordSummary));
+
+                if (string.IsNullOrWhiteSpace(email.EmailTo.ToString()))
+                    return true;
 
                 // generate email message
                 myMessage = new MailMessage()
