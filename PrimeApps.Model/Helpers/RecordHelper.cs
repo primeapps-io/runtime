@@ -247,8 +247,12 @@ namespace PrimeApps.Model.Helpers
 
                 fieldsSql = fieldsSql.Trim().TrimEnd(',');
 
+                //Add advance sharing information for module list records.
+                if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products" && tableName != "users")
+                    fieldsSql += $", \"{tableName}\".\"shared_users\", " + $"\"{tableName}\".\"shared_user_groups\", " + $"\"{tableName}\".\"shared_users_edit\", " + $"\"{tableName}\".\"shared_user_groups_edit\"";
+
                 //Approval Processes
-                if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products")
+                if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products")
                     fieldsSql += ", \"process_requests_process\".process_id AS \"process.process_requests.process_id\", process_requests_process.process_status AS \"process.process_requests.process_status\", process_requests_process.operation_type AS \"process.process_requests.operation_type\", process_requests_process.updated_by AS \"process.process_requests_updated_by\", process_requests_process.updated_at AS \"process.process_requests_updated_at\", process_requests_process.process_status_order AS \"process.process_requests.process_status_order\"";
             }
 

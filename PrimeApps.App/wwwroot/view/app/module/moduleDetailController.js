@@ -1107,7 +1107,7 @@ angular.module('primeapps')
                             ModuleService.getPicklists($scope.orderProductModule)
                                 .then(function (orderProductModulePicklists) {
                                     var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
+									findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
                                     findRequest.filters = [{ field: 'sales_order', operator: 'equals', value: $scope.id }];
                                     findRequest.sort_field = 'order';
                                     findRequest.sort_direction = 'asc';

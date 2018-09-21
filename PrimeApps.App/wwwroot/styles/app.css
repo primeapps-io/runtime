@@ -5996,7 +5996,7 @@ tags-input.ng-invalid .tags {
   .quote-products .product-list thead .product-price {
     width: 14% !important; }
   .quote-products .product-list thead .product-discount {
-      width: 10% !important;
+      width: 20% !important;
   }
   .quote-products .product-list thead .product-total {
     width: 21% !important;

@@ -23,7 +23,13 @@ angular.module('primeapps')
 
             $scope.salesInvoiceProductModule.fields.forEach(function (field) {
                 $scope.fields[field.name] = field;
-            });
+			});
+
+			$scope.salesInvoiceFields = [];
+			$scope.salesInvoiceModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices' }, true)[0];
+			$scope.salesInvoiceModule.fields.forEach(function (field) {
+				$scope.salesInvoiceFields[field.name] = field;
+			});
 
             $scope.productField = $filter('filter')($scope.salesInvoiceProductModule.fields, { name: 'product' }, true)[0];
             $scope.productModule = $filter('filter')($rootScope.modules, { name: 'products' }, true)[0];
@@ -38,8 +44,10 @@ angular.module('primeapps')
                 .then(function (picklists) {
                     $scope.picklistsModule = picklists;
                     $scope.usageUnitList = $scope.picklistsModule[$scope.fields['usage_unit'].picklist_id];
-                    $scope.currencyList = $scope.picklistsModule[$scope.fields['currency'].picklist_id];
-                });
+					$scope.currencyList = $scope.picklistsModule[$scope.fields['currency'].picklist_id];
+					$scope.defaultCurrency = $filter('filter')($scope.currencyList, { value: $rootScope.currencySymbol })[0];
+				});
+
             ModuleService.getPicklists($scope.productModule)
                 .then(function (picklists) {
                     $scope.productModulePicklists = picklists;
@@ -57,21 +65,17 @@ angular.module('primeapps')
                 }
                 $scope.$parent.setCurrentLookupField(field);
             };
-            var isExtraField = true;
+            
             var additionalFields = ['unit_price', 'usage_unit', 'vat_percent'];
-            var extraadditionalFields = ['purchase_price'];
+
+			if ($scope.fields['purchase_price'])
+				additionalFields.push("purchase_price");
+
+			if ($scope.fields['currency'])
+				additionalFields.push("currency");
+
             $scope.lookup = function (searchTerm) {
-                if (isExtraField) {
-                    for (var i = 0; extraadditionalFields.length > i; i++) {
-                        var field = $filter('filter')($scope.salesInvoiceProductModule.fields, { name: extraadditionalFields[i] }, true);
-                        if (field.length > 0) {
-                            additionalFields.push(extraadditionalFields[i])
-                        }
-                    }
-                    if ($scope.$parent.$parent.currencyField)
-                        additionalFields.push('currency');
-                    isExtraField = false;
-                }
+             
                 return ModuleService.lookup(searchTerm, $scope.productField, $scope.currentLookupProduct, additionalFields);
             };
 
@@ -134,10 +138,10 @@ angular.module('primeapps')
                     return;
 
                 if (!salesInvoiceProduct.defaultCurrency) {
-                    salesInvoiceProduct.defaultCurrency = salesInvoiceProduct.product.currency.value;
+					salesInvoiceProduct.defaultCurrency = salesInvoiceProduct.product.currency ? salesInvoiceProduct.product.currency.value : $rootScope.currencySymbol;
                     salesInvoiceProduct.currencyConvertList = $scope.currencyConvert(salesInvoiceProduct, salesInvoiceProduct.product.unit_price);
                 } else {
-                    salesInvoiceProduct.product.unit_price = salesInvoiceProduct.currencyConvertList[salesInvoiceProduct.product.currency.value];
+					salesInvoiceProduct.product.unit_price = salesInvoiceProduct.currencyConvertList[salesInvoiceProduct.product.currency ? salesInvoiceProduct.product.currency.value : $rootScope.currencySymbol];
                 }
 
                 var unitPrice = parseFloat(salesInvoiceProduct.product.unit_price);
@@ -147,13 +151,26 @@ angular.module('primeapps')
                 salesInvoiceProduct.unit_price = unitPrice;
                 salesInvoiceProduct.amount = unitPrice;
 
-                if (salesInvoiceProduct.product.usage_unit) {
-                    salesInvoiceProduct.usage_unit = salesInvoiceProduct.product.usage_unit;
-                }
+				if (salesInvoiceProduct.product.usage_unit) {
+					if (!angular.isObject(salesInvoiceProduct.product.usage_unit)) {
+						$scope.usageUnitList.forEach(function (unit) {
+							if (salesInvoiceProduct.product.usage_unit === unit.labelStr) {
+								salesInvoiceProduct.product.usage_unit = unit;
+							}
+						});
+					}
+					else {
+						salesInvoiceProduct.usage_unit = salesInvoiceProduct.product.usage_unit;
+					}
+				}
 
                 if (salesInvoiceProduct.product.currency) {
                     salesInvoiceProduct.currency = salesInvoiceProduct.product.currency;
                 }
+				else {
+					salesInvoiceProduct.currency = $scope.defaultCurrency;
+					salesInvoiceProduct.product.currency = $scope.defaultCurrency;
+				}
 
                 $scope.calculate(salesInvoiceProduct);
 
@@ -234,12 +251,14 @@ angular.module('primeapps')
                             salesInvoiceProduct.unit_amount = salesInvoiceProduct.amount / quantity;
                         }
                         break;
-                }
-                if (salesInvoiceProduct.product.purchase_price && (salesInvoiceProduct.purchase_price === undefined || salesInvoiceProduct.purchase_price === null)) {
-                    salesInvoiceProduct.purchase_price = $scope.currencyConvert(salesInvoiceProduct, salesInvoiceProduct.product.purchase_price)[salesInvoiceProduct.product.currency.value];
-                } else {
-                    salesInvoiceProduct.purchase_price = $scope.currencyConvert(salesInvoiceProduct, salesInvoiceProduct.product.purchase_price)[salesInvoiceProduct.product.currency.value];
-                }
+				}
+				if ($scope.fields['purchase_price']) {
+					if (salesInvoiceProduct.product.purchase_price && (salesInvoiceProduct.purchase_price === undefined || salesInvoiceProduct.purchase_price === null)) {
+						salesInvoiceProduct.purchase_price = $scope.currencyConvert(salesInvoiceProduct, salesInvoiceProduct.product.purchase_price)[salesInvoiceProduct.product.currency.value];
+					} else {
+						salesInvoiceProduct.purchase_price = $scope.currencyConvert(salesInvoiceProduct, salesInvoiceProduct.product.purchase_price)[salesInvoiceProduct.product.currency.value];
+					}
+				}
                 if (salesInvoiceProduct.purchase_price != undefined || salesInvoiceProduct.purchase_price != null) {
                     salesInvoiceProduct.profit_amount = salesInvoiceProduct.amount - salesInvoiceProduct.purchase_price * quantity;
                     salesInvoiceProduct.profit_percent = ((salesInvoiceProduct.amount - (quantity * salesInvoiceProduct.purchase_price)) / (quantity * salesInvoiceProduct.purchase_price)) * 100;
