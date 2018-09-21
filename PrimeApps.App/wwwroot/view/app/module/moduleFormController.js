@@ -245,6 +245,13 @@ angular.module('primeapps')
                 }
             };
 
+			var checkEditPermission = function () {
+				if ($scope.id && ($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights)) {
+					ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+					$state.go('app.crm.dashboard');
+				}
+			};
+
             ModuleService.getPicklists($scope.module)
                 .then(function (picklists) {
                     $scope.picklistsModule = picklists;
