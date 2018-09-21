@@ -692,9 +692,9 @@ namespace PrimeApps.Model.Helpers
                         break;
                     case DataType.Currency:
                         if (!string.IsNullOrWhiteSpace(value))
-                            command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = Decimal.Parse(value), NpgsqlDbType = NpgsqlDbType.Money });
+                            command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = Decimal.Parse(value), NpgsqlDbType = NpgsqlDbType.Numeric });
                         else
-                            command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Money });
+                            command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Numeric });
                         break;
                     case DataType.Date:
                         if (!string.IsNullOrWhiteSpace(value))
