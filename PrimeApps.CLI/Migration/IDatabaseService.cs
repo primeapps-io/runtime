@@ -8,6 +8,6 @@ namespace PrimeApps.CLI.Migration
         JObject MigrateTemplateDatabases(string targetVersion = null, string externalConnectionString = null);
         JObject MigrateTenantDatabases(string targetVersion = null, string externalConnectionString = null);
         JObject RunSqlTemplateDatabases(string sqlFilePath, string externalConnectionString = null);
-        JObject RunSqlTenantDatabases(string sqlFilePath, string externalConnectionString = null);
+        JObject RunSqlTenantDatabases(string sqlFilePath, string externalConnectionString = null, string app = null);
     }
 }
