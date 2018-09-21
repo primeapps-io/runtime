@@ -146,6 +146,14 @@ namespace PrimeApps.App.Helpers
                     AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", $"quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
                     AzureStorage.CommitFile($"quote-template-{language}.docx", $"templates/quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
                 }
+
+                using (var httpClient = new HttpClient())
+                {
+                    var fileContent = await httpClient.GetByteArrayAsync(new Uri($"http://file.ofisim.com/static/sales-invoice-template-{language}.docx"));
+
+                    AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", $"sales-invoice-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
+                    AzureStorage.CommitFile($"sales-invoice-template-{language}.docx", $"templates/sales-invoice-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
+                }
             }
 
             if (appId == 3 || appId == 4)
