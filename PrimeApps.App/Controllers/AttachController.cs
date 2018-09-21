@@ -160,9 +160,9 @@ namespace PrimeApps.App.Controllers
             // Open a template document.
             using (var template = new MemoryStream())
             {
-                    await templateBlob.DownloadToStreamAsync(template, Microsoft.WindowsAzure.Storage.AccessCondition.GenerateEmptyCondition(), new Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions(), new Microsoft.WindowsAzure.Storage.OperationContext());
+                await templateBlob.DownloadToStreamAsync(template, Microsoft.WindowsAzure.Storage.AccessCondition.GenerateEmptyCondition(), new Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions(), new Microsoft.WindowsAzure.Storage.OperationContext());
 
-                    doc = new Aspose.Words.Document(template);
+                doc = new Aspose.Words.Document(template);
 
             }
 
@@ -985,7 +985,7 @@ namespace PrimeApps.App.Controllers
             }
 
             var moduleEntity = await _moduleRepository.GetByName(module);
-            var fields = moduleEntity.Fields.OrderBy(x => x.Id).ToList();
+            var fields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
             var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(nameModule);
             //var moduleName = System.Text.Encoding.ASCII.GetString(bytes);

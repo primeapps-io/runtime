@@ -299,7 +299,7 @@
 		"ChooseFilesExcel": "Dosya Seçiniz (.xls, .xlsx)",
 		"WordUpload": "Detay İçin  Word Yükle",
 		"ExcelUploadTemplate": "Liste İçin Excel Yükle",
-		"ExcelDesktop": "Excel şablonunuz masaüstüne başarılı bir şekilde indirildi.",
+		"ExcelDesktop": "Excel dosyanız başarılı bir şekilde indirilmiştir.",
 		"ExcelType": "Tip",
 		"DownloadExcelTemplate": "Excel Şablonu İndir",
 		"ExportWarning": "Maksimum 3000 adet kaydı dışarı aktarabilirsiniz.<br>Lütfen öncelikle filtreleme yaparak kayıt sayısını azaltınız ve tekrar deneyiniz.",

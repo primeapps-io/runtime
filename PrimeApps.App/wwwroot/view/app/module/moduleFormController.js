@@ -837,7 +837,7 @@ angular.module('primeapps')
                                     $scope.submitting = false;
                                     result(response.data);
                                 }
-                                else {
+								else if ($scope.module.name === 'quotes') {
                                     //After record is revised, update the master record's stage
                                     ModuleService.getRecord($scope.module.name, record.master_id)
                                         .then(function onSuccess(recordDataMaster) {
