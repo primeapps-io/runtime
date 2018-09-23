@@ -464,7 +464,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository);
+            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _warehouse);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -550,7 +550,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository);
+                await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _warehouse);
 
 
                 if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])

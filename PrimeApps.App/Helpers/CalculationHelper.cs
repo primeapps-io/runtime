@@ -1350,38 +1350,52 @@ namespace PrimeApps.App.Helpers
                                                 var recordOwner = recordRepository.Find("users", recordOwnerRequest);
                                                 var recordOwnerObj = recordOwner.First();
                                                 var humanResourcesRecordObj = humanResourcesRecord.First();
-                                                approverUserRecord = recordRepository.Find("users", findApproverUser);
-                                                if (!humanResourcesRecord.IsNullOrEmpty())
-                                                {
-                                                    if ((string)recordOwnerObj["email"] == (string)humanResourcesRecordObj["e_mail1"])
-                                                    {
-                                                        var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
-                                                        var approverRecord = recordRepository.Find("human_resources", approverRequest);
-                                                        record["custom_approver"] = approverRecord.First()["e_mail1"];
-                                                    }
-                                                    else
-                                                    {
-                                                        record["custom_approver"] = humanResourcesRecord.First()["e_mail1"];
-                                                    }
+                                                var projectRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)record["project_code"], No = 1 } }, Limit = 9999 };
+                                                var projectObj = recordRepository.Find("projects", projectRequest);
+                                                var proModExpSheet = await moduleRepository.GetByName("projects");
 
-                                                    if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                var bdpmPicklist = proModExpSheet.Fields.Single(x => x.Name == "bdpm");
+                                                var bdpmPicklistItem = await picklistRepository.FindItemByLabel(bdpmPicklist.PicklistId.Value, (string)projectObj.First()["bdpm"], appUser.TenantLanguage);
+
+                                                if (bdpmPicklistItem.Value == "bd")
+                                                {
+                                                    record["custom_approver"] = "levent.ergen@pf.com.tr";
+                                                }
+                                                else
+                                                {
+                                                    approverUserRecord = recordRepository.Find("users", findApproverUser);
+                                                    if (!humanResourcesRecord.IsNullOrEmpty())
                                                     {
-                                                        int id = (int)approverUserRecord.First()["id"];
-                                                        var sharedUsers = (JArray)record["shared_users_edit"];
-                                                        foreach (var item in sharedUsers.ToList())
+                                                        if ((string)recordOwnerObj["email"] == (string)humanResourcesRecordObj["e_mail1"])
                                                         {
-                                                            if ((int)item != id)
+                                                            var approverRequest = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)approvalWorkflowRecord.First()["second_approver"], No = 1 } }, Limit = 9999 };
+                                                            var approverRecord = recordRepository.Find("human_resources", approverRequest);
+                                                            record["custom_approver"] = approverRecord.First()["e_mail1"];
+                                                        }
+                                                        else
+                                                        {
+                                                            record["custom_approver"] = humanResourcesRecord.First()["e_mail1"];
+                                                        }
+
+                                                        if (!record["shared_users_edit"].IsNullOrEmpty())
+                                                        {
+                                                            int id = (int)approverUserRecord.First()["id"];
+                                                            var sharedUsers = (JArray)record["shared_users_edit"];
+                                                            foreach (var item in sharedUsers.ToList())
                                                             {
-                                                                sharedUsers.Add(approverUserRecord.First()["id"]);
-                                                                record["shared_users_edit"] = sharedUsers;
+                                                                if ((int)item != id)
+                                                                {
+                                                                    sharedUsers.Add(approverUserRecord.First()["id"]);
+                                                                    record["shared_users_edit"] = sharedUsers;
+                                                                }
                                                             }
                                                         }
-                                                    }
-                                                    else
-                                                    {
-                                                        var sharedUsers = new JArray();
-                                                        sharedUsers.Add(approverUserRecord.First()["id"]);
-                                                        record["shared_users_edit"] = sharedUsers;
+                                                        else
+                                                        {
+                                                            var sharedUsers = new JArray();
+                                                            sharedUsers.Add(approverUserRecord.First()["id"]);
+                                                            record["shared_users_edit"] = sharedUsers;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -2306,9 +2320,10 @@ namespace PrimeApps.App.Helpers
                                                 record["yasi"] = age;
                                             }
 
-                                            if (!record["ise_baslama_tarihi"].IsNullOrEmpty())
+                                            var iseBaslamaTarihi2 = calisanModule.Fields.SingleOrDefault(x => x.Name == "ise_baslama_tarihi_2");
+                                            if (iseBaslamaTarihi2 != null && !record["ise_baslama_tarihi_2"].IsNullOrEmpty())
                                             {
-                                                var timespan = DateTime.UtcNow.Subtract((DateTime)record["ise_baslama_tarihi"]);
+                                                var timespan = DateTime.UtcNow.Subtract((DateTime)record["ise_baslama_tarihi_2"]);
                                                 record["deneyim_yil"] = Math.Floor(timespan.TotalDays / 365);
 
                                                 if ((int)record["deneyim_yil"] > 0)
@@ -2346,6 +2361,7 @@ namespace PrimeApps.App.Helpers
                                                     deneyimYil += 1;
                                                 }
 
+
                                                 if (deneyimYil < 0)
                                                     deneyimYil = 0;
 
@@ -2356,7 +2372,7 @@ namespace PrimeApps.App.Helpers
                                                 record["toplam_deneyim_yazi"] = deneyimYil + " yıl " + deneyimAy + " ay";
                                             }
 
-                                            if (!record["dogum_tarihi"].IsNullOrEmpty() || !record["ise_baslama_tarihi"].IsNullOrEmpty())
+                                            if (!record["dogum_tarihi"].IsNullOrEmpty() || (iseBaslamaTarihi2 != null && !record["ise_baslama_tarihi_2"].IsNullOrEmpty()))
                                                 await recordRepository.Update(record, calisanModule, isUtc: false);
                                         }
                                         else//delete

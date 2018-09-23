@@ -1080,7 +1080,21 @@ angular.module('primeapps')
 								case 'lookup':
 									newRecord[field.name] = newRecord[field.name].id;
 									newCurrentRecord[field.name] = newCurrentRecord[field.name] ? newCurrentRecord[field.name].id : null;
-									break;
+                                    break;
+                                case 'text_multi':
+                                    function htmltext(html) {
+                                        var tag = document.createElement('div');
+                                        tag.innerHTML = html;
+
+                                        return tag.innerHTML.toString();
+                                    }
+
+                                    var htmlValue = newRecord[field.name];
+                                    if (field.multiline_type_use_html === true) {
+                                        var htmlValueConvert = htmltext(htmlValue);
+                                        newRecord[field.name] = htmlValueConvert;
+                                    }
+                                    break;
 								case 'multiselect':
 									var ids = [];
 									var currentIds = [];

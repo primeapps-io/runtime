@@ -5,6 +5,10 @@ angular.module('primeapps')
     .factory('TemplateService', ['$rootScope', '$http', 'config', '$filter', 'ModuleService',
         function ($rootScope, $http, config, $filter, ModuleService) {
             return {
+                get: function (id) {
+                    return $http.get(config.apiUrl + 'template/get/' + id);
+                },
+
                 getAll: function (type, module) {
                     return $http.get(config.apiUrl + 'template/get_all?type=' + type + '&moduleName=' + (module || ''));
                 },

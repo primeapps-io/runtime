@@ -892,7 +892,23 @@ angular.module('primeapps')
 			};
 
 			//kaydın process detaylarını gösterme
-			$scope.recordProcessDetail = function (record) {
+            $scope.recordProcessDetail = function (record) {
+
+                if ($scope.previousApprovers)
+                    delete $scope.previousApprovers;
+
+                if ($scope.processOrderParam)
+                    delete $scope.processOrderParam;
+
+                if ($scope.currentApprover)
+                    delete $scope.currentApprover;
+
+                if ($scope.updateTime)
+                    delete $scope.updateTime;
+
+                if ($scope.rejectApprover)
+                    delete $scope.rejectApprover;
+
 				var currentModuleProcess;
 				for (var j = 0; j < $rootScope.approvalProcesses.length; j++) {
 					var currentProcess = $rootScope.approvalProcesses[j];

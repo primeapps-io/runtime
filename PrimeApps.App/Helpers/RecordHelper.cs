@@ -28,7 +28,7 @@ namespace PrimeApps.App.Helpers
     public interface IRecordHelper
     {
         Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
-        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository);
+        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, Warehouse warehouse);
         void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
         void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
         void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true);
@@ -372,7 +372,7 @@ namespace PrimeApps.App.Helpers
                     }
                 }
                 if (module.Name == "izinler")
-                    await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest));
+                    await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
             }
 
             return 0;

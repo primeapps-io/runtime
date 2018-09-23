@@ -133,6 +133,15 @@ angular.module('primeapps')
                     $scope.currentModuleProcess = currentProcess;
             }
 
+            if ($scope.currentModuleProcess) {
+                var profileIds = $scope.currentModuleProcess.profiles.split(',');
+                $scope.hasProcessEditPermission = false;
+                for (var i = 0; i < profileIds.length; i++) {
+                    if (profileIds[i] === $rootScope.user.profile.ID.toString())
+                        $scope.hasProcessEditPermission = true;
+                }
+            }
+
             //Get All Record Count in Related Modules
             if ($scope.module.relations) {
                 angular.forEach($scope.module.relations, function (relation) {
@@ -1101,6 +1110,9 @@ angular.module('primeapps')
                             setQuoteButtonsDisplay();
                         }
                         else if (module === 'sales_orders') {
+                            if ($scope.record.order_stage && $scope.record.order_stage.system_code)
+                                $scope.salesOrderStageSystemCode = $scope.record.order_stage.system_code;
+
                             $scope.orderProductsLoading = true;
                             $scope.orderProductModule = $filter('filter')($rootScope.modules, { name: 'order_products' }, true)[0];
 
@@ -1172,6 +1184,9 @@ angular.module('primeapps')
                                 });
                         }
                         else if (module === 'purchase_orders') {
+                            if ($scope.record.order_stage && $scope.record.order_stage.system_code)
+                                $scope.purchaseOrderStageSystemCode = $scope.record.order_stage.system_code;
+
                             $scope.purchaseProductsLoading = true;
                             $scope.purchaseProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_order_products' }, true)[0];
 
@@ -1841,6 +1856,8 @@ angular.module('primeapps')
                         if (response.data.status === "approved") {
                             $scope.isApproved = true;
                             $scope.record.freeze = true;
+
+                            components.run('AfterApproveProcess', 'Script', $scope);
                         }
                         else
                             $scope.record.process_status_order++;
