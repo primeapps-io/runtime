@@ -71,7 +71,7 @@
                 </div>
                 <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                 <div ng-show="!loading">
-                    <div class="subpanel" ng-repeat="section in module.sections | filter:{display_form:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasPermission(type, operations.modify) && hasSectionFullPermission(section)">
+                    <div class="subpanel" ng-repeat="section in module.sections | filter:{display_form:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasPermission(type, operations.modify, record) && hasSectionFullPermission(section)">
                         <h5 class="subpanel-heading">{{ !section.custom_label ? section['label_' + language] :
                             section.custom_label }}</h5>
                         <div class="subpanel-body">
@@ -563,7 +563,7 @@
                                                         replace-spaces-with-dashes="false"
                                                         add-from-autocomplete-only="true"
                                                         template="view/common/taginput.html">
-                                                <auto-complete source="lookupUserAndGroup(module.id, true, $query)"
+                                                <auto-complete source="lookupUserAndGroup(module.id, !user.profile.has_admin_rights, $query)"
                                                                min-length="0"
                                                                load-on-focus="true"
                                                                load-on-empty="true"

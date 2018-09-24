@@ -631,7 +631,7 @@ angular.module('primeapps')
 
                     return -1;
                 },
-                hasPermission: function (moduleName, operation) {
+                hasPermission: function (moduleName, operation, record) {
                     if (moduleName === 'related_to')
                         moduleName = 'activities';
 
@@ -644,47 +644,48 @@ angular.module('primeapps')
 
                     var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
 
-                    if (!permission)
-                        return false;
-
-                    return permission[operation];
-                },
-                hasRecordEditPermission: function (record) {
-                    if ($rootScope.user.profile.has_admin_rights)
+                    if (permission && permission[operation]) {
                         return true;
-
-                    if (record.shared_users && record.shared_users.indexOf($rootScope.user.id) > -1) {
-                        if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.id) > -1)
-                            return true;
-
-                        if (record.shared_user_groups_edit && $rootScope.user.groups.length) {
-                            for (var userGroupId in record.shared_user_groups_edit) {
-                                if ($rootScope.user.groups.indexOf(record.shared_user_groups_edit[userGroupId]) > -1)
+                    } else if (record) {
+                        /*
+                        * Checking record advanced sharing.
+                        * */
+                        switch (operation) {
+                            case 'Read': {
+                                if (record.shared_users && record.shared_users.indexOf($rootScope.user.id) > -1) {
                                     return true;
-                            }
-                        }
+                                }
 
-                        return false;
-                    }
-
-                    if (record.shared_user_groups && $rootScope.user.groups.length) {
-                        if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.id) > -1)
-                            return true;
-
-                        if (record.shared_user_groups_edit) {
-                            for (var userGroupId in record.shared_user_groups_edit) {
-                                if ($rootScope.user.groups.indexOf(record.shared_user_groups_edit[userGroupId]) > -1)
-                                    return true;
-                            }
-                        }
-
-                        for (var userGroupId in record.shared_user_groups) {
-                            if ($rootScope.user.groups.indexOf(record.shared_user_groups[userGroupId]) > -1)
+                                if (record.shared_user_groups && $rootScope.user.groups.length) {
+                                    for (var userGroupId in record.shared_user_groups) {
+                                        if ($rootScope.user.groups.indexOf(record.shared_user_groups[userGroupId]) > -1)
+                                            return true;
+                                    }
+                                }
                                 return false;
+                            }
+                            case 'Remove':
+                            case 'Modify': {
+                                if ($rootScope.user.profile.has_admin_rights) {
+                                    return true;
+                                }
+
+                                if (record.shared_users_edit && record.shared_users_edit.indexOf($rootScope.user.id) > -1) {
+                                    return true;
+                                }
+
+                                if (record.shared_user_groups_edit) {
+                                    for (var userGroupId in record.shared_user_groups_edit) {
+                                        if ($rootScope.user.groups.indexOf(record.shared_user_groups_edit[userGroupId]) > -1)
+                                            return true;
+                                    }
+                                }
+                                return false;
+                            }
                         }
                     }
 
-                    return true;
+                    return false;
                 },
                 hasDocumentsPermission: function (operation) {
                     var permission = $filter('filter')($rootScope.user.profile.permissions, { type: 1 })[0];

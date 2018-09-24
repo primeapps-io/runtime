@@ -36,5 +36,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> UpdateDependency(Dependency dependency);
         Task<int> DeleteDependencySoft(Dependency dependency);
         Task<int> DeleteDependencyHard(Dependency dependency);
+        Task<ICollection<Components>> GetComponents();
     }
 }

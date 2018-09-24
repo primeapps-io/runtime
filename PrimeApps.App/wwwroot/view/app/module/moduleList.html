@@ -180,8 +180,8 @@
 						<td class="text-right">
 							<span style="display:block; width: 40px"></span>
 							<span class="action-buttons" ng-show="(!record.isProcessItem || isAdmin) && module.name != 'current_accounts' && module.name != 'kasa_hareketleri' && module.name != 'banka_hareketleri' && module.name != 'stock_transactions'">
-								<a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + '&back=' + type}}" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify)"><i class="flaticon-pencil124"></i></a>
-								<i class="action-icon flaticon-bin9" confirm-click action="delete(record.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove)"></i>
+								<a href="#/app/moduleForm/{{type}}{{'?id=' + record.id + '&back=' + type}}" class="action-icon" title="{{'Common.Edit' | translate}}" ng-show="hasPermission(type, operations.modify, record)"><i class="flaticon-pencil124"></i></a>
+								<i class="action-icon flaticon-bin9" confirm-click action="delete(record.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasPermission(type, operations.remove, record)"></i>
 							</span>
 							<span ng-show="record.isProcessItem" style="cursor:pointer">
 								<a ng-if="record['process.process_requests.process_status'] == 1" class="button" ng-click="recordProcessDetail(record)" id="processPopover{{record.id}}"><i class="fa fa-hourglass-half" aria-hidden="true" style="color:darkorange"></i></a>

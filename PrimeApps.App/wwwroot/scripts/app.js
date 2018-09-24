@@ -50,11 +50,22 @@ angular.module('primeapps',
             angular.module('primeapps').constant = $provide.constant;
             angular.module('primeapps').provider = $provide.provider;
 
-
             $locationProvider.hashPrefix('');
+            var whiteList = [];
 
             if (cdnUrl)
-                $sceDelegateProvider.resourceUrlWhitelist(['self', cdnUrl + '**']);
+                whiteList.push(cdnUrl + '**');
+
+            if (blobUrl)
+                whiteList.push(blobUrl + '**');
+
+            if (functionUrl)
+                whiteList.push(functionUrl + '**');
+
+            if (whiteList.length > 0) {
+                whiteList.push('self');
+                $sceDelegateProvider.resourceUrlWhitelist(whiteList);
+            }
 
             $httpProvider.interceptors.push('genericInterceptor');
 
@@ -141,7 +152,7 @@ angular.module('primeapps',
 
             $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
                 try {
-                    $rootScope.currentPath = $location.path();
+                    $rootScope.currentPath = $location.$$url;
                     $window.yaCounter47616517.hit($location.path());
                 }
                 catch (error) {
