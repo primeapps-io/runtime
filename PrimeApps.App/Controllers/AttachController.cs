@@ -188,8 +188,8 @@ namespace PrimeApps.App.Controllers
             Stream outputStream = new MemoryStream();
 
             Aspose.Words.SaveFormat sf;
-            var localModuleName = AppUser.TenantLanguage.Contains("tr") ? moduleEntity.LabelTrSingular : moduleEntity.LabelEnSingular;
-            var fileName = $"{localModuleName}";
+            var primaryField = moduleEntity.Fields.Single(x => x.Primary);
+            var fileName = $"{templateEntity.Name} - {record[primaryField.Name]}";
             switch (format)
             {
                 case "pdf":
