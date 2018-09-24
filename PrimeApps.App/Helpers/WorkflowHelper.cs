@@ -28,7 +28,7 @@ namespace PrimeApps.App.Helpers
 
     public interface IWorkflowHelper
     {
-        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
+        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord = null);
 
         Task<Workflow> CreateEntity(WorkflowBindingModel workflowModel, string tenantLanguage);
 
@@ -49,7 +49,7 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
         }
-        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -77,6 +77,21 @@ namespace PrimeApps.App.Helpers
 
                     foreach (var workflow in workflows)
                     {
+                        if (!string.IsNullOrEmpty(workflow.ChangedField) && operationType != OperationType.insert)
+                        {
+                            bool isFieldExist = false;
+                            var relatedField = module.Fields.FirstOrDefault(x => x.Name == workflow.ChangedField);
+
+                            foreach (var property in record)
+                            {
+                                if (property.Key == workflow.ChangedField || property.Key == workflow.ChangedField + ".id")
+                                    isFieldExist = true;
+                            }
+
+                            if (!isFieldExist || record[workflow.ChangedField] == previousRecord[workflow.ChangedField])
+                                continue;
+                        }
+
                         lookupModuleNames = new List<string>();
                         lookupModules = null;
 
@@ -863,7 +878,8 @@ namespace PrimeApps.App.Helpers
                 Frequency = workflowModel.Frequency,
                 Active = workflowModel.Active,
                 OperationsArray = workflowModel.Operations,
-                ProcessFilter = workflowModel.ProcessFilter
+                ProcessFilter = workflowModel.ProcessFilter,
+                ChangedField = workflowModel.ChangedField
             };
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -1018,6 +1034,7 @@ namespace PrimeApps.App.Helpers
             workflow.ProcessFilter = workflowModel.ProcessFilter;
             workflow.Active = workflowModel.Active;
             workflow.OperationsArray = workflowModel.Operations;
+            workflow.ChangedField = workflowModel.ChangedField;
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {

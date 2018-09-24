@@ -23,6 +23,9 @@ namespace PrimeApps.App.Models
 
         public bool Active { get; set; }
 
+        [StringLength(200)]
+        public string ChangedField { get; set; }
+
         public bool DeleteLogs { get; set; }
 
         [RequiredCollection]

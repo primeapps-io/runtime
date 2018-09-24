@@ -1401,6 +1401,8 @@
       "Status": "Status",
       "DeleteLogs": "Allow re-work for one-time flows that have already worked before",
       "RuleTrigger": "Rule Trigger",
+      "RelatedField": "Related Field",
+      "WhenFieldChanged": "Run when the value in the related field changes only",
       "RuleTriggers": {
         "insert": "Created",
         "update": "Updated",
