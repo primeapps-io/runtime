@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
-var minify = require('gulp-minify-css');
+var minify = require('gulp-clean-css');
 var stripDebug = require('gulp-strip-debug');
 var runSequence = require('run-sequence');
 var bundle = require('gulp-bundle-assets');
@@ -96,7 +96,7 @@ gulp.task('uglify', function () {
 
 gulp.task('minify', function () {
     return gulp.src('styles/*.css')
-        .pipe(minify({keepSpecialComments: false}))
+		.pipe(minify({ compatibility: 'ie8'}))
         .pipe(gulp.dest('styles/'));
 });
 
