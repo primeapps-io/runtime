@@ -10,6 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<ProcessRequest>> GetByProcessId(int id);
         Task<ProcessRequest> GetByIdBasic(int id);
         Task<ProcessRequest> GetByRecordId(int id, string moduleName, OperationType operationType);
+        Task<ProcessRequest> GetByRecordIdWithOutOperationType(int id, string moduleName);
         Task<int> Update(ProcessRequest request);
     }
 }

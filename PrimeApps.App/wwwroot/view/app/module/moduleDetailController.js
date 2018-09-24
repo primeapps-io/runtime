@@ -133,6 +133,15 @@ angular.module('primeapps')
                     $scope.currentModuleProcess = currentProcess;
             }
 
+            if ($scope.currentModuleProcess) {
+                var profileIds = $scope.currentModuleProcess.profiles.split(',');
+                $scope.hasProcessEditPermission = false;
+                for (var i = 0; i < profileIds.length; i++) {
+                    if (profileIds[i] === $rootScope.user.profile.ID.toString())
+                        $scope.hasProcessEditPermission = true;
+                }
+            }
+
             //Get All Record Count in Related Modules
             if ($scope.module.relations) {
                 angular.forEach($scope.module.relations, function (relation) {
@@ -255,7 +264,7 @@ angular.module('primeapps')
                     $scope.record['calisan_data'] = $scope.record['calisan'];
 
                     var filterRequest = {
-                        fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status'],
+						fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status', 'system_code'],
                         filters: [
                             { field: 'calisan', operator: 'equals', value: $scope.record['calisan'].id, no: 1 },
                             { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2 },
@@ -1101,13 +1110,16 @@ angular.module('primeapps')
                             setQuoteButtonsDisplay();
                         }
                         else if (module === 'sales_orders') {
+                            if ($scope.record.order_stage && $scope.record.order_stage.system_code)
+                                $scope.salesOrderStageSystemCode = $scope.record.order_stage.system_code;
+
                             $scope.orderProductsLoading = true;
                             $scope.orderProductModule = $filter('filter')($rootScope.modules, { name: 'order_products' }, true)[0];
 
                             ModuleService.getPicklists($scope.orderProductModule)
                                 .then(function (orderProductModulePicklists) {
                                     var findRequest = {};
-                                    findRequest.fields = ['quantity', 'usage_unit', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
+									findRequest.fields = ['quantity', 'usage_unit', 'currency', 'unit_price', 'vat_percent', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
                                     findRequest.filters = [{ field: 'sales_order', operator: 'equals', value: $scope.id }];
                                     findRequest.sort_field = 'order';
                                     findRequest.sort_direction = 'asc';
@@ -1172,6 +1184,9 @@ angular.module('primeapps')
                                 });
                         }
                         else if (module === 'purchase_orders') {
+                            if ($scope.record.order_stage && $scope.record.order_stage.system_code)
+                                $scope.purchaseOrderStageSystemCode = $scope.record.order_stage.system_code;
+
                             $scope.purchaseProductsLoading = true;
                             $scope.purchaseProductModule = $filter('filter')($rootScope.modules, { name: 'purchase_order_products' }, true)[0];
 
@@ -1841,6 +1856,8 @@ angular.module('primeapps')
                         if (response.data.status === "approved") {
                             $scope.isApproved = true;
                             $scope.record.freeze = true;
+
+                            components.run('AfterApproveProcess', 'Script', $scope);
                         }
                         else
                             $scope.record.process_status_order++;

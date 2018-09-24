@@ -579,6 +579,7 @@ namespace PrimeApps.Model.Context
             //UserCustomShare
             //UserGroup
             //View
+            modelBuilder.Entity<View>().HasIndex(x => new { x.ModuleId, x.SystemCode }).HasName("views_IX_module_id_system_code").IsUnique();
             modelBuilder.Entity<View>().HasIndex(x => x.ModuleId);
             modelBuilder.Entity<View>().HasIndex(x => x.SharingType);
             modelBuilder.Entity<View>().HasIndex(x => x.CreatedAt);

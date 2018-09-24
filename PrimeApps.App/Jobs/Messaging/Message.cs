@@ -20,5 +20,7 @@ namespace PrimeApps.App.Jobs.Messaging
         public IList<string> Recipients { get; set; }
         public string AttachmentLink { get; set; }
         public string AttachmentName { get; set; }
+        public string Cc { get; set; }
+        public string Bcc { get; set; }
     }
 }

@@ -41,5 +41,9 @@ namespace PrimeApps.Model.Common.Messaging
         public string AttachmentLink { get; set; }
         [DataMember]
         public string AttachmentName { get; set; }
+        [DataMember]
+        public string Cc { get; set; }
+        [DataMember]
+        public string Bcc { get; set; }
     }
 }

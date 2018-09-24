@@ -6001,6 +6001,9 @@ tags-input.ng-invalid .tags {
   .quote-products .product-list thead .product-total {
     width: 21% !important;
     padding-right: 20px; }
+    .quote-products .product-list thead .product-vat {
+        width: 7% !important;
+    }
   .quote-products .product-list .product td {
     padding: 5px 5px 5px 0; }
   .quote-products .product-list .product .form-control {

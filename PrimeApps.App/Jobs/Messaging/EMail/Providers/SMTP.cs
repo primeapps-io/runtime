@@ -22,6 +22,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail.Providers
 
             string statusMessage = string.Empty;
             int mailQueue = 0;
+            var emailAddress = new EmailAddressAttribute();
 
             try
             {
@@ -43,6 +44,29 @@ namespace PrimeApps.App.Jobs.Messaging.EMail.Providers
                         mailMessage.SubjectEncoding = Encoding.UTF8;
                         mailMessage.HeadersEncoding = Encoding.UTF8;
                         mailMessage.Subject = message.Subject;
+                        if (!string.IsNullOrWhiteSpace(message.Cc))
+                        {
+                            var ccList = message.Cc.Split(',');
+                            foreach (var cc in ccList)
+                            {
+                                if (string.IsNullOrWhiteSpace(cc) || !emailAddress.IsValid(cc))
+                                    continue;
+
+                                mailMessage.CC.Add(cc);
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(message.Bcc))
+                        {
+                            var bccList = message.Bcc.Split(',');
+                            foreach (var bcc in bccList)
+                            {
+                                if (string.IsNullOrWhiteSpace(bcc) || !emailAddress.IsValid(bcc))
+                                    continue;
+
+                                mailMessage.Bcc.Add(bcc);
+                            }
+                        }
+
                         mailMessage.From = new MailAddress(SenderEMail, Alias, Encoding.UTF8);
                         foreach (string recipient in message.Recipients)
                         {

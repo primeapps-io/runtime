@@ -347,6 +347,7 @@ namespace PrimeApps.App.Helpers
                     fieldEntity.Encrypted = fieldModel.Encrypted;
                     fieldEntity.EncryptionAuthorizedUsers = fieldModel.EncryptionAuthorizedUsers;
                     fieldEntity.AddressType = fieldModel.AddressType;
+                    fieldEntity.LookupSearchType = fieldModel.LookupSearchType;
                     fieldEntity.MultilineType = fieldModel.MultilineType;
                     fieldEntity.MultilineTypeUseHtml = fieldModel.MultilineTypeUseHtml;
                     fieldEntity.PicklistId = fieldModel.PicklistId;

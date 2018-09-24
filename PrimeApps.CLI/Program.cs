@@ -58,6 +58,7 @@ namespace PrimeApps.CLI
             string command = args[1];
             string param1 = args.Length > 2 ? args[2] : null;
             string param2 = args.Length > 3 ? args[3] : null;
+            string param3 = args.Length > 4 ? args[4] : null;
             string connStr = null;
             string version = null;
 
@@ -128,7 +129,7 @@ namespace PrimeApps.CLI
                                 result = databaseMigration.RunSqlTemplateDatabases(param1, param2);
                                 break;
                             default:
-                                result = databaseMigration.RunSqlTenantDatabases(param1, param2);
+                                result = databaseMigration.RunSqlTenantDatabases(param1, param2, param3);
                                 break;
                         }
                         break;

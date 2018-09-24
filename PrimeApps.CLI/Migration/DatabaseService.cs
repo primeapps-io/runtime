@@ -159,7 +159,7 @@ namespace PrimeApps.CLI.Migration
             return result;
         }
 
-        public JObject RunSqlTenantDatabases(string sqlFilePath, string externalConnectionString = null)
+        public JObject RunSqlTenantDatabases(string sqlFilePath, string externalConnectionString = null, string app = null)
         {
             var result = new JObject();
             result["successful"] = new JArray();
@@ -168,11 +168,19 @@ namespace PrimeApps.CLI.Migration
             var sql = File.ReadAllText(sqlFilePath);
             var dbs = Postgres.GetTenantDatabases(_configuration.GetConnectionString("TenantDBConnection"), externalConnectionString);
 
+            var appId = 0;
+
+            if (app != null)
+                appId = int.Parse(app);
+
             foreach (var databaseName in dbs)
             {
                 try
                 {
-                    var rslt = Postgres.ExecuteSql(_configuration.GetConnectionString("TenantDBConnection"), databaseName, sql, externalConnectionString);
+                    if (appId > 0 && !CheckDatabaseApp(databaseName, appId, externalConnectionString))
+                        continue;
+
+                    var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName, sql, externalConnectionString);
 
                     var dbStatus = new JObject();
                     dbStatus["name"] = databaseName;
@@ -206,7 +214,7 @@ namespace PrimeApps.CLI.Migration
                 {
                     Postgres.PrepareTemplateDatabaseForUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
 
-                    var rslt = Postgres.ExecuteSql(_configuration.GetConnectionString("TenantDBConnection"), databaseName + "_new", sql, externalConnectionString);
+                    var rslt = Postgres.ExecuteNonQuery(_configuration.GetConnectionString("TenantDBConnection"), databaseName + "_new", sql, externalConnectionString);
 
                     Postgres.FinalizeTemplateDatabaseUpgrade(_configuration.GetConnectionString("TenantDBConnection"), databaseName, externalConnectionString);
 
@@ -225,6 +233,30 @@ namespace PrimeApps.CLI.Migration
             }
 
             return result;
+        }
+        private bool CheckDatabaseApp(string databaseName, int appId, string externalConnectionString = null)
+        {
+            switch (appId)
+            {
+                case 1:
+                    var sqlCrm = "SELECT * FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'leads_d'";
+                    var resultCrm = Postgres.ExecuteReader(databaseName, sqlCrm, externalConnectionString);
+
+                    if (!resultCrm.IsNullOrEmpty())
+                        return true;
+
+                    break;
+                case 4:
+                    var sqlIk = "SELECT * FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'calisanlar_d'";
+                    var resultIk = Postgres.ExecuteReader(databaseName, sqlIk, externalConnectionString);
+
+                    if (!resultIk.IsNullOrEmpty())
+                        return true;
+
+                    break;
+            }
+
+            return false;
         }
     }
 }

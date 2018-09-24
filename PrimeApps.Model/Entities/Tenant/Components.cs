@@ -53,6 +53,7 @@ namespace PrimeApps.Model.Entities.Application
 		BeforeLookup = 9,
 		PicklistFilter = 10,
         BeforeApproveProcess = 11,
-        BeforeRejectProcess = 12
+        BeforeRejectProcess = 12,
+        AfterApproveProcess = 13
     }
 }

@@ -110,7 +110,7 @@ angular.module('primeapps')
                                     validUsers.push(response.data.id);
                                     if($scope.calisanlar.length - $scope.notValidUser.length === validUsers.length && calisan['process.process_requests.process_id'] !== undefined){
                                         var approveRecords = function() {
-                                            ModuleService.approveMultipleProcessRequest(validUsers)
+											ModuleService.approveMultipleProcessRequest(validUsers, 'izinler')
                                                 .then(function(){
                                                     $scope.submittingModal = false;
                                                 });

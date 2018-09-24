@@ -275,7 +275,7 @@ namespace PrimeApps.Model.Helpers
             }
         }
 
-        public static int ExecuteSql(string connectionString, string databaseName, string sql, string externalConnectionString = null)
+        public static int ExecuteNonQuery(string connectionString, string databaseName, string sql, string externalConnectionString = null)
         {
             int result;
 
@@ -287,6 +287,29 @@ namespace PrimeApps.Model.Helpers
                 {
                     command.CommandText = sql;
                     result = command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
+
+            return result;
+        }
+
+        public static JArray ExecuteReader(string databaseName, string sql, string externalConnectionString = null)
+        {
+            JArray result;
+
+            using (var connection = new NpgsqlConnection(GetConnectionString(databaseName, externalConnectionString)))
+            {
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = sql;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        result = reader.MultiResultToJArray();
+                    }
                 }
                 connection.Close();
             }

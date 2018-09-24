@@ -6,16 +6,23 @@
                     <div class="modal-header clearfix">
                         <h4 class="modal-title pull-left">{{'EMail.Title' | translate}}</h4>
                         <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true"
-                                ng-click="$hide()"><i class="fa fa-close"></i></button>
+                                ng-click="$hide()">
+                            <i class="fa fa-close"></i>
+                        </button>
                     </div>
                     <div class="modal-body">
-                        <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i>
+                        <div ng-show="loadingModal" class="page-loading">
+                            <i class="fa fa-sm fa-spinner fa-pulse"></i>
                         </div>
                         <div ng-show="!loadingModal">
                             <div class="row"
                                  ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.senderAlias.$invalid}">
-                                <label name="senderLabel" class="col-sm-2 control-label">{{'EMail.From' |
-                                    translate}}</label>
+                                <label name="senderLabel" class="col-sm-2 control-label">
+                                    {{
+'EMail.From' |
+                                    translate
+                                    }}
+                                </label>
                                 <div class="col-sm-10"
                                      ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.senderLabel.$invalid}">
                                     <select class="form-control ng-animate-disabled sender-label" name="senderAlias"
@@ -33,26 +40,47 @@
                                     <span ng-if="singleEMail">{{selectedRecords[0].displayName}}</span>
                                 </div>
                             </div>
+                            <div class="row">
+                                <label class="col-sm-2 control-label">Cc </label>
+                                <div class="col-md-10">
+                                    <input class="form-control subject" name="Cc" type="text" ng-model="Cc" />
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label class="col-sm-2 control-label">Bcc</label>
+                                <div class="col-md-10">
+                                    <input class="form-control subject" name="Bcc" type="text" ng-model="Bcc" />
+                                </div>
+                            </div>
                             <div class="row" ng-show="emailField"
                                  ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.emailField.$invalid}">
-                                <label name="senderLabel" class="col-sm-2 control-label">{{'EMail.EMailField' |
-                                    translate}}</label>
+                                <label name="senderLabel" class="col-sm-2 control-label">
+                                    {{'EMail.EMailField' |translate}}
+                                </label>
                                 <div class="col-sm-10"
                                      ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.emailField.$invalid}">
                                     <select name="emailField" class="form-control sender-label" ng-required="true"
                                             ng-options="field.label + ' ' + field.labelExt for field in emailFields | filter:{data_type:'email', deleted:'!true'}"
-                                            ng-model="emailField">
-                                    </select>
+                                            ng-model="emailField"></select>
                                 </div>
                             </div>
                             <div class="row" ng-show="!emailField"
                                  ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.emailField.$invalid}">
-                                <label name="senderLabel2" class="col-sm-2 control-label">{{'EMail.EMailField' |
-                                    translate}}</label>
+                                <label name="senderLabel2" class="col-sm-2 control-label">
+                                    {{
+'EMail.EMailField' |
+                                    translate
+                                    }}
+                                </label>
                                 <div class="col-sm-10"
                                      ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.emailField.$invalid}">
-                                    <label class="form-control subject" style="color:#990000;padding-top:8px">{{'EMail.NoEMailField' |
-                                        translate}}</label>
+                                    <label class="form-control subject" style="color:#990000;padding-top:8px">
+                                        {{
+'EMail.NoEMailField' |
+                                        translate
+                                        }}
+                                    </label>
                                 </div>
                             </div>
                             <div class="row" ng-class="{'has-error': emailModalForm.$submitted && emailModalForm.Subject.$invalid}">
@@ -125,7 +153,7 @@
             <div ng-show="formType === 'template'">
                 <form name="emailModalFormTemplateEdit" class="form-horizontal form-custom" autocomplete="off" novalidate>
                     <div class="modal-header clearfix">
-                        <h4 class="modal-title pull-left"  ng-show="!template">{{'Template.Title' | translate}}</h4>
+                        <h4 class="modal-title pull-left" ng-show="!template">{{'Template.Title' | translate}}</h4>
                         <h4 class="modal-title pull-left" ng-show="template">{{'Template.EditTemplate' | translate}}</h4>
                         <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
                     </div>
@@ -220,8 +248,8 @@
                         </div>
                         <div class="clearfix row template-footer">
                             <div class="col-sm-4">
-                            <p class="pull-left" style="margin-top:6px">{{'Common.ParameterMessage' | translate}}</p>
-                        </div>
+                                <p class="pull-left" style="margin-top:6px">{{'Common.ParameterMessage' | translate}}</p>
+                            </div>
                             <div class="col-sm-8 text-right">
                                 <button type="button" class="btn btn-custom" ng-click="formType = 'email';backTemplate()" ng-disabled="saving">{{'Template.Back' | translate}}</button>
                                 <button type="button" class="btn btn-danger" ng-show="template" action="templateDelete();formType = 'email';" confirm-click placement="top" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ladda="emailUpdating">{{'Template.TemplateDelete' | translate}}</button>

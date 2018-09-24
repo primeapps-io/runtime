@@ -102,6 +102,9 @@ namespace PrimeApps.Model.Entities.Application
         [Column("address_type")]
         public AddressType AddressType { get; set; }
 
+        [Column("lookup_search_type")]
+        public LookupSearchType LookupSearchType { get; set; }
+
         [Column("label_en"), MaxLength(50), Required]
         public string LabelEn { get; set; }
 
