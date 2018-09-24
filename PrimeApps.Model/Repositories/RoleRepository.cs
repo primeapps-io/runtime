@@ -262,23 +262,13 @@ namespace PrimeApps.Model.Repositories
 
         }
 
-        public async Task AddOwnersRecursiveAsync(Role role, ICollection<string> owners, int? tenantId = null, int? oldParentRoleID = null)
+        public async Task AddOwnersRecursiveAsync(Role role, ICollection<string> owners, int? tenantId = null)
         {
             Role parentRole = await DbContext.Roles.FindAsync(role.ReportsToId);
 
             if (parentRole != null)
             {
                 parentRole.OwnersList.AddRange(owners);
-
-                if (role.Users.Count > 0)
-                {
-                    var userID = role.Users.First().Id.ToString();
-                    parentRole.OwnersList.Add(userID);
-                    Role oldParentRole = await DbContext.Roles.FindAsync(oldParentRoleID);
-                    if (oldParentRole != null)
-                        oldParentRole.OwnersList.Remove(userID);
-                }
-
                 parentRole.OwnersList = parentRole.OwnersList.Distinct().ToList();
 
                 if (tenantId.HasValue)
@@ -312,6 +302,18 @@ namespace PrimeApps.Model.Repositories
             roleToUpdate.LabelEn = role.LabelEn;
             roleToUpdate.LabelTr = role.LabelTr;
             roleToUpdate.ShareData = role.ShareData;
+            var userID = string.Empty;
+            //The moved Role has been passed to a temporary variable to avoid spoofing the owner list.
+            var tempOwnerList = roleToUpdate.OwnersList;
+
+            //If the user has been moved to the role, we add his own ID to the tempOwner list 
+            //that he owns so that the old and new parents can be cleaned and re - added from their OwnerList.
+            if (roleToUpdate.Users.Count() > 0)
+            {
+                userID = roleToUpdate.Users.First().Id.ToString();
+                tempOwnerList.Add(userID);
+                tempOwnerList = tempOwnerList.Distinct().ToList();
+            }
 
             if (role.ReportsTo != roleToUpdate.ReportsToId)
             {
@@ -319,7 +321,7 @@ namespace PrimeApps.Model.Repositories
                 if (roleToUpdate.ReportsToId.HasValue)
                 {
                     /// the role had a parent role before, so just go trough the parent branch and update until the root.
-                    await RemoveOwnersRecursiveAsync(roleToUpdate, roleToUpdate.OwnersList);
+                    await RemoveOwnersRecursiveAsync(roleToUpdate, tempOwnerList);
                 }
 
                 /// update the roles reports to id (parent)
@@ -328,7 +330,7 @@ namespace PrimeApps.Model.Repositories
                 if (roleToUpdate.ReportsToId.HasValue)
                 {
                     /// There is a new parent, so add user id to owners list of the parent roles until the root.
-                    await AddOwnersRecursiveAsync(roleToUpdate, roleToUpdate.OwnersList, oldParentRoleID: oldRoleID);
+                    await AddOwnersRecursiveAsync(roleToUpdate, tempOwnerList);
                 }
             }
 

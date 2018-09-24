@@ -82,6 +82,8 @@ namespace PrimeApps.App.Jobs.Email
 
                 var emailAddress = new EmailAddressAttribute();
 
+                if (string.IsNullOrWhiteSpace(mail.EmailTo.ToString()) || !emailAddress.IsValid(mail.EmailTo))
+                    return true;
 
                 // generate email message
                 myMessage = new MailMessage()
@@ -174,7 +176,9 @@ namespace PrimeApps.App.Jobs.Email
                 var subject = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Subject, tenantId, moduleId, recordId, false));
                 var body = AsyncHelpers.RunSync(() => ParseDynamicContent(email.Body, tenantId, moduleId, recordId, addRecordSummary));
 
-                if (string.IsNullOrWhiteSpace(email.EmailTo.ToString()))
+                var emailAddress = new EmailAddressAttribute();
+
+                if (string.IsNullOrWhiteSpace(email.EmailTo.ToString()) || !emailAddress.IsValid(email.EmailTo))
                     return true;
 
                 // generate email message

@@ -24,6 +24,9 @@ namespace PrimeApps.Model.Entities.Application
         [Column("active")]//, Index]
         public bool Active { get; set; }
 
+        [Column("changed_field"), MaxLength(200)]
+        public string ChangedField { get; set; }
+
         [Column("operations"), MaxLength(50), Required]
         public string Operations { get; set; }
 

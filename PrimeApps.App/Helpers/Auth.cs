@@ -24,8 +24,8 @@ namespace PrimeApps.App.Helpers
             _configuration = configuration;
             _ctx = new PlatformDBContext(configuration);
         }
-		//TODO Removed
-		/*public async Task<bool> AddClient(Client client)
+        //TODO Removed
+        /*public async Task<bool> AddClient(Client client)
         {
 
             var existingToken = _ctx.Clients.SingleOrDefault(r => r.Name == client.Name && r.ApplicationType == client.ApplicationType);
@@ -91,7 +91,7 @@ namespace PrimeApps.App.Helpers
             return _ctx.RefreshTokens.ToList();
         }*/
 
-		public void Dispose()
+        public void Dispose()
         {
             _ctx.Dispose();
 
@@ -169,6 +169,7 @@ namespace PrimeApps.App.Helpers
                             var lang = !result["Language"].IsNullOrEmpty() ? (string)result["Language"] : string.Empty;
                             var favicon = !result["Favicon"].IsNullOrEmpty() ? result["Favicon"] : cdnUrlStatic + "images/favicon/primeapps.ico";
                             var image = !result["Image"].IsNullOrEmpty() ? result["Image"] : null;
+                            Thread.CurrentThread.CurrentUICulture = lang == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
                             json = @"{app: 'primeapps', title: '" + title + "', logo: '" + result["Logo"] + "', desc_tr:'" + description + "', desc_en:'" + description + "', color: '" + color + "', customDomain: true, language: '" + lang + "', favicon: '" + favicon + "', customImage: '" + image + "' }";
                             AppInfo = json;
                             return JObject.Parse(json);

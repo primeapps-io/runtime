@@ -182,6 +182,12 @@ angular.module('primeapps')
                     workflowModel.delete_logs = workflow.delete_logs;
                     workflowModel.processFilter = workflow.process_filter;
                     workflowModel.frequency = workflow.frequency || 'one_time';
+
+                    if (workflow.changed_field) {
+                        workflowModel.changed_field_checkbox = true;
+                        workflowModel.changed_field = $filter('filter')(module.fields, { name: workflow.changed_field }, true)[0];
+                    }
+
                     workflowModel.operation = {};
 
                     angular.forEach(workflow.operations_array, function (operation) {
@@ -609,6 +615,11 @@ angular.module('primeapps')
                     workflow.active = workflowModel.active;
                     workflow.delete_logs = workflowModel.delete_logs;
                     workflow.process_filter = workflowModel.processFilter;
+
+                    if (workflowModel.changed_field)
+                        workflow.changed_field = workflowModel.changed_field.name;
+                    else workflow.changed_field = null;
+
                     workflow.operations = [];
 
                     angular.forEach(workflowModel.operation, function (value, key) {
