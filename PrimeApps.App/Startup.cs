@@ -43,8 +43,8 @@ namespace PrimeApps.App
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
             //Add Workflow service
-           // services.AddWorkflow(x => x.UsePostgreSQL("server=pg-dev.ofisim.com;port=5433;username=postgres;password=0f!s!mCRMDev;database=workflow;command timeout=0;keepalive=30;", false, true));
-            services.AddWorkflow();
+           services.AddWorkflow(x => x.UsePostgreSQL("server=pg-dev.ofisim.com;port=5433;username=postgres;password=0f!s!mCRMDev;database=platform;command timeout=0;keepalive=60;", false, true));
+           // services.AddWorkflow();
            
             //Register DI
             DIRegister(services, Configuration);

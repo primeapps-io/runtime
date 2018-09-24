@@ -1,37 +1,59 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks; 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.Helpers;
-using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Repositories;
+using System;
+using System.Threading.Tasks;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
-using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace PrimeApps.App.Bpm.Steps
 {
-    public class TaskStep : StepBody
+    public class TaskStep : StepBodyAsync
     {
-        private IRecordRepository _recordRepository;
-        private ICalculationHelper _calculationHelper;
-        private IRecordHelper _recordHelper;
+        private IServiceScopeFactory _serviceScopeFactory;
+        private IConfiguration _configuration;
 
         public JObject Record { get; set; }
 
-        public TaskStep(IRecordHelper recordHelper)
+        public TaskStep(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
-            _recordHelper = recordHelper;
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public override ExecutionResult Run(IStepExecutionContext context)
+        public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
-            // _moduleRepository=(IModuleRepository)System.Reflection.Assembly.GetExecutingAssembly().GetTypes().Where(q => q.GetInterface(typeof(IServiceProvider).Name) == typeof(IModuleRepository)).FirstOrDefault();
-            
+            if (context == null)
+                throw new NullReferenceException();
+
+            if (context.Workflow.Reference == null)
+                throw new NullReferenceException();
+
+            var appUser = JsonConvert.DeserializeObject<JObject>(context.Workflow.Reference);
+
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var userRepository = new UserRepository(databaseContext, _configuration))
+                {
+                    userRepository.CurrentUser = new Model.Helpers.CurrentUser()
+                    {
+                        TenantId = (int)appUser.GetValue("tenant_id"),
+                        UserId = (int)appUser.GetValue("user_id")
+                    };
+                        //Example
+                        //var result = await userRepository.GetById(2);
+                }
+            }
+
+
+
             //var moduleEntity =  _moduleRepository.GetByNameBasic("activities");
             var record = new JObject();
-            record["owner"] = (int)Record["record"]["owner"];
+            //record["owner"] = (int)Record["id"];
             record["subject"] = "The subject is Real!"; //+ (string)Record["record"]["name"];
 
             //////var resultCreate =  _recordRepository.Create(record, moduleEntity);

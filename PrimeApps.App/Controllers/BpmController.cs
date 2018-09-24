@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
-using WorkflowCore.Interface;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
+using WorkflowCore.Interface;
 
 namespace PrimeApps.App.Controllers
 {
@@ -86,10 +86,15 @@ namespace PrimeApps.App.Controllers
             var str = bpmWorkflow.DefinitionJson.ToString();
             _definitionLoader.LoadDefinition(str);
 
-            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString());
+            //  var referance = "{'user_id': " + _bpmRepository.CurrentUser.UserId + ", 'tenant_id': " + _bpmRepository.CurrentUser.TenantId + "}";
+            var referance = new JObject();
+            referance["user_id"] = _bpmRepository.CurrentUser.UserId;
+            referance["tenant_id"] = _bpmRepository.CurrentUser.TenantId;
+            
+            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return null;//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
+            return Ok();//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

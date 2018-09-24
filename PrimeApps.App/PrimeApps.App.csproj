@@ -28,11 +28,18 @@
     <PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.8.18" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.0" />
-    <PackageReference Include="WorkflowCore" Version="1.6.6" />
-    <PackageReference Include="WorkflowCore.Persistence.PostgreSQL" Version="1.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WorkflowCore">
+      <HintPath>..\..\WorkflowTest1\WorkflowCore\bin\Debug\netstandard2.0\WorkflowCore.dll</HintPath>
+    </Reference>
+    <Reference Include="WorkflowCore.Persistence.PostgreSQL">
+      <HintPath>..\..\WorkflowTest1\WorkflowCore.Persistence.PostgreSQL\bin\Debug\netstandard2.0\WorkflowCore.Persistence.PostgreSQL.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
