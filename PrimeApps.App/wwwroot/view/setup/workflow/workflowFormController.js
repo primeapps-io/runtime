@@ -440,6 +440,9 @@ angular.module('primeapps')
                 if (!$scope.workflowForm.workflowName.$valid || !$scope.workflowForm.module.$valid || !$scope.workflowForm.operation.$valid)
                     return false;
 
+                if ($scope.workflowModel.changed_field_checkbox && !$scope.workflowForm.changed_field.$valid)
+                    return false;
+
                 return $scope.validateActions(tabClick);
             };
 
@@ -792,6 +795,15 @@ angular.module('primeapps')
                         $scope.workflowModel.delete_logs = false;
                 }
 
+                $scope.workflowModel.changed_field_checkbox = false;
+                $scope.workflowModel.changed_field = null;
+
+            }
+
+            $scope.changeFieldCheckboxChanged = function (status) {
+                if (!status) {
+                    $scope.workflowModel.changed_field = null;
+                }
             }
 
             $scope.frequencyChanged = function (frequency) {
