@@ -60,7 +60,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.Error = error;
             ViewBag.ReturnUrl = returnUrl;
 
-            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language, _configuration);
+            ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, lang, _configuration);
 
             if (!string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value))
             {

@@ -1,43 +1,43 @@
 <div id="wrapper">
-	<div id="navbar-wrapper">
-		<nav class="navbar navbar-upper">
-			<div class="navbar-header">
-				<a class="navbar-brand" ng-href="{{app === 'crm' ? '#/app/dashboard' : '#/app/analytics/report'}}">
-					<img ng-src="{{workgroup.logo_url ? workgroup.logo_url : 'images/logo-header-'+ appLogo +'.jpg'}}"
-						 border="0" class="logo" ng-class="{'ofisim-logo':!workgroup.logo_url}">
-				</a>
-				<button type="button" class="navbar-toggle ng-scope" ng-click="toggleFullLeftMenu()">
-					<span class="fa fa-bars fa-2x"></span>
-				</button>
-			</div>
-			<ul class="nav navbar-nav navbar-right">
-				<!--<li>-->
-				<!--<form class="navbar-form navbar-left search-form" data-toggle="dropdown">-->
-				<!--<div class="form-group">-->
-				<!--<input-->
-				<!--type="text"-->
-				<!--class="form-control"-->
-				<!--placeholder="{{'Layout.Search' | translate}}"-->
-				<!--ng-model="searchValue">-->
-				<!--<i class="flaticon-search74"></i>-->
-				<!--</div>-->
-				<!--</form>-->
-				<!--</li>-->
-				<!--<li>-->
-				<li>
-					<a href ng-click="removeSampleData()" class="remove-sample-data" ng-if="workgroup.has_sample_data" ladda="sampleRemoving"><i class="fa-sidebar-icon fa fa-trash"></i> {{'Layout.RemoveSampleData' | translate}}</a>
-				</li>
-				<li ng-if="preview">
-					<a href ng-click="reload()" data-title="{{'Common.Reload' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip>
-						<i class="fa fa-refresh fa-2x" ng-class="{'fa-spin fa-fw':reloading}"></i>
-					</a>
-				</li>
-				<li data-title="{{'Common.Help' | translate}}" ng-hide="helpIconHide || preview || isCustomDomain" data-trigger="hover" data-placement="bottom" bs-tooltip>
-					<a href class="help-link" data-template-url="view/common/help.html" ng-click="helpSide()" data-placement="right"
-					   data-animation="am-slide-right" data-container="body" bs-aside>
-						<i class="fa fa-question-circle"></i>
-					</a>
-				</li>
+    <div id="navbar-wrapper">
+        <nav class="navbar navbar-upper">
+            <div class="navbar-header">
+                <a class="navbar-brand" ng-href="{{app === 'crm' ? '#/app/dashboard' : '#/app/analytics/report'}}">
+                    <img ng-src="{{workgroup.logo_url ? workgroup.logo_url : 'images/logo-header-'+ appLogo +'.jpg'}}"
+                         border="0" class="logo" ng-class="{'ofisim-logo':!workgroup.logo_url}">
+                </a>
+                <button type="button" class="navbar-toggle ng-scope" ng-click="toggleFullLeftMenu()">
+                    <span class="fa fa-bars fa-2x"></span>
+                </button>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <!--<li>-->
+                <!--<form class="navbar-form navbar-left search-form" data-toggle="dropdown">-->
+                <!--<div class="form-group">-->
+                <!--<input-->
+                <!--type="text"-->
+                <!--class="form-control"-->
+                <!--placeholder="{{'Layout.Search' | translate}}"-->
+                <!--ng-model="searchValue">-->
+                <!--<i class="flaticon-search74"></i>-->
+                <!--</div>-->
+                <!--</form>-->
+                <!--</li>-->
+                <!--<li>-->
+                <li>
+                    <a href ng-click="removeSampleData()" class="remove-sample-data" ng-if="workgroup.has_sample_data" ladda="sampleRemoving"><i class="fa-sidebar-icon fa fa-trash"></i> {{'Layout.RemoveSampleData' | translate}}</a>
+                </li>
+                <li ng-if="preview">
+                    <a href ng-click="reload()" data-title="{{'Common.Reload' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip>
+                        <i class="fa fa-refresh fa-2x" ng-class="{'fa-spin fa-fw':reloading}"></i>
+                    </a>
+                </li>
+                <li data-title="{{'Common.Help' | translate}}" ng-hide="helpIconHide || preview || isCustomDomain" data-trigger="hover" data-placement="bottom" bs-tooltip>
+                    <a href class="help-link" data-template-url="view/common/help.html" ng-click="helpSide()" data-placement="right"
+                       data-animation="am-slide-right" data-container="body" bs-aside>
+                        <i class="fa fa-question-circle"></i>
+                    </a>
+                </li>
 
 				<li class="sip-phone-container" ng-if="sipAccessRights && sipUser">
 					<a id="sipPhoneBtn" ng-click="showSipPhone()"
