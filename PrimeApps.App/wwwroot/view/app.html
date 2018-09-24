@@ -106,11 +106,11 @@
 						</div>
 						<div ng-if="item.route" class="panel-heading" role="tab">
 							<h4 class="panel-title">
-								<a ng-if="item.is_dynamic" href="#/app/modules/{{item.route}}" ng-click="routingPrism('#/app/modules/{{item.route}}')" ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}" style="text-decoration: none !important;">
+								<a ng-if="item.is_dynamic" href="#/app/modules/{{item.route}}" ng-click="routingPrism('#/app/modules/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}" style="text-decoration: none !important;">
 									<div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
 									<span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
 								</a>
-								<a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
+								<a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
 									<div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
 									<span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
 								</a>
@@ -119,11 +119,11 @@
 						<div ng-if="!item.route" style="position: relative;" class="panel-collapse" role="tabpanel" bs-collapse-target>
 							<div class="panel-body" ng-class="{'toggled-menu':toggled}">
 								<li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
-									<a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/modules/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}">
+									<a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/modules/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}">
 										<div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
 										<span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
 									</a>
-									<a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/{{subMenu.route}}" ng-click="routingPrism('#/app/{{subMenu.route}}')" ng-class="{'active': currentPath === '/app/{{subMenu.route}}'}">
+									<a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/{{subMenu.route}}" ng-click="routingPrism('#/app/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{subMenu.route}}'}">
 										<div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
 										<span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
 									</a>
