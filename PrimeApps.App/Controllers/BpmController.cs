@@ -87,20 +87,18 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow);
+            var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.TenantLanguage);
             var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            var str = bpmWorkflow.DefinitionJson.ToString();
-            _definitionLoader.LoadDefinition(str);
+            ////var str = bpmWorkflow.DefinitionJson.ToString();
+            ////_definitionLoader.LoadDefinition(str);
 
-            var referance = new JObject();
-            referance["user_id"] = _bpmRepository.CurrentUser.UserId;
-            referance["tenant_id"] = _bpmRepository.CurrentUser.TenantId;
+            ////var referance = _bpmHelper.ReferanceCreateToForBpmHost(AppUser);
 
-            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
+            ////await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Ok();//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
@@ -117,7 +115,7 @@ namespace PrimeApps.App.Controllers
             if (bpmWorkflowEntity == null)
                 return NotFound();
 
-            await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity);
+            await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity, AppUser.TenantLanguage);
             await _bpmRepository.Update(bpmWorkflowEntity);
 
             return Ok(bpmWorkflowEntity);
@@ -142,6 +140,7 @@ namespace PrimeApps.App.Controllers
         {
             string workflowId;
             var workflowDefinition = _workflowRegistry.GetDefinition(id, version);
+            var referance = _bpmHelper.ReferanceCreateToForBpmHost(AppUser);
 
             if (workflowDefinition == null)
                 return BadRequest(string.Format("Workflow definition {0} for version {1} not found", id, version));
@@ -150,11 +149,13 @@ namespace PrimeApps.App.Controllers
             {
                 var dataStr = JsonConvert.SerializeObject(data);
                 var dataObj = JsonConvert.DeserializeObject(dataStr, workflowDefinition.DataType);
-                workflowId = await _workflowHost.StartWorkflow(id, version, dataObj, AppUser.TenantId.ToString());
+
+
+                workflowId = await _workflowHost.StartWorkflow(id, version, dataObj, referance);
             }
             else
             {
-                workflowId = await _workflowHost.StartWorkflow(id, version, null, AppUser.TenantId.ToString());
+                workflowId = await _workflowHost.StartWorkflow(id, version, null, referance);
             }
 
             return Ok(workflowId);

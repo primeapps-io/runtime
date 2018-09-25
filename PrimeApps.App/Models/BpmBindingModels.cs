@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Annotations;
+using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace PrimeApps.App.Models
 
         public DateTime EndTime { get; set; }
 
+        public bool Active { get; set; }
+
         [Required]
         public BpmTriggerType TriggerType { get; set; }
 
@@ -30,13 +33,17 @@ namespace PrimeApps.App.Models
         public WorkflowFrequency Frequency { get; set; }
 
         [MaxLength(4000)]
-        public string[] ChangedFields { get; set; }
+        public string ChangedFields { get; set; }
 
         public bool CanStartManuel { get; set; }
         
         public JObject DefinitionJson { get; set; }
 
         public string DiagramJson { get; set; }
+
+        public int ModuleId { get; set; }
+
+        public List<BpmRecordFilter> Filters { get; set; }
 
 
 

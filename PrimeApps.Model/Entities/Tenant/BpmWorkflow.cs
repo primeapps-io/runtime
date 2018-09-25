@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -58,6 +59,8 @@ namespace PrimeApps.Model.Entities.Application
         public int ModuleId { get; set; }
 
         public virtual BpmCategory Category { get; set; }
+
+        public virtual ICollection<BpmRecordFilter> Filters { get; set; }
 
         [NotMapped]
         public string[] OperationsArray
