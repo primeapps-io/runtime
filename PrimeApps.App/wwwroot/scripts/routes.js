@@ -1296,5 +1296,55 @@ angular.module('primeapps')
                     controller: 'PaymentFormController'
                 });
 
+            if (components !== '') {
+                var _components = angular.fromJson(components);
+
+                angular.forEach(_components, function (component) {
+                    var files = [];
+                    var componentContent = angular.fromJson(component.content);
+
+                    var url = componentContent.local === 't' ? 'views/app/crm/' + component.name + '/' : blobUrl + '/components/tenant-' + tenantId + '/' + component.name + '/';
+
+                    for (var i = 0; i < componentContent.files.length; i++) {
+                        files.push(componentContent.files[i].includes('http') ? componentContent.files[i] : url + componentContent.files[i]);
+                    }
+
+                    $stateProvider
+                        .state('app.crm.' + component.name, {
+                            cache: false,
+                            url: '/' + componentContent.url,
+                            views: {
+                                'app': {
+                                    templateUrl: function ($stateParams) {
+                                        var str = "?";
+
+                                        for (var p in $stateParams) {
+                                            if ($stateParams[p]) {
+                                                str += p + '=' + $stateParams[p] + '&';
+                                            }
+                                        }
+                                        str = str.substring(0, str.length - 1);
+
+                                        var fUrl = componentContent.app.templateUrl.includes('http') ? componentContent.app.templateUrl : url + componentContent.app.templateUrl;
+
+                                        if (str.length > 1) {
+                                            fUrl += str;
+                                        }
+
+                                        return fUrl;
+                                    },
+                                    controller: componentContent.app.controller
+                                }
+                            },
+                            resolve: {
+                                plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                                    return $ocLazyLoad.load(files);
+                                }]
+                            }
+
+                        });
+                });
+            }
+
             $urlRouterProvider.otherwise('/app/dashboard');
         }]);

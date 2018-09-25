@@ -20,7 +20,6 @@ angular.module('primeapps')
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
-            $scope.hasRecordEditPermission = helper.hasRecordEditPermission;
             $scope.hasDocumentsPermission = helper.hasDocumentsPermission;
             $scope.hasFieldDisplayPermission = ModuleService.hasFieldDisplayPermission;
             $scope.hasFieldFullPermission = ModuleService.hasFieldFullPermission;
@@ -51,6 +50,12 @@ angular.module('primeapps')
             if (!$scope.module) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
                 $state.go('app.dashboard');
+                return;
+            }
+
+            if (!$scope.id) {
+                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+                $state.go('app.crm.dashboard');
                 return;
             }
 
@@ -101,12 +106,6 @@ angular.module('primeapps')
                     setScrollHeight();
                 });
             });
-
-            if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
-                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.dashboard');
-                return;
-            }
 
             $scope.primaryField = $filter('filter')($scope.module.fields, { primary: true })[0];
             $scope.currentUser = ModuleService.processUser($rootScope.user);
@@ -205,12 +204,6 @@ angular.module('primeapps')
                 });
             }
 
-            if (!$scope.id) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.dashboard');
-                return;
-            }
-
             if ($scope.parentType) {
                 if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
                     $scope.parentModule = $scope.parentType;
@@ -253,7 +246,7 @@ angular.module('primeapps')
             var setRecordValidationData = function () {
                 if ($scope.module.name === 'izinler' &&
                     (
-                    ($scope.hasManuelProcess && ($scope.record.owner.id === $scope.currentUser.id || $scope.hasProcessRights) && !$scope.record.process_id) ||
+                        ($scope.hasManuelProcess && ($scope.record.owner.id === $scope.currentUser.id || $scope.hasProcessRights) && !$scope.record.process_id) ||
                         ($scope.record.process_status === 3 && $scope.record.owner.id === $scope.currentUser.id && !$scope.waitingForApproval)
                     ) && $scope.record['izin_turu']) {
                     var startOf = moment().date(1).month(1).year(moment().year()).format('YYYY-MM-DD');
@@ -263,8 +256,29 @@ angular.module('primeapps')
                     $scope.record['dogum_tarihi'] = $scope.record['calisan']['dogum_tarihi'];
                     $scope.record['calisan_data'] = $scope.record['calisan'];
 
+
+                    //Yıllık izin seçilmiş ise işe bağladığı tarih dikkate alınarak 1 yıllık kullandığı izinleri çekmek için tarih hesaplanıyor.
+                    if ($scope.record['izin_turu_data']['yillik_izin']) {
+                        var jobStart = moment($scope.record['calisan_data']['ise_baslama_tarihi']);
+                        var jobDay = jobStart.get('date');
+                        var jobMonth = jobStart.get('month');
+                        var currentYear = moment().get('year');
+
+                        var currentDate = moment().date(jobDay).month(jobMonth).year(currentYear).format('YYYY-MM-DD');
+
+                        if (moment(currentDate).isAfter(moment().format('YYYY-MM-DD'))) {
+                            currentYear -= 1;
+                        }
+
+                        startOf = moment().date(jobDay).month(jobMonth).year(currentYear).format('YYYY-MM-DD');
+                    }
+
+                    if ($scope.record['izin_turu_data']['her_ay_yenilenir']) {
+                        startOf = moment().date(1).month(moment().month()).year(moment().year()).format('YYYY-MM-DD');
+                    }
+
                     var filterRequest = {
-						fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status', 'system_code'],
+                        fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status'],
                         filters: [
                             { field: 'calisan', operator: 'equals', value: $scope.record['calisan'].id, no: 1 },
                             { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2 },
@@ -289,6 +303,12 @@ angular.module('primeapps')
 
                     ModuleService.getRecord($scope.module.name, $scope.id)
                         .then(function (recordData) {
+                            if (Object.keys(recordData.data).length === 0) {
+                                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                                $state.go('app.crm.dashboard');
+                                return;
+                            }
+
                             var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
 
                             for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
@@ -1424,7 +1444,7 @@ angular.module('primeapps')
                         }
                     });
 
-                if ($scope.record.master_id) {
+                if ($scope.record.master_id && $scope.module.name === 'quotes') {
                     ModuleService.getRecord($scope.module.name, $scope.record.master_id, true)
                         .then(function (masterRecord) {
                             $scope.masterRecord = ModuleService.processRecordSingle(masterRecord.data, $scope.module, $scope.picklistsModule);

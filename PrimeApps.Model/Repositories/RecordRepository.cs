@@ -39,7 +39,9 @@ namespace PrimeApps.Model.Repositories
                 GetRoleBasedInfo(module.Name, out owners, out userGroups);
 
             var sql = RecordHelper.GenerateGetSql(module, lookupModules, recordId, owners, CurrentUser.UserId, userGroups, deleted);
-            var record = (JObject)DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
+			var data = DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
+
+			var record = data == null ? new JObject() : (JObject)data;
 
             if (!record.IsNullOrEmpty())
             {
@@ -89,6 +91,31 @@ namespace PrimeApps.Model.Repositories
                 else
                     throw;
 
+            }
+
+            if (records.Count > 0)
+            {
+                foreach (var record in records)
+                {
+                    if (!record.IsNullOrEmpty())
+                    {
+                        if (!record["shared_users"].IsNullOrEmpty() || !record["shared_user_groups"].IsNullOrEmpty())
+                        {
+                            var userIds = record["shared_users"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_users"]);
+                            var userGroupIds = record["shared_user_groups"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_user_groups"]);
+                            var sqlSharedRead = RecordHelper.GenerateSharedSql(userIds, userGroupIds);
+                            record["shared_read"] = DbContext.Database.SqlQueryDynamic(sqlSharedRead);
+                        }
+
+                        if (!record["shared_users_edit"].IsNullOrEmpty() || !record["shared_user_groups_edit"].IsNullOrEmpty())
+                        {
+                            var userIdsEdit = record["shared_users_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_users_edit"]);
+                            var userGroupIdsEdit = record["shared_user_groups_edit"].IsNullOrEmpty() ? "0" : string.Join(",", (JArray)record["shared_user_groups_edit"]);
+                            var sqlSharedEdit = RecordHelper.GenerateSharedSql(userIdsEdit, userGroupIdsEdit);
+                            record["shared_edit"] = DbContext.Database.SqlQueryDynamic(sqlSharedEdit);
+                        }
+                    }
+                }
             }
 
             return records;

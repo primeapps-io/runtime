@@ -2,18 +2,23 @@
 
 angular.module('primeapps')
 
-    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', 'ngToast', '$cookies',
-        function ($q, $injector, $window, $localStorage, $filter, ngToast, $cookies) {
+    .factory('genericInterceptor', ['$q', '$injector', '$window', '$localStorage', '$filter', 'ngToast', '$cookies', '$rootScope',
+        function ($q, $injector, $window, $localStorage, $filter, ngToast, $cookies, $rootScope) {
             return {
                 request: function (config) {
                     config.headers = config.headers || {};
 
                     var accessToken = $localStorage.read('access_token');
 
-                    if (cdnUrl && config.url.indexOf(cdnUrl) > -1)
+                    if ((cdnUrl && config.url.indexOf(cdnUrl) > -1) || (blobUrl && config.url.indexOf(blobUrl) > -1) || (functionUrl && config.url.indexOf(functionUrl) > -1))
                         config.headers['Access-Control-Allow-Origin'] = '*';
-                    else if (accessToken && config.url.indexOf('/token') < 0)
+                    else if (accessToken && config.url.indexOf('/token') < 0 && (blobUrl === '' || config.url.indexOf(blobUrl) < 0) && (functionUrl === '' || config.url.indexOf(functionUrl) < 0))
                         config.headers['Authorization'] = 'Bearer ' + accessToken;
+
+                    if (functionUrl && config.url.indexOf(functionUrl) > -1) {
+                        config.headers['user_id'] = $rootScope.user.ID;
+                        config.headers['tenant_id'] = $rootScope.user.tenantId;
+                    }
 
                     config.headers['X-Tenant-Id'] = $cookies.get('tenant_id');
 

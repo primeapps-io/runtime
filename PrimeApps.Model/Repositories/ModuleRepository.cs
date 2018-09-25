@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -87,6 +88,15 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
 
             return modules;
+        }
+        public async Task<ICollection<Components>> GetComponents()
+        {
+            var components = await DbContext.Modules
+                .Include(x => x.Components)
+                .Where(x => x.SystemType == SystemType.Component)
+                .ToListAsync();
+
+            return components.SelectMany(x => x.Components).Where(x => x.Type == ComponentType.Component).ToList();
         }
 
         public async Task<ICollection<Module>> GetAllDeleted()

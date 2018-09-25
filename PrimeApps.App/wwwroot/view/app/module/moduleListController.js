@@ -267,22 +267,22 @@ angular.module('primeapps')
 				}
 			};
 
-			$scope.delete = function (id) {
-				ModuleService.getRecord($scope.module.name, id)
-					.then(function (recordData) {
-						if (!helper.hasRecordEditPermission(recordData.data)) {
-							ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-							return;
-						}
+            $scope.delete = function (id) {
+                ModuleService.getRecord($scope.module.name, id)
+                    .then(function (recordData) {
+                        if (!helper.hasPermission($scope.type, operations.modify, recordData.data)) {
+                            ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                            return;
+                        }
 
-						ModuleService.deleteRecord($scope.module.name, id)
-							.then(function () {
-								$cache.remove(cacheKey);
-								$scope.tableParams.reload();
+                        ModuleService.deleteRecord($scope.module.name, id)
+                            .then(function () {
+                                $cache.remove(cacheKey);
+                                $scope.tableParams.reload();
 
-							});
-					});
-			};
+                            });
+                    });
+            };
 
 			$scope.hideCreateNew = function (field) {
 				if (field.lookup_type === 'users')

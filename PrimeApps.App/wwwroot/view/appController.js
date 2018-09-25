@@ -14,6 +14,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.addingApp = false;
         $scope.tenants = $rootScope.multiTenant;
         $scope.isTimetrackerExist = false;
+        $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
 
         $rootScope.isMobile = function () {
             var check = false;
@@ -184,9 +185,28 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
         $scope.isAvailableForSmallDevice();
 
-        $scope.routingPrism = function (url) {
+        $scope.routingPrism = function (url, canReload) {
             if (windowWidth < 1024) {
                 $scope.toggleLeftMenu();
+            }
+
+            var currentUrl = $state.$current.url.source;
+
+            angular.forEach($state.params, function (value, key) {
+                var index = currentUrl.indexOf(key);
+
+                if (currentUrl.charAt(index - 1) === ':') {
+                    currentUrl = value ? currentUrl.replace(':' + key, value) : currentUrl.replace(':' + key, '');
+                } else if (currentUrl.charAt(index - 1) === '?') {
+                    currentUrl = value ? currentUrl.replace('?' + key, '?' + key + '=' + value) : currentUrl.replace('?' + key, '');
+                } else if (currentUrl.charAt(index - 1) === '&') {
+                    currentUrl = value ? currentUrl.replace('&' + key, '&' + key + '=' + value) : currentUrl.replace('&' + key, '');
+                }
+            });
+
+
+            if (canReload && url.includes(currentUrl)) {
+                $state.reload();
             }
         };
 

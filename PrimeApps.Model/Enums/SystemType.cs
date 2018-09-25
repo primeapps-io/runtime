@@ -11,6 +11,9 @@ namespace PrimeApps.Model.Enums
         System = 1,
 
         [EnumMember(Value = "custom")]
-        Custom = 2
+        Custom = 2,
+
+        [EnumMember(Value = "component")]
+        Component = 3
     }
 }

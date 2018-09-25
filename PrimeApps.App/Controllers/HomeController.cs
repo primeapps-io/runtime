@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Application;
@@ -36,9 +37,9 @@ namespace PrimeApps.App.Controllers
             if (tenant == null)
                 return BadRequest();
 
-            /*var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
+            var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-			await SetValues(userId, tenant.Id);*/
+            await SetValues(userId, tenant.Id);
 
             Response.Cookies.Append("tenant_id", tenant.Id.ToString());
 
@@ -59,6 +60,8 @@ namespace PrimeApps.App.Controllers
 
             var useCdn = bool.Parse(_configuration.GetSection("AppSettings")["UseCdn"]);
             ViewBag.AppInfo = await AuthHelper.GetApplicationInfo(Request, language, _configuration);
+            ViewBag.BlobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            ViewBag.FunctionUrl = _configuration.GetSection("AppSettings")["FunctionUrl"];
 
             if (useCdn)
             {
@@ -73,21 +76,33 @@ namespace PrimeApps.App.Controllers
                 ViewBag.CdnUrlStatic = "";
             }
 
+            string jsonString = "";
+            var hasAdminRight = false;
+
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
             componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = tenantId };
-            await componentRepository.GetByType(ComponentType.Component);
+            var components = await componentRepository.GetByType(ComponentType.Component);
 
-            var hasAdminRight = false;
+            if(components.Count > 0)
+                jsonString = JsonConvert.SerializeObject(components);
+
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
+                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = tenantId };
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
-                    hasAdminRight = userInfo.profile.HasAdminRights;
+
+                    if (userInfo != null)
+                    {
+                        hasAdminRight = userInfo.profile.HasAdminRights;
+                    }
                 }
             }
+            ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
+            ViewBag.TenantId = tenantId;
         }
     }
 }
