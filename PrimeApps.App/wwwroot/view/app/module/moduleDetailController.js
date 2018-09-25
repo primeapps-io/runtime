@@ -1424,7 +1424,7 @@ angular.module('primeapps')
                         }
                     });
 
-                if ($scope.record.master_id) {
+                if ($scope.record.master_id && $scope.module.name === 'quotes') {
                     ModuleService.getRecord($scope.module.name, $scope.record.master_id, true)
                         .then(function (masterRecord) {
                             $scope.masterRecord = ModuleService.processRecordSingle(masterRecord.data, $scope.module, $scope.picklistsModule);

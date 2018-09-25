@@ -28,6 +28,13 @@ angular.module('primeapps')
                         if (module.name === 'purchase_order_products' && module.fields[i].lookup_type === 'purchase_order')
                             continue;
 
+                        if (module.name === 'sales_invoices_products' && module.fields[i].lookup_type === 'sales_invoices')
+                            continue;
+
+                        if (module.name === 'purchase_invoices_products' && module.fields[i].lookup_type === 'purchase_invoices')
+                            continue;
+
+
                         for (var j = 0; j < $rootScope.modules.length; j++) {
                             if (module.fields[i].lookup_type == $rootScope.modules[j].name) {
                                 var lookupModule = angular.copy($rootScope.modules[j]);
@@ -100,6 +107,19 @@ angular.module('primeapps')
                     getLookupModules(purchaseProductsModule);
                     module.relatedModules.push(purchaseProductsModule);
                 }
+
+                if (module.name === 'sales_invoices') {
+                    var salesInvoiceProductModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices_products' }, true)[0];
+                    getLookupModules(salesInvoiceProductModule);
+                    module.relatedModules.push(salesInvoiceProductModule);
+                }
+
+                if (module.name === 'purchase_invoices') {
+                    var purchaseInvoiceproduct = $filter('filter')($rootScope.modules, { name: 'purchase_invoices_products' }, true)[0];
+                    getLookupModules(purchaseInvoiceproduct);
+                    module.relatedModules.push(purchaseInvoiceproduct);
+                }
+
 
                 angular.forEach($scope.selectedModule.relations, function (relation) {
                     var relatedModule = $filter('filter')($rootScope.modules, { name: relation.related_module }, true)[0];

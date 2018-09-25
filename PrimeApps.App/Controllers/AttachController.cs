@@ -486,22 +486,25 @@ namespace PrimeApps.App.Controllers
                 var quoteProductsModuleEntity = await _moduleRepository.GetByNameBasic("quote_products");
                 var quoteProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(quoteProductsModuleEntity, _moduleRepository);
                 var productsFormatted = new JArray();
+                int orderCount = 1;
 
                 foreach (var product in products)
                 {
-                    if (!record["currency"].IsNullOrEmpty())
+                    if (product["currency"].IsNullOrEmpty())
                     {
-                        product["currency"] = (string)record["currency"];
+                        if (!product["product.products.currency"].IsNullOrEmpty())
+                            product["currency"] = (string)product["product.products.currency"];
+
+                        if (!record["currency"].IsNullOrEmpty())
+                            product["currency"] = (string)record["currency"];
                     }
 
-                    if (!product["product.products.currency"].IsNullOrEmpty())
-                    {
-                        product["currency"] = (string)product["product.products.currency"];
-                    }
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.PicklistLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
                     if (!productFormatted["separator"].IsNullOrEmpty())
                     {
+                        productFormatted["order"] = null;
+                        orderCount = 1;
                         productFormatted["product.products.name"] = productFormatted["separator"] + "-product_separator_separator";
                     }
 
@@ -540,14 +543,13 @@ namespace PrimeApps.App.Controllers
 
                 foreach (var product in products)
                 {
-                    if (!record["currency"].IsNullOrEmpty())
+                    if (product["currency"].IsNullOrEmpty())
                     {
-                        product["currency"] = (string)record["currency"];
-                    }
+                        if (!product["product.products.currency"].IsNullOrEmpty())
+                            product["currency"] = (string)product["product.products.currency"];
 
-                    if (!product["product.products.currency"].IsNullOrEmpty())
-                    {
-                        product["currency"] = (string)product["product.products.currency"];
+                        if (!record["currency"].IsNullOrEmpty())
+                            product["currency"] = (string)record["currency"];
                     }
 
                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
@@ -585,14 +587,13 @@ namespace PrimeApps.App.Controllers
 
                 foreach (var product in products)
                 {
-                    if (!record["currency"].IsNullOrEmpty())
+                    if (product["currency"].IsNullOrEmpty())
                     {
-                        product["currency"] = (string)record["currency"];
-                    }
+                        if (!product["product.products.currency"].IsNullOrEmpty())
+                            product["currency"] = (string)product["product.products.currency"];
 
-                    if (!product["product.products.currency"].IsNullOrEmpty())
-                    {
-                        product["currency"] = (string)product["product.products.currency"];
+                        if (!record["currency"].IsNullOrEmpty())
+                            product["currency"] = (string)record["currency"];
                     }
 
                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
@@ -601,6 +602,97 @@ namespace PrimeApps.App.Controllers
 
                 relatedModuleRecords.Add("purchase_order_products", productsFormatted);
             }
+
+            if (module == "sales_invoices" && doc.Range.Text.Contains("{{#foreach purchase_order_products}}"))
+            {
+                var orderFields = await _recordHelper.GetAllFieldsForFindRequest("sales_invoices_products");
+
+                var products = _recordRepository.Find("sales_invoices_products", new FindRequest()
+                {
+                    Fields = orderFields,
+                    Filters = new List<Filter>
+                    {
+                        new Filter
+                        {
+                            Field = "sales_invoice",
+                            Operator = Operator.Equals,
+                            No = 0,
+                            Value = recordId.ToString()
+                        }
+                    },
+                    SortField = "order",
+                    SortDirection = SortDirection.Asc,
+                    Limit = 1000,
+                    Offset = 0
+                });
+
+                var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("sales_invoices_products");
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var productsFormatted = new JArray();
+
+                foreach (var product in products)
+                {
+                    if (product["currency"].IsNullOrEmpty())
+                    {
+                        if (!product["product.products.currency"].IsNullOrEmpty())
+                            product["currency"] = (string)product["product.products.currency"];
+
+                        if (!record["currency"].IsNullOrEmpty())
+                            product["currency"] = (string)record["currency"];
+                    }
+
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    productsFormatted.Add(productFormatted);
+                }
+
+                relatedModuleRecords.Add("sales_invoices_products", productsFormatted);
+            }
+
+            if (module == "purchase_invoices" && doc.Range.Text.Contains("{{#foreach purchase_invoices_products}}"))
+            {
+                var orderFields = await _recordHelper.GetAllFieldsForFindRequest("sales_invoices_products");
+
+                var products = _recordRepository.Find("purchase_invoices_products", new FindRequest()
+                {
+                    Fields = orderFields,
+                    Filters = new List<Filter>
+                    {
+                        new Filter
+                        {
+                            Field = "purchase_invoice",
+                            Operator = Operator.Equals,
+                            No = 0,
+                            Value = recordId.ToString()
+                        }
+                    },
+                    SortField = "order",
+                    SortDirection = SortDirection.Asc,
+                    Limit = 1000,
+                    Offset = 0
+                });
+
+                var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("purchase_invoices_products");
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var productsFormatted = new JArray();
+
+                foreach (var product in products)
+                {
+                    if (product["currency"].IsNullOrEmpty())
+                    {
+                        if (!product["product.products.currency"].IsNullOrEmpty())
+                            product["currency"] = (string)product["product.products.currency"];
+
+                        if (!record["currency"].IsNullOrEmpty())
+                            product["currency"] = (string)record["currency"];
+                    }
+
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    productsFormatted.Add(productFormatted);
+                }
+
+                relatedModuleRecords.Add("purchase_invoices_products", productsFormatted);
+            }
+
             return true;
         }
 
