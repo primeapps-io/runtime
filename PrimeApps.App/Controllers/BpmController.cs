@@ -29,7 +29,15 @@ namespace PrimeApps.App.Controllers
         private IDefinitionLoader _definitionLoader;
         private IConfiguration _configuration;
 
-        public BpmController(IBpmRepository bpmRepository, IWorkflowHost workflowHost, IWorkflowRegistry workflowRegistry, IPersistenceProvider workflowStore, IDefinitionLoader definitionLoader, IConfiguration configuration)
+        private IBpmHelper _bpmHelper;
+
+        public BpmController(IBpmRepository bpmRepository,
+            IWorkflowHost workflowHost,
+            IWorkflowRegistry workflowRegistry,
+            IPersistenceProvider workflowStore,
+            IDefinitionLoader definitionLoader,
+            IConfiguration configuration,
+            IBpmHelper bpmHelper)
         {
             _bpmRepository = bpmRepository;
             _configuration = configuration;
@@ -37,6 +45,7 @@ namespace PrimeApps.App.Controllers
             _workflowStore = workflowStore;
             _workflowRegistry = workflowRegistry;
             _definitionLoader = definitionLoader;
+            _bpmHelper = bpmHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -73,24 +82,24 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("create"), HttpPost]
-        public async Task<IActionResult> Create([FromBody]BpmWorkflowBindingModel bpmWorkflow) //BpmWorkflowBindingModel bpmWorkflow)
+        public async Task<IActionResult> Create([FromBody]BpmWorkflowBindingModel bpmWorkflow)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var bpmWorkflowEntity = await BpmHelper.CreateEntity(bpmWorkflow);
-            //var result = await _bpmRepository.Create(bpmWorkflowEntity);
+            var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow);
+            var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
-            //if (result < 1)
-            //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
             var str = bpmWorkflow.DefinitionJson.ToString();
             _definitionLoader.LoadDefinition(str);
 
-            //  var referance = "{'user_id': " + _bpmRepository.CurrentUser.UserId + ", 'tenant_id': " + _bpmRepository.CurrentUser.TenantId + "}";
             var referance = new JObject();
             referance["user_id"] = _bpmRepository.CurrentUser.UserId;
             referance["tenant_id"] = _bpmRepository.CurrentUser.TenantId;
-            
+
             await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
 
             var uri = new Uri(Request.GetDisplayUrl());
@@ -108,7 +117,7 @@ namespace PrimeApps.App.Controllers
             if (bpmWorkflowEntity == null)
                 return NotFound();
 
-            await BpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity);
+            await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity);
             await _bpmRepository.Update(bpmWorkflowEntity);
 
             return Ok(bpmWorkflowEntity);

@@ -54,6 +54,9 @@ namespace PrimeApps.Model.Entities.Application
         [Column("diagram_json")]
         public string DiagramJson { get; set; }
 
+        [Column("module_id"), Range(1, int.MaxValue)]
+        public int ModuleId { get; set; }
+
         public virtual BpmCategory Category { get; set; }
 
         [NotMapped]

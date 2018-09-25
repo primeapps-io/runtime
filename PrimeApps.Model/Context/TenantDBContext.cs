@@ -654,11 +654,11 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Version);
             modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Active);
             modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.ChangedFields);
-            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.CreatedAt);
-            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.CreatedById);
-            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.UpdatedAt);
-            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.UpdatedById);
-            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.Deleted);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.CreatedById);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.UpdatedById);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Deleted);
 
             //BpmRecordFilter
 
