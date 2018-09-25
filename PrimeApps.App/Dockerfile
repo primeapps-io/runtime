@@ -1,8 +1,8 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS runtime
 WORKDIR /app
 EXPOSE 80
 
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
 COPY PrimeApps.App/PrimeApps.App.csproj PrimeApps.App/
 COPY PrimeApps.Model/PrimeApps.Model.csproj PrimeApps.Model/
@@ -14,7 +14,7 @@ RUN dotnet build PrimeApps.App.csproj -c Release -o /app
 FROM build AS publish
 RUN dotnet publish PrimeApps.App.csproj -c Release -o /app
 
-FROM base AS final
+FROM runtime AS final
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "PrimeApps.App.dll"]

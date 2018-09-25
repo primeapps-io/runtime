@@ -1,0 +1,24 @@
+# Default values for aksapp.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+# name: value
+serviceType: NodePort
+servicePort: 80
+containerPort: 80
+component: aksapp
+replicas: 3
+image: primeappsio.azurecr.io/primeapps-app
+imageTag: master
+imagePullPolicy: Always
+##Secrets
+pullsecret: vsts-secret
+cpu: 10m
+memory: 128Mi
+## Ingress settings
+ingress:
+  enabled: true
+  hostname: dev.primeapps.io
+  annotations:
+     kubernetes.io/ingress.class: nginx
+  tls: false
+  
