@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("helps")]
     public class Help : BaseEntity

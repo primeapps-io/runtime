@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using PrimeApps.Model.Helpers;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("workflow_notifications")]
     public class WorkflowNotification

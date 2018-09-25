@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Helpers;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("workflow_tasks")]
     public class WorkflowTask

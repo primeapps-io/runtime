@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
