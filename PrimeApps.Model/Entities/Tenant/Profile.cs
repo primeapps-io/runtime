@@ -77,6 +77,15 @@ namespace PrimeApps.Model.Entities.Application
         [Column("migration_id")]
         public string MigrationId { get; set; }
 
+        [Column("parent_id")]
+        public int ParentId { get; set; }
+
+        [Column("order")]
+        public int Order { get; set; }
+
+        [Column("system_code")]
+        public string SystemCode { get; set; }
+
         public virtual IList<ProfilePermission> Permissions { get; set; }
 
         [InverseProperty("Profile")]
