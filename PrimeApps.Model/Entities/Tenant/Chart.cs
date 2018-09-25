@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("charts")]
     public class Chart : BaseEntity

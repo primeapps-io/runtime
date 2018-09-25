@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("sections")]
     public class Section : BaseEntity

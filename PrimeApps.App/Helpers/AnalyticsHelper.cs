@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Models;
 using PrimeApps.App.Models.ViewModel.Analytics;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Context;

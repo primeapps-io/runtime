@@ -32,7 +32,7 @@ namespace PrimeApps.App.Jobs.Reminder
         [QueueCustom]
         public async Task<bool> Process(ReminderDTO reminderMessage, UserItem appUser)
         {
-            Model.Entities.Application.Reminder reminder;
+            Model.Entities.Tenant.Reminder reminder;
             bool status = false;
 
             try
@@ -102,7 +102,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for event typed activity records.
         /// </summary>
-        private async Task Event(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, UserItem _appUser)
+        private async Task Event(Model.Entities.Tenant.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
             try
             {
@@ -140,7 +140,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for call typed activity records.
         /// </summary>
-        private async Task Call(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, UserItem _appUser)
+        private async Task Call(Model.Entities.Tenant.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, UserItem _appUser)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace PrimeApps.App.Jobs.Reminder
         /// <summary>
         /// Creates notifications for task typed activity records.
         /// </summary>
-        private async Task Task(Model.Entities.Application.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, ReminderRepository reminderRepository, UserItem _appUser, IConfiguration configuration)
+        private async Task Task(Model.Entities.Tenant.Reminder reminder, ReminderDTO reminderMessage, IUserRepository userRepository, PlatformUserRepository platformUserRepository, ReminderRepository reminderRepository, UserItem _appUser, IConfiguration configuration)
         {
 
             try

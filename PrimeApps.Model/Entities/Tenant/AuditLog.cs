@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("audit_logs")]
     public class AuditLog : BaseEntity

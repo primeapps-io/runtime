@@ -15,7 +15,7 @@ using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
@@ -29,7 +29,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Document = PrimeApps.Model.Entities.Application.Document;
+using Document = PrimeApps.Model.Entities.Tenant.Document;
 using SaveFormat = Aspose.Words.SaveFormat;
 
 namespace PrimeApps.App.Controllers

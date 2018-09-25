@@ -13,7 +13,7 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Note;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;

@@ -25,7 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using User = PrimeApps.Model.Entities.Application.TenantUser;
+using User = PrimeApps.Model.Entities.Tenant.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
 
 namespace PrimeApps.App.Controllers

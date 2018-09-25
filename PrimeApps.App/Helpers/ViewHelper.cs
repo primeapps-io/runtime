@@ -5,7 +5,7 @@ using PrimeApps.App.Models;
 using PrimeApps.App.Models.ViewModel.Crm;
 using PrimeApps.App.Models.ViewModel.Crm.View;
 using PrimeApps.Model.Common;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 
