@@ -41,9 +41,23 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<MenuItem>> GetItems(int id)
         {
             var menuItems = await DbContext.MenuItems
-                .Include(x => (x.MenuItems as MenuItem).CreatedBy)
-                .Include(x => x.CreatedBy)
-                .Where(x => !x.Deleted && x.MenuId == id && x.ParentId == null).ToListAsync();
+                  .Include(x => x.MenuItems.Select(z => z.CreatedBy))
+                  .Include(x => x.CreatedBy)
+                  .Where(x => !x.Deleted && x.MenuId == id && x.ParentId == null).ToListAsync();
+
+
+            foreach (var menu in menuItems)
+            {
+                var menuList = new List<MenuItem>();
+
+                foreach (var item in menu.MenuItems)
+                {
+                    if (item.MenuId == id)
+                        menuList.Add(item);
+                }
+
+                menu.MenuItems = menuList;
+            }
 
             return menuItems;
         }

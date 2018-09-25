@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
@@ -22,7 +22,6 @@ angular.module('primeapps')
 			$scope.operations = operations;
 			$scope.hasPermission = helper.hasPermission;
 			$scope.hasDocumentsPermission = helper.hasDocumentsPermission;
-			$scope.hasRecordEditPermission = helper.hasRecordEditPermission;
 			$scope.hasAdminRights = helper.hasAdminRights;
 			$scope.hasFieldFullPermission = ModuleService.hasFieldFullPermission;
 			$scope.hasSectionFullPermission = ModuleService.hasSectionFullPermission;
@@ -30,13 +29,6 @@ angular.module('primeapps')
 			$scope.lookupUserAndGroup = helper.lookupUserAndGroup;
 			$scope.loading = true;
 			$scope.image = {};
-
-
-			if (!$scope.hasPermission($scope.type, $scope.operations.read)) {
-				ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-				$state.go('app.dashboard');
-				return;
-			}
 
 			if ($scope.parentId)
 				$window.scrollTo(0, 0);
@@ -66,11 +58,11 @@ angular.module('primeapps')
 				$scope.dropdownFieldDatas[$scope.dropdownFields[i].name] = [];
 			}
 
-			if ((!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) || ($scope.id && !$scope.hasPermission($scope.type, $scope.operations.modify))) {
-				ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-				$state.go('app.dashboard');
-				return;
-			}
+            if (!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) {
+                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                $state.go('app.crm.dashboard');
+                return;
+            }
 
 			$scope.primaryField = $filter('filter')($scope.module.fields, { primary: true })[0];
 			$scope.currentUser = ModuleService.processUser($rootScope.user);
@@ -405,10 +397,16 @@ angular.module('primeapps')
 					}
 
 					ModuleService.getRecord($scope.module.name, $scope.id)
-						.then(function onSuccess(recordData) {
+                        .then(function onSuccess(recordData) {
+                            if (Object.keys(recordData.data).length === 0) {
+                                ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                                $state.go('app.crm.dashboard');
+                                return;
+                            }
+
 							var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
 
-							if (!$scope.hasRecordEditPermission(recordData.data) || (isFreeze(record) && !$scope.hasAdminRights)) {
+                            if (!$scope.hasPermission($scope.type, $scope.operations.modify, recordData.data) || (isFreeze(record) && !$scope.hasAdminRights)) {
 								ngToast.create({
 									content: $filter('translate')('Common.Forbidden'),
 									className: 'warning'
@@ -479,7 +477,18 @@ angular.module('primeapps')
 										record['related_to'] = relatedRecord;
 
 										$scope.record = record;
-										$scope.recordState = angular.copy($scope.record);
+                                        $scope.recordState = angular.copy($scope.record);
+
+                                        /*
+                                        * Record edit denildiğinde sayfa ilk yüklendiğinde fieldValueChange in tetiklenmediği durumlar var.
+                                        * (ex: Admin olmayan bir kullanıcı izinler modülünde ki bir record a edit dediğinde fieldValueChange metodu sayfa ilk açıldığında tetiklenmediği için görsel değişiklikler gerçekleşmiyor)
+                                        * Eğer field ların içinde form da gözüken bir lookup alan var ise (show as dropdown olmayan) fieldValueChange otomatik olarak tetikleniyor. Ama böyle bir alan mevcut değil ise tetiklenmiyor.
+                                        * Çözüm olarak fieldValueChange in içerisin de ki function ların çalışması için fake bir şekilde ilk field ı kullanarak fieldValueChange metodunu tetikliyoruz.
+                                        * */
+                                        if ($scope.module && $scope.module.fields && $scope.module.fields.length > 0) {
+                                            $scope.fieldValueChange($scope.module.fields[0]);
+                                        }
+
 										$scope.loading = false;
 									})
 									.catch(function onError(response) {
@@ -720,19 +729,6 @@ angular.module('primeapps')
 				if (!$scope.moduleForm.$valid || !validate())
 					return;
 
-				if ($scope.module.name === 'izinler') {
-					var val = ModuleService.customValidations($scope.module, record);
-					if (val != "") {
-						ngToast.create({
-							//content: $filter('translate')('Module.SuccessMessage', { title: $scope.module['label_' + $rootScope.language + '_singular'] }),
-							content: val,
-							className: 'warning',
-							timeout: 8000
-						});
-						return;
-					}
-				}
-
 				if (!$scope.id || $scope.clone) {
 					$scope.executeCode = false;
 					components.run('BeforeCreate', 'Script', $scope, record);
@@ -746,7 +742,34 @@ angular.module('primeapps')
 					if ($scope.executeCode) {
 						return;
 					}
-				}
+                }
+
+                if ($scope.module.name === 'izinler') {
+                    var val = "";
+                    /*
+                     * skipValidation parametresi component içinde setlenerek validasyonların atlanması sağlanıyor.
+                     * #2438 nolu task için geliştirildi.
+                     * */
+                    if (!$scope.skipValidation)
+                        val = ModuleService.customValidations($scope.module, record);
+                    else {
+                        delete record['goreve_baslama_tarihi'];
+                        delete record['calisan_data']
+                        delete record['dogum_tarihi'];
+                        delete record['izin_turu_data'];
+                        delete record['alinan_izinler'];
+                    }
+
+                    if (val != "") {
+                        ngToast.create({
+                            //content: $filter('translate')('Module.SuccessMessage', { title: $scope.module['label_' + $rootScope.language + '_singular'] }),
+                            content: val,
+                            className: 'warning',
+                            timeout: 8000
+                        });
+                        return;
+                    }
+                }
 
 				if ($scope.clone) {
 					angular.forEach($scope.module.fields, function (field) {

@@ -112,14 +112,20 @@ angular.module('primeapps')
 					});
 				},
 
-				updateRecordBulk: function (module, request) {
-					return $http({
-						method: 'Put',
-						url: config.apiUrl + 'record/update_bulk/' + module,
-						data: request,
-						headers: { 'Content-type': 'application/json;charset=utf-8' }
-					});
-				},
+                updateRecordBulk: function (module, request) {
+                    delete request.record.shared_users_edit;
+                    delete request.record.shared_users;
+                    delete request.record.shared_user_groups_edit;
+                    delete request.record.shared_user_groups;
+                    delete request.record.shared_read;
+
+                    return $http({
+                        method: 'Put',
+                        url: config.apiUrl + 'record/update_bulk/' + module,
+                        data: request,
+                        headers: { 'Content-type': 'application/json;charset=utf-8' }
+                    });
+                },
 
 				findPicklist: function (ids) {
 					return $http.post(config.apiUrl + 'picklist/find', ids);
@@ -232,8 +238,20 @@ angular.module('primeapps')
 				processRecordMulti: function (records, module, picklists, viewFields, type, parentId, parentType, returnTab, previousParentType, previousParentId, previousReturnTab, parentScope) {
 					var recordsProcessed = [];
 
-					var setLink = function (field, record, type, parentType, parentId, returnTab, previousParentType, previousParentId, previousReturnTab, parentScope) {
-						var linkPrefix = '#/app/module/';
+                    var setLink = function (field, record, type, parentType, parentId, returnTab, previousParentType, previousParentId, previousReturnTab, parentScope, orjField, isLookup) {
+                        var linkPrefix = '#/app/module/';
+
+                        /*
+                        * Lookup bir alan external link içeriyorsa record id yerine lookup olan record un id sini basıyoruz.
+                        * */
+                        if (orjField.external_link) {
+                            if (isLookup) {
+                                field.link = orjField.external_link + '?id=' + field.value_id + '&back=' + type;
+                            } else {
+                                field.link = orjField.external_link + '?id=' + record.id + '&back=' + type;
+                            }
+                            return;
+                        }
 
 						if (type === 'rehber') {
 							linkPrefix = '#/app/';
@@ -337,7 +355,14 @@ angular.module('primeapps')
 							recordProcessed["process.process_requests.process_status"] = record["process.process_requests.process_status"];
 						}
 						else
-							recordProcessed.isProcessItem = false;
+                            recordProcessed.isProcessItem = false;
+
+                        //Module list records add advanced sharing info.
+                        recordProcessed.shared_users_edit = record['shared_users_edit'];
+                        recordProcessed.shared_users = record['shared_users'];
+                        recordProcessed.shared_user_groups_edit = record['shared_user_groups_edit'];
+                        recordProcessed.shared_user_groups = record['shared_user_groups'];
+                        recordProcessed.shared_read = record['shared_read'];
 
 						recordProcessed.fields = [];
 
@@ -383,13 +408,14 @@ angular.module('primeapps')
 								for (var recordKey in record) {
 									if (record.hasOwnProperty(recordKey)) {
 										var recordValue = record[recordKey];
-
+                                        var isLookup = false;
 										if (recordKey.indexOf('.') > -1) {
 											var recordKeyParts = recordKey.split('.');
 
 											if (isJoin && field.primary) {
 												recordProcessedField.value_id = record[recordKeyParts[0] + '.' + recordKeyParts[1] + '.id'];
-												recordProcessedField.value_type = recordKeyParts[1];
+                                                recordProcessedField.value_type = recordKeyParts[1];
+                                                isLookup = true;
 											}
 
 											recordKey = recordKeyParts[2];
@@ -399,7 +425,7 @@ angular.module('primeapps')
 											continue;
 
 										setValue(field, recordProcessedField, record, recordKey, recordValue);
-										setLink(recordProcessedField, record, type, parentType, parentId, returnTab, previousParentType, previousParentId, previousReturnTab, parentScope);
+                                        setLink(recordProcessedField, record, type, parentType, parentId, returnTab, previousParentType, previousParentId, previousReturnTab, parentScope, field, isLookup);
 									}
 								}
 
@@ -1686,7 +1712,24 @@ angular.module('primeapps')
 					if (module.name === 'izinler') {
 						var calculate = function (that) {
 							if (record['calisan'] && record['izin_turu'] && record['izin_turu_data']) {
-								var startOf = moment().date(1).month(0).year(moment().year()).format('YYYY-MM-DD');
+                                var startOf = moment().date(1).month(0).year(moment().year()).format('YYYY-MM-DD');
+
+                                //Yıllık izin seçilmiş ise işe bağladığı tarih dikkate alınarak 1 yıllık kullandığı izinleri çekmek için tarih hesaplanıyor.
+                                if (record['izin_turu_data']['yillik_izin'] && record['calisan_data']) {
+                                    var jobStart = moment(record['calisan_data']['ise_baslama_tarihi']);
+                                    var jobDay = jobStart.get('date');
+                                    var jobMonth = jobStart.get('month');
+                                    var currentYear = moment().get('year');
+
+                                    var currentDate = moment().date(jobDay).month(jobMonth).year(currentYear).format('YYYY-MM-DD');
+
+                                    if (moment(currentDate).isAfter(moment().format('YYYY-MM-DD'))) {
+                                        currentYear -= 1;
+                                    }
+
+                                    startOf = moment().date(jobDay).month(jobMonth).year(currentYear).format('YYYY-MM-DD');
+                                }
+
 								if (record['izin_turu_data']['her_ay_yenilenir']) {
 									startOf = moment().date(1).month(moment().month()).year(moment().year()).format('YYYY-MM-DD');
 								}
@@ -1709,10 +1752,12 @@ angular.module('primeapps')
 										{ field: 'calisan', operator: 'equals', value: record['calisan'].id, no: 1 },
 										{ field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2 },
 										{ field: 'deleted', operator: 'equals', value: false, no: 3 },
-										{ field: 'process.process_requests.process_status', operator: 'not_equal', value: 3, no: 4 }
-									],
-									limit: 999999
-								};
+										{ field: 'process.process_requests.process_status', operator: 'not_equal', value: 3, no: 4 }//,
+                                        //{ field: 'process.process_requests.process_status', operator: 'empty', value: '-', no: 5 }
+                                    ],
+                                    //filter_logic: '(((1 and 2) and 3) and (4 or 5))',
+                                    limit: 999999
+                                };
 
 
 								that.findRecords('izinler', filterRequest)
@@ -1745,21 +1790,31 @@ angular.module('primeapps')
 											} else {
 												record['mevcut_kullanilabilir_izin'] = record['izin_turu_data']['yillik_hakedilen_limit_gun'] - totalUsed;
 											}
-										} else if (record['izin_turu'] && record['izin_turu_data'] && record['calisan_data'] && record['izin_turu_data']['yillik_izin'] && record['calisan']['e_posta'] === record['calisan_data']['e_posta']) {
-											var checkUsedCount = 0;
+                                        }
+                                        else if (record['izin_turu'] && record['izin_turu_data'] && record['calisan_data'] && record['izin_turu_data']['yillik_izin'] && record['calisan']['e_posta'] === record['calisan_data']['e_posta']) {
+                                            var checkUsedCount = 0;
 
-											var filteredLeaves = $filter('filter')(record["alinan_izinler"], function (izin) {
-												return izin['izin_turu'] === record['izin_turu'].id && izin['process.process_requests.process_status'] === 1;
-											}, true);
+                                            //var filteredLeaves = $filter('filter')(record["alinan_izinler"], function (izin) {
+                                            //    return izin['izin_turu'] === record['izin_turu'].id && izin['process.process_requests.process_status'] === 1;
+                                            //}, true);
 
-											angular.forEach(filteredLeaves, function (izin) {
-												if (izin["hesaplanan_alinacak_toplam_izin"]) {
-													checkUsedCount += izin["hesaplanan_alinacak_toplam_izin"];
-												}
-											});
+                                            //angular.forEach(filteredLeaves, function (izin) {
+                                            //    if (izin["hesaplanan_alinacak_toplam_izin"]) {
+                                            //        checkUsedCount += izin["hesaplanan_alinacak_toplam_izin"];
+                                            //    }
+                                            //});
 
-											record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] ? record['calisan_data']['kalan_izin_hakki'] - checkUsedCount : 0.0;
-										}
+                                            /*if (record["izin_turu_data"]["izin_hakki_onay_sureci_sonunda_dusulsun"]) {*/
+                                            record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] ? record['calisan_data']['kalan_izin_hakki'] : 0.0;
+                                            /*}
+                                             else {
+                                             angular.forEach(record['alinan_izinler'], function (izinler) {
+                                             if (izinler['hesaplanan_alinacak_toplam_izin'] && izinler['izin_turu'] === record['izin_turu'].id && izinler['process.process_requests.process_status'] === 1)
+                                             checkUsedCount += izinler['hesaplanan_alinacak_toplam_izin'];
+                                             });
+                                             record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] ? record['calisan_data']['kalan_izin_hakki'] - checkUsedCount : 0.0;
+                                             }*/
+                                        }
 									});
 							}
 						};
@@ -1917,22 +1972,27 @@ angular.module('primeapps')
 							return $filter('translate')('Leave.Validations.Requested0OfDaysNot')
 						}
 
-						//Aynı Tarihlerde Başka izin varmı diye kontrol ediliyor.
-						if (record["alinan_izinler"] && record["alinan_izinler"].length > 0) {
-							for (var i = 0; i < record["alinan_izinler"].length; i++) {
-								var startDate = moment(moment(Date.parse(moment(record['baslangic_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
-								var endDate = moment(moment(Date.parse(moment(record['bitis_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+                        //Aynı Tarihlerde Başka izin varmı diye kontrol ediliyor.
+                        if (record['alinan_izinler'] && record['alinan_izinler'].length > 0) {
+                            for (var i = 0; i < record['alinan_izinler'].length; i++) {
 
-								if (startDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '[)') ||
-									endDate.isBetween(moment(record["alinan_izinler"][i].baslangic_tarihi), moment(record["alinan_izinler"][i].bitis_tarihi), null, '(]') ||
-									(startDate.isSameOrBefore(moment(record["alinan_izinler"][i].baslangic_tarihi)) && endDate.isSameOrAfter(moment(record["alinan_izinler"][i].bitis_tarihi)))
-								) {
-									if (record["alinan_izinler"][i].id != record.id) {
-										return $filter('translate')('Leave.Validations.AlreadyHave');
-									}
-								}
-							}
-						}
+                                if (record.id && record.id === record['alinan_izinler'][i].id) {
+                                    continue;
+                                }
+
+                                var startDate = moment(moment(Date.parse(moment(record['baslangic_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+                                var endDate = moment(moment(Date.parse(moment(record['bitis_tarihi']))).format('YYYY-MM-DDTHH:mm:ss'));
+
+                                if (startDate.isBetween(moment(record['alinan_izinler'][i].baslangic_tarihi), moment(record['alinan_izinler'][i].bitis_tarihi), null, '[)') ||
+                                    endDate.isBetween(moment(record['alinan_izinler'][i].baslangic_tarihi), moment(record['alinan_izinler'][i].bitis_tarihi), null, '(]') ||
+                                    (startDate.isSameOrBefore(moment(record['alinan_izinler'][i].baslangic_tarihi)) && endDate.isSameOrAfter(moment(record['alinan_izinler'][i].bitis_tarihi)))
+                                ) {
+                                    if (record["alinan_izinler"][i].id != record.id) {
+                                        return $filter('translate')('Leave.Validations.AlreadyHave');
+                                    }
+                                }
+                            }
+                        }
 
                         /*
                          * İLK İZİN KULLANIMI HAKEDİŞ ZAMANI KONTROLÜ
@@ -1953,254 +2013,272 @@ angular.module('primeapps')
                              * Değil ise izin borçlanma seçeneği mevcutmu diye kontrol ediliyor.
                              * */
 
-							if (record['mevcut_kullanilabilir_izin'] === null)
-								return $filter('translate')('Leave.Validations.LeaveEnd');
+                            if (record['mevcut_kullanilabilir_izin'] === null)
+                                return $filter('translate')('Leave.Validations.LeaveEnd');
 
-							var checkUsedCount = 0;
-							if (checkUsed) {
-								var filteredLeaves = $filter('filter')(record["alinan_izinler"], function (izin) {
-									return izin['izin_turu'] === record['izin_turu'].id && izin['process.process_requests.process_status'] === 1;
-								}, true);
+                            /*var checkUsedCount = 0;
 
-								angular.forEach(filteredLeaves, function (izin) {
-									if (izin["hesaplanan_alinacak_toplam_izin"]) {
-										checkUsedCount += izin["hesaplanan_alinacak_toplam_izin"];
-									}
-								});
-							}
+                             if (checkUsed) {
+                             if (record["izin_turu_data"]["izin_hakki_onay_sureci_sonunda_dusulsun"]) {
+                             record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] ? record['calisan_data']['kalan_izin_hakki'] : 0.0;
+                             } else {
+                             angular.forEach(record['alinan_izinler'], function (izinler) {
+                             if (izinler['hesaplanan_alinacak_toplam_izin'] && izinler['izin_turu'] === record['izin_turu'].id && izinler['process.process_requests.process_status'] !== 3)
+                             checkUsedCount += izinler['hesaplanan_alinacak_toplam_izin'];
+                             });
+                             record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] ? record['calisan_data']['kalan_izin_hakki'] - checkUsedCount : 0.0;
+                             }
+                             }*/
 
-							if (record['mevcut_kullanilabilir_izin'] === 0 || (record['mevcut_kullanilabilir_izin'] - checkUsedCount < record['hesaplanan_alinacak_toplam_izin'])) {
-								if (!izin_turu["izin_borclanma_yapilabilir"]) {
-									return $filter('translate')('Leave.Validations.LeaveEnd');
-								}
-							}
-							record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] || 0.0;
+                            /*
+                             * Record edit yapılırken hesaplanan alanın değeri değişmiş ise kalan izin hakkı tekrar kontrol edilecek.
+                             * Yeni bir kayıt için normal kontrol devam edecek.
+                             * Record kayıt edilip sonra onaya gönderildiği için record.process_status varmı diye kontrol ediliyor. Yoksa standart süreç işliyor.
+                             * */
+                            if (record.id && record.process_status) {
+                                var filteredLeave = $filter('filter')(record['alinan_izinler'], { id: record.id }, true)[0];
 
-							delete record["goreve_baslama_tarihi"];
-							delete record['calisan_data'];
-							delete record["izin_turu_data"];
-							delete record["dogum_tarihi"];
-							delete record["alinan_izinler"];
+                                if (filteredLeave && record['hesaplanan_alinacak_toplam_izin'] > filteredLeave['hesaplanan_alinacak_toplam_izin'] && record['mevcut_kullanilabilir_izin'] + filteredLeave['hesaplanan_alinacak_toplam_izin'] < record['hesaplanan_alinacak_toplam_izin']) {
+                                    if (!izin_turu["izin_borclanma_yapilabilir"]) {
+                                        return $filter('translate')('Leave.Validations.LeaveEnd');
+                                    }
+                                }
+                            } else if (record['mevcut_kullanilabilir_izin'] === 0 || (record['mevcut_kullanilabilir_izin'] /*- checkUsedCount*/ < record['hesaplanan_alinacak_toplam_izin'])) {
+                                if (!izin_turu["izin_borclanma_yapilabilir"]) {
+                                    return $filter('translate')('Leave.Validations.LeaveEnd');
+                                }
+                            }
 
-							return "";
+                            record['mevcut_kullanilabilir_izin'] = record['calisan_data']['kalan_izin_hakki'] || 0.0;
+
+                            delete record["goreve_baslama_tarihi"];
+                            delete record['calisan_data'];
+                            delete record["izin_turu_data"];
+                            delete record["dogum_tarihi"];
+                            delete record['alinan_izinler'];
+
+                            return "";
 						} else {
                             /*
                              * İzin tipinin yıllık hakedilen limiti doldurup doldurmadığı kontrol ediliyor.
                              * Bu yıl aynı türden aldığı(örneğin mazeret izni) izinler yıllık hakedilen izin miktarını (yıllık hakedilen mazeret izni) geçiyor mu diye kontrol edilecek.
                              * */
-							var filteredLeaves = $filter('filter')(record["alinan_izinler"], { izin_turu: record['izin_turu'].id }, true);
+                            var filteredLeaves = $filter('filter')(record['alinan_izinler'], function (izin) {
+                                return izin.izin_turu === record['izin_turu'].id && izin['process.process_requests.process_status'] !== null && (!record.id || (record.id && record.id !== izin.id));
+                            });
 
-							if (izin_turu["yillik_hakedilen_limit_gun"] && izin_turu["yillik_hakedilen_limit_gun"] != 0) {
-								var totalUsed = 0;
-								if (filteredLeaves && filteredLeaves.length > 0) {
-									angular.forEach(filteredLeaves, function (izin) {
-										if (izin["hesaplanan_alinacak_toplam_izin"])
-											totalUsed += izin["hesaplanan_alinacak_toplam_izin"];
-									});
-								}
+                            if (izin_turu["yillik_hakedilen_limit_gun"] && izin_turu["yillik_hakedilen_limit_gun"] != 0) {
+                                var totalUsed = 0;
+                                if (filteredLeaves && filteredLeaves.length > 0) {
+                                    angular.forEach(filteredLeaves, function (izin) {
+                                        if (izin["hesaplanan_alinacak_toplam_izin"])
+                                            totalUsed += izin["hesaplanan_alinacak_toplam_izin"];
+                                    });
+                                }
 
-								if (record['izin_turu_data'] && record['izin_turu_data']['saatlik_kullanim_yapilir']) {
-									var workHour = record['izin_turu_data']['toplam_calisma_saati'];
+                                if (record['izin_turu_data'] && record['izin_turu_data']['saatlik_kullanim_yapilir']) {
+                                    var workHour = record['izin_turu_data']['toplam_calisma_saati'];
 
-									if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
-										var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
-										workHour = workHour - ogleTatili;
-									}
+                                    if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
+                                        var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
+                                        workHour = workHour - ogleTatili;
+                                    }
 
-									var maxLimit = workHour * izin_turu['yillik_hakedilen_limit_gun'];
+                                    var maxLimit = workHour * izin_turu['yillik_hakedilen_limit_gun'];
 
-									if (maxLimit < totalUsed + record['hesaplanan_alinacak_toplam_izin']) {
-										if (record['izin_turu_data']['her_ay_yenilenir']) {
-											return $filter('translate')('Leave.Validations.NotHaveLimitHourMonth', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
-										}
-										return $filter('translate')('Leave.Validations.NotHaveLimitHour', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
-									}
-								} else if (totalUsed + record['hesaplanan_alinacak_toplam_izin'] > izin_turu["yillik_hakedilen_limit_gun"]) {
-									if (record['izin_turu_data']['her_ay_yenilenir']) {
-										return $filter('translate')('Leave.Validations.NotHaveLimitDayMonth', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
-									}
-									return $filter('translate')('Leave.Validations.NotHaveLimitDay', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
-								}
-							}
+                                    if (maxLimit < totalUsed + record['hesaplanan_alinacak_toplam_izin']) {
+                                        if (record['izin_turu_data']['her_ay_yenilenir']) {
+                                            return $filter('translate')('Leave.Validations.NotHaveLimitHourMonth', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
+                                        }
+                                        return $filter('translate')('Leave.Validations.NotHaveLimitHour', { total_hour: maxLimit, remaining_hour: maxLimit - totalUsed });
+                                    }
+                                }
+                                else if (totalUsed + record['hesaplanan_alinacak_toplam_izin'] > izin_turu["yillik_hakedilen_limit_gun"]) {
+                                    if (record['izin_turu_data']['her_ay_yenilenir']) {
+                                        return $filter('translate')('Leave.Validations.NotHaveLimitDayMonth', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
+                                    }
+                                    return $filter('translate')('Leave.Validations.NotHaveLimitDay', { total_hour: izin_turu["yillik_hakedilen_limit_gun"], remaining_hour: izin_turu["yillik_hakedilen_limit_gun"] - totalUsed });
+                                }
+                            }
 
                             /*
                              * Seçilen izin türü için tek sefer de alabileceği en fazla izin hakkı kontrol ediliyor. Eğer bu alan set li değil veya 0 ise dikkate alınmıyor.
                              * */
 
-							if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != null && izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != 0) {
+                            if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != null && izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] != 0) {
 
-								if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
-									var workHour = record['izin_turu_data']["toplam_calisma_saati"];
-									if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
-										var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
-										workHour = workHour - ogleTatili;
-									}
-									var maxLimit = workHour * izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"];
-									if (maxLimit < record["talep_edilen_izin"]) {
-										return $filter('translate')('Leave.Validations.OneGoHour', { total_hour: izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] * maxLimit });
-									}
-								} else if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] < record["talep_edilen_izin"]) {
-									return $filter('translate')('Leave.Validations.OneGoDay', { total_hour: izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] });
-								}
-							}
+                                if (record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
+                                    var workHour = record['izin_turu_data']["toplam_calisma_saati"];
+                                    if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
+                                        var ogleTatili = parseFloat(moment.duration(moment(record['izin_turu_data']['ogle_tatili_bitis']).diff(moment(record['izin_turu_data']['ogle_tatili_baslangic']))).asHours().toFixed(2));
+                                        workHour = workHour - ogleTatili;
+                                    }
+                                    var maxLimit = workHour * izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"];
+                                    if (maxLimit < record["talep_edilen_izin"]) {
+                                        return $filter('translate')('Leave.Validations.OneGoHour', { total_hour: izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] * maxLimit });
+                                    }
+                                } else if (izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] < record["talep_edilen_izin"]) {
+                                    return $filter('translate')('Leave.Validations.OneGoDay', { total_hour: izin_turu["tek_seferde_alinabilecek_en_fazla_izin_gun"] });
+                                }
+                            }
 
                             /*
                              * Eğer seçilen izin türü resmi tatiller ile birleştirilemiyor ise;
                              * İznin başlangıç günün den 1 çıkarılır, setlenen yeni gün haftasonuna denk gelmiyor ve yine de tatil günü olarak geçiyor ise tatil gününü birleştirdiği için bu izin reddedilir.
                              * Aynı işlem iznin bitiş zamanı için de yapılır ama bu sefer bitiş zamanına 1 eklenerek yapılır.
                              * */
-							if (izin_turu['resmi_tatiller_ile_birlestirilebilir'] === null || izin_turu['resmi_tatiller_ile_birlestirilebilir'] === false) {
-								var start_day = moment(record["baslangic_tarihi"]);
-								var finish_day = moment(record["bitis_tarihi"]);
-								var start_day_added = start_day.add(-1, 'days')
-								//var day = moment(start_day_added).format('dddd');
+                            if (izin_turu['resmi_tatiller_ile_birlestirilebilir'] === null || izin_turu['resmi_tatiller_ile_birlestirilebilir'] === false) {
+                                var start_day = moment(record["baslangic_tarihi"]);
+                                var finish_day = moment(record["bitis_tarihi"]);
+                                var start_day_added = start_day.add(-1, 'days')
+                                //var day = moment(start_day_added).format('dddd');
 
-								var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
-								if (workSaturdays.length > 0 && workSaturdays[0].value === 't') {
-									workSaturdays = true;
-								} else {
-									workSaturdays = false;
-								}
+                                var workSaturdays = $filter('filter')($rootScope.moduleSettings, { key: 'work_saturdays' }, true);
+                                if (workSaturdays.length > 0 && workSaturdays[0].value === 't') {
+                                    workSaturdays = true;
+                                } else {
+                                    workSaturdays = false;
+                                }
 
-								var isWeekend = moment(start_day_added).isoWeekday() === 7;
+                                var isWeekend = moment(start_day_added).isoWeekday() === 7;
 
-								if (!isWeekend && !workSaturdays) {
-									isWeekend = moment(start_day_added).isoWeekday() === 6;
-								}
+                                if (!isWeekend && !workSaturdays) {
+                                    isWeekend = moment(start_day_added).isoWeekday() === 6;
+                                }
 
-								var isBusinessDay = moment(moment(start_day_added).format('YYYY-MM-DD')).isBusinessDay();
+                                var isBusinessDay = moment(moment(start_day_added).format('YYYY-MM-DD')).isBusinessDay();
 
-								if (isBusinessDay) {
-									for (var i = 0; i < $rootScope.holidaysData.length; i++) {
-										var holiday = $rootScope.holidaysData[i];
-										if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(start_day_added.format("YYYY-MM-DD")).isSame(moment(holiday.date).format("YYYY-MM-DD"))) {
-											isBusinessDay = false;
-										}
-									}
-								}
+                                if (isBusinessDay) {
+                                    for (var i = 0; i < $rootScope.holidaysData.length; i++) {
+                                        var holiday = $rootScope.holidaysData[i];
+                                        if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(start_day_added.format("YYYY-MM-DD")).isSame(moment(holiday.date).format("YYYY-MM-DD"))) {
+                                            isBusinessDay = false;
+                                        }
+                                    }
+                                }
 
-								if (!isWeekend && !isBusinessDay) {
-									return $filter('translate')('Leave.Validations.InfusibleWithHolidays');
-								}
-								var finish_day_added = finish_day;
+                                if (!isWeekend && !isBusinessDay) {
+                                    return $filter('translate')('Leave.Validations.InfusibleWithHolidays');
+                                }
+                                var finish_day_added = finish_day;
 
-								if (izin_turu["saatlik_kullanim_yapilir"]) {
-									finish_day_added = finish_day.add(1, 'days');
-								}
+                                if (izin_turu["saatlik_kullanim_yapilir"]) {
+                                    finish_day_added = finish_day.add(1, 'days');
+                                }
 
-								//var finish_day_added = finish_day.add(1, 'days');
-								//day = moment(finish_day_added).weekday();
-								isWeekend = moment(finish_day_added).isoWeekday() === 7;
-								if (!isWeekend && !workSaturdays) {
-									isWeekend = moment(finish_day_added).isoWeekday() === 6;
-								}
+                                //var finish_day_added = finish_day.add(1, 'days');
+                                //day = moment(finish_day_added).weekday();
+                                isWeekend = moment(finish_day_added).isoWeekday() === 7;
+                                if (!isWeekend && !workSaturdays) {
+                                    isWeekend = moment(finish_day_added).isoWeekday() === 6;
+                                }
 
-								isBusinessDay = moment(moment(finish_day_added).format('YYYY-MM-DD')).isBusinessDay();
+                                isBusinessDay = moment(moment(finish_day_added).format('YYYY-MM-DD')).isBusinessDay();
 
-								if (isBusinessDay) {
-									for (var i = 0; i < $rootScope.holidaysData.length; i++) {
-										var holiday = $rootScope.holidaysData[i];
-										if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(finish_day_added.format("YYYY-MM-DD")).isSame(moment(holiday.date).format("YYYY-MM-DD"))) {
-											isBusinessDay = false;
-										}
-									}
-								}
+                                if (isBusinessDay) {
+                                    for (var i = 0; i < $rootScope.holidaysData.length; i++) {
+                                        var holiday = $rootScope.holidaysData[i];
+                                        if (holiday.half_day && moment(holiday.date).isBusinessDay() && moment(finish_day_added.format("YYYY-MM-DD")).isSame(moment(holiday.date).format("YYYY-MM-DD"))) {
+                                            isBusinessDay = false;
+                                        }
+                                    }
+                                }
 
-								if (!isWeekend && !isBusinessDay) {
-									return $filter('translate')('Leave.Validations.InfusibleWithHolidays');
-								}
-							}
+                                if (!isWeekend && !isBusinessDay) {
+                                    return $filter('translate')('Leave.Validations.InfusibleWithHolidays');
+                                }
+                            }
 
                             /*
                              * Doğum günü izni için kurallar kontrol ediliyor.
                              *
                              * */
 
-							if (izin_turu["dogum_gunu_izni"]) {
-								//Etiya Özel Doğum Günü izni 1 hafta önce veya 3 hafta sonra kullanılması durumu
-								if (izin_turu['1_hafta_once_ve_3_hafta_sonra_arasinda_kullanilir']) {
-									var current = moment(record["baslangic_tarihi"]);
-									var first = moment(record["dogum_tarihi"]).set('year', moment().get('year')).subtract(1, 'weeks');
-									var end = moment(record["dogum_tarihi"]).set('year', moment().get('year')).add(3, 'weeks');
+                            if (izin_turu["dogum_gunu_izni"]) {
+                                //Etiya Özel Doğum Günü izni 1 hafta önce veya 3 hafta sonra kullanılması durumu
+                                if (izin_turu['1_hafta_once_ve_3_hafta_sonra_arasinda_kullanilir']) {
+                                    var current = moment(record["baslangic_tarihi"]);
+                                    var first = moment(record["dogum_tarihi"]).set('year', moment().get('year')).subtract(1, 'weeks');
+                                    var end = moment(record["dogum_tarihi"]).set('year', moment().get('year')).add(3, 'weeks');
 
-									var dateChecker = moment(current.format('YYYY-MM-DD')).isBetween(first.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), null, '[]');
-									if (!dateChecker) {
-										return 'Mutlu Yıllar! Doğumgünü iznini doğum gününün 1 hafta öncesinden başlayarak 3 hafta sonrasına kadar olan 4 haftalık süre diliminde kullanabilirsin. İzin tarihini değiştirerek tekrar denemelisin.';
-									}
+                                    var dateChecker = moment(current.format('YYYY-MM-DD')).isBetween(first.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), null, '[]');
+                                    if (!dateChecker) {
+                                        return 'Mutlu Yıllar! Doğumgünü iznini doğum gününün 1 hafta öncesinden başlayarak 3 hafta sonrasına kadar olan 4 haftalık süre diliminde kullanabilirsin. İzin tarihini değiştirerek tekrar denemelisin.';
+                                    }
 
-								} else {
-									var dogum_tarihi = moment(record["dogum_tarihi"]);
-									var start_day = moment(record["baslangic_tarihi"]);
-									dogum_tarihi = moment(dogum_tarihi.year(start_day.year()).toISOString());
+                                } else {
+                                    var dogum_tarihi = moment(record["dogum_tarihi"]);
+                                    var start_day = moment(record["baslangic_tarihi"]);
+                                    dogum_tarihi = moment(dogum_tarihi.year(start_day.year()).toISOString());
 
-									if (izin_turu["dogum_gunu_izni_kullanimi"].includes("15")) {
-										var calculatedField = start_day.diff(dogum_tarihi, 'days');
+                                    if (izin_turu["dogum_gunu_izni_kullanimi"].includes("15")) {
+                                        var calculatedField = start_day.diff(dogum_tarihi, 'days');
 
-										if (calculatedField < 0)
-											calculatedField = calculatedField * -1;
+                                        if (calculatedField < 0)
+                                            calculatedField = calculatedField * -1;
 
-										if (calculatedField > 15) {
-											return $filter('translate')('Leave.Validations.BirthDayLimitDay');
-										}
-									}
-									else if (dogum_tarihi.month() !== start_day.month()) {
-										return $filter('translate')('Leave.Validations.BirthDayLimitMonth');
-									}
-								}
+                                        if (calculatedField > 15) {
+                                            return $filter('translate')('Leave.Validations.BirthDayLimitDay');
+                                        }
+                                    }
+                                    else if (dogum_tarihi.month() !== start_day.month()) {
+                                        return $filter('translate')('Leave.Validations.BirthDayLimitMonth');
+                                    }
+                                }
 
-							}
+                            }
 
-							//Etiya Özel Mazeret İzni Arka Arkaya 3 gün Alınamaz.
-							if (izin_turu['3_gun_arka_arkaya_kullanilamasin'] && filteredLeaves && filteredLeaves.length > 0) {
-								if (filteredLeaves.length > 0) {
-									function calculateDate(date, operation) {
-										var isSaturday = moment(date).isoWeekday() === 6;
-										var isSunday = moment(date).isoWeekday() === 7;
+                            //Etiya Özel Mazeret İzni Arka Arkaya 3 gün Alınamaz.
+                            if (izin_turu['3_gun_arka_arkaya_kullanilamasin'] && filteredLeaves && filteredLeaves.length > 0) {
+                                if (filteredLeaves.length > 0) {
+                                    function calculateDate(date, operation) {
+                                        var isSaturday = moment(date).isoWeekday() === 6;
+                                        var isSunday = moment(date).isoWeekday() === 7;
 
-										if (isSaturday || isSunday || !moment(date).isBusinessDay()) {
-											if (operation == 'subtract') {
-												return calculateDate(moment(date).subtract(1, 'days'), operation);
-											} else if (operation == 'add') {
-												return calculateDate(moment(date).add(1, 'days'), operation);
-											}
-										} else
-											return date;
-									}
+                                        if (isSaturday || isSunday || !moment(date).isBusinessDay()) {
+                                            if (operation == 'subtract') {
+                                                return calculateDate(moment(date).subtract(1, 'days'), operation);
+                                            } else if (operation == 'add') {
+                                                return calculateDate(moment(date).add(1, 'days'), operation);
+                                            }
+                                        } else
+                                            return date;
+                                    }
 
-									var current = moment(record['baslangic_tarihi']).format('YYYY-MM-DD');
-									var st1 = calculateDate(moment(current).subtract(1, 'days'), 'subtract').format('YYYY-MM-DD');
-									var st2 = calculateDate(moment(st1).subtract(1, 'days'), 'subtract').format('YYYY-MM-DD');
+                                    var current = moment(record['baslangic_tarihi']).format('YYYY-MM-DD');
+                                    var st1 = calculateDate(moment(current).subtract(1, 'days'), 'subtract').format('YYYY-MM-DD');
+                                    var st2 = calculateDate(moment(st1).subtract(1, 'days'), 'subtract').format('YYYY-MM-DD');
 
-									var st3 = calculateDate(moment(current).add(1, 'days'), 'add').format('YYYY-MM-DD');
-									var st4 = calculateDate(moment(st3).add(1, 'days'), 'add').format('YYYY-MM-DD');
+                                    var st3 = calculateDate(moment(current).add(1, 'days'), 'add').format('YYYY-MM-DD');
+                                    var st4 = calculateDate(moment(st3).add(1, 'days'), 'add').format('YYYY-MM-DD');
 
-									var check1 = false;
-									var check2 = false;
-									var check3 = false;
-									var check4 = false;
+                                    var check1 = false;
+                                    var check2 = false;
+                                    var check3 = false;
+                                    var check4 = false;
 
-									var calDateCheck1 = 0;
-									var calDateCheck2 = 0;
-									var calDateCheck3 = 0;
-									var calDateCheck4 = 0;
+                                    var calDateCheck1 = 0;
+                                    var calDateCheck2 = 0;
+                                    var calDateCheck3 = 0;
+                                    var calDateCheck4 = 0;
 
-									for (var i = 0; i < filteredLeaves.length; i++) {
-										if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st1) {
-											calDateCheck1 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
-											check1 = true;
-										}
-										else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st2) {
-											calDateCheck2 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
-											check2 = true;
-										}
-										else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st3) {
-											calDateCheck3 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
-											check3 = true;
-										}
-										else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st4) {
-											calDateCheck4 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
-											check4 = true;
-										}
+                                    for (var i = 0; i < filteredLeaves.length; i++) {
+                                        if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st1) {
+                                            calDateCheck1 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check1 = true;
+                                        }
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st2) {
+                                            calDateCheck2 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check2 = true;
+                                        }
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st3) {
+                                            calDateCheck3 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check3 = true;
+                                        }
+                                        else if (moment(filteredLeaves[i].baslangic_tarihi).format('YYYY-MM-DD') == st4) {
+                                            calDateCheck4 = filteredLeaves[i].hesaplanan_alinacak_toplam_izin;
+                                            check4 = true;
+                                        }
 
                                         /*if (moment(record['baslangic_tarihi']).isBetween(moment(mazeretIzinleri[i].baslangic_tarihi), moment(mazeretIzinleri[i].bitis_tarihi), null, '[)') ||
                                          moment(record['bitis_tarihi']).isBetween(moment(mazeretIzinleri[i].baslangic_tarihi), moment(mazeretIzinleri[i].bitis_tarihi), null, '(}') ||
@@ -2210,19 +2288,19 @@ angular.module('primeapps')
                                          }*/
 
 
-									}
+                                    }
 
-									if ((check1 && check2 && calDateCheck1 + calDateCheck2 >= 16) || (check3 && check4 && calDateCheck3 + calDateCheck4 >= 16) || (check1 && check3 && calDateCheck1 + calDateCheck3 >= 16))
-										return 'Üst üste 16 saatlik mazeret izni girişi yaptığın için, 16 saati takiben mazeret izni girişi yapamazsın.';
-								}
-							}
+                                    if ((check1 && check2 && calDateCheck1 + calDateCheck2 >= 16) || (check3 && check4 && calDateCheck3 + calDateCheck4 >= 16) || (check1 && check3 && calDateCheck1 + calDateCheck3 >= 16))
+                                        return 'Üst üste 16 saatlik mazeret izni girişi yaptığın için, 16 saati takiben mazeret izni girişi yapamazsın.';
+                                }
+                            }
 
-							delete record["goreve_baslama_tarihi"];
-							delete record['calisan_data']
-							delete record["dogum_tarihi"];
-							delete record["izin_turu_data"];
-							delete record["alinan_izinler"];
-							return "";
+                            delete record["goreve_baslama_tarihi"];
+                            delete record['calisan_data']
+                            delete record["dogum_tarihi"];
+                            delete record["izin_turu_data"];
+                            delete record['alinan_izinler'];
+                            return "";
 						}
 					}
 					//}
@@ -2242,7 +2320,7 @@ angular.module('primeapps')
 
 					if (module.name === 'izinler') {
 
-						if (record['baslangic_tarihi'] && !record['bitis_tarihi'] && record['izin_turu_data'] && record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
+                        if (record['baslangic_tarihi'] && !record['bitis_tarihi'] && record['izin_turu_data'] && record['izin_turu_data']['saatlik_kullanim_yapilir']) {
 							var defaultDate = new Date(record['baslangic_tarihi']);
 							defaultDate.setHours(8, 0, 0, 0);
 							record['bitis_tarihi'] = new Date(defaultDate).toISOString();
@@ -2281,33 +2359,47 @@ angular.module('primeapps')
 
 						if (record['izin_turu_data'] && record['baslangic_tarihi'] && record['bitis_tarihi']) {
 
-							if (!record['izin_turu_data']["saatlik_kullanim_yapilir"] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
-								var bitisTarihi = new Date(record['bitis_tarihi']);
-								var baslangicTarihi = new Date(record['baslangic_tarihi']);
-								bitisTarihi.setHours(0, 0, 0, 0);
-								baslangicTarihi.setHours(0, 0, 0, 0);
+                            /*
+                            * Sadece tam gün olarak kullanılan izinlerde saati 00:00 setlediği için utc formata çevirirken 1 gün öncesine geçip saati 21:00 yapıyordu bu yüzden saati sabah 8 olarak setliyoruz.
+                            * */
+                            if (record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
+                                var bitisTarihi = new Date(record['bitis_tarihi']);
+                                var baslangicTarihi = new Date(record['baslangic_tarihi']);
 
-								if (baslangicTarihi.toISOString() === bitisTarihi.toISOString()) {
-									record['from_entry_type'] = picklists[scope.customLeaveFields['from_entry_type'].picklist_id][0];
-									//Yıllık izin alınmak istendiğinde Bitiş Tarihi aynı tarih atılıp öğleden sonraya çekiliyordu. Bunun yerine artık Sabah olarak basıcak.
-									//record['to_entry_type'] = picklists[scope.customLeaveFields['to_entry_type'].picklist_id][1];
-								}
+                                baslangicTarihi.setHours(8, 0, 0, 0);
+                                bitisTarihi.setHours(8, 0, 0, 0);
 
-								if (record['to_entry_type'].system_code === 'entry_type_afternoon')
-									bitisTarihi.setHours(12, 0, 0, 0);
-								else
-									bitisTarihi.setHours(8, 0, 0, 0);
+                                record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                                record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
+                            }
 
-								record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                            if (!record['izin_turu_data']['saatlik_kullanim_yapilir'] && !record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
+                                var bitisTarihi = new Date(record['bitis_tarihi']);
+                                var baslangicTarihi = new Date(record['baslangic_tarihi']);
+                                bitisTarihi.setHours(0, 0, 0, 0);
+                                baslangicTarihi.setHours(0, 0, 0, 0);
+
+                                if (baslangicTarihi.toISOString() === bitisTarihi.toISOString()) {
+                                    record['from_entry_type'] = picklists[scope.customLeaveFields['from_entry_type'].picklist_id][0];
+                                    //Yıllık izin alınmak istendiğinde Bitiş Tarihi aynı tarih atılıp öğleden sonraya çekiliyordu. Bu yüzden kaldırıldı.
+                                    //record['to_entry_type'] = picklists[scope.customLeaveFields['to_entry_type'].picklist_id][0];
+                                }
+
+                                if (record['to_entry_type'].system_code === 'entry_type_afternoon')
+                                    bitisTarihi.setHours(12, 0, 0, 0);
+                                else
+                                    bitisTarihi.setHours(8, 0, 0, 0);
+
+                                record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
 
 
-								if (record['from_entry_type'].system_code === 'entry_type_afternoon')
-									baslangicTarihi.setHours(12, 0, 0, 0);
-								else
-									baslangicTarihi.setHours(8, 0, 0, 0);
+                                if (record['from_entry_type'].system_code === 'entry_type_afternoon')
+                                    baslangicTarihi.setHours(12, 0, 0, 0);
+                                else
+                                    baslangicTarihi.setHours(8, 0, 0, 0);
 
-								record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
-							}
+                                record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
+                            }
 
 							//izin alanları seçilirken alınacak izin miktarı hesaplanarak set ediliyor.
 							var calculatedField = 0;
@@ -2320,7 +2412,7 @@ angular.module('primeapps')
 							var fromDate = moment(record["baslangic_tarihi"]);
 							var toDate = moment(record["bitis_tarihi"]);
 
-							if (record['izin_turu_data']["saatlik_kullanim_yapilir"]) {
+                            if (record['izin_turu_data']['saatlik_kullanim_yapilir']) {
 								var calismaSaati = record['izin_turu_data']['toplam_calisma_saati'];
 
 								if (record['izin_turu_data']['ogle_tatilini_dikkate_al']) {
@@ -2427,22 +2519,25 @@ angular.module('primeapps')
 										calculatedField = checker;
 
 								} else {
-									var bitisTarihi = new Date(record['bitis_tarihi']);
-									bitisTarihi.setHours(0, 0, 0, 0);
-									record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
+                                    var bitisTarihi = new Date(record['bitis_tarihi']);
+                                    var baslangicTarihi = new Date(record['baslangic_tarihi']);
 
-									var baslangicTarihi = new Date(record['baslangic_tarihi']);
-									baslangicTarihi.setHours(0, 0, 0, 0);
-									record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
+                                    if (!record['izin_turu_data']['sadece_tam_gun_olarak_kullanilir']) {
+                                        bitisTarihi.setHours(0, 0, 0, 0);
+                                        record['bitis_tarihi'] = new Date(bitisTarihi).toISOString();
 
-									fromDate = moment(record["baslangic_tarihi"]);
-									toDate = moment(record["bitis_tarihi"]);
-									if (record['izin_turu_data']["izin_hakkindan_takvim_gunu_olarak_dusulsun"]) {
-										calculatedField = toDate.diff(fromDate, 'days');
-									}
-									else {
-										calculatedField = fromDate.businessDiff(toDate);
-									}
+                                        baslangicTarihi.setHours(0, 0, 0, 0);
+                                        record['baslangic_tarihi'] = new Date(baslangicTarihi).toISOString();
+                                    }
+
+                                    fromDate = moment(record["baslangic_tarihi"]);
+                                    toDate = moment(record["bitis_tarihi"]);
+                                    if (record['izin_turu_data']["izin_hakkindan_takvim_gunu_olarak_dusulsun"]) {
+                                        calculatedField = toDate.diff(fromDate, 'days');
+                                    }
+                                    else {
+                                        calculatedField = fromDate.businessDiff(toDate);
+                                    }
 								}
 							}
 
@@ -2492,8 +2587,9 @@ angular.module('primeapps')
 									}
 								}
 
-								if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && toDate.diff(fromDate, 'days') < 2)
-									calculatedField -= 1;
+                                //Sadece cuma günü alınan izinler de 2 gün sayma
+                                if (moment(toDate).isoWeekday() === 5 && moment(toDate).isBusinessDay() && toDate.diff(fromDate, 'days') < 2)
+                                    calculatedField -= 1;
 
 								//Bitiş tarihini işe tekrar başlama olarak gördüğümüz için ve aşşağıdaki kontrol bunu bize sagladığı için bu tarihi manuel çıkarıyoruz.
                                 /*var isToDateFriday = moment(toDate).isoWeekday() === 5;
@@ -2504,9 +2600,9 @@ angular.module('primeapps')
 								if (fridays) {
 									if (fridays.length) {
 										for (var x = 0; x < fridays.length; x++) {
-											if (moment(fridays[x]).isBusinessDay()) {
-												calculatedField += 1;
-											}
+                                            if (moment(fridays[x]).isBusinessDay()) {
+                                                calculatedField += 1;
+                                            }
 										}
 									} else {
 										if (fridays.isBusinessDay())
@@ -2515,15 +2611,17 @@ angular.module('primeapps')
 								}
 							}
 
-							//Yarım gün tatiller alınan izinden çıkarılıyor
-							for (var i = 0; i < $rootScope.holidaysData.length; i++) {
-								var holiday = $rootScope.holidaysData[i];
-								if (holiday.half_day && moment(holiday.date).isBusinessDay()
-									&& moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')
-								) {
-									calculatedField -= 0.5;
-								}
-							}
+                            if (!record['izin_turu_data']['izin_hakkindan_takvim_gunu_olarak_dusulsun']) {
+                                //Yarım gün tatiller alınan izinden çıkarılıyor
+                                for (var i = 0; i < $rootScope.holidaysData.length; i++) {
+                                    var holiday = $rootScope.holidaysData[i];
+                                    if (holiday.half_day && moment(holiday.date).isBusinessDay()
+                                        && moment(moment(holiday.date).format('YYYY-MM-DD')).isBetween(moment(record['baslangic_tarihi']).format('YYYY-MM-DD'), moment(record['bitis_tarihi']).format('YYYY-MM-DD'), null, '[)')
+                                    ) {
+                                        calculatedField -= 0.5;
+                                    }
+                                }
+                            }
 
 							if (record['izin_turu_data']["saatlik_kullanim_yapilir"] && record['izin_turu_data']['saatlik_kullanimi_yukari_yuvarla']) {
 								calculatedField = Math.ceil(calculatedField);
@@ -3064,11 +3162,34 @@ angular.module('primeapps')
 
 																				var currentFilter = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
 
-																				if (currentFilter && !angular.isUndefined(currentFilter.isView))
-																					filters.splice(filters.indexOf(currentFilter), 1);
+																				/*
+                                                                                 * Tek başına !angular.isUndefined(currentFilter.isView) olarak kontrol etmek.
+                                                                                 * View larda oluşturulan filtrelerin ezilmesine sebep oluyordu.
+                                                                                 * Extra !currentFilter.isView kontrolü eklenerek view filtrelerinin korunması sağlandı.
+                                                                                 * */
+                                                                                if (currentFilter && !angular.isUndefined(currentFilter.isView) && !currentFilter.isView)
+                                                                                    filters.splice(filters.indexOf(currentFilter), 1);
 
 																				continue;
-																			}
+                                                                            }
+
+                                                                            /*
+                                                                            * View da filtre eklenen bir alan eğer listeye de kolon olarak eklenmiş ise ve
+                                                                            * Bu alana liste de ayrı bir filtre uygulanırsa view de oluşturulan filtre ve liste de oluşturulan filtre birlikte gidiyordu
+                                                                            * Liste de eklenen filtre'nin view de kini ezmesi sağlandı.
+                                                                            * */
+                                                                            var currentFilter = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
+                                                                            if (currentFilter && !angular.isUndefined(currentFilter.isView) && currentFilter.isView &&
+                                                                                (
+                                                                                    (angular.isArray(search.value) && search.value.length) ||
+                                                                                    ((field.data_type === 'number' || field.data_type === 'number_decimal' || field.data_type === 'number_auto' || field.data_type === 'currency') && !isNaN(search.value)) ||
+                                                                                    search.value !== undefined ||
+                                                                                    search.value !== null ||
+                                                                                    search.value !== ''
+                                                                                )
+                                                                            ) {
+                                                                                filters.splice(filters.indexOf(currentFilter), 1);
+                                                                            }
 
 																			var lookupModule;
 																			var lookupModulePrimaryField;

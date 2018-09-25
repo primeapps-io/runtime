@@ -39,106 +39,106 @@
                     </a>
                 </li>
 
-                <li class="sip-phone-container" ng-if="sipAccessRights && sipUser">
-                    <a id="sipPhoneBtn" ng-click="showSipPhone()"
-                       href class="nav-link">
-                        <i ng-if="!sipUser.events.IsRegistered" class="fa fa-phone-square fa-2x offlineColor"></i>
-                        <i ng-if="sipUser.events.IsRegistered"
-                           ng-class="sipPhone[app].$isShown ? 'sip-registered-open fa-times-circle' : 'sip-registered fa-phone-square' "
-                           class="fa  fa-2x "></i>
-                    </a>
-                    <div ng-hide="sipPhone[app].$isShown" ng-if="sipUser.events.IsRegistered && sipUser.lineInfo.State === 'Active'" class="sip-phone-active-timer box-shadow">
-                        {{sipUser.lineInfo.TalkingTimer | formatToMinuteAndSecond}}
-                    </div>
-                    <!--<div ng-hide="sipPhone[app].$isShown" ng-if="sipUser.events.IsRegistered && sipUser.lineInfo.State != 'Active' && sipUser.lineInfo.State != 'Ready'" class="sip-phone-state-info box-shadow">-->
-                    <!--{{sipUser.lineInfo.PhoneStatus}}-->
-                    <!--</div>-->
-                    <video style="display: none" autoplay>Video Disabled or Unavailable</video>
-                    <audio id="IncomingSound" style="display: none" preload="metadata">
-                        <source src="http://file.ofisim.com/static/ring.wav"
-                                type="audio/mpeg">
-                    </audio>
-                    <audio id="DialSound" style="display: none" preload="metadata">
-                        <source src="http://file.ofisim.com/static/call.mp3" type="audio/mpeg">
-                    </audio>
-                    <audio id="BusySound" style="display: none" preload="metadata">
-                        <source src="http://file.ofisim.com/static/busy.mp3" type="audio/mpeg">
-                    </audio>
-                </li>
-                <li ng-hide="preview || multiTenant.length <= 1" class="app-launcher-container">
-                    <a href class="launcher-link" data-template-url="view/common/app-launcher.html" data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-th fa-2x"></i></a>
-                </li>
-                <li>
-                    <span class="nav-link nav-profile">
-                        <img src="images/user-image.png" ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}" class="img-circle" />
-                        <span>{{user.first_name}} {{user.last_name}}</span>
-                    </span>
-                </li>
-                <li ng-show="!preview">
-                    <a href class="nav-link ng-scope"
-                       ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/reports' : '#/app/analytics/report'))"
-                       data-title="{{'Layout.SettingsTooltip' | translate}}" data-trigger="hover"
-                       data-placement="bottom" bs-tooltip=""><span class="flaticon-cogwheel22"></span></a>
-                </li>
-                <li>
-                    <a href ng-click="logout()" class="nav-link" data-title="{{'Layout.LogoutTooltip' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip><span class="flaticon-logout10"></span></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-    <div id="sidebar-wrapper">
-        <ul class="sidebar-nav">
-            <li class="sidebar-brand">
-                <a class="sidebar-brand-logo" href ng-click="toggleLeftMenu()">
-                    <i class="fa fa-bars fa-2x"></i>
-                </a>
-            </li>
-            <div ng-show="customMenu" class="panel-group collapse-menu" ng-model="multiplePanels.activePanels" bs-collapse>
-                <div class="panel-group">
-                    <div class="panel panel-default" ng-repeat="item in menu">
-                        <div ng-hide="item.hide" ng-if="!item.route" class="panel-heading">
-                            <h4 class="panel-title">
-                                <a class="menu-category clearfix" style="text-decoration: none !important;" bs-collapse-toggle>
-                                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
-                                    <div><span class="sidebar-menu-label">{{item['label_' + language]}}</span> <i class="pull-right glyphicon" style="margin-top:14px;padding-right: 20px;font-size:13px" ng-class="{'glyphicon-chevron-down': panels.activePanel === $index, 'glyphicon-chevron-right': panels.activePanel !== $index}"></i></div>
-                                </a>
-                            </h4>
-                        </div>
-                        <div ng-if="item.route" class="panel-heading" role="tab">
-                            <h4 class="panel-title">
-                                <a ng-if="item.is_dynamic" href="#/app/modules/{{item.route}}" ng-click="routingPrism('#/app/modules/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}" style="text-decoration: none !important;">
-                                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
-                                    <span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
-                                </a>
-                                <a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
-                                    <div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
-                                    <span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
-                                </a>
-                            </h4>
-                        </div>
-                        <div ng-if="!item.route" style="position: relative;" class="panel-collapse" role="tabpanel" bs-collapse-target>
-                            <div class="panel-body" ng-class="{'toggled-menu':toggled}">
-                                <li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
-                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/modules/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}">
-                                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
-                                        <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
-                                    </a>
-                                    <a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/{{subMenu.route}}" ng-click="routingPrism('#/app/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{subMenu.route}}'}">
-                                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
-                                        <span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
-                                    </a>
-                                </li>
-                            </div>
-                        </div>
-                    </div>
-                    <li ng-if="isAvailableForSmallDevice()">
-                        <a href ng-click="logout()">
-                            <div data-container="body" data-delay="300" data-placement="right" data-title="{{'Auth.Logout' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-sign-out"></i></div>
-                            <span class="sidebar-menu-label">{{'Auth.Logout' | translate}}</span>
-                        </a>
-                    </li>
-                </div>
-            </div>
+				<li class="sip-phone-container" ng-if="sipAccessRights && sipUser">
+					<a id="sipPhoneBtn" ng-click="showSipPhone()"
+					   href class="nav-link">
+						<i ng-if="!sipUser.events.IsRegistered" class="fa fa-phone-square fa-2x offlineColor"></i>
+						<i ng-if="sipUser.events.IsRegistered"
+						   ng-class="sipPhone[app].$isShown ? 'sip-registered-open fa-times-circle' : 'sip-registered fa-phone-square' "
+						   class="fa  fa-2x "></i>
+					</a>
+					<div ng-hide="sipPhone[app].$isShown" ng-if="sipUser.events.IsRegistered && sipUser.lineInfo.State === 'Active'" class="sip-phone-active-timer box-shadow">
+						{{sipUser.lineInfo.TalkingTimer | formatToMinuteAndSecond}}
+					</div>
+					<!--<div ng-hide="sipPhone[app].$isShown" ng-if="sipUser.events.IsRegistered && sipUser.lineInfo.State != 'Active' && sipUser.lineInfo.State != 'Ready'" class="sip-phone-state-info box-shadow">-->
+					<!--{{sipUser.lineInfo.PhoneStatus}}-->
+					<!--</div>-->
+					<video style="display: none" autoplay>Video Disabled or Unavailable</video>
+					<audio id="IncomingSound" style="display: none" preload="metadata">
+						<source src="http://file.ofisim.com/static/ring.wav"
+								type="audio/mpeg">
+					</audio>
+					<audio id="DialSound" style="display: none" preload="metadata">
+						<source src="http://file.ofisim.com/static/call.mp3" type="audio/mpeg">
+					</audio>
+					<audio id="BusySound" style="display: none" preload="metadata">
+						<source src="http://file.ofisim.com/static/busy.mp3" type="audio/mpeg">
+					</audio>
+				</li>
+				<li ng-hide="preview || multiTenant.length <= 1" class="app-launcher-container">
+					<a href class="launcher-link" data-template-url="view/common/app-launcher.html" data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-th fa-2x"></i></a>
+				</li>
+				<li>
+					<span class="nav-link nav-profile">
+						<img src="images/user-image.png" ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}" class="img-circle" />
+						<span>{{user.first_name}} {{user.last_name}}</span>
+					</span>
+				</li>
+				<li ng-show="!preview">
+					<a href class="nav-link ng-scope"
+					   ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/reports' : '#/app/analytics/report'))"
+					   data-title="{{'Layout.SettingsTooltip' | translate}}" data-trigger="hover"
+					   data-placement="bottom" bs-tooltip=""><span class="flaticon-cogwheel22"></span></a>
+				</li>
+				<li>
+					<a href ng-click="logout()" class="nav-link" data-title="{{'Layout.LogoutTooltip' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip><span class="flaticon-logout10"></span></a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+	<div id="sidebar-wrapper">
+		<ul class="sidebar-nav">
+			<li class="sidebar-brand">
+				<a class="sidebar-brand-logo" href ng-click="toggleLeftMenu()">
+					<i class="fa fa-bars fa-2x"></i>
+				</a>
+			</li>
+			<div ng-show="customMenu" class="panel-group collapse-menu" ng-model="multiplePanels.activePanels" bs-collapse>
+				<div class="panel-group">
+					<div class="panel panel-default" ng-repeat="item in menu">
+						<div ng-hide="item.hide" ng-if="!item.route" class="panel-heading">
+							<h4 class="panel-title">
+								<a class="menu-category clearfix" style="text-decoration: none !important;" bs-collapse-toggle>
+									<div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
+									<div><span class="sidebar-menu-label">{{item['label_' + language]}}</span> <i class="pull-right glyphicon" style="margin-top:14px;padding-right: 20px;font-size:13px" ng-class="{'glyphicon-chevron-down': panels.activePanel === $index, 'glyphicon-chevron-right': panels.activePanel !== $index}"></i></div>
+								</a>
+							</h4>
+						</div>
+						<div ng-if="item.route" class="panel-heading" role="tab">
+							<h4 class="panel-title">
+								<a ng-if="item.is_dynamic" href="#/app/modules/{{item.route}}" ng-click="routingPrism('#/app/modules/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{item.route}}'}" style="text-decoration: none !important;">
+									<div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
+									<span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
+								</a>
+								<a ng-if="!item.is_dynamic" href="#/app/{{item.route}}" ng-click="routingPrism('#/app/{{item.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{item.route}}'}">
+									<div data-container="body" data-delay="300" data-placement="right" data-title="{{item['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{item.menu_icon}}"></i></div>
+									<span ng-model="collapsed" ng-click="isCollapsed=!isCollapsed" class="sidebar-menu-label">{{item['label_' + language]}}</span>
+								</a>
+							</h4>
+						</div>
+						<div ng-if="!item.route" style="position: relative;" class="panel-collapse" role="tabpanel" bs-collapse-target>
+							<div class="panel-body" ng-class="{'toggled-menu':toggled}">
+								<li ng-repeat="subMenu in menu[$index].menu_items | orderBy:'order'">
+									<a ng-hide="subMenu.hide || subMenu.deleted" ng-if="subMenu.is_dynamic" href="#/app/modules/{{subMenu.route}}" ng-click="routingPrism('#/app/modules/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/modules/{{subMenu.route}}'}">
+										<div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
+										<span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
+									</a>
+									<a ng-hide="subMenu.hide || subMenu.deleted" ng-if="!subMenu.is_dynamic" href="#/app/{{subMenu.route}}" ng-click="routingPrism('#/app/{{subMenu.route}}')" ng-show="item.display" ng-class="{'active': currentPath === '/app/{{subMenu.route}}'}">
+										<div data-container="body" data-delay="300" data-placement="right" data-title="{{subMenu['label_' + language]}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{subMenu.menu_icon}}"></i></div>
+										<span class="sidebar-menu-label">{{subMenu['label_' + language]}}</span>
+									</a>
+								</li>
+							</div>
+						</div>
+					</div>
+					<li ng-if="isAvailableForSmallDevice()">
+						<a href ng-click="logout()">
+							<div data-container="body" data-delay="300" data-placement="right" data-title="{{'Auth.Logout' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-sign-out"></i></div>
+							<span class="sidebar-menu-label">{{'Auth.Logout' | translate}}</span>
+						</a>
+					</li>
+				</div>
+			</div>
             <div ng-show="!customMenu">
                 <li ng-if="user.profile.home">
                     <a href="#/app/home" ng-click="routingPrism('#/app/home')"
@@ -161,10 +161,17 @@
                         <span class="sidebar-menu-label">{{'Layout.Menu.Newsfeed' | translate}}</span>
                     </a>
                 </li>
-                <li ng-repeat="module in modules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(module.name, operations.read) && module.display">
+                <li ng-repeat="module in modules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(module.name, operations.read) && module.display && module.system_type != 'component'">
                     <a href="#/app/modules/{{module.name}}" ng-click="routingPrism('#/app/modules/' + module.name)" ng-class="{'active': ((currentPath.indexOf('modules/' + module.name) > -1 || currentPath.indexOf('module/' + module.name) > -1 || module.name.indexOf(activeModuleName) > -1) && currentPath.indexOf('/setup') <= -1)}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{module['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{module.menu_icon}}"></i></div>
                         <span class="sidebar-menu-label">{{module['label_' + language + '_plural']}}</span>
+                    </a>
+                </li>
+                <li ng-repeat="component in componentModules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(component.name, operations.read) && component.display && (component.components | filter: {name:component.name}).length > 0">
+                    <a href="#/app/crm/{{component.name}}" ng-click="routingPrism('#/app/crm/' + component.name, true)"
+                       ng-class="{'active': (currentPath=='/app/crm/' + component.name  && currentPath.indexOf('/setup') < 0)}">
+                        <div data-container="body" data-delay="300" data-placement="right" data-title="{{component['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{component.menu_icon}}"></i></div>
+                        <span class="sidebar-menu-label">{{component['label_' + language + '_plural']}}</span>
                     </a>
                 </li>
                 <li ng-show="showTimesheetMenu">
@@ -237,11 +244,11 @@
                     </a>
                 </li>
             </div>
-        </ul>
-    </div>
-    <div id="page-content-wrapper" class="container">
-        <div class="row clearfix">
-            <div ui-view="app"></div>
-        </div>
-    </div>
+		</ul>
+	</div>
+	<div id="page-content-wrapper" class="container">
+		<div class="row clearfix">
+			<div ui-view="app"></div>
+		</div>
+	</div>
 </div>

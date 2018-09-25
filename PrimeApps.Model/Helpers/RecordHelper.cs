@@ -247,9 +247,9 @@ namespace PrimeApps.Model.Helpers
 
                 fieldsSql = fieldsSql.Trim().TrimEnd(',');
 
-                //Add advance sharing information for module list records.
-                if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products" && tableName != "users")
-                    fieldsSql += $", \"{tableName}\".\"shared_users\", " + $"\"{tableName}\".\"shared_user_groups\", " + $"\"{tableName}\".\"shared_users_edit\", " + $"\"{tableName}\".\"shared_user_groups_edit\"";
+                //Add advanced sharing information for module list records.
+				if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products" && tableName != "users" && tableName != "profiles" && tableName != "roles")
+					fieldsSql += $", \"{tableName}\".\"shared_users\", " + $"\"{tableName}\".\"shared_user_groups\", " + $"\"{tableName}\".\"shared_users_edit\", " + $"\"{tableName}\".\"shared_user_groups_edit\"";
 
                 //Approval Processes
                 if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products")
@@ -350,7 +350,27 @@ namespace PrimeApps.Model.Helpers
 
                 if (!findRequest.SortField.Contains(".") && !findRequest.SortField.Contains(","))
                 {
-                    sortSql = $"\"{tableName}\".\"{findRequest.SortField}\" {sortDirection}";
+                    sortSql = null;
+
+                    #region #2452 lookup alanlarda sort problemi
+                    /*
+                     * Lookup bir alan sort edilirken primary key e göre değilde id ye göre sort ediyordu.
+                     */
+                    if (findRequest.Fields != null)
+                    {
+                        foreach (var field in findRequest.Fields)
+                        {
+                            if (field != findRequest.SortField && field.StartsWith(findRequest.SortField + ".") && field.EndsWith(".primary"))
+                            {
+                                sortSql = $"\"{field}\" {sortDirection}";
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    if (sortSql == null)
+                        sortSql = $"\"{tableName}\".\"{findRequest.SortField}\" {sortDirection}";
                 }
                 else if (findRequest.SortField.Contains(",") && !findRequest.SortField.Contains("."))
                 {
@@ -390,7 +410,7 @@ namespace PrimeApps.Model.Helpers
 
             foreach (var jn in joins)
             {
-                var joinTableName = jn.Value != "users" ? jn.Value + "_d" : "users";
+                var joinTableName = jn.Value != "users" && jn.Value != "profiles" && jn.Value != "roles" ? jn.Value + "_d" : jn.Value == "profiles" ? "profiles" : jn.Value == "roles" ? "roles" : "users";
                 var alias = jn.Value + "_" + jn.Key;
 
                 if (string.IsNullOrWhiteSpace(findRequest.ManyToMany))
@@ -398,11 +418,19 @@ namespace PrimeApps.Model.Helpers
 
                 sql += $"JOIN {joinTableName} AS \"{alias}\" ON \"{alias}\".\"id\" = {tableName}.\"{jn.Key}\"";
 
-                if (moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products")
+                if (moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "sales_invoices_products" && moduleName != "purchase_invoices_products")
                     sql += $"AND \"{alias}\".\"deleted\" IS NOT TRUE";
 
                 if (!string.IsNullOrEmpty(owners) && !string.IsNullOrWhiteSpace(findRequest.ManyToMany))
-                    sql += $" AND \"{alias}\".\"owner\" = ANY(ARRAY[{owners}])\n";
+                {
+                    sql += $"\nAND (\n\"{alias}\".\"owner\" = ANY(ARRAY[{owners}]) \nOR {userId} = ANY(\"{alias}\".\"shared_users\") \nOR {userId} = ANY(\"{alias}\".\"shared_users_edit\")";
+
+                    if (!string.IsNullOrEmpty(userGroups))
+                        sql += $"\nOR \"{alias}\".\"shared_user_groups\" <@ ARRAY[{userGroups}] \nOR \"{alias}\".\"shared_user_groups_edit\" <@ ARRAY[{userGroups}]";
+
+                    sql += "\n)";
+                }
+
                 else
                     sql += "\n";
             }

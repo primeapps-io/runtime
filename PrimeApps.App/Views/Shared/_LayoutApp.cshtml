@@ -1,4 +1,6 @@
 ﻿@using PrimeApps.App.Extensions
+@using Microsoft.AspNetCore.Html
+@using PrimeApps.App.Extensions
 @{
     var app = "primeapps";
     if (ViewBag.AppInfo != null)
@@ -9,10 +11,14 @@
     //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
     //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
     /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-	var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
+    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
     var customDomain = false;
     var customLanguage = string.Empty;
     //var favicon = ViewBag.AppInfo["favicon"].Value;
+    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
+    var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
+    var hasAdminRight = ViewBag.HasAdminRight;
+    var tenantId = ViewBag.TenantId;
 }
 
 <!DOCTYPE html>
@@ -34,14 +40,18 @@
     <link rel="stylesheet" href="/styles/bundles-css/app.css" />
 </head>
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
-	@RenderBody()
-	<script>
+    @RenderBody()
+    <script>
 		var version = '@typeof(ControllerContext).Assembly.GetName().Version';
 		var cdnUrl = '@ViewBag.CdnUrlDynamic';
 		var isCustomDomain = '@customDomain' === 'True';
 		var customLanguage = '@customLanguage';
 		var theme = window.localStorage.getItem('theme');
 		var host = window.location.hostname;
+        var components = @(new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Components)));
+	    var blobUrl = '@blobUrl';
+	    var functionUrl = '@functionUrl';
+        var tenantId = '@tenantId';
 
 		var getParameterByName = function (name) {
 			var url = window.location.href;
@@ -110,24 +120,51 @@
 		var loaderDiv = document.getElementById('loader');
 		loaderDiv.style.display = 'block';
 
-	</script>
+    </script>
+    @if (!customDomain && !HttpRequestExtensions.IsLocal(Context.Request) && hasAdminRight)
+    {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=@googleCode"></script>
+        <script>
+        //Google Analytics
+        window.dataLayer = window.dataLayer || [];
 
-	<script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
-	<script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
-	<script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
-	<script src="/scripts/vendor/sip.min.js"></script>
-	<script src="/scripts/vendor/xlsx.core.min.js"></script>
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('js', new Date());
+
+        gtag('config', '@googleCode');
+
+        //Yandex.Metrika
+        (function (d, w, c) { (w[c] = w[c] || []).push(function () { try { w.yaCounter47616517 = new Ya.Metrika({ id: 47616517, clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true, trackHash: true }); } catch (e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks");
+
+        //Tawk.to
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function() {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/59888248dbb01a218b4db261/default';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+        </script>
+    }
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
+    <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+    <script src="/scripts/vendor/sip.min.js"></script>
+    <script src="/scripts/vendor/xlsx.core.min.js"></script>
 
 
-	<script src="/scripts/bundles-js/vendor.js"></script>
-	<script src="/scripts/bundles-js/app.js"></script>
+    <script src="/scripts/bundles-js/vendor.js"></script>
+    <script src="/scripts/bundles-js/app.js"></script>
 
-	@RenderSection("scripts", required: false)
+    @RenderSection("scripts", required: false)
 </body>
 </html>

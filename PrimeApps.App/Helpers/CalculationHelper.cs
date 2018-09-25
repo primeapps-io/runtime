@@ -168,7 +168,16 @@ namespace PrimeApps.App.Helpers
                                         var calisanObj = new JObject();
                                         if (!userData.IsNullOrEmpty())
                                         {
-                                            calisanRequest = new FindRequest { Fields = new List<string> { "yoneticisi.calisanlar.e_posta" }, Filters = new List<Filter> { new Filter { Field = "e_posta", Operator = Operator.Is, Value = userData.First()["email"], No = 1 } }, Limit = 1 };
+                                            calisanRequest = new FindRequest
+                                            {
+                                                Fields = new List<string> { "yoneticisi.calisanlar.e_posta" },
+                                                Filters = new List<Filter> {
+                                                    new Filter { Field = "e_posta", Operator = Operator.Is, Value = userData.First()["email"], No = 1 },
+                                                    new Filter { Field = "calisma_durumu", Operator = Operator.Is, Value = "Aktif", No = 2 }
+                                            },
+                                                Limit = 1
+                                            };
+
                                             calisanData = recordRepository.Find("calisanlar", calisanRequest, false);
                                             calisanObj = (JObject)calisanData.First();
                                             var moduleCalisan = await moduleRepository.GetByName("calisanlar");
@@ -184,7 +193,17 @@ namespace PrimeApps.App.Helpers
                                                     if (!calisanObj["yoneticisi.calisanlar.e_posta"].IsNullOrEmpty())
                                                     {
                                                         j++;
-                                                        calisanRequest = new FindRequest { Fields = new List<string> { "yoneticisi.calisanlar.e_posta" }, Filters = new List<Filter> { new Filter { Field = "e_posta", Operator = Operator.Is, Value = (string)calisanObj["yoneticisi.calisanlar.e_posta"], No = 1 }, new Filter { Field = "calisma_durumu", Operator = Operator.Is, Value = "Aktif", No = 2 } }, Limit = 1 };
+
+                                                        calisanRequest = new FindRequest
+                                                        {
+                                                            Fields = new List<string> { "yoneticisi.calisanlar.e_posta" },
+                                                            Filters = new List<Filter> {
+                                                                new Filter { Field = "e_posta", Operator = Operator.Is, Value = (string)calisanObj["yoneticisi.calisanlar.e_posta"], No = 1 },
+                                                                new Filter { Field = "calisma_durumu", Operator = Operator.Is, Value = "Aktif", No = 2 }
+                                                            },
+                                                            Limit = 1
+                                                        };
+
                                                         calisanData = recordRepository.Find("calisanlar", calisanRequest, false);
                                                         calisanObj = (JObject)calisanData.First();
 
@@ -1320,7 +1339,10 @@ namespace PrimeApps.App.Helpers
                                                 pettyCashUpdateRecord["updated_by"] = (int)record["updated_by"];
                                             }
                                         }
-                                        await recordRepository.Update(pettyCashUpdateRecord, pettyCashModule, isUtc: false);
+                                        if (!pettyCashUpdateRecord.IsNullOrEmpty())
+                                        {
+                                            await recordRepository.Update(pettyCashUpdateRecord, pettyCashModule, isUtc: false);
+                                        }
                                         break;
 
                                     case "expense_sheet":
@@ -2732,7 +2754,7 @@ namespace PrimeApps.App.Helpers
                             accountRecordUpdate["ek_izin_atama_tarihi"] = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm:ss");
 
                         accountRecordUpdate["updated_by"] = (int)calisan["updated_by"];
-                        var resultUpdate = await _recordRepository.Update(accountRecordUpdate, calisanlarModule);
+                        var resultUpdate = await _recordRepository.Update(accountRecordUpdate, calisanlarModule, isUtc: false);
 
                         if (resultUpdate < 1)
                         {
@@ -2782,7 +2804,7 @@ namespace PrimeApps.App.Helpers
 
 
                         accountRecordUpdate["updated_by"] = (int)calisan["updated_by"];
-                        var resultUpdate = await _recordRepository.Update(accountRecordUpdate, calisanlarModule);
+                        var resultUpdate = await _recordRepository.Update(accountRecordUpdate, calisanlarModule, isUtc: false);
 
                         if (resultUpdate < 1)
                         {
@@ -2889,7 +2911,7 @@ namespace PrimeApps.App.Helpers
 
                     try
                     {
-                        var resultUpdate = await _recordRepository.Update(timesheetRecordUpdate, timesheetModule);
+                        var resultUpdate = await _recordRepository.Update(timesheetRecordUpdate, timesheetModule, isUtc: false);
 
                         if (resultUpdate < 1)
                         {
@@ -2938,7 +2960,7 @@ namespace PrimeApps.App.Helpers
 
                         try
                         {
-                            var resultUpdate = await _recordRepository.Update(projectTeamRecordUpdate, projectTeamModule);
+                            var resultUpdate = await _recordRepository.Update(projectTeamRecordUpdate, projectTeamModule, isUtc: false);
 
                             if (resultUpdate < 1)
                             {
@@ -2983,7 +3005,7 @@ namespace PrimeApps.App.Helpers
                                         balance -= (decimal)accountCurrentAccountTry["alacak"];
 
                                     accountCurrentAccountTry["bakiye_tl"] = balance;
-                                    await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
+                                    await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule, isUtc: false);
                                 }
 
                             }
@@ -3002,7 +3024,7 @@ namespace PrimeApps.App.Helpers
                                         balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
 
                                     accountCurrentAccountEuro["bakiye_euro"] = balance;
-                                    await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
+                                    await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule, isUtc: false);
                                 }
                             }
                             break;
@@ -3020,7 +3042,7 @@ namespace PrimeApps.App.Helpers
                                         balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
 
                                     accountCurrentAccountUsd["bakiye_usd"] = balance;
-                                    await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
+                                    await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule, isUtc: false);
                                 }
                             }
                             break;
@@ -3057,7 +3079,7 @@ namespace PrimeApps.App.Helpers
                                         balance += (decimal)accountCurrentAccountTry["borc_tl"];
 
                                     accountCurrentAccountTry["bakiye_tl"] = balance;
-                                    await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule);
+                                    await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule, isUtc: false);
                                 }
 
                             }
@@ -3076,7 +3098,7 @@ namespace PrimeApps.App.Helpers
                                         balance += (decimal)accountCurrentAccountEuro["borc_euro"];
 
                                     accountCurrentAccountEuro["bakiye_euro"] = balance;
-                                    await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule);
+                                    await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule, isUtc: false);
                                 }
                             }
                             break;
@@ -3094,7 +3116,7 @@ namespace PrimeApps.App.Helpers
                                         balance += (decimal)accountCurrentAccountUsd["borc_usd"];
 
                                     accountCurrentAccountUsd["bakiye_usd"] = balance;
-                                    await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule);
+                                    await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule, isUtc: false);
                                 }
                             }
                             break;
@@ -3130,7 +3152,7 @@ namespace PrimeApps.App.Helpers
                                 balance += (decimal)kasaHareketi["borc"];
 
                             kasaHareketi["bakiye"] = balance;
-                            await _recordRepository.Update(kasaHareketi, kasaHareketiModule);
+                            await _recordRepository.Update(kasaHareketi, kasaHareketiModule, isUtc: false);
                         }
 
                     }
@@ -3163,7 +3185,7 @@ namespace PrimeApps.App.Helpers
                                 balance += (decimal)bankaHareketi["borc"];
 
                             bankaHareketi["bakiye"] = balance;
-                            await _recordRepository.Update(bankaHareketi, bankaHareketiModule);
+                            await _recordRepository.Update(bankaHareketi, bankaHareketiModule, isUtc: false);
                         }
                     }
 
@@ -3203,7 +3225,7 @@ namespace PrimeApps.App.Helpers
                             }
 
                             stockTransaction["bakiye"] = balance;
-                            await _recordRepository.Update(stockTransaction, stockTransactionModule);
+                            await _recordRepository.Update(stockTransaction, stockTransactionModule, isUtc: false);
                         }
 
                     }
