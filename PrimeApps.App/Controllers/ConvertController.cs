@@ -916,7 +916,7 @@ namespace PrimeApps.App.Controllers
                     if (orderProduct["separator"] != null)
                         salesInvoicesProduct["separator"] = orderProduct["separator"];
 
-                    var resultBeforeProduct = await RecordHelper.BeforeCreateUpdate(salesInvoicesProductModule, salesInvoicesProduct, ModelState, AppUser.PicklistLanguage, _moduleRepository, _picklistRepository, false);
+                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(salesInvoicesProductModule, salesInvoicesProduct, ModelState, AppUser.TenantLanguage, false);
 
                     if (resultBeforeProduct < 0 && !ModelState.IsValid)
                         return BadRequest(ModelState);
@@ -1192,7 +1192,7 @@ namespace PrimeApps.App.Controllers
                     if (purchaseOrderProduct["separator"] != null)
                         purchaseInvoicesProduct["separator"] = purchaseOrderProduct["separator"];
 
-                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceProductModule, purchaseInvoicesProduct, ModelState, AppUser.PicklistLanguage, _moduleRepository, _picklistRepository, false);
+                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceProductModule, purchaseInvoicesProduct, ModelState, AppUser.TenantLanguage, false);
 
                     if (resultBeforeProduct < 0 && !ModelState.IsValid)
                         return BadRequest(ModelState);

@@ -498,8 +498,7 @@ namespace PrimeApps.App.Controllers
                         if (!record["currency"].IsNullOrEmpty())
                             product["currency"] = (string)record["currency"];
                     }
-
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, AppUser.PicklistLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
+                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
 
                     if (!productFormatted["separator"].IsNullOrEmpty())
                     {
@@ -552,7 +551,8 @@ namespace PrimeApps.App.Controllers
                             product["currency"] = (string)record["currency"];
                     }
 
-                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+
                     productsFormatted.Add(productFormatted);
                 }
 
@@ -640,8 +640,8 @@ namespace PrimeApps.App.Controllers
                         if (!record["currency"].IsNullOrEmpty())
                             product["currency"] = (string)record["currency"];
                     }
-
                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+
                     productsFormatted.Add(productFormatted);
                 }
 
