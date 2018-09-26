@@ -1,20 +1,19 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS runtime
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine  AS base
 WORKDIR /app
-EXPOSE 80
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
+ENV ASPNETCORE_ENVIRONMENT Development
+COPY . /src
 WORKDIR /src
-COPY PrimeApps.Auth/PrimeApps.Auth.csproj PrimeApps.Auth/
-COPY PrimeApps.Model/PrimeApps.Model.csproj PrimeApps.Model/
-RUN dotnet restore PrimeApps.Auth/PrimeApps.Auth.csproj
-COPY . .
-WORKDIR /src/PrimeApps.Auth
-RUN dotnet build PrimeApps.Auth.csproj -c Release -o /app
+RUN dotnet restore -nowarn:msb3202,nu1503 PrimeApps.App/
+RUN dotnet build --no-restore -c Release -o /app PrimeApps.Auth/
 
 FROM build AS publish
-RUN dotnet publish PrimeApps.Auth.csproj -c Release -o /app
+ENV ASPNETCORE_ENVIRONMENT Development
+WORKDIR /src/PrimeApps.Auth/
+RUN dotnet publish --no-restore -c Release -o /app
 
-FROM runtime AS final   
+FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
