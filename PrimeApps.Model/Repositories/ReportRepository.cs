@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories

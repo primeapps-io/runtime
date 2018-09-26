@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("template_permissions")]
     public class TemplatePermission : BaseEntity

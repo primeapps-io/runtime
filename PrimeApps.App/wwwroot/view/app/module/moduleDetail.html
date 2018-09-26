@@ -722,7 +722,7 @@ relatedModule['label_'
                     <ng-include ng-show="module.name === 'purchase_orders'" src="'view/app/product/purchaseProducts.html'"></ng-include>
                     <ng-include ng-show="module.name === 'sales_invoices'" src="'view/app/product/salesInvoiceProducts.html'"></ng-include>
                     <ng-include ng-show="module.name === 'purchase_invoices'" src="'view/app/product/purchaseInvoiceProducts.html'"></ng-include>
-                    <div class="subpanel" ng-if="masterRecord">
+                    <div class="subpanel" ng-if="masterRecord && module.name === 'quotes'">
                         <h5 class="subpanel-heading">{{'Module.RevisionMasters' | translate}}</h5>
                         <div class="subpanel-body">
                             <div class="row row-custom" ng-style="{ 'min-height': !tabconfig ? '' : '400px'}">

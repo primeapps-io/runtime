@@ -11,7 +11,7 @@ using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using RecordHelper = PrimeApps.App.Helpers.RecordHelper;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -515,6 +515,12 @@ namespace PrimeApps.App.Controllers
                 if (quoteProduct["vat"] != null)
                     orderProduct["vat"] = quoteProduct["vat"];
 
+                if (quoteProduct["discount_percent"] != null)
+                    orderProduct["discount_percent"] = quoteProduct["discount_percent"];
+
+                if (quoteProduct["separator"] != null)
+                    orderProduct["separator"] = quoteProduct["separator"];
+
                 var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(orderProductModule, orderProduct, ModelState, AppUser.TenantLanguage, false);
 
                 if (resultBeforeProduct < 0 && !ModelState.IsValid)
@@ -787,6 +793,7 @@ namespace PrimeApps.App.Controllers
             var activityModule = await _moduleRepository.GetByName("activities");
             var salesOrder = _recordRepository.GetById(salesOrderModule, (int)request["sales_order_id"], false);
             var conversionMappings = await _conversionMappingRepository.GetAll(salesOrderModule.Id);
+            var salesInvoicesProductModule = await _moduleRepository.GetByName("sales_invoices_products");
             var salesInvoice = new JObject();
 
             //Set warehouse database name
@@ -819,6 +826,19 @@ namespace PrimeApps.App.Controllers
                 salesInvoice["siparis"] = salesOrder["id"];
                 salesInvoice["fatura_tarihi"] = DateTime.UtcNow;
                 salesInvoice["vade_tarihi"] = DateTime.UtcNow;
+
+                salesInvoice["total"] = salesOrder["total"];
+                salesInvoice["discounted_total"] = salesOrder["discounted_total"];
+                salesInvoice["vat_total"] = salesOrder["vat_total"];
+                salesInvoice["grand_total"] = salesOrder["grand_total"];
+                salesInvoice["discount_amount"] = salesOrder["discount_amount"];
+                salesInvoice["discount_percent"] = salesOrder["discount_percent"];
+                salesInvoice["discount_type"] = salesOrder["discount_type"];
+                salesInvoice["vat_list"] = salesOrder["vat_list"];
+
+                if (!salesOrder["currency"].IsNullOrEmpty())
+                    salesInvoice["currency"] = salesOrder["currency"];
+
 
                 var asamaField = salesInvoiceModule.Fields.Single(x => x.Name == "asama");
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
@@ -853,6 +873,80 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
 	            _recordHelper.AfterCreate(salesInvoiceModule, salesInvoice, AppUser, _warehouse);
+
+                // Get all quote products and insert order products
+                var findRequest = new FindRequest
+                {
+                    Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)salesOrder["id"], No = 1 } },
+                    Limit = 1000,
+                    Offset = 0
+                };
+
+                var orderProducts = _recordRepository.Find("order_products", findRequest, false);
+
+                foreach (var orderProduct in orderProducts)
+                {
+                    var salesInvoicesProduct = new JObject();
+                    salesInvoicesProduct["sales_invoice"] = salesInvoice["id"];
+                    salesInvoicesProduct["order"] = orderProduct["order"];
+                    salesInvoicesProduct["amount"] = orderProduct["amount"];
+                    salesInvoicesProduct["product"] = orderProduct["product"];
+                    salesInvoicesProduct["quantity"] = orderProduct["quantity"];
+                    salesInvoicesProduct["unit_price"] = orderProduct["unit_price"];
+                    salesInvoicesProduct["usage_unit"] = orderProduct["usage_unit"];
+
+                    if (orderProduct["discount_amount"] != null)
+                        salesInvoicesProduct["discount_amount"] = orderProduct["discount_amount"];
+
+                    if (orderProduct["currency"] != null)
+                        salesInvoicesProduct["currency"] = orderProduct["currency"];
+
+                    if (orderProduct["vat_percent"] != null)
+                        salesInvoicesProduct["vat_percent"] = orderProduct["vat_percent"];
+
+                    if (orderProduct["discount_type"] != null)
+                        salesInvoicesProduct["discount_type"] = orderProduct["discount_type"];
+
+                    if (orderProduct["vat"] != null)
+                        salesInvoicesProduct["vat"] = orderProduct["vat"];
+
+                    if (orderProduct["discount_percent"] != null)
+                        salesInvoicesProduct["discount_percent"] = orderProduct["discount_percent"];
+
+                    if (orderProduct["separator"] != null)
+                        salesInvoicesProduct["separator"] = orderProduct["separator"];
+
+                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(salesInvoicesProductModule, salesInvoicesProduct, ModelState, AppUser.TenantLanguage, false);
+
+                    if (resultBeforeProduct < 0 && !ModelState.IsValid)
+                        return BadRequest(ModelState);
+
+                    int resultCreateProduct;
+
+                    try
+                    {
+                        resultCreateProduct = await _recordRepository.Create(salesInvoicesProduct, salesInvoicesProductModule);
+                    }
+                    catch (PostgresException ex)
+                    {
+                        if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                            return StatusCode(HttpStatusCode.Status409Conflict, new { message = ex.MessageText });
+                   
+
+                        if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                            return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+
+                        if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                            return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+
+                        throw;
+                    }
+
+                    if (resultCreateProduct < 1)
+                        throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+                    _recordHelper.AfterCreate(salesInvoicesProductModule, salesInvoicesProduct, AppUser, _warehouse);
+                }
             }
 
             //Update order stage
@@ -986,6 +1080,7 @@ namespace PrimeApps.App.Controllers
             var purchaseInvoiceModule = await _moduleRepository.GetByName("purchase_invoices");
             var activityModule = await _moduleRepository.GetByName("activities");
             var purchaseOrder = _recordRepository.GetById(purchaseOrderModule, (int)request["purchase_order_id"], false);
+            var purchaseInvoiceProductModule = await _moduleRepository.GetByName("purchase_invoices_products");
             var conversionMappings = await _conversionMappingRepository.GetAll(purchaseOrderModule.Id);
             var purchaseInvoice = new JObject();
 
@@ -1053,6 +1148,80 @@ namespace PrimeApps.App.Controllers
                     throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
 	            _recordHelper.AfterCreate(purchaseInvoiceModule, purchaseInvoice, AppUser, _warehouse);
+
+                // Get all quote products and insert order products
+                var findRequest = new FindRequest
+                {
+                    Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)purchaseOrder["id"], No = 1 } },
+                    Limit = 1000,
+                    Offset = 0
+                };
+
+                var purchaseOrderProducts = _recordRepository.Find("purchase_order_products", findRequest, false);
+
+                foreach (var purchaseOrderProduct in purchaseOrderProducts)
+                {
+                    var purchaseInvoicesProduct = new JObject();
+                    purchaseInvoicesProduct["purchase_invoice"] = purchaseInvoice["id"];
+                    purchaseInvoicesProduct["order"] = purchaseOrderProduct["order"];
+                    purchaseInvoicesProduct["amount"] = purchaseOrderProduct["amount"];
+                    purchaseInvoicesProduct["product"] = purchaseOrderProduct["product"];
+                    purchaseInvoicesProduct["quantity"] = purchaseOrderProduct["quantity"];
+                    purchaseInvoicesProduct["unit_price"] = purchaseOrderProduct["unit_price"];
+                    purchaseInvoicesProduct["usage_unit"] = purchaseOrderProduct["usage_unit"];
+                    purchaseInvoicesProduct["purchase_price"] = purchaseOrderProduct["purchase_price"];
+
+                    if (purchaseOrderProduct["discount_amount"] != null)
+                        purchaseInvoicesProduct["discount_amount"] = purchaseOrderProduct["discount_amount"];
+
+                    if (purchaseOrderProduct["currency"] != null)
+                        purchaseInvoicesProduct["currency"] = purchaseOrderProduct["currency"];
+
+                    if (purchaseOrderProduct["vat_percent"] != null)
+                        purchaseInvoicesProduct["vat_percent"] = purchaseOrderProduct["vat_percent"];
+
+                    if (purchaseOrderProduct["discount_type"] != null)
+                        purchaseInvoicesProduct["discount_type"] = purchaseOrderProduct["discount_type"];
+
+                    if (purchaseOrderProduct["vat"] != null)
+                        purchaseInvoicesProduct["vat"] = purchaseOrderProduct["vat"];
+
+                    if (purchaseOrderProduct["discount_percent"] != null)
+                        purchaseInvoicesProduct["discount_percent"] = purchaseOrderProduct["discount_percent"];
+
+                    if (purchaseOrderProduct["separator"] != null)
+                        purchaseInvoicesProduct["separator"] = purchaseOrderProduct["separator"];
+
+                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceProductModule, purchaseInvoicesProduct, ModelState, AppUser.TenantLanguage, false);
+
+                    if (resultBeforeProduct < 0 && !ModelState.IsValid)
+                        return BadRequest(ModelState);
+
+                    int resultCreateProduct;
+
+                    try
+                    {
+                        resultCreateProduct = await _recordRepository.Create(purchaseInvoicesProduct, purchaseInvoiceProductModule);
+                    }
+                    catch (PostgresException ex)
+                    {
+                        if (ex.SqlState == PostgreSqlStateCodes.UniqueViolation)
+                            return StatusCode(HttpStatusCode.Status409Conflict, _recordHelper.PrepareConflictError(ex));
+
+                        if (ex.SqlState == PostgreSqlStateCodes.ForeignKeyViolation)
+                            return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.Detail });
+
+                        if (ex.SqlState == PostgreSqlStateCodes.UndefinedColumn)
+                            return StatusCode(HttpStatusCode.Status400BadRequest, new { message = ex.MessageText });
+
+                        throw;
+                    }
+
+                    if (resultCreate < 1)
+                        throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+                    _recordHelper.AfterCreate(purchaseInvoiceProductModule, purchaseInvoicesProduct, AppUser, _warehouse);
+                }
             }
 
             //Update order stage

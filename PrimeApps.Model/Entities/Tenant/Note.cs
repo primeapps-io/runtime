@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("notes")]
     public class Note : BaseEntity

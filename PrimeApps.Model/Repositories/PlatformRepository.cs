@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using PrimeApps.Model.Entities.Platform;

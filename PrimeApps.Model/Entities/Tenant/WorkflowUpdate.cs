@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("workflow_updates")]
     public class WorkflowUpdate

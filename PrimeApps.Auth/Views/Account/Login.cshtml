@@ -70,9 +70,9 @@
 			<button type="submit" class="btn btn-login btn-block ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
 			@if (!customDomain)
 			{
-				@if (Model.VisibleExternalProviders.Any())
+				if (Model.VisibleExternalProviders.Any())
 				{
-					@foreach (var provider in Model.VisibleExternalProviders)
+					foreach (var provider in Model.VisibleExternalProviders)
 					{
 						<hr />
 						<a class="btn btn-block add-button"
@@ -88,7 +88,7 @@
 			<div class="language">
 				@if (multiLanguage)
 				{
-					@if (otherLang == "tr")
+					if (otherLang == "tr")
 					{
 						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "tr", ReturnUrl = path })">@Localizer["TR"]</a> <span>|</span>
 					}

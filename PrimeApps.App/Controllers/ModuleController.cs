@@ -9,7 +9,7 @@ using PrimeApps.App.Models;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using ModuleHelper = PrimeApps.App.Helpers.ModuleHelper;

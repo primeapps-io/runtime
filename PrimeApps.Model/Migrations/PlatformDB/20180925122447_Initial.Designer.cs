@@ -10,8 +10,8 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180621105248_Task2127")]
-    partial class Task2127
+    [Migration("20180925122447_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,7 +19,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
             modelBuilder
                 .HasDefaultSchema("public")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.1.0-rtm-30799")
+                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.App", b =>
@@ -356,6 +356,23 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .IsUnique();
 
                     b.ToTable("workflow_webhooks");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Cache", b =>
+                {
+                    b.Property<string>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("key")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Value")
+                        .HasColumnName("value");
+
+                    b.HasKey("Key");
+
+                    b.HasIndex("Key");
+
+                    b.ToTable("cache");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
@@ -761,6 +778,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.Property<int>("ModuleLicenseCount")
                         .HasColumnName("module_license_count");
+
+                    b.Property<int>("SipLicenseCount")
+                        .HasColumnName("sip_license_count");
 
                     b.Property<DateTime?>("SuspendedAt")
                         .HasColumnName("suspended_at");

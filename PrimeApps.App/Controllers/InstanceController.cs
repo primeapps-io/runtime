@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Instance;

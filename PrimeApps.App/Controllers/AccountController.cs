@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Platform;
 using Newtonsoft.Json;

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     /// <summary>
     /// This is the table where we keep the information about storage objects we uploaded to Windows Azure Storage.

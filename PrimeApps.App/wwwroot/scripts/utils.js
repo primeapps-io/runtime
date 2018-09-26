@@ -303,8 +303,13 @@ angular.module('primeapps')
                     limit: 1,
                     offset: 0
                 };
-
-                findRequest.filters.push({ field: fieldName, operator: 'equals', value: searchValue, no: 1 });
+                 
+                findRequest.filters.push({
+                    field: fieldName,
+                    operator: 'contains',
+                    value: searchValue.substring(2, 12),
+                    no: 1
+                });
 
                 $http.post(config.apiUrl + 'record/find/' + moduleName, findRequest)
                     .then(function (response) {

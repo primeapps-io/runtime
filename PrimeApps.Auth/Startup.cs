@@ -46,7 +46,7 @@ namespace PrimeApps.Auth
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+			services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection")));
 			services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
 			services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
 			services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
@@ -132,14 +132,14 @@ namespace PrimeApps.Auth
 				.AddConfigurationStore(options =>
 				{
 					options.ConfigureDbContext = opt =>
-						opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
+						opt.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection"),
 							sql => sql.MigrationsAssembly(migrationsAssembly));
 				})
 				// this adds the operational data from DB (codes, tokens, consents)
 				.AddOperationalStore(options =>
 				{
 					options.ConfigureDbContext = opt =>
-						opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"),
+						opt.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection"),
 							sql => sql.MigrationsAssembly(migrationsAssembly));
 
 					// this enables automatic token cleanup. this is optional.

@@ -1,4 +1,4 @@
-﻿using PrimeApps.Model.Entities.Application;
+﻿using PrimeApps.Model.Entities.Tenant;
 using System;
 using System.Collections.Generic;
 using System.Text;

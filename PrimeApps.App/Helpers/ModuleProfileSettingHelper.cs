@@ -5,7 +5,7 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using System.Web;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 
 namespace PrimeApps.App.Helpers
 {

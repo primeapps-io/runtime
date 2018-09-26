@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Common.Profile;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using Microsoft.AspNetCore.Mvc.Filters;
 using PrimeApps.Model.Helpers;
 using PrimeApps.App.Helpers;

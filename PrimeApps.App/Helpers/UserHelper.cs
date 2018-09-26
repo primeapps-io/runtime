@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.App.Models;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using Newtonsoft.Json.Linq;

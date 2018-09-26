@@ -3,7 +3,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
