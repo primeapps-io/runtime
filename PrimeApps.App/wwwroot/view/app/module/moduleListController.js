@@ -11,7 +11,9 @@ angular.module('primeapps')
 			$scope.transactionTypes = transactionTypes;
 			$scope.loading = true;
 			$scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
-			$scope.lookupUser = helper.lookupUser;
+            $scope.lookupUser = helper.lookupUser;
+            $scope.lookupProfile = helper.lookupProfile;
+            $scope.lookupRole = helper.lookupRole;
 			$scope.searchingDocuments = false;
 			$scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 			$scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;

@@ -125,7 +125,7 @@ namespace PrimeApps.App.Helpers
             viewState.RowPerPage = viewStateModel.RowPerPage;
         }
 
-        public static async Task<View> CreateDefaultViewAllRecords(Module module, IModuleRepository moduleRepository)
+        public static async Task<View> CreateDefaultViewAllRecords(Module module, IModuleRepository moduleRepository, string tenantLanguage)
         {
             var view = new View
             {
@@ -158,7 +158,7 @@ namespace PrimeApps.App.Helpers
 
                 if (field.DataType == DataType.Lookup)
                 {
-                    if (field.LookupType != "users")
+                    if (field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles")
                     {
                         var lookupModule = await moduleRepository.GetByName(field.LookupType);
                         var lookupModulePrimaryField = lookupModule.Fields.Single(x => x.Primary);
@@ -167,7 +167,20 @@ namespace PrimeApps.App.Helpers
                     }
                     else
                     {
-                        var viewFieldUserPrimary = new ViewField { Field = field.Name + ".users.full_name.primary", Order = i };
+                        var viewFieldUserPrimary = new ViewField();
+
+                        if (field.LookupType == "profiles")
+                        {
+                            viewFieldUserPrimary = new ViewField { Field = field.Name + ".profiles.name.primary", Order = i };
+                        }
+                        else if (field.LookupType == "roles")
+                        {
+                            viewFieldUserPrimary = new ViewField { Field = field.Name + ".roles.label_" + tenantLanguage + ".primary", Order = i };
+                        }
+                        else
+                        {
+                            viewFieldUserPrimary = new ViewField { Field = field.Name + ".users.full_name.primary", Order = i };
+                        }
                         view.Fields.Add(viewFieldUserPrimary);
                     }
                 }

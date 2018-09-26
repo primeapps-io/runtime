@@ -33,6 +33,11 @@ namespace PrimeApps.Model.Repositories
 
             return userowner;
         }
+        public async Task<List<UserCustomShare>> GetAllBySharedUserId(int id)
+		{
+			return await DbContext.UserCustomShares
+				.Where(x => !x.Deleted && x.SharedUserId == id).ToListAsync();
+		}
 
         public async Task<UserCustomShare> GetById(int id)
         {

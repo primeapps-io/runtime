@@ -2,9 +2,18 @@
 
 angular.module('primeapps')
 
-    .controller('RoleController', ['$rootScope', '$scope', '$filter', 'ngToast', 'guidEmpty', '$modal', 'RoleService', 'AppService',
-        function ($rootScope, $scope, $filter, ngToast, guidEmpty, $modal, RoleService, AppService) {
+    .controller('RoleController', ['$rootScope', '$scope', '$filter', 'ngToast', 'guidEmpty', '$modal', 'RoleService', 'AppService', '$state',
+        function ($rootScope, $scope, $filter, ngToast, guidEmpty, $modal, RoleService, AppService, $state) {
             $scope.loading = true;
+
+            if ($rootScope.branchAvailable && !$rootScope.user.profile.has_admin_rights) {
+                ngToast.create({
+                    content: $filter('translate')('Common.Forbidden'),
+                    className: 'warning'
+                });
+                $state.go('app.crm.dashboard');
+                return;
+            }
 
             RoleService.getAll().then(function (response) {
                 $scope.roles = response.data;

@@ -425,7 +425,7 @@ namespace PrimeApps.App.Helpers
 
             if (runCalculations)
             {
-                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest));
+                Queue.QueueBackgroundWorkItem(async token => await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest, currentRecord));
             }
         }
 
@@ -691,6 +691,9 @@ namespace PrimeApps.App.Helpers
                     var module = await _moduleRepository.GetByNameBasic(moduleName);
                     var fields = new List<string>();
 
+                    var platformUser = (PlatformUser)_context.HttpContext.Items["user"];
+                    var tenant = platformUser.TenantsAsUser.Single().Tenant;
+
                     foreach (var field in module.Fields)
                     {
                         if (field.Deleted || field.LookupType == "relation")
@@ -702,6 +705,10 @@ namespace PrimeApps.App.Helpers
 
                             if (field.LookupType == "users")
                                 lookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                            else if (field.LookupType == "profiles")
+                                lookupModule = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+                            else if (field.LookupType == "roles")
+                                lookupModule = Model.Helpers.ModuleHelper.GetFakeRoleModule(tenant.Setting.Language);
                             else
                                 lookupModule = await _moduleRepository.GetByName(field.LookupType);
 

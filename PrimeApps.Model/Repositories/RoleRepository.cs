@@ -11,6 +11,7 @@ using Hangfire;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
+using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -35,10 +36,27 @@ namespace PrimeApps.Model.Repositories
         /// </summary>
         /// <param name="newRole"></param>
         /// <returns></returns>
-        public async Task CreateAsync(Role newRole)
+        public async Task<int> CreateAsync(Role newRole)
         {
             DbContext.Roles.Add(newRole);
             await DbContext.SaveChangesAsync();
+            return newRole.Id;
+        }
+
+        public async Task<Role> GetWithCode(string code)
+        {
+            return await DbContext
+                .Roles
+                .Where(x => x.SystemCode == code)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Role>> GetByReportsToId(int id)
+        {
+            return await DbContext
+                .Roles
+                .Where(x => x.ReportsToId == id && !x.Deleted)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -164,7 +182,7 @@ namespace PrimeApps.Model.Repositories
             {
                 var result = await DbContext.SaveChangesAsync();
 
-                if (result > 0 && string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
                 {
                     if (_warehouse.DatabaseName != "0")
                         BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(userId, _warehouse.DatabaseName, CurrentUser));
@@ -276,6 +294,28 @@ namespace PrimeApps.Model.Repositories
 
                 await AddOwnersRecursiveAsync(parentRole, owners, tenantId);
             }
+        }
+
+        public async Task AddOwners(Role role, JArray owners, int? tenantId = null)
+        {
+            foreach (var owner in owners)
+            {
+                if (!role.OwnersList.Contains(owner["id"].ToString()))
+                    role.OwnersList.Add(owner["id"].ToString());
+            }
+
+            await DbContext.SaveChangesAsync();
+        }
+
+        public async Task RemoveOwners(Role role, JArray owners, int? tenantId = null)
+        {
+            foreach (var owner in owners)
+            {
+                if (role.OwnersList.Contains(owner["id"].ToString()))
+                    role.OwnersList.Remove(owner["id"].ToString());
+            }
+
+            await DbContext.SaveChangesAsync();
         }
 
         public async Task<Role> GetByIdAsync(int id)

@@ -108,7 +108,7 @@ namespace PrimeApps.App.Controllers
             //Create default views
             try
             {
-                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository);
+                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
                 //var defaultViewMyRecordsEntity = ViewHelper.CreateDefaultViewMyRecords(moduleEntity);
 
                 var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);

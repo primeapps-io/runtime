@@ -35,7 +35,7 @@ namespace PrimeApps.Model.Repositories
             string owners = null;
             string userGroups = null;
 
-            if (roleBasedEnabled && module.Fields.Any(x => x.Name == "owner") && module.Name != "users")
+            if (roleBasedEnabled && module.Fields.Any(x => x.Name == "owner") && module.Name != "users" && module.Name != "profiles" && module.Name != "roles")
                 GetRoleBasedInfo(module.Name, out owners, out userGroups);
 
             var sql = RecordHelper.GenerateGetSql(module, lookupModules, recordId, owners, CurrentUser.UserId, userGroups, deleted);
@@ -70,7 +70,7 @@ namespace PrimeApps.Model.Repositories
             string owners = null;
             string userGroups = null;
 
-            if (roleBasedEnabled && moduleName != "users")
+            if (roleBasedEnabled && moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
                 GetRoleBasedInfo(moduleName, out owners, out userGroups);
 
             var sql = RecordHelper.GenerateFindSql(moduleName, findRequest, owners, CurrentUser.UserId, userGroups, timezoneOffset: timezoneOffset);

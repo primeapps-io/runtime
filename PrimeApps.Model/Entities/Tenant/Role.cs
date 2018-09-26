@@ -70,6 +70,9 @@ namespace PrimeApps.Model.Entities.Application
 
         [Column("reports_to_id"), ForeignKey("ReportsTo")]
         public int? ReportsToId { get; set; }
+
+        [Column("system_code")]
+        public string SystemCode { get; set; }
         public virtual Role ReportsTo { get; set; }
 
         [InverseProperty("Role")]

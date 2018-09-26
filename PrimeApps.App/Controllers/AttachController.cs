@@ -118,7 +118,14 @@ namespace PrimeApps.App.Controllers
                 moduleEntity = Model.Helpers.ModuleHelper.GetFakeUserModule();
             }
 
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            if (module == "profiles")
+                moduleEntity = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+
+            if (module == "roles")
+                moduleEntity = Model.Helpers.ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage);
+
+
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             try
             {
@@ -353,7 +360,7 @@ namespace PrimeApps.App.Controllers
                 else
                 {
                     relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
-                    relatedLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(relatedModuleEntity, _moduleRepository);
+                    relatedLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(relatedModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 }
 
                 var recordsFormatted = new JArray();
@@ -484,7 +491,7 @@ namespace PrimeApps.App.Controllers
                 });
 
                 var quoteProductsModuleEntity = await _moduleRepository.GetByNameBasic("quote_products");
-                var quoteProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(quoteProductsModuleEntity, _moduleRepository);
+                var quoteProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(quoteProductsModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 var productsFormatted = new JArray();
 
                 foreach (var product in products)
@@ -535,7 +542,7 @@ namespace PrimeApps.App.Controllers
                 });
 
                 var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("order_products");
-                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 var productsFormatted = new JArray();
 
                 foreach (var product in products)
@@ -580,7 +587,7 @@ namespace PrimeApps.App.Controllers
                 });
 
                 var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("purchase_order_products");
-                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 var productsFormatted = new JArray();
 
                 foreach (var product in products)
@@ -911,7 +918,7 @@ namespace PrimeApps.App.Controllers
             worksheetData.Name = "Data";
             DataTable dt = new DataTable("Excel");
             Worksheet worksheet2 = workbook.Worksheets.Add("Report Formula");
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -993,7 +1000,7 @@ namespace PrimeApps.App.Controllers
             Worksheet worksheetData = workbook.Worksheets[0];
             worksheetData.Name = "Data";
             DataTable dt = new DataTable("Excel");
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1072,7 +1079,7 @@ namespace PrimeApps.App.Controllers
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
             //var tempName = System.Text.Encoding.ASCII.GetString(bytes);
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1178,7 +1185,7 @@ namespace PrimeApps.App.Controllers
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
             //var tempName = System.Text.Encoding.ASCII.GetString(bytes);
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();

@@ -26,9 +26,11 @@ angular.module('primeapps')
 			$scope.hasFieldFullPermission = ModuleService.hasFieldFullPermission;
 			$scope.hasSectionFullPermission = ModuleService.hasSectionFullPermission;
 			$scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
-			$scope.lookupUserAndGroup = helper.lookupUserAndGroup;
+            $scope.lookupUserAndGroup = helper.lookupUserAndGroup;
+            $scope.lookupUser = helper.lookupUser;
 			$scope.loading = true;
 			$scope.image = {};
+            $scope.userAdded = false;
 
 			if ($scope.parentId)
 				$window.scrollTo(0, 0);
@@ -235,13 +237,34 @@ angular.module('primeapps')
 							$scope.record['currency'] = currencyValue;
 					}
 				}
-			};
+            };
+
+            var checkBranchSettingsAvailable = function () {
+                if ($rootScope.branchAvailable) {
+                    $scope.branchManager = $filter('filter')($rootScope.users, { RoleId: parseInt($scope.record['branch']) }, true)[0];
+                    $scope.record.Authorities = [];
+                    if ($scope.branchManager) {
+                        $http.get(config.apiUrl + 'user_custom_shares/get_all_by_shared_user_id/' + $scope.branchManager.Id)
+                            .then(function (response) {
+                                $scope.authorities = response.data;
+                                angular.forEach($scope.authorities, function (authority) {
+                                    var user = $filter('filter')($rootScope.users, { Id: authority['user_id'] }, true)[0];
+                                    $scope.record.Authorities.push({ id: user.Id, full_name: user.FullName, email: user.Email });
+                                });
+                                $scope.showBranchSettings = true;
+                            });
+                    }
+
+                    //$scope.authorities
+                }
+            };
 
 			var checkEditPermission = function () {
 				if ($scope.id && ($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights)) {
 					ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
 					$state.go('app.crm.dashboard');
-				}
+                }
+                checkBranchSettingsAvailable();
 			};
 
 			ModuleService.getPicklists($scope.module)
@@ -267,7 +290,29 @@ angular.module('primeapps')
 						}
 					}
 
-					if (!$scope.id) {
+                    if (!$scope.id) {
+                        //Çalışanlar Create sayfası açıldığında Kullanıcı Ekle checkboxında lisans kontrolü yapmak için Lisans bilgileri çekiliyor.
+                        //Düzenle sayfasına gidildiğinde gizlenen fieldların gözükmesi sağlanıyor.
+                        if ($scope.module.name === 'calisanlar') {
+                            if (!$rootScope.branchAvailable) {
+                                var userCreateField = $filter('filter')($scope.module.fields, { name: 'kullanici_olustur' }, true)[0];
+                                var userProfileField = $filter('filter')($scope.module.fields, { name: 'kullanici_profili' }, true)[0];
+                                var userRoleField = $filter('filter')($scope.module.fields, { name: 'kullanici_rolu' }, true)[0];
+                                if (userCreateField)
+                                    userCreateField.hidden = false;
+                                if (userProfileField)
+                                    userProfileField.hidden = false;
+                                if (userRoleField)
+                                    userRoleField.hidden = false;
+                            }
+
+                            ModuleService.getUserLicenseStatus()
+                                .then(function (response) {
+                                    $scope.userLicenseControl = response.data;
+                                    $scope.userLicenseKalan = $scope.userLicenseControl.Total - $scope.userLicenseControl.Used;
+                                });
+                        }
+
 						$scope.loading = false;
 						$scope.record.owner = $scope.currentUser;
 
@@ -405,6 +450,29 @@ angular.module('primeapps')
                             }
 
 							var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
+
+                            //Kullanıcı oluşturulduysa edit sayfasında kullanıcı oluşturma alanları gizleniyor.
+                            if ($scope.module.name === 'calisanlar' && record['kullanici_olustur']) {
+                                var userCreateField = $filter('filter')($scope.module.fields, { name: 'kullanici_olustur' }, true)[0];
+                                var userProfileField = $filter('filter')($scope.module.fields, { name: 'kullanici_profili' }, true)[0];
+                                var userRoleField = $filter('filter')($scope.module.fields, { name: 'kullanici_rolu' }, true)[0];
+                                if (userCreateField)
+                                    userCreateField.hidden = true;
+                                if (userProfileField)
+                                    userProfileField.hidden = true;
+                                if (userRoleField)
+                                    userRoleField.hidden = true;
+                            }
+                            else {
+                                //Düzenle butonundan Edit Sayfasına gidildiğinde Lisans kontrolü için Lisans bilgileri çekiliyor.
+                                if ($scope.module.name === 'calisanlar') {
+                                    ModuleService.getUserLicenseStatus()
+                                        .then(function (response) {
+                                            $scope.userLicenseControl = response.data;
+                                            $scope.userLicenseKalan = $scope.userLicenseControl.Total - $scope.userLicenseControl.Used;
+                                        });
+                                }
+                            }
 
                             if (!$scope.hasPermission($scope.type, $scope.operations.modify, recordData.data) || (isFreeze(record) && !$scope.hasAdminRights)) {
 								ngToast.create({
@@ -557,7 +625,21 @@ angular.module('primeapps')
 					userModulePrimaryField.data_type = 'text_single';
 					userModulePrimaryField.name = 'full_name';
 					$scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
-				}
+                }
+
+                if ($scope.currentLookupField.lookup_type === 'profiles' && !$scope.currentLookupField.lookupModulePrimaryField) {
+                    var userModulePrimaryField = {};
+                    userModulePrimaryField.data_type = 'text_single';
+                    userModulePrimaryField.name = 'name';
+                    $scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
+                }
+
+                if ($scope.currentLookupField.lookup_type === 'roles' && !$scope.currentLookupField.lookupModulePrimaryField) {
+                    var userModulePrimaryField = {};
+                    userModulePrimaryField.data_type = 'text_single';
+                    userModulePrimaryField.name = 'label_' + $rootScope.user.tenantLanguage;
+                    $scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
+                }
 
 				if ($scope.currentLookupField.lookup_type === 'relation') {
 					if (!$scope.record.related_module) {
@@ -619,13 +701,20 @@ angular.module('primeapps')
 					}
 				}
 
-				if ($scope.currentLookupField.lookup_type === 'users')
-					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['email']);
-				else if ($scope.currentLookupField.lookup_type === 'calisanlar')
-					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['e_posta']);
-				else
-					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
+                $scope.customFilters = null;
 
+                components.run('BeforeLookup', 'Script', $scope);
+
+                if ($scope.currentLookupField.lookup_type === 'users')
+                    return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['email'], false, $scope.customFilters);
+                else if ($scope.currentLookupField.lookup_type === 'profiles')
+                    return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, null, false, $scope.customFilters);
+                else if ($scope.currentLookupField.lookup_type === 'roles')
+                    return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, null, false, $scope.customFilters);
+                else if ($scope.currentLookupField.lookup_type === 'calisanlar')
+                    return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record, ['e_posta'], false, $scope.customFilters);
+                else
+					return ModuleService.lookup(searchTerm, $scope.currentLookupField, $scope.record);
 			};
 
 			$scope.multiselect = function (searchTerm, field) {
@@ -668,6 +757,140 @@ angular.module('primeapps')
 			$scope.entityIdFunc = function () {
 				return $scope.recordId;
 			};
+
+            //Çalışan kaydı oluşurken otomatik kullanıcı oluşmasını sağlayan method.
+            $scope.addUser = function (record) {
+                $scope.openCreateUserModal = function () {
+                    $scope.userCreateModal = $scope.userCreateModal || $modal({
+                        scope: $scope,
+                        templateUrl: 'view/app/module/createUserModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal',
+                        keyboard: false
+                    });
+
+                    $scope.userCreateModal.$promise.then($scope.userCreateModal.show);
+                };
+
+                //Kullanıcı oluştur checkboxında lisans kontrolü.
+                if ($scope.userLicenseKalan == 0 || $scope.userLicenseKalan < 0) {
+                    if (!$rootScope.branchAvailable)
+                        $scope.record['kullanici_olustur'] = false;
+
+                    ngToast.create({ content: $filter('translate')('Setup.Users.LicenceRequired'), className: 'warning' });
+                    $scope.submitting = false;
+                    return;
+                }
+
+                //Sisteme kayıtlı bir user ile kullanıcı oluşturmak istenildiğinde yapılan user kontrolü.
+                ModuleService.getUserEmailControl($scope.record.e_posta)
+                    .then(function (response) {
+                        var userEmail = response.data;
+                        if (userEmail) {
+                            ngToast.create({
+                                content: $filter('translate')('Setup.Users.NewUserError'),
+                                className: 'warning'
+                            });
+
+                            if (!$rootScope.branchAvailable)
+                                $scope.record['kullanici_olustur'] = false;
+
+                            $scope.submitting = false;
+                            return;
+                        }
+                        else {
+                            var profileId = $scope.record.kullanici_profili ? $scope.record.kullanici_profili.id : null;
+                            var roleId = $scope.record.kullanici_rolu ? $scope.record.kullanici_rolu.id : null;
+
+                            var createUser = function (roleId, profileId, record) {
+                                var inviteModel = {};
+                                inviteModel.email = $scope.record.e_posta;
+                                inviteModel.firstName = $scope.record.ad;
+                                inviteModel.lastName = $scope.record.soyad;
+                                inviteModel.profile = profileId;
+                                inviteModel.role = roleId;
+                                inviteModel.fullName = inviteModel.firstName + " " + inviteModel.lastName;
+
+
+                                if (!inviteModel || !inviteModel.email || !inviteModel.profile || !inviteModel.role || !inviteModel.firstName || !inviteModel.lastName)
+                                    return;
+
+                                $scope.userInviting = true;
+                                inviteModel.profileId = inviteModel.profile;
+                                inviteModel.roleId = inviteModel.role;
+                                $scope.addedUser = angular.copy(inviteModel);
+
+                                ModuleService.addUser(inviteModel)
+                                    .then(function (response) {
+                                        if (response.data) {
+                                            //User Lisans ve şifre bilgilerinin setlenmesi.
+                                            $scope.userCreatePassword = response.data;
+                                            $scope.userCreateEmail = $scope.record.e_posta;
+                                            $scope.userLicenseAvailable = $scope.userLicenseKalan - 1;
+                                            $scope.userLicensesBought = $scope.userLicenseControl.Total;
+                                            $scope.userAdded = true;
+
+                                            var promises = [];
+
+                                            promises.push(ModuleService.myAccount());
+                                            promises.push(ModuleService.getAllUser());
+
+                                            $q.all(promises).then(function (data) {
+                                                var account = data[0].data,
+                                                    users = data[1].data;
+
+                                                $rootScope.user = account.user;
+                                                $rootScope.workgroups = account.instances;
+                                                var workgroupId = $localStorage.read('Workgroup');
+                                                $rootScope.workgroup = account.instances[0];
+
+                                                if (workgroupId) {
+                                                    var workgroup = $filter('filter')(account.instances, { instanceID: workgroupId }, true)[0];
+
+                                                    if (workgroup)
+                                                        $rootScope.workgroup = workgroup;
+                                                }
+                                                var isDemo = account.user.isDemo || false;
+
+                                                $rootScope.users = !isDemo ? users : $filter('filter')(users, function (value) {
+                                                    return value.Id == account.user.ID;
+                                                }, true);
+
+                                            });
+
+                                            $scope.submit(record);
+                                            $scope.openCreateUserModal();
+                                        }
+                                    })
+                                    .catch(function (response) {
+                                        $scope.submitting = false;
+                                        if (response.status === 409) {
+                                            ngToast.create({
+                                                content: $filter('translate')('Setup.Users.NewUserError'),
+                                                className: 'warning'
+                                            });
+                                        }
+                                    });
+                            }
+
+                            if ($rootScope.branchAvailable) {
+                                ModuleService.getRecord('branchs', $scope.record.branch.id)
+                                    .then(function (response) {
+                                        roleId = response.data.branch;
+                                        profileId = $scope.record.profile.id;
+                                        createUser(roleId, profileId, record);
+                                    }).catch(function (error) {
+                                        $scope.submitting = false;
+                                    });
+                            }
+                            else {
+                                createUser(roleId, profileId, record);
+                            }
+                        }
+                    });
+            };
 
 			$scope.submit = function (record) {
 				function validate() {
@@ -726,6 +949,8 @@ angular.module('primeapps')
 					return isValid;
 				}
 
+                $scope.submitting = true;
+
 				if (!$scope.moduleForm.$valid || !validate())
 					return;
 
@@ -733,16 +958,45 @@ angular.module('primeapps')
 					$scope.executeCode = false;
 					components.run('BeforeCreate', 'Script', $scope, record);
 
-					if ($scope.executeCode) {
+                    if ($scope.executeCode) {
+                        $scope.submitting = false;
 						return;
 					}
 				} else {
 					$scope.executeCode = false;
 					components.run('BeforeUpdate', 'Script', $scope, record);
-					if ($scope.executeCode) {
+                    if ($scope.executeCode) {
+                        $scope.submitting = false;
 						return;
 					}
                 }
+
+                //Çalışan modülünde record kayıt edilirken record da kullanıcı oluştur seçiliyse AddUser methodu çalışacak.
+                if (!$scope.id && $scope.module.name === 'calisanlar' && ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable) && !$scope.userAdded) {
+                    $scope.addUser(record);
+                    return;
+                }
+
+                if ($rootScope.branchAvailable && $scope.branchManager) {
+                    angular.forEach($scope.record.Authorities, function (authority) {
+                        var checker = $filter('filter')($scope.authorities, { user_id: authority.id }, true)[0];
+
+                        if (!checker) {
+                            $http.post(config.apiUrl + 'user_custom_shares/create/', { shared_user_id: $scope.branchManager.Id, user_id: authority.id })
+                        }
+                    });
+
+                    angular.forEach($scope.authorities, function (authority) {
+                        var checker = $filter('filter')($scope.record.Authorities, { id: authority.user_id }, true)[0];
+
+                        if (!checker) {
+                            $http.delete(config.apiUrl + 'user_custom_shares/delete/' + authority.id)
+                        }
+                    });
+
+                }
+
+                delete record['Authorities'];
 
                 if ($scope.module.name === 'izinler') {
                     var val = "";
@@ -779,8 +1033,6 @@ angular.module('primeapps')
 					});
 					$scope.recordState = null;
 				}
-
-				$scope.submitting = true;
 
 				if (record.discount_percent && record.discount_amount == null)
 					record.discount_amount = parseFloat(record.total - record.discounted_total);
@@ -962,7 +1214,8 @@ angular.module('primeapps')
 					}
 				}
 
-				function result(response) {
+                function result(response) {
+                    $scope.addedUser = false;
 					$scope.recordId = response.id;
 
 					if ($scope.uploader.queue.length > 0) {
@@ -1510,15 +1763,34 @@ angular.module('primeapps')
 								setTimeout(function () {
 									$state.go('app.moduleDetail', params);
 								}, 500);
-							} else
-								$state.go('app.moduleDetail', params);
+                            }
+                            else {
+                                if ($scope.module.name === 'calisanlar') {
+                                    //Kullanıcı bilgilerinin yer aldığı modalda Detaya Git butonuna basılınca çalışacak fonksiyon.
+                                    $scope.goModuleDetail = function () {
+                                        $state.go('app.moduleDetail', params);
+                                        $scope.userCreateModal.hide();
+                                    };
+
+                                    //Çalışanlar modülünde User oluşturulurken kullanıcı bilgilerinin yer aldığı Modalın
+                                    //gösterilebilmesi için kullanıcının ModüleForm sayfasında bekletilmesi
+                                    if ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable) {
+                                        $scope.loading = true;
+                                    }
+                                    else
+                                        $state.go('app.moduleDetail', params);
+                                }
+                                else
+                                    $state.go('app.moduleDetail', params);
+                            }
 
 						}
 						$scope.izinTuruData = null;
 					}
 				}
 
-				function error(data, status) {
+                function error(data, status) {
+                    $scope.addedUser = false;
 					if (status === 409) {
 						$scope.moduleForm[data.field].$setValidity('unique', false);
 
@@ -1701,7 +1973,7 @@ angular.module('primeapps')
 							ModuleService.getPicklists($scope.orderProductModule)
 								.then(function (orderProductModulePicklists) {
 									var findRequest = {};
-									findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent'];
+                                    findRequest.fields = ['quantity', 'currency', 'usage_unit', 'vat_percent', 'unit_price', 'discount_percent', 'discount_amount', 'discount_type', 'amount', 'order', 'product.products.id', 'product.products.name.primary', 'product.products.unit_price', 'product.products.usage_unit', 'product.products.vat_percent', 'deleted'];
 									findRequest.filters = [{ field: 'sales_order', operator: 'equals', value: $scope.id }];
 									findRequest.sort_field = 'order';
 									findRequest.sort_direction = 'asc';

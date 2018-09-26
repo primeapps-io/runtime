@@ -285,7 +285,7 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
                                     {
                                         var status = MessageStatusEnum.Successful;
                                         string phoneNumber = "";
-                                        var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
+                                        var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
                                         var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
                                         var recordCopy = record;
                                         record = await Model.Helpers.RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, lang, culture, 180, lookupModules);

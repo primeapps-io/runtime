@@ -475,11 +475,10 @@ namespace PrimeApps.App.Controllers
             if (resultCreate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-
             //Create default views
             try
             {
-                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository);
+                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
                 var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
 
                 if (resultCreateViewAllRecords < 1)

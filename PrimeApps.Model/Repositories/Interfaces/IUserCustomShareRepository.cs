@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<ICollection<UserCustomShare>> GetAllBasic();
         Task<UserCustomShare> GetByUserId(int id);
+        Task<List<UserCustomShare>> GetAllBySharedUserId(int id);
         Task<int> Create(UserCustomShare userowner);
         Task<UserCustomShare> GetByIdBasic(int id);
         Task<UserCustomShare> GetById(int id);

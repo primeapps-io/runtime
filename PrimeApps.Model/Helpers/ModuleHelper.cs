@@ -390,6 +390,28 @@ namespace PrimeApps.Model.Helpers
             return userModule;
         }
 
+        public static Module GetFakeProfileModule()
+        {
+            var profileModule = new Module();
+            profileModule.Name = "profiles";
+            profileModule.Fields = new List<Field>();
+            profileModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "name", Primary = true });
+
+            return profileModule;
+        }
+
+        public static Module GetFakeRoleModule(string language)
+        {
+            var roleModule = new Module();
+            roleModule.Name = "roles";
+            roleModule.Fields = new List<Field>();
+            roleModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "label_en", Primary = language == "en" });
+            roleModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "label_tr", Primary = language == "tr" });
+
+            return roleModule;
+        }
+
+
         private static string GetCloumnDataTypeAndOptions(Field field, out List<string> options)
         {
             var dataType = GetDataType(field);
@@ -419,7 +441,7 @@ namespace PrimeApps.Model.Helpers
                 options.Add("NOT NULL DEFAULT FALSE");
 
             if (field.DataType == DataType.Lookup && field.LookupType != "relation")
-                options.Add(string.Format(ForeignKeyTemplate, field.LookupType != "users" ? field.LookupType + "_d" : "users"));
+                options.Add(string.Format(ForeignKeyTemplate, field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" ? field.LookupType + "_d" : field.LookupType == "profiles" ? "profiles" : field.LookupType == "roles" ? "roles" : "users"));
 
             return dataType;
         }

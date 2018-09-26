@@ -2,7 +2,7 @@
     <ul class="nav nav-tabs">
         <li><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
         <li><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
-        <li><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
+        <li ng-if="!branchAvailable"><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
         <li class="active"><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
         <li><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
     </ul>
