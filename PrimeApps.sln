@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{A02346A3-1F14-479C-8684-A3581C1A0047}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Auth", "PrimeApps.Auth\PrimeApps.Auth.csproj", "{F0497B05-D72D-4E08-954C-7ACE090586F1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Console", "PrimeApps.Console\PrimeApps.Console.csproj", "{E73A5813-A39C-4739-9BED-2EF9AC96EE87}"
@@ -13,16 +11,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.CLI", "PrimeApps.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrimeApps.Model", "PrimeApps.Model\PrimeApps.Model.csproj", "{618C5D45-32AD-4F59-8D8E-D3258CE09033}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrimeApps.App", "PrimeApps.App\PrimeApps.App.csproj", "{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A02346A3-1F14-479C-8684-A3581C1A0047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A02346A3-1F14-479C-8684-A3581C1A0047}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A02346A3-1F14-479C-8684-A3581C1A0047}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A02346A3-1F14-479C-8684-A3581C1A0047}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F0497B05-D72D-4E08-954C-7ACE090586F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F0497B05-D72D-4E08-954C-7ACE090586F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0497B05-D72D-4E08-954C-7ACE090586F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +35,10 @@ Global
 		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{618C5D45-32AD-4F59-8D8E-D3258CE09033}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DE85C0D-8FD0-47FD-A0E2-38B5EF9E7EF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
