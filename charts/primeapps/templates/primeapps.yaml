@@ -1,4 +1,9 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: "primeapps-{{.Release.EnvironmentName}}"
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: {{ template "fullname" . }}
@@ -9,8 +14,12 @@ metadata:
     component: "{{.Release.Name}}-{{.Values.component}}"
 spec:
   ports:
-    - port: {{.Values.servicePort}}
-      targetPort: {{.Values.containerPort}}
+    - port: {{.Values.authServicePort}}
+      targetPort: {{.Values.authContainerPort}}
+      protocol: TCP
+      name: http
+    - port: {{.Values.appServicePort}}
+      targetPort: {{.Values.appContainerPort}}
       protocol: TCP
       name: http
   selector:
@@ -44,15 +53,23 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.pullsecret }}
       containers:
-        - name: {{ template "fullname" . }}
-          image: "{{.Values.image}}:{{.Values.imageTag}}"
+        - name: {{ template "fullname" . }}.auth
+          image: "{{.Values.authImage}}:{{.Values.imageTag}}"
           imagePullPolicy: "{{.Values.imagePullPolicy}}"
           ports:
           - name: http
-            containerPort: {{.Values.containerPort}}
+            containerPort: {{.Values.authContainerPort}}
           resources:
             requests:
               cpu: "{{.Values.cpu}}"
               memory: "{{.Values.memory}}"
-
-
+        - name: {{ template "fullname" . }}.app
+          image: "{{.Values.appImage}}:{{.Values.imageTag}}"
+          imagePullPolicy: "{{.Values.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.appContainerPort}}
+          resources:
+            requests:
+              cpu: "{{.Values.cpu}}"
+              memory: "{{.Values.memory}}"

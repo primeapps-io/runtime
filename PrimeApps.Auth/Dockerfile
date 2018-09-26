@@ -14,7 +14,7 @@ RUN dotnet build PrimeApps.Auth.csproj -c Release -o /app
 FROM build AS publish
 RUN dotnet publish PrimeApps.Auth.csproj -c Release -o /app
 
-FROM runtime AS final
+FROM runtime AS final   
 WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
