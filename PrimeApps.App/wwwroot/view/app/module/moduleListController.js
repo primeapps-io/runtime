@@ -665,7 +665,13 @@ angular.module('primeapps')
 
 			$scope.getDownloadViewUrlExcel = function () {
 				var module = $scope.module.name;
-				$window.open("/attach/export_excel_view?module=" + module, "_blank");
+				var viewId = $scope.view.id;
+				var isViewFields = $scope.export.moduleAllColumn;
+
+				if (isViewFields)
+					$window.open("/attach/ExportExcelView?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false, "_blank");
+				else
+					$window.open("/attach/ExportExcelView?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true, "_blank");
 				ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
 			};
 
