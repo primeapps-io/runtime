@@ -1853,7 +1853,11 @@ angular.module('primeapps')
 						}
 					}
 
-					if (module.name === 'current_accounts') {
+                    if (module.name === 'current_accounts') {
+                        var salesInvoiceModule = $filter('filter')(scope.modules, { name: 'sales_invoices' }, true);
+                        if (salesInvoiceModule.length < 1)
+                            return false;
+
 						if (scope.subtype === 'collection') {
 							switch (record.currency.system_code) {
 								case 'try':

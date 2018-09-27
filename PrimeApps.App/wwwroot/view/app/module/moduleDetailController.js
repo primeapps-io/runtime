@@ -120,6 +120,12 @@ angular.module('primeapps')
             $scope.showEditor = false;
             $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
+            var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
+            if (salesInvoiceModule.length < 1)
+                $scope.salesInvoiceModule = false;
+            else
+                $scope.salesInvoiceModule = true;
+
             angular.forEach($scope.module.fields, function (field) {
                 if (ModuleService.hasFieldDisplayPermission(field))
                     $scope.allFields.push(angular.copy(field));

@@ -474,6 +474,13 @@ angular.module('primeapps')
                         $scope.previousReturnTab = $scope.$parent.previousReturnTab;
                         $scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 
+                        var salesInvoiceModule = $filter('filter')($rootScope.modules, { name: 'sales_invoices' }, true);
+                        if (salesInvoiceModule.length < 1)
+                            $scope.salesInvoiceModule = false;
+                        else
+                            $scope.salesInvoiceModule = true;
+
+
                         var counts = [10, 25, 50, 100];
                         var displayFields = $scope.relatedModule.display_fields;
 

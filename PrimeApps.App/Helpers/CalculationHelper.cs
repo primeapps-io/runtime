@@ -455,205 +455,128 @@ namespace PrimeApps.App.Helpers
                                         break;
 
                                     case "current_accounts":
-                                        var currentAccountModuleObj = await moduleRepository.GetByName("current_accounts");
-                                        var currencyFieldCurrentAccount = currentAccountModuleObj.Fields.Single(x => x.Name == "currency");
-                                        var currencyPicklistCurrentAccount = await picklistRepository.GetById(currencyFieldCurrentAccount.PicklistId.Value);
-                                        var currencyCurrentAccount = currencyPicklistCurrentAccount.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
-
-                                        //tahsilat
-                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                        var salesInvoiceSModule = await moduleRepository.GetByName("sales_invoices");
+                                        if (salesInvoiceSModule != null)
                                         {
-                                            //Firma Obj
-                                            var parentAccountRecord = new JObject();
-                                            decimal parentAccountRecordBalance;
+                                            var currentAccountModuleObj = await moduleRepository.GetByName("current_accounts");
+                                            var currencyFieldCurrentAccount = currentAccountModuleObj.Fields.Single(x => x.Name == "currency");
+                                            var currencyPicklistCurrentAccount = await picklistRepository.GetById(currencyFieldCurrentAccount.PicklistId.Value);
+                                            var currencyCurrentAccount = currencyPicklistCurrentAccount.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)record["currency"] : x.LabelEn == (string)record["currency"]).SystemCode;
 
-
-                                            var parentAccountModule = await moduleRepository.GetByName("accounts");
-
-                                            switch (currencyCurrentAccount)
+                                            //tahsilat
+                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
                                             {
-                                                case "try":
-                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
-                                                    parentAccountRecord["balance"] = parentAccountRecordBalance;
-                                                    break;
-                                                case "eur":
-                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
-                                                    parentAccountRecord["bakiye_eur"] = parentAccountRecordBalance;
-                                                    break;
-                                                case "usd":
-                                                    parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
-                                                    parentAccountRecord["bakiye_usd"] = parentAccountRecordBalance;
-                                                    break;
-                                            }
+                                                //Firma Obj
+                                                var parentAccountRecord = new JObject();
+                                                decimal parentAccountRecordBalance;
 
-                                            //firmanın balance'ını güncelleme
-                                            parentAccountRecord["id"] = record["customer"];
-                                            await recordRepository.Update(parentAccountRecord, parentAccountModule);
-                                        }
-                                        //ödeme
-                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                        {
-                                            //Tedarikci Obj
-                                            var parentSupplierRecord = new JObject();
-                                            decimal parentSupplierRecordBalance;
 
-                                            var parentSupplierModule = await moduleRepository.GetByName("suppliers");
+                                                var parentAccountModule = await moduleRepository.GetByName("accounts");
 
-                                            switch (currencyCurrentAccount)
-                                            {
-                                                case "try":
-                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
-                                                    parentSupplierRecord["balance"] = parentSupplierRecordBalance;
-                                                    break;
-                                                case "eur":
-                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
-                                                    parentSupplierRecord["bakiye_euro"] = parentSupplierRecordBalance;
-                                                    break;
-                                                case "usd":
-                                                    parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
-                                                    parentSupplierRecord["bakiye_usd"] = parentSupplierRecordBalance;
-                                                    break;
-                                            }
-
-                                            //Tedarikcinin balance'ını güncelleme
-                                            parentSupplierRecord["id"] = record["supplier"];
-                                            await recordRepository.Update(parentSupplierRecord, parentSupplierModule);
-                                        }
-
-                                        //oto kasa hareketi ekleme, güncelleme ya da silme
-                                        if (operationType != OperationType.delete)
-                                        {
-                                            if (!record["kasa"].IsNullOrEmpty())
-                                            {
-                                                var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
-                                                var kasaModule = await moduleRepository.GetByName("kasalar");
-                                                var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
-                                                var kasaHareketiRecord = new JObject();
-                                                kasaHareketiRecord["owner"] = record["owner"];
-                                                kasaHareketiRecord["islem_tarihi"] = record["date"];
-                                                kasaHareketiRecord["aciklama"] = record["description"];
-
-                                                kasaHareketiRecord["ilgili_cari_hareket"] = record["id"];
-                                                kasaHareketiRecord["kasa"] = record["kasa"];
                                                 switch (currencyCurrentAccount)
                                                 {
                                                     case "try":
-                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                            kasaHareketiRecord["borc"] = record["alacak"];
-                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                            kasaHareketiRecord["alacak"] = record["borc_tl"];
+                                                        parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
+                                                        parentAccountRecord["balance"] = parentAccountRecordBalance;
                                                         break;
                                                     case "eur":
-                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                            kasaHareketiRecord["borc"] = record["alacak_euro"];
-                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                            kasaHareketiRecord["alacak"] = record["borc_euro"];
+                                                        parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
+                                                        parentAccountRecord["bakiye_eur"] = parentAccountRecordBalance;
                                                         break;
                                                     case "usd":
-                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                            kasaHareketiRecord["borc"] = record["alacak_usd"];
-                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                            kasaHareketiRecord["alacak"] = record["borc_usd"];
+                                                        parentAccountRecordBalance = await CalculateAccountBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
+                                                        parentAccountRecord["bakiye_usd"] = parentAccountRecordBalance;
                                                         break;
                                                 }
 
-                                                var hareketTipiField = kasaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
-                                                var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
-
-                                                if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                    kasaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
-                                                else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                    kasaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
-
-
-                                                if (!currentKasaHareketiRecord.IsNullOrEmpty())
-                                                {
-                                                    kasaHareketiRecord["id"] = currentKasaHareketiRecord.First()["id"];
-                                                    await recordRepository.Update(kasaHareketiRecord, kasaHareketiModule);
-                                                }
-                                                else
-                                                    await recordRepository.Create(kasaHareketiRecord, kasaHareketiModule);
-
-                                                //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
-                                                decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule, warehouse);
-                                                var kasaRecord = new JObject();
-                                                kasaRecord["id"] = record["kasa"];
-                                                kasaRecord["guncel_bakiye"] = kasaBalance;
-                                                await recordRepository.Update(kasaRecord, kasaModule);
+                                                //firmanın balance'ını güncelleme
+                                                parentAccountRecord["id"] = record["customer"];
+                                                await recordRepository.Update(parentAccountRecord, parentAccountModule);
                                             }
-                                            else if (!record["banka"].IsNullOrEmpty())
+                                            //ödeme
+                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
                                             {
-                                                var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
-                                                var bankaModule = await moduleRepository.GetByName("bankalar");
-                                                var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                var currentBankaHareketiRecord = recordRepository.Find("banka_hareketleri", findRequestBankaHareketi);
-                                                var bankaHareketiRecord = new JObject();
-                                                bankaHareketiRecord["owner"] = record["owner"];
-                                                bankaHareketiRecord["islem_tarihi"] = record["date"];
-                                                bankaHareketiRecord["aciklama"] = record["description"];
-                                                bankaHareketiRecord["ilgili_cari_hareket"] = record["id"];
-                                                bankaHareketiRecord["banka"] = record["banka"];
+                                                //Tedarikci Obj
+                                                var parentSupplierRecord = new JObject();
+                                                decimal parentSupplierRecordBalance;
+
+                                                var parentSupplierModule = await moduleRepository.GetByName("suppliers");
+
                                                 switch (currencyCurrentAccount)
                                                 {
                                                     case "try":
-                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                            bankaHareketiRecord["borc"] = record["alacak"];
-                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                            bankaHareketiRecord["alacak"] = record["borc_tl"];
+                                                        parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
+                                                        parentSupplierRecord["balance"] = parentSupplierRecordBalance;
                                                         break;
                                                     case "eur":
-                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                            bankaHareketiRecord["borc"] = record["alacak_euro"];
-                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                            bankaHareketiRecord["alacak"] = record["borc_euro"];
+                                                        parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
+                                                        parentSupplierRecord["bakiye_euro"] = parentSupplierRecordBalance;
                                                         break;
                                                     case "usd":
-                                                        if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                            bankaHareketiRecord["borc"] = record["alacak_usd"];
-                                                        else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                            bankaHareketiRecord["alacak"] = record["borc_usd"];
+                                                        parentSupplierRecordBalance = await CalculateSupplierBalance(record, currencyCurrentAccount, appUser, currentAccountModuleObj, currencyPicklistCurrentAccount, module, warehouse);
+                                                        parentSupplierRecord["bakiye_usd"] = parentSupplierRecordBalance;
                                                         break;
                                                 }
 
-                                                var hareketTipiField = bankaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
-                                                var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
-                                                if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
-                                                    bankaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
-                                                else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
-                                                    bankaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
-
-                                                if (!currentBankaHareketiRecord.IsNullOrEmpty())
-                                                {
-                                                    bankaHareketiRecord["id"] = currentBankaHareketiRecord.First()["id"];
-                                                    await recordRepository.Update(bankaHareketiRecord, bankaHareketiModule);
-                                                }
-                                                else
-                                                    await recordRepository.Create(bankaHareketiRecord, bankaHareketiModule);
-
-                                                //banka hareketlerinin ve ana bankanın bakiyesini güncelleme
-                                                decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule, warehouse);
-                                                var bankaRecord = new JObject();
-                                                bankaRecord["id"] = record["banka"];
-                                                bankaRecord["guncel_bakiye"] = bankaBalance;
-                                                await recordRepository.Update(bankaRecord, bankaModule);
+                                                //Tedarikcinin balance'ını güncelleme
+                                                parentSupplierRecord["id"] = record["supplier"];
+                                                await recordRepository.Update(parentSupplierRecord, parentSupplierModule);
                                             }
-                                        }
-                                        else
-                                        {
-                                            if (!record["kasa"].IsNullOrEmpty())
-                                            {
-                                                var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
-                                                var kasaModule = await moduleRepository.GetByName("kasalar");
-                                                var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
 
-                                                if (!currentKasaHareketiRecord.IsNullOrEmpty())
+                                            //oto kasa hareketi ekleme, güncelleme ya da silme
+                                            if (operationType != OperationType.delete)
+                                            {
+                                                if (!record["kasa"].IsNullOrEmpty())
                                                 {
+                                                    var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
+                                                    var kasaModule = await moduleRepository.GetByName("kasalar");
+                                                    var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                    var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
+                                                    var kasaHareketiRecord = new JObject();
+                                                    kasaHareketiRecord["owner"] = record["owner"];
+                                                    kasaHareketiRecord["islem_tarihi"] = record["date"];
+                                                    kasaHareketiRecord["aciklama"] = record["description"];
+
+                                                    kasaHareketiRecord["ilgili_cari_hareket"] = record["id"];
+                                                    kasaHareketiRecord["kasa"] = record["kasa"];
+                                                    switch (currencyCurrentAccount)
+                                                    {
+                                                        case "try":
+                                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                                kasaHareketiRecord["borc"] = record["alacak"];
+                                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                                kasaHareketiRecord["alacak"] = record["borc_tl"];
+                                                            break;
+                                                        case "eur":
+                                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                                kasaHareketiRecord["borc"] = record["alacak_euro"];
+                                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                                kasaHareketiRecord["alacak"] = record["borc_euro"];
+                                                            break;
+                                                        case "usd":
+                                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                                kasaHareketiRecord["borc"] = record["alacak_usd"];
+                                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                                kasaHareketiRecord["alacak"] = record["borc_usd"];
+                                                            break;
+                                                    }
+
                                                     var hareketTipiField = kasaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
                                                     var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
-                                                    var kasaHareketiObj = (JObject)currentKasaHareketiRecord.First();
-                                                    await recordRepository.Delete(kasaHareketiObj, kasaHareketiModule);
+
+                                                    if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                        kasaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
+                                                    else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                        kasaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
+
+
+                                                    if (!currentKasaHareketiRecord.IsNullOrEmpty())
+                                                    {
+                                                        kasaHareketiRecord["id"] = currentKasaHareketiRecord.First()["id"];
+                                                        await recordRepository.Update(kasaHareketiRecord, kasaHareketiModule);
+                                                    }
+                                                    else
+                                                        await recordRepository.Create(kasaHareketiRecord, kasaHareketiModule);
 
                                                     //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
                                                     decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule, warehouse);
@@ -662,22 +585,56 @@ namespace PrimeApps.App.Helpers
                                                     kasaRecord["guncel_bakiye"] = kasaBalance;
                                                     await recordRepository.Update(kasaRecord, kasaModule);
                                                 }
-                                            }
-                                            else if (!record["banka"].IsNullOrEmpty())
-                                            {
-                                                var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
-                                                var bankaModule = await moduleRepository.GetByName("bankalar");
-                                                var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                var currentBankaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi);
-
-                                                if (!currentBankaHareketiRecord.IsNullOrEmpty())
+                                                else if (!record["banka"].IsNullOrEmpty())
                                                 {
+                                                    var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
+                                                    var bankaModule = await moduleRepository.GetByName("bankalar");
+                                                    var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                    var currentBankaHareketiRecord = recordRepository.Find("banka_hareketleri", findRequestBankaHareketi);
+                                                    var bankaHareketiRecord = new JObject();
+                                                    bankaHareketiRecord["owner"] = record["owner"];
+                                                    bankaHareketiRecord["islem_tarihi"] = record["date"];
+                                                    bankaHareketiRecord["aciklama"] = record["description"];
+                                                    bankaHareketiRecord["ilgili_cari_hareket"] = record["id"];
+                                                    bankaHareketiRecord["banka"] = record["banka"];
+                                                    switch (currencyCurrentAccount)
+                                                    {
+                                                        case "try":
+                                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                                bankaHareketiRecord["borc"] = record["alacak"];
+                                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                                bankaHareketiRecord["alacak"] = record["borc_tl"];
+                                                            break;
+                                                        case "eur":
+                                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                                bankaHareketiRecord["borc"] = record["alacak_euro"];
+                                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                                bankaHareketiRecord["alacak"] = record["borc_euro"];
+                                                            break;
+                                                        case "usd":
+                                                            if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                                bankaHareketiRecord["borc"] = record["alacak_usd"];
+                                                            else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                                bankaHareketiRecord["alacak"] = record["borc_usd"];
+                                                            break;
+                                                    }
+
                                                     var hareketTipiField = bankaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
                                                     var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
-                                                    var bankaHareketiObj = (JObject)currentBankaHareketiRecord.First();
-                                                    await recordRepository.Delete(bankaHareketiObj, bankaHareketiModule);
+                                                    if (!record["customer"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "collection")
+                                                        bankaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_girisi").LabelEn;
+                                                    else if (!record["supplier"].IsNullOrEmpty() && (string)record["transaction_type_system"] == "payment")
+                                                        bankaHareketiRecord["hareket_tipi"] = appUser.TenantLanguage == "tr" ? hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelTr : hareketTipleri.Items.Single(x => x.SystemCode == "para_cikisi").LabelEn;
 
-                                                    //banka hareketlerinin ve ana kasanın bakiyesini güncelleme
+                                                    if (!currentBankaHareketiRecord.IsNullOrEmpty())
+                                                    {
+                                                        bankaHareketiRecord["id"] = currentBankaHareketiRecord.First()["id"];
+                                                        await recordRepository.Update(bankaHareketiRecord, bankaHareketiModule);
+                                                    }
+                                                    else
+                                                        await recordRepository.Create(bankaHareketiRecord, bankaHareketiModule);
+
+                                                    //banka hareketlerinin ve ana bankanın bakiyesini güncelleme
                                                     decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule, warehouse);
                                                     var bankaRecord = new JObject();
                                                     bankaRecord["id"] = record["banka"];
@@ -685,7 +642,98 @@ namespace PrimeApps.App.Helpers
                                                     await recordRepository.Update(bankaRecord, bankaModule);
                                                 }
                                             }
+                                            else
+                                            {
+                                                if (!record["kasa"].IsNullOrEmpty())
+                                                {
+                                                    var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
+                                                    var kasaModule = await moduleRepository.GetByName("kasalar");
+                                                    var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                    var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
+
+                                                    if (!currentKasaHareketiRecord.IsNullOrEmpty())
+                                                    {
+                                                        var hareketTipiField = kasaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                                        var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
+                                                        var kasaHareketiObj = (JObject)currentKasaHareketiRecord.First();
+                                                        await recordRepository.Delete(kasaHareketiObj, kasaHareketiModule);
+
+                                                        //kasa hareketlerinin ve ana kasanın bakiyesini güncelleme
+                                                        decimal kasaBalance = await CalculateKasaBalance(record, hareketTipleri, appUser, kasaHareketiModule, warehouse);
+                                                        var kasaRecord = new JObject();
+                                                        kasaRecord["id"] = record["kasa"];
+                                                        kasaRecord["guncel_bakiye"] = kasaBalance;
+                                                        await recordRepository.Update(kasaRecord, kasaModule);
+                                                    }
+                                                }
+                                                else if (!record["banka"].IsNullOrEmpty())
+                                                {
+                                                    var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
+                                                    var bankaModule = await moduleRepository.GetByName("bankalar");
+                                                    var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
+                                                    var currentBankaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi);
+
+                                                    if (!currentBankaHareketiRecord.IsNullOrEmpty())
+                                                    {
+                                                        var hareketTipiField = bankaHareketiModule.Fields.Single(x => x.Name == "hareket_tipi");
+                                                        var hareketTipleri = await picklistRepository.GetById(hareketTipiField.PicklistId.Value);
+                                                        var bankaHareketiObj = (JObject)currentBankaHareketiRecord.First();
+                                                        await recordRepository.Delete(bankaHareketiObj, bankaHareketiModule);
+
+                                                        //banka hareketlerinin ve ana kasanın bakiyesini güncelleme
+                                                        decimal bankaBalance = await CalculateBankaBalance(record, hareketTipleri, appUser, bankaHareketiModule, warehouse);
+                                                        var bankaRecord = new JObject();
+                                                        bankaRecord["id"] = record["banka"];
+                                                        bankaRecord["guncel_bakiye"] = bankaBalance;
+                                                        await recordRepository.Update(bankaRecord, bankaModule);
+                                                    }
+                                                }
+                                            }
                                         }
+                                        else
+                                        {
+                                            try
+                                            {
+                                                var currentTransactionType = (string)record["transaction_type_system"];
+                                                var recordUpdate = new JObject();
+                                                decimal balance;
+                                                Module moduleUpdate;
+
+                                                switch (currentTransactionType)
+                                                {
+                                                    case "sales_invoice":
+                                                    case "collection":
+                                                        var customerId = (int)record["customer"];
+                                                        balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
+                                                        moduleUpdate = await moduleRepository.GetByName("accounts");
+                                                        recordUpdate["id"] = customerId;
+                                                        recordUpdate["balance"] = balance;
+                                                        break;
+                                                    case "purchase_invoice":
+                                                    case "payment":
+                                                        var supplierId = (int)record["supplier"];
+                                                        balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
+                                                        moduleUpdate = await moduleRepository.GetByName("suppliers");
+                                                        recordUpdate["id"] = supplierId;
+                                                        recordUpdate["balance"] = balance;
+                                                        break;
+                                                    default:
+                                                        throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment.");
+                                                }
+
+                                                recordUpdate["updated_by"] = (int)record["updated_by"];
+
+                                                var resultUpdate = await recordRepository.Update(recordUpdate, moduleUpdate, isUtc: false);
+
+                                               // if (resultUpdate < 1)
+                                                   // ErrorLog.GetDefault(null).Log(new Error(new Exception("Balance cannot be updated! Object: " + recordUpdate)));
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                            }
+                                        }
+                                       
 
                                         break;
                                     case "kasa_hareketleri":

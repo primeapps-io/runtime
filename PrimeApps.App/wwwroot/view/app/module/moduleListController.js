@@ -22,6 +22,12 @@ angular.module('primeapps')
 				return;
 			}
 
+            var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
+            if (salesInvoiceModule.length < 1)
+                $scope.salesInvoiceModule = false;
+            else
+                $scope.salesInvoiceModule = true;
+
 			$scope.bulkUpdate = {};
 			$scope.filter = {};
 

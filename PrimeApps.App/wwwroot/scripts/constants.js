@@ -560,29 +560,29 @@ angular.module('primeapps')
             value: 'payment',
             order: 2
         }
-        // ,
-        // {
-        //     type: 1,
-        //     id: 352,
-        //     label: {
-        //         en: 'Sales Invoice',
-        //         tr: 'Satış Faturası'
-        //     },
-        //     system_code: 'sales_invoice',
-        //     value: 'sales_invoice',
-        //     order: 3
-        // },
-        // {
-        //     type: 2,
-        //     id: 353,
-        //     label: {
-        //         en: 'Purchase Invoice',
-        //         tr: 'Alış Faturası'
-        //     },
-        //     system_code: 'purchase_invoice',
-        //     value: 'purchase_invoice',
-        //     order: 4
-        // }
+         ,
+         {
+             type: 1,
+             id: 352,
+             label: {
+                 en: 'Sales Invoice',
+                 tr: 'Satış Faturası'
+             },
+             system_code: 'sales_invoice',
+             value: 'sales_invoice',
+             order: 3
+         },
+         {
+             type: 2,
+             id: 353,
+             label: {
+                 en: 'Purchase Invoice',
+                 tr: 'Alış Faturası'
+             },
+             system_code: 'purchase_invoice',
+             value: 'purchase_invoice',
+             order: 4
+         }
     ])
 
     .constant('yesNo', [
