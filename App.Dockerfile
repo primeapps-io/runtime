@@ -1,13 +1,11 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
-EXPOSE 50002 50002
+EXPOSE 80
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
 COPY ["PrimeApps.App/PrimeApps.App.csproj", "PrimeApps.App/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
-COPY ["PrimeApps.Model/PrimeApps.Api.csproj", "PrimeApps.Api/"]
-
 
 RUN dotnet restore "PrimeApps.App/PrimeApps.App.csproj"
 COPY . .
