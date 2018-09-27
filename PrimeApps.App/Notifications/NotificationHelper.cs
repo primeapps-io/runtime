@@ -6,7 +6,7 @@ using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Resources;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;

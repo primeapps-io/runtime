@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Npgsql;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Enums;
@@ -66,6 +66,13 @@ namespace PrimeApps.App.Controllers
             if (module == "users")
                 moduleEntity = ModuleHelper.GetFakeUserModule();
 
+            if (module == "profiles")
+                moduleEntity = ModuleHelper.GetFakeProfileModule();
+
+            if (module == "roles")
+                moduleEntity = ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage);
+
+
             if (moduleEntity == null)
                 return BadRequest();
 
@@ -74,7 +81,7 @@ namespace PrimeApps.App.Controllers
 
             foreach (var field in moduleEntity.Fields)
             {
-                if (field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                if (field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
                 {
                     var lookupModule = await _moduleRepository.GetByName(field.LookupType);
 
@@ -102,6 +109,8 @@ namespace PrimeApps.App.Controllers
             }
 
             lookupModules.Add(ModuleHelper.GetFakeUserModule());
+            lookupModules.Add(ModuleHelper.GetFakeProfileModule());
+            lookupModules.Add(ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage));
 
             try
             {
@@ -198,7 +207,7 @@ namespace PrimeApps.App.Controllers
                     var moduleEntity = await _moduleRepository.GetByName(module);
                     var isManyToMany = !string.IsNullOrWhiteSpace(request.ManyToMany);
                     var additionalModule = isManyToMany ? request.ManyToMany : string.Empty;
-                    var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, additionalModule);
+                    var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, additionalModule, tenantLanguage: AppUser.TenantLanguage);
                     var recordsFiltered = new JArray();
 
                     if (isManyToMany)

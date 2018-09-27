@@ -317,6 +317,20 @@ angular.module('primeapps')
 
                             var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
 
+                            //Kullanıcı alanların detay da gizlenmesi.
+                            if ($scope.module.name === 'calisanlar' && record['kullanici_olustur']) {
+                                var userCreateField = $filter('filter')($scope.module.fields, { name: 'kullanici_olustur' }, true)[0];
+                                var userProfileField = $filter('filter')($scope.module.fields, { name: 'kullanici_profili' }, true)[0];
+                                var userRoleField = $filter('filter')($scope.module.fields, { name: 'kullanici_rolu' }, true)[0];
+
+                                if (userCreateField)
+                                    userCreateField.hidden = true;
+                                if (userProfileField)
+                                    userProfileField.hidden = true;
+                                if (userRoleField)
+                                    userRoleField.hidden = true;
+                            }
+
                             for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
                                 var currentProcess = $rootScope.approvalProcesses[i];
                                 if (currentProcess.module_id === $scope.module.id && currentProcess.trigger_time === 'manuel')
@@ -560,6 +574,20 @@ angular.module('primeapps')
                     var userModulePrimaryField = {};
                     userModulePrimaryField.data_type = 'text_single';
                     userModulePrimaryField.name = 'full_name';
+                    $scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
+                }
+
+                if ($scope.currentLookupField.lookup_type === 'profiles' && !$scope.currentLookupField.lookupModulePrimaryField) {
+                    var userModulePrimaryField = {};
+                    userModulePrimaryField.data_type = 'text_single';
+                    userModulePrimaryField.name = 'name';
+                    $scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
+                }
+
+                if ($scope.currentLookupField.lookup_type === 'roles' && !$scope.currentLookupField.lookupModulePrimaryField) {
+                    var userModulePrimaryField = {};
+                    userModulePrimaryField.data_type = 'text_single';
+                    userModulePrimaryField.name = 'label_' + $rootScope.user.tenantLanguage;
                     $scope.currentLookupField.lookupModulePrimaryField = userModulePrimaryField;
                 }
 

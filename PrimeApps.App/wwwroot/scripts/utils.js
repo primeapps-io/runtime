@@ -749,6 +749,130 @@ angular.module('primeapps')
                     var coeff = 1e3 * 60 * 5;
                     return new Date(Math.floor(time.getTime() / coeff) * coeff);
                 },
+                lookupProfile: function (searchTerm, firstItem, includeInactiveUsers) {
+                    var deferred = $q.defer();
+
+                    if (!searchTerm && !firstItem) {
+                        deferred.resolve([]);
+                        return deferred.promise;
+                    }
+
+                    var findRequest = {
+                        fields: ['id', 'name'],
+                        filters: [
+                            {
+                                field: 'name',
+                                operator: 'starts_with',
+                                value: searchTerm,
+                                no: 1
+                            },
+                            {
+                                field: 'deleted',
+                                operator: 'equals',
+                                value: false,
+                                no: 2
+                            }
+                        ],
+                        limit: 20,
+                        sort_field: 'name',
+                        sort_direction: 'asc'
+                    };
+
+                    if (!searchTerm) {
+                        findRequest.filters.shift();
+                        findRequest.filters[0].no = 1;
+                    }
+
+                    $http.post(config.apiUrl + 'record/find/profiles', findRequest)
+                        .then(function (response) {
+                            response = response.data;
+                            if (!response) {
+                                deferred.resolve([]);
+                                return deferred.promise;
+                            }
+
+                            var profiles = [];
+
+                            for (var i = 0; i < response.length; i++) {
+                                var userRecord = response[i];
+
+                                var profile = {};
+                                profile.id = userRecord.id;
+                                profile.name = userRecord.name;
+
+                                profiles.push(profile);
+                            }
+
+                            deferred.resolve(profiles);
+                        })
+                        .catch(function (reason) {
+                            deferred.reject(reason.data);
+                        });
+
+                    return deferred.promise;
+                },
+                lookupRole: function (searchTerm, firstItem, includeInactiveUsers) {
+                    var deferred = $q.defer();
+
+                    if (!searchTerm && !firstItem) {
+                        deferred.resolve([]);
+                        return deferred.promise;
+                    }
+
+                    var findRequest = {
+                        fields: ['id', 'label_en', 'label_tr'],
+                        filters: [
+                            {
+                                field: 'label_' + $rootScope.user.tenant_language,
+                                operator: 'starts_with',
+                                value: searchTerm,
+                                no: 1
+                            },
+                            {
+                                field: 'deleted',
+                                operator: 'equals',
+                                value: false,
+                                no: 2
+                            }
+                        ],
+                        limit: 20,
+                        sort_field: 'label_' + $rootScope.user.tenant_language,
+                        sort_direction: 'asc'
+                    };
+
+                    if (!searchTerm) {
+                        findRequest.filters.shift();
+                        findRequest.filters[0].no = 1;
+                    }
+
+                    $http.post(config.apiUrl + 'record/find/roles', findRequest)
+                        .then(function (response) {
+                            response = response.data;
+                            if (!response) {
+                                deferred.resolve([]);
+                                return deferred.promise;
+                            }
+
+                            var roles = [];
+
+                            for (var i = 0; i < response.length; i++) {
+                                var userRecord = response[i];
+
+                                var role = {};
+                                role.id = userRecord.id;
+                                role.name = userRecord['label_' + $rootScope.user.tenant_language];
+
+                                roles.push(role);
+                            }
+
+                            deferred.resolve(roles);
+                        })
+                        .catch(function (reason) {
+                            deferred.reject(reason.data);
+                        });
+
+                    return deferred.promise;
+                },
                 lookupUser: function (searchTerm, firstItem, includeInactiveUsers) {
                     var deferred = $q.defer();
 

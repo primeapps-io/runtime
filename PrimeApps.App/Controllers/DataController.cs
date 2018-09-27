@@ -11,7 +11,7 @@ using PrimeApps.Model.Common.Document;
 using PrimeApps.Model.Common.Import;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Constants;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;

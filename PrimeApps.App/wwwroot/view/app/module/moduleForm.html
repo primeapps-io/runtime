@@ -72,8 +72,12 @@
                 <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                 <div ng-show="!loading">
                     <div class="subpanel" ng-repeat="section in module.sections | filter:{display_form:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasPermission(type, operations.modify, record) && hasSectionFullPermission(section)">
-                        <h5 class="subpanel-heading">{{ !section.custom_label ? section['label_' + language] :
-                            section.custom_label }}</h5>
+                        <h5 class="subpanel-heading">
+                            {{
+ !section.custom_label ? section['label_' + language] :
+                            section.custom_label
+                            }}
+                        </h5>
                         <div class="subpanel-body">
                             <div class="row">
                                 <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
@@ -517,16 +521,21 @@
                         </div>
                     </div>
                     <div class="subpanel expand">
-                        <h5 class="subpanel-heading" ng-click="expanded = !expanded">{{ 'AdvancedSharing.Title' |
-                            translate }} <i
-                                    ng-class="{'fa fa-minus-square-o':expanded, 'fa fa-plus-square-o':!expanded}"></i>
+                        <h5 class="subpanel-heading" ng-click="expanded = !expanded">
+                            {{
+ 'AdvancedSharing.Title' |
+                            translate
+                            }} <i ng-class="{'fa fa-minus-square-o':expanded, 'fa fa-plus-square-o':!expanded}"></i>
                         </h5>
                         <div class="subpanel-body" ng-show="expanded">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="sharedUsersRead" class="control-label col-sm-4">{{
-                                            'AdvancedSharing.VisibleAndCanNotEdit' | translate }}:</label>
+                                        <label for="sharedUsersRead" class="control-label col-sm-4">
+                                            {{
+                                            'AdvancedSharing.VisibleAndCanNotEdit' | translate
+                                            }}:
+                                        </label>
                                         <div class="col-sm-8">
                                             <tags-input id="sharedUsersRead"
                                                         name="sharedRead"
@@ -550,8 +559,11 @@
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="sharedUsersRead" class="control-label col-sm-4">{{
-                                            'AdvancedSharing.VisibleAndEditable' | translate }}:</label>
+                                        <label for="sharedUsersRead" class="control-label col-sm-4">
+                                            {{
+                                            'AdvancedSharing.VisibleAndEditable' | translate
+                                            }}:
+                                        </label>
                                         <div class="col-sm-8">
                                             <tags-input id="sharedEdit"
                                                         name="sharedUsersRead"
@@ -569,6 +581,41 @@
                                                                load-on-empty="true"
                                                                max-results-to-show="9999"
                                                                template="view/common/taginput-autocomplete.html"></auto-complete>
+                                            </tags-input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="subpanel expand" ng-if="branchAvailable && module.name == 'branchs' && showBranchSettings">
+                        <h5 class="subpanel-heading" ng-click="expanded = !expanded">
+                            {{ 'Branch.Title' | translate }} <i ng-class="{'fa fa-minus-square-o':expanded, 'fa fa-plus-square-o':!expanded}"></i>
+                        </h5>
+                        <div class="subpanel-body" ng-show="expanded">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="sharedUsersRead" class="control-label col-sm-4">
+                                            {{
+                                            'Branch.Authorities' | translate
+                                            }}:
+                                        </label>
+                                        <div class="col-sm-8">
+                                            <tags-input id="branchAuthorities"
+                                                        name="authorities"
+                                                        tabindex="998"
+                                                        ng-model="record.Authorities"
+                                                        display-property="full_name"
+                                                        key-property="id"
+                                                        placeholder="{{'Common.Search' | translate}}"
+                                                        replace-spaces-with-dashes="false"
+                                                        add-from-autocomplete-only="true">
+                                                <auto-complete source="lookupUser($query)"
+                                                               min-length="0"
+                                                               load-on-focus="true"
+                                                               load-on-empty="true"
+                                                               max-results-to-show="9999"></auto-complete>
                                             </tags-input>
                                         </div>
                                     </div>

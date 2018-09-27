@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
@@ -19,6 +19,7 @@ using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Common.Resources;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Model.Entities.Platform;
 
 namespace PrimeApps.App.Helpers
 {
@@ -99,7 +100,7 @@ namespace PrimeApps.App.Helpers
 
                         foreach (var field in module.Fields)
                         {
-                            if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                            if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
                                 lookupModuleNames.Add(field.LookupType);
                         }
 
@@ -124,7 +125,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 var filterField = module.Fields.FirstOrDefault(x => x.Name == filter.Field);
 
-                                if (filterField.DataType == DataType.Lookup && filterField.LookupType != "users")
+                                if (filterField.DataType == DataType.Lookup && filterField.LookupType != "users" && filterField.LookupType != "profiles" && filterField.LookupType != "roles")
                                     filter.Field = filter.Field + ".id";
 
                                 if (filterField == null || record[filter.Field] == null)
@@ -141,7 +142,7 @@ namespace PrimeApps.App.Helpers
                                 double.TryParse(fieldValueString, out fieldValueNumber);
                                 double.TryParse(filterValueString, out filterValueNumber);
 
-                                if (filterField.DataType == DataType.Lookup && filterField.LookupType == "users" && filterValueNumber == 0)
+                                if (filterField.DataType == DataType.Lookup && filterField.LookupType == "users" && filterField.LookupType == "profiles" && filterField.LookupType == "roles" && filterValueNumber == 0)
                                     filterValueNumber = appUser.Id;
 
                                 switch (filterOperator)
@@ -282,7 +283,7 @@ namespace PrimeApps.App.Helpers
 
                                 else
                                 {
-                                    approverLookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                                    approverLookupModule = approverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule() : approverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
                                 }
 
                                 var approverUserRecord = _recordRepository.GetById(approverLookupModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false);
@@ -317,7 +318,7 @@ namespace PrimeApps.App.Helpers
 
                                     else
                                     {
-                                        secondApproverLookupModule = Model.Helpers.ModuleHelper.GetFakeUserModule();
+                                        secondApproverLookupModule = secondApproverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule() : secondApproverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
                                     }
 
                                     var secondApproverUserRecord = _recordRepository.GetById(secondApproverLookupModule, (int)record[secondApproverFieldName + "." + secondApproverLookupName], false);
@@ -753,7 +754,7 @@ namespace PrimeApps.App.Helpers
 
                             foreach (var field in process.Module.Fields)
                             {
-                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
                                     lookupModuleNames.Add(field.LookupType);
                             }
 
@@ -877,7 +878,7 @@ namespace PrimeApps.App.Helpers
 
                             foreach (var field in process.Module.Fields)
                             {
-                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
                                     lookupModuleNames.Add(field.LookupType);
                             }
 
@@ -1234,7 +1235,7 @@ namespace PrimeApps.App.Helpers
 
                         foreach (var field in process.Module.Fields)
                         {
-                            if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                            if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
                                 lookupModuleNames.Add(field.LookupType);
                         }
 

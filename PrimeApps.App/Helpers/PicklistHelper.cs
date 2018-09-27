@@ -2,7 +2,7 @@
 using System.Linq;
 using PrimeApps.App.Models;
 using PrimeApps.App.Models.ViewModel.Crm.Picklist;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Helpers

@@ -4,8 +4,11 @@ using Aspose.Words.MailMerging;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using MimeMapping;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using PrimeApps.App.Extensions;
@@ -13,7 +16,8 @@ using PrimeApps.App.Helpers;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Note;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Context;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Helpers.QueryTranslation;
@@ -45,9 +49,10 @@ namespace PrimeApps.App.Controllers
         private INoteRepository _noteRepository;
         private IConfiguration _configuration;
         private IDocumentRepository _documentRepository;
+        private IServiceScopeFactory _serviceScopeFactory;
 
         private IRecordHelper _recordHelper;
-        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage)
+        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory)
         {
             _tenantRepository = tenantRepository;
             _documentRepository = documentRepository;
@@ -59,6 +64,7 @@ namespace PrimeApps.App.Controllers
             _noteRepository = noteRepository;
             _recordHelper = recordHelper;
             _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -118,7 +124,14 @@ namespace PrimeApps.App.Controllers
                 moduleEntity = Model.Helpers.ModuleHelper.GetFakeUserModule();
             }
 
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            if (module == "profiles")
+                moduleEntity = Model.Helpers.ModuleHelper.GetFakeProfileModule();
+
+            if (module == "roles")
+                moduleEntity = Model.Helpers.ModuleHelper.GetFakeRoleModule(AppUser.TenantLanguage);
+
+
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             try
             {
@@ -353,7 +366,7 @@ namespace PrimeApps.App.Controllers
                 else
                 {
                     relatedModuleEntity = await _moduleRepository.GetByNameBasic(relation.RelatedModule);
-                    relatedLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(relatedModuleEntity, _moduleRepository);
+                    relatedLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(relatedModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 }
 
                 var recordsFormatted = new JArray();
@@ -484,7 +497,7 @@ namespace PrimeApps.App.Controllers
                 });
 
                 var quoteProductsModuleEntity = await _moduleRepository.GetByNameBasic("quote_products");
-                var quoteProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(quoteProductsModuleEntity, _moduleRepository);
+                var quoteProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(quoteProductsModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 var productsFormatted = new JArray();
                 int orderCount = 1;
 
@@ -498,7 +511,7 @@ namespace PrimeApps.App.Controllers
                         if (!record["currency"].IsNullOrEmpty())
                             product["currency"] = (string)record["currency"];
                     }
-                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(quoteProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, quoteProductsLookupModules);
 
                     if (!productFormatted["separator"].IsNullOrEmpty())
                     {
@@ -537,7 +550,7 @@ namespace PrimeApps.App.Controllers
                 });
 
                 var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("order_products");
-                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 var productsFormatted = new JArray();
 
                 foreach (var product in products)
@@ -551,7 +564,7 @@ namespace PrimeApps.App.Controllers
                             product["currency"] = (string)record["currency"];
                     }
 
-                     var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
+                    var productFormatted = await Model.Helpers.RecordHelper.FormatRecordValues(orderProductsModuleEntity, (JObject)product, _moduleRepository, _picklistRepository, _configuration, AppUser.TenantLanguage, currentCulture, timezoneOffset, orderProductsLookupModules);
 
                     productsFormatted.Add(productFormatted);
                 }
@@ -582,7 +595,7 @@ namespace PrimeApps.App.Controllers
                 });
 
                 var orderProductsModuleEntity = await _moduleRepository.GetByNameBasic("purchase_order_products");
-                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository);
+                var orderProductsLookupModules = await Model.Helpers.RecordHelper.GetLookupModules(orderProductsModuleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
                 var productsFormatted = new JArray();
 
                 foreach (var product in products)
@@ -1003,7 +1016,7 @@ namespace PrimeApps.App.Controllers
             worksheetData.Name = "Data";
             DataTable dt = new DataTable("Excel");
             Worksheet worksheet2 = workbook.Worksheets.Add("Report Formula");
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1069,7 +1082,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("export_excel_view")]
-        public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, string locale = "", bool? normalize = false, int? timezoneOffset = 180)
+        public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
         {
             if (string.IsNullOrWhiteSpace(module))
             {
@@ -1085,38 +1098,103 @@ namespace PrimeApps.App.Controllers
             Worksheet worksheetData = workbook.Worksheets[0];
             worksheetData.Name = "Data";
             DataTable dt = new DataTable("Excel");
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
-            var findRequest = new FindRequest();
-            findRequest.Fields = new List<string>();
-
-            for (int i = 0; i < fields.Count; i++)
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                var field = fields[i];
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
-                if (field.DataType != Model.Enums.DataType.Lookup)
+                var view = await databaseContext.Views
+                           .Include(x => x.Fields)
+                           .Include(x => x.Filters)
+                           .Include(x => x.Module)
+                           .Include(x => x.Module.Fields)
+                           .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
+
+                if (view == null)
+                    return null;
+
+                /**
+                 * listFindRequestJson View'den gelen data
+                 * listFindRequest View'den gelen datayı Json formatına çeviriyoruz
+                 */
+
+                FindRequest listFindRequest = null;
+
+                if (!string.IsNullOrWhiteSpace(listFindRequestJson))
                 {
-                    findRequest.Fields.Add(field.Name);
+                    var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+                    listFindRequest = JsonConvert.DeserializeObject<FindRequest>(listFindRequestJson, serializerSettings);
                 }
-                else
+
+                var findRequest = new FindRequest();
+                findRequest.Fields = new List<string>();
+                findRequest.Limit = 9999;
+
+                if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
                 {
-                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
-                    findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
+                    findRequest.Filters = new List<Filter>();
+
+                    foreach (var viewFilter in listFindRequest.Filters)
+                    {
+                        findRequest.Filters.Add(new Filter
+                        {
+                            Field = viewFilter.Field,
+                            Operator = viewFilter.Operator,
+                            Value = viewFilter.Value,
+                            No = viewFilter.No
+                        });
+                    }
                 }
-            }
+                else if (view.Filters != null && view.Filters.Count > 0)
+                {
+                    findRequest.Filters = new List<Filter>();
 
-            var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+                    foreach (var viewFilter in view.Filters)
+                    {
+                        viewFilter.Value = viewFilter.Value.Replace("[me]", AppUser.TenantId.ToString());
+                        viewFilter.Value = viewFilter.Value.Replace("[me.email]", AppUser.Email);
 
-            for (int i = 0; i < fields.Count; i++)
-            {
-                var field = fields[i];
-                dt.Columns.Add(field.LabelTr.ToString());
-            }
-            for (int j = 0; j < records.Count; j++)
-            {
-                var record = records[j];
-                var dr = dt.NewRow();
+                        findRequest.Filters.Add(new Filter
+                        {
+                            Field = viewFilter.Field,
+                            Operator = viewFilter.Operator,
+                            Value = viewFilter.Value,
+                            No = viewFilter.No
+                        });
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(view.FilterLogic))
+                    findRequest.FilterLogic = view.FilterLogic;
+                /**
+                 * isViewFields, Modüldeki tüm alanları aktar check boxtan beslenmektedir.
+                 * Modüldeki tüm alanları aktar Check değil ise -> isViewFields = true
+                 * isViewFields = true durumunda View'de görüntülenen alanları export etmekteyiz.
+                 */
+                if (isViewFields)
+                {
+                    var viewFields = new List<Field>();
+                    var field = new Field();
+                    var viewFieldsList = view.Fields.Where(x => !x.Deleted);
+
+                    foreach (var viewField in viewFieldsList)
+                    {
+                        /**
+                         * viewField.Field.Contains(".")  ViewFields'lerdeki fieldlerin, fields nameler arasında yer almadığından dolayı split edilmiştir.
+                         * örn: ViewFields = calisan.calisan_ad.primary fields.Name = calisan
+                         */
+                        if (!viewField.Field.Contains("."))
+                        {
+                            field = fields.FirstOrDefault(x => x.Name == viewField.Field);
+
+                            if (field != null)
+                                viewFields.Add(field);
+                        }
+                    }
+
+                    fields = viewFields;
+                }
 
                 for (int i = 0; i < fields.Count; i++)
                 {
@@ -1124,28 +1202,57 @@ namespace PrimeApps.App.Controllers
 
                     if (field.DataType != Model.Enums.DataType.Lookup)
                     {
-                        dr[i] = record[field.Name];
+                        findRequest.Fields.Add(field.Name);
                     }
                     else
                     {
                         var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
                         var primaryField = lookupModule.Fields.Single(x => x.Primary);
-                        dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
+                        findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
                     }
                 }
-                dt.Rows.Add(dr);
+
+                var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+
+                for (int i = 0; i < fields.Count; i++)
+                {
+                    var field = fields[i];
+                    dt.Columns.Add(field.LabelTr.ToString());
+                }
+                for (int j = 0; j < records.Count; j++)
+                {
+                    var record = records[j];
+                    var dr = dt.NewRow();
+
+                    for (int i = 0; i < fields.Count; i++)
+                    {
+                        var field = fields[i];
+
+                        if (field.DataType != Model.Enums.DataType.Lookup)
+                        {
+                            dr[i] = record[field.Name];
+                        }
+                        else
+                        {
+                            var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
+                            var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                            dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
+                        }
+                    }
+                    dt.Rows.Add(dr);
+                }
+
+                worksheetData.Cells.ImportDataTable(dt, true, "A1");
+
+                Stream memory = new MemoryStream();
+
+                var fileName = nameModule + ".xlsx";
+
+                workbook.Save(memory, Aspose.Cells.SaveFormat.Xlsx);
+                memory.Position = 0;
+
+                return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
             }
-
-            worksheetData.Cells.ImportDataTable(dt, true, "A1");
-
-            Stream memory = new MemoryStream();
-
-            var fileName = nameModule + ".xlsx";
-
-            workbook.Save(memory, Aspose.Cells.SaveFormat.Xlsx);
-            memory.Position = 0;
-
-            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [Route("export_excel_no_data")]
@@ -1164,7 +1271,7 @@ namespace PrimeApps.App.Controllers
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
             //var tempName = System.Text.Encoding.ASCII.GetString(bytes);
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1270,7 +1377,7 @@ namespace PrimeApps.App.Controllers
             //var tempsName = templateName;
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
             //var tempName = System.Text.Encoding.ASCII.GetString(bytes);
-            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository);
+            var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();

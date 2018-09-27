@@ -258,7 +258,7 @@ relatedModule['label_'
                                                     <i ng-if="field.custom_label && record[field.name] != undefined && record[field.name] === true" class="fa fa-check-square-o custom-checkbox"></i>
                                                 </span>
                                             </th>
-                                            <td ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label, 'link-container': (((field.data_type === 'lookup' && field.lookup_type != 'users') || field.data_type === 'email' || field.data_type === 'url' || (field.data_type === 'text_single' && (field.name ==='phone' || field.name ==='mobile'))) && record[field.name])}"
+                                            <td ng-class="{'col-sm-6': (section.column_count === 2 && !field.custom_label), 'col-sm-9': (section.column_count === 1 && !field.custom_label), 'col-sm-11': field.custom_label, 'link-container': (((field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') || field.data_type === 'email' || field.data_type === 'url' || (field.data_type === 'text_single' && (field.name ==='phone' || field.name ==='mobile'))) && record[field.name])}"
                                                 ng-if="hasPermission(type, operations.modify, record) && !field.validation.readonly && field.inline_edit && !record.freeze && field.editable && hasFieldFullPermission(field)"
                                                 ng-init="editLookup[field.name] = false">
 
@@ -525,7 +525,7 @@ relatedModule['label_'
                                                                       hide-create-new="hideCreateNew(field)"
                                                                       ng-show="editLookup[field.name]" />
                                                 </div>
-                                                <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}" class="link" ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
+                                                <a href="#/app/crm/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}" class="link" ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name]" ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
                                                 <a href
                                                    editable-checkbox="record[field.name]"
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field);"
@@ -646,7 +646,7 @@ relatedModule['label_'
 
                                                 <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                                                    class="link"
-                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && record[field.name]"
+                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name]"
                                                    ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
 
                                                 <pre name="{{field.name}}"

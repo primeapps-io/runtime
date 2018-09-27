@@ -9,7 +9,7 @@ using System.Net;
 using Hangfire;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;

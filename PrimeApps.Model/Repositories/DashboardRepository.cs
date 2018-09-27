@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using PrimeApps.Model.Enums;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using System;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Cache;

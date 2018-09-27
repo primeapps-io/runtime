@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using Newtonsoft.Json;
 using PrimeApps.Model.Common.Record;
@@ -475,11 +475,10 @@ namespace PrimeApps.App.Controllers
             if (resultCreate < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-
             //Create default views
             try
             {
-                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository);
+                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
                 var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
 
                 if (resultCreateViewAllRecords < 1)

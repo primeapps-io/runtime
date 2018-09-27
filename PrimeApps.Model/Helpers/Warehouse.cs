@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using Database = Microsoft.SqlServer.Management.Smo.Database;
@@ -574,7 +574,7 @@ namespace PrimeApps.Model.Helpers
             CreateRole(role, databaseName, tenantLanguage);
         }
 
-        public void CreateTenantUser(Entities.Application.TenantUser user, string databaseName, string tenantLanguage)
+        public void CreateTenantUser(Entities.Tenant.TenantUser user, string databaseName, string tenantLanguage)
         {
             var connection = new SqlConnection(GetConnectionString(databaseName));
 
@@ -651,7 +651,7 @@ namespace PrimeApps.Model.Helpers
             var user = GetTenantUser(userId, currentUser);
             CreateTenantUser(user, databaseName, tenantLanguage);
         }
-        public void UpdateTenantUser(Entities.Application.TenantUser user, string databaseName, string tenantLanguage, bool delete = false)
+        public void UpdateTenantUser(Entities.Tenant.TenantUser user, string databaseName, string tenantLanguage, bool delete = false)
         {
             var connection = new SqlConnection(GetConnectionString(databaseName));
 
@@ -1591,7 +1591,7 @@ namespace PrimeApps.Model.Helpers
             return role;
         }
 
-        private Entities.Application.TenantUser GetTenantUser(int userId, CurrentUser currentUser)
+        private TenantUser GetTenantUser(int userId, CurrentUser currentUser)
         {
 			_analyticRepository.CurrentUser = currentUser;
 			_analyticRepository.TenantId = currentUser.TenantId;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Profile;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -9,6 +9,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task AddModuleAsync(int moduleId);
         Task<Profile> GetProfileById(int id);
+        Task<List<Profile>> GetByParentId(int parentId);
         Task AddUserAsync(int userId, int profileId);
         Task CreateAsync(ProfileDTO newProfileDTO);
         Task<IEnumerable<Profile>> GetAll();

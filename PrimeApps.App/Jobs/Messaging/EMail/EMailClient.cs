@@ -10,7 +10,7 @@ using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Messaging;
 using PrimeApps.Model.Common.Record;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
@@ -27,10 +27,12 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
-        public EMailClient(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        private IHttpContextFactory _context;
+        public EMailClient(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IHttpContextFactory context)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
+            _context = context;
         }
 
         /// <summary>
@@ -319,7 +321,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
                             foreach (string recordId in ids)
                             {
                                 var status = MessageStatusEnum.Successful;
-                                var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository);
+                                var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: tenant.Setting.Language);
                                 var record = recordRepository.GetById(module, int.Parse(recordId), false, lookupModules);
 
                                 if (!record[emailField].IsNullOrEmpty())

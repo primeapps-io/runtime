@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("widgets")]
     public class Widget : BaseEntity

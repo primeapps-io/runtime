@@ -50,6 +50,8 @@ namespace PrimeApps.Model.Common.Profile
         [DataMember]
         public bool IsPersistent { get; set; }
         [DataMember]
+        public int ParentId { get; set; }
+        [DataMember]
         public IEnumerable<ProfilePermissionLightDTO> Permissions { get; set; }
     }
 }

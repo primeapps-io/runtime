@@ -7,7 +7,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.App.Models.ViewModel.Crm.Dashboard;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Repositories.Interfaces;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 
 namespace PrimeApps.App.Helpers
 {

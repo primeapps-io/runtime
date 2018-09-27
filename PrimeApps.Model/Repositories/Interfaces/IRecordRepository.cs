@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Record;

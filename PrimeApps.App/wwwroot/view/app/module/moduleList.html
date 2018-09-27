@@ -120,7 +120,7 @@
 						</li>
 						<li ng-show="hasPermission(type, operations.read) && view.system_code === 'pending_approval_from_me_view'">
 							<a href ng-click="showCollectiveApproval()">
-								<i class="fa fa-check-circle-o"></i> {{'Module.CollectiveApproval' | translate }}
+								<i class="fa fa-check-circle-o pull-left"></i> {{'Module.CollectiveApproval' | translate }}
 							</a>
 						</li>
 						<li ng-if="user.profile.send_email" ng-show="hasPermission(type, operations.read)">

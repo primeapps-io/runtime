@@ -56,7 +56,9 @@ angular.module('primeapps')
                             var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
                             $scope.profile.PageStart = setPageStart;
 
-
+                            if ($scope.profile.parent_id != 0) {
+                                $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: $scope.profile.parent_id }, true)[0];
+                            }
                         }
                         else {
                             $scope.profile = {};
@@ -73,6 +75,7 @@ angular.module('primeapps')
                                 delete  $scope.profile.id;
                                 var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.start_page}, true)[0];
                                 $scope.profile.PageStart = setPageStart;
+                                $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
                             }
                             else {
                                 $scope.profile.has_admin_rights = false;
@@ -150,6 +153,12 @@ angular.module('primeapps')
                     var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
 
                     $scope.profile[setPage.value] = true;
+
+                    if ($scope.profile.parent_id) {
+                        $scope.profile.parent_id = $scope.profile.parent_id.id;
+                    } else {
+                        $scope.profile.parent_id = 0;
+                    }
 
                     if (!$scope.profile.id) {
                         result = ProfileService.create($scope.profile);

@@ -39,6 +39,17 @@ namespace PrimeApps.App.Controllers
             return Ok(userOwnerEntities);
         }
 
+        [Route("get_all_by_shared_user_id/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetAllBySharedUserId(int id)
+        {
+            var userOwnerEntity = await _userOwnerRepository.GetAllBySharedUserId(id);
+
+            if (userOwnerEntity == null)
+                return NotFound();
+
+            return Ok(userOwnerEntity);
+        }
+
         [Route("get_by_userid/{id:int}"), HttpGet]
         public async Task<IActionResult> GetByUserId(int id)
         {

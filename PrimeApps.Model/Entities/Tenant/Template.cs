@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("templates")]
     public class Template : BaseEntity
