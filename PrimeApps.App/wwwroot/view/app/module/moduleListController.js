@@ -11,9 +11,9 @@ angular.module('primeapps')
 			$scope.transactionTypes = transactionTypes;
 			$scope.loading = true;
 			$scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
-            $scope.lookupUser = helper.lookupUser;
-            $scope.lookupProfile = helper.lookupProfile;
-            $scope.lookupRole = helper.lookupRole;
+			$scope.lookupUser = helper.lookupUser;
+			$scope.lookupProfile = helper.lookupProfile;
+			$scope.lookupRole = helper.lookupRole;
 			$scope.searchingDocuments = false;
 			$scope.isAdmin = $rootScope.user.profile.has_admin_rights;
 			$scope.hasActionButtonDisplayPermission = ModuleService.hasActionButtonDisplayPermission;
@@ -269,22 +269,22 @@ angular.module('primeapps')
 				}
 			};
 
-            $scope.delete = function (id) {
-                ModuleService.getRecord($scope.module.name, id)
-                    .then(function (recordData) {
-                        if (!helper.hasPermission($scope.type, operations.modify, recordData.data)) {
-                            ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                            return;
-                        }
+			$scope.delete = function (id) {
+				ModuleService.getRecord($scope.module.name, id)
+					.then(function (recordData) {
+						if (!helper.hasPermission($scope.type, operations.modify, recordData.data)) {
+							ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+							return;
+						}
 
-                        ModuleService.deleteRecord($scope.module.name, id)
-                            .then(function () {
-                                $cache.remove(cacheKey);
-                                $scope.tableParams.reload();
+						ModuleService.deleteRecord($scope.module.name, id)
+							.then(function () {
+								$cache.remove(cacheKey);
+								$scope.tableParams.reload();
 
-                            });
-                    });
-            };
+							});
+					});
+			};
 
 			$scope.hideCreateNew = function (field) {
 				if (field.lookup_type === 'users')
@@ -555,7 +555,7 @@ angular.module('primeapps')
 					ModuleService.approveMultipleProcessRequest(arrayApprove, $scope.module.name)
 						.then(function (response) {
 							ngToast.create({
-								content: $filter('translate')(arrayApprove.length + 'Module.ApprovedRecordCount'),
+								content: arrayApprove.length + $filter('translate')('Module.ApprovedRecordCount'),
 								className: 'success'
 							});
 
@@ -894,22 +894,22 @@ angular.module('primeapps')
 			};
 
 			//kaydın process detaylarını gösterme
-            $scope.recordProcessDetail = function (record) {
+			$scope.recordProcessDetail = function (record) {
 
-                if ($scope.previousApprovers)
-                    delete $scope.previousApprovers;
+				if ($scope.previousApprovers)
+					delete $scope.previousApprovers;
 
-                if ($scope.processOrderParam)
-                    delete $scope.processOrderParam;
+				if ($scope.processOrderParam)
+					delete $scope.processOrderParam;
 
-                if ($scope.currentApprover)
-                    delete $scope.currentApprover;
+				if ($scope.currentApprover)
+					delete $scope.currentApprover;
 
-                if ($scope.updateTime)
-                    delete $scope.updateTime;
+				if ($scope.updateTime)
+					delete $scope.updateTime;
 
-                if ($scope.rejectApprover)
-                    delete $scope.rejectApprover;
+				if ($scope.rejectApprover)
+					delete $scope.rejectApprover;
 
 				var currentModuleProcess;
 				for (var j = 0; j < $rootScope.approvalProcesses.length; j++) {
