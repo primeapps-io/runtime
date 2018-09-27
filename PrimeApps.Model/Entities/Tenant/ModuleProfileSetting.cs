@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Tenant
             _profileList = new List<string>();
         }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         [Column("profiles")]

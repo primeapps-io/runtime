@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace PrimeApps.Model.Entities.Platform
 {
@@ -14,59 +11,30 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("app_id"), Key]
 		public int AppId { get; set; }
 
-		/// <summary>
-		/// Currency
-		/// </summary>
 		[Column("title")]
 		public string Title { get; set; }
 
-
-		/// <summary>
-		/// Language
-		/// </summary>
-		[Column("description")]//]//, Index]
+		[Column("description")]
 		public string Description { get; set; }
 
-		/// <summary>
-		/// Has Logo
-		/// </summary>
 		[Column("favicon")]
 		public string Favicon { get; set; }
 
-		/// <summary>
-		/// Mail Sender Name
-		/// </summary>
 		[Column("color")]
 		public string Color { get; set; }
 
-		/// <summary>
-		/// Mail Sender Email
-		/// </summary>
-		[Column("image")]//]//, Index]
+		[Column("image")]
 		public string Image { get; set; }
 
-		/// <summary>
-		/// Custom Domain
-		/// </summary>
-		[Column("domain")]//]//, Index]
+		[Column("domain")]
 		public string Domain { get; set; }
 
-		/// <summary>
-		/// Auth Domain
-		/// </summary>
-		/// 
-		[Column("auth_domain")]//]//, Index]
+		[Column("auth_domain")]
 		public string AuthDomain { get; set; }
 
-		/// <summary>
-		/// Custom Title
-		/// </summary>
-		[Column("mail_sender_name")]//]//, Index]
+		[Column("mail_sender_name")]
 		public string MailSenderName { get; set; }
 
-		/// <summary>
-		/// Custom Login Title
-		/// </summary>
 		[Column("mail_sender_email")]
 		public string MailSenderEmail { get; set; }
 
@@ -78,18 +46,19 @@ namespace PrimeApps.Model.Entities.Platform
 
 		[Column("time_zone")]
 		public string TimeZone { get; set; }
-		/// <summary>
-		/// Language
-		/// </summary>	
-		[Column("language")]//]//, Index]
+		
+		[Column("language")]
 		public string Language { get; set; }
 
-		[Column("banner", TypeName = "jsonb")]//]//, Index]
+		[Column("banner", TypeName = "jsonb")]
 		public string Banner { get; set; }
 
-		[Column("google_analytics_code")]//]//, Index]
+		[Column("google_analytics_code")]
 		public string GoogleAnalyticsCode { get; set; }
-		//App One to One
-		public virtual App App { get; set; }
+
+		[Column("tenant_create_webhook")]
+	    public string TenantCreateWebhook { get; set; }
+
+	    public virtual App App { get; set; }
 	}
 }

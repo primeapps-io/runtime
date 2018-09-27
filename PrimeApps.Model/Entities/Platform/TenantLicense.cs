@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace PrimeApps.Model.Entities.Platform
 {
@@ -39,7 +37,6 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("suspended_at")]
         public DateTime? SuspendedAt { get; set; }
 
-        //Tenant One to One
         public virtual Tenant Tenant { get; set; }
     }
 }

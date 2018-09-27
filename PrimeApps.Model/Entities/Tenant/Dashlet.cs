@@ -16,10 +16,10 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("dashlet_type"), Required]
         public DashletType DashletType { get; set; }
 
-        [Column("chart_id"), ForeignKey("Chart")]//, Index]
+        [Column("chart_id"), ForeignKey("Chart")]
         public int? ChartId { get; set; }
 
-        [Column("widget_id"), ForeignKey("Widget")]//, Index]
+        [Column("widget_id"), ForeignKey("Widget")]
         public int? WidgetId { get; set; }
 
         [Column("order"), Required]
@@ -33,7 +33,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
         public int YTileLength { get; set; }
 
-        [Column("dashboard_id"), ForeignKey("Dashboard")]//, Index]
+        [Column("dashboard_id"), ForeignKey("Dashboard")]
         public int? DashboardId { get; set; }
 
         public virtual Chart Chart { get; set; }

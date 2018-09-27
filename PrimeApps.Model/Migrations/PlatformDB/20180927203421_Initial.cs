@@ -54,7 +54,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     first_name = table.Column<string>(nullable: false),
                     last_name = table.Column<string>(nullable: false),
                     created_at = table.Column<DateTime>(nullable: false),
-                    updated_at = table.Column<DateTime>(nullable: false)
+                    updated_at = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,43 +166,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "warehouses",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    created_by = table.Column<int>(nullable: false),
-                    updated_by = table.Column<int>(nullable: true),
-                    created_at = table.Column<DateTime>(nullable: false),
-                    updated_at = table.Column<DateTime>(nullable: true),
-                    deleted = table.Column<bool>(nullable: false),
-                    tenant_id = table.Column<int>(nullable: false),
-                    database_name = table.Column<string>(nullable: true),
-                    database_user = table.Column<string>(nullable: true),
-                    powerbi_workspace_id = table.Column<string>(nullable: true),
-                    completed = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_warehouses", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_warehouses_users_created_by",
-                        column: x => x.created_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_warehouses_users_updated_by",
-                        column: x => x.updated_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "app_settings",
                 schema: "public",
                 columns: table => new
@@ -222,7 +185,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     time_zone = table.Column<string>(nullable: true),
                     language = table.Column<string>(nullable: true),
                     banner = table.Column<string>(type: "jsonb", nullable: true),
-                    google_analytics_code = table.Column<string>(nullable: true)
+                    google_analytics_code = table.Column<string>(nullable: true),
+                    tenant_create_webhook = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -308,50 +272,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_tenants_users_updated_by",
-                        column: x => x.updated_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "workflows",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    created_by = table.Column<int>(nullable: false),
-                    updated_by = table.Column<int>(nullable: true),
-                    created_at = table.Column<DateTime>(nullable: false),
-                    updated_at = table.Column<DateTime>(nullable: true),
-                    deleted = table.Column<bool>(nullable: false),
-                    name = table.Column<string>(maxLength: 200, nullable: false),
-                    active = table.Column<bool>(nullable: false),
-                    frequency = table.Column<int>(nullable: false),
-                    operations = table.Column<string>(maxLength: 50, nullable: false),
-                    app_id = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_workflows", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_workflows_apps_app_id",
-                        column: x => x.app_id,
-                        principalSchema: "public",
-                        principalTable: "apps",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workflows_users_created_by",
-                        column: x => x.created_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workflows_users_updated_by",
                         column: x => x.updated_by,
                         principalSchema: "public",
                         principalTable: "users",
@@ -474,9 +394,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     custom_favicon = table.Column<string>(nullable: true),
                     custom_color = table.Column<string>(nullable: true),
                     custom_image = table.Column<string>(nullable: true),
-                    has_sample_data = table.Column<bool>(nullable: false),
-                    integration_email = table.Column<string>(nullable: true),
-                    integration_password = table.Column<string>(nullable: true)
+                    has_sample_data = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -518,7 +436,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "workflow_logs",
+                name: "warehouses",
                 schema: "public",
                 columns: table => new
                 {
@@ -529,76 +447,36 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     created_at = table.Column<DateTime>(nullable: false),
                     updated_at = table.Column<DateTime>(nullable: true),
                     deleted = table.Column<bool>(nullable: false),
-                    workflow_id = table.Column<int>(nullable: false),
-                    app_id = table.Column<int>(nullable: false)
+                    tenant_id = table.Column<int>(nullable: false),
+                    database_name = table.Column<string>(nullable: true),
+                    database_user = table.Column<string>(nullable: true),
+                    powerbi_workspace_id = table.Column<string>(nullable: true),
+                    completed = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_workflow_logs", x => x.id);
+                    table.PrimaryKey("PK_warehouses", x => x.id);
                     table.ForeignKey(
-                        name: "FK_workflow_logs_workflows_workflow_id",
-                        column: x => x.workflow_id,
-                        principalSchema: "public",
-                        principalTable: "workflows",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workflow_logs_users_created_by",
+                        name: "FK_warehouses_users_created_by",
                         column: x => x.created_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_workflow_logs_users_updated_by",
+                        name: "FK_warehouses_tenants_tenant_id",
+                        column: x => x.tenant_id,
+                        principalSchema: "public",
+                        principalTable: "tenants",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_warehouses_users_updated_by",
                         column: x => x.updated_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "workflow_webhooks",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<int>(nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
-                    created_by = table.Column<int>(nullable: false),
-                    updated_by = table.Column<int>(nullable: true),
-                    created_at = table.Column<DateTime>(nullable: false),
-                    updated_at = table.Column<DateTime>(nullable: true),
-                    deleted = table.Column<bool>(nullable: false),
-                    workflow_id = table.Column<int>(nullable: false),
-                    callback_url = table.Column<string>(maxLength: 500, nullable: false),
-                    method_type = table.Column<int>(nullable: false),
-                    parameters = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_workflow_webhooks", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_workflow_webhooks_users_created_by",
-                        column: x => x.created_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_workflow_webhooks_users_updated_by",
-                        column: x => x.updated_by,
-                        principalSchema: "public",
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_workflow_webhooks_workflows_workflow_id",
-                        column: x => x.workflow_id,
-                        principalSchema: "public",
-                        principalTable: "workflows",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -657,64 +535,10 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_settings_app_id",
-                schema: "public",
-                table: "app_settings",
-                column: "app_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_culture",
-                schema: "public",
-                table: "app_settings",
-                column: "culture");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_currency",
-                schema: "public",
-                table: "app_settings",
-                column: "currency");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_domain",
-                schema: "public",
-                table: "app_settings",
-                column: "domain");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_language",
-                schema: "public",
-                table: "app_settings",
-                column: "language");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_mail_sender_email",
-                schema: "public",
-                table: "app_settings",
-                column: "mail_sender_email");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_mail_sender_name",
-                schema: "public",
-                table: "app_settings",
-                column: "mail_sender_name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_settings_time_zone",
-                schema: "public",
-                table: "app_settings",
-                column: "time_zone");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_app_templates_active",
                 schema: "public",
                 table: "app_templates",
                 column: "active");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_templates_app_id",
-                schema: "public",
-                table: "app_templates",
-                column: "app_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_app_templates_language",
@@ -723,28 +547,10 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "language");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_templates_mail_sender_email",
-                schema: "public",
-                table: "app_templates",
-                column: "mail_sender_email");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_templates_mail_sender_name",
-                schema: "public",
-                table: "app_templates",
-                column: "mail_sender_name");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_app_templates_name",
                 schema: "public",
                 table: "app_templates",
                 column: "name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_app_templates_subject",
-                schema: "public",
-                table: "app_templates",
-                column: "subject");
 
             migrationBuilder.CreateIndex(
                 name: "IX_app_templates_system_code",
@@ -777,18 +583,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "deleted");
 
             migrationBuilder.CreateIndex(
-                name: "IX_apps_description",
-                schema: "public",
-                table: "apps",
-                column: "description");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_apps_label",
-                schema: "public",
-                table: "apps",
-                column: "label");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_apps_name",
                 schema: "public",
                 table: "apps",
@@ -811,12 +605,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "apps",
                 column: "updated_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_apps_use_tenant_settings",
-                schema: "public",
-                table: "apps",
-                column: "use_tenant_settings");
 
             migrationBuilder.CreateIndex(
                 name: "IX_cache_key",
@@ -855,12 +643,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "organization_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_organization_users_user_id",
-                schema: "public",
-                table: "organization_users",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_organizations_created_at",
                 schema: "public",
                 table: "organizations",
@@ -877,18 +659,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "organizations",
                 column: "deleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_organizations_id",
-                schema: "public",
-                table: "organizations",
-                column: "id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_organizations_label",
-                schema: "public",
-                table: "organizations",
-                column: "label");
 
             migrationBuilder.CreateIndex(
                 name: "IX_organizations_name",
@@ -915,12 +685,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "updated_by");
 
             migrationBuilder.CreateIndex(
-                name: "IX_team_apps_app_id",
-                schema: "public",
-                table: "team_apps",
-                column: "app_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_team_apps_team_id",
                 schema: "public",
                 table: "team_apps",
@@ -931,12 +695,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "team_users",
                 column: "team_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_team_users_user_id",
-                schema: "public",
-                table: "team_users",
-                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_teams_created_at",
@@ -955,18 +713,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "teams",
                 column: "deleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_teams_id",
-                schema: "public",
-                table: "teams",
-                column: "id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_teams_name",
-                schema: "public",
-                table: "teams",
-                column: "name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_teams_organization_id",
@@ -1017,58 +763,10 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "suspended_at");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tenant_licenses_tenant_id",
-                schema: "public",
-                table: "tenant_licenses",
-                column: "tenant_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_culture",
-                schema: "public",
-                table: "tenant_settings",
-                column: "culture");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_currency",
-                schema: "public",
-                table: "tenant_settings",
-                column: "currency");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_tenant_settings_custom_domain",
                 schema: "public",
                 table: "tenant_settings",
                 column: "custom_domain");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_language",
-                schema: "public",
-                table: "tenant_settings",
-                column: "language");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_mail_sender_email",
-                schema: "public",
-                table: "tenant_settings",
-                column: "mail_sender_email");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_mail_sender_name",
-                schema: "public",
-                table: "tenant_settings",
-                column: "mail_sender_name");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_tenant_id",
-                schema: "public",
-                table: "tenant_settings",
-                column: "tenant_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenant_settings_time_zone",
-                schema: "public",
-                table: "tenant_settings",
-                column: "time_zone");
 
             migrationBuilder.CreateIndex(
                 name: "IX_tenants_app_id",
@@ -1117,12 +815,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "tenants",
                 column: "updated_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_tenants_use_user_settings",
-                schema: "public",
-                table: "tenants",
-                column: "use_user_settings");
 
             migrationBuilder.CreateIndex(
                 name: "IX_user_settings_culture",
@@ -1231,73 +923,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "warehouses",
                 column: "updated_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_logs_app_id",
-                schema: "public",
-                table: "workflow_logs",
-                column: "app_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_logs_workflow_id",
-                schema: "public",
-                table: "workflow_logs",
-                column: "workflow_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_logs_created_by",
-                schema: "public",
-                table: "workflow_logs",
-                column: "created_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_logs_updated_by",
-                schema: "public",
-                table: "workflow_logs",
-                column: "updated_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_webhooks_created_by",
-                schema: "public",
-                table: "workflow_webhooks",
-                column: "created_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_webhooks_updated_by",
-                schema: "public",
-                table: "workflow_webhooks",
-                column: "updated_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflow_webhooks_workflow_id",
-                schema: "public",
-                table: "workflow_webhooks",
-                column: "workflow_id",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflows_active",
-                schema: "public",
-                table: "workflows",
-                column: "active");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflows_app_id",
-                schema: "public",
-                table: "workflows",
-                column: "app_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflows_created_by",
-                schema: "public",
-                table: "workflows",
-                column: "created_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_workflows_updated_by",
-                schema: "public",
-                table: "workflows",
-                column: "updated_by");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -1351,23 +976,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "workflow_logs",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "workflow_webhooks",
-                schema: "public");
-
-            migrationBuilder.DropTable(
                 name: "teams",
                 schema: "public");
 
             migrationBuilder.DropTable(
                 name: "tenants",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "workflows",
                 schema: "public");
 
             migrationBuilder.DropTable(

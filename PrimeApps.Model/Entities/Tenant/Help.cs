@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("template"), Required]
         public string Template { get; set; }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int? ModuleId { get; set; }
 
         [Column("modal_type")]

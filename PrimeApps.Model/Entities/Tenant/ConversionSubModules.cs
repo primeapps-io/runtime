@@ -5,7 +5,7 @@ namespace PrimeApps.Model.Entities.Tenant
     [Table("conversion_sub_modules")]
     public class ConversionSubModule : BaseEntity
     {
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         [Column("sub_module_id"), ForeignKey("MappingSubModule")]

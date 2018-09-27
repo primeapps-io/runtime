@@ -3,21 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 
 namespace PrimeApps.Model.Entities.Tenant
 {
-    /// <summary>
-    /// User Model
-    /// </summary>
     [Table("users")]
     public class TenantUser
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("id"), Key, Required]
+        [Column("id"), Key, Required, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
-        [Column("email"), Required, MaxLength(200)]//, Index]
+        [Column("email"), Required, MaxLength(200)]
         public string Email { get; set; }
 
         [Column("first_name"), Required, MaxLength(200)]
@@ -26,7 +21,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("last_name"), Required, MaxLength(200)]
         public string LastName { get; set; }
 
-        [Column("full_name"), Required, MaxLength(400)]//, Index]
+        [Column("full_name"), Required, MaxLength(400)]
         public string FullName { get; set; }
 
         [Column("is_active")]
@@ -67,7 +62,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("role_id"), ForeignKey("Role")]
         public int? RoleId { get; set; }
 
-       [Column("phone"), MaxLength(50)]
+        [Column("phone"), MaxLength(50)]
         public string Phone { get; set; }
 
         public Role Role { get; set; }

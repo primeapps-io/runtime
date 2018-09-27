@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using System.Net;
 using System.Linq;
@@ -21,10 +21,9 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/account")]
+    [Route("api/account")]
     public class AccountController : Controller
     {
-        private const string LocalLoginProvider = "Local";
         private IRecordRepository _recordRepository;
         private IApplicationRepository _applicationRepository;
         private IPlatformRepository _platformRepository;
@@ -33,44 +32,34 @@ namespace PrimeApps.App.Controllers
         private IProfileRepository _profileRepository;
         private IUserRepository _userRepository;
         private IRoleRepository _roleRepository;
-        private IPlatformWorkflowRepository _platformWorkflowRepository;
-		private Warehouse _warehouse;
+        private IDocumentHelper _documentHelper;
         private IConfiguration _configuration;
-		
-		private IRecordHelper _recordHelper;
-	    private IPlatformWorkflowHelper _platformWorkflowHelper;
-	    private IDocumentHelper _documentHelper;
 
-		public IBackgroundTaskQueue Queue { get; }
-		public AccountController(IApplicationRepository applicationRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IPlatformWorkflowRepository platformWorkflowRepository, IPlatformWorkflowHelper platformWorkflowHelper, IDocumentHelper documentHelper)
-		{
-			_applicationRepository = applicationRepository;
-			_recordRepository = recordRepository;
-			_warehouse = warehouse;
-			_platformUserRepository = platformUserRepository;
-			_tenantRepository = tenantRepository;
-			_platformRepository = platformRepository;
-			_profileRepository = profileRepository;
-			_roleRepository = roleRepository;
-			_userRepository = userRepository;
-            _platformWorkflowRepository = platformWorkflowRepository;
+        public IBackgroundTaskQueue Queue { get; }
+        public AccountController(IApplicationRepository applicationRepository, IRecordRepository recordRepository, IPlatformUserRepository platformUserRepository, IPlatformRepository platformRepository, IRoleRepository roleRepository, IProfileRepository profileRepository, IUserRepository userRepository, ITenantRepository tenantRepository, IBackgroundTaskQueue queue, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IDocumentHelper documentHelper)
+        {
+            _applicationRepository = applicationRepository;
+            _recordRepository = recordRepository;
+            _platformUserRepository = platformUserRepository;
+            _tenantRepository = tenantRepository;
+            _platformRepository = platformRepository;
+            _profileRepository = profileRepository;
+            _roleRepository = roleRepository;
+            _userRepository = userRepository;
+            _documentHelper = documentHelper;
             _configuration = configuration;
+            Queue = queue;
+        }
 
-			Queue = queue;
-			_recordHelper = recordHelper;
-			_platformWorkflowHelper = platformWorkflowHelper;
-			_documentHelper = documentHelper;
-		}
-		
-		[HttpPost]
-		[AllowAnonymous]
-		[Route("create")]
-		public async Task<IActionResult> Create([FromBody]CreateBindingModels activateBindingModel)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("create")]
+        public async Task<IActionResult> Create([FromBody]CreateBindingModels activateBindingModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			var userExist = true;
+            var userExist = true;
             PlatformUser user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
             var app = await _applicationRepository.Get(activateBindingModel.AppId);
 
@@ -196,7 +185,7 @@ namespace PrimeApps.App.Controllers
 
                 user.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = user });
 
-				Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
+                Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
 
                 //user.TenantId = user.Id;
                 //tenant.License.HasAnalyticsLicense = true;
@@ -227,9 +216,8 @@ namespace PrimeApps.App.Controllers
 
                 }
 
-				//TODO Integration
-				//Queue.QueueBackgroundWorkItem(async token => _integration.UpdateSubscriber(user.Email, tenantId, _warehouse, _recordHelper.AfterUpdate));
-				Queue.QueueBackgroundWorkItem(async token => await _platformWorkflowHelper.Run(OperationType.insert, app));
+                //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
+                //Queue.QueueBackgroundWorkItem(async token => await _platformWorkflowHelper.Run(OperationType.insert, app));
 
             }
             catch (Exception ex)
@@ -246,50 +234,50 @@ namespace PrimeApps.App.Controllers
         //return GetErrorResult(confirmResponse);
         //return BadRequestResult();
 
-		[Route("change_password")]
-		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordBindingModel changePasswordBindingModel)
-		{
-			if(HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
-				return Unauthorized();
+        [Route("change_password")]
+        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordBindingModel changePasswordBindingModel)
+        {
+            if (HttpContext.User.FindFirst("email") == null || string.IsNullOrEmpty(HttpContext.User.FindFirst("email").Value))
+                return Unauthorized();
 
-			changePasswordBindingModel.Email = HttpContext.User.FindFirst("email").Value;
+            changePasswordBindingModel.Email = HttpContext.User.FindFirst("email").Value;
 
-			var appInfo = await _applicationRepository.Get(Request.Host.Value);
-			using (var httpClient = new HttpClient())
-			{
+            var appInfo = await _applicationRepository.Get(Request.Host.Value);
+            using (var httpClient = new HttpClient())
+            {
 
-				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/change_password";
-				httpClient.BaseAddress = new Uri(url);
-				httpClient.DefaultRequestHeaders.Accept.Clear();
-				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/change_password";
+                httpClient.BaseAddress = new Uri(url);
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
 
-				var json = JsonConvert.SerializeObject(changePasswordBindingModel);
-				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+                var json = JsonConvert.SerializeObject(changePasswordBindingModel);
+                var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
-				if (!response.IsSuccessStatusCode)
-					return BadRequest(response);
-			}
+                if (!response.IsSuccessStatusCode)
+                    return BadRequest(response);
+            }
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		// POST account/logout
-		[Route("logout")]
-		public async Task<IActionResult> Logout()
-		{
-			var appInfo = await _applicationRepository.Get(Request.Host.Value);
+        // POST account/logout
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var appInfo = await _applicationRepository.Get(Request.Host.Value);
 
-			Response.Cookies.Delete("tenant_id");
-			await HttpContext.SignOutAsync();
+            Response.Cookies.Delete("tenant_id");
+            await HttpContext.SignOutAsync();
 
-			return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout" });
-		}
+            return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout" });
+        }
 
-		private async Task DeactivateUser(Tenant tenant)
-		{
-			await _tenantRepository.DeleteAsync(tenant);
-		}
-	}
+        private async Task DeactivateUser(Tenant tenant)
+        {
+            await _tenantRepository.DeleteAsync(tenant);
+        }
+    }
 }
 
 

@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Entities.Tenant
     public class ProcessFilter : BaseEntity
     {
         [JsonIgnore]
-        [Column("process_id"), ForeignKey("Process")]//, Index]
+        [Column("process_id"), ForeignKey("Process")]
         public int ProcessId { get; set; }
 
         [Column("field"), MaxLength(120), Required]

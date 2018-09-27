@@ -12,10 +12,10 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("text"), Required]
         public string Text { get; set; }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int? ModuleId { get; set; }
 
-        [Column("record_id")]//, Index]
+        [Column("record_id")]
         public int? RecordId { get; set; }
 
         [Column("note_id")]

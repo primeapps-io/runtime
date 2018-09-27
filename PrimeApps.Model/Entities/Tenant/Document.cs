@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Tenant
         /// <summary>
         /// Which module is associated with this document.
         /// </summary>
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         /// <summary>

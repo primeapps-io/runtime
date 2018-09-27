@@ -32,7 +32,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("active")]
         public bool Active { get; set; }
 
-        [Column("sharing_type")]//, Index]
+        [Column("sharing_type")]
         public TemplateSharingType SharingType { get; set; }
 
         public List<TemplateShares> Shares { get; set; }

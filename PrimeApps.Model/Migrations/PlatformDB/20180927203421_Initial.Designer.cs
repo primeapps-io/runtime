@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180925122447_Initial")]
+    [Migration("20180927203421_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,10 +72,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Deleted");
 
-                    b.HasIndex("Description");
-
-                    b.HasIndex("Label");
-
                     b.HasIndex("Name");
 
                     b.HasIndex("TemplateId");
@@ -83,8 +79,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("UpdatedAt");
 
                     b.HasIndex("UpdatedById");
-
-                    b.HasIndex("UseTenantSettings");
 
                     b.ToTable("apps");
                 });
@@ -134,6 +128,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("MailSenderName")
                         .HasColumnName("mail_sender_name");
 
+                    b.Property<string>("TenantCreateWebhook")
+                        .HasColumnName("tenant_create_webhook");
+
                     b.Property<string>("TimeZone")
                         .HasColumnName("time_zone");
 
@@ -141,22 +138,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasColumnName("title");
 
                     b.HasKey("AppId");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("Culture");
-
-                    b.HasIndex("Currency");
-
-                    b.HasIndex("Domain");
-
-                    b.HasIndex("Language");
-
-                    b.HasIndex("MailSenderEmail");
-
-                    b.HasIndex("MailSenderName");
-
-                    b.HasIndex("TimeZone");
 
                     b.ToTable("app_settings");
                 });
@@ -199,163 +180,15 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Active");
 
-                    b.HasIndex("AppId");
-
                     b.HasIndex("Language");
 
-                    b.HasIndex("MailSenderEmail");
-
-                    b.HasIndex("MailSenderName");
-
                     b.HasIndex("Name");
-
-                    b.HasIndex("Subject");
 
                     b.HasIndex("SystemCode");
 
                     b.HasIndex("Type");
 
                     b.ToTable("app_templates");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflow", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<bool>("Active")
-                        .HasColumnName("active");
-
-                    b.Property<int>("AppId")
-                        .HasColumnName("app_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<int>("Frequency")
-                        .HasColumnName("frequency");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnName("name")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("Operations")
-                        .IsRequired()
-                        .HasColumnName("operations")
-                        .HasMaxLength(50);
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Active");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("workflows");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<int>("AppId")
-                        .HasColumnName("app_id");
-
-                    b.Property<int>("AppWorkflowId")
-                        .HasColumnName("workflow_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("AppWorkflowId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("workflow_logs");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowWebhook", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("CallbackUrl")
-                        .IsRequired()
-                        .HasColumnName("callback_url")
-                        .HasMaxLength(500);
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<int>("MethodType")
-                        .HasColumnName("method_type");
-
-                    b.Property<string>("Parameters")
-                        .HasColumnName("parameters");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.Property<int>("WorkflowId")
-                        .HasColumnName("workflow_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.HasIndex("WorkflowId")
-                        .IsUnique();
-
-                    b.ToTable("workflow_webhooks");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Cache", b =>
@@ -452,10 +285,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Deleted");
 
-                    b.HasIndex("Id");
-
-                    b.HasIndex("Label");
-
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
@@ -478,8 +307,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasKey("UserId", "OrganizationId");
 
                     b.HasIndex("OrganizationId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("organization_users");
                 });
@@ -505,7 +332,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .IsRequired()
                         .HasColumnName("last_name");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
 
                     b.HasKey("Id");
@@ -647,10 +474,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Deleted");
 
-                    b.HasIndex("Id");
-
-                    b.HasIndex("Name");
-
                     b.HasIndex("OrganizationId");
 
                     b.HasIndex("UpdatedAt");
@@ -669,8 +492,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasColumnName("team_id");
 
                     b.HasKey("AppId", "TeamId");
-
-                    b.HasIndex("AppId");
 
                     b.HasIndex("TeamId");
 
@@ -691,8 +512,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasKey("UserId", "TeamId");
 
                     b.HasIndex("TeamId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("team_users");
                 });
@@ -751,8 +570,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("UpdatedById");
 
-                    b.HasIndex("UseUserSettings");
-
                     b.ToTable("tenants");
                 });
 
@@ -800,8 +617,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("SuspendedAt");
 
-                    b.HasIndex("TenantId");
-
                     b.ToTable("tenant_licenses");
                 });
 
@@ -837,12 +652,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<bool>("HasSampleData")
                         .HasColumnName("has_sample_data");
 
-                    b.Property<string>("IntegrationEmail")
-                        .HasColumnName("integration_email");
-
-                    b.Property<string>("IntegrationPassword")
-                        .HasColumnName("integration_password");
-
                     b.Property<string>("Language")
                         .HasColumnName("language");
 
@@ -860,21 +669,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasKey("TenantId");
 
-                    b.HasIndex("Culture");
-
-                    b.HasIndex("Currency");
-
                     b.HasIndex("CustomDomain");
-
-                    b.HasIndex("Language");
-
-                    b.HasIndex("MailSenderEmail");
-
-                    b.HasIndex("MailSenderName");
-
-                    b.HasIndex("TenantId");
-
-                    b.HasIndex("TimeZone");
 
                     b.ToTable("tenant_settings");
                 });
@@ -924,57 +719,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflow", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
-                        .WithMany()
-                        .HasForeignKey("AppId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowLog", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.AppWorkflow", "AppWorkflow")
-                        .WithMany("Logs")
-                        .HasForeignKey("AppWorkflowId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppWorkflowWebhook", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.AppWorkflow", "AppWorkflow")
-                        .WithOne("WebHook")
-                        .HasForeignKey("PrimeApps.Model.Entities.Platform.AppWorkflowWebhook", "WorkflowId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Organization", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
@@ -1018,6 +762,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")

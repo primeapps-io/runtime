@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Entities.Tenant
     public class ProcessApprover : BaseEntity
     {
         [JsonIgnore]
-        [Column("process_id"), ForeignKey("Process")]//, Index]
+        [Column("process_id"), ForeignKey("Process")]
         public int ProcessId { get; set; }
 
         [JsonIgnore]

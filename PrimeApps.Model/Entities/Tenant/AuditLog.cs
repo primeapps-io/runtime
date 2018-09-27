@@ -12,7 +12,7 @@ namespace PrimeApps.Model.Entities.Tenant
         public AuditType AuditType { get; set; }
 
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int? ModuleId { get; set; }
 
         [Column("record_id")]
