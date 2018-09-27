@@ -1,17 +1,21 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine  AS base
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
+EXPOSE 50002 50002
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
-ENV ASPNETCORE_ENVIRONMENT Development
-COPY . /src
 WORKDIR /src
-RUN dotnet restore -nowarn:msb3202,nu1503 PrimeApps.App/
-RUN dotnet build --no-restore -c Release -o /app PrimeApps.App/
+COPY ["PrimeApps.App/PrimeApps.App.csproj", "PrimeApps.App/"]
+COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
+COPY ["PrimeApps.Model/PrimeApps.Api.csproj", "PrimeApps.Api/"]
+
+
+RUN dotnet restore "PrimeApps.App/PrimeApps.App.csproj"
+COPY . .
+WORKDIR "/src/PrimeApps.App"
+RUN dotnet build "PrimeApps.App.csproj" -c Release -o /app
 
 FROM build AS publish
-ENV ASPNETCORE_ENVIRONMENT Development
-WORKDIR /src/PrimeApps.App/
-RUN dotnet publish --no-restore -c Release -o /app
+RUN dotnet publish "PrimeApps.App.csproj" -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
