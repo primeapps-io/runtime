@@ -32,20 +32,20 @@ namespace PrimeApps.App.Controllers
         private IBpmHelper _bpmHelper;
 
         public BpmController(IBpmRepository bpmRepository,
+            IBpmHelper bpmHelper,
             IWorkflowHost workflowHost,
             IWorkflowRegistry workflowRegistry,
             IPersistenceProvider workflowStore,
             IDefinitionLoader definitionLoader,
-            IConfiguration configuration,
-            IBpmHelper bpmHelper)
+            IConfiguration configuration)
         {
             _bpmRepository = bpmRepository;
+            _bpmHelper = bpmHelper;
             _configuration = configuration;
             _workflowHost = workflowHost;
             _workflowStore = workflowStore;
             _workflowRegistry = workflowRegistry;
             _definitionLoader = definitionLoader;
-            _bpmHelper = bpmHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -88,17 +88,20 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.TenantLanguage);
-            var result = await _bpmRepository.Create(bpmWorkflowEntity);
+            ////var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
-            if (result < 1)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            ////if (result < 1)
+            ////    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            JObject data = new JObject();
+            data["id"] = 1;
+            data["value"] = "galip";
+            var result = data.ToJsonString();
 
-            ////var str = bpmWorkflow.DefinitionJson.ToString();
-            ////_definitionLoader.LoadDefinition(str);
+            var str = bpmWorkflow.DefinitionJson.ToString();
+            _definitionLoader.LoadDefinition(str);
 
-            ////var referance = _bpmHelper.ReferanceCreateToForBpmHost(AppUser);
-
-            ////await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
+            var referance = _bpmHelper.ReferanceCreateToForBpmHost(AppUser);
+            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Ok();//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);

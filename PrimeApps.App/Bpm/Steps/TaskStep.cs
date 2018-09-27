@@ -18,6 +18,8 @@ namespace PrimeApps.App.Bpm.Steps
 
         public JObject Record { get; set; }
 
+        public string RecordStr { get; set; }
+
         public TaskStep(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             _configuration = configuration;

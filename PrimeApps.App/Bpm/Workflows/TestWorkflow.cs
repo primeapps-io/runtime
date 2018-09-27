@@ -14,11 +14,11 @@ namespace PrimeApps.App.Bpm.Workflows
         public void Build(IWorkflowBuilder<JObject> builder)
         {
             builder
-                .StartWith<DataReadStep>()
-                .Input(step => step.Request, data => data)
-                 //.Output(data => data, step => step)
-                .Then<TaskStep>()
-                .Input(step => step.Record, data => data);
+                .StartWith<DataReadStep>();
+                //.Input(step => step.Request, data => data)
+                // //.Output(data => data, step => step)
+                //.Then<TaskStep>()
+                //.Input(step => step.Record, data => data);
         }
     }
 }
