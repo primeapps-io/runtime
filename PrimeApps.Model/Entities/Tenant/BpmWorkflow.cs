@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("bpm_workflows")]
     public class BpmWorkflow : BaseEntity

@@ -1,8 +1,7 @@
-﻿using PrimeApps.Model.Enums;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("bpm_categories")]
     public class BpmCategory : BaseEntity
