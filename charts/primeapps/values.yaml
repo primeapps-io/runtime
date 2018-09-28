@@ -20,7 +20,8 @@ memory: 128Mi
 ## Ingress settings
 ingress:
   enabled: true
-  hostname: dev.primeapps.io
+  appHostname: dev.primeapps.io
+  authHostname: auth-dev.primeapps.io
   annotations:
      kubernetes.io/ingress.class: nginx
   tls: false
