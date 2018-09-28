@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("value3"), MaxLength(100)]
         public string Value3 { get; set; }
 
-        [Column("system_code"), MaxLength(50)] //, Index(IsUnique = true)
+        [Column("system_code"), MaxLength(50)]
         public string SystemCode { get; set; }
 
         [Column("order")]
