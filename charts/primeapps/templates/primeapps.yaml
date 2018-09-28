@@ -1,9 +1,4 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: "primeapps-{{.Release.EnvironmentName}}"
----
-apiVersion: v1
 kind: Service
 metadata:
   name: {{ template "fullname" . }}
@@ -17,11 +12,11 @@ spec:
     - port: {{.Values.authServicePort}}
       targetPort: {{.Values.authContainerPort}}
       protocol: TCP
-      name: http
+      name: auth-http
     - port: {{.Values.appServicePort}}
       targetPort: {{.Values.appContainerPort}}
       protocol: TCP
-      name: http
+      name: app-http
   selector:
     component: "{{.Release.Name}}-{{.Values.component}}"
 #  type: {{ default "ClusterIP" .Values.serviceType | quote }}
@@ -53,7 +48,7 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.pullsecret }}
       containers:
-        - name: {{ template "fullname" . }}.auth
+        - name: {{ template "fullname" . }}-auth
           image: "{{.Values.authImage}}:{{.Values.imageTag}}"
           imagePullPolicy: "{{.Values.imagePullPolicy}}"
           ports:
@@ -63,7 +58,7 @@ spec:
             requests:
               cpu: "{{.Values.cpu}}"
               memory: "{{.Values.memory}}"
-        - name: {{ template "fullname" . }}.app
+        - name: {{ template "fullname" . }}-app
           image: "{{.Values.appImage}}:{{.Values.imageTag}}"
           imagePullPolicy: "{{.Values.imagePullPolicy}}"
           ports:
