@@ -11,10 +11,10 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("system_type"), Required]
         public SystemType SystemType { get; set; }
 
-        [Column("label_en"), MaxLength(50), Required] //, Index(IsUnique = true)
+        [Column("label_en"), MaxLength(50), Required]
         public string LabelEn { get; set; }
 
-        [Column("label_tr"), MaxLength(50), Required] //, Index(IsUnique = true)
+        [Column("label_tr"), MaxLength(50), Required]
         public string LabelTr { get; set; }
 
         [Column("migration_id")]

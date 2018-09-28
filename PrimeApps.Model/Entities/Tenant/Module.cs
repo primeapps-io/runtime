@@ -1,5 +1,4 @@
-﻿using System;
-using PrimeApps.Model.Enums;
+﻿using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +8,7 @@ namespace PrimeApps.Model.Entities.Tenant
     [Table("modules")]
     public class Module : BaseEntity
     {
-        [Column("name"), MaxLength(50), Required] //, Index(IsUnique = true)
+        [Column("name"), MaxLength(50), Required]
         public string Name { get; set; }
 
         [Column("system_type"), Required]
@@ -72,7 +71,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
         public virtual ICollection<Reminder> Reminders { get; set; }
 
-		public virtual ICollection<Components> Components { get; set; }
+        public virtual ICollection<Components> Components { get; set; }
 
     }
 }
