@@ -43,7 +43,7 @@ spec:
           {{- end }}
           env:
             {{- $root := . }}
-            {{- range $ref, $values := .Values.secrets.auth }}
+            {{- range $ref, $values := .Values.secrets }}
             {{- range $key, $value := $values }}
             - name: {{ $ref }}__{{ $key }}
               valueFrom:
@@ -75,7 +75,7 @@ spec:
           {{- end }}
           env:
             {{- $root := . }}
-            {{- range $ref, $values := .Values.secrets.app }}
+            {{- range $ref, $values := .Values.secrets }}
             {{- range $key, $value := $values }}
             - name: {{ $ref }}__{{ $key }}
               valueFrom:

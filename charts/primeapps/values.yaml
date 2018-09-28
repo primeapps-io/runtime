@@ -30,10 +30,10 @@ ingress:
     #   hosts:
     #     - chart-example.local
 probes:
-  enabled: false
+  enabled: true
 secrets:
-  app:
     ConnectionStrings:
+      AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
       TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
       PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
       WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
@@ -64,21 +64,10 @@ secrets:
       AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;"
       AzureSearch.Storage: "ofisimdev"
       AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
-      UseCdn: "false",
-      AuthenticationServerURL: "http://auth-dev.primeapps.io",
+      UseCdn: "false"
+      AuthenticationServerURL: "http://auth-dev.primeapps.io"
       ClientId: "ofisim_crm"
       ClientSecret: "secret"
-    webOptimizer:
-      enableCaching: false
-      enableMemoryCache: false
-      enableDiskCache: false
-      cacheDirectory: "/var/temp/weboptimizercache"
-      enableTagHelperBundling": "false"
-  auth:
-    ConnectionStrings:
-      AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
-      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
-      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
     webOptimizer:
       enableCaching: "false"
       enableMemoryCache: "false"
