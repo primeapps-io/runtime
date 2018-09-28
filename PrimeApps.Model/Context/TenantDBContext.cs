@@ -230,7 +230,7 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<Profile>()
                 .HasOne(x => x.CreatedBy)
                 .WithMany()
-                .HasForeignKey(x => x.CreatedById); 
+                .HasForeignKey(x => x.CreatedById);
 
             BuildIndexes(modelBuilder);
         }
@@ -660,6 +660,16 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Deleted);
 
+            //BpmWorkflowLog
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.WorkflowId);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.RecordId);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.CreatedById);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.UpdatedById);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.Deleted);
+
             //BpmRecordFilter
 
 
@@ -732,5 +742,6 @@ namespace PrimeApps.Model.Context
         public DbSet<BpmCategory> BpmCategories { get; set; }
         public DbSet<BpmRecordFilter> BpmRecordFilters { get; set; }
         public DbSet<BpmWorkflow> BpmWorkflows { get; set; }
+        public DbSet<BpmWorkflowLog> BpmWorkflowLogs { get; set; }
     }
 }

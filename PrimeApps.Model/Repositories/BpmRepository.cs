@@ -14,11 +14,38 @@ namespace PrimeApps.Model.Repositories
     {
         public BpmRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
+        #region BpmWorkflow
         public async Task<BpmWorkflow> Get(int id)
         {
             var bpmWorkFlow = await DbContext.BpmWorkflows.Where(q => q.Id == id && !q.Deleted).FirstOrDefaultAsync();
 
             return bpmWorkFlow;
+        }
+
+        public async Task<List<BpmWorkflow>> GetAll(string code = null, int? version = null, bool active = true, bool deleted = false)
+        {
+            var bpmWorkFlows = DbContext.BpmWorkflows.Where(q => q.Deleted == deleted && q.Active == active);
+
+            if (code != null)
+                bpmWorkFlows = bpmWorkFlows.Where(q => q.Code == code);
+            if (version.HasValue)
+                bpmWorkFlows = bpmWorkFlows.Where(q => q.Version == version);
+
+            return await bpmWorkFlows.ToListAsync();
+        }
+
+        public async Task<List<BpmWorkflow>> GetByModuleId(int moduleId, bool active = true, bool deleted = false)
+        {
+            var bpmWorkFlows = await DbContext.BpmWorkflows.Where(q => q.ModuleId == moduleId && q.Active == active && q.Deleted == deleted).ToListAsync();
+
+            return bpmWorkFlows;
+        }
+
+        public async Task<List<BpmWorkflow>> GetAllBasic()
+        {
+            var bpmWorkFlows = await DbContext.BpmWorkflows.Where(q => !q.Deleted).ToListAsync();
+
+            return bpmWorkFlows;
         }
 
         public async Task<ICollection<BpmWorkflow>> Find(BpmFindRequest request)
@@ -63,5 +90,44 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
+        #endregion BpmWorkflow
+
+        #region BpmWorkflowLog
+
+        public async Task<bool> HasLog(int workflowId, int moduleId, int recordId)
+        {
+            var hasLog = await DbContext.BpmWorkflowLogs
+                .AnyAsync(x => !x.Deleted &&
+                x.WorkflowId == workflowId &&
+                x.ModuleId == moduleId &&
+                x.RecordId == recordId);
+
+            return hasLog;
+        }
+
+        public async Task<int> CreateLog(BpmWorkflowLog workflowLog)
+        {
+            DbContext.BpmWorkflowLogs.Add(workflowLog);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteLogs(int workflowId)
+        {
+            var workflowLogs = await DbContext.BpmWorkflowLogs
+                .Where(x => !x.Deleted && x.WorkflowId == workflowId)
+                .ToListAsync();
+
+            if (workflowLogs.Count < 1)
+                return -1;
+
+            foreach (var workflowLog in workflowLogs)
+            {
+                workflowLog.Deleted = true;
+            }
+
+            return await DbContext.SaveChangesAsync();
+        }
+        #endregion BpmWorkflowLog
     }
 }

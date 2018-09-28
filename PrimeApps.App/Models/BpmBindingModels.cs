@@ -13,6 +13,9 @@ namespace PrimeApps.App.Models
         [Required, StringLength(100)]
         public string Name { get; set; }
 
+        [Required, MaxLength(200)]
+        public string Code { get; set; }
+        
         public string Description { get; set; }
 
         public int? CategoryId { get; set; }
@@ -31,6 +34,9 @@ namespace PrimeApps.App.Models
 
         [Required]
         public WorkflowFrequency Frequency { get; set; }
+
+        [Required]
+        public WorkflowProcessFilter ProcessFilter { get; set;}
 
         [MaxLength(4000)]
         public string ChangedFields { get; set; }

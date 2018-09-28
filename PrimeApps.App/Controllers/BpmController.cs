@@ -16,6 +16,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Helpers;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using WorkflowCore.Interface;
+using System.Linq;
 
 namespace PrimeApps.App.Controllers
 {
@@ -88,20 +89,23 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.TenantLanguage);
-            ////var result = await _bpmRepository.Create(bpmWorkflowEntity);
+            bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
+            bpmWorkflow.DefinitionJson["Version"] = 1;
 
-            ////if (result < 1)
-            ////    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            JObject data = new JObject();
-            data["id"] = 1;
-            data["value"] = "galip";
-            var result = data.ToJsonString();
+            //Load string JSON Data on WorkFlowEngine
+            var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
+            var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-            var str = bpmWorkflow.DefinitionJson.ToString();
-            _definitionLoader.LoadDefinition(str);
+            if (workflowDefinition == null)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            var referance = _bpmHelper.ReferanceCreateToForBpmHost(AppUser);
-            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance.ToString());
+            //var result = await _bpmRepository.Create(bpmWorkflowEntity);
+
+            //if (result < 1)
+            //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+            var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
+            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Ok();//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
@@ -117,6 +121,29 @@ namespace PrimeApps.App.Controllers
 
             if (bpmWorkflowEntity == null)
                 return NotFound();
+
+            //var bpmRecord = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
+            //if (bpmRecord != null)
+            //{
+            //To increase the last version number of the record we want to update
+            var searchResult = await _bpmRepository.GetAll(bpmWorkflowEntity.Code);
+            if (searchResult != null && searchResult.Count > 0)
+            {
+                var lastVersion = searchResult.OrderByDescending(q => q.Version).First().Version;
+                var newVersion = lastVersion + 1;
+
+                bpmWorkflowEntity.Version = newVersion;
+                bpmWorkflow.DefinitionJson["Version"] = newVersion;
+                bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
+            }
+            //}
+
+            //Load string JSON Data on WorkFlowEngine
+            var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
+            var workflowDefinition = _definitionLoader.LoadDefinition(str);
+
+            if(workflowDefinition==null)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity, AppUser.TenantLanguage);
             await _bpmRepository.Update(bpmWorkflowEntity);
@@ -143,7 +170,7 @@ namespace PrimeApps.App.Controllers
         {
             string workflowId;
             var workflowDefinition = _workflowRegistry.GetDefinition(id, version);
-            var referance = _bpmHelper.ReferanceCreateToForBpmHost(AppUser);
+            var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
 
             if (workflowDefinition == null)
                 return BadRequest(string.Format("Workflow definition {0} for version {1} not found", id, version));

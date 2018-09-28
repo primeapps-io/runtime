@@ -58,6 +58,9 @@ namespace PrimeApps.Model.Entities.Application
         [Column("module_id"), Range(1, int.MaxValue)]
         public int ModuleId { get; set; }
 
+        [Column("process_filter"), Required]
+        public WorkflowProcessFilter ProcessFilter { get; set; }
+
         public virtual BpmCategory Category { get; set; }
 
         public virtual ICollection<BpmRecordFilter> Filters { get; set; }

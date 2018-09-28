@@ -368,6 +368,8 @@ namespace PrimeApps.App.Helpers
                                 continue;
                         }
 
+
+                        //-----------------
                         if (workflow.FieldUpdate != null)
                         {
                             var fieldUpdate = workflow.FieldUpdate;

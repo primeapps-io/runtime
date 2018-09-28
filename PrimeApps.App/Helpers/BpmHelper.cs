@@ -9,7 +9,9 @@ using PrimeApps.Model.Entities.Application;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +23,7 @@ namespace PrimeApps.App.Helpers
 
         Task UpdateEntity(BpmWorkflowBindingModel bpmWorkflowModel, BpmWorkflow bpmWorkflow, string tenantLanguage);
 
-        string ReferanceCreateToForBpmHost(UserItem appUser);
+        string ReferenceCreateToForBpmHost(UserItem appUser);
     }
     public class BpmHelper : IBpmHelper
     {
@@ -43,6 +45,7 @@ namespace PrimeApps.App.Helpers
             var bpmWorkflow = new BpmWorkflow
             {
                 Name = bpmWorkflowModel.Name,
+                Code = bpmWorkflowModel.Code,
                 Description = bpmWorkflowModel.Description,
                 CategoryId = bpmWorkflowModel.CategoryId,
                 StartTime = bpmWorkflowModel.StartTime,
@@ -50,6 +53,7 @@ namespace PrimeApps.App.Helpers
                 TriggerType = bpmWorkflowModel.TriggerType,
                 RecordOperations = bpmWorkflowModel.RecordOperations,
                 Frequency = bpmWorkflowModel.Frequency,
+                ProcessFilter = bpmWorkflowModel.ProcessFilter,
                 ChangedFields = bpmWorkflowModel.ChangedFields,
                 CanStartManuel = bpmWorkflowModel.CanStartManuel,
                 DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString(),
@@ -166,6 +170,7 @@ namespace PrimeApps.App.Helpers
             bpmWorkflow.TriggerType = bpmWorkflowModel.TriggerType;
             bpmWorkflow.RecordOperations = bpmWorkflowModel.RecordOperations;
             bpmWorkflow.Frequency = bpmWorkflowModel.Frequency;
+            bpmWorkflow.ProcessFilter = bpmWorkflowModel.ProcessFilter;
             bpmWorkflow.ChangedFields = bpmWorkflowModel.ChangedFields;
             bpmWorkflow.CanStartManuel = bpmWorkflowModel.CanStartManuel;
             bpmWorkflow.DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString();
@@ -263,10 +268,349 @@ namespace PrimeApps.App.Helpers
                             bpmWorkflow.Filters.Add(recordFilter);
                         }
                     }
-                } 
+                }
             }
 
 
+        }
+
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, JObject previousRecord)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                //Set warehouse database name
+                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                using (var _BpmWorkflowRepository = new BpmRepository(databaseContext, _configuration))
+                using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+                using (var _userRepository = new UserRepository(databaseContext, _configuration))
+                using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                {
+                    _userRepository.CurrentUser = _picklistRepository.CurrentUser = _BpmWorkflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    var bpmWorkflows = await _BpmWorkflowRepository.GetByModuleId(module.Id);
+                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString())).ToList();
+                    var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
+
+                    if (bpmWorkflows.Count < 1)
+                        return;
+
+                    var lookupModuleNames = new List<string>();
+                    ICollection<Module> lookupModules = null;
+
+                    foreach (var workflow in bpmWorkflows)
+                    {
+                        if (!string.IsNullOrEmpty(workflow.ChangedFields) && operationType != OperationType.insert)
+                        {
+                            bool isFieldExist = false;
+                            // var relatedField = module.Fields.FirstOrDefault(q => workflow.ChangedFieldsArray.Contains(q.Name));
+
+                            foreach (var property in record)
+                            {
+                                if (workflow.ChangedFieldsArray.Contains(property.Key))
+                                    isFieldExist = true;
+                            }
+
+                            if (!isFieldExist /*|| record[workflow.ChangedFields] == previousRecord[workflow.ChangedFields]*/)
+                                continue;
+                        }
+
+                        foreach (var field in module.Fields)
+                        {
+                            if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                                lookupModuleNames.Add(field.LookupType);
+                        }
+
+                        if (lookupModuleNames.Count > 0)
+                            lookupModules = await _moduleRepository.GetByNamesBasic(lookupModuleNames);
+                        else
+                            lookupModules = new List<Module>();
+
+                        lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                        record = _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+
+                        bool hasProcessFilter = true;
+                        if (workflow.ProcessFilter != WorkflowProcessFilter.None)
+                        {
+                            if (!record["process_id"].IsNullOrEmpty() || (record["process_id"].IsNullOrEmpty() && workflow.ProcessFilter == WorkflowProcessFilter.All))
+                            {
+                                switch (workflow.ProcessFilter)
+                                {
+                                    case WorkflowProcessFilter.All:
+                                        break;
+                                    case WorkflowProcessFilter.Pending:
+                                        if ((int)record["process_status"] != 1)
+                                            hasProcessFilter = false;
+                                        break;
+                                    case WorkflowProcessFilter.Approved:
+                                        if ((int)record["process_status"] != 2)
+                                            hasProcessFilter = false;
+                                        break;
+                                    case WorkflowProcessFilter.Rejected:
+                                        if ((int)record["process_status"] != 3)
+                                            hasProcessFilter = false;
+                                        break;
+                                }
+                            }
+                            else return;
+                        }
+
+                        if (!hasProcessFilter)
+                            continue;
+
+                        if ((workflow.Frequency == WorkflowFrequency.NotSet || workflow.Frequency == WorkflowFrequency.OneTime) && operationType != OperationType.delete)
+                        {
+                            var haslog = await _BpmWorkflowRepository.HasLog(workflow.Id, module.Id, (int)record["id"]);
+
+                            if (haslog)
+                                continue;
+                        }
+
+                        if (workflow.Filters != null && workflow.Filters.Count > 0)
+                        {
+                            var filters = workflow.Filters;
+                            var mismatchedCount = 0;
+
+                            foreach(var filter in filters)
+                            {
+                                var filterField = module.Fields.Where(q => q.Name == filter.Field).FirstOrDefault();
+                                var filterFieldStr = filter.Field;
+
+                                if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id"));
+                                filterFieldStr = filter.Field + ".id";
+
+                                if(filterField==null || record[filterFieldStr]==null)
+                                {
+                                    mismatchedCount++;
+                                    continue;
+                                }
+
+                                var filterOperator = filter.Operator;
+                                var fieldValueString = record[filterFieldStr].ToString();
+                                var filterValueString = filter.Value;
+                                double fieldValueNumber;
+                                double filterValueNumber;
+                                double.TryParse(filterValueString, out fieldValueNumber);
+                                double.TryParse(filterValueString, out filterValueNumber);
+                                bool fieldValueBoolen;
+                                bool filterValueBoolen;
+                                var fieldValueBoolenParsed = bool.TryParse(fieldValueString, out fieldValueBoolen);
+                                var filterValueBoolenParsed = bool.TryParse(filterValueString, out filterValueBoolen);
+
+                                if (filterField.DataType == DataType.Lookup && filterField.LookupType == "users" && filterValueNumber == 0)
+                                    filterValueNumber = appUser.Id;
+
+                                switch (filterOperator)
+                                {
+                                    case Operator.Is:
+                                        if (fieldValueString.Trim().ToLower(culture) != filterValueString.Trim().ToLower(culture))
+                                            mismatchedCount++;
+                                        break;
+                                    case Operator.IsNot:
+                                        if (fieldValueString.Trim().ToLower(culture) == filterValueString.Trim().ToLower(culture))
+                                            mismatchedCount++;
+                                        break;
+                                    case Operator.Equals:
+                                        if (fieldValueBoolenParsed && filterValueBoolenParsed)
+                                        {
+                                            if (fieldValueBoolen != filterValueBoolen)
+                                                mismatchedCount++;
+                                        }
+                                        else
+                                        {
+                                            if (fieldValueNumber != filterValueNumber)
+                                                mismatchedCount++;
+                                        }
+                                        break;
+                                    case Operator.NotEqual:
+                                        if (fieldValueBoolenParsed && filterValueBoolenParsed)
+                                        {
+                                            if (fieldValueBoolen == filterValueBoolen)
+                                                mismatchedCount++;
+                                        }
+                                        else
+                                        {
+                                            if (fieldValueNumber == filterValueNumber)
+                                                mismatchedCount++;
+                                        }
+                                        break;
+                                    case Operator.Contains:
+                                        if (!(fieldValueString.Contains("|") || filterValueString.Contains("|")))
+                                        {
+                                            if (!fieldValueString.Trim().ToLower(culture).Contains(filterValueString.Trim().ToLower(culture)))
+                                                mismatchedCount++;
+                                        }
+                                        else
+                                        {
+                                            var fieldValueStringArray = fieldValueString.Split('|');
+                                            var filterValueStringArray = filterValueString.Split('|');
+
+                                            foreach (var filterValueStr in filterValueStringArray)
+                                            {
+                                                if (!fieldValueStringArray.Contains(filterValueStr))
+                                                    mismatchedCount++;
+                                            }
+                                        }
+                                        break;
+                                    case Operator.NotContain:
+                                        if (!(fieldValueString.Contains("|") || filterValueString.Contains("|")))
+                                        {
+                                            if (fieldValueString.Trim().ToLower(culture).Contains(filterValueString.Trim().ToLower(culture)))
+                                                mismatchedCount++;
+                                        }
+                                        else
+                                        {
+                                            var fieldValueStringArray = fieldValueString.Split('|');
+                                            var filterValueStringArray = filterValueString.Split('|');
+
+                                            foreach (var filterValueStr in filterValueStringArray)
+                                            {
+                                                if (fieldValueStringArray.Contains(filterValueStr))
+                                                    mismatchedCount++;
+                                            }
+                                        }
+                                        break;
+                                    case Operator.StartsWith:
+                                        if (!fieldValueString.Trim().ToLower(culture).StartsWith(filterValueString.Trim().ToLower(culture)))
+                                            mismatchedCount++;
+                                        break;
+                                    case Operator.EndsWith:
+                                        if (!fieldValueString.Trim().ToLower(culture).EndsWith(filterValueString.Trim().ToLower(culture)))
+                                            mismatchedCount++;
+                                        break;
+                                    case Operator.Empty:
+                                        if (!string.IsNullOrWhiteSpace(fieldValueString))
+                                            mismatchedCount++;
+                                        break;
+                                    case Operator.NotEmpty:
+                                        if (string.IsNullOrWhiteSpace(fieldValueString))
+                                            mismatchedCount++;
+                                        break;
+                                    case Operator.Greater:
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                                if (recordDate <= filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber <= filterValueNumber)
+                                        {
+                                            mismatchedCount++;
+                                        }
+                                        break;
+                                    case Operator.GreaterEqual:
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                                if (recordDate < filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber < filterValueNumber)
+                                        {
+                                            mismatchedCount++;
+                                        }
+
+                                        break;
+                                    case Operator.Less:
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                                if (recordDate >= filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber >= filterValueNumber)
+                                        {
+                                            mismatchedCount++;
+                                        }
+                                        break;
+                                    case Operator.LessEqual:
+                                        if (filterField.DataType == DataType.Date)
+                                        {
+                                            if (!record[filter.Field].IsNullOrEmpty())
+                                            {
+                                                DateTime filterDate = Convert.ToDateTime(filter.Value);
+                                                DateTime recordDate = Convert.ToDateTime(record[filter.Field]);
+
+                                                if (recordDate >= filterDate)
+                                                {
+                                                    mismatchedCount++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                mismatchedCount++;
+                                            }
+                                        }
+                                        else if (fieldValueNumber > filterValueNumber)
+                                        {
+                                            mismatchedCount++;
+                                        }
+
+                                        break;
+                                }
+
+                            }
+
+                            if (mismatchedCount > 0)
+                                continue;
+                        }
+
+                        var workflowLog = new BpmWorkflowLog
+                        {
+                            WorkflowId = workflow.Id,
+                            ModuleId = module.Id,
+                            RecordId = (int)record["id"]
+                        };
+
+                        try
+                        {
+                            var resultCreateLog = await _BpmWorkflowRepository.CreateLog(workflowLog);
+
+                            //if (resultCreateLog < 1)
+                            //    ErrorLog.GetDefault(null).Log(new Error(new Exception("WorkflowLog cannot be created! Object: " + workflowLog.ToJsonString())));
+                        }
+                        catch (Exception ex)
+                        {
+                            //ErrorLog.GetDefault(null).Log(new Error(ex));
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -274,14 +618,11 @@ namespace PrimeApps.App.Helpers
         /// </summary>
         /// <param name="appUser"></param>
         /// <returns></returns>
-        public string ReferanceCreateToForBpmHost(UserItem appUser)
+        public string ReferenceCreateToForBpmHost(UserItem appUser)
         {
-            var referance = new JObject();
+            var reference = appUser.TenantId + "|" + appUser.Id;
 
-            referance["user_id"] = appUser.ProfileId;
-            referance["tenant_id"] = appUser.TenantId;
-
-            return referance.ToString();
+            return reference;
         }
     }
 
