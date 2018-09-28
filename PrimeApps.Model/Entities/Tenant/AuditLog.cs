@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("audit_logs")]
     public class AuditLog : BaseEntity
@@ -12,7 +12,7 @@ namespace PrimeApps.Model.Entities.Application
         public AuditType AuditType { get; set; }
 
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int? ModuleId { get; set; }
 
         [Column("record_id")]

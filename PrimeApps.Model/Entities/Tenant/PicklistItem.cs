@@ -2,13 +2,13 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("picklist_items")]
     public class PicklistItem : BaseEntity
     {
         [JsonIgnore]
-        [Column("picklist_id"), ForeignKey("Picklist")]//, Index]
+        [Column("picklist_id"), ForeignKey("Picklist")]
         public int PicklistId { get; set; }
 
         [Column("label_en"), MaxLength(100), Required]
@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("value3"), MaxLength(100)]
         public string Value3 { get; set; }
 
-        [Column("system_code"), MaxLength(50)] //, Index(IsUnique = true)
+        [Column("system_code"), MaxLength(50)]
         public string SystemCode { get; set; }
 
         [Column("order")]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("picklists")]
     public class Picklist : BaseEntity
@@ -11,10 +11,10 @@ namespace PrimeApps.Model.Entities.Application
         [Column("system_type"), Required]
         public SystemType SystemType { get; set; }
 
-        [Column("label_en"), MaxLength(50), Required] //, Index(IsUnique = true)
+        [Column("label_en"), MaxLength(50), Required]
         public string LabelEn { get; set; }
 
-        [Column("label_tr"), MaxLength(50), Required] //, Index(IsUnique = true)
+        [Column("label_tr"), MaxLength(50), Required]
         public string LabelTr { get; set; }
 
         [Column("migration_id")]

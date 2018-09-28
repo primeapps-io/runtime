@@ -1,4 +1,4 @@
-﻿using PrimeApps.Model.Entities.Application;
+﻿using PrimeApps.Model.Entities.Tenant;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<ICollection<UserCustomShare>> GetAllBasic();
         Task<UserCustomShare> GetByUserId(int id);
+        Task<List<UserCustomShare>> GetAllBySharedUserId(int id);
         Task<int> Create(UserCustomShare userowner);
         Task<UserCustomShare> GetByIdBasic(int id);
         Task<UserCustomShare> GetById(int id);

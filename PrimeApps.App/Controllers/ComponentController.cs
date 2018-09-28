@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using PrimeApps.Model.Enums;
 
 namespace PrimeApps.App.Controllers
 {
@@ -29,7 +30,7 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("get_by_type"), HttpGet]
-		public async Task<IActionResult> GetActionButtons([FromQuery(Name = "component_type")] ComponentType type)
+		public async Task<IActionResult> GetActionButtons([FromQuery(Name = "component_type")]ComponentType type)
 		{
 			var components = await _componentRepository.GetByType(type);
 

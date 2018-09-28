@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Repositories
@@ -41,7 +41,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<ICollection<MenuItem>> GetItems(int id)
         {
             var menuItems = await DbContext.MenuItems
-                  .Include(x => x.MenuItems.Select(z => z.CreatedBy))
+                  .Include(x => x.MenuItems).ThenInclude(z => z.CreatedBy)
                   .Include(x => x.CreatedBy)
                   .Where(x => !x.Deleted && x.MenuId == id && x.ParentId == null).ToListAsync();
 

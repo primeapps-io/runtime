@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("process_filters")]
     public class ProcessFilter : BaseEntity
     {
         [JsonIgnore]
-        [Column("process_id"), ForeignKey("Process")]//, Index]
+        [Column("process_id"), ForeignKey("Process")]
         public int ProcessId { get; set; }
 
         [Column("field"), MaxLength(120), Required]

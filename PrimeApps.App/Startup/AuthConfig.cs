@@ -81,14 +81,14 @@ namespace PrimeApps.App
 						{
 							#region CRM için kullanılacak bilgiler
 							options.Authority = "http://localhost:5002";
-							options.ClientId = "ofisim.crm";
+							options.ClientId = "ofisim_crm";
 							#endregion
 						}
 						else if (int.Parse(configuration.GetSection("AppSettings")["DevelopmentApp"]) == 4)
 						{
 							#region İK için kullanılacak bilgiler
 							options.Authority = "http://localhost:5004";
-							options.ClientId = "ofisim.ik";
+							options.ClientId = "ofisim_ik";
 							#endregion
 						}
 					}
@@ -98,7 +98,7 @@ namespace PrimeApps.App
 					}*/
 
 					options.Authority = "http://localhost:5002";
-					options.ClientId = "primeapps.mvc";
+					options.ClientId = "ofisim_crm";
 
 					options.RequireHttpsMetadata = false;
 					options.ClientSecret = "secret";

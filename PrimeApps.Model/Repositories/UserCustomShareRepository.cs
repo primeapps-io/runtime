@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -33,6 +33,11 @@ namespace PrimeApps.Model.Repositories
 
             return userowner;
         }
+        public async Task<List<UserCustomShare>> GetAllBySharedUserId(int id)
+		{
+			return await DbContext.UserCustomShares
+				.Where(x => !x.Deleted && x.SharedUserId == id).ToListAsync();
+		}
 
         public async Task<UserCustomShare> GetById(int id)
         {

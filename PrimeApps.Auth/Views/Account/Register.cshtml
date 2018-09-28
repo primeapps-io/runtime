@@ -99,7 +99,7 @@
 			<div class="language">
 				@if (multiLanguage)
 				{
-					@if (otherLang == "tr")
+					if (otherLang == "tr")
 					{
 						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "tr", ReturnUrl = path })">@Localizer["TR"]</a> <span>|</span>
 					}

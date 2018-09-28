@@ -1,6 +1,6 @@
 ﻿using PrimeApps.App.Models;
 using PrimeApps.Model.Entities;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,7 +2,22 @@ angular.module('primeapps')
 
 	.factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo',
 		function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo) {
-			return {
+            return {
+                myAccount: function () {
+                    return $http.post(config.apiUrl + 'User/MyAccount', {});
+                },
+                getAllUser: function () {
+                    return $http.get(config.apiUrl + 'User/get_all');
+                },
+                getUserLicenseStatus: function () {
+                    return $http.post(config.apiUrl + 'License/GetUserLicenseStatus', {});
+                },
+                addUser: function (user) {
+                    return $http.post(config.apiUrl + 'User/add_user', user);
+                },
+                getUserEmailControl: function (email) {
+                    return $http.get(config.apiUrl + 'User/get_user_email_control?Email=' + email);
+                },
 				get: function (id) {
 					return $http.get(config.apiUrl + 'template/get/' + id);
 				},
@@ -276,12 +291,12 @@ angular.module('primeapps')
 							field.link = linkPrefix + type + '?id=' + record.id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId + '&rtab=' + returnTab + (parentRecord && parentRecord.freeze ? '&freeze=true' : '')) + (previousParentId ? ('&pptype=' + previousParentType + '&ppid=' + previousParentId + '&prtab=' + previousReturnTab) : '') : '');
 							return;
 						}
-						else if (field.primary && field.isJoin && field.value_type != 'users') {
+                        else if (field.primary && field.isJoin && field.value_type != 'users' && field.value_type != 'profiles' && field.value_type != 'roles') {
 							field.link = linkPrefix + field.value_type + '?id=' + field.value_id + (parentId ? ('&ptype=' + parentType + '&pid=' + parentId + (parentRecord && parentRecord.freeze ? '&freeze=true' : '')) : '&back=' + type);
 							return;
 						}
 
-						if (field.data_type === 'lookup' && field.lookup_type != 'users') {
+                        if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
 							var lookupType = field.lookup_type;
 
 							if (typeof field.lookup_type === 'object')
@@ -478,7 +493,13 @@ angular.module('primeapps')
 
 							if (field.lookup_type === 'users') {
 								lookupRecord.primary_value = lookupRecord['full_name'];
-							}
+                            }
+                            else if (field.lookup_type === 'profiles') {
+                                lookupRecord.primary_value = lookupRecord['name'];
+                            }
+                            else if (field.lookup_type === 'roles') {
+                                lookupRecord.primary_value = lookupRecord['label_' + $rootScope.user.tenant_language];
+                            }
 							else if (field.lookup_type === 'relation') {
 								if (record[field.lookup_relation] && record['related_to'])
 									lookupRecord = record['related_to'];
@@ -692,7 +713,7 @@ angular.module('primeapps')
 						for (var i = 0; i < module.fields.length; i++) {
 							var field = module.fields[i];
 
-							if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'relation') {
+                            if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
 								var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 
 								if (!lookupModule)
@@ -881,9 +902,9 @@ angular.module('primeapps')
 						return deferred.promise;
 					}
 
-					var hasPermission = lookupType != 'users' ? helper.hasPermission(lookupType, operations.read) : true;
+                    var hasPermission = lookupType != 'users' && lookupType != 'profiles' && lookupType != 'roles' ? helper.hasPermission(lookupType, operations.read) : true;
 
-					if (!hasPermission) {
+                    if (!hasPermission && !($rootScope.branchAvailable && lookupType == 'branchs')) {
 						deferred.resolve([]);
 						return deferred.promise;
 					}
@@ -944,7 +965,7 @@ angular.module('primeapps')
 						findRequest.limit = 1000;
 					}
 					//get only active users to list! if need also inactive users, use utils lookupuser with includeInactiveUsers parameter
-					if (lookupModule.name == 'users') {
+                    if (lookupModule.name == 'users' || ($rootScope.branchAvailable && lookupType == 'branchs')) {
 						var filterOrderNo = findRequest.filters.length + 1;
 						findRequest.filters.push({ field: 'is_active', operator: 'equals', value: true, no: filterOrderNo });
 					}
@@ -956,7 +977,7 @@ angular.module('primeapps')
 							var filter = field.filters[z];
 							no++;
 							var filterMatch = filter.value.match(/^\W+(.+)]/i);
-							if (filterMatch != null && field.lookup_type != 'users') {
+                            if (filterMatch != null && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
 								var recordMatch = filterMatch[1].split('.');
 								var findRecordValue;
 
@@ -993,7 +1014,10 @@ angular.module('primeapps')
 
 							if (!additionalFields) {
 								for (var i = 0; i < response.data.length; i++) {
-									var recordItem = response.data[i];
+                                    var recordItem = response.data[i];
+                                    if (lookupType == 'profiles' && recordItem['id'] === 1) {
+                                        recordItem['name'] = $rootScope.user.tenant_language === 'tr' ? 'Sistem Yöneticisi' : 'Administrator';
+                                    }
 									var lookupRecord = angular.copy(recordItem);
 
 									lookupRecord.primary_value = recordItem[field.lookupModulePrimaryField.name];
@@ -1853,7 +1877,11 @@ angular.module('primeapps')
 						}
 					}
 
-					if (module.name === 'current_accounts') {
+                    if (module.name === 'current_accounts') {
+                        var salesInvoiceModule = $filter('filter')(scope.modules, { name: 'sales_invoices' }, true);
+                        if (salesInvoiceModule.length < 1)
+                            return false;
+
 						if (scope.subtype === 'collection') {
 							switch (record.currency.system_code) {
 								case 'try':
@@ -3194,16 +3222,16 @@ angular.module('primeapps')
 																			var lookupModule;
 																			var lookupModulePrimaryField;
 
-																			if (field.data_type === 'lookup' && field.lookup_type != 'users') {
+                                                                            if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
 																				lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 																				lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
 																			}
 
 																			if (search.operator.name != 'empty' && search.operator.name != 'not_empty') {
-																				if (field.data_type === 'lookup' && field.lookup_type === 'users')
+                                                                                if (field.data_type === 'lookup' && (field.lookup_type === 'users' || field.lookup_type === 'profiles' || field.lookup_type === 'roles'))
 																					search.value = search.value[0].id;
 
-																				if (field.data_type === 'lookup' && field.lookup_type != 'users') {
+                                                                                if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
 																					fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
 																					field = lookupModulePrimaryField;
 																				}
@@ -3235,7 +3263,7 @@ angular.module('primeapps')
 																					search.value = search.value.system_code;
 																			}
 																			else {
-																				if (field.data_type === 'lookup' && field.lookup_type != 'users') {
+                                                                                if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') {
 																					fieldName = field.name + '.' + field.lookup_type + '.' + lookupModulePrimaryField.name;
 																					var currentFilterLookup = filters && $filter('filter')(filters, { field: fieldName }, true)[0];
 

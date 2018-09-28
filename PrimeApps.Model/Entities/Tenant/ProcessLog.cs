@@ -6,18 +6,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("process_logs")]
     public class ProcessLog : BaseEntity
     {
-        [Column("process_id"), ForeignKey("Process")]//, Index]
+        [Column("process_id"), ForeignKey("Process")]
         public int ProcessId { get; set; }
 
-        [Column("module_id"), Required]//, Index]
+        [Column("module_id"), Required]
         public int ModuleId { get; set; }
 
-        [Column("record_id"), Required]//, Index]
+        [Column("record_id"), Required]
         public int RecordId { get; set; }
 
         public virtual Process Process { get; set; }

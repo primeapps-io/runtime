@@ -1,0 +1,68 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.component}}"
+spec:
+  replicas: {{ default 1 .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{.Release.Name}}-{{.Values.component}}"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        component: "{{.Release.Name}}-{{.Values.component}}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.pullsecret }}
+      containers:
+        - name: {{ template "fullname" . }}-auth
+          image: "{{.Values.authImage}}:{{.Values.imageTag}}"
+          imagePullPolicy: "{{.Values.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.authContainerPort}}
+          resources:
+            requests:
+              cpu: "{{.Values.cpu}}"
+              memory: "{{.Values.memory}}"
+        - name: {{ template "fullname" . }}-app
+          image: "{{.Values.appImage}}:{{.Values.imageTag}}"
+          imagePullPolicy: "{{.Values.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.appContainerPort}}
+     {{- if .Values.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.secrets }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}_{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "primeapps.fullname" $root }}-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "{{.Values.cpu}}"
+              memory: "{{.Values.memory}}"

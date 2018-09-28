@@ -169,7 +169,29 @@ angular.module('primeapps')
 							userLookType.type = 0;
 							userLookType.value = 'users';
 
-							$scope.lookupTypes.unshift(userLookType);
+                            $scope.lookupTypes.unshift(userLookType);
+
+                            var profileLookType = {};
+                            profileLookType.id = 900100;
+                            profileLookType.label = {};
+                            profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
+                            profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
+                            profileLookType.order = 0;
+                            profileLookType.type = 0;
+                            profileLookType.value = 'profiles';
+
+                            $scope.lookupTypes.push(profileLookType);
+
+                            var roleLookType = {};
+                            roleLookType.id = 900101;
+                            roleLookType.label = {};
+                            roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
+                            roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
+                            roleLookType.order = 0;
+                            roleLookType.type = 0;
+                            roleLookType.value = 'roles';
+
+                            $scope.lookupTypes.push(roleLookType);
 						}
 					});
 			};

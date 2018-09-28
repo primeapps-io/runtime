@@ -12,16 +12,16 @@ namespace PrimeApps.Model.Entities.Platform
 		[Column("user_id"), Key]
 		public int UserId { get; set; }
 
-		[Column("phone")]//]//, Index]
+		[Column("phone")]
 		public string Phone { get; set; }
 
 		[Column("culture")]
 		public string Culture { get; set; }
 
-		[Column("currency")]//]//, Index]
+		[Column("currency")]
 		public string Currency { get; set; }
 
-		[Column("time_zone")]//]//, Index]
+		[Column("time_zone")]
 		public string TimeZone { get; set; }
 
 		[Column("language")]

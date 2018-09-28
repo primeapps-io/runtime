@@ -4,10 +4,9 @@ using PrimeApps.Model.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Linq;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("fields")]
     public class Field : BaseEntity
@@ -18,10 +17,10 @@ namespace PrimeApps.Model.Entities.Application
         }
 
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), /*Index("fields_IX_module_id_name", 1, IsUnique = true)*/]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
-        [Column("name"), Required, MaxLength(50), /*Index("fields_IX_module_id_name", 2, IsUnique = true)*/]
+        [Column("name"), Required, MaxLength(50)]
         public string Name { get; set; }
 
         [Column("system_type"), Required]
@@ -50,9 +49,6 @@ namespace PrimeApps.Model.Entities.Application
 
         [Column("editable")]
         public bool Editable { get; set; }
-
-        [Column("encrypted")]
-        public bool Encrypted { get; set; }
 
         [Column("show_label")]
         public bool ShowLabel { get; set; }
@@ -155,6 +151,9 @@ namespace PrimeApps.Model.Entities.Application
 
         [Column("show_as_dropdown")]
         public bool ShowAsDropdown { get; set; }
+
+        [Column("encrypted")]
+        public bool Encrypted { get; set; }
 
         [Column("encryption_authorized_users")]
         public string EncryptionAuthorizedUsers

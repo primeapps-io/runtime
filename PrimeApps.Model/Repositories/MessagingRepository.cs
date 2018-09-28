@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;

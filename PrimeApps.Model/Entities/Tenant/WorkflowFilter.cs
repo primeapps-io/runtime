@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("workflow_filters")]
     public class WorkflowFilter : BaseEntity
     {
         [JsonIgnore]
-        [Column("workflow_id"), ForeignKey("Workflow")]//, Index]
+        [Column("workflow_id"), ForeignKey("Workflow")]
         public int WorkflowId { get; set; }
 
         [Column("field"), MaxLength(120), Required]

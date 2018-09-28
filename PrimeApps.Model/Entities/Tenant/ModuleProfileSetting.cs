@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("module_profile_settings")]
     public class ModuleProfileSetting : BaseEntity
@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Application
             _profileList = new List<string>();
         }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         [Column("profiles")]

@@ -18,7 +18,7 @@ namespace PrimeApps.Model.Context
         {
             Database.GetDbConnection().ConnectionString = configuration.GetConnectionString("PlatformDBConnection");
         }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             CreateModelMapping(modelBuilder);
@@ -198,39 +198,18 @@ namespace PrimeApps.Model.Context
 
             //App
             modelBuilder.Entity<App>().HasIndex(x => x.Name);
-            modelBuilder.Entity<App>().HasIndex(x => x.Label);
-            modelBuilder.Entity<App>().HasIndex(x => x.Description);
             modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
-            modelBuilder.Entity<App>().HasIndex(x => x.UseTenantSettings);
-            modelBuilder.Entity<App>().HasIndex(x => x.CreatedById);
-            modelBuilder.Entity<App>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.Deleted);
 
-            //AppSetting
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.Domain);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderName);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.MailSenderEmail);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.Currency);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.Culture);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.Language);
-            modelBuilder.Entity<AppSetting>().HasIndex(x => x.TimeZone);
-
-            //AppTemplates
-            modelBuilder.Entity<AppTemplate>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Subject);
+            //AppTemplate
+            modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Name);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Type);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Language);
-            modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Name);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.SystemCode);
-            modelBuilder.Entity<AppTemplate>().HasIndex(x => x.MailSenderEmail);
-            modelBuilder.Entity<AppTemplate>().HasIndex(x => x.MailSenderName);
             modelBuilder.Entity<AppTemplate>().HasIndex(x => x.Active);
 
-            //ApiLog
-            //App
             //ExchangeRate
             modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Date);
             modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Year);
@@ -238,34 +217,20 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<ExchangeRate>().HasIndex(x => x.Day);
 
             //PlatformWarehouse
-            modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.TenantId);
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.DatabaseName);
             modelBuilder.Entity<PlatformWarehouse>().HasIndex(x => x.Completed);
 
             //Tenant
             modelBuilder.Entity<Tenant>().HasIndex(x => x.GuidId);
             modelBuilder.Entity<Tenant>().HasIndex(x => x.OwnerId);
-            modelBuilder.Entity<Tenant>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<Tenant>().HasIndex(x => x.UseUserSettings);
-
-            modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedById);
-            modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Tenant>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Tenant>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Tenant>().HasIndex(x => x.Deleted);
 
             //TenantSetting
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.TenantId);
             modelBuilder.Entity<TenantSetting>().HasIndex(x => x.CustomDomain);
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.MailSenderName);
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.MailSenderEmail);
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.Culture);
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.Currency);
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.Language);
-            modelBuilder.Entity<TenantSetting>().HasIndex(x => x.TimeZone);
 
             //TenantLicense
-            modelBuilder.Entity<TenantLicense>().HasIndex(x => x.TenantId);
             modelBuilder.Entity<TenantLicense>().HasIndex(x => x.IsPaidCustomer);
             modelBuilder.Entity<TenantLicense>().HasIndex(x => x.IsDeactivated);
             modelBuilder.Entity<TenantLicense>().HasIndex(x => x.IsSuspended);
@@ -273,24 +238,12 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TenantLicense>().HasIndex(x => x.SuspendedAt);
 
             //Organization
-            modelBuilder.Entity<Organization>().HasIndex(x => x.Id);
             modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
-            modelBuilder.Entity<Organization>().HasIndex(x => x.Label);
-            /*modelBuilder.Entity<Organization>().HasIndex(x => x.Owner);*/
-
-            modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedById);
-            modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Organization>().HasIndex(x => x.Deleted);
 
             //Team
-            modelBuilder.Entity<Team>().HasIndex(x => x.Id);
-            modelBuilder.Entity<Team>().HasIndex(x => x.Name);
-            modelBuilder.Entity<Team>().HasIndex(x => x.OrganizationId);
-
-            modelBuilder.Entity<Team>().HasIndex(x => x.CreatedById);
-            modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedById);
             modelBuilder.Entity<Team>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Team>().HasIndex(x => x.Deleted);
@@ -299,29 +252,8 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
 
-            //TeamApps
-            modelBuilder.Entity<TeamApp>().HasIndex(x => x.AppId);
-            modelBuilder.Entity<TeamApp>().HasIndex(x => x.TeamId);
-
-            //TeamUsers
-            modelBuilder.Entity<TeamUser>().HasIndex(x => x.UserId);
-            modelBuilder.Entity<TeamUser>().HasIndex(x => x.TeamId);
-
-            //OrganizationUsers
-            modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.UserId);
-            modelBuilder.Entity<OrganizationUser>().HasIndex(x => x.OrganizationId);
-
-            //AppWorkflow
-            modelBuilder.Entity<AppWorkflow>().HasIndex(x => x.Active);
-            modelBuilder.Entity<AppWorkflow>().HasIndex(x => x.AppId);
-
-            //AppWorkflowLog
-            modelBuilder.Entity<AppWorkflowLog>().HasIndex(x => x.AppWorkflowId);
-            modelBuilder.Entity<AppWorkflowLog>().HasIndex(x => x.AppId);
-
             //Cache
             modelBuilder.Entity<Cache>().HasIndex(x => x.Key);
-      
         }
 
         public DbSet<PlatformUser> Users { get; set; }
@@ -340,9 +272,6 @@ namespace PrimeApps.Model.Context
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
         public DbSet<UserTenant> UserTenants { get; set; }
-        public DbSet<AppWorkflow> AppWorkflows { get; set; }
-        public DbSet<AppWorkflowLog> AppWorkflowLogs { get; set; }
-        public DbSet<AppWorkflowWebhook> AppWorkflowWebhooks { get; set; }
         public DbSet<Cache> Cache { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("helps")]
     public class Help : BaseEntity
@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("template"), Required]
         public string Template { get; set; }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int? ModuleId { get; set; }
 
         [Column("modal_type")]

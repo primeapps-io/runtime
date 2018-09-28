@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("report_categories")]
     public class ReportCategory : BaseEntity
@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("order")]
         public int Order { get; set; }
 
-        [Column("user_id"), ForeignKey("User")]//, Index]
+        [Column("user_id"), ForeignKey("User")]
 
         public int? UserId { get; set; }
 

@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("process_approvers")]
     public class ProcessApprover : BaseEntity
     {
         [JsonIgnore]
-        [Column("process_id"), ForeignKey("Process")]//, Index]
+        [Column("process_id"), ForeignKey("Process")]
         public int ProcessId { get; set; }
 
         [JsonIgnore]

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Npgsql;
 using NpgsqlTypes;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Helpers.QueryTranslation;
@@ -29,11 +29,11 @@ namespace PrimeApps.Model.Helpers
         public static string GenerateGetSql(Module module, ICollection<Module> lookupModules, int recordId, string owners = null, int userId = 0, string userGroups = null, bool deleted = false)
         {
             var moduleName = module.Name;
-            var tableName = moduleName != "users" ? moduleName + "_d" : "users";
+            var tableName = moduleName != "users" && moduleName != "profiles" && moduleName != "roles" ? moduleName + "_d" : moduleName == "profiles" ? "profiles" : moduleName == "roles" ? "roles" : "users";
             var fieldsSql = "";
             var joinSql = "";
 
-            if (moduleName != "users")
+            if (moduleName != "users" && moduleName != "profiles" && moduleName != "roles")
             {
                 foreach (var systemField in ModuleHelper.SystemFields)
                 {
@@ -47,11 +47,32 @@ namespace PrimeApps.Model.Helpers
             }
             else
             {
-                fieldsSql += "\"users\".\"id\", \"users\".\"deleted\", ";
-
-                foreach (var standardField in ModuleHelper.StandardFields)
+                if (moduleName == "profiles")
                 {
-                    fieldsSql += $"\"users\".\"{standardField}\", ";
+                    fieldsSql += "\"profiles\".\"id\", \"profiles\".\"deleted\", ";
+
+                    foreach (var standardField in ModuleHelper.StandardFields)
+                    {
+                        fieldsSql += $"\"profiles\".\"{standardField}\", ";
+                    }
+                }
+                else if (moduleName == "roles")
+                {
+                    fieldsSql += "\"roles\".\"id\", \"roles\".\"deleted\", ";
+
+                    foreach (var standardField in ModuleHelper.StandardFields)
+                    {
+                        fieldsSql += $"\"roles\".\"{standardField}\", ";
+                    }
+                }
+                else
+                {
+                    fieldsSql += "\"users\".\"id\", \"users\".\"deleted\", ";
+
+                    foreach (var standardField in ModuleHelper.StandardFields)
+                    {
+                        fieldsSql += $"\"users\".\"{standardField}\", ";
+                    }
                 }
             }
 
@@ -70,7 +91,7 @@ namespace PrimeApps.Model.Helpers
             {
                 if (field.DataType == DataType.Lookup && lookupModules != null && lookupModules.Count > 0 && field.LookupType != "relation")
                 {
-                    var lookupTableName = field.LookupType != "users" ? field.LookupType + "_d" : "users";
+                    var lookupTableName = field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" ? field.LookupType + "_d" : field.LookupType == "profiles" ? "profiles" : field.LookupType == "roles" ? "roles" : "users";
 
                     var alias = field.Name + "_" + field.LookupType;
                     var lookupModule = lookupModules.SingleOrDefault(x => x.Name == field.LookupType);
@@ -85,6 +106,12 @@ namespace PrimeApps.Model.Helpers
                     foreach (var lookupField in lookupModuleFields)
                     {
                         if (lookupModule.Name == "users" && lookupField.Name != "id" && lookupField.Name != "email" && lookupField.Name != "phone" && lookupField.Name != "full_name")
+                            continue;
+
+                        if (lookupModule.Name == "profiles" && lookupField.Name != "id" && lookupField.Name != "name")
+                            continue;
+
+                        if (lookupModule.Name == "roles" && lookupField.Name != "id" && lookupField.Name != "label_en" && lookupField.Name != "label_tr")
                             continue;
 
                         fieldsSql += $"\"{alias}\".\"{lookupField.Name}\" AS \"{field.Name}.{lookupField.Name}\", ";
@@ -142,7 +169,7 @@ namespace PrimeApps.Model.Helpers
         public static string GenerateFindSql(string moduleName, FindRequest findRequest, string owners = null, int userId = 0, string userGroups = null, int timezoneOffset = 180)
         {
             var joins = new Dictionary<string, string>();
-            var tableName = moduleName != "users" ? moduleName + "_d" : "users";
+            var tableName = moduleName != "users" && moduleName != "profiles" && moduleName != "roles" ? moduleName + "_d" : moduleName == "profiles" ? "profiles" : moduleName == "roles" ? "roles" : "users";
             var fieldsSql = "\"" + tableName + "\".*";
             var aggregateFieldsSql = "";
             var idColumn = "id";
@@ -248,8 +275,8 @@ namespace PrimeApps.Model.Helpers
                 fieldsSql = fieldsSql.Trim().TrimEnd(',');
 
                 //Add advanced sharing information for module list records.
-				if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products" && tableName != "users" && tableName != "profiles" && tableName != "roles")
-					fieldsSql += $", \"{tableName}\".\"shared_users\", " + $"\"{tableName}\".\"shared_user_groups\", " + $"\"{tableName}\".\"shared_users_edit\", " + $"\"{tableName}\".\"shared_user_groups_edit\"";
+                if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products" && tableName != "users" && tableName != "profiles" && tableName != "roles")
+                    fieldsSql += $", \"{tableName}\".\"shared_users\", " + $"\"{tableName}\".\"shared_user_groups\", " + $"\"{tableName}\".\"shared_users_edit\", " + $"\"{tableName}\".\"shared_user_groups_edit\"";
 
                 //Approval Processes
                 if (string.IsNullOrEmpty(findRequest.ManyToMany) && moduleName != "quote_products" && moduleName != "order_products" && moduleName != "purchase_order_products" && moduleName != "purchase_invoices_products" && moduleName != "sales_invoices_products")
@@ -570,7 +597,7 @@ namespace PrimeApps.Model.Helpers
 
         public static string GenerateGetAllByIdSql(string moduleName, List<int> recordIds, string owners = null, int userId = 0, string userGroups = null)
         {
-            var tableName = moduleName != "users" ? moduleName + "_d" : "users";
+            var tableName = moduleName != "users" && moduleName != "profiles" && moduleName != "roles" ? moduleName + "_d" : moduleName == "profiles" ? "profiles" : moduleName == "roles" ? "roles" : "users";
             var fieldsSql = "\"" + tableName + "\".*";
             var filtersSql = $"\"{tableName}\".\"deleted\" IS NOT TRUE";
             filtersSql += $"\nAND \"{tableName}\".\"id\" IN('{string.Join("', '", recordIds)}')";
@@ -1642,7 +1669,7 @@ namespace PrimeApps.Model.Helpers
 
         public static string GenerateGetLookupIdsSql(string lookupType, string field, JArray lookupValues)
         {
-            var tableName = lookupType + (lookupType != "users" ? "_d" : "");
+            var tableName = lookupType != "users" && lookupType != "profiles" && lookupType != "roles" ? lookupType + "_d" : lookupType == "profiles" ? "profiles" : lookupType == "roles" ? "roles" : "users";
 
             var sql = "PREPARE SelectQuery AS\n" +
                       $"SELECT \"id\", \"{field}\" AS \"value\"\n" +
@@ -2270,9 +2297,10 @@ namespace PrimeApps.Model.Helpers
             return fieldsDictionary;
         }
 
-        public static async Task<ICollection<Module>> GetLookupModules(Module module, IModuleRepository moduleRepository, string additionalModule = "")
+        public static async Task<ICollection<Module>> GetLookupModules(Module module, IModuleRepository moduleRepository, string additionalModule = "", string tenantLanguage = "en")
         {
             var lookupModuleNames = new List<string>();
+            ICollection<Module> lookupModules = new List<Module>();
 
             foreach (var field in module.Fields)
             {
@@ -2284,13 +2312,17 @@ namespace PrimeApps.Model.Helpers
                     var lookupModule = await moduleRepository.GetByNameBasic(field.LookupType);
                     if (lookupModule != null)
                         lookupModuleNames.Add(field.LookupType);
+
+                    if (field.LookupType != "profiles")
+                        lookupModules.Add(ModuleHelper.GetFakeProfileModule());
+
+                    if (field.LookupType != "roles")
+                        lookupModules.Add(ModuleHelper.GetFakeRoleModule(tenantLanguage));
                 }
             }
 
             if (!string.IsNullOrEmpty(additionalModule))
                 lookupModuleNames.Add(additionalModule);
-
-            ICollection<Module> lookupModules = new List<Module>();
 
             if (lookupModuleNames.Count > 0)
             {

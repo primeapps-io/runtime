@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("field_permissions")]
     public class FieldPermission : BaseEntity
     {
         [JsonIgnore]
-        [Column("field_id"), ForeignKey("Field"), /*Index("field_permissions_IX_field_id_profile_id", 1, IsUnique = true)*/]
+        [Column("field_id"), ForeignKey("Field")]
         public int FieldId { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile"), Required,/* Index("field_permissions_IX_field_id_profile_id", 2, IsUnique = true)*/]
+        [Column("profile_id"), ForeignKey("Profile"), Required]
         public int ProfileId { get; set; }
 
         [Column("type"), Required]

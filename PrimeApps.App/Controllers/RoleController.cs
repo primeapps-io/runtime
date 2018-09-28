@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.ActionFilters;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +10,7 @@ using PrimeApps.Model.Common.Role;
 using PrimeApps.Model.Helpers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Hangfire;
+using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.App.Controllers
 {
@@ -114,6 +115,20 @@ namespace PrimeApps.App.Controllers
 
                 await _roleRepository.AddUserAsync(user.Id, user.RoleId.Value);
             }
+        }
+
+        [Route("add_owners"), HttpPost]
+        public async Task AddOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
+        {
+            Role role = await _roleRepository.GetByIdAsyncWithUsers(id);
+            await _roleRepository.AddOwners(role, owners);
+        }
+
+        [Route("remove_owners"), HttpPost]
+        public async Task RemoveOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
+        {
+            Role role = await _roleRepository.GetByIdAsyncWithUsers(id);
+            await _roleRepository.RemoveOwners(role, owners);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     /// <summary>
     /// This is the table where we keep the information about storage objects we uploaded to Windows Azure Storage.
@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Application
         /// <summary>
         /// Which module is associated with this document.
         /// </summary>
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         /// <summary>

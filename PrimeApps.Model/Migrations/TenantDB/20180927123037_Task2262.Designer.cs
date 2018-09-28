@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.TenantDB
 {
     [DbContext(typeof(TenantDBContext))]
-    [Migration("20180725112718_Task2262")]
+    [Migration("20180927123037_Task2262")]
     partial class Task2262
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ActionButton", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ActionButton", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +100,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("action_buttons");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ActionButtonPermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ActionButtonPermission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -151,7 +151,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("action_button_permissions");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Analytic", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Analytic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,7 +210,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("analytics");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.AnalyticShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.AnalyticShares", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnName("user_id");
@@ -225,7 +225,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("analytic_shares");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.AuditLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.AuditLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -282,7 +282,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("audit_logs");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Calculation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Calculation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -347,7 +347,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("calculations");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ChangeLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ChangeLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -372,7 +372,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("changelogs");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Chart", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Chart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -438,7 +438,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("charts");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Components", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Components", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -496,7 +496,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("components");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ConversionMapping", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ConversionMapping", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -548,7 +548,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("conversion_mappings");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ConversionSubModule", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ConversionSubModule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -600,7 +600,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("conversion_sub_modules");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Dashboard", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Dashboard", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -663,7 +663,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("dashboard");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Dashlet", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Dashlet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -734,7 +734,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("dashlets");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Dependency", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Dependency", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -813,7 +813,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("dependencies");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Document", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Document", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -872,7 +872,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("documents");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Field", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Field", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -962,6 +962,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("LookupRelation")
                         .HasColumnName("lookup_relation")
                         .HasMaxLength(50);
+
+                    b.Property<int>("LookupSearchType")
+                        .HasColumnName("lookup_search_type");
 
                     b.Property<string>("LookupType")
                         .HasColumnName("lookup_type")
@@ -1071,7 +1074,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("fields");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldCombination", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldCombination", b =>
                 {
                     b.Property<int>("FieldId")
                         .HasColumnName("field_id");
@@ -1095,7 +1098,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("field_combinations");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldFilter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1143,7 +1146,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("field_filters");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldPermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldPermission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1193,7 +1196,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("field_permissions");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldValidation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldValidation", b =>
                 {
                     b.Property<int>("FieldId")
                         .HasColumnName("field_id");
@@ -1228,7 +1231,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("field_validations");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Help", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Help", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1295,7 +1298,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("helps");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Import", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Import", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1342,7 +1345,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("imports");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Menu", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Menu", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1384,7 +1387,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("menu");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.MenuItem", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.MenuItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1453,7 +1456,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("menu_items");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Module", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Module", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1548,7 +1551,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("modules");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ModuleProfileSetting", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ModuleProfileSetting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1619,7 +1622,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("module_profile_settings");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Note", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Note", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1674,7 +1677,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("notes");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.NoteLikes", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.NoteLikes", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnName("user_id");
@@ -1689,7 +1692,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("note_likes");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Notification", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1706,6 +1709,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("AttachmentName")
                         .HasColumnName("attachment_name")
                         .HasMaxLength(50);
+
+                    b.Property<string>("Bcc")
+                        .HasColumnName("bcc");
+
+                    b.Property<string>("Cc")
+                        .HasColumnName("cc");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
@@ -1794,7 +1803,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("notifications");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Picklist", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Picklist", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1852,7 +1861,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("picklists");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.PicklistItem", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.PicklistItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1932,7 +1941,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("picklist_items");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Process", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Process", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2006,7 +2015,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("processes");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessApprover", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessApprover", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2055,7 +2064,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("process_approvers");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessFilter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2109,7 +2118,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("process_filters");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2160,7 +2169,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("process_logs");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessRequest", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2231,7 +2240,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("process_requests");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Profile", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Profile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2291,6 +2300,12 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("Newsfeed")
                         .HasColumnName("newsfeeed");
 
+                    b.Property<int>("Order")
+                        .HasColumnName("order");
+
+                    b.Property<int>("ParentId")
+                        .HasColumnName("parent_id");
+
                     b.Property<bool>("Report")
                         .HasColumnName("report");
 
@@ -2302,6 +2317,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<string>("StartPage")
                         .HasColumnName("startpage");
+
+                    b.Property<string>("SystemCode")
+                        .HasColumnName("system_code");
 
                     b.Property<bool>("Tasks")
                         .HasColumnName("tasks");
@@ -2324,7 +2342,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("profiles");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProfilePermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProfilePermission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2360,7 +2378,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("profile_permissions");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Relation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Relation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2446,7 +2464,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("relations");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Reminder", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Reminder", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2531,7 +2549,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("reminders");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Report", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Report", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2614,7 +2632,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("reports");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportAggregation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportAggregation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2657,7 +2675,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("report_aggregations");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportCategory", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2706,7 +2724,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("report_categories");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportField", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportField", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2749,7 +2767,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("report_fields");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportFilter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2797,7 +2815,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("report_filters");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportShares", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnName("user_id");
@@ -2812,7 +2830,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("report_shares");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Role", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2860,6 +2878,9 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<bool>("ShareData")
                         .HasColumnName("share_data");
 
+                    b.Property<string>("SystemCode")
+                        .HasColumnName("system_code");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
 
@@ -2877,7 +2898,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("roles");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Section", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Section", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2954,7 +2975,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("sections");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.SectionPermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.SectionPermission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3005,7 +3026,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("section_permissions");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Setting", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Setting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3061,7 +3082,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("settings");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Tag", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Tag", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3100,7 +3121,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("tags");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Template", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Template", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3170,7 +3191,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("templates");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.TemplatePermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.TemplatePermission", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3221,7 +3242,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("template_permissions");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.TemplateShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.TemplateShares", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnName("user_id");
@@ -3236,7 +3257,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("template_shares");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.TenantUser", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.TenantUser", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnName("id");
@@ -3322,7 +3343,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.UserCustomShare", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.UserCustomShare", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3371,7 +3392,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("user_custom_shares");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.UserGroup", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.UserGroup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3407,7 +3428,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("user_groups");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.UsersUserGroup", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.UsersUserGroup", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnName("user_id");
@@ -3422,7 +3443,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("users_user_groups");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.View", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.View", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3460,6 +3481,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<int>("SharingType")
                         .HasColumnName("sharing_type");
 
+                    b.Property<string>("SystemCode")
+                        .HasColumnName("system_code")
+                        .HasMaxLength(50);
+
                     b.Property<int>("SystemType")
                         .HasColumnName("system_type");
 
@@ -3485,10 +3510,14 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasIndex("UpdatedById");
 
+                    b.HasIndex("ModuleId", "SystemCode")
+                        .IsUnique()
+                        .HasName("views_IX_module_id_system_code");
+
                     b.ToTable("views");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewField", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewField", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3531,7 +3560,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("view_fields");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewFilter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3579,7 +3608,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("view_filters");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewShares", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnName("user_id");
@@ -3594,7 +3623,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("view_shares");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewState", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewState", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3655,7 +3684,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("view_states");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Widget", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Widget", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3721,7 +3750,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("widgets");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Workflow", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Workflow", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3729,6 +3758,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<bool>("Active")
                         .HasColumnName("active");
+
+                    b.Property<string>("ChangedField")
+                        .HasColumnName("changed_field")
+                        .HasMaxLength(200);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
@@ -3783,7 +3816,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflows");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowFilter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3837,7 +3870,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflow_filters");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -3888,7 +3921,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflow_logs");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowNotification", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowNotification", b =>
                 {
                     b.Property<int>("WorkflowId")
                         .HasColumnName("workflow_id");
@@ -3923,7 +3956,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflow_notifications");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowTask", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowTask", b =>
                 {
                     b.Property<int>("WorkflowId")
                         .HasColumnName("workflow_id");
@@ -3963,7 +3996,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflow_tasks");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowUpdate", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowUpdate", b =>
                 {
                     b.Property<int>("WorkflowId")
                         .HasColumnName("workflow_id");
@@ -3988,7 +4021,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflow_updates");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowWebhook", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowWebhook", b =>
                 {
                     b.Property<int>("WorkflowId")
                         .HasColumnName("workflow_id");
@@ -4009,1157 +4042,1157 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("workflow_webhooks");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ActionButton", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ActionButton", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ActionButtonPermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ActionButtonPermission", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.ActionButton", "ActionButton")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.ActionButton", "ActionButton")
                         .WithMany("Permissions")
                         .HasForeignKey("ActionButtonId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Analytic", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Analytic", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.AnalyticShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.AnalyticShares", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Analytic", "Analytic")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Analytic", "Analytic")
                         .WithMany("Shares")
                         .HasForeignKey("AnaltyicId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "TenantUser")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "TenantUser")
                         .WithMany("SharedAnalytics")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.AuditLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.AuditLog", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("AuditLogs")
                         .HasForeignKey("ModuleId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Calculation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Calculation", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Calculations")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ChangeLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ChangeLog", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Chart", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Chart", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Report", "Report")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Report", "Report")
                         .WithMany()
                         .HasForeignKey("ReportId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Components", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Components", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Components")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ConversionMapping", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ConversionMapping", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "MappingModule")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "MappingModule")
                         .WithMany()
                         .HasForeignKey("MappingModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ConversionSubModule", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ConversionSubModule", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "MappingSubModule")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "MappingSubModule")
                         .WithMany()
                         .HasForeignKey("MappingModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Dashboard", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Dashboard", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Dashlet", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Dashlet", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Chart", "Chart")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Chart", "Chart")
                         .WithMany()
                         .HasForeignKey("ChartId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Dashboard", "Dashboard")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Dashboard", "Dashboard")
                         .WithMany()
                         .HasForeignKey("DashboardId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Widget", "Widget")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Widget", "Widget")
                         .WithMany()
                         .HasForeignKey("WidgetId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Dependency", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Dependency", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Dependencies")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Document", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Document", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Field", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Field", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Fields")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Picklist", "Picklist")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Picklist", "Picklist")
                         .WithMany()
                         .HasForeignKey("PicklistId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldCombination", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldCombination", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Field", "Field")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Field", "Field")
                         .WithOne("Combination")
-                        .HasForeignKey("PrimeApps.Model.Entities.Application.FieldCombination", "FieldId")
+                        .HasForeignKey("PrimeApps.Model.Entities.Tenant.FieldCombination", "FieldId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldFilter", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Field", "Field")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Field", "Field")
                         .WithMany("Filters")
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldPermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldPermission", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Field", "Field")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Field", "Field")
                         .WithMany("Permissions")
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.FieldValidation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.FieldValidation", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Field", "Field")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Field", "Field")
                         .WithOne("Validation")
-                        .HasForeignKey("PrimeApps.Model.Entities.Application.FieldValidation", "FieldId")
+                        .HasForeignKey("PrimeApps.Model.Entities.Tenant.FieldValidation", "FieldId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Help", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Help", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Import", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Import", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Menu", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Menu", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.MenuItem", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.MenuItem", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Menu", "Menu")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Menu", "Menu")
                         .WithMany()
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.MenuItem", "Parent")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.MenuItem", "Parent")
                         .WithMany("MenuItems")
                         .HasForeignKey("ParentId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Module", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Module", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ModuleProfileSetting", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ModuleProfileSetting", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Note", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Note", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Notes")
                         .HasForeignKey("ModuleId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Note", "Parent")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Note", "Parent")
                         .WithMany("Notes")
                         .HasForeignKey("NoteId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.NoteLikes", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.NoteLikes", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Note", "Note")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Note", "Note")
                         .WithMany("NoteLikes")
                         .HasForeignKey("NoteId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "TenantUser")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "TenantUser")
                         .WithMany("LikedNotes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Notification", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Notification", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Notifications")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Picklist", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Picklist", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.PicklistItem", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.PicklistItem", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Picklist", "Picklist")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Picklist", "Picklist")
                         .WithMany("Items")
                         .HasForeignKey("PicklistId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Process", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Process", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessApprover", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessApprover", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Process", "Process")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Process", "Process")
                         .WithMany("Approvers")
                         .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessFilter", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Process", "Process")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Process", "Process")
                         .WithMany("Filters")
                         .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessLog", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Process", "Process")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Process", "Process")
                         .WithMany("Logs")
                         .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProcessRequest", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProcessRequest", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Process", "Process")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Process", "Process")
                         .WithMany("Requests")
                         .HasForeignKey("ProcessId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Profile", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Profile", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ProfilePermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ProfilePermission", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany("Permissions")
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Relation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Relation", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Relations")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Reminder", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Reminder", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Reminders")
                         .HasForeignKey("ModuleId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Report", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Report", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.ReportCategory", "Category")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.ReportCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportAggregation", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportAggregation", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Report", "Report")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Report", "Report")
                         .WithMany("Aggregations")
                         .HasForeignKey("ReportId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportCategory", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportCategory", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportField", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportField", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Report", "Report")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Report", "Report")
                         .WithMany("Fields")
                         .HasForeignKey("ReportId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportFilter", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Report", "Report")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Report", "Report")
                         .WithMany("Filters")
                         .HasForeignKey("ReportId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ReportShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ReportShares", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Report", "Report")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Report", "Report")
                         .WithMany("Shares")
                         .HasForeignKey("ReportId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "TenantUser")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "TenantUser")
                         .WithMany("SharedReports")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Role", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Role", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Role", "ReportsTo")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Role", "ReportsTo")
                         .WithMany()
                         .HasForeignKey("ReportsToId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Section", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Section", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany("Sections")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.SectionPermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.SectionPermission", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Section", "Section")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Section", "Section")
                         .WithMany("Permissions")
                         .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Setting", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Setting", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Tag", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Tag", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Field", "Field")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Field", "Field")
                         .WithMany()
                         .HasForeignKey("FieldId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Template", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Template", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.TemplatePermission", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.TemplatePermission", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany()
                         .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Template", "Template")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Template", "Template")
                         .WithMany("Permissions")
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.TemplateShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.TemplateShares", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Template", "Template")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Template", "Template")
                         .WithMany("Shares")
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "TenantUser")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "TenantUser")
                         .WithMany("SharedTemplates")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.TenantUser", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.TenantUser", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Profile", "Profile")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Profile", "Profile")
                         .WithMany("Users")
                         .HasForeignKey("ProfileId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Role", "Role")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.UserCustomShare", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.UserCustomShare", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "SharedUser")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "SharedUser")
                         .WithMany()
                         .HasForeignKey("SharedUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.UserGroup", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.UserGroup", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.UsersUserGroup", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.UsersUserGroup", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.UserGroup", "UserGroup")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.UserGroup", "UserGroup")
                         .WithMany("Users")
                         .HasForeignKey("UserGroupId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany("Groups")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.View", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.View", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewField", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewField", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.View", "View")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.View", "View")
                         .WithMany("Fields")
                         .HasForeignKey("ViewId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewFilter", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.View", "View")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.View", "View")
                         .WithMany("Filters")
                         .HasForeignKey("ViewId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewShares", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewShares", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany("SharedViews")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.View", "View")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.View", "View")
                         .WithMany("Shares")
                         .HasForeignKey("ViewId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.ViewState", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ViewState", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "User")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Widget", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Widget", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Report", "Report")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Report", "Report")
                         .WithMany()
                         .HasForeignKey("ReportId");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.View", "View")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.View", "View")
                         .WithMany()
                         .HasForeignKey("ViewId");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.Workflow", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Workflow", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Module", "Module")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
                         .WithMany()
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowFilter", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowFilter", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Workflow", "Workflow")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Workflow", "Workflow")
                         .WithMany("Filters")
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowLog", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowLog", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "CreatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.TenantUser", "UpdatedBy")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.HasOne("PrimeApps.Model.Entities.Application.Workflow", "Workflow")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Workflow", "Workflow")
                         .WithMany("Logs")
                         .HasForeignKey("WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowNotification", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowNotification", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Workflow", "Workflow")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Workflow", "Workflow")
                         .WithOne("SendNotification")
-                        .HasForeignKey("PrimeApps.Model.Entities.Application.WorkflowNotification", "WorkflowId")
+                        .HasForeignKey("PrimeApps.Model.Entities.Tenant.WorkflowNotification", "WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowTask", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowTask", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Workflow", "Workflow")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Workflow", "Workflow")
                         .WithOne("CreateTask")
-                        .HasForeignKey("PrimeApps.Model.Entities.Application.WorkflowTask", "WorkflowId")
+                        .HasForeignKey("PrimeApps.Model.Entities.Tenant.WorkflowTask", "WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowUpdate", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowUpdate", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Workflow", "Workflow")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Workflow", "Workflow")
                         .WithOne("FieldUpdate")
-                        .HasForeignKey("PrimeApps.Model.Entities.Application.WorkflowUpdate", "WorkflowId")
+                        .HasForeignKey("PrimeApps.Model.Entities.Tenant.WorkflowUpdate", "WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Application.WorkflowWebhook", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.WorkflowWebhook", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Application.Workflow", "Workflow")
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Workflow", "Workflow")
                         .WithOne("WebHook")
-                        .HasForeignKey("PrimeApps.Model.Entities.Application.WorkflowWebhook", "WorkflowId")
+                        .HasForeignKey("PrimeApps.Model.Entities.Tenant.WorkflowWebhook", "WorkflowId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

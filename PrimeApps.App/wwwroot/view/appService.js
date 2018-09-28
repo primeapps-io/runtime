@@ -109,6 +109,8 @@ angular.module('primeapps')
                             promises.push($http.get(config.apiUrl + 'help/get_first_screen?templateType=' + 'modal' + '&firstscreen=' + true));
                             promises.push($http.get(config.apiUrl + 'menu/get/' + responseAccount.data.user.profile.id));
                             promises.push($http.get(config.apiUrl + 'settings/get_all/custom?userId=' + responseAccount.data.user.id));
+                            promises.push($http.get(config.apiUrl + 'settings/get_by_key/1/branch'));
+
                             $q.all(promises)
                                 .then(function (response) {
                                     if (response.length < 6
@@ -119,6 +121,12 @@ angular.module('primeapps')
                                         return deferred.promise;
                                     }
 
+                                    /*
+                                    * Check branch mode is available.
+                                    * */
+                                    if (response[11].status === 200 && response[11].data.value) {
+                                        $rootScope.branchAvailable = response[11].data.value === 't';
+                                    }
 
                                     var isDemo = responseAccount.data.user.isDemo || false;
                                     var account = responseAccount.data;
@@ -154,6 +162,8 @@ angular.module('primeapps')
                                         for (var fieldKey = modules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
                                             if (modules[moduleKey].fields[fieldKey].data_type == "lookup"
                                                 && modules[moduleKey].fields[fieldKey].lookup_type != "users"
+                                                && modules[moduleKey].fields[fieldKey].lookup_type != "profiles"
+                                                && modules[moduleKey].fields[fieldKey].lookup_type != "roles"
                                                 && modules[moduleKey].fields[fieldKey].lookup_type != "relation"
                                                 && activeModuleNames.indexOf(modules[moduleKey].fields[fieldKey].lookup_type) === -1)
                                                 modules[moduleKey].fields.splice(fieldKey, 1);
@@ -182,6 +192,8 @@ angular.module('primeapps')
                                     $rootScope.currencySymbol = that.getCurrencySymbol($rootScope.workgroup.currency);
                                     $rootScope.modules = modules;
                                     $rootScope.modules.push(that.getUserModule());
+                                    $rootScope.modules.push(that.getProfileModule());
+                                    $rootScope.modules.push(that.getRoleModule());
                                     $rootScope.profiles = profiles;
                                     $rootScope.moduleSettings = moduleSettings;
                                     $rootScope.system = {};
@@ -464,7 +476,108 @@ angular.module('primeapps')
 
                     return deferred.promise;
                 },
+                getProfileModule: function () {
+                    var profileModule = {};
+                    profileModule.id = 1000;
+                    profileModule.name = 'profiles';
+                    profileModule.system_type = 'system';
+                    profileModule.order = 999;
+                    profileModule.display = false;
+                    profileModule.label_en_singular = 'Profile';
+                    profileModule.label_en_plural = 'Profiles';
+                    profileModule.label_tr_singular = 'Profil';
+                    profileModule.label_tr_plural = 'Profiller';
+                    profileModule.menu_icon = 'fa fa-users';
+                    profileModule.sections = [];
+                    profileModule.fields = [];
 
+                    var section = {};
+                    section.name = 'profile_information';
+                    section.system_type = 'system';
+                    section.order = 1;
+                    section.column_count = 1;
+                    section.label_en = 'Profile Information';
+                    section.label_tr = 'Profil Bilgisi';
+                    section.display_form = true;
+                    section.display_detail = true;
+
+                    var fieldEmail = {};
+                    fieldEmail.name = 'name';
+                    fieldEmail.system_type = 'system';
+                    fieldEmail.data_type = 'text_single';
+                    fieldEmail.order = 2;
+                    fieldEmail.section = 1;
+                    fieldEmail.section_column = 1;
+                    fieldEmail.primary = true;
+                    fieldEmail.inline_edit = false;
+                    fieldEmail.label_en = 'Name';
+                    fieldEmail.label_tr = 'İsim';
+                    fieldEmail.display_list = true;
+                    fieldEmail.display_form = true;
+                    fieldEmail.display_detail = true;
+                    profileModule.fields.push(fieldEmail);
+
+                    return profileModule;
+                },
+                getRoleModule: function () {
+                    var profileModule = {};
+                    profileModule.id = 1001;
+                    profileModule.name = 'roles';
+                    profileModule.system_type = 'system';
+                    profileModule.order = 999;
+                    profileModule.display = false;
+                    profileModule.label_en_singular = 'Role';
+                    profileModule.label_en_plural = 'Roles';
+                    profileModule.label_tr_singular = 'Rol';
+                    profileModule.label_tr_plural = 'Roller';
+                    profileModule.menu_icon = 'fa fa-users';
+                    profileModule.sections = [];
+                    profileModule.fields = [];
+
+                    var section = {};
+                    section.name = 'role_information';
+                    section.system_type = 'system';
+                    section.order = 1;
+                    section.column_count = 1;
+                    section.label_en = 'Role Information';
+                    section.label_tr = 'Rol Bilgisi';
+                    section.display_form = true;
+                    section.display_detail = true;
+
+                    var fieldLabelEn = {};
+                    fieldLabelEn.name = 'label_en';
+                    fieldLabelEn.system_type = 'system';
+                    fieldLabelEn.data_type = 'text_single';
+                    fieldLabelEn.order = 2;
+                    fieldLabelEn.section = 1;
+                    fieldLabelEn.section_column = 1;
+                    fieldLabelEn.primary = $rootScope.user.tenant_language == "en";
+                    fieldLabelEn.inline_edit = false;
+                    fieldLabelEn.label_en = 'Name English';
+                    fieldLabelEn.label_tr = 'İsim İngilizce';
+                    fieldLabelEn.display_list = true;
+                    fieldLabelEn.display_form = true;
+                    fieldLabelEn.display_detail = true;
+                    profileModule.fields.push(fieldLabelEn);
+
+                    var fieldLabelTr = {};
+                    fieldLabelTr.name = 'label_tr';
+                    fieldLabelTr.system_type = 'system';
+                    fieldLabelTr.data_type = 'text_single';
+                    fieldLabelTr.order = 2;
+                    fieldLabelTr.section = 1;
+                    fieldLabelTr.section_column = 1;
+                    fieldLabelTr.primary = $rootScope.user.tenant_language == "tr";
+                    fieldLabelTr.inline_edit = false;
+                    fieldLabelTr.label_en = 'Name Turkish';
+                    fieldLabelTr.label_tr = 'İsim Türkçe';
+                    fieldLabelTr.display_list = true;
+                    fieldLabelTr.display_form = true;
+                    fieldLabelTr.display_detail = true;
+                    profileModule.fields.push(fieldLabelTr);
+
+                    return profileModule;
+                },
                 getUserModule: function () {
                     var userModule = {};
                     userModule.id = 999;
@@ -581,7 +694,6 @@ angular.module('primeapps')
 
                     return userModule;
                 },
-
                 processModule: function (module) {
                     for (var i = 0; i < module.sections.length; i++) {
                         var section = module.sections[i];
@@ -639,7 +751,7 @@ angular.module('primeapps')
                         field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
 
                         if (field.data_type === 'lookup') {
-                            if (field.lookup_type != 'users' && field.lookup_type != 'relation') {
+                            if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
                                 var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
 
                                 if (!lookupModule)
@@ -666,6 +778,14 @@ angular.module('primeapps')
 
                                 if (field.lookup_type === 'users') {
                                     var lookupModule = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                }
+                                else if (field.lookup_type === 'profiles') {
+                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'profiles' }, true)[0];
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                }
+                                else if (field.lookup_type === 'roles') {
+                                    var lookupModule = $filter('filter')($rootScope.modules, { name: 'roles' }, true)[0];
                                     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
                                 }
                             }

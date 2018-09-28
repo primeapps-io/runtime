@@ -1,7 +1,7 @@
 ﻿using System;
 using Aspose.Words.MailMerging;
 using Newtonsoft.Json.Linq;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;

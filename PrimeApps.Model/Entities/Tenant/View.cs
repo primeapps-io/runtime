@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("views")]
     public class View : BaseEntity
     {
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
         [Column("system_code"), MaxLength(50)]
@@ -26,7 +26,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("active")]
         public bool Active { get; set; }
 
-        [Column("sharing_type")]//, Index]
+        [Column("sharing_type")]
         public ViewSharingType SharingType { get; set; }
 
         [Column("filter_logic"), MaxLength(200)]

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("charts")]
     public class Chart : BaseEntity
@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("y_axis_name"), MaxLength(80), Required]
         public string YaxisName { get; set; }
 
-        [Column("report_id"), ForeignKey("Report")]//, Index]
+        [Column("report_id"), ForeignKey("Report")]
         public int? ReportId { get; set; }
 
         public virtual Report Report { get; set; }

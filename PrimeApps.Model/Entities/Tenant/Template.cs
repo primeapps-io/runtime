@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("templates")]
     public class Template : BaseEntity
@@ -32,7 +32,7 @@ namespace PrimeApps.Model.Entities.Application
         [Column("active")]
         public bool Active { get; set; }
 
-        [Column("sharing_type")]//, Index]
+        [Column("sharing_type")]
         public TemplateSharingType SharingType { get; set; }
 
         public List<TemplateShares> Shares { get; set; }

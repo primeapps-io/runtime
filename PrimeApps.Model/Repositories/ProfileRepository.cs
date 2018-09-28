@@ -1,5 +1,5 @@
 ﻿using PrimeApps.Model.Context;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
@@ -37,7 +37,8 @@ namespace PrimeApps.Model.Repositories
                 Dashboard = newProfileDTO.Dashboard,
                 Home = newProfileDTO.Home,
 	            CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
-				StartPage = newProfileDTO.StartPage
+				StartPage = newProfileDTO.StartPage,
+                ParentId = newProfileDTO.ParentId
             };
 
             DbContext.ProfilePermissions.Add(new ProfilePermission()
@@ -101,6 +102,7 @@ namespace PrimeApps.Model.Repositories
             profileToUpdate.Home = updatedProfileDTO.Home;
 	        profileToUpdate.CollectiveAnnualLeave = updatedProfileDTO.CollectiveAnnualLeave;
 			profileToUpdate.StartPage = updatedProfileDTO.StartPage;
+            profileToUpdate.ParentId = updatedProfileDTO.ParentId;
 
             DbContext.ProfilePermissions.RemoveRange(profileToUpdate.Permissions);
 
@@ -205,6 +207,7 @@ namespace PrimeApps.Model.Repositories
                     Home = x.Home,
 	                CollectiveAnnualLeave = x.CollectiveAnnualLeave,
 					StartPage = x.StartPage,
+                    ParentId = x.ParentId,
                     CreatedBy = x.CreatedById,
                     IsPersistent = x.IsPersistent,
                     UserIDs = x.Users.Select(z => z.Id).ToList(),
@@ -255,6 +258,7 @@ namespace PrimeApps.Model.Repositories
                                    Home = x.Home,
 	                               CollectiveAnnualLeave = x.CollectiveAnnualLeave,
 								   StartPage = x.StartPage,
+                                   ParentId = x.ParentId,
                                    UserIds = x.Users.Select(z => z.Id).ToList(),
                                    Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
                                    {
@@ -329,6 +333,11 @@ namespace PrimeApps.Model.Repositories
         public async Task<Profile> GetDefaultUserProfile()
         {
             return await DbContext.Profiles.Where(x => x.IsPersistent && !x.HasAdminRights).SingleOrDefaultAsync();
+        }
+
+        public async Task<List<Profile>> GetByParentId(int parentId)
+        {
+            return await DbContext.Profiles.Where(x => x.ParentId == parentId).ToListAsync();
         }
     }
 }

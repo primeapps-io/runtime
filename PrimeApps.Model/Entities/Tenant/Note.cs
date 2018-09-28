@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("notes")]
     public class Note : BaseEntity
@@ -12,10 +12,10 @@ namespace PrimeApps.Model.Entities.Application
         [Column("text"), Required]
         public string Text { get; set; }
 
-        [Column("module_id"), ForeignKey("Module")]//, Index]
+        [Column("module_id"), ForeignKey("Module")]
         public int? ModuleId { get; set; }
 
-        [Column("record_id")]//, Index]
+        [Column("record_id")]
         public int? RecordId { get; set; }
 
         [Column("note_id")]

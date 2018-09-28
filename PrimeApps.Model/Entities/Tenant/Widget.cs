@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("widgets")]
     public class Widget : BaseEntity
@@ -23,10 +23,10 @@ namespace PrimeApps.Model.Entities.Application
         [Column("icon"), MaxLength(30)]
         public string Icon { get; set; }
 
-        [Column("report_id"), ForeignKey("Report")]//, Index]
+        [Column("report_id"), ForeignKey("Report")]
         public int? ReportId { get; set; }
 
-        [Column("view_id"), ForeignKey("View")]//, Index]
+        [Column("view_id"), ForeignKey("View")]
         public int? ViewId { get; set; }
 
         public virtual Report Report { get; set; }

@@ -30,7 +30,7 @@
                 ng-model="params.filters[field.fieldName].operator"
                 ng-change="operatorChanged(field)"
                 ng-options="o as o.label[language] for o in field.operators | orderBy:'order' track by o.order"
-                ng-if="!field.lookupModulePrimaryField || field.lookup_type ==='users'">
+                ng-if="!field.lookupModulePrimaryField || (field.lookup_type ==='users' || field.lookup_type ==='profiles' || field.lookup_type ==='roles')">
             <option value="" ng-if="false"></option>
         </select>
         <select
@@ -39,7 +39,7 @@
                 ng-model="params.filters[field.fieldName].operator"
                 ng-change="operatorChanged(field)"
                 ng-options="o as o.label[language] for o in field.lookupModulePrimaryField.operators | orderBy:'order' track by o.order"
-                ng-if="field.lookupModulePrimaryField && field.lookup_type !='users' ">
+                ng-if="field.lookupModulePrimaryField && field.lookup_type !='users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles'">
             <option value="" ng-if="false"></option>
         </select>
     </th>
@@ -53,128 +53,117 @@
         <button type="button" class="btn btn-xs btn-w-xs btn-custom" ng-click="refresh(true)">{{'Common.Clear' | translate}}</button>
     </th>
     <th ng-repeat="field in fields | orderBy:'order'" class="th-custom filters">
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled || field.data_type === 'image'"
-                maxlength="100"
-                ng-enter="params.reloading = true; params.renew = true; params.reload();"
-                ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'text_single' || field.data_type === 'text_multi' || field.data_type === 'email' || field.data_type === 'document' || field.data_type === 'url' || field.data_type === 'location' || field.data_type === 'image') : (field.lookupModulePrimaryField.data_type === 'text_single' || field.lookupModulePrimaryField.data_type === 'text_multi' || field.lookupModulePrimaryField.data_type === 'email' || field.lookupModulePrimaryField.data_type === 'document') && field.lookup_type !='users'" />
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled || field.data_type === 'image'"
+               maxlength="100"
+               ng-enter="params.reloading = true; params.renew = true; params.reload();"
+               ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'text_single' || field.data_type === 'text_multi' || field.data_type === 'email' || field.data_type === 'document' || field.data_type === 'url' || field.data_type === 'location' || field.data_type === 'image') : (field.lookupModulePrimaryField.data_type === 'text_single' || field.lookupModulePrimaryField.data_type === 'text_multi' || field.lookupModulePrimaryField.data_type === 'email' || field.lookupModulePrimaryField.data_type === 'document') && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles'" />
 
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
-                maxlength="50"
-                numeric
-                ng-enter="params.reloading = true; params.renew = true; params.reload();"
-                ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'number' || field.data_type === 'number_auto') : (field.lookupModulePrimaryField.data_type === 'number' || field.lookupModulePrimaryField.data_type === 'number_auto')" />
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled"
+               maxlength="50"
+               numeric
+               ng-enter="params.reloading = true; params.renew = true; params.reload();"
+               ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'number' || field.data_type === 'number_auto') : (field.lookupModulePrimaryField.data_type === 'number' || field.lookupModulePrimaryField.data_type === 'number_auto')" />
 
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
-                maxlength="50"
-                places="field.decimal_places || 2"
-                number-decimal
-                ng-enter="params.reloading = true; params.renew = true; params.reload();"
-                ng-if="!field.lookupModulePrimaryField ? field.data_type === 'number_decimal' : field.lookupModulePrimaryField.data_type === 'number_decimal'" />
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled"
+               maxlength="50"
+               places="field.decimal_places || 2"
+               number-decimal
+               ng-enter="params.reloading = true; params.renew = true; params.reload();"
+               ng-if="!field.lookupModulePrimaryField ? field.data_type === 'number_decimal' : field.lookupModulePrimaryField.data_type === 'number_decimal'" />
 
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
-                maxlength="50"
-                places="field.decimal_places || 2"
-                currency-symbol="field.currency_symbol"
-                number-currency
-                ng-enter="params.reloading = true; params.renew = true; params.reload();"
-                ng-if="!field.lookupModulePrimaryField ? field.data_type === 'currency' : field.lookupModulePrimaryField.data_type === 'currency'" />
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled"
+               maxlength="50"
+               places="field.decimal_places || 2"
+               currency-symbol="field.currency_symbol"
+               number-currency
+               ng-enter="params.reloading = true; params.renew = true; params.reload();"
+               ng-if="!field.lookupModulePrimaryField ? field.data_type === 'currency' : field.lookupModulePrimaryField.data_type === 'currency'" />
 
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
-                data-autoclose="1"
-                data-date-type="date"
-                data-timezone=""
-                data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
-                data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
-                data-icon-left="fa fa-chevron-left"
-                data-icon-right="fa fa-chevron-right"
-                data-placement="bottom-right"
-                bs-datepicker
-                ng-if="!field.lookupModulePrimaryField ? field.data_type === 'date' : field.lookupModulePrimaryField.data_type === 'date'">
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled"
+               data-autoclose="1"
+               data-date-type="date"
+               data-timezone=""
+               data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
+               data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
+               data-icon-left="fa fa-chevron-left"
+               data-icon-right="fa fa-chevron-right"
+               data-placement="bottom-right"
+               bs-datepicker
+               ng-if="!field.lookupModulePrimaryField ? field.data_type === 'date' : field.lookupModulePrimaryField.data_type === 'date'">
 
-        <input-stars
-                ng-if="field.data_type === 'rating'"
-                max="{{field.validation.min_length}}"
-                allow-half
-                icon-base="fa fa-fw"
-                icon-empty="fa-star-o"
-                icon-half="fa-star-half-o"
-                icon-full="fa-star"
-                icon-hover-full="fa-star"
-                ng-model="params.filters[field.fieldName].value"
-        ></input-stars>
+        <input-stars ng-if="field.data_type === 'rating'"
+                     max="{{field.validation.min_length}}"
+                     allow-half
+                     icon-base="fa fa-fw"
+                     icon-empty="fa-star-o"
+                     icon-half="fa-star-half-o"
+                     icon-full="fa-star"
+                     icon-hover-full="fa-star"
+                     ng-model="params.filters[field.fieldName].value"></input-stars>
 
         <div class="clearfix datetime-pick" ng-if="!field.lookupModulePrimaryField ? field.data_type === 'date_time' : field.lookupModulePrimaryField.data_type === 'date_time'">
-            <input
-                    type="text"
-                    class="form-control date-pick"
-                    ng-model="params.filters[field.fieldName].value"
-                    ng-disabled="params.filters[field.fieldName].disabled"
-                    placeholder="{{'Common.Date' | translate}}"
-                    data-autoclose="1"
-                    data-date-type="iso"
-                    data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
-                    data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
-                    data-icon-left="fa fa-chevron-left"
-                    data-icon-right="fa fa-chevron-right"
-                    bs-datepicker
-                    ng-change="dateTimeChanged(field)"
-                    ng-enter="params.reloading = true; params.renew = true; params.reload();">
-            <input
-                    type="text"
-                    class="form-control time-pick"
-                    ng-model="params.filters[field.fieldName].value"
-                    ng-disabled="params.filters[field.fieldName].disabled"
-                    placeholder="{{'Common.Time' | translate}}"
-                    data-autoclose="1"
-                    data-time-type="iso"
-                    data-icon-up="fa fa-chevron-up"
-                    data-icon-down="fa fa-chevron-down"
-                    data-length="1"
-                    data-minute-step="10"
-                    data-arrow-behavior="picker"
-                    bs-timepicker
-                    ng-enter="params.reloading = true; params.renew = true; params.reload();">
+            <input type="text"
+                   class="form-control date-pick"
+                   ng-model="params.filters[field.fieldName].value"
+                   ng-disabled="params.filters[field.fieldName].disabled"
+                   placeholder="{{'Common.Date' | translate}}"
+                   data-autoclose="1"
+                   data-date-type="iso"
+                   data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
+                   data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
+                   data-icon-left="fa fa-chevron-left"
+                   data-icon-right="fa fa-chevron-right"
+                   bs-datepicker
+                   ng-change="dateTimeChanged(field)"
+                   ng-enter="params.reloading = true; params.renew = true; params.reload();">
+            <input type="text"
+                   class="form-control time-pick"
+                   ng-model="params.filters[field.fieldName].value"
+                   ng-disabled="params.filters[field.fieldName].disabled"
+                   placeholder="{{'Common.Time' | translate}}"
+                   data-autoclose="1"
+                   data-time-type="iso"
+                   data-icon-up="fa fa-chevron-up"
+                   data-icon-down="fa fa-chevron-down"
+                   data-length="1"
+                   data-minute-step="10"
+                   data-arrow-behavior="picker"
+                   bs-timepicker
+                   ng-enter="params.reloading = true; params.renew = true; params.reload();">
         </div>
 
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
-                placeholder="{{'Common.Time' | translate}}"
-                data-autoclose="1"
-                data-time-type="iso"
-                data-icon-up="fa fa-chevron-up"
-                data-icon-down="fa fa-chevron-down"
-                data-length="1"
-                data-minute-step="10"
-                data-arrow-behavior="picker"
-                bs-timepicker
-                ng-if="!field.lookupModulePrimaryField ? field.data_type === 'time' : field.lookupModulePrimaryField.data_type === 'time'"
-                ng-enter="params.reloading = true; params.renew = true; params.reload();">
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled"
+               placeholder="{{'Common.Time' | translate}}"
+               data-autoclose="1"
+               data-time-type="iso"
+               data-icon-up="fa fa-chevron-up"
+               data-icon-down="fa fa-chevron-down"
+               data-length="1"
+               data-minute-step="10"
+               data-arrow-behavior="picker"
+               bs-timepicker
+               ng-if="!field.lookupModulePrimaryField ? field.data_type === 'time' : field.lookupModulePrimaryField.data_type === 'time'"
+               ng-enter="params.reloading = true; params.renew = true; params.reload();">
 
-        <select
-                class="form-control"
+        <select class="form-control"
                 ng-model="params.filters[field.fieldName].value"
                 ng-disabled="params.filters[field.fieldName].disabled"
                 ng-options="o as o.label[language] for o in params.picklists[!field.lookupModulePrimaryField ? field.picklist_id : field.lookupModulePrimaryField.picklist_id] | filter:{hidden:'!true'} track by o.id"
@@ -224,17 +213,45 @@
                            max-results-to-show="9999"></auto-complete>
         </tags-input>
 
-        <input
-                type="text"
-                class="form-control"
-                ng-model="params.filters[field.fieldName].value"
-                ng-disabled="params.filters[field.fieldName].disabled"
-                maxlength="100"
-                ng-enter="params.reloading = true; params.renew = true; params.reload();"
-                ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'lookup' && field.lookup_type != 'users') : (field.lookupModulePrimaryField.data_type === 'lookup' && field.lookupModulePrimaryField.lookup_type != 'users')" />
+        <tags-input ng-model="params.filters[field.fieldName].value"
+                    display-property="name"
+                    key-property="id"
+                    max-tags="1"
+                    placeholder="{{'Common.Search' | translate}}"
+                    replace-spaces-with-dashes="false"
+                    add-from-autocomplete-only="true"
+                    ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'lookup' && field.lookup_type === 'profiles') :  field.lookup_type === 'profiles'">
+            <auto-complete source="lookupProfile($query,null,true)"
+                           min-length="0"
+                           load-on-focus="true"
+                           load-on-empty="true"
+                           max-results-to-show="9999"></auto-complete>
+        </tags-input>
 
-        <select
-                class="form-control"
+        <tags-input ng-model="params.filters[field.fieldName].value"
+                    display-property="name"
+                    key-property="id"
+                    max-tags="1"
+                    placeholder="{{'Common.Search' | translate}}"
+                    replace-spaces-with-dashes="false"
+                    add-from-autocomplete-only="true"
+                    ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'lookup' && field.lookup_type === 'roles') :  field.lookup_type === 'roles'">
+            <auto-complete source="lookupRole($query,null,true)"
+                           min-length="0"
+                           load-on-focus="true"
+                           load-on-empty="true"
+                           max-results-to-show="9999"></auto-complete>
+        </tags-input>
+
+        <input type="text"
+               class="form-control"
+               ng-model="params.filters[field.fieldName].value"
+               ng-disabled="params.filters[field.fieldName].disabled"
+               maxlength="100"
+               ng-enter="params.reloading = true; params.renew = true; params.reload();"
+               ng-if="!field.lookupModulePrimaryField ? (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles') : (field.lookupModulePrimaryField.data_type === 'lookup' && field.lookupModulePrimaryField.lookup_type != 'users' && field.lookupModulePrimaryField.lookup_type != 'profiles' && field.lookupModulePrimaryField.lookup_type != 'roles')" />
+
+        <select class="form-control"
                 ng-model="params.filters[field.fieldName].value"
                 ng-options="o as o.label[language] for o in params.picklists['yes_no'] track by o.id"
                 ng-enter="params.reloading = true; params.renew = true; params.reload();"

@@ -25,7 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using User = PrimeApps.Model.Entities.Application.TenantUser;
+using User = PrimeApps.Model.Entities.Tenant.TenantUser;
 using Utils = PrimeApps.App.Helpers.Utils;
 
 namespace PrimeApps.App.Controllers
@@ -457,13 +457,8 @@ namespace PrimeApps.App.Controllers
             registerModel.LastName = addUserBindingModel.LastName;
             registerModel.Password = randomPassword;
             registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
-
-            //TODO Integration
-            //Queue.QueueBackgroundWorkItem(async token => _integration.InsertUser(registerModel, _warehouse));
-
+            
             var platformUser = await _platformUserRepository.Get(applicationUser.Id);
-            var adminUser = await _platformUserRepository.GetTenantWithOwner(tenantId);
-
 
             //Set warehouse database name
             var warehouseInfo = await _platformWarehouseRepository.GetByTenantId(tenantId);

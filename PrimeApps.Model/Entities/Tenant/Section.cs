@@ -4,16 +4,16 @@ using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("sections")]
     public class Section : BaseEntity
     {
         [JsonIgnore]
-        [Column("module_id"), ForeignKey("Module"), /*Index("sections_IX_module_id_name", 1, IsUnique = true)*/]
+        [Column("module_id"), ForeignKey("Module")]
         public int ModuleId { get; set; }
 
-        [Column("name"), MaxLength(50), Required, /*Index("sections_IX_module_id_name", 2, IsUnique = true)*/]
+        [Column("name"), MaxLength(50), Required]
         public string Name { get; set; }
 
         [Column("system_type"), Required]
@@ -43,6 +43,5 @@ namespace PrimeApps.Model.Entities.Application
         public virtual Module Module { get; set; }
 
         public virtual ICollection<SectionPermission> Permissions { get; set; }
-
     }
 }

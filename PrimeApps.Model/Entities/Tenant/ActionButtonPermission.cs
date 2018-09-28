@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PrimeApps.Model.Enums;
 
-namespace PrimeApps.Model.Entities.Application
+namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("action_button_permissions")]
     public class ActionButtonPermission : BaseEntity
     {
         [JsonIgnore]
-        [Column("action_button_id"), ForeignKey("ActionButton"), /*Index("action_button_permissions_IX_action_button_id_profile_id", 1, IsUnique = true)*/]
+        [Column("action_button_id"), ForeignKey("ActionButton")]
         public int ActionButtonId { get; set; }
 
-        [Column("profile_id"), ForeignKey("Profile"), Required, /*Index("action_button_permissions_IX_action_button_id_profile_id", 2, IsUnique = true)*/]
+        [Column("profile_id"), ForeignKey("Profile"), Required]
         public int ProfileId { get; set; }
 
         [Column("type"), Required]
