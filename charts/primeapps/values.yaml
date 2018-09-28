@@ -9,12 +9,12 @@ authServicePort: 5002
 authContainerPort: 5002
 component: primeapps
 replicas: 3
-appImage: primeappsio.azurecr.io/primeapps-app
-authImage: primeappsio.azurecr.io/primeapps-auth
+appImage: eu.gcr.io/primeapps-gke/primeapps-app
+authImage: eu.gcr.io/primeapps-gke/primeapps-auth
 imageTag: master
 imagePullPolicy: Always
 ##Secrets
-pullsecret: vsts-secret
+pullsecret: container-registry-secret
 cpu: 10m
 memory: 128Mi
 ## Ingress settings
@@ -24,5 +24,76 @@ ingress:
   authHostname: auth-dev.primeapps.io
   annotations:
      kubernetes.io/ingress.class: nginx
-  tls: false
+     # kubernetes.io/tls-acme: "true"
+   tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+probes:
+  enabled: false
+secrets: {
+    
+    ConnectionStrings__TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;",
+    ConnectionStrings__PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;",
+    ConnectionStrings__WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    ConnectionStrings__StorageConnection: "http://51.144.165.200:9000",
+    ConnectionStrings__ElasticConnection: "http://es-dev.primeapps.io:9200/",
+    AppSettings__EnableJobs: "true",
+    AppSettings__AllowInsecureHttp: "true",
+    AppSettings__StorageAccessKey: "ofisim-storage",
+    AppSettings__StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O",
+    AppSettings__TestMode: "true",
+    AppSettings__BlobUrl: "http://file-dev.ofisim.com",
+    AppSettings__FunctionUrl: "http://localhost:7071",
+    AppSettings__EmailSMTPEnableSsl: "true",
+    AppSettings__EmailSMTPHost: "smtp.sendgrid.net",
+    AppSettings__EmailSMTPPort: "587",
+    AppSettings__EmailSMTPUser: "apikey",
+    AppSettings__EmailSMTPPassword: "password",
+    AppSettings__EmailSMTPHostTest: "smtp.mailtrap.io",
+    AppSettings__EmailSMTPPortTest: "465",
+    AppSettings__EmailSMTPUserTest: "b12c70f7f50ca9",
+    AppSettings__EmailSMTPPasswordTest: "2cfb87c728981a",
+    AppSettings__WarehouseServer: "ofisim-dwh-dev.database.windows.net",
+    AppSettings__WarehouseMasterUser: "ofisim",
+    AppSettings__WarehouseMasterPassword: "0f!s!mDev",
+    AppSettings__PowerbiAccessKey: "n+3uhoGPMk7fCEB7J+ThW1vVE+1XJDQsHzkUbn0KJZ+tcqVmobO0XmIhKvis4tkOlwhfWALsI6o4dPGzYN+nIA==",
+    AppSettings__PowerbiWorkspaceCollection: "OfisimDev",
+    AppSettings__AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;",
+    AppSettings__AzureSearch.Storage: "ofisimdev",
+    AppSettings__AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE",
+    AppSettings__UseCdn: "false",
+    webOptimizer__enableCaching": false,
+    webOptimizer__enableMemoryCache": false,
+    webOptimizer__enableDiskCache": false,
+    webOptimizer__cacheDirectory": "/var/temp/weboptimizercache",
+    webOptimizer__enableTagHelperBundling": false,
+    webOptimizer__cdnUrl": ""
+  }
+}
+  # Optionally specify a set of secret objects whose values
+  # will be injected as environment variables by default.
+  # You should add this section to a file like secrets.yaml
+  # that is explicitly NOT committed to source code control
+  # and then include it as part of your helm install step.
+  # ref: https://kubernetes.io/docs/concepts/configuration/secret/
+  #
+  # This creates a secret "mysecret" and injects "mypassword"
+  # as the environment variable mysecret_mypassword=password.
+  # mysecret:
+  #   mypassword: password
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+nodeSelector: {}
+tolerations: []
+affinity: {}
   
