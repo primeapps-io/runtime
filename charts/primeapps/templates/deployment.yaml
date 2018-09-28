@@ -31,17 +31,7 @@ spec:
           ports:
           - name: http
             containerPort: {{.Values.authContainerPort}}
-          resources:
-            requests:
-              cpu: "{{.Values.cpu}}"
-              memory: "{{.Values.memory}}"
-        - name: {{ template "fullname" . }}-app
-          image: "{{.Values.appImage}}:{{.Values.imageTag}}"
-          imagePullPolicy: "{{.Values.imagePullPolicy}}"
-          ports:
-          - name: http
-            containerPort: {{.Values.appContainerPort}}
-     {{- if .Values.probes.enabled }}
+          {{- if .Values.probes.enabled }}
           livenessProbe:
             httpGet:
               path: /
@@ -53,12 +43,44 @@ spec:
           {{- end }}
           env:
             {{- $root := . }}
-            {{- range $ref, $values := .Values.secrets }}
+            {{- range $ref, $values := .Values.secrets.auth }}
             {{- range $key, $value := $values }}
-            - name: {{ $ref }}_{{ $key }}
+            - name: {{ $ref }}__{{ $key }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "primeapps.fullname" $root }}-{{ $ref | lower }}
+                  name: {{ template "fullname" . }}-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+
+          resources:
+            requests:
+              cpu: "{{.Values.cpu}}"
+              memory: "{{.Values.memory}}"
+        - name: {{ template "fullname" . }}-app
+          image: "{{.Values.appImage}}:{{.Values.imageTag}}"
+          imagePullPolicy: "{{.Values.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.appContainerPort}}
+          {{- if .Values.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.secrets.app }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}__{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "fullname" . }}-{{ $ref | lower }}
                   key: {{ $key }}
             {{- end }}
             {{- end }}

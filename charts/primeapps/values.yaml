@@ -31,44 +31,60 @@ ingress:
     #     - chart-example.local
 probes:
   enabled: false
-secrets: {
-    ConnectionStrings__TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;",
-    ConnectionStrings__PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;",
-    ConnectionStrings__WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
-    ConnectionStrings__StorageConnection: "http://51.144.165.200:9000",
-    ConnectionStrings__ElasticConnection: "http://es-dev.primeapps.io:9200/",
-    AppSettings__EnableJobs: "true",
-    AppSettings__AllowInsecureHttp: "true",
-    AppSettings__StorageAccessKey: "ofisim-storage",
-    AppSettings__StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O",
-    AppSettings__TestMode: "true",
-    AppSettings__BlobUrl: "http://file-dev.ofisim.com",
-    AppSettings__FunctionUrl: "http://localhost:7071",
-    AppSettings__EmailSMTPEnableSsl: "true",
-    AppSettings__EmailSMTPHost: "smtp.sendgrid.net",
-    AppSettings__EmailSMTPPort: "587",
-    AppSettings__EmailSMTPUser: "apikey",
-    AppSettings__EmailSMTPPassword: "password",
-    AppSettings__EmailSMTPHostTest: "smtp.mailtrap.io",
-    AppSettings__EmailSMTPPortTest: "465",
-    AppSettings__EmailSMTPUserTest: "b12c70f7f50ca9",
-    AppSettings__EmailSMTPPasswordTest: "2cfb87c728981a",
-    AppSettings__WarehouseServer: "ofisim-dwh-dev.database.windows.net",
-    AppSettings__WarehouseMasterUser: "ofisim",
-    AppSettings__WarehouseMasterPassword: "0f!s!mDev",
-    AppSettings__PowerbiAccessKey: "n+3uhoGPMk7fCEB7J+ThW1vVE+1XJDQsHzkUbn0KJZ+tcqVmobO0XmIhKvis4tkOlwhfWALsI6o4dPGzYN+nIA==",
-    AppSettings__PowerbiWorkspaceCollection: "OfisimDev",
-    AppSettings__AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;",
-    AppSettings__AzureSearch.Storage: "ofisimdev",
-    AppSettings__AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE",
-    AppSettings__UseCdn: "false",
-    webOptimizer__enableCaching": false,
-    webOptimizer__enableMemoryCache": false,
-    webOptimizer__enableDiskCache": false,
-    webOptimizer__cacheDirectory": "/var/temp/weboptimizercache",
-    webOptimizer__enableTagHelperBundling": false,
-    webOptimizer__cdnUrl": ""
-}
+secrets:
+  app:
+    ConnectionStrings:
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+      WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+      StorageConnection: "http://51.144.165.200:9000"
+      ElasticConnection: "http://es-dev.primeapps.io:9200/"
+    AppSettings:
+      EnableJobs: "true"
+      AllowInsecureHttp: "true"
+      StorageAccessKey: "ofisim-storage"
+      StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O"
+      TestMode: "true"
+      BlobUrl: "http://file-dev.ofisim.com"
+      FunctionUrl: "http://localhost:7071"
+      EmailSMTPEnableSsl: "true"
+      EmailSMTPHost: "smtp.sendgrid.net"
+      EmailSMTPPort: "587"
+      EmailSMTPUser: "apikey"
+      EmailSMTPPassword: "password"
+      EmailSMTPHostTest: "smtp.mailtrap.io"
+      EmailSMTPPortTest: "465"
+      EmailSMTPUserTest: "b12c70f7f50ca9"
+      EmailSMTPPasswordTest: "2cfb87c728981a"
+      WarehouseServer: "ofisim-dwh-dev.database.windows.net"
+      WarehouseMasterUser: "ofisim"
+      WarehouseMasterPassword: "0f!s!mDev"
+      PowerbiAccessKey: "n+3uhoGPMk7fCEB7J+ThW1vVE+1XJDQsHzkUbn0KJZ+tcqVmobO0XmIhKvis4tkOlwhfWALsI6o4dPGzYN+nIA=="
+      PowerbiWorkspaceCollection: "OfisimDev"
+      AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;"
+      AzureSearch.Storage: "ofisimdev"
+      AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
+      UseCdn: "false",
+      AuthenticationServerURL: "http://auth-dev.primeapps.io",
+      ClientId: "ofisim_crm"
+      ClientSecret: "secret"
+    webOptimizer:
+      enableCaching: false
+      enableMemoryCache: false
+      enableDiskCache: false
+      cacheDirectory: "/var/temp/weboptimizercache"
+      enableTagHelperBundling": "false"
+  auth:
+    ConnectionStrings:
+      AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
+      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+    webOptimizer:
+      enableCaching: "false"
+      enableMemoryCache: "false"
+      enableDiskCache: "false"
+      cacheDirectory: "/var/temp/weboptimizercache"
+      enableTagHelperBundling: "false"
   # Optionally specify a set of secret objects whose values
   # will be injected as environment variables by default.
   # You should add this section to a file like secrets.yaml

@@ -97,11 +97,11 @@ namespace PrimeApps.App
 						options.Authority = configuration.GetSection("AppSettings")["DevelopmentApp"];
 					}*/
 
-					options.Authority = "http://localhost:5002";
-					options.ClientId = "ofisim_crm";
+					options.Authority = configuration.GetSection("AppSettings")["AuthenticationServerURL"];
+					options.ClientId = configuration.GetSection("AppSettings")["ClientId"];
 
 					options.RequireHttpsMetadata = false;
-					options.ClientSecret = "secret";
+					options.ClientSecret = configuration.GetSection("AppSettings")["ClientSecret"];
 					options.ResponseType = "code id_token";
 
 					options.SaveTokens = true;
