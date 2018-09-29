@@ -23,14 +23,12 @@ namespace PrimeApps.App.Helpers
         private IServiceScopeFactory _serviceScopeFactory;
         private IHttpContextAccessor _context;
         private IConfiguration _configuration;
-        private CurrentUser _currentUser;
 
         public RoleHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _context = context;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-            _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
         public async Task<bool> UpdateUserRoleBulkAsync(Warehouse warehouse, UserItem appUser)
@@ -42,10 +40,7 @@ namespace PrimeApps.App.Helpers
                 using (var userRespository = new UserRepository(databaseContext, _configuration))
                 using (var roleRepository = new RoleRepository(databaseContext, _configuration))
                 {
-                    userRespository.UserId = appUser.TenantId;
-                    roleRepository.UserId = appUser.TenantId;
-
-                    userRespository.CurrentUser = roleRepository.CurrentUser = _currentUser;
+                    userRespository.CurrentUser = roleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
                     var users = await userRespository.GetAllAsync();
 

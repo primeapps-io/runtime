@@ -24,16 +24,12 @@ namespace PrimeApps.App.Controllers
         private IRoleHelper _roleHelper;
         private Warehouse _warehouse;
 
-        public IBackgroundTaskQueue Queue { get; }
-
-        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, IRoleHelper roleHelper, Warehouse warehouse, IBackgroundTaskQueue queue)
+        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, IRoleHelper roleHelper, Warehouse warehouse)
         {
             _roleRepository = roleRepository;
             _userRepository = userRespository;
             _roleHelper = roleHelper;
             _warehouse = warehouse;
-
-            Queue = queue;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -89,7 +85,7 @@ namespace PrimeApps.App.Controllers
             await _roleRepository.UpdateAsync(roleToUpdate, role);
 
             if (roleChange)
-                Queue.QueueBackgroundWorkItem(async token => await _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
+                BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
         }
 
         [Route("delete"), HttpDelete]
@@ -129,7 +125,7 @@ namespace PrimeApps.App.Controllers
             if (!user.Profile.HasAdminRights)
                 return;
 
-            await _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser);
+            BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
         }
 
         [Route("add_owners"), HttpPost]
