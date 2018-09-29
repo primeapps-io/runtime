@@ -375,7 +375,11 @@ angular.module('primeapps')
 
 
                                     if ($rootScope.workgroup.licenses.sip_license_count > 0) {
-                                        $rootScope.phoneSettings = phoneSettings;
+                                        if (angular.isObject(phoneSettings))
+                                            $rootScope.phoneSettings = phoneSettings;
+                                        else
+                                            $rootScope.phoneSettings = {};
+                                        
                                         $rootScope.phoneSettings.sipLicenseCount = $rootScope.workgroup.licenses.sip_license_count;
                                         //getUserSpecific sipAccount Info
                                         if (phoneSettings.sipUsers) {
