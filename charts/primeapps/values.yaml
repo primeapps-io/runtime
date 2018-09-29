@@ -5,7 +5,7 @@
 serviceType: NodePort
 appServicePort: 80
 appContainerPort: 80
-authServicePort: 8080
+authServicePort: 80
 authContainerPort: 80
 component: primeapps
 replicas: 1

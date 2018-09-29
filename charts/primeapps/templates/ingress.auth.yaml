@@ -11,13 +11,6 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: {{ template "fullname" . }}
+          serviceName: {{ template "fullname" . }}-auth
           servicePort: {{ .Values.authServicePort }}
-  - host: {{ .Values.ingress.appHostname | quote }}
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: {{ template "fullname" . }}
-          servicePort: {{ .Values.appServicePort }}
           

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "fullname" . }}-auth
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -12,11 +12,7 @@ spec:
     - port: {{.Values.authServicePort}}
       targetPort: {{.Values.authContainerPort}}
       protocol: TCP
-      name: auth-http
-    - port: {{.Values.appServicePort}}
-      targetPort: {{.Values.appContainerPort}}
-      protocol: TCP
-      name: app-http
+      name: http
   selector:
     component: "{{.Release.Name}}-{{.Values.component}}"
 #  type: {{ default "ClusterIP" .Values.serviceType | quote }}

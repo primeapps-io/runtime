@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "fullname" . }}
+  name: {{ template "fullname" . }}-app
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -25,38 +25,6 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.pullsecret }}
       containers:
-        - name: {{ template "fullname" . }}-auth
-          image: "{{.Values.authImage}}:{{.Values.imageTag}}"
-          imagePullPolicy: "{{.Values.imagePullPolicy}}"
-          ports:
-          - name: http
-            containerPort: {{.Values.authContainerPort}}
-          {{- if .Values.probes.enabled }}
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          {{- end }}
-          env:
-            {{- $root := . }}
-            {{- range $ref, $values := .Values.secrets }}
-            {{- range $key, $value := $values }}
-            - name: {{ $ref }}__{{ $key }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "fullname" . }}-{{ $ref | lower }}
-                  key: {{ $key }}
-            {{- end }}
-            {{- end }}
-
-          resources:
-            requests:
-              cpu: "{{.Values.cpu}}"
-              memory: "{{.Values.memory}}"
         - name: {{ template "fullname" . }}-app
           image: "{{.Values.appImage}}:{{.Values.imageTag}}"
           imagePullPolicy: "{{.Values.imagePullPolicy}}"
