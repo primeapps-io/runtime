@@ -11,32 +11,41 @@ using PrimeApps.Model.Helpers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Hangfire;
 using Newtonsoft.Json.Linq;
+using PrimeApps.App.Helpers;
+using PrimeApps.App.Services;
 
 namespace PrimeApps.App.Controllers
 {
     [Route("api/role"), Authorize]
-	public class RoleController : ApiBaseController
+    public class RoleController : ApiBaseController
     {
         private IRoleRepository _roleRepository;
         private IUserRepository _userRepository;
+        private IRoleHelper _roleHelper;
         private Warehouse _warehouse;
-        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, Warehouse warehouse)
+
+        public IBackgroundTaskQueue Queue { get; }
+
+        public RoleController(IRoleRepository roleRepository, IUserRepository userRespository, IRoleHelper roleHelper, Warehouse warehouse, IBackgroundTaskQueue queue)
         {
             _roleRepository = roleRepository;
             _userRepository = userRespository;
+            _roleHelper = roleHelper;
             _warehouse = warehouse;
+
+            Queue = queue;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_roleRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_roleRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("find"), HttpPost]
+        [Route("find"), HttpPost]
         public async Task<Role> Find([FromQuery(Name = "id")]int id)
         {
             return await _roleRepository.GetByIdAsync(id);
@@ -46,7 +55,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IEnumerable<RoleDTO>> FindAll()
         {
             IEnumerable<RoleDTO> roles = await _roleRepository.GetAllAsync();
-            
+
             return roles;
         }
 
@@ -69,25 +78,38 @@ namespace PrimeApps.App.Controllers
         [Route("update"), HttpPut]
         public async Task Update([FromQuery]bool roleChange, [FromBody]RoleDTO role)
         {
+            var user = await _userRepository.GetById(AppUser.Id);
+
+            if (!user.Profile.HasAdminRights)
+                return;
+
             Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
             if (roleToUpdate == null) return;
 
             await _roleRepository.UpdateAsync(roleToUpdate, role);
 
             if (roleChange)
-                BackgroundJob.Enqueue(() => UpdateUserRoleBulk());
+                Queue.QueueBackgroundWorkItem(async token => await _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
         }
 
         [Route("delete"), HttpDelete]
         public async Task Delete([FromQuery(Name = "id")]int id, [FromQuery(Name = "transferRoleId")]int transferRoleId)
         {
+            var user = await _userRepository.GetById(AppUser.Id);
+
+            if (!user.Profile.HasAdminRights)
+                return;
+
             await _roleRepository.RemoveAsync(id, transferRoleId);
         }
 
         [Route("update_user_role"), HttpPut]
         public async Task UpdateUserRole([FromQuery(Name = "userId")]int userId, [FromQuery(Name = "roleId")]int roleId)
         {
-            var user = await _userRepository.GetById(userId);
+            var user = await _userRepository.GetById(AppUser.Id);
+
+            if (!user.Profile.HasAdminRights)
+                return;
 
             if (user.RoleId.HasValue)
             {
@@ -102,24 +124,22 @@ namespace PrimeApps.App.Controllers
         [Route("update_user_role_bulk"), HttpPut]
         public async Task UpdateUserRoleBulk()
         {
-            var users = await _userRepository.GetAllAsync();
+            var user = await _userRepository.GetById(AppUser.Id);
 
-            foreach (var user in users)
-            {
-                if (user.RoleId.HasValue)
-                {
-                    await _roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
-                }
+            if (!user.Profile.HasAdminRights)
+                return;
 
-                _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
-
-                await _roleRepository.AddUserAsync(user.Id, user.RoleId.Value);
-            }
+            await _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser);
         }
 
         [Route("add_owners"), HttpPost]
         public async Task AddOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
         {
+            var user = await _userRepository.GetById(AppUser.Id);
+
+            if (!user.Profile.HasAdminRights)
+                return;
+
             Role role = await _roleRepository.GetByIdAsyncWithUsers(id);
             await _roleRepository.AddOwners(role, owners);
         }
@@ -127,6 +147,11 @@ namespace PrimeApps.App.Controllers
         [Route("remove_owners"), HttpPost]
         public async Task RemoveOwners([FromQuery(Name = "id")]int id, [FromBody]JArray owners)
         {
+            var user = await _userRepository.GetById(AppUser.Id);
+
+            if (!user.Profile.HasAdminRights)
+                return;
+
             Role role = await _roleRepository.GetByIdAsyncWithUsers(id);
             await _roleRepository.RemoveOwners(role, owners);
         }
