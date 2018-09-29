@@ -30,7 +30,7 @@ ingress:
     #   hosts:
     #     - chart-example.local
 probes:
-  enabled: true
+  enabled: false
 secrets:
     ConnectionStrings:
       AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
