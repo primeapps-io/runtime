@@ -1,13 +1,13 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
     .factory('QuoteProductsService', ['$rootScope', '$http', '$filter', 'config',
         function ($rootScope, $http, $filter, config) {
             return {
             };
         }]);
 
-angular.module('ofisim')
+angular.module('primeapps')
     .constant('pdfLabels', {
         PdfUrlTr: "Teklifi buraya tıklayarak indirebilirsiniz",
         PdfUrlEn: "Click here to download quote",
