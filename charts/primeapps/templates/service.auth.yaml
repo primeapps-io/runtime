@@ -6,13 +6,13 @@ metadata:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{.Release.Name}}-{{.Values.component}}"
+    component: "{{.Release.Name}}-{{.Values.auth.component}}"
 spec:
   ports:
-    - port: {{.Values.authServicePort}}
-      targetPort: {{.Values.authContainerPort}}
+    - port: {{.Values.auth.servicePort}}
+      targetPort: {{.Values.auth.containerPort}}
       protocol: TCP
       name: http
   selector:
-    component: "{{.Release.Name}}-{{.Values.component}}"
+    component: "{{.Release.Name}}-{{.Values.auth.component}}"
 #  type: {{ default "ClusterIP" .Values.serviceType | quote }}

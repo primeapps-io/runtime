@@ -1,11 +1,9 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
-ENV "ASPNETCORE_ENVIRONMENT": "Development"
 WORKDIR /app
 EXPOSE 80
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
-ENV "ASPNETCORE_ENVIRONMENT": "Development"
 COPY ["PrimeApps.Auth/PrimeApps.Auth.csproj", "PrimeApps.Auth/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
 

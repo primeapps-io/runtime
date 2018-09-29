@@ -2,15 +2,14 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   annotations:
-{{ toYaml .Values.ingress.annotations | indent 4 }}
+{{ toYaml .Values.app.ingress.annotations | indent 4 }}
   name: {{ template "fullname" . }}-app
 spec:
   rules:
-  - host: {{ .Values.ingress.appHostname | quote }}
+  - host: {{ .Values.app.ingress.hostname | quote }}
     http:
       paths:
       - path: /
         backend:
           serviceName: {{ template "fullname" . }}-app
-          servicePort: {{ .Values.appServicePort }}
-          
+          servicePort: {{ .Values.app.servicePort }}

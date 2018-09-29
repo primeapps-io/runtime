@@ -156,14 +156,15 @@ namespace PrimeApps.Auth
 				.AddProfileService<CustomProfileService>()
 				.AddRedirectUriValidator<CustomRedirectUriValidator>();
 
-			if (Environment.IsDevelopment())
-			{
+			// TODO: Fix this for real server environment.
+			// if (Environment.IsDevelopment())
+			// {
 				builder.AddDeveloperSigningCredential();
-			}
-			else
-			{
-				throw new Exception("need to configure key material");
-			}
+			// }
+			// else
+			// {
+			// 	throw new Exception("need to configure key material");
+			// }
 
 			services.AddAuthentication()
 				.AddOpenIdConnect("aad", "Azure AD", options =>

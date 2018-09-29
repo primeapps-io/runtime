@@ -6,32 +6,32 @@ metadata:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    component: "{{.Release.Name}}-{{.Values.component}}"
+    component: "{{.Release.Name}}-{{.Values.auth.component}}"
 spec:
-  replicas: {{ default 1 .Values.replicas }}
+  replicas: {{ default 1 .Values.auth.replicas }}
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      component: "{{.Release.Name}}-{{.Values.component}}"
+      component: "{{.Release.Name}}-{{.Values.auth.component}}"
   template:
     metadata:
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
         chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-        component: "{{.Release.Name}}-{{.Values.component}}"
+        component: "{{.Release.Name}}-{{.Values.auth.component}}"
     spec:
       imagePullSecrets:
-        - name: {{ .Values.pullsecret }}
+        - name: {{ .Values.auth.pullsecret }}
       containers:
         - name: {{ template "fullname" . }}-auth
-          image: "{{.Values.authImage}}:{{.Values.imageTag}}"
-          imagePullPolicy: "{{.Values.imagePullPolicy}}"
+          image: "{{.Values.auth.image}}:{{.Values.auth.imageTag}}"
+          imagePullPolicy: "{{.Values.auth.imagePullPolicy}}"
           ports:
           - name: http
-            containerPort: {{.Values.authContainerPort}}
-          {{- if .Values.probes.enabled }}
+            containerPort: {{.Values.auth.containerPort}}
+          {{- if .Values.auth.probes.enabled }}
           livenessProbe:
             httpGet:
               path: /
@@ -43,16 +43,16 @@ spec:
           {{- end }}
           env:
             {{- $root := . }}
-            {{- range $ref, $values := .Values.secrets }}
+            {{- range $ref, $values := .Values.auth.secrets }}
             {{- range $key, $value := $values }}
             - name: {{ $ref }}__{{ $key }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "fullname" . }}-{{ $ref | lower }}
+                  name: {{ template "fullname" . }}-auth-{{ $ref | lower }}
                   key: {{ $key }}
             {{- end }}
             {{- end }}
           resources:
             requests:
-              cpu: "{{.Values.cpu}}"
-              memory: "{{.Values.memory}}"
+              cpu: "{{.Values.auth.cpu}}"
+              memory: "{{.Values.auth.memory}}"

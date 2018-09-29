@@ -1,102 +1,122 @@
-# Default values for aksapp.
+# Default values for PrimeApps
 # This is a YAML-formatted file.
 # Declare name/value pairs to be passed into your templates.
-# name: value
-serviceType: NodePort
-appServicePort: 80
-appContainerPort: 80
-authServicePort: 80
-authContainerPort: 80
-component: primeapps
-replicas: 1
-appImage: eu.gcr.io/primeapps-gke/primeapps-app
-authImage: eu.gcr.io/primeapps-gke/primeapps-auth
-imageTag: master
-imagePullPolicy: Always
-##Secrets
-pullsecret: container-registry-secret
-cpu: 10m
-memory: 256Mi
-## Ingress settings
-ingress:
-  enabled: true
-  appHostname: dev.primeapps.io
-  authHostname: auth-dev.primeapps.io
-  annotations:
-     kubernetes.io/ingress.class: nginx
-     # kubernetes.io/tls-acme: "true"
-  tls: []
-    # - secretName: chart-example-tls
-    #   hosts:
-    #     - chart-example.local
-probes:
-  enabled: false
-secrets:
-    ConnectionStrings:
-      AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
-      TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
-      PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
-      WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
-      StorageConnection: "http://51.144.165.200:9000"
-      ElasticConnection: "http://es-dev.primeapps.io:9200/"
-    AppSettings:
-      EnableJobs: "true"
-      AllowInsecureHttp: "true"
-      StorageAccessKey: "ofisim-storage"
-      StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O"
-      TestMode: "true"
-      BlobUrl: "http://file-dev.ofisim.com"
-      FunctionUrl: "http://localhost:7071"
-      EmailSMTPEnableSsl: "true"
-      EmailSMTPHost: "smtp.sendgrid.net"
-      EmailSMTPPort: "587"
-      EmailSMTPUser: "apikey"
-      EmailSMTPPassword: "password"
-      EmailSMTPHostTest: "smtp.mailtrap.io"
-      EmailSMTPPortTest: "465"
-      EmailSMTPUserTest: "b12c70f7f50ca9"
-      EmailSMTPPasswordTest: "2cfb87c728981a"
-      WarehouseServer: "ofisim-dwh-dev.database.windows.net"
-      WarehouseMasterUser: "ofisim"
-      WarehouseMasterPassword: "0f!s!mDev"
-      PowerbiAccessKey: "n+3uhoGPMk7fCEB7J+ThW1vVE+1XJDQsHzkUbn0KJZ+tcqVmobO0XmIhKvis4tkOlwhfWALsI6o4dPGzYN+nIA=="
-      PowerbiWorkspaceCollection: "OfisimDev"
-      AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;"
-      AzureSearch.Storage: "ofisimdev"
-      AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
-      UseCdn: "false"
-      AuthenticationServerURL: "http://auth-dev.primeapps.io"
-      ClientId: "ofisim_crm"
-      ClientSecret: "secret"
-    webOptimizer:
-      enableCaching: "false"
-      enableMemoryCache: "false"
-      enableDiskCache: "false"
-      cacheDirectory: "/var/temp/weboptimizercache"
-      enableTagHelperBundling: "false"
-  # Optionally specify a set of secret objects whose values
-  # will be injected as environment variables by default.
-  # You should add this section to a file like secrets.yaml
-  # that is explicitly NOT committed to source code control
-  # and then include it as part of your helm install step.
-  # ref: https://kubernetes.io/docs/concepts/configuration/secret/
-  #
-  # This creates a secret "mysecret" and injects "mypassword"
-  # as the environment variable mysecret_mypassword=password.
-  # mysecret:
-  #   mypassword: password
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
-nodeSelector: {}
-tolerations: []
-affinity: {}
-  
+  # name: value
+app:
+  serviceType: NodePort
+  servicePort: 80
+  containerPort: 80
+  component: app
+  replicas: 1
+  image: eu.gcr.io/primeapps-gke/primeapps-app
+  imageTag: master
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: container-registry-secret
+  cpu: 10m
+  memory: 256Mi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: dev.primeapps.io
+    annotations:
+       kubernetes.io/ingress.class: nginx
+       # kubernetes.io/tls-acme: "true"
+    tls: []
+      # - secretName: chart-example-tls
+      #   hosts:
+      #     - chart-example.local
+  probes:
+    enabled: false
+  secrets:
+      ConnectionStrings:
+        AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
+        TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+        PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+        WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+        StorageConnection: "http://51.144.165.200:9000"
+        ElasticConnection: "http://es-dev.primeapps.io:9200/"
+      AppSettings:
+        EnableJobs: "true"
+        AllowInsecureHttp: "true"
+        StorageAccessKey: "ofisim-storage"
+        StorageSecretKey: "veryHiddenSecretNoOneCanGuess:O"
+        TestMode: "true"
+        BlobUrl: "http://file-dev.ofisim.com"
+        FunctionUrl: "http://localhost:7071"
+        EmailSMTPEnableSsl: "true"
+        EmailSMTPHost: "smtp.sendgrid.net"
+        EmailSMTPPort: "587"
+        EmailSMTPUser: "apikey"
+        EmailSMTPPassword: "password"
+        EmailSMTPHostTest: "smtp.mailtrap.io"
+        EmailSMTPPortTest: "465"
+        EmailSMTPUserTest: "b12c70f7f50ca9"
+        EmailSMTPPasswordTest: "2cfb87c728981a"
+        WarehouseServer: "ofisim-dwh-dev.database.windows.net"
+        WarehouseMasterUser: "ofisim"
+        WarehouseMasterPassword: "0f!s!mDev"
+        PowerbiAccessKey: "n+3uhoGPMk7fCEB7J+ThW1vVE+1XJDQsHzkUbn0KJZ+tcqVmobO0XmIhKvis4tkOlwhfWALsI6o4dPGzYN+nIA=="
+        PowerbiWorkspaceCollection: "OfisimDev"
+        AzureStorage.ConnectionString: "DefaultEndpointsProtocol=https;AccountName=ofisimcomdev;AccountKey=uFQDgZlv6UVtP9Lbq3zOjiXC5pm8riBL3BVum1nHojQPL8AI+iYCj9x2HBypqXJ0yXhy0rAqNLjIZxydQblRwA==;"
+        AzureSearch.Storage: "ofisimdev"
+        AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
+        UseCdn: "false"
+        AuthenticationServerURL: "http://auth-dev.primeapps.io"
+        ClientId: "ofisim_crm"
+        ClientSecret: "secret"
+      webOptimizer:
+        enableCaching: "false"
+        enableMemoryCache: "false"
+        enableDiskCache: "false"
+        cacheDirectory: "/var/temp/weboptimizercache"
+        enableTagHelperBundling: "false"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+auth:
+  serviceType: NodePort
+  servicePort: 80
+  containerPort: 80
+  component: auth
+  replicas: 1
+  image: eu.gcr.io/primeapps-gke/primeapps-auth
+  imageTag: master
+  imagePullPolicy: Always
+  ##Secrets
+  pullsecret: container-registry-secret
+  cpu: 10m
+  memory: 256Mi
+  ## Ingress settings
+  ingress:
+    enabled: true
+    hostname: auth-dev.primeapps.io
+    annotations:
+       kubernetes.io/ingress.class: nginx
+       # kubernetes.io/tls-acme: "true"
+    tls: []
+      # - secretName: chart-example-tls
+      #   hosts:
+      #     - chart-example.local
+  probes:
+    enabled: false
+  secrets:
+      ConnectionStrings:
+        AuthDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=auth;command timeout=0;keepalive=30;"
+        TenantDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=dev;command timeout=0;keepalive=30;"
+        PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
+        WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+        StorageConnection: "http://51.144.165.200:9000"
+        ElasticConnection: "http://es-dev.primeapps.io:9200/"
+      webOptimizer:
+        enableCaching: "false"
+        enableMemoryCache: "false"
+        enableDiskCache: "false"
+        cacheDirectory: "/var/temp/weboptimizercache"
+        enableTagHelperBundling: "false"
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
