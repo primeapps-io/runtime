@@ -6,7 +6,7 @@ namespace PrimeApps.Model.Entities.Tenant
     [Table("bpm_workflow_logs")]
     public class BpmWorkflowLog : BaseEntity
     {
-        [Column("code"), ForeignKey("BpmWorkflow")]
+        [Column("workflow_id"), ForeignKey("BpmWorkflow")]
         public int WorkflowId { get; set; }
 
         [Column("module_id"), Required]

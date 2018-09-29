@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Common.Annotations;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.Model.Common.Bpm;
-using PrimeApps.Model.Entities.Application;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
