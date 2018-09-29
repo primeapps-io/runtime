@@ -175,7 +175,7 @@ angular.module('primeapps')
 					$scope.frameModal = $scope.frameModal || $modal({
 						scope: $scope,
 						controller: 'ActionButtonFrameController',
-						templateUrl: 'views/app/crm/actionbutton/actionButtonFrameModal.html',
+						templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
 						backdrop: 'static',
 						show: false
 					});
@@ -580,7 +580,7 @@ angular.module('primeapps')
 
 					$scope.collectiveApprovalModal = $scope.collectiveApprovalModal || $modal({
 						scope: $scope,
-						templateUrl: 'views/app/crm/module/collectiveApproveAlert.html',
+						templateUrl: 'view/app/module/collectiveApproveAlert.html',
 						animation: '',
 						backdrop: 'static',
 						show: false,

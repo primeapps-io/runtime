@@ -168,8 +168,8 @@
                     </a>
                 </li>
                 <li ng-repeat="component in componentModules | orderBy:['-system_type','order']" class="text-uppercase" ng-show="hasPermission(component.name, operations.read) && component.display && (component.components | filter: {name:component.name}).length > 0">
-                    <a href="#/app/crm/{{component.name}}" ng-click="routingPrism('#/app/crm/' + component.name, true)"
-                       ng-class="{'active': (currentPath=='/app/crm/' + component.name  && currentPath.indexOf('/setup') < 0)}">
+                    <a href="#/app/{{component.name}}" ng-click="routingPrism('#/app/' + component.name, true)"
+                       ng-class="{'active': (currentPath=='/app/' + component.name  && currentPath.indexOf('/setup') < 0)}">
                         <div data-container="body" data-delay="300" data-placement="right" data-title="{{component['label_' + language + '_plural']}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon {{component.menu_icon}}"></i></div>
                         <span class="sidebar-menu-label">{{component['label_' + language + '_plural']}}</span>
                     </a>
