@@ -237,7 +237,7 @@ angular.module('primeapps')
             };
 
             $scope.getUser = function (id) {
-                var user = $filter('filter')($rootScope.users, { 'Id': id }, true)[0];
+                var user = $filter('filter')($rootScope.users, { 'id': id }, true)[0];
                 if (user.FullName)
                     return user.FullName;
                 return id;
@@ -258,7 +258,7 @@ angular.module('primeapps')
 
             };
 
-      
+
 
             $scope.table = {
                 limitChange: function (limit) {
@@ -366,11 +366,11 @@ angular.module('primeapps')
                 };
 
                 $scope.categoryEditModal = $scope.categoryEditModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/reports/common/createCategoryReport.html',
-                        show: false,
-                        placement: 'top'
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/reports/common/createCategoryReport.html',
+                    show: false,
+                    placement: 'top'
+                });
 
                 $scope.categoryEditModal.$promise.then($scope.categoryEditModal.show);
             };

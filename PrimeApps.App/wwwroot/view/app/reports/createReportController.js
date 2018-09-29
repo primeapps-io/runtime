@@ -221,19 +221,19 @@ angular.module('primeapps')
                 $scope.numberField = [];
                 $scope.reportModel.aggregations = [];
                 $scope.module = angular.copy($filter('filter')($rootScope.modules, { id: $scope.reportModel.module_id }, true)[0]);
-
                 $scope.fields = {
-                    "availableFields": angular.copy($scope.module.fields),
+                    "availableFields": [],
                     "selectedFields": []
                 };
-
                 if (!$scope.ReportId) {
                     angular.forEach($scope.module.fields, function (item) {
                         if (item.deleted || !ModuleService.hasFieldDisplayPermission(item) && item.multiline_type != 'large')
                             return;
 
                         if (item.data_type === 'lookup' && item.lookup_type != 'users') {
-                            item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
+                            if (item.lookupModulePrimaryField) {
+                                item.name = item.name + "." + item.lookup_type + "." + item.lookupModulePrimaryField.name;
+                            }
                         }
 
                         $scope.fields.availableFields.push(item);
@@ -304,10 +304,10 @@ angular.module('primeapps')
                                                 if (value != '-') {
                                                     var userItem =
                                                         $filter('filter')($rootScope.users, { id: parseInt(value) }, true)[0
-                                                            ];
+                                                        ];
                                                     user.id = userItem.id;
-                                                    user.email = userItem.Email;
-                                                    user.full_name = userItem.FullName;
+                                                    user.email = userItem.email;
+                                                    user.full_name = userItem.full_name;
                                                 }
 
                                                 //TODO: $rootScope.users kaldirilinca duzeltilecek
@@ -549,7 +549,7 @@ angular.module('primeapps')
                 //console.log($scope.reportModel);
             };
 
-           
+
 
             $scope.removeSelectAggregation = function (field) {
                 field.Aggregation = null;
