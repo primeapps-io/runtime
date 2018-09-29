@@ -50,9 +50,10 @@ namespace PrimeApps.App.Controllers
         private IConfiguration _configuration;
         private IDocumentRepository _documentRepository;
         private IServiceScopeFactory _serviceScopeFactory;
+        private IViewRepository _viewRepository;
 
         private IRecordHelper _recordHelper;
-        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory)
+        public AttachController(ITenantRepository tenantRepository, IDocumentRepository documentRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ITemplateRepository templateRepository, IPicklistRepository picklistRepository, ISettingRepository settingsRepository, IRecordHelper recordHelper, INoteRepository noteRepository, IConfiguration configuration, IHostingEnvironment hostingEnvironment, IUnifiedStorage unifiedStorage, IServiceScopeFactory serviceScopeFactory, IViewRepository viewRepository)
         {
             _tenantRepository = tenantRepository;
             _documentRepository = documentRepository;
@@ -65,6 +66,7 @@ namespace PrimeApps.App.Controllers
             _recordHelper = recordHelper;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
+            _viewRepository = viewRepository;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -79,6 +81,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_settingsRepository);
             SetCurrentUser(_noteRepository);
             SetCurrentUser(_moduleRepository);
+            SetCurrentUser(_viewRepository);
             _recordHelper.SetCurrentUser(AppUser);
             base.OnActionExecuting(context);
         }
@@ -1100,101 +1103,120 @@ namespace PrimeApps.App.Controllers
             DataTable dt = new DataTable("Excel");
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
 
-            using (var _scope = _serviceScopeFactory.CreateScope())
+            var view = await _viewRepository.GetById(viewId);
+
+            if (view == null)
+                return null;
+
+            /**
+             * listFindRequestJson View'den gelen data
+             * listFindRequest View'den gelen datayı Json formatına çeviriyoruz
+             */
+
+            FindRequest listFindRequest = null;
+
+            if (!string.IsNullOrWhiteSpace(listFindRequestJson))
             {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+                listFindRequest = JsonConvert.DeserializeObject<FindRequest>(listFindRequestJson, serializerSettings);
+            }
 
-                var view = await databaseContext.Views
-                           .Include(x => x.Fields)
-                           .Include(x => x.Filters)
-                           .Include(x => x.Module)
-                           .Include(x => x.Module.Fields)
-                           .FirstOrDefaultAsync(x => !x.Deleted && x.Id == viewId);
+            var findRequest = new FindRequest();
+            findRequest.Fields = new List<string>();
+            findRequest.Limit = 9999;
 
-                if (view == null)
-                    return null;
+            if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
+            {
+                findRequest.Filters = new List<Filter>();
 
-                /**
-                 * listFindRequestJson View'den gelen data
-                 * listFindRequest View'den gelen datayı Json formatına çeviriyoruz
-                 */
-
-                FindRequest listFindRequest = null;
-
-                if (!string.IsNullOrWhiteSpace(listFindRequestJson))
+                foreach (var viewFilter in listFindRequest.Filters)
                 {
-                    var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
-                    listFindRequest = JsonConvert.DeserializeObject<FindRequest>(listFindRequestJson, serializerSettings);
-                }
-
-                var findRequest = new FindRequest();
-                findRequest.Fields = new List<string>();
-                findRequest.Limit = 9999;
-
-                if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
-                {
-                    findRequest.Filters = new List<Filter>();
-
-                    foreach (var viewFilter in listFindRequest.Filters)
+                    findRequest.Filters.Add(new Filter
                     {
-                        findRequest.Filters.Add(new Filter
-                        {
-                            Field = viewFilter.Field,
-                            Operator = viewFilter.Operator,
-                            Value = viewFilter.Value,
-                            No = viewFilter.No
-                        });
+                        Field = viewFilter.Field,
+                        Operator = viewFilter.Operator,
+                        Value = viewFilter.Value,
+                        No = viewFilter.No
+                    });
+                }
+            }
+            else if (view.Filters != null && view.Filters.Count > 0)
+            {
+                findRequest.Filters = new List<Filter>();
+
+                foreach (var viewFilter in view.Filters)
+                {
+                    viewFilter.Value = viewFilter.Value.Replace("[me]", AppUser.TenantId.ToString());
+                    viewFilter.Value = viewFilter.Value.Replace("[me.email]", AppUser.Email);
+
+                    findRequest.Filters.Add(new Filter
+                    {
+                        Field = viewFilter.Field,
+                        Operator = viewFilter.Operator,
+                        Value = viewFilter.Value,
+                        No = viewFilter.No
+                    });
+                }
+            }
+
+            if (!string.IsNullOrEmpty(view.FilterLogic))
+                findRequest.FilterLogic = view.FilterLogic;
+            /**
+             * isViewFields, Modüldeki tüm alanları aktar check boxtan beslenmektedir.
+             * Modüldeki tüm alanları aktar Check değil ise -> isViewFields = true
+             * isViewFields = true durumunda View'de görüntülenen alanları export etmekteyiz.
+             */
+            if (isViewFields)
+            {
+                var viewFields = new List<Field>();
+                var field = new Field();
+                var viewFieldsList = view.Fields.Where(x => !x.Deleted);
+
+                foreach (var viewField in viewFieldsList)
+                {
+                    /**
+                     * viewField.Field.Contains(".")  ViewFields'lerdeki fieldlerin, fields nameler arasında yer almadığından dolayı split edilmiştir.
+                     * örn: ViewFields = calisan.calisan_ad.primary fields.Name = calisan
+                     */
+                    if (!viewField.Field.Contains("."))
+                    {
+                        field = fields.FirstOrDefault(x => x.Name == viewField.Field);
+
+                        if (field != null)
+                            viewFields.Add(field);
                     }
                 }
-                else if (view.Filters != null && view.Filters.Count > 0)
+
+                fields = viewFields;
+            }
+
+            for (int i = 0; i < fields.Count; i++)
+            {
+                var field = fields[i];
+
+                if (field.DataType != Model.Enums.DataType.Lookup)
                 {
-                    findRequest.Filters = new List<Filter>();
-
-                    foreach (var viewFilter in view.Filters)
-                    {
-                        viewFilter.Value = viewFilter.Value.Replace("[me]", AppUser.TenantId.ToString());
-                        viewFilter.Value = viewFilter.Value.Replace("[me.email]", AppUser.Email);
-
-                        findRequest.Filters.Add(new Filter
-                        {
-                            Field = viewFilter.Field,
-                            Operator = viewFilter.Operator,
-                            Value = viewFilter.Value,
-                            No = viewFilter.No
-                        });
-                    }
+                    findRequest.Fields.Add(field.Name);
                 }
-
-                if (!string.IsNullOrEmpty(view.FilterLogic))
-                    findRequest.FilterLogic = view.FilterLogic;
-                /**
-                 * isViewFields, Modüldeki tüm alanları aktar check boxtan beslenmektedir.
-                 * Modüldeki tüm alanları aktar Check değil ise -> isViewFields = true
-                 * isViewFields = true durumunda View'de görüntülenen alanları export etmekteyiz.
-                 */
-                if (isViewFields)
+                else
                 {
-                    var viewFields = new List<Field>();
-                    var field = new Field();
-                    var viewFieldsList = view.Fields.Where(x => !x.Deleted);
-
-                    foreach (var viewField in viewFieldsList)
-                    {
-                        /**
-                         * viewField.Field.Contains(".")  ViewFields'lerdeki fieldlerin, fields nameler arasında yer almadığından dolayı split edilmiştir.
-                         * örn: ViewFields = calisan.calisan_ad.primary fields.Name = calisan
-                         */
-                        if (!viewField.Field.Contains("."))
-                        {
-                            field = fields.FirstOrDefault(x => x.Name == viewField.Field);
-
-                            if (field != null)
-                                viewFields.Add(field);
-                        }
-                    }
-
-                    fields = viewFields;
+                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
+                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
                 }
+            }
+
+            var records = _recordRepository.Find(moduleEntity.Name, findRequest);
+
+            for (int i = 0; i < fields.Count; i++)
+            {
+                var field = fields[i];
+                dt.Columns.Add(field.LabelTr.ToString());
+            }
+            for (int j = 0; j < records.Count; j++)
+            {
+                var record = records[j];
+                var dr = dt.NewRow();
 
                 for (int i = 0; i < fields.Count; i++)
                 {
@@ -1202,57 +1224,28 @@ namespace PrimeApps.App.Controllers
 
                     if (field.DataType != Model.Enums.DataType.Lookup)
                     {
-                        findRequest.Fields.Add(field.Name);
+                        dr[i] = record[field.Name];
                     }
                     else
                     {
                         var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
                         var primaryField = lookupModule.Fields.Single(x => x.Primary);
-                        findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
+                        dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                     }
                 }
-
-                var records = _recordRepository.Find(moduleEntity.Name, findRequest);
-
-                for (int i = 0; i < fields.Count; i++)
-                {
-                    var field = fields[i];
-                    dt.Columns.Add(field.LabelTr.ToString());
-                }
-                for (int j = 0; j < records.Count; j++)
-                {
-                    var record = records[j];
-                    var dr = dt.NewRow();
-
-                    for (int i = 0; i < fields.Count; i++)
-                    {
-                        var field = fields[i];
-
-                        if (field.DataType != Model.Enums.DataType.Lookup)
-                        {
-                            dr[i] = record[field.Name];
-                        }
-                        else
-                        {
-                            var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                            var primaryField = lookupModule.Fields.Single(x => x.Primary);
-                            dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
-                        }
-                    }
-                    dt.Rows.Add(dr);
-                }
-
-                worksheetData.Cells.ImportDataTable(dt, true, "A1");
-
-                Stream memory = new MemoryStream();
-
-                var fileName = nameModule + ".xlsx";
-
-                workbook.Save(memory, Aspose.Cells.SaveFormat.Xlsx);
-                memory.Position = 0;
-
-                return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                dt.Rows.Add(dr);
             }
+
+            worksheetData.Cells.ImportDataTable(dt, true, "A1");
+
+            Stream memory = new MemoryStream();
+
+            var fileName = nameModule + ".xlsx";
+
+            workbook.Save(memory, Aspose.Cells.SaveFormat.Xlsx);
+            memory.Position = 0;
+
+            return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [Route("export_excel_no_data")]

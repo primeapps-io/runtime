@@ -24,11 +24,11 @@ angular.module('primeapps')
 				return;
 			}
 
-            var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
-            if (salesInvoiceModule.length < 1)
-                $scope.salesInvoiceModule = false;
-            else
-                $scope.salesInvoiceModule = true;
+			var salesInvoiceModule = $filter('filter')($scope.modules, { name: 'sales_invoices' }, true);
+			if (salesInvoiceModule.length < 1)
+				$scope.salesInvoiceModule = false;
+			else
+				$scope.salesInvoiceModule = true;
 
 			$scope.bulkUpdate = {};
 			$scope.filter = {};
@@ -675,9 +675,9 @@ angular.module('primeapps')
 				var isViewFields = $scope.export.moduleAllColumn;
 
 				if (isViewFields)
-					$window.open("/attach/ExportExcelView?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false, "_blank");
+					$window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false, "_blank");
 				else
-					$window.open("/attach/ExportExcelView?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true, "_blank");
+					$window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true, "_blank");
 				ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
 			};
 
@@ -903,6 +903,21 @@ angular.module('primeapps')
 				});
 
 				$scope.deleteModal.$promise.then($scope.deleteModal.show);
+			};
+
+			$scope.showExportDataModal = function () {
+
+				$scope.export.moduleAllColumn = null;
+				$scope.exportDataModal = $scope.exportDataModal || $modal({
+					scope: $scope,
+					templateUrl: 'view/app/module/exportData.html',
+					animation: '',
+					backdrop: 'static',
+					show: false,
+					tag: 'createModal'
+				});
+
+				$scope.exportDataModal.$promise.then($scope.exportDataModal.show);
 			};
 
 			//kaydın process detaylarını gösterme
