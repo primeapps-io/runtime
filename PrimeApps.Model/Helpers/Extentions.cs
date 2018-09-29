@@ -49,6 +49,9 @@ namespace PrimeApps.Model.Helpers
 
             for (var j = 0; j < columns; j++)
             {
+                if (result[record.GetName(j)] != null)
+                    continue;
+
                 result.Add(new JProperty(record.GetName(j), data[j]));
             }
 
