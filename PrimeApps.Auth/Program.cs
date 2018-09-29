@@ -24,16 +24,16 @@ namespace PrimeApps.Auth
 
             Console.Title = "PrimeApps.Auth";
 
-            var seed = args.Any(x => x == "/seed");
-            if (seed) args = args.Except(new[] { "/seed" }).ToArray();
+            // var seed = args.Any(x => x == "/seed");
+            // if (seed) args = args.Except(new[] { "/seed" }).ToArray();
 
             var host = CreateWebHostBuilder(args).Build();
 
-            if (seed)
-            {
-                SeedData.EnsureSeedData(host.Services);
-                return;
-            }
+            // if (seed)
+            // {
+            //     SeedData.EnsureSeedData(host.Services);
+            //     return;
+            // }
 
             try
             {
