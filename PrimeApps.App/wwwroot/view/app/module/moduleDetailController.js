@@ -142,7 +142,7 @@ angular.module('primeapps')
                 var profileIds = $scope.currentModuleProcess.profiles.split(',');
                 $scope.hasProcessEditPermission = false;
                 for (var i = 0; i < profileIds.length; i++) {
-                    if (profileIds[i] === $rootScope.user.profile.ID.toString())
+                    if (profileIds[i] === $rootScope.user.profile.id.toString())
                         $scope.hasProcessEditPermission = true;
                 }
             }
