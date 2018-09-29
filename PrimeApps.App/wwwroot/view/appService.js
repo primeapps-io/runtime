@@ -326,6 +326,8 @@ angular.module('primeapps')
                                                 var result_module = $filter('filter')($rootScope.modules, { id: mainMenuItem.module_id }, true)[0];
                                                 mainMenuItem.display = result_module.display;
                                             }
+                                            else
+                                                mainMenuItem.display = true;
                                         }
                                     }
 
