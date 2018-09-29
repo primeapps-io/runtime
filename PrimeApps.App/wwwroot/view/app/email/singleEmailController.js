@@ -251,7 +251,7 @@ angular.module('primeapps')
             $scope.primaryField = $filter('filter')($scope.module.fields, { primary: true })[0];
             $scope.recordId = $scope.$parent.$parent.id;
 
-            TemplateService.getAll('email',$scope.module.name)
+            TemplateService.getAll('email', $scope.module.name)
                 .then(function (response) {
                     $scope.templates = response.data;
                 });
@@ -511,7 +511,7 @@ angular.module('primeapps')
                     }
                     else {
                         $scope.attachmentLink = quoteTemplate.link.fileurl;
-                        $scope.attachmentName = fileName.substring(0,50);
+                        $scope.attachmentName = fileName.substring(0, 50);
                         $scope.quoteTemplateName = " ( " + quoteTemplate.name + " ) ";
                     }
 
@@ -530,7 +530,7 @@ angular.module('primeapps')
                         }
                         else {
                             $scope.attachmentLink = response.data.fileurl;
-                            $scope.attachmentName = fileName.substring(0,50);
+                            $scope.attachmentName = fileName.substring(0, 50);
                             $scope.quoteTemplateName = " ( " + quoteTemplate.name + " ) ";
                         }
 
@@ -557,10 +557,10 @@ angular.module('primeapps')
                         $scope.selectedIds,
                         $scope.queryRequest.query,
                         $scope.$parent.$parent.isAllSelected,
-                        $scope.Cc,
-                        $scope.Bcc,
                         $scope.tinymceModel,
                         $scope.emailField.name,
+                        $scope.Cc,
+                        $scope.Bcc,
                         $scope.senderAlias.alias,
                         $scope.senderAlias.email,
                         emailProviderType,
