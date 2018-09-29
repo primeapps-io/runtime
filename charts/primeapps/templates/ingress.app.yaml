@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   annotations:
 {{ toYaml .Values.ingress.annotations | indent 4 }}
-  name: {{ template "fullname" . }}
+  name: {{ template "fullname" . }}-app
 spec:
   rules:
   - host: {{ .Values.ingress.appHostname | quote }}
