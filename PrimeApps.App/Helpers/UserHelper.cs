@@ -44,17 +44,17 @@ namespace PrimeApps.App.Helpers
 
             string email = context.HttpContext.User.FindFirst("email").Value;
 
-            string key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
-            var platformUser = cacheRepository.Get<PlatformUser>(key);
+            //string key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
+            //var platformUser = cacheRepository.Get<PlatformUser>(key);
 
-            if (platformUser == null)
-            {
-                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
-                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+            //if (platformUser == null)
+            //{
+            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+            var platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-                var data = cacheRepository.Add(key, platformUser);
-            }
+            //var data = cacheRepository.Add(key, platformUser);
+            //}
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 return null;
 

@@ -31,15 +31,15 @@ namespace PrimeApps.App.Controllers
             string email = context.HttpContext.User.FindFirst("email").Value;
 
             string key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
-            var platformUser = cacheRepository.Get<PlatformUser>(key);
+            //var platformUser = cacheRepository.Get<PlatformUser>(key);
 
-            if (platformUser == null)
-            {
-                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+            //if (platformUser == null)
+            //{
+            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+            var platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-                var data = cacheRepository.Add(key, platformUser);
-            }
+            //var data = cacheRepository.Add(key, platformUser);
+            //}
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 context.Result = new UnauthorizedResult();
