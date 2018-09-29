@@ -968,10 +968,13 @@ angular.module('primeapps')
 					return isValid;
 				}
 
-                $scope.submitting = true;
+               $scope.submitting = true;
 
-				if (!$scope.moduleForm.$valid || !validate())
-					return;
+                if (!$scope.moduleForm.$valid || !validate()) {
+                    $scope.submitting = false;
+                    return;
+                }
+					
 
 				if (!$scope.id || $scope.clone) {
 					$scope.executeCode = false;
@@ -1519,10 +1522,11 @@ angular.module('primeapps')
 					}
 					else if ($scope.type === 'sales_orders') {
 						var orderProducts = [];
-
-						angular.forEach($scope.orderProducts, function (orderProduct) {
-							if (!orderProduct.product || orderProduct.deleted)
-								return;
+                        var no = 1;
+                        var orderProductsOrder = $filter('orderBy')($scope.orderProducts, 'order');
+                        angular.forEach(orderProductsOrder, function (orderProduct) {
+                            if (orderProduct.deleted)
+                                return;
 
 							var sales_order = {};
 							sales_order.id = $scope.recordId;
@@ -1534,7 +1538,11 @@ angular.module('primeapps')
 							if ($scope.clone) {
 								delete (orderProduct.id);
 								delete (orderProduct._rev);
-							}
+                            }
+
+                            if (!orderProduct.separator && orderProduct.no) {
+                                orderProduct.no = no++;
+                            }
 							//Discount percent applied also calculate discount amount.
 							if (orderProduct.discount_percent && orderProduct.discount_amount == null)
 								orderProduct.discount_amount = parseFloat((orderProduct.unit_price * orderProduct.quantity) - orderProduct.amount);
@@ -1594,9 +1602,10 @@ angular.module('primeapps')
 					}
 					else if ($scope.type === 'purchase_orders') {
 						var purchaseProducts = [];
-
-						angular.forEach($scope.purchaseProducts, function (purchaseProduct) {
-							if (!purchaseProduct.product || purchaseProduct.deleted)
+                        var no = 1;
+                        var purchaseProductsOrders = $filter('orderBy')($scope.purchaseProducts, 'order');
+                        angular.forEach(purchaseProductsOrders, function (purchaseProduct) {
+                            if (purchaseProduct.deleted)
 								return;
 
 							var purchase_order = {};
@@ -1609,7 +1618,12 @@ angular.module('primeapps')
 							if ($scope.clone) {
 								delete (purchaseProduct.id);
 								delete (purchaseProduct._rev);
-							}
+                            }
+
+                            if (!purchaseProduct.separator && purchaseProduct.no) {
+                                purchaseProduct.no = no++;
+                            }
+
 							//Discount percent applied also calculate discount amount.
 							if (purchaseProduct.discount_percent && purchaseProduct.discount_amount == null)
 								purchaseProduct.discount_amount = parseFloat((purchaseProduct.unit_price * purchaseProduct.quantity) - purchaseProduct.amount);
@@ -1758,12 +1772,12 @@ angular.module('primeapps')
 										var dailyRates = response.data;
 										$scope.exchangeRatesDate = $filter('date')(dailyRates.date, 'dd MMMM yyyy') + ' 15:30';
 
-										$scope.record.exchange_rate_try_usd = dailyRates.usd;
-										$scope.record.exchange_rate_try_eur = dailyRates.eur;
-										$scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
-										$scope.record.exchange_rate_usd_eur = dailyRates.eur / dailyRates.usd;
-										$scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
-										$scope.record.exchange_rate_eur_usd = dailyRates.usd / dailyRates.eur;
+                                        $scope.record.exchange_rate_try_usd = dailyRates.usd;
+                                        $scope.record.exchange_rate_try_eur = dailyRates.eur;
+                                        $scope.record.exchange_rate_usd_try = 1 / dailyRates.usd;
+                                        $scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
+                                        $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
+                                        $scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
 									})
 							}
 
@@ -1997,6 +2011,7 @@ angular.module('primeapps')
 									findRequest.sort_field = 'order';
 									findRequest.sort_direction = 'asc';
 									findRequest.limit = 1000;
+                                    findRequest.fields = findRequest.fields.concat(additionalFields);
 
 									if ($scope.productCurrencyField)
 										findRequest.fields.push('product.products.currency');
