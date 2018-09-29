@@ -29,7 +29,8 @@ angular.module('primeapps')
             $scope.lookupUserAndGroup = helper.lookupUserAndGroup;
             $scope.lookupUser = helper.lookupUser;
 			$scope.loading = true;
-			$scope.image = {};
+            $scope.image = {};
+            $scope.hasProcessEditPermission = false;
             $scope.userAdded = false;
 
 			if ($scope.parentId)
@@ -131,7 +132,22 @@ angular.module('primeapps')
 				}
 			};
 
-			setHolidays();
+            setHolidays();
+
+            //checks if user has permission for editin process record
+            for (var j = 0; j < $rootScope.approvalProcesses.length; j++) {
+                var currentProcess = $rootScope.approvalProcesses[j];
+                if (currentProcess.module_id === $scope.module.id)
+                    $scope.currentModuleProcess = currentProcess;
+            }
+
+            if ($scope.currentModuleProcess) {
+                var profileIds = $scope.currentModuleProcess.profiles.split(',');
+                for (var i = 0; i < profileIds.length; i++) {
+                    if (profileIds[i] === $rootScope.user.profile.ID.toString())
+                        $scope.hasProcessEditPermission = true;
+                }
+            }
 
 			if ($scope.parentType) {
 				if ($scope.type === 'activities' || $scope.type === 'mails' || $scope.many) {
@@ -259,13 +275,16 @@ angular.module('primeapps')
                 }
             };
 
-			var checkEditPermission = function () {
-				if ($scope.id && ($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights)) {
-					ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-					$state.go('app.crm.dashboard');
+            var checkEditPermission = function () {
+                if (!$scope.hasProcessEditPermission) {
+                    if ($scope.id && (($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights))) {
+                        ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
+                        $state.go('app.crm.dashboard');
+                    }
                 }
+
                 checkBranchSettingsAvailable();
-			};
+            };
 
 			ModuleService.getPicklists($scope.module)
 				.then(function (picklists) {
