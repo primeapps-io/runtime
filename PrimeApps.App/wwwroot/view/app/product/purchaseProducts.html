@@ -55,9 +55,8 @@
                         <!--<span class="product-info" ng-if="!readonly && purchaseProduct.product"-->
                         <!--ng-click="productInfo(purchaseProduct)">-->
                         <!--<i class="fa fa-info-circle" aria-hidden="true" id="purchaseProduct.order"-->
-
                         <!--data-title="{{purchaseProduct.product.name}}"-->
-                        <!--data-template-url="views/app/crm/product/productInfo.html"-->
+                        <!--data-template-url="view/app/product/productInfo.html"-->
                         <!--data-animation="am-flip-x"-->
                         <!--data-auto-close="1"-->
                         <!--data-placement="bottom"-->
@@ -76,7 +75,7 @@
                                           title-field="primary_value"
                                           focus-in="setCurrentLookupProduct(purchaseProduct,productField)"
                                           minlength="0"
-                                          template-url="views/app/common/angucomplete.html"
+                                          template-url="view/common/angucomplete.html"
                                           text-searching="{{'Common.Searching' | translate}}"
                                           text-no-results="{{'Common.NoResults' | translate}}"
                                           use-original-object="true"
@@ -84,7 +83,7 @@
                                           placeholder="{{productModule['label_' + language + '_singular']}}"
                                           create-new="openFormModal"
                                           hide-create-new="false"
-                                          ng-if="!readonly"/>
+                                          ng-if="!readonly" />
                     </td>
                     <td ng-if="purchaseProduct.separator===undefined || purchaseProduct.separator===null"
                         class="form-group product-quantity">
@@ -236,7 +235,7 @@
                                       title-field="primary_value"
                                       focus-in="setCurrentLookupProduct(purchaseProduct)"
                                       minlength="2"
-                                      template-url="views/app/common/angucomplete.html"
+                                      template-url="view/common/angucomplete.html"
                                       text-searching="{{'Common.Searching' | translate}}"
                                       text-no-results="{{'Common.NoResults' | translate}}"
                                       use-original-object="true"
