@@ -40,8 +40,14 @@ namespace PrimeApps.Auth
 
 		public Startup(IConfiguration configuration, IHostingEnvironment environment)
 		{
-			Configuration = configuration;
-			Environment = environment;
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+
+            Configuration = builder;
+            Environment = environment;
 		}
 
 		public void ConfigureServices(IServiceCollection services)

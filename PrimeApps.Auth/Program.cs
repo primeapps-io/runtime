@@ -15,19 +15,18 @@ namespace PrimeApps.Auth
 
         public static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddEnvironmentVariables();
+            // var builder = new ConfigurationBuilder()
+            //     .SetBasePath(Directory.GetCurrentDirectory())
+            //     .AddJsonFile("appsettings.json")
+            //     .AddEnvironmentVariables();
 
-            Configuration = builder.Build();
-
-            Console.Title = "PrimeApps.Auth";
+            // Configuration = builder.Build();
+            // Console.Title = "PrimeApps.Auth";
 
             // var seed = args.Any(x => x == "/seed");
             // if (seed) args = args.Except(new[] { "/seed" }).ToArray();
 
-            var host = CreateWebHostBuilder(args).Build();
+            // var host = CreateWebHostBuilder(args).Build();
 
             // if (seed)
             // {
@@ -38,7 +37,7 @@ namespace PrimeApps.Auth
             try
             {
                 Log.Information("Starting auth web host");
-                host.Run();
+                CreateWebHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
