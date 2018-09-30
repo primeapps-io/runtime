@@ -56,3 +56,11 @@ spec:
             requests:
               cpu: "{{.Values.auth.cpu}}"
               memory: "{{.Values.auth.memory}}"
+          volumeMounts:
+            - name: cert
+              mountPath: /cert
+              readOnly: true
+      volumes:
+        - name: cert
+          secret:
+            secretName: {{ template "fullname" . }}-auth-certs
