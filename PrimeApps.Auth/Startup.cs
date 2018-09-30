@@ -155,17 +155,8 @@ namespace PrimeApps.Auth
                 })
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<CustomProfileService>()
-                .AddRedirectUriValidator<CustomRedirectUriValidator>();
-
-            // TODO: Fix this for real server environment.
-            if (Environment.IsDevelopment())
-            {
-                builder.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                builder.AddSigningCredential(LoadCertificate());
-            }
+                .AddRedirectUriValidator<CustomRedirectUriValidator>()
+                .AddSigningCredential(LoadCertificate());
 
             services.AddAuthentication()
                 .AddOpenIdConnect("aad", "Azure AD", options =>
@@ -349,8 +340,12 @@ namespace PrimeApps.Auth
         }
         private X509Certificate2 LoadCertificate()
         {
-            return new X509Certificate2("/cert/primeapps_id4.pfx",
-                "pr!m€Appsi0");
+            string location = Configuration.GetValue("AppSettings:AuthCertLocation", string.Empty);
+            string exportKey = Configuration.GetValue("AppSettings:AuthCertExportKey", string.Empty);
+
+            if (location == string.Empty) throw new ArgumentNullException("Authentication Certificate Location is not set!");
+
+            return new X509Certificate2(location, exportKey, X509KeyStorageFlags.Exportable);
         }
     }
 }

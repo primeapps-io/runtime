@@ -13,4 +13,10 @@ spec:
         backend:
           serviceName: {{ template "fullname" . }}-auth
           servicePort: {{ .Values.auth.servicePort }}
+{{- if .Values.auth.ingress.tls }}
+  tls:
+  - secretName: {{ .Values.auth.ingress.hostname | quote }}
+    hosts:
+      - {{ .Values.auth.ingress.hostname | quote }}
+{{- end -}}
           
