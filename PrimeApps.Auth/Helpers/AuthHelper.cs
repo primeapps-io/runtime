@@ -31,7 +31,7 @@ namespace PrimeApps.Auth.Helpers
             }
 
             var primeLang = _language ?? "tr";
-            var b = "{\"images\": [\"/images/login/banner/primeapps-background.jpg\"], \"descriptions\": [{\"en\": \"\", \"tr\": \"Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin.\"}]}";
+            var b = "{\"images\": [\"/images/login/banner/primeapps-background.jpg\"], \"descriptions\": [{\"en\": \"PrimeApps\", \"tr\": \"PrimeApps\"}]}";
             var json = @"{
 							app: 'primeapps',
 							title: 'PrimeApps',
@@ -53,7 +53,7 @@ namespace PrimeApps.Auth.Helpers
             if (!string.IsNullOrEmpty(returnUrl) && (returnUrl.Split("&")).Length > 1)
                 url = new Uri(HttpUtility.UrlDecode((returnUrl.Split("&")).Where(x => x.Contains("redirect_uri")).FirstOrDefault().Split("redirect_uri=")[1]));
 
-            if (url != null /*&& !url.Authority.Contains("localhost")*/)
+            if (!url.Authority.Contains("localhost") && !url.Authority.Contains("primeapps.io"))
             {
                 App result = null;
 
