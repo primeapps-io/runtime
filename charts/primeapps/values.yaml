@@ -109,6 +109,7 @@ auth:
       AppSettings:
         AuthCertLocation: "/cert/primeapps_id4.pfx"
         AuthCertExportKey: "1q2w3e4r5t"
+        PublicOrigin: "https://auth-dev.primeapps.io"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"

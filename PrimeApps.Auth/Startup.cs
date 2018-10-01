@@ -32,6 +32,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.HttpOverrides;
+using IdentityServer4.Configuration;
 
 namespace PrimeApps.Auth
 {
@@ -125,19 +126,18 @@ namespace PrimeApps.Auth
             services.AddTransient<IPlatformRepository, PlatformRepository>();
             services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
-
             var builder = services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-                    options.PublicOrigin="https://auth-dev.primeapps.io";
+                    options.PublicOrigin = Configuration.GetValue("AppSettings:PublicOrigin", String.Empty);
                 })
                 /*.AddInMemoryIdentityResources(Config.GetIdentityResources())
-				.AddInMemoryApiResources(Config.GetApiResources())
-				.AddInMemoryClients(Config.GetClients())
-				.AddAspNetIdentity<ApplicationUser>()*/
+                .AddInMemoryApiResources(Config.GetApiResources())
+                .AddInMemoryClients(Config.GetClients())
+                .AddAspNetIdentity<ApplicationUser>()*/
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = opt =>
@@ -151,8 +151,8 @@ namespace PrimeApps.Auth
                         opt.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection"),
                             sql => sql.MigrationsAssembly(migrationsAssembly));
 
-                    // this enables automatic token cleanup. this is optional.
-                    options.EnableTokenCleanup = true;
+            // this enables automatic token cleanup. this is optional.
+            options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 3600; //3600 (1 hour)
                 })
                 .AddAspNetIdentity<ApplicationUser>()
@@ -256,29 +256,33 @@ namespace PrimeApps.Auth
             //dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
             //dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
 
-            services.Configure<ForwardedHeadersOptions>(options =>
-        {
-            options.ForwardedHeaders =
-                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-        });
+            if (!Environment.IsDevelopment())
+            {
+
+                services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+            }
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-                app.UseForwardedHeaders();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseHttpsRedirection();
-                app.UseHsts();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                // app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage(); //TODO: Temporary, remove later.
+                app.UseDatabaseErrorPage(); //TODO: Temporary, remove later.
                 app.UseHttpsRedirection();
                 app.UseHsts();
+                app.UseForwardedHeaders();
             }
 
             var supportedCultures = new[]
