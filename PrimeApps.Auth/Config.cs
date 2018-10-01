@@ -72,7 +72,7 @@ namespace PrimeApps.Auth
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { "https://localhost:5001/signin-oidc" },
+                    RedirectUris = { "http://localhost:5001/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5001/signout-callback-oidc" },
 
                     AllowedScopes =
