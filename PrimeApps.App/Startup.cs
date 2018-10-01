@@ -136,7 +136,8 @@ namespace PrimeApps.App
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage(); //Todo: Temporary, remove it.
+                app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }
