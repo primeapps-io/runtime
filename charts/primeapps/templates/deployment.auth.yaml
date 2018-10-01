@@ -31,6 +31,8 @@ spec:
           ports:
           - name: http
             containerPort: {{.Values.auth.containerPort}}
+          - name: https
+            containerPort: {{.Values.auth.containerPortSecure}}
           {{- if .Values.auth.probes.enabled }}
           livenessProbe:
             httpGet:

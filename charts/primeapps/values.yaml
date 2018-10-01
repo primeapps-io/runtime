@@ -5,7 +5,9 @@
 app:
   serviceType: NodePort
   servicePort: 80
+  servicePortSecure: 443
   containerPort: 80
+  containerPortSecure: 443
   component: app
   replicas: 1
   image: eu.gcr.io/primeapps-gke/primeapps-app
@@ -77,7 +79,9 @@ app:
 auth:
   serviceType: NodePort
   servicePort: 80
+  servicePortSecure: 443
   containerPort: 80
+  containerPortSecure: 443
   component: auth
   replicas: 1
   image: eu.gcr.io/primeapps-gke/primeapps-auth

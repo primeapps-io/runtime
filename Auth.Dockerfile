@@ -1,6 +1,6 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Production
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
@@ -17,6 +17,6 @@ FROM build AS publish
 RUN dotnet publish "PrimeApps.Auth.csproj" -c Debug -o /app
 
 FROM base AS final
-WORKDIR /app
+WORKDIR /app 443
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
