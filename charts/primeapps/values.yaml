@@ -22,8 +22,8 @@ app:
     annotations:
      kubernetes.io/ingress.class: nginx
      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-     kubernetes.io/tls-acme: "true"
-    tls: true
+     kubernetes.io/tls-acme: "false"
+    tls: false
   probes:
     enabled: false
   secrets:
@@ -63,7 +63,7 @@ app:
         AuthenticationServerURL: "http://auth-dev.primeapps.io"
         ClientId: "primeapps"
         ClientSecret: "secret",
-        RequireHttps: "true"
+        RequireHttps: "false"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"
@@ -94,8 +94,8 @@ auth:
     annotations:
      kubernetes.io/ingress.class: nginx
      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-     kubernetes.io/tls-acme: "true"
-    tls: true
+     kubernetes.io/tls-acme: "false"
+    tls: false
   probes:
     enabled: false
   secrets:
