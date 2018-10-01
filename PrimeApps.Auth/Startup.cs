@@ -132,6 +132,7 @@ namespace PrimeApps.Auth
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
+                    options.PublicOrigin="https://auth-dev.primeapps.io";
                 })
                 /*.AddInMemoryIdentityResources(Config.GetIdentityResources())
 				.AddInMemoryApiResources(Config.GetApiResources())
@@ -264,7 +265,7 @@ namespace PrimeApps.Auth
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseForwardedHeaders();
+                app.UseForwardedHeaders();
 
             if (env.IsDevelopment())
             {
