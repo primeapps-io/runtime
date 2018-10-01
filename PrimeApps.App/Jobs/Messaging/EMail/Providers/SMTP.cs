@@ -47,7 +47,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail.Providers
                         mailMessage.Subject = message.Subject;
                         if (!string.IsNullOrWhiteSpace(message.Cc))
                         {
-                            var ccList = message.Cc.Split(',');
+                            var ccList = message.Cc.Split(';');
                             foreach (var cc in ccList)
                             {
                                 if (string.IsNullOrWhiteSpace(cc) || !emailAddress.IsValid(cc))
@@ -58,7 +58,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail.Providers
                         }
                         if (!string.IsNullOrWhiteSpace(message.Bcc))
                         {
-                            var bccList = message.Bcc.Split(',');
+                            var bccList = message.Bcc.Split(';');
                             foreach (var bcc in bccList)
                             {
                                 if (string.IsNullOrWhiteSpace(bcc) || !emailAddress.IsValid(bcc))

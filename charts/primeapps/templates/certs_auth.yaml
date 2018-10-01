@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "fullname" . }}-auth-certs
+type: Opaque
+data:
+{{ (.Files.Glob "cert/*").AsSecrets | indent 2 }}

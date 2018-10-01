@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
@@ -181,11 +181,12 @@ angular.module('primeapps')
                                 cdnUrl + 'view/app/product/salesInvoiceProductsService.js',
                                 cdnUrl + 'view/app/product/purchaseInvoiceProductsController.js',
                                 cdnUrl + 'view/app/product/purchaseInvoiceProductsService.js',
-                                cdnUrl + 'view/app/location/locationFormModalController.js',
-                                {
-                                    type: 'js',
-                                    path: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o&libraries=places'
-                                }
+                                cdnUrl + 'view/app/location/locationFormModalController.js'
+                                //google maps keyi dinamik yapıldığında açılacak
+                                //{
+                                //    type: 'js',
+                                //    path: 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDxai8Lo5_z03O9am5WyP5XvYtITzC_l-o&libraries=places'
+                                //}
                             ]);
                         }]
                     }
@@ -1303,14 +1304,14 @@ angular.module('primeapps')
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
-                    var url = componentContent.local === 't' ? 'views/app/crm/' + component.name + '/' : blobUrl + '/components/tenant-' + tenantId + '/' + component.name + '/';
+                    var url = componentContent.local === 't' ? 'view/app/' + component.name + '/' : blobUrl + '/components/tenant-' + tenantId + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
                         files.push(componentContent.files[i].includes('http') ? componentContent.files[i] : url + componentContent.files[i]);
                     }
 
                     $stateProvider
-                        .state('app.crm.' + component.name, {
+                        .state('app.' + component.name, {
                             cache: false,
                             url: '/' + componentContent.url,
                             views: {

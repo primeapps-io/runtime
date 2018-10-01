@@ -363,15 +363,15 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
                 if (hash.indexOf('/app/modules/') > -1)
                     isModuleList = true;
-                moduleName = hash.split('/')[4];
+                moduleName = hash.split('/')[3];
 
                 if (hash.indexOf('/app/module/') > -1) {
                     isModuleDetail = true;
-                    moduleName = hash.split('/')[4].split('?')[0];
+                    moduleName = hash.split('/')[3].split('?')[0];
                 }
 
                 if (hash.indexOf('/app/moduleForm/') > -1) {
-                    moduleName = hash.split('/')[4].split('?')[0];
+                    moduleName = hash.split('/')[3].split('?')[0];
                 }
 
                 var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
@@ -513,15 +513,15 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
 
             if (hash.indexOf('/app/modules/') > -1)
                 isModuleList = true;
-            moduleName = hash.split('/')[4];
+            moduleName = hash.split('/')[3];
 
             if (hash.indexOf('/app/module/') > -1) {
                 isModuleDetail = true;
-                moduleName = hash.split('/')[4].split('?')[0];
+                moduleName = hash.split('/')[3].split('?')[0];
             }
 
             if (hash.indexOf('/app/moduleForm/') > -1) {
-                moduleName = hash.split('/')[4].split('?')[0];
+                moduleName = hash.split('/')[3].split('?')[0];
             }
 
             if (moduleName) {

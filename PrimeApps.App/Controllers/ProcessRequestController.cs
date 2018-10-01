@@ -60,7 +60,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("approve_multiple_request"), HttpPut]
-        public async Task<IActionResult> ApproveMultipleRequest(JObject request)
+        public async Task<IActionResult> ApproveMultipleRequest([FromBody]JObject request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

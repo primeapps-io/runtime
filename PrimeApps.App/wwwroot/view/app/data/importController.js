@@ -395,10 +395,17 @@ angular.module('primeapps')
 
                             if (isNaN(recordValue)) {
                                 $scope.error.message = $filter('translate')('Data.Import.Error.InvalidNumber');
-                                recordValue = null;
+                                recordValue = 0;
                             }
                             break;
                         case 'number_decimal':
+                            recordValue = parseFloat(recordValue);
+
+                            if (isNaN(recordValue)) {
+                                $scope.error.message = $filter('translate')('Data.Import.Error.InvalidNumber');
+                                recordValue = 0;
+                            }
+                            break;
                         case 'currency':
                             recordValue = recordValue.replace(',', '.');
                             recordValue = parseFloat(recordValue);

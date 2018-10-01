@@ -142,7 +142,7 @@ angular.module('primeapps')
                 var profileIds = $scope.currentModuleProcess.profiles.split(',');
                 $scope.hasProcessEditPermission = false;
                 for (var i = 0; i < profileIds.length; i++) {
-                    if (profileIds[i] === $rootScope.user.profile.ID.toString())
+                    if (profileIds[i] === $rootScope.user.profile.id.toString())
                         $scope.hasProcessEditPermission = true;
                 }
             }
@@ -284,7 +284,7 @@ angular.module('primeapps')
                     }
 
                     var filterRequest = {
-                        fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status'],
+                        fields: ['hesaplanan_alinacak_toplam_izin', 'baslangic_tarihi', 'bitis_tarihi', 'izin_turu', 'process.process_requests.process_status','system_code'],
                         filters: [
                             { field: 'calisan', operator: 'equals', value: $scope.record['calisan'].id, no: 1 },
                             { field: 'baslangic_tarihi', operator: 'greater_equal', value: startOf, no: 2 },

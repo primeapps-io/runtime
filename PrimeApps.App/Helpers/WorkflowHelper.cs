@@ -88,8 +88,56 @@ namespace PrimeApps.App.Helpers
                                     isFieldExist = true;
                             }
 
-                            if (!isFieldExist || record[workflow.ChangedField] == previousRecord[workflow.ChangedField])
+                            if (!isFieldExist)
+                            {
                                 continue;
+                            }
+                            else
+                            {
+                                if (relatedField.DataType == DataType.Lookup)
+                                {
+                                    var hasId = false;
+                                    foreach (var property in record)
+                                    {
+                                        if (property.Key == workflow.ChangedField + ".id")
+                                            hasId = true;
+                                    }
+
+                                    if (hasId)
+                                    {
+                                        if (!record[workflow.ChangedField + ".id"].IsNullOrEmpty() && !previousRecord[workflow.ChangedField].IsNullOrEmpty())
+                                        {
+                                            if (((int)record[workflow.ChangedField + ".id"] == (int)previousRecord[workflow.ChangedField]))
+                                                continue;
+
+                                        }
+                                        else if (record[workflow.ChangedField + ".id"].IsNullOrEmpty() && previousRecord[workflow.ChangedField].IsNullOrEmpty())
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (!record[workflow.ChangedField].IsNullOrEmpty() && !previousRecord[workflow.ChangedField].IsNullOrEmpty())
+                                        {
+                                            if (((int)record[workflow.ChangedField] == (int)previousRecord[workflow.ChangedField]))
+                                                continue;
+                                        }
+                                        else if (record[workflow.ChangedField].IsNullOrEmpty() && previousRecord[workflow.ChangedField].IsNullOrEmpty())
+                                        {
+                                            continue;
+                                        }
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    if ((string)record[workflow.ChangedField] == (string)previousRecord[workflow.ChangedField])
+                                        continue;
+                                }
+                            }
+
                         }
 
                         lookupModuleNames = new List<string>();

@@ -210,7 +210,7 @@ angular.module('primeapps')
 					});
 				},
 
-				sendEMail: function (moduleId, ids, query, isAllSelected, message, emailField, senderAlias, senderEMail, providerType, attachmentContainer, subject, attachmentLink, attachmentName) {
+				sendEMail: function (moduleId, ids, query, isAllSelected, message, emailField,Cc,Bcc, senderAlias, senderEMail, providerType, attachmentContainer, subject, attachmentLink, attachmentName) {
 					return $http.post(config.apiUrl + 'messaging/send_email', {
 						"module_id": moduleId,
 						"Ids": ids,
@@ -218,15 +218,15 @@ angular.module('primeapps')
 						"is_all_selected": isAllSelected,
 						"Message": message,
 						"e_mail_field": emailField,
+                        "Cc": Cc,
+                        "Bcc": Bcc,
 						"sender_alias": senderAlias,
 						"provider_type": providerType,
 						"sender_e_mail": senderEMail,
 						"attachment_container": attachmentContainer,
 						"subject": subject,
 						"attachment_link": attachmentLink,
-                        "attachment_name": attachmentName,
-                        "Cc": Cc,
-                        "Bcc": Bcc
+                        "attachment_name": attachmentName
 					});
 				},
 

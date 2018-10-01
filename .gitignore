@@ -170,7 +170,6 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
-*.pfx
 *.publishsettings
 node_modules/
 bower_components/
@@ -212,11 +211,7 @@ FakesAssemblies/
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 .history
 /.vscode
-/PrimeApps.CLI/appsettings.json
+
 /PrimeApps.CLI/Properties/launchSettings.json

@@ -10,10 +10,12 @@ namespace PrimeApps.App.Jobs
     public class ExchangeRate
     {
         private IConfiguration _configuration;
+        private PlatformDBContext _dBContext;
 
-        public ExchangeRate(IConfiguration configuration)
+        public ExchangeRate(IConfiguration configuration, PlatformDBContext dBContext)
         {
             _configuration = configuration;
+            _dBContext = dBContext;
         }
 
         public void DailyRates()
@@ -32,24 +34,20 @@ namespace PrimeApps.App.Jobs
             var date = DateTime.Parse(dateAttribute.Value, CultureInfo.CreateSpecificCulture("en-US"));
             var usd = usdNode.InnerXml;
             var euro = euroNode.InnerXml;
+            var exchangeRate = _dBContext.ExchangeRates.SingleOrDefault(x => x.Year == date.Year && x.Month == date.Month && x.Day == date.Day);
 
-            using (var dbContext = new PlatformDBContext(_configuration))
+            if (exchangeRate == null)
             {
-                var exchangeRate = dbContext.ExchangeRates.SingleOrDefault(x => x.Year == date.Year && x.Month == date.Month && x.Day == date.Day);
+                exchangeRate = new Model.Entities.Platform.ExchangeRate();
+                exchangeRate.Usd = decimal.Parse(usd);
+                exchangeRate.Eur = decimal.Parse(euro);
+                exchangeRate.Date = date;
+                exchangeRate.Year = date.Year;
+                exchangeRate.Month = date.Month;
+                exchangeRate.Day = date.Day;
 
-                if (exchangeRate == null)
-                {
-                    exchangeRate = new Model.Entities.Platform.ExchangeRate();
-                    exchangeRate.Usd = decimal.Parse(usd);
-                    exchangeRate.Eur = decimal.Parse(euro);
-                    exchangeRate.Date = date;
-                    exchangeRate.Year = date.Year;
-                    exchangeRate.Month = date.Month;
-                    exchangeRate.Day = date.Day;
-
-                    dbContext.ExchangeRates.Add(exchangeRate);
-                    dbContext.SaveChanges();
-                }
+                _dBContext.ExchangeRates.Add(exchangeRate);
+                _dBContext.SaveChanges();
             }
         }
     }

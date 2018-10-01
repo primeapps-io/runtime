@@ -78,7 +78,7 @@ angular.module('primeapps')
             ];
 
             $scope.getUser = function (id) {
-                var user = $filter('filter')($rootScope.users, { 'Id': id }, true)[0];
+                var user = $filter('filter')($rootScope.users, { 'id': id }, true)[0];
                 if (user.FullName)
                     return user.FullName;
                 return id;

@@ -80,20 +80,20 @@ namespace PrimeApps.App.Controllers
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 
-            var cacheRepository = (ICacheRepository)HttpContext.RequestServices.GetService(typeof(ICacheRepository));
+            //var cacheRepository = (ICacheRepository)HttpContext.RequestServices.GetService(typeof(ICacheRepository));
 
-            string key = typeof(TenantUser).Name + "-" + appUser.Id;
-            var tenantUser = cacheRepository.Get<TenantUser>(key);
+            //string key = typeof(TenantUser).Name + "-" + appUser.Id;
+            //var tenantUser = cacheRepository.Get<TenantUser>(key);
 
-            if (tenantUser == null)
-            {
-                var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+            //if (tenantUser == null)
+            //{
+            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 
-                tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
-                tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
+            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
+            var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-                var result = cacheRepository.Add(key, tenantUser);
-            }
+           // var result = cacheRepository.Add(key, tenantUser);
+            //}
 
             appUser.RoleId = tenantUser.RoleId ?? 0;
             appUser.ProfileId = tenantUser.RoleId ?? 0;
