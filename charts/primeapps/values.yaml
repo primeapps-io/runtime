@@ -60,7 +60,7 @@ app:
         AzureSearch.Storage: "ofisimdev"
         AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
         UseCdn: "false"
-        AuthenticationServerURL: "https://auth-dev.primeapps.io"
+        AuthenticationServerURL: "http://auth-dev.primeapps.io"
         ClientId: "primeapps"
         ClientSecret: "secret",
         RequireHttps: "true"
