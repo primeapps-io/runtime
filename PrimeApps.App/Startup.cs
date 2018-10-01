@@ -142,10 +142,14 @@ namespace PrimeApps.App
             else
             {
                 //app.UseExceptionHandler("/Home/Error");
-                app.UseHttpsRedirection();
-                app.UseHsts();
-                app.UseForwardedHeaders();
+                //app.UseHttpsRedirection();
+                //app.UseHsts();
+                //app.UseForwardedHeaders();
             }
+
+            app.UseHttpsRedirection();
+            app.UseHsts();
+            app.UseForwardedHeaders();
 
             app.UseHangfireDashboard();
             app.UseWebOptimizer();
