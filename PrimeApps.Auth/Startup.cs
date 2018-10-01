@@ -31,6 +31,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace PrimeApps.Auth
 {
@@ -253,14 +254,24 @@ namespace PrimeApps.Auth
 				})*/;
             //dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
             //dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders =
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseForwardedHeaders();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.UseHttpsRedirection();
+                app.UseHsts();
             }
             else
             {
