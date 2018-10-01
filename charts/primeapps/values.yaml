@@ -61,7 +61,7 @@ app:
         AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
         UseCdn: "false"
         AuthenticationServerURL: "https://auth-dev.primeapps.io"
-        ClientId: "ofisim_crm"
+        ClientId: "primeapps"
         ClientSecret: "secret"
       webOptimizer:
         enableCaching: "false"
