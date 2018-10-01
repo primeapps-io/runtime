@@ -100,7 +100,7 @@ namespace PrimeApps.Auth.Controllers
 
 			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.App.Setting.Culture;
 
-			var url = Request.Scheme + "://" + appInfo.App.Setting.Domain.Replace("/ik", "") + "/api/account/create";
+			var url = Request.Scheme + "://" + appInfo.App.Setting.AppDomain.Replace("/ik", "") + "/api/account/create";
 
 			var activateModel = new ActivateBindingModels
 			{
@@ -146,7 +146,7 @@ namespace PrimeApps.Auth.Controllers
 			if (signInResult.Succeeded)
 				await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
 
-			return Created(appInfo.App.Setting.Domain, new { token, domain = appInfo.App.Setting.Domain });
+			return Created(appInfo.App.Setting.AppDomain, new { token, domain = appInfo.App.Setting.AppDomain });
 		}
 
 		[Route("confirm_token"), HttpGet]

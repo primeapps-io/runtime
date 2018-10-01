@@ -25,14 +25,12 @@ namespace PrimeApps.Model.Entities.Platform
 
 		[Column("use_tenant_settings")]
 		public bool UseTenantSettings { get; set; }
-
-		//AppInfo One to One
+        
 		public virtual AppSetting Setting { get; set; }
 
 		[JsonIgnore]
 		public virtual ICollection<AppTemplate> Templates { get; set; }
-
-		//Apps and Tenants One to Many 
+        
 		[JsonIgnore]
 		public virtual ICollection<Tenant> Tenants { get; set; }
 

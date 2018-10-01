@@ -10,7 +10,7 @@ using PrimeApps.Model.Context;
 namespace PrimeApps.Model.Migrations.PlatformDB
 {
     [DbContext(typeof(PlatformDBContext))]
-    [Migration("20180927203421_Initial")]
+    [Migration("20181001152119_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,15 +88,19 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<int>("AppId")
                         .HasColumnName("app_id");
 
-                    b.Property<string>("AuthDomain")
-                        .HasColumnName("auth_domain");
+                    b.Property<string>("AppDomain")
+                        .HasColumnName("app_domain");
 
-                    b.Property<string>("Banner")
-                        .HasColumnName("banner")
+                    b.Property<string>("AppTheme")
+                        .HasColumnName("app_theme")
                         .HasColumnType("jsonb");
 
-                    b.Property<string>("Color")
-                        .HasColumnName("color");
+                    b.Property<string>("AutTheme")
+                        .HasColumnName("auth_theme")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("AuthDomain")
+                        .HasColumnName("auth_domain");
 
                     b.Property<string>("Culture")
                         .HasColumnName("culture");
@@ -104,20 +108,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("Currency")
                         .HasColumnName("currency");
 
-                    b.Property<string>("Description")
-                        .HasColumnName("description");
-
-                    b.Property<string>("Domain")
-                        .HasColumnName("domain");
-
-                    b.Property<string>("Favicon")
-                        .HasColumnName("favicon");
-
                     b.Property<string>("GoogleAnalyticsCode")
                         .HasColumnName("google_analytics_code");
-
-                    b.Property<string>("Image")
-                        .HasColumnName("image");
 
                     b.Property<string>("Language")
                         .HasColumnName("language");
@@ -128,14 +120,11 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("MailSenderName")
                         .HasColumnName("mail_sender_name");
 
-                    b.Property<string>("TenantCreateWebhook")
-                        .HasColumnName("tenant_create_webhook");
+                    b.Property<string>("TenantOperationWebhook")
+                        .HasColumnName("tenant_operation_webhook");
 
                     b.Property<string>("TimeZone")
                         .HasColumnName("time_zone");
-
-                    b.Property<string>("Title")
-                        .HasColumnName("title");
 
                     b.HasKey("AppId");
 
@@ -144,14 +133,27 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.AppTemplate", b =>
                 {
-                    b.Property<int>("AppId")
-                        .HasColumnName("app_id");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
 
                     b.Property<bool>("Active")
                         .HasColumnName("active");
 
+                    b.Property<int>("AppId")
+                        .HasColumnName("app_id");
+
                     b.Property<string>("Content")
                         .HasColumnName("content");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
 
                     b.Property<string>("Language")
                         .HasColumnName("language");
@@ -176,9 +178,19 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<int>("Type")
                         .HasColumnName("type");
 
-                    b.HasKey("AppId");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("Active");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("Language");
 
@@ -188,24 +200,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasIndex("Type");
 
+                    b.HasIndex("UpdatedById");
+
                     b.ToTable("app_templates");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Cache", b =>
-                {
-                    b.Property<string>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("key")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Value")
-                        .HasColumnName("value");
-
-                    b.HasKey("Key");
-
-                    b.HasIndex("Key");
-
-                    b.ToTable("cache");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.ExchangeRate", b =>
@@ -717,6 +714,15 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .WithMany("Templates")
                         .HasForeignKey("AppId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Organization", b =>

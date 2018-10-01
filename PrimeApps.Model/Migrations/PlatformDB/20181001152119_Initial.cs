@@ -12,19 +12,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 name: "public");
 
             migrationBuilder.CreateTable(
-                name: "cache",
-                schema: "public",
-                columns: table => new
-                {
-                    key = table.Column<string>(maxLength: 100, nullable: false),
-                    value = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_cache", x => x.key);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "exchange_rates",
                 schema: "public",
                 columns: table => new
@@ -171,22 +158,18 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 columns: table => new
                 {
                     app_id = table.Column<int>(nullable: false),
-                    title = table.Column<string>(nullable: true),
-                    description = table.Column<string>(nullable: true),
-                    favicon = table.Column<string>(nullable: true),
-                    color = table.Column<string>(nullable: true),
-                    image = table.Column<string>(nullable: true),
-                    domain = table.Column<string>(nullable: true),
+                    app_domain = table.Column<string>(nullable: true),
                     auth_domain = table.Column<string>(nullable: true),
-                    mail_sender_name = table.Column<string>(nullable: true),
-                    mail_sender_email = table.Column<string>(nullable: true),
                     currency = table.Column<string>(nullable: true),
                     culture = table.Column<string>(nullable: true),
                     time_zone = table.Column<string>(nullable: true),
                     language = table.Column<string>(nullable: true),
-                    banner = table.Column<string>(type: "jsonb", nullable: true),
+                    auth_theme = table.Column<string>(type: "jsonb", nullable: true),
+                    app_theme = table.Column<string>(type: "jsonb", nullable: true),
+                    mail_sender_name = table.Column<string>(nullable: true),
+                    mail_sender_email = table.Column<string>(nullable: true),
                     google_analytics_code = table.Column<string>(nullable: true),
-                    tenant_create_webhook = table.Column<string>(nullable: true)
+                    tenant_operation_webhook = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -205,6 +188,13 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 columns: table => new
                 {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    created_by = table.Column<int>(nullable: false),
+                    updated_by = table.Column<int>(nullable: true),
+                    created_at = table.Column<DateTime>(nullable: false),
+                    updated_at = table.Column<DateTime>(nullable: true),
+                    deleted = table.Column<bool>(nullable: false),
                     app_id = table.Column<int>(nullable: false),
                     name = table.Column<string>(maxLength: 200, nullable: true),
                     subject = table.Column<string>(maxLength: 200, nullable: true),
@@ -218,7 +208,7 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_app_templates", x => x.app_id);
+                    table.PrimaryKey("PK_app_templates", x => x.id);
                     table.ForeignKey(
                         name: "FK_app_templates_apps_app_id",
                         column: x => x.app_id,
@@ -226,6 +216,20 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         principalTable: "apps",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_templates_users_created_by",
+                        column: x => x.created_by,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_templates_users_updated_by",
+                        column: x => x.updated_by,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -541,6 +545,18 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 column: "active");
 
             migrationBuilder.CreateIndex(
+                name: "IX_app_templates_app_id",
+                schema: "public",
+                table: "app_templates",
+                column: "app_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_templates_created_by",
+                schema: "public",
+                table: "app_templates",
+                column: "created_by");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_app_templates_language",
                 schema: "public",
                 table: "app_templates",
@@ -563,6 +579,12 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "app_templates",
                 column: "type");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_templates_updated_by",
+                schema: "public",
+                table: "app_templates",
+                column: "updated_by");
 
             migrationBuilder.CreateIndex(
                 name: "IX_apps_created_at",
@@ -605,12 +627,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                 schema: "public",
                 table: "apps",
                 column: "updated_by");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_cache_key",
-                schema: "public",
-                table: "cache",
-                column: "key");
 
             migrationBuilder.CreateIndex(
                 name: "IX_exchange_rates_date",
@@ -933,10 +949,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
             migrationBuilder.DropTable(
                 name: "app_templates",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "cache",
                 schema: "public");
 
             migrationBuilder.DropTable(

@@ -156,11 +156,6 @@ namespace PrimeApps.Model.Context
                .WithOne(i => i.App)
                .HasForeignKey(b => b.AppId);
 
-            modelBuilder.Entity<App>()
-               .HasMany(p => p.Templates)
-               .WithOne(i => i.App)
-               .HasForeignKey(b => b.AppId);
-
             modelBuilder.Entity<Team>()
                 .HasOne(p => p.Organization)
                 .WithMany(b => b.Teams)
@@ -251,9 +246,6 @@ namespace PrimeApps.Model.Context
             //UserTenants
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
-
-            //Cache
-            modelBuilder.Entity<Cache>().HasIndex(x => x.Key);
         }
 
         public DbSet<PlatformUser> Users { get; set; }
@@ -272,6 +264,5 @@ namespace PrimeApps.Model.Context
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
         public DbSet<UserTenant> UserTenants { get; set; }
-        public DbSet<Cache> Cache { get; set; }
     }
 }

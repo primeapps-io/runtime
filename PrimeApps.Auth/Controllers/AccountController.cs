@@ -84,7 +84,7 @@ namespace PrimeApps.Auth.UI
 			if (User?.Identity.IsAuthenticated == true)
 				return View();*/
 
-			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.AppDomain);
 		}
 
 
@@ -276,7 +276,7 @@ namespace PrimeApps.Auth.UI
 
 			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.Setting.Culture;
 
-			var url = Request.Scheme + "://" + appInfo.Setting.Domain + "/api/account/create";
+			var url = Request.Scheme + "://" + appInfo.Setting.AppDomain + "/api/account/create";
 
 			var activateModel = new ActivateBindingModels
 			{
@@ -329,7 +329,7 @@ namespace PrimeApps.Auth.UI
 			if (signInResult.Succeeded)
 				await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
 
-			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.AppDomain);
 		}
 
 		[HttpGet]
@@ -494,7 +494,7 @@ namespace PrimeApps.Auth.UI
 					var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 					if (platformUser == null || userApp == null)
 					{
-						var createUrl = Request.Scheme + "://" + appInfo.Setting.Domain + "/api/account/create";
+						var createUrl = Request.Scheme + "://" + appInfo.Setting.AppDomain + "/api/account/create";
 
 						var activateModel = new ActivateBindingModels
 						{
@@ -618,7 +618,7 @@ namespace PrimeApps.Auth.UI
 				// this triggers a redirect to the external provider for sign-out
 				return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
 			}
-			return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);
+			return Redirect(Request.Scheme + "://" + appInfo.Setting.AppDomain);
 			//return View("LoggedOut", vm);
 		}
 

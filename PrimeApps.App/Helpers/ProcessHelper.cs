@@ -367,7 +367,7 @@ namespace PrimeApps.App.Helpers
                             var app = await _appRepository.Get(appUser.AppId);
                             if (app != null)
                             {
-                                domain = "https://" + app.Setting.Domain + "/";
+                                domain = "https://" + app.Setting.AppDomain + "/";
                             }
                         }
 
@@ -803,7 +803,7 @@ namespace PrimeApps.App.Helpers
                             var app = await _appRepository.Get(appUser.AppId);
                             if (app != null)
                             {
-                                domain = "https://" + app.Setting.Domain + "/";
+                                domain = "https://" + app.Setting.AppDomain + "/";
                             }
                         }
 
@@ -951,7 +951,7 @@ namespace PrimeApps.App.Helpers
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
                                 {
-                                    domain = "https://" + app.Setting.Domain + "/";
+                                    domain = "https://" + app.Setting.AppDomain + "/";
                                 }
                             }
 
@@ -1040,7 +1040,7 @@ namespace PrimeApps.App.Helpers
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
                                 {
-                                    domain = "https://" + app.Setting.Domain + "/";
+                                    domain = "https://" + app.Setting.AppDomain + "/";
                                 }
                             }
 
@@ -1150,7 +1150,7 @@ namespace PrimeApps.App.Helpers
                         var app = await _appRepository.Get(appUser.AppId);
                         if (app != null)
                         {
-                            domain = "https://" + app.Setting.Domain + "/";
+                            domain = "https://" + app.Setting.AppDomain + "/";
                         }
                     }
 
@@ -1285,7 +1285,7 @@ namespace PrimeApps.App.Helpers
                         var app = await _appRepository.Get(appUser.AppId);
                         if (app != null)
                         {
-                            domain = "https://" + app.Setting.Domain + "/";
+                            domain = "https://" + app.Setting.AppDomain + "/";
                         }
                     }
 
