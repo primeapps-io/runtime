@@ -10,10 +10,10 @@ COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
 RUN dotnet restore "PrimeApps.Auth/PrimeApps.Auth.csproj"
 COPY . .
 WORKDIR "/src/PrimeApps.Auth"
-RUN dotnet build "PrimeApps.Auth.csproj" -c Release -o /app
+RUN dotnet build "PrimeApps.Auth.csproj" -c Debug -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Auth.csproj" -c Release -o /app
+RUN dotnet publish "PrimeApps.Auth.csproj" -c Debug -o /app
 
 FROM base AS final
 WORKDIR /app
