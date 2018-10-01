@@ -62,7 +62,7 @@ app:
         UseCdn: "false"
         AuthenticationServerURL: "https://auth-dev.primeapps.io"
         ClientId: "primeapps"
-        ClientSecret: "secret",
+        ClientSecret: "secret"
         RequireHttps: "true"
       webOptimizer:
         enableCaching: "false"
