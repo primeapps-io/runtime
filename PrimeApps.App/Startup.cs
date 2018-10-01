@@ -14,6 +14,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
 using System.Globalization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace PrimeApps.App
 {
@@ -122,6 +123,11 @@ namespace PrimeApps.App
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
 
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             AuthConfiguration(services, Configuration, HostingEnvironment);
         }
 
@@ -138,6 +144,7 @@ namespace PrimeApps.App
                 //app.UseExceptionHandler("/Home/Error");
                 app.UseHttpsRedirection();
                 app.UseHsts();
+                app.UseForwardedHeaders();
             }
 
             app.UseHangfireDashboard();
