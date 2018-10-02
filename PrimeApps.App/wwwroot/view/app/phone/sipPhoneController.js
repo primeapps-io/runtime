@@ -7,7 +7,7 @@ angular.module('primeapps')
                 angular.forEach($rootScope.phoneSettings.sipUsers, function (sipUser) {
                     if (!sipUser.name) {
                         var user = $filter('filter')($rootScope.users, {id: parseInt(sipUser.userId)}, true)[0];
-                        sipUser.name = user.FullName;
+                        sipUser.name = user.full_name;
                     }
                 });
             }
