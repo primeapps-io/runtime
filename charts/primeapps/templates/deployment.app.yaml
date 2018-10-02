@@ -65,4 +65,4 @@ spec:
       volumes:
         - name: domain-cert
           secret:
-            secretName: {{ .Values.auth.ingress.hostname | quote }}
+            secretName: {{ .Values.app.ingress.hostname | quote }}
