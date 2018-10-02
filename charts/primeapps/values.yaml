@@ -62,7 +62,7 @@ app:
         UseCdn: "false"
         AuthenticationServerURL: "https://auth-dev.primeapps.io"
         ClientId: "primeapps"
-        ClientSecret: "secret",
+        ClientSecret: "secret"
         RequireHttps: "true"
       webOptimizer:
         enableCaching: "false"
@@ -109,6 +109,7 @@ auth:
       AppSettings:
         AuthCertLocation: "/cert/primeapps_id4.pfx"
         AuthCertExportKey: "1q2w3e4r5t"
+        RequireHttps: "true"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"

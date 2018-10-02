@@ -135,7 +135,13 @@ namespace PrimeApps.App
             }
             else
             {
-                //app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home/Error");
+            }
+
+            var requireHttps = bool.Parse(Configuration.GetSection("AppSettings")["RequireHttps"]);
+
+            if (requireHttps)
+            {
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }
