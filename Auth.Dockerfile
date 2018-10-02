@@ -23,5 +23,6 @@ RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-RUN openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:
+
+CMD openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:
 ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
