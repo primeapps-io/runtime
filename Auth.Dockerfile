@@ -17,6 +17,6 @@ FROM build AS publish
 RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 
 FROM base AS final
-WORKDIR /app 443
+WORKDIR /app
 COPY --from=publish /app .
 ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
