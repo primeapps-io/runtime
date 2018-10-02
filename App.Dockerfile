@@ -1,9 +1,9 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
+FROM microsoft/dotnet:2.1.4-aspnetcore-runtime-bionic AS base
 WORKDIR /app
 EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Production
 
-FROM microsoft/dotnet:2.1-sdk-alpine AS build
+FROM microsoft/dotnet:2.1.402-sdk-bionic AS build
 WORKDIR /src
 COPY ["PrimeApps.App/PrimeApps.App.csproj", "PrimeApps.App/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
