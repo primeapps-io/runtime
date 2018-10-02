@@ -2,7 +2,7 @@ FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
 EXPOSE 80
 ENV ASPNETCORE_ENVIRONMENT Production
-ENV ASPNETCORE_URLS="https://+"
+ENV ASPNETCORE_URLS="http://+"
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
