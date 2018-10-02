@@ -4,7 +4,7 @@ EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Production
 ENV ASPNETCORE_URLS="https://+;http://+"
 ENV ASPNETCORE_URLS="https://+;http://+"
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password=""
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="pWd"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/tls.pfx"
 
 FROM microsoft/dotnet:2.1.402-sdk-bionic AS build
@@ -24,5 +24,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 
-CMD openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:
-ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
+ENTRYPOINT openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:pWd && dotnet PrimeApps.Auth.dll
