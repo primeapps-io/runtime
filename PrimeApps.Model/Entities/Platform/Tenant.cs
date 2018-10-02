@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using PrimeApps.Model.Entities.Tenant;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeApps.Model.Entities.Platform

@@ -31,6 +31,32 @@ namespace PrimeApps.Auth
             // client credentials client
             return new List<Client>
             {
+                // OpenID Connect hybrid flow and client credentials client (PrimeApps)
+                new Client
+                {
+                    ClientId = "primeapps",
+                    ClientName = "PrimeApps",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                    AllowRememberConsent = false,
+                    AlwaysSendClientClaims = true,
+                    RequireConsent = false,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = { "https://auth-dev.primeapps.io/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://auth-dev.primeapps.io/signout-callback-oidc" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    }
+                },
 				// OpenID Connect hybrid flow and client credentials client (Ofisim CRM)
                 new Client
                 {
@@ -46,7 +72,7 @@ namespace PrimeApps.Auth
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { "http://localhost:5001/signin-oidc" },
+                    RedirectUris = { "https://localhost:5001/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:5001/signout-callback-oidc" },
 
                     AllowedScopes =

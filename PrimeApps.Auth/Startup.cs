@@ -58,20 +58,19 @@ namespace PrimeApps.Auth
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
 
-
             services.AddSingleton(Configuration);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(config =>
-            {
-                config.Password.RequiredLength = 6;
-                config.Password.RequireLowercase = false;
-                config.Password.RequireUppercase = false;
-                config.Password.RequireNonAlphanumeric = false;
-                config.Password.RequireDigit = false;
+                {
+                    config.Password.RequiredLength = 6;
+                    config.Password.RequireLowercase = false;
+                    config.Password.RequireUppercase = false;
+                    config.Password.RequireNonAlphanumeric = false;
+                    config.Password.RequireDigit = false;
 
-                config.User.RequireUniqueEmail = false;
-                config.SignIn.RequireConfirmedEmail = false;
-            })
+                    config.User.RequireUniqueEmail = false;
+                    config.SignIn.RequireConfirmedEmail = false;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -265,6 +264,12 @@ namespace PrimeApps.Auth
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+            }
+
+            var requireHttps = bool.Parse(Configuration.GetSection("AppSettings")["RequireHttps"]);
+
+            if (requireHttps)
+            {
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }

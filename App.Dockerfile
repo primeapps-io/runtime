@@ -1,6 +1,7 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
 EXPOSE 80
+ENV ASPNETCORE_ENVIRONMENT Development
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src

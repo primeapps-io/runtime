@@ -20,7 +20,7 @@ namespace PrimeApps.App
                 .AddIdentityServerAuthentication(options =>
                 {
                     options.Authority = configuration.GetSection("AppSettings")["AuthenticationServerURL"];
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = bool.Parse(configuration.GetSection("AppSettings")["RequireHttps"]);
                     options.ApiName = "api1";
                 });
 
@@ -37,7 +37,7 @@ namespace PrimeApps.App
                     options.Authority = configuration.GetSection("AppSettings")["AuthenticationServerURL"];
                     options.ClientId = configuration.GetSection("AppSettings")["ClientId"];
                     options.ClientSecret = configuration.GetSection("AppSettings")["ClientSecret"];
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = bool.Parse(configuration.GetSection("AppSettings")["RequireHttps"]);
                     options.ResponseType = "code id_token";
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;

@@ -6,10 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace PrimeApps.Model.Entities.Platform
 {
     [Table("app_templates")]
-    public class AppTemplate
+    public class AppTemplate : BaseEntity
     {
         [JsonIgnore]
-        [Column("app_id"), Key]
+        [Column("app_id"), ForeignKey("App")]
         public int AppId { get; set; }
 
         [Column("name"), MaxLength(200)]
