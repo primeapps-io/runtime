@@ -3,7 +3,6 @@ WORKDIR /app
 EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Production
 ENV ASPNETCORE_URLS="https://+;http://+"
-ENV ASPNETCORE_URLS="https://+;http://+"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="pWd"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/tls.pfx"
 
