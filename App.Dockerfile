@@ -1,8 +1,7 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Production
-ENV ASPNETCORE_URLS="http://+"
 
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
