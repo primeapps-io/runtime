@@ -2,6 +2,9 @@ FROM microsoft/dotnet:2.1.4-aspnetcore-runtime-bionic AS base
 WORKDIR /app
 EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Production
+ENV ASPNETCORE_URLS="https://+;http://+"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="pWd"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/tls.pfx"
 
 FROM microsoft/dotnet:2.1.402-sdk-bionic AS build
 WORKDIR /src
@@ -19,4 +22,4 @@ RUN dotnet publish "PrimeApps.App.csproj" --no-restore -c Debug -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "PrimeApps.App.dll"]
+ENTRYPOINT openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:pWd && dotnet PrimeApps.App.dll
