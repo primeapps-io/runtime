@@ -13,6 +13,10 @@ spec:
       targetPort: {{.Values.auth.containerPort}}
       protocol: TCP
       name: http
+    - port: {{.Values.auth.servicePortSecure}}
+      targetPort: {{.Values.auth.containerPortSecure}}
+      protocol: TCP
+      name: https
   selector:
     component: "{{.Release.Name}}-{{.Values.auth.component}}"
 #  type: {{ default "ClusterIP" .Values.serviceType | quote }}

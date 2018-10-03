@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Bpm.Steps;
 using PrimeApps.App.Storage;
 using System.Globalization;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace PrimeApps.App
 {
@@ -140,13 +141,8 @@ namespace PrimeApps.App
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
-            }
-
-            var requireHttps = bool.Parse(Configuration.GetSection("AppSettings")["RequireHttps"]);
-
-            if (requireHttps)
-            {
+                app.UseDeveloperExceptionPage(); //Todo: Temporary, remove it.
+                app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
                 app.UseHttpsRedirection();
                 app.UseHsts();
             }

@@ -252,7 +252,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
+            var subscriberTenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
 
             subscriberTenant.License.SipLicenseCount = count;
 

@@ -31,6 +31,8 @@ spec:
           ports:
           - name: http
             containerPort: {{.Values.auth.containerPort}}
+          - name: https
+            containerPort: {{.Values.auth.containerPortSecure}}
           {{- if .Values.auth.probes.enabled }}
           livenessProbe:
             httpGet:
@@ -60,7 +62,13 @@ spec:
             - name: cert
               mountPath: /cert
               readOnly: true
+            - name: domain-cert
+              mountPath: /domain-cert
+              readOnly: true
       volumes:
         - name: cert
           secret:
             secretName: {{ template "fullname" . }}-auth-certs
+        - name: domain-cert
+          secret:
+            secretName: {{ .Values.auth.ingress.hostname | quote }}

@@ -21,6 +21,10 @@ namespace PrimeApps.Model.Common.Instance
         [DataMember]
         public string Currency { get; set; }
 
+        [DataMember]
+        public string Culture { get; set; }
+
+
         /// <summary>
         /// Tenant Language
         /// </summary>
@@ -32,6 +36,9 @@ namespace PrimeApps.Model.Common.Instance
         /// </summary>
         [DataMember]
         public string Logo { get; set; }
+
+        [DataMember]
+        public string LogoUrl { get; set; }
 
 
         /// <summary>

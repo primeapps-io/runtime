@@ -50,12 +50,12 @@ angular.module('primeapps')
 
             $scope.showCreateAccountForm = function () {
                 $scope.createSipPopover = $scope.createSipPopover || $popover(angular.element(document.getElementById('createButton')), {
-                        templateUrl: 'view/setup/phone/sipAccountCreate.html',
-                        placement: 'left',
-                        scope: $scope,
-                        autoClose: true,
-                        show: true
-                    });
+                    templateUrl: 'view/setup/phone/sipAccountCreate.html',
+                    placement: 'left',
+                    scope: $scope,
+                    autoClose: true,
+                    show: true
+                });
             };
 
             $scope.showEditAccountForm = function (sipAccount) {
@@ -90,7 +90,8 @@ angular.module('primeapps')
                     sipAccount.user_id = parseInt(sipAccount.UserId);
                     sipAccount.record_detail_module_name = sipAccount.RecordDetailModuleName.name;
                     sipAccount.record_detail_phone_field_name = sipAccount.RecordDetailPhoneFieldName.name;
-
+                    sipAccount.is_auto_register = sipAccount.IsAutoRegister;
+                    sipAccount.is_auto_record_detail = sipAccount.IsAutoRecordDetail;
                     PhoneSettingsService.saveSipAccount(sipAccount)
                         .then(function (response) {
                             renewSipUsers(true);

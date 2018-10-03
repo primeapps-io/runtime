@@ -128,7 +128,7 @@ namespace PrimeApps.App.Controllers
             if (user.picture != tenantUserToEdit.Picture && user.picture != null)
             {
                 //if users avatar changed check update it.
-                if (user.picture.Trim() != string.Empty)
+                if (user.picture.Trim() == "")
                 {
                     //if users avatar changed check update it.
 
