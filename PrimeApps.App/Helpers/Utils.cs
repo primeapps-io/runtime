@@ -190,7 +190,7 @@ namespace PrimeApps.App.Helpers
 				status = false;
 			else if (!password.Any(char.IsDigit))
 				status = false;
-			else if (password.Any(x => !Char.IsLetterOrDigit(x)))
+			else if (!password.Any(x => Char.IsLetterOrDigit(x)))
 				status = false;
 
 			return status;
