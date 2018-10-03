@@ -1,7 +1,7 @@
 FROM microsoft/dotnet:2.1.5-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
 EXPOSE 80 443
-ENV ASPNETCORE_ENVIRONMENT Development
+ENV ASPNETCORE_ENVIRONMENT Production
 ENV ASPNETCORE_URLS="https://+;http://+"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password="pWd"
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/tls.pfx"

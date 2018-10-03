@@ -4,9 +4,9 @@
   # name: value
 app:
   serviceType: NodePort
-  servicePort: 443
+  servicePort: 80
   servicePortSecure: 443
-  containerPort: 443
+  containerPort: 80
   containerPortSecure: 443
   component: app
   replicas: 1
@@ -25,6 +25,7 @@ app:
      kubernetes.io/ingress.class: nginx
      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
      kubernetes.io/tls-acme: "false"
+     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
     tls: true
   probes:
     enabled: false
@@ -62,7 +63,7 @@ app:
         AzureSearch.Storage: "ofisimdev"
         AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
         UseCdn: "false"
-        AuthenticationServerURL: "primeapps-dev-auth.primeapps-dev.svc.cluster.local"
+        AuthenticationServerURL: "http://auth-dev.primeapps.io"
         ClientId: "primeapps"
         ClientSecret: "secret"
         RequireHttps: "true"
@@ -78,9 +79,9 @@ app:
   affinity: {}
 auth:
   serviceType: NodePort
-  servicePort: 443
+  servicePort: 80
   servicePortSecure: 443
-  containerPort: 443
+  containerPort: 80
   containerPortSecure: 443
   component: auth
   replicas: 1
@@ -99,6 +100,7 @@ auth:
      kubernetes.io/ingress.class: nginx
      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
      kubernetes.io/tls-acme: "true"
+     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
     tls: true
   probes:
     enabled: false
