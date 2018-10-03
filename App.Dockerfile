@@ -1,7 +1,7 @@
 FROM microsoft/dotnet:2.1.5-aspnetcore-runtime-alpine AS base
 WORKDIR /app
 EXPOSE 80
-ENV ASPNETCORE_ENVIRONMENT Production
+ENV ASPNETCORE_ENVIRONMENT Development
 ENV ASPNETCORE_URLS="http://+"
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
