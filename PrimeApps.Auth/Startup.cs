@@ -55,11 +55,6 @@ namespace PrimeApps.Auth
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection")));
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
@@ -276,7 +271,6 @@ namespace PrimeApps.Auth
                 app.UseDatabaseErrorPage(); //TODO: Temporary, remove later.
                 app.UseHttpsRedirection();
                 app.UseHsts();
-                app.UseForwardedHeaders();
             }
 
             var supportedCultures = new[]
