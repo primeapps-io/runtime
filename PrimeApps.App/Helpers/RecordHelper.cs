@@ -12,7 +12,6 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.Notifications;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
-using Hangfire;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Entities.Platform;
@@ -20,8 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PrimeApps.App.Helpers
 {
@@ -58,7 +55,7 @@ namespace PrimeApps.App.Helpers
 
     public delegate bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
 
-    public class RecordHelper : IRecordHelper
+    public class RecordHelper : IRecordHelper, IDisposable
     {
         private CurrentUser _currentUser;
         private IServiceScopeFactory _serviceScopeFactory;
@@ -88,6 +85,23 @@ namespace PrimeApps.App.Helpers
             _changeLogHelper = changeLogHelper;
 
             Queue = queue;
+        }
+
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+            _configuration = configuration;
+
+            _currentUser = currentUser;
+            _auditLogHelper = new AuditLogHelper(configuration, serviceScopeFactory, currentUser);
+            _notificationHelper = new NotificationHelper(configuration, serviceScopeFactory, currentUser);
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser);
+            _processHelper = new ProcessHelper(configuration, serviceScopeFactory, currentUser);
+            _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
+            //TODO LogHelper
+            _changeLogHelper = new ChangeLogHelper();
+
+            Queue = new BackgroundTaskQueue();
         }
 
         public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
@@ -744,6 +758,11 @@ namespace PrimeApps.App.Helpers
                 UserId = appUser.Id
 
             };
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

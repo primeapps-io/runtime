@@ -52,7 +52,15 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
             _calculationHelper = calculationHelper;
         }
+        public ProcessHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
 
+            _currentUser = currentUser;
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser);
+            _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
+        }
         public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())

@@ -49,6 +49,16 @@ namespace PrimeApps.App.Helpers
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
         }
+
+        public WorkflowHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+            _currentUser = currentUser;
+
+        }
+
         public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate, JObject previousRecord)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())

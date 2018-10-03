@@ -373,15 +373,15 @@ namespace PrimeApps.App.Helpers
                             var filters = workflow.Filters;
                             var mismatchedCount = 0;
 
-                            foreach(var filter in filters)
+                            foreach (var filter in filters)
                             {
                                 var filterField = module.Fields.Where(q => q.Name == filter.Field).FirstOrDefault();
                                 var filterFieldStr = filter.Field;
 
-                                if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id"));
+                                if (filterField.DataType == DataType.Lookup && !filter.Field.EndsWith(".id")) ;
                                 filterFieldStr = filter.Field + ".id";
 
-                                if(filterField==null || record[filterFieldStr]==null)
+                                if (filterField == null || record[filterFieldStr] == null)
                                 {
                                     mismatchedCount++;
                                     continue;
@@ -620,9 +620,10 @@ namespace PrimeApps.App.Helpers
         /// <returns></returns>
         public string ReferenceCreateToForBpmHost(UserItem appUser)
         {
-            var reference = appUser.TenantId + "|" + appUser.Id;
+            //var reference = appUser.TenantId + "|" + appUser.Id + "|" + appUser.Language;
+            var reference = JObject.FromObject(appUser);
 
-            return reference;
+            return reference.ToJsonString();
         }
     }
 

@@ -52,6 +52,15 @@ namespace PrimeApps.App.Notifications
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
+        public NotificationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+            _currentUser = currentUser;
+            _activityHelper = new ActivityHelper(configuration, serviceScopeFactory, currentUser);
+        }
+
         #region Create
         /// <summary>
         /// Creates all necessary notifications for the record.
@@ -311,7 +320,7 @@ namespace PrimeApps.App.Notifications
                     // Send task notification_sms if it is true
                     if (!fullRecord["task_notification_sms"].IsNullOrEmpty() && (bool)fullRecord["task_notification_sms"])
                     {
-                        Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.SendSingleSms((string)fullRecord["subject"], (string)fullRecord["owner.phone"],appUser.TenantLanguage,appUser));
+                        Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.SendSingleSms((string)fullRecord["subject"], (string)fullRecord["owner.phone"], appUser.TenantLanguage, appUser));
                     }
                 }
             }

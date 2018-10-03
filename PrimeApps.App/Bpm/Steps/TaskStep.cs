@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Model.Context;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using System;
 using System.Threading.Tasks;
@@ -16,9 +17,9 @@ namespace PrimeApps.App.Bpm.Steps
         private IServiceScopeFactory _serviceScopeFactory;
         private IConfiguration _configuration;
 
-        public JObject Record { get; set; }
+        public string Request { get; set; }
 
-        public string RecordStr { get; set; }
+        public string Response { get; set; }
 
         public TaskStep(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
@@ -34,18 +35,19 @@ namespace PrimeApps.App.Bpm.Steps
             if (context.Workflow.Reference == null)
                 throw new NullReferenceException();
 
-            var appUser = JsonConvert.DeserializeObject<JObject>(context.Workflow.Reference);
+            var tempRef = context.Workflow.Reference.Split('|');
+            var appUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    userRepository.CurrentUser = new Model.Helpers.CurrentUser()
-                    {
-                        TenantId = (int)appUser.GetValue("tenant_id"),
-                        UserId = (int)appUser.GetValue("user_id")
-                    };
+                    //userRepository.CurrentUser = new Model.Helpers.CurrentUser()
+                    //{
+                    //    TenantId = (int)appUser.GetValue("tenant_id"),
+                    //    UserId = (int)appUser.GetValue("user_id")
+                    //};
                         //Example
                         //var result = await userRepository.GetById(2);
                 }

@@ -46,6 +46,14 @@ namespace PrimeApps.App.Notifications
             _configuration = configuration;
         }
 
+        public ActivityHelper(IConfiguration configuration,IServiceScopeFactory serviceScopeFactory,CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+            _currentUser = currentUser;
+        }
+
         #region Create
         public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180)
         {

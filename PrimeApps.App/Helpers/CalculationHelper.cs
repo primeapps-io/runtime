@@ -49,6 +49,14 @@ namespace PrimeApps.App.Helpers
             _currentUser = UserHelper.GetCurrentUser(_context);
         }
 
+        public CalculationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+            _currentUser = currentUser;
+        }
+
         public async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, JObject currentRecord)
         {
             try

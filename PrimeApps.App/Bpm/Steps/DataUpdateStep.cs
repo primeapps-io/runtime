@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Bpm;
+using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
-using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,10 @@ namespace PrimeApps.App.Bpm.Steps
     public class DataUpdateStep : StepBodyAsync
     {
         private IServiceScopeFactory _serviceScopeFactory;
-        private IConfiguration _configuration; 
+        private IConfiguration _configuration;
 
-        public JObject Request { get; set; }
-        public JObject Response { get; set; }
+        public string Request { get; set; }
+        public string Response { get; set; }
 
         public DataUpdateStep(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
@@ -41,27 +42,27 @@ namespace PrimeApps.App.Bpm.Steps
             if (context.Workflow.Reference == null)
                 throw new NullReferenceException();
 
-            var tempRef = context.Workflow.Reference.Split('|');
-            var appUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
+            //var tempRef = context.Workflow.Reference.Split('|');
+            //var _currentUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
+            //var tenantLanguage = tempRef[2];
+
+            var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
+            var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+
+            var newRequest = JObject.Parse(Request.Replace("\\", ""));
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
-
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                // var httpContext = _scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
-                // var _auditLogRepository = _scope.ServiceProvider.GetRequiredService<IAuditLogRepository>();
-                var _record = _scope.ServiceProvider.GetRequiredService<IRecordHelper>();
 
                 using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
                 using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
-                //RecordHelper için oluşturulanlar.
-                // using (var _recordHelper = new RecordHelper(_configuration, _scope, ))
                 {
-                    _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = appUser;
+                    _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = _currentUser;
 
                     var warehouse = new Model.Helpers.Warehouse(_analyticRepository, _configuration);
-                    var warehouseEntity = await _platformWarehouseRepository.GetByTenantId(appUser.TenantId);
+                    var warehouseEntity = await _platformWarehouseRepository.GetByTenantId(_currentUser.TenantId);
 
                     if (warehouseEntity != null)
                         warehouse.DatabaseName = warehouseEntity.DatabaseName;
@@ -70,15 +71,16 @@ namespace PrimeApps.App.Bpm.Steps
 
                     using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                     using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                    using (var _recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, _currentUser))
                     {
-                        _moduleRepository.CurrentUser = _recordRepository.CurrentUser = appUser;
+                        _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
-                        if (Request["FieldUpdate"].IsNullOrEmpty() || Request["Module"].IsNullOrEmpty())
+                        if (newRequest["FieldUpdate"].IsNullOrEmpty() || newRequest["Module"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
-                        var fieldUpdate = Request["FieldUpdate"].ToObject<BpmDataUpdate>();
-                        var module = Request["Module"].ToObject<Module>(); //module ID olarak gelirse module bilgisi çekilecek.
-                        var record = Request["record"];
+                        var fieldUpdate = newRequest["FieldUpdate"].ToObject<BpmDataUpdate>();
+                        var module = newRequest["Module"].ToObject<Module>(); //module ID olarak gelirse module bilgisi çekilecek.
+                        var record = newRequest["record"];
 
                         var fieldUpdateRecords = new Dictionary<string, int>();
                         var isDynamicUpdate = false;
@@ -216,9 +218,38 @@ namespace PrimeApps.App.Bpm.Steps
 
 
 
+                            var modelState = new ModelStateDictionary();
+                            var resultBefore = await _recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, false, currentRecordFieldUpdate, null);
 
+                            if (resultBefore < 0 && !modelState.IsValid)
+                            {
+                                throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString());
+                            }
 
+                            if (isDynamicUpdate)
+                                _recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
 
+                            try
+                            {
+                                var resultUpdate = await _recordRepository.Update(recordFieldUpdate, fieldUpdateModule);
+
+                                if (resultUpdate < 1)
+                                {
+                                    throw new OperationCanceledException("Record cannot be updated! Object: " + recordFieldUpdate);
+                                }
+
+                                // If module is opportunities create stage history
+                                if (fieldUpdateModule.Name == "opportunities")
+                                    await _recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                //ErrorLog.GetDefault(null).Log(new Error(ex));
+                            }
+
+                            //TODO RecordHelper
+                            //AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
                         }
 
                         return ExecutionResult.Next();
