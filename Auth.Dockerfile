@@ -22,4 +22,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 
-ENTRYPOINT ["dotnet", "PrimeApps.App.dll"]
+ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
