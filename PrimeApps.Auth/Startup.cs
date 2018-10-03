@@ -55,11 +55,16 @@ namespace PrimeApps.Auth
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection")));
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
-
 
             services.AddSingleton(Configuration);
 
@@ -132,7 +137,6 @@ namespace PrimeApps.Auth
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
                     options.Events.RaiseSuccessEvents = true;
-                    options.PublicOrigin = Configuration.GetValue("AppSettings:PublicOrigin", String.Empty);
                 })
                 /*.AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryApiResources(Config.GetApiResources())
@@ -151,8 +155,8 @@ namespace PrimeApps.Auth
                         opt.UseNpgsql(Configuration.GetConnectionString("AuthDBConnection"),
                             sql => sql.MigrationsAssembly(migrationsAssembly));
 
-            // this enables automatic token cleanup. this is optional.
-            options.EnableTokenCleanup = true;
+                    // this enables automatic token cleanup. this is optional.
+                    options.EnableTokenCleanup = true;
                     options.TokenCleanupInterval = 3600; //3600 (1 hour)
                 })
                 .AddAspNetIdentity<ApplicationUser>()
@@ -255,16 +259,6 @@ namespace PrimeApps.Auth
 				})*/;
             //dotnet ef migrations add InitialIdentityServerPersistedGrantDbMigration -c PersistedGrantDbContext -o Data/Migrations/IdentityServer/PersistedGrantDb
             //dotnet ef migrations add InitialIdentityServerConfigurationDbMigration -c ConfigurationDbContext -o Data/Migrations/IdentityServer/ConfigurationDb
-
-            if (!Environment.IsDevelopment())
-            {
-
-                services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
-            }
 
         }
 

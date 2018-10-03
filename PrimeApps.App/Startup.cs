@@ -37,6 +37,12 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
@@ -140,6 +146,7 @@ namespace PrimeApps.App
                 app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
                 app.UseHttpsRedirection();
                 app.UseHsts();
+                app.UseForwardedHeaders();
             }
 
             app.UseHangfireDashboard();
