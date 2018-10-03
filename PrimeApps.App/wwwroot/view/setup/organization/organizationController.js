@@ -9,7 +9,7 @@ angular.module('primeapps')
             $scope.company.title = $rootScope.workgroup.title;
             $scope.company.currency = $rootScope.workgroup.currency;
             $scope.company.culture = $rootScope.workgroup.setting.culture;
-            $scope.company.logo = $rootScope.workgroup.logo;
+            $scope.company.logo = $rootScope.workgroup.setting.logo;
             $scope.company.tenant_id = $rootScope.user.tenant_id;
             $scope.company.language = $rootScope.workgroup.setting.language;
             $scope.bounds = {};
