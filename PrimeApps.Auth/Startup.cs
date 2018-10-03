@@ -269,8 +269,6 @@ namespace PrimeApps.Auth
                 // app.UseExceptionHandler("/Home/Error");
                 app.UseDeveloperExceptionPage(); //TODO: Temporary, remove later.
                 app.UseDatabaseErrorPage(); //TODO: Temporary, remove later.
-                app.UseHttpsRedirection();
-                app.UseHsts();
             }
 
             var supportedCultures = new[]

@@ -139,8 +139,7 @@ namespace PrimeApps.App
             {
                 app.UseDeveloperExceptionPage(); //Todo: Temporary, remove it.
                 app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
-                app.UseHttpsRedirection();
-                app.UseHsts();
+
             }
 
             app.UseHangfireDashboard();
