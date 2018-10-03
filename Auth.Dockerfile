@@ -1,8 +1,10 @@
 FROM microsoft/dotnet:2.1.5-aspnetcore-runtime-alpine AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 80 443
 ENV ASPNETCORE_ENVIRONMENT Development
-ENV ASPNETCORE_URLS="http://+"
+ENV ASPNETCORE_URLS="https://+;http://+"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="pWd"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/tls.pfx"
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
 FROM microsoft/dotnet:2.1.403-sdk-alpine AS build
@@ -22,4 +24,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 
-ENTRYPOINT ["dotnet", "PrimeApps.Auth.dll"]
+ENTRYPOINT openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:pWd && dotnet PrimeApps.Auth.dll

@@ -4,9 +4,9 @@
   # name: value
 app:
   serviceType: NodePort
-  servicePort: 80
+  servicePort: 443
   servicePortSecure: 443
-  containerPort: 80
+  containerPort: 443
   containerPortSecure: 443
   component: app
   replicas: 1
@@ -62,7 +62,7 @@ app:
         AzureSearch.Storage: "ofisimdev"
         AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
         UseCdn: "false"
-        AuthenticationServerURL: "https://auth-dev.primeapps.io"
+        AuthenticationServerURL: "primeapps-dev-auth.primeapps-dev.svc.cluster.local"
         ClientId: "primeapps"
         ClientSecret: "secret"
         RequireHttps: "true"
@@ -78,9 +78,9 @@ app:
   affinity: {}
 auth:
   serviceType: NodePort
-  servicePort: 80
+  servicePort: 443
   servicePortSecure: 443
-  containerPort: 80
+  containerPort: 443
   containerPortSecure: 443
   component: auth
   replicas: 1

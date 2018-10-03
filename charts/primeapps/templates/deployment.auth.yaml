@@ -64,3 +64,13 @@ spec:
         - name: cert
           secret:
             secretName: {{ template "fullname" . }}-auth-certs
+        - name: domain-cert
+            mountPath: /domain-cert
+            readOnly: true
+      volumes:
+        - name: cert
+          secret:
+            secretName: {{ template "fullname" . }}-auth-certs
+        - name: domain-cert
+          secret:
+            secretName: {{ .Values.auth.ingress.hostname | quote }}

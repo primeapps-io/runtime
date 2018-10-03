@@ -56,3 +56,11 @@ spec:
             requests:
               cpu: "{{.Values.app.cpu}}"
               memory: "{{.Values.app.memory}}"
+          volumeMounts:
+            - name: domain-cert
+              mountPath: /domain-cert
+              readOnly: true
+      volumes:
+        - name: domain-cert
+          secret:
+            secretName: {{ .Values.app.ingress.hostname | quote }}
