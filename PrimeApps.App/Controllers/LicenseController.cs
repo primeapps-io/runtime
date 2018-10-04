@@ -222,7 +222,7 @@ namespace PrimeApps.App.Controllers
         {
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
-            var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
+            var subscriberTenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
             subscriberTenant.License.UserLicenseCount = count;
             await _tenantRepository.UpdateAsync(subscriberTenant);
 
@@ -236,7 +236,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var subscriberTenant = await _tenantRepository.GetAsync(tenantId);
+            var subscriberTenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
 
             subscriberTenant.License.ModuleLicenseCount = count;
 
@@ -308,7 +308,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var tenant = await _tenantRepository.GetAsync(tenantId);
+            var tenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
 
             tenant.License.IsPaidCustomer = !tenant.License.IsPaidCustomer;
             await _tenantRepository.UpdateAsync(tenant);
@@ -330,7 +330,7 @@ namespace PrimeApps.App.Controllers
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var users = await _platformUserRepository.GetAllByTenant(tenantId);
-            var tenant = await _tenantRepository.GetAsync(tenantId);
+            var tenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
             _userRepository.DbContext.TenantId = tenantId;
 
             tenant.License.IsDeactivated = true;
@@ -366,7 +366,7 @@ namespace PrimeApps.App.Controllers
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
             var users = await _platformUserRepository.GetAllByTenant(tenantId);
-            var tenant = await _tenantRepository.GetAsync(tenantId);
+            var tenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
 
             _userRepository.DbContext.TenantId = tenantId;
             foreach (var user in users)
@@ -402,7 +402,7 @@ namespace PrimeApps.App.Controllers
             if (!AppUser.Email.EndsWith("@ofisim.com"))
                 return StatusCode(HttpStatusCode.Status403Forbidden);
 
-            var tenant = await _tenantRepository.GetAsync(tenantId);
+            var tenant = await _tenantRepository.GetWithLicenseAsync(tenantId);
 
             tenant.License.IsSuspended = true;
             tenant.License.SuspendedAt = DateTime.UtcNow;
