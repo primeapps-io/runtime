@@ -529,7 +529,8 @@ angular.module('primeapps')
 								}
 							}
 
-							$scope.title = $scope.primaryField.valueFormatted;
+                            ModuleService.formatRecordFieldValues(angular.copy(recordData.data), $scope.module, $scope.picklistsModule);
+                            $scope.title = $scope.primaryField.valueFormatted;
 							$scope.recordState = angular.copy(record);
 							ModuleService.setDisplayDependency($scope.module, record);
 

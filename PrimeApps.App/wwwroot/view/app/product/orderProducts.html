@@ -242,7 +242,7 @@
                                       ng-if="!readonly"/>
                 </div>
                 <div class="mobile-row product-quantity">
-                    <span class="label-readonly" ng-if="readonly">{{orderProduct.quantity != undefined && orderProduct.quantity != null ? (orderProduct.quantity | number:2) : ''}}</span>
+                    <span class="label-readonly" ng-if="readonly">{{orderProduct.quantity != undefined && orderProduct.quantity != null ? (orderProduct.quantity | number:fields['quantity'].decimal_places) : ''}}</span>
                     <span class="product-quantity">{{'Product.Quantity' | translate}}</span>
                     <input type="text"
                            class="form-control"
