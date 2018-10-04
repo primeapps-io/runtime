@@ -1240,6 +1240,26 @@ namespace PrimeApps.App.Controllers
                 {
                     var field = fields[i];
 
+                    var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+                    if (record[field.Name] != null && !record[field.Name].IsNullOrEmpty())
+                    {
+                        switch (field.DataType)
+                        {
+                            case DataType.Date:
+                                var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+                                record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDate);
+                                break;
+                            case DataType.DateTime:
+                                var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+                                record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
+                                break;
+                            case DataType.Time:
+                                var formatTime = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+                                record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatTime);
+                                break;
+                        }
+                    }
+
                     if (field.DataType != Model.Enums.DataType.Lookup)
                     {
                         dr[i] = record[field.Name];
