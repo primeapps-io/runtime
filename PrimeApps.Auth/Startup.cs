@@ -70,7 +70,6 @@ namespace PrimeApps.Auth
                 config.Password.RequireUppercase = false;
                 config.Password.RequireNonAlphanumeric = false;
                 config.Password.RequireDigit = false;
-
                 config.User.RequireUniqueEmail = false;
                 config.SignIn.RequireConfirmedEmail = false;
             })
@@ -158,7 +157,7 @@ namespace PrimeApps.Auth
                 .AddProfileService<CustomProfileService>()
                 .AddRedirectUriValidator<CustomRedirectUriValidator>()
                 .AddSigningCredential(LoadCertificate());
-
+                
             services.AddAuthentication()
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
@@ -269,6 +268,8 @@ namespace PrimeApps.Auth
                 // app.UseExceptionHandler("/Home/Error");
                 app.UseDeveloperExceptionPage(); //TODO: Temporary, remove later.
                 app.UseDatabaseErrorPage(); //TODO: Temporary, remove later.
+                // app.UseHttpsRedirection();
+                // app.UseHsts();
             }
 
             var supportedCultures = new[]
