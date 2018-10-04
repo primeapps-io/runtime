@@ -1560,6 +1560,7 @@ angular.module('primeapps')
                                 }
                                 else {
                                     quoteTemplate.isShown = true;
+                                    $scope.isShownWarning = false;
                                 }
                             }
                             $scope.quoteTemplate = $scope.quoteTemplates[0];
