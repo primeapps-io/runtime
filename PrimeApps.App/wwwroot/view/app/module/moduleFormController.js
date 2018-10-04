@@ -808,7 +808,7 @@ angular.module('primeapps')
 				ModuleService.getUserEmailControl($scope.record.e_posta)
 					.then(function (response) {
 						var userEmail = response.data;
-						if (userEmail) {
+						if (!userEmail) {
 							ngToast.create({
 								content: $filter('translate')('Setup.Users.NewUserError'),
 								className: 'warning'
