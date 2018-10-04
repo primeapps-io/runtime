@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/Instance")]
+    [Route("api/Instance")]
     public class InstanceController : ApiBaseController
     {
         private IUserRepository _userRepository;
@@ -31,12 +31,12 @@ namespace PrimeApps.App.Controllers
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_userRepository);
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
         /// <summary>
         /// Updates instance.
@@ -64,17 +64,18 @@ namespace PrimeApps.App.Controllers
             tenantToUpdate.Setting = new TenantSetting
             {
                 Currency = tenantDto.Currency,
-                Logo = tenantDto.Logo
+                Logo = tenantDto.Logo,
+                Culture = tenantDto.Culture
             };
 
             //TODO Burda hata veriyor. Migration ile ilgili..
             await _tenantRepository.UpdateAsync(tenantToUpdate);
 
-            if (!string.IsNullOrEmpty(tenantDto.Language))
+            if (!string.IsNullOrEmpty(tenantDto.Culture))
             {
                 var dbContext = _userRepository.DbContext;
 
-                var culture = tenantDto.Language == "en" ? "en-US" : "tr-TR";
+                var culture = tenantDto.Culture == "en" ? "en-US" : "tr-TR";
 
                 foreach (var usr in dbContext.Users)
                 {
@@ -126,12 +127,12 @@ namespace PrimeApps.App.Controllers
 
                 await _userRepository.UpdateAsync(user);
 
-				var platformUser = await _platformUserRepository.Get(user.Id);
+                var platformUser = await _platformUserRepository.Get(user.Id);
 
-				platformUser.TenantsAsUser.Remove(platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == AppUser.TenantId & x.UserId == user.Id));
+                platformUser.TenantsAsUser.Remove(platformUser.TenantsAsUser.FirstOrDefault(x => x.TenantId == AppUser.TenantId & x.UserId == user.Id));
 
-				await _platformUserRepository.UpdateAsync(platformUser);
-			}
+                await _platformUserRepository.UpdateAsync(platformUser);
+            }
 
             return Ok();
         }
@@ -141,7 +142,7 @@ namespace PrimeApps.App.Controllers
         /// </summary>
         /// <param name="fileContents">The file contents.</param>
         /// <returns>System.String.</returns>
-        
+
 
         [Route("SaveLogo")]
         [ProducesResponseType(typeof(void), 200)]

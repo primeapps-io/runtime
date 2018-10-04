@@ -27,7 +27,7 @@ angular.module('primeapps')
                         $scope.lightBox = false;
                         $scope.type = $stateParams.type;
                         $scope.module = $filter('filter')($scope.$root.modules, { name: $stateParams.type }, true)[0];
-                        $scope.moduleId = $scope.module.id;
+                        $scope.moduleId = $scope.moduleId;
 
 
                         var tenant_id = $scope.$root.workgroup.tenant_id;
@@ -216,7 +216,7 @@ angular.module('primeapps')
                         var entityId = $scope.entityId;
                         var stateType = $stateParams.type;
                         $scope.module = $filter('filter')($scope.$root.modules, { name: stateType }, true)[0];
-                        var moduleId = $scope.module.id;
+                        var moduleId = $scope.moduleId;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
                             url: config.apiUrl + 'Document/upload_large',
