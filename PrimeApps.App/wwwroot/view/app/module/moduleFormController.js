@@ -1814,7 +1814,7 @@ angular.module('primeapps')
 
 									//Çalışanlar modülünde User oluşturulurken kullanıcı bilgilerinin yer aldığı Modalın
 									//gösterilebilmesi için kullanıcının ModüleForm sayfasında bekletilmesi
-									if ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable) {
+									if (!$scope.id && ($scope.record['kullanici_olustur'] || $rootScope.branchAvailable)) {
 										$scope.loading = true;
 									}
 									else
