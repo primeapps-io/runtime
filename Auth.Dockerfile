@@ -1,12 +1,10 @@
-FROM microsoft/dotnet:2.1.4-aspnetcore-runtime-bionic AS base
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
-EXPOSE 80 443
+EXPOSE 80
 ENV ASPNETCORE_ENVIRONMENT Production
-ENV ASPNETCORE_URLS="https://+;http://+"
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password="pWd"
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/app/tls.pfx"
+ENV DOTNET_RUNNING_IN_CONTAINER=true
 
-FROM microsoft/dotnet:2.1.402-sdk-bionic AS build
+FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
 COPY ["PrimeApps.Auth/PrimeApps.Auth.csproj", "PrimeApps.Auth/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
@@ -23,4 +21,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
 
-ENTRYPOINT openssl pkcs12 -inkey /domain-cert/tls.key -in /domain-cert/tls.crt -export -out /app/tls.pfx -passout pass:pWd && dotnet PrimeApps.Auth.dll
+ENTRYPOINT ["dotnet","PrimeApps.Auth.dll"]
