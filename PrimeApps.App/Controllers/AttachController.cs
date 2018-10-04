@@ -1034,8 +1034,14 @@ namespace PrimeApps.App.Controllers
                 }
                 else
                 {
-                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                    var primaryField = new Field();
+
+                    if (lookupModule != null)
+                        primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    else
+                        continue;
+
                     findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
                 }
             }
@@ -1062,8 +1068,14 @@ namespace PrimeApps.App.Controllers
                     }
                     else
                     {
-                        var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                        var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                        var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                        var primaryField = new Field();
+
+                        if (lookupModule != null)
+                            primaryField = lookupModule.Fields.Single(x => x.Primary);
+                        else
+                            continue;
+
                         dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                     }
                 }
@@ -1200,8 +1212,14 @@ namespace PrimeApps.App.Controllers
                 }
                 else
                 {
-                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                    var primaryField = new Field();
+
+                    if (lookupModule != null)
+                        primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    else
+                        continue;
+
                     findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
                 }
             }
@@ -1228,8 +1246,14 @@ namespace PrimeApps.App.Controllers
                     }
                     else
                     {
-                        var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                        var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                        var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                        var primaryField = new Field();
+
+                        if (lookupModule != null)
+                            primaryField = lookupModule.Fields.Single(x => x.Primary);
+                        else
+                            continue;
+
                         dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                     }
                 }
@@ -1279,8 +1303,14 @@ namespace PrimeApps.App.Controllers
                 }
                 else
                 {
-                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                    var primaryField = new Field();
+
+                    if (lookupModule != null)
+                        primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    else
+                        continue;
+
                     findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
                 }
             }
@@ -1324,8 +1354,14 @@ namespace PrimeApps.App.Controllers
                         }
                         else
                         {
-                            var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                            var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                            var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                            var primaryField = new Field();
+
+                            if (lookupModule != null)
+                                primaryField = lookupModule.Fields.Single(x => x.Primary);
+                            else
+                                continue;
+
                             dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                         }
                     }
@@ -1385,8 +1421,14 @@ namespace PrimeApps.App.Controllers
                 }
                 else
                 {
-                    var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                    var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                    var primaryField = new Field();
+
+                    if (lookupModule != null)
+                        primaryField = lookupModule.Fields.Single(x => x.Primary);
+                    else
+                        continue;
+
                     findRequest.Fields.Add(field.Name + "." + field.LookupType + "." + primaryField.Name);
                 }
             }
@@ -1430,8 +1472,14 @@ namespace PrimeApps.App.Controllers
                         }
                         else
                         {
-                            var lookupModule = lookupModules.Single(x => x.Name == field.LookupType);
-                            var primaryField = lookupModule.Fields.Single(x => x.Primary);
+                            var lookupModule = lookupModules.FirstOrDefault(x => x.Name == field.LookupType);
+                            var primaryField = new Field();
+
+                            if (lookupModule != null)
+                                primaryField = lookupModule.Fields.Single(x => x.Primary);
+                            else
+                                continue;
+
                             dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
                         }
                     }
