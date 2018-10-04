@@ -315,7 +315,7 @@ relatedModule['label_'
                                                    e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
                                                    e-ng-trim="false"
                                                    e-maxlength="{{field.validation.max_length || 18}}"
-                                                   e-min-value="field.validation.min || 0"
+                                                   e-min-value="field.validation.min || Number.MIN_VALUE"
                                                    e-max-value="field.validation.max || Number.MAX_VALUE"
                                                    e-numeric
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field); calculate(field); reformatFieldValues();"
@@ -328,7 +328,7 @@ relatedModule['label_'
                                                    editable-text="record[field.name]"
                                                    e-ng-change="record[field.name] = $data; fieldValueChange(field); calculate(field); reformatFieldValues();"
                                                    e-maxlength="{{field.validation.max_length || 19}}"
-                                                   e-min-value="field.validation.min || 0"
+                                                   e-min-value="field.validation.min || Number.MIN_VALUE"
                                                    e-max-value="field.validation.max || Number.MAX_VALUE"
                                                    e-places="field.decimal_places || 2"
                                                    e-number-decimal
