@@ -15,185 +15,187 @@ using Newtonsoft.Json.Linq;
 
 namespace PrimeApps.App.Controllers
 {
-    [Route("api/process_request"), Authorize]
-    public class ProcessRequestController : ApiBaseController
-    {
-        private IProcessRequestRepository _processRequestRepository;
-        private IModuleRepository _moduleRepository;
-        private IRecordRepository _recordRepository;
-        private Warehouse _warehouse;
-        private IConfiguration _configuration;
+	[Route("api/process_request"), Authorize]
+	public class ProcessRequestController : ApiBaseController
+	{
+		private IProcessRequestRepository _processRequestRepository;
+		private IModuleRepository _moduleRepository;
+		private IRecordRepository _recordRepository;
+		private Warehouse _warehouse;
+		private IConfiguration _configuration;
 
-        private ICalculationHelper _calculationHelper;
-        private IProcessHelper _processHelper;
-        private IRecordHelper _recordHelper;
+		private ICalculationHelper _calculationHelper;
+		private IProcessHelper _processHelper;
+		private IRecordHelper _recordHelper;
 
-        public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ICalculationHelper calculationHelper, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
-        {
-            _processRequestRepository = processRequestRepository;
-            _moduleRepository = moduleRepository;
-            _recordRepository = recordRepository;
-            _warehouse = warehouse;
+		public ProcessRequestController(IProcessRequestRepository processRequestRepository, IModuleRepository moduleRepository, IRecordRepository recordRepository, ICalculationHelper calculationHelper, IProcessHelper processHelper, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration)
+		{
+			_processRequestRepository = processRequestRepository;
+			_moduleRepository = moduleRepository;
+			_recordRepository = recordRepository;
+			_warehouse = warehouse;
 
-            _calculationHelper = calculationHelper;
-            _processHelper = processHelper;
-            _recordHelper = recordHelper;
-            _configuration = configuration;
-        }
+			_calculationHelper = calculationHelper;
+			_processHelper = processHelper;
+			_recordHelper = recordHelper;
+			_configuration = configuration;
+		}
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_processRequestRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_recordRepository);
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_processRequestRepository);
+			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_recordRepository);
 
-            base.OnActionExecuting(context);
-        }
+			base.OnActionExecuting(context);
+		}
 
-        [Route("get_requests/{id:int}"), HttpGet]
-        public async Task<IActionResult> GetAll(int id)
-        {
-            var processRequestEntities = await _processRequestRepository.GetByProcessId(id);
+		[Route("get_requests/{id:int}"), HttpGet]
+		public async Task<IActionResult> GetAll(int id)
+		{
+			var processRequestEntities = await _processRequestRepository.GetByProcessId(id);
 
-            return Ok(processRequestEntities);
-        }
+			return Ok(processRequestEntities);
+		}
 
-        [Route("approve_multiple_request"), HttpPut]
-        public async Task<IActionResult> ApproveMultipleRequest([FromBody]JObject request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+		[Route("approve_multiple_request"), HttpPut]
+		public async Task<IActionResult> ApproveMultipleRequest([FromBody]JObject request)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            if (!request["record_ids"].HasValues && request["module_name"].IsNullOrEmpty())
-                return BadRequest();
+			if (!request["record_ids"].HasValues && request["module_name"].IsNullOrEmpty())
+				return BadRequest();
 
-            if (request["record_ids"].Type != JTokenType.Array)
-                return BadRequest("Plesae send record_ids array.");
+			if (request["record_ids"].Type != JTokenType.Array)
+				return BadRequest("Plesae send record_ids array.");
 
-            for (int i = 0; i < ((JArray)request["record_ids"]).Count; i++)
-            {
-                var requestEntity = await _processRequestRepository.GetByRecordIdWithOutOperationType((int)request["record_ids"][i], request["module_name"].ToString());
-                if (requestEntity == null)
-                    continue;
-                await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-                await _processRequestRepository.Update(requestEntity);
+			for (int i = 0; i < ((JArray)request["record_ids"]).Count; i++)
+			{
+				var requestEntity = await _processRequestRepository.GetByRecordIdWithOutOperationType((int)request["record_ids"][i], request["module_name"].ToString());
 
-                await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+				if (requestEntity == null || requestEntity.Active == false)
+					continue;
 
-                if (request["module_name"].ToString() == "izinler")
-                {
-                    //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
-                    var moduleEntity = await _moduleRepository.GetByName(request["module_name"].ToString());
-                    await _calculationHelper.Calculate((int)request["record_ids"][i], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-                }
-            }
+				await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+				await _processRequestRepository.Update(requestEntity);
 
-            return Ok();
-        }
+				await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
-        [Route("approve"), HttpPut]
-        public async Task<IActionResult> ApproveRequest([FromBody]ProcessRequestModel request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+				if (request["module_name"].ToString() == "izinler")
+				{
+					//süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+					var moduleEntity = await _moduleRepository.GetByName(request["module_name"].ToString());
+					await _calculationHelper.Calculate((int)request["record_ids"][i], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+				}
+			}
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
+			return Ok();
+		}
 
-            if (requestEntity == null)
-                return NotFound();
+		[Route("approve"), HttpPut]
+		public async Task<IActionResult> ApproveRequest([FromBody]ProcessRequestModel request)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-            await _processRequestRepository.Update(requestEntity);
+			var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
-            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+			if (requestEntity == null || requestEntity.Active == false)
+				return NotFound();
 
-            if (request.ModuleName == "izinler")
-            {
-                //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
-                var moduleEntity = await _moduleRepository.GetByName(request.ModuleName);
-                await _calculationHelper.Calculate(request.RecordId, moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-            }
+			await _processHelper.ApproveRequest(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+			await _processRequestRepository.Update(requestEntity);
 
-            return Ok(requestEntity);
-        }
+			await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
-        [Route("reject"), HttpPut]
-        public async Task<IActionResult> RejectRequest([FromBody]ProcessRequestRejectModel request)
-        {
+			if (request.ModuleName == "izinler")
+			{
+				//süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+				var moduleEntity = await _moduleRepository.GetByName(request.ModuleName);
+				await _calculationHelper.Calculate(request.RecordId, moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+			}
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
+			return Ok(requestEntity);
+		}
 
-            if (requestEntity == null)
-                return NotFound();
+		[Route("reject"), HttpPut]
+		public async Task<IActionResult> RejectRequest([FromBody]ProcessRequestRejectModel request)
+		{
 
-            await _processHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
-            await _processRequestRepository.Update(requestEntity);
+			var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
-            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+			if (requestEntity == null || requestEntity.Active == false)
+				return NotFound();
 
-            if (request.ModuleName == "izinler")
-            {
-                //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
-                var moduleEntity = await _moduleRepository.GetByName(request.ModuleName);
-                await _calculationHelper.Calculate(request.RecordId, moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-            }
+			await _processHelper.RejectRequest(requestEntity, request.Message, AppUser, _warehouse);
+			await _processRequestRepository.Update(requestEntity);
 
-            return Ok(requestEntity);
-        }
+			await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
-        [Route("delete"), HttpPut]
-        public async Task<IActionResult> DeleteRequest([FromBody]ProcessRequestDeleteModel request)
-        {
-            var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
-            var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
+			if (request.ModuleName == "izinler")
+			{
+				//süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+				var moduleEntity = await _moduleRepository.GetByName(request.ModuleName);
+				await _calculationHelper.Calculate(request.RecordId, moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+			}
 
-            return Ok();
-        }
+			return Ok(requestEntity);
+		}
 
-        [Route("send_approval"), HttpPut]
-        public async Task<IActionResult> ReApprovalRequest([FromBody]ProcessRequestModel request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+		[Route("delete"), HttpPut]
+		public async Task<IActionResult> DeleteRequest([FromBody]ProcessRequestDeleteModel request)
+		{
+			var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
+			var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
+			await _processHelper.Run(OperationType.delete, record, moduleEntity, AppUser, _warehouse, Model.Enums.ProcessTriggerTime.Instant, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
 
-            var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
+			return Ok();
+		}
 
-            if (requestEntity == null)
-                return NotFound();
+		[Route("send_approval"), HttpPut]
+		public async Task<IActionResult> ReApprovalRequest([FromBody]ProcessRequestModel request)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            await _processHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-            await _processRequestRepository.Update(requestEntity);
+			var requestEntity = await _processRequestRepository.GetByRecordId(request.RecordId, request.ModuleName, request.OperationType);
 
-            await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
+			if (requestEntity == null || requestEntity.Active == false)
+				return NotFound();
 
-            return Ok(requestEntity);
-        }
+			await _processHelper.SendToApprovalAgain(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+			await _processRequestRepository.Update(requestEntity);
 
-        [Route("send_approval_manuel"), HttpPost]
-        public async Task<IActionResult> ManuelApprovalRequest([FromBody]ProcessRequestManuelModel request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+			await _processHelper.AfterCreateProcess(requestEntity, AppUser, _warehouse, _recordHelper.BeforeCreateUpdate, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate, _recordHelper.GetAllFieldsForFindRequest);
 
-            var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
-            var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
-            try
-            {
-                await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
+			return Ok(requestEntity);
+		}
 
-                //süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
-                if (moduleEntity.Name == "izinler")
-                    await _calculationHelper.Calculate((int)record["id"], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
-            }
-            catch (ProcessFilterNotMatchException ex)
-            {
-                ModelState.AddModelError("FiltersNotMatch", "Filters don't matched");
-                return BadRequest(ModelState);
-            }
+		[Route("send_approval_manuel"), HttpPost]
+		public async Task<IActionResult> ManuelApprovalRequest([FromBody]ProcessRequestManuelModel request)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            return Ok();
-        }
-    }
+			var moduleEntity = await _moduleRepository.GetById(request.ModuleId);
+			var record = _recordRepository.GetById(moduleEntity, request.RecordId, !AppUser.HasAdminProfile);
+			try
+			{
+				await _processHelper.Run(OperationType.insert, record, moduleEntity, AppUser, _warehouse, ProcessTriggerTime.Manuel, _recordHelper.BeforeCreateUpdate, _recordHelper.GetAllFieldsForFindRequest, _recordHelper.UpdateStageHistory, _recordHelper.AfterUpdate, _recordHelper.AfterCreate);
+
+				//süreç bitiminde kalan izin hakkı tekrar kontrol ettiriliyor. 
+				if (moduleEntity.Name == "izinler")
+					await _calculationHelper.Calculate((int)record["id"], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
+			}
+			catch (ProcessFilterNotMatchException ex)
+			{
+				ModelState.AddModelError("FiltersNotMatch", "Filters don't matched");
+				return BadRequest(ModelState);
+			}
+
+			return Ok();
+		}
+	}
 }

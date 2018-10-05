@@ -36,7 +36,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<ProcessRequest> GetByRecordId(int id, string moduleName, OperationType operationType)
         {
             var request = await DbContext.ProcessRequests
-                .FirstOrDefaultAsync(x => x.RecordId == id && x.OperationType == operationType && x.Module == moduleName && x.Active == true);
+                .FirstOrDefaultAsync(x => x.RecordId == id && x.OperationType == operationType && x.Module == moduleName );
 
             return request;
         }
@@ -44,7 +44,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<ProcessRequest> GetByRecordIdWithOutOperationType(int id, string moduleName)
         {
             var request = await DbContext.ProcessRequests
-                .FirstOrDefaultAsync(x => x.RecordId == id && x.Module == moduleName && x.Active == true);
+                .FirstOrDefaultAsync(x => x.RecordId == id && x.Module == moduleName);
 
             return request;
         }

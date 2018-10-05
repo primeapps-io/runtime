@@ -2635,13 +2635,13 @@ select option[disabled] {
 }
 
 .time-tracker-modal-content {
-    .dropdown-menu {
-        position: inherit !important;
-    }
+  .dropdown-menu {
+    position: inherit !important;
+  }
 
-    .ui-select-choices {
-        width: calc(100% - 48px) !important;
-    }
+  .ui-select-choices {
+    width: calc(100% - 48px) !important;
+  }
 }
 
 .template-document {
@@ -2689,11 +2689,4 @@ select option[disabled] {
     background: url(/images/excelbuttonhover.png);
 
   }
-
-}
-
-.moduleProfileSettings {
-    .tags {
-        width: 280px !important;
-    }
 }

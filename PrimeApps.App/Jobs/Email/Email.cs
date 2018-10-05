@@ -99,7 +99,8 @@ namespace PrimeApps.App.Jobs.Email
                     if (string.IsNullOrWhiteSpace(to) || !emailAddress.IsValid(to))
                         continue;
 
-                    myMessage.To.Add(to);
+                    //kullanıcı e-postası pre__ ile başlayan kullanıcıları filtreleme
+                    myMessage.To.Add(Regex.Replace(to, "^pre__", ""));
                 }
 
                 if (!string.IsNullOrWhiteSpace(mail.CC))
