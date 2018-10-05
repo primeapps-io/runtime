@@ -34,5 +34,13 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WorkflowCore">
+      <HintPath>..\..\WorkflowTest1\WorkflowCore\bin\Debug\netstandard2.0\WorkflowCore.dll</HintPath>
+    </Reference>
+    <Reference Include="WorkflowCore.Persistence.PostgreSQL">
+      <HintPath>..\..\WorkflowTest1\WorkflowCore.Persistence.PostgreSQL\bin\Debug\netstandard2.0\WorkflowCore.Persistence.PostgreSQL.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4locales_4tr_1json__JSONSchema="en" /></VisualStudio></ProjectExtensions>
 </Project>
