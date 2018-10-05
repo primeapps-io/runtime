@@ -1134,7 +1134,18 @@ namespace PrimeApps.App.Controllers
             }
 
             var findRequest = new FindRequest();
+            var newSortField = "id";
+            var newSortDirection = SortDirection.Desc;
+
+            if (listFindRequest.SortField != null && listFindRequest.SortDirection != null)
+            {
+                newSortField = listFindRequest.SortField;
+                newSortDirection = listFindRequest.SortDirection;
+            }
+
             findRequest.Fields = new List<string>();
+            findRequest.SortField = newSortField;
+            findRequest.SortDirection = newSortDirection;
             findRequest.Limit = 9999;
 
             if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
