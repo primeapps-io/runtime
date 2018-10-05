@@ -621,7 +621,15 @@ namespace PrimeApps.App.Helpers
         public string ReferenceCreateToForBpmHost(UserItem appUser)
         {
             //var reference = appUser.TenantId + "|" + appUser.Id + "|" + appUser.Language;
-            var reference = JObject.FromObject(appUser);
+            var tempReference = new Model.Common.Bpm.Reference
+            {
+                Id = appUser.Id,
+                Culture = appUser.Culture,
+                Language = appUser.Language,
+                TenantId = appUser.TenantId,
+                TimeZone = appUser.TimeZone
+            };
+            var reference = JObject.FromObject(tempReference);
 
             return reference.ToJsonString();
         }

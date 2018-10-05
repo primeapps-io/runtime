@@ -1,4 +1,5 @@
-﻿using WorkflowCore.Interface;
+﻿using Newtonsoft.Json.Linq;
+using WorkflowCore.Interface;
 using WorkflowCore.Models;
 
 namespace PrimeApps.App.Bpm.Steps
@@ -7,7 +8,11 @@ namespace PrimeApps.App.Bpm.Steps
     {
         public override ExecutionResult Run(IStepExecutionContext context)
         {
-            return ExecutionResult.Next();
+            var data = new JObject();
+            data["id"] = 1;
+            data["value"] = "Galip";
+
+            return ExecutionResult.Outcome(data);
         }
     }
 }

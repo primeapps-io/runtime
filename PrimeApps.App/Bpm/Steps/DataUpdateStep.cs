@@ -46,7 +46,7 @@ namespace PrimeApps.App.Bpm.Steps
             //var _currentUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
             //var tenantLanguage = tempRef[2];
 
-            var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
+            var appUser = JsonConvert.DeserializeObject<Reference>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
             var newRequest = JObject.Parse(Request.Replace("\\", ""));
@@ -79,7 +79,8 @@ namespace PrimeApps.App.Bpm.Steps
                             throw new MissingFieldException("Cannot find child data");
 
                         var fieldUpdate = newRequest["FieldUpdate"].ToObject<BpmDataUpdate>();
-                        var module = newRequest["Module"].ToObject<Module>(); //module ID olarak gelirse module bilgisi çekilecek.
+                        var moduleID = newRequest["Module"].ToObject<int>(); 
+                        var module = await _moduleRepository.GetById(moduleID);
                         var record = newRequest["record"];
 
                         var fieldUpdateRecords = new Dictionary<string, int>();

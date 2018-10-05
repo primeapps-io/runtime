@@ -88,7 +88,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.TenantLanguage);
+            var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.Language);
             bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
             bpmWorkflow.DefinitionJson["Version"] = 1;
 
@@ -103,7 +103,7 @@ namespace PrimeApps.App.Controllers
 
             //if (result < 1)
             //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-
+            
             var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
             await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance);
 
@@ -142,7 +142,7 @@ namespace PrimeApps.App.Controllers
             var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
             var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-            if(workflowDefinition==null)
+            if (workflowDefinition == null)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity, AppUser.TenantLanguage);
