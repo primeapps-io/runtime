@@ -1002,7 +1002,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("export_excel")]
-        public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module)
+        public async Task<ActionResult> ExportExcel([FromQuery(Name = "module")]string module, string locale = "", int? timezoneOffset = 180)
         {
             if (string.IsNullOrWhiteSpace(module))
             {
@@ -1020,6 +1020,10 @@ namespace PrimeApps.App.Controllers
             DataTable dt = new DataTable("Excel");
             Worksheet worksheet2 = workbook.Worksheets.Add("Report Formula");
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
+            var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+            var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
+            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1062,6 +1066,22 @@ namespace PrimeApps.App.Controllers
                 {
                     var field = fields[i];
 
+                    if (record[field.Name] != null && !record[field.Name].IsNullOrEmpty())
+                    {
+                        switch (field.DataType)
+                        {
+                            case DataType.Date:
+                                record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDate);
+                                break;
+                            case DataType.DateTime:
+                                record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
+                                break;
+                            case DataType.Time:
+                                record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatTime);
+                                break;
+                        }
+                    }
+
                     if (field.DataType != Model.Enums.DataType.Lookup)
                     {
                         dr[i] = record[field.Name];
@@ -1082,7 +1102,9 @@ namespace PrimeApps.App.Controllers
                 dt.Rows.Add(dr);
             }
 
-            worksheetData.Cells.ImportDataTable(dt, true, "A1");
+            var rowCount = records.Count + 1;
+            var colCount = fields.Count;
+            worksheetData.Cells.ImportDataTable(dt, true, 0, 0, rowCount, colCount, true, formatDateTime, true);
 
             Stream memory = new MemoryStream();
 
@@ -1114,6 +1136,10 @@ namespace PrimeApps.App.Controllers
             worksheetData.Name = "Data";
             DataTable dt = new DataTable("Excel");
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
+            var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+            var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
+            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
 
             var view = await _viewRepository.GetById(viewId);
 
@@ -1134,7 +1160,18 @@ namespace PrimeApps.App.Controllers
             }
 
             var findRequest = new FindRequest();
+            var newSortField = "id";
+            var newSortDirection = SortDirection.Desc;
+
+            if (listFindRequest.SortField != null && listFindRequest.SortDirection != null)
+            {
+                newSortField = listFindRequest.SortField;
+                newSortDirection = listFindRequest.SortDirection;
+            }
+
             findRequest.Fields = new List<string>();
+            findRequest.SortField = newSortField;
+            findRequest.SortDirection = newSortDirection;
             findRequest.Limit = 9999;
 
             if (listFindRequest.Filters != null && listFindRequest.Filters.Count > 0)
@@ -1240,21 +1277,17 @@ namespace PrimeApps.App.Controllers
                 {
                     var field = fields[i];
 
-                    var currentCulture = locale == "en" ? "en-US" : "tr-TR";
                     if (record[field.Name] != null && !record[field.Name].IsNullOrEmpty())
                     {
                         switch (field.DataType)
                         {
                             case DataType.Date:
-                                var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
                                 record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDate);
                                 break;
                             case DataType.DateTime:
-                                var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
                                 record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
                                 break;
                             case DataType.Time:
-                                var formatTime = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
                                 record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatTime);
                                 break;
                         }
@@ -1280,7 +1313,9 @@ namespace PrimeApps.App.Controllers
                 dt.Rows.Add(dr);
             }
 
-            worksheetData.Cells.ImportDataTable(dt, true, "A1");
+            var rowCount = records.Count + 1;
+            var colCount = fields.Count;
+            worksheetData.Cells.ImportDataTable(dt, true, 0, 0, rowCount, colCount, true, formatDateTime, true);
 
             Stream memory = new MemoryStream();
 
@@ -1309,6 +1344,10 @@ namespace PrimeApps.App.Controllers
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
             //var tempName = System.Text.Encoding.ASCII.GetString(bytes);
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
+            var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+            var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
+            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1368,6 +1407,22 @@ namespace PrimeApps.App.Controllers
                     {
                         var field = fields[i];
 
+                        if (record[field.Name] != null && !record[field.Name].IsNullOrEmpty())
+                        {
+                            switch (field.DataType)
+                            {
+                                case DataType.Date:
+                                    record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDate);
+                                    break;
+                                case DataType.DateTime:
+                                    record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
+                                    break;
+                                case DataType.Time:
+                                    record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatTime);
+                                    break;
+                            }
+                        }
+
                         if (field.DataType != Model.Enums.DataType.Lookup)
                         {
                             dr[i] = record[field.Name];
@@ -1388,8 +1443,11 @@ namespace PrimeApps.App.Controllers
                     dt.Rows.Add(dr);
                 }
 
-                worksheetData.Cells.ImportDataTable(dt, true, "A1");
+                var rowCount = records.Count + 1;
+                var colCount = fields.Count;
+                worksheetData.Cells.ImportDataTable(dt, true, 0, 0, rowCount, colCount, true, formatDateTime, true);
                 workbook.CalculateFormula();
+
                 if (row > 0 && col > 0)
                 {
                     var fromRange = worksheetReportFormul.Cells.CreateRange(0, 0, row, col);
@@ -1427,6 +1485,10 @@ namespace PrimeApps.App.Controllers
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(tempsName);
             //var tempName = System.Text.Encoding.ASCII.GetString(bytes);
             var lookupModules = await Model.Helpers.RecordHelper.GetLookupModules(moduleEntity, _moduleRepository, tenantLanguage: AppUser.TenantLanguage);
+            var currentCulture = locale == "en" ? "en-US" : "tr-TR";
+            var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
+            var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
+            var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
 
             var findRequest = new FindRequest();
             findRequest.Fields = new List<string>();
@@ -1486,6 +1548,22 @@ namespace PrimeApps.App.Controllers
                     {
                         var field = fields[i];
 
+                        if (record[field.Name] != null && !record[field.Name].IsNullOrEmpty())
+                        {
+                            switch (field.DataType)
+                            {
+                                case DataType.Date:
+                                    record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDate);
+                                    break;
+                                case DataType.DateTime:
+                                    record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
+                                    break;
+                                case DataType.Time:
+                                    record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatTime);
+                                    break;
+                            }
+                        }
+
                         if (field.DataType != Model.Enums.DataType.Lookup)
                         {
                             dr[i] = record[field.Name];
@@ -1506,8 +1584,11 @@ namespace PrimeApps.App.Controllers
                     dt.Rows.Add(dr);
                 }
 
-                worksheetData.Cells.ImportDataTable(dt, true, "A1");
+                var rowCount = records.Count + 1;
+                var colCount = fields.Count;
+                worksheetData.Cells.ImportDataTable(dt, true, 0, 0, rowCount, colCount, true, formatDateTime, true);
                 workbook.CalculateFormula();
+
                 if (row > 0 && col > 0)
                 {
                     var fromRange = worksheetReportFormul.Cells.CreateRange(0, 0, row, col);
