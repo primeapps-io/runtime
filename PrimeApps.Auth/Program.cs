@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Serilog;
-using Serilog.Events;
 using System;
 using System.IO;
 using System.Linq;
@@ -36,31 +34,21 @@ namespace PrimeApps.Auth
 
             try
             {
-                Log.Information("Starting auth web host");
                 CreateWebHostBuilder(args).Build().Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Auth host terminated unexpectedly");
             }
             finally
             {
-                Log.CloseAndFlush();
             }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
-
             return WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-            //.UseSerilog();
+                .UseStartup<Startup>()
+                .UseSentry();
         }
     }
 }

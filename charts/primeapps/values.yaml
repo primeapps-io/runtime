@@ -73,6 +73,16 @@ app:
         enableDiskCache: "false"
         cacheDirectory: "/var/temp/weboptimizercache"
         enableTagHelperBundling: "false"
+      Sentry:
+        Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
+        IncludeRequestPayload: "true"
+        IncludeActivityData: "true"
+        Logging:
+          MinimumBreadcrumbLevel: "Information"
+      Logging: 
+        IncludeScopes": "false"
+        LogLevel:
+          Default: "Trace"
   resources: {}
   nodeSelector: {}
   tolerations: []
@@ -122,6 +132,16 @@ auth:
         enableDiskCache: "false"
         cacheDirectory: "/var/temp/weboptimizercache"
         enableTagHelperBundling: "false"
+      Sentry:
+        Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
+        IncludeRequestPayload: "true"
+        IncludeActivityData: "true"
+        Logging:
+          MinimumBreadcrumbLevel: "Information"
+      Logging: 
+        IncludeScopes": "false"
+        LogLevel:
+          Default: "Trace"
   resources: {}
   nodeSelector: {}
   tolerations: []
