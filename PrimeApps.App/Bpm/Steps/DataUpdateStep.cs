@@ -79,9 +79,10 @@ namespace PrimeApps.App.Bpm.Steps
                             throw new MissingFieldException("Cannot find child data");
 
                         var fieldUpdate = newRequest["FieldUpdate"].ToObject<BpmDataUpdate>();
-                        var moduleID = newRequest["Module"].ToObject<int>(); 
+                        var moduleID = newRequest["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleID);
-                        var record = newRequest["record"];
+                        var recordId = newRequest["record"].ToObject<int>();
+                        var record = _recordRepository.GetById(module, recordId);
 
                         var fieldUpdateRecords = new Dictionary<string, int>();
                         var isDynamicUpdate = false;

@@ -95,20 +95,20 @@ namespace PrimeApps.App.Controllers
             //Load string JSON Data on WorkFlowEngine
             var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
             var workflowDefinition = _definitionLoader.LoadDefinition(str);
-
+            
             if (workflowDefinition == null)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            //var result = await _bpmRepository.Create(bpmWorkflowEntity);
+            var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
-            //if (result < 1)
-            //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            
+            if (result < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
             var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
             await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance);
 
             var uri = new Uri(Request.GetDisplayUrl());
-            return Ok();//Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
         }
 
         [Route("update/{id:int}"), HttpPut]

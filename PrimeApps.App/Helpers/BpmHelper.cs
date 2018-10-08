@@ -299,7 +299,7 @@ namespace PrimeApps.App.Helpers
 
                     var lookupModuleNames = new List<string>();
                     ICollection<Module> lookupModules = null;
-
+                    
                     foreach (var workflow in bpmWorkflows)
                     {
                         if (!string.IsNullOrEmpty(workflow.ChangedFields) && operationType != OperationType.insert)

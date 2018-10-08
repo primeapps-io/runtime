@@ -67,14 +67,16 @@ namespace PrimeApps.App.Bpm.Steps
                     using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                     using (var _recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, _currentUser))
                     {
-                        _moduleRepository.CurrentUser = _currentUser;
+                        _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
                         if (newRequest["CreateTask"].IsNullOrEmpty() || newRequest["Module"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
                         var createTask = newRequest["CreateTask"];
-                        var module = newRequest["Module"].ToObject<Module>(); //module ID olarak gelirse module bilgisi çekilecek.
-                        var record = newRequest["record"].ToObject<JObject>();
+                        var moduleId = newRequest["module_id"].ToObject<int>();
+                        var module = await _moduleRepository.GetById(moduleId);
+                        var recordId = newRequest["record"].ToObject<int>();
+                        var record = _recordRepository.GetById(module, recordId);
 
                         var moduleActivity = await _moduleRepository.GetByName("activities");
 

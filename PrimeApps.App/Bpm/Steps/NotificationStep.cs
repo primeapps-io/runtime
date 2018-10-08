@@ -70,34 +70,36 @@ namespace PrimeApps.App.Bpm.Steps
                     using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                     using (var _userRepository = new UserRepository(databaseContext, _configuration))
                     {
-                        _moduleRepository.CurrentUser = _currentUser;
+                        _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
 
                         if (newRequest["FieldUpdate"].IsNullOrEmpty() || newRequest["Module"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
                         var sendNotification = newRequest["SendNotification"].ToObject<BpmNotification>();
-                        var module = newRequest["Module"].ToObject<Module>(); //module ID olarak gelirse module bilgisi çekilecek.
-                        var record = newRequest["record"];
+                        var moduleId = newRequest["module_id"].ToObject<int>();
+                        var module = await _moduleRepository.GetById(moduleId);
+                        var recordId = newRequest["record"].ToObject<int>();
+                        var record = _recordRepository.GetById(module, recordId);
 
-                        if (newRequest["FieldUpdate"].HasValues)
-                        {
-                            var lookupModuleNames = new List<string>();
-                            ICollection<Module> lookupModules = null;
+                        ////if (newRequest["FieldUpdate"].HasValues)
+                        ////{
+                        ////    var lookupModuleNames = new List<string>();
+                        ////    ICollection<Module> lookupModules = null;
 
-                            foreach (var field in module.Fields)
-                            {
-                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
-                                    lookupModuleNames.Add(field.LookupType);
-                            }
+                        ////    foreach (var field in module.Fields)
+                        ////    {
+                        ////        if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                        ////            lookupModuleNames.Add(field.LookupType);
+                        ////    }
 
-                            if (lookupModuleNames.Count > 0)
-                                lookupModules = await _moduleRepository.GetByNamesBasic(lookupModuleNames);
-                            else
-                                lookupModules = new List<Module>();
+                        ////    if (lookupModuleNames.Count > 0)
+                        ////        lookupModules = await _moduleRepository.GetByNamesBasic(lookupModuleNames);
+                        ////    else
+                        ////        lookupModules = new List<Module>();
 
-                            lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                            record = _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
-                        }
+                        ////    lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                        ////    record = _recordRepository.GetById(module, (int)record["id"], false, lookupModules, true);
+                        ////}
 
                         var recipients = sendNotification.RecipientsArray;
                         var sendNotificationCC = sendNotification.CC;

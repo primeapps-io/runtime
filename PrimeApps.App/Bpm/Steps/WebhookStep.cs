@@ -76,15 +76,15 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
 
-                        var record = newRequest["record"];
+                        var recordId = newRequest["record"].ToObject<int>();
+                        var moduleId = newRequest["module_id"].ToObject<int>();
+                        var module = await _moduleRepository.GetById(moduleId);
+                        var record = _recordRepository.GetById(module, recordId);
                         var webHook = newRequest["webhook"];
-                        var module = newRequest["Module"].ToObject<Module>(); //module ID olarak gelirse module bilgisi çekilecek.
-
 
                         if (!webHook.HasValues)
                             throw new MissingFieldException("Cannot find child data");
 
-                        var recordId = (int)record["id"];
                         var jsonData = new JObject();
                         jsonData["id"] = record["id"];
 
