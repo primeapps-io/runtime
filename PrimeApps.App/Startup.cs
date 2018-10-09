@@ -16,6 +16,7 @@ using PrimeApps.App.Bpm.Steps;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Sentry;
 
 namespace PrimeApps.App
 {
@@ -140,47 +141,50 @@ namespace PrimeApps.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            using (SentrySdk.Init(Configuration.GetSection("AppSettings")["SentryClientKey"]))
             {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseDeveloperExceptionPage(); //Todo: Temporary, remove it.
-                app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
-                // app.UseHttpsRedirection();
-                // app.UseHsts();
-                app.UseForwardedHeaders();
-            }
+                if (env.IsDevelopment())
+                {
+                    app.UseDeveloperExceptionPage();
+                    app.UseDatabaseErrorPage();
+                }
+                else
+                {
+                    app.UseDeveloperExceptionPage(); //Todo: Temporary, remove it.
+                    app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
+                                               // app.UseHttpsRedirection();
+                                               // app.UseHsts();
+                    app.UseForwardedHeaders();
+                }
 
-            app.UseHangfireDashboard();
-            app.UseWebOptimizer();
-            app.UseStaticFiles();
-            app.UseAuthentication();
+                app.UseHangfireDashboard();
+                app.UseWebOptimizer();
+                app.UseStaticFiles();
+                app.UseAuthentication();
 
-            app.UseCors(cors =>
-              cors
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowAnyOrigin()
-            );
+                app.UseCors(cors =>
+                  cors
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowAnyOrigin()
+                );
 
             JobConfiguration(app, Configuration);
             BpmConfiguration(app, Configuration);
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}"
-                );
+                app.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller=Home}/{action=Index}/{id?}"
+                    );
 
-                routes.MapRoute(
-                    name: "DefaultApi",
-                    template: "api/{controller}/{id}"
-                );
-            });
+                    routes.MapRoute(
+                        name: "DefaultApi",
+                        template: "api/{controller}/{id}"
+                    );
+                });
+            }
         }
     }
 }
