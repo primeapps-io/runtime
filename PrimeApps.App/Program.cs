@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using System;
-using Sentry;
-using Sentry.Extensions.Logging;
 
 namespace PrimeApps.App
 {

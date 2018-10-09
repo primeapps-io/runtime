@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sentry;
+using System;
 using System.Diagnostics;
 
 namespace PrimeApps.App.Helpers
@@ -6,20 +7,29 @@ namespace PrimeApps.App.Helpers
     class ErrorHandler
     {
         /// <summary>
-        /// Logs error to elmah.
+        /// Logs error to sentry.
         /// </summary>
         /// <param name="ex"></param>
-        /// <param name="details"></param>
-        public static void LogError(Exception ex, string details = "")
+        /// <param name="message"></param>
+        public static void LogError(Exception ex, string message = "")
         {
-            //ErrorLog errorLog = ErrorLog.GetDefault(null);
-            //Error err = new Error(ex);
-            //err.Message = string.Format("{0} {1}", details, err.Message);
-            //errorLog.Log(err);
+            Exception exception = (Exception)Activator.CreateInstance(ex.GetType(), string.Format("{0} {1}", ex.Message, message));
+            
+            SentrySdk.CaptureException(exception);
 
-            //#if (DEBUG)
-            //throw ex;
-            //#endif
+            if (Debugger.IsAttached)
+                throw ex;
+            
+        }
+
+        /// <summary>
+        /// Logs message to sentry.
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="level"></param>
+        public static void LogMessage(string message = "", Sentry.Protocol.SentryLevel level = Sentry.Protocol.SentryLevel.Info)
+        {
+            SentrySdk.CaptureMessage(message, level);
         }
     }
 }

@@ -159,4 +159,37 @@
   <data name="Google" xml:space="preserve">
     <value>Google ile hızlı erişim</value>
   </data>
+  <data name="AlreadyRegisterForApp" xml:space="preserve">
+    <value>Bu uygulamaya daha önce kayıt olmuşsunuz gibi görünüyor. Lütfen bilgileriniz ile giriş yapmayı deneyiniz.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Bir sorun oluştu !</value>
+  </data>
+  <data name="ModelStateNotValid" xml:space="preserve">
+    <value>Lütfen geçerli bilgiler giriniz.</value>
+  </data>
+  <data name="NotValidAppContent" xml:space="preserve">
+    <value>{0} uygulamasına kayıtlı hesabınızla giriş yapmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla giriş yapmayı deneyin.</value>
+  </data>
+  <data name="NotValidAppTitle" xml:space="preserve">
+    <value>Uygulama bilgileri eşleşmiyor.</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+  <data name="PasswordSuccessMessage" xml:space="preserve">
+    <value>Yeni parolanız ile giriş yapabilirsiniz.</value>
+  </data>
+  <data name="PasswordSuccessTitle" xml:space="preserve">
+    <value>Parolanız başarılı bir şekilde değiştirilmiştir.</value>
+  </data>
+  <data name="TenantCreateError" xml:space="preserve">
+    <value>Hesap oluşturulurken bir hata oluştu.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Beklenmedik bir hata oluştu.</value>
+  </data>
+  <data name="UserNotCreated" xml:space="preserve">
+    <value>Kullanıcı oluşturulurken bir sorun oluştu.</value>
+  </data>
 </root>

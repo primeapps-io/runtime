@@ -169,6 +169,6 @@
     <value>Türkçe</value>
   </data>
   <data name="UserExist" xml:space="preserve">
-    <value>{0} uygulamasına kayıtlı hesabınızla kayıt olmaya çalıştınız. Lütfen farklı bir e-posta hesabıyla kayıt olmayı deneyin.</value>
+    <value>Bu bilgilerle daha önce kayıt olmuş gibi gözüküyorsunuz. Lütfen farklı bir e-posta hesabıyla kayıt olmayı deneyin.</value>
   </data>
 </root>

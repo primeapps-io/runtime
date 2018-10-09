@@ -8,43 +8,19 @@
 	string customLanguage = null;
 	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
 	bool multiLanguage = true;
-	if (ViewBag.AppInfo != null)
+	if (Model.ApplicationInfo != null)
 	{
-		ViewBag.Title = ViewBag.AppInfo["title"].Value;
-		customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
-		multiLanguage = Convert.ToBoolean(ViewBag.AppInfo["multiLanguage"].Value.ToLower());
+		ViewBag.Title = Model.ApplicationInfo.Title;
+		customLanguage = !string.IsNullOrWhiteSpace(Model.ApplicationInfo.Language) ? Model.ApplicationInfo.Language : string.Empty;
+		multiLanguage = Model.ApplicationInfo.MultiLanguage;
 	}
-	var otherLang = ViewBag.AppInfo["language"] == "tr" ? "en" : "tr";
-	var error = ViewBag.Error;
+	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
+	var error = Model.Error;
 	var officeSignIn = false;
 }
-@*<div class="row">
-		<div class="col-md-4">
-			<form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
-				<h4>Create a new account.</h4>
-				<hr />
-				<div asp-validation-summary="All" class="text-danger"></div>
-				<div class="form-group">
-					<label asp-for="Email"></label>
-					<input asp-for="Email" class="form-control" />
-					<span asp-validation-for="Email" class="text-danger"></span>
-				</div>
-				<div class="form-group">
-					<label asp-for="Password"></label>
-					<input asp-for="Password" class="form-control" />
-					<span asp-validation-for="Password" class="text-danger"></span>
-				</div>
-
-				<button type="submit" class="btn btn-default">Register</button>
-			</form>
-		</div>
-	</div>
-*@
-
-
 
 <div class="col-md-4 login-sec">
-	<img class="logo-img" src="@ViewBag.AppInfo["logo"].Value" />
+	<img class="logo-img" src="@Model.ApplicationInfo.Logo" />
 	<span class="free-info-header">
 		@Localizer["Free"]
 	</span>
@@ -80,10 +56,11 @@
 			</div>
 		</div>
 
-		@if (error != null)
+		@if (!string.IsNullOrEmpty(error))
 		{
-			@Html.Raw(string.Format(Localizer["UserExist"].Value, ViewData["appName"]))
+            <div class="error">@Localizer["UserExist"]</div>
 		}
+
 		<div class="error-all"></div>
 		<div class="error-email"></div>
 		<div class="error-pass"></div>
@@ -108,7 +85,7 @@
 						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "en", ReturnUrl = path })">@Localizer["EN"]</a> <span>|</span>
 					}
 				}
-				<a href="@Url.Action("Login", "Account", new {ReturnUrl = ViewBag.ReturnUrl})" class="">@Localizer["LoginForm"]</a>
+				<a href="@Url.Action("Login", "Account", new { ReturnUrl = Model.ReturnUrl })" class="">@Localizer["LoginForm"]</a>
 			</div>
 		</div>
 	</form>

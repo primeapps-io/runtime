@@ -457,16 +457,16 @@ namespace PrimeApps.App.Helpers
                         {
                             var resultRequestLog = await _processRepository.CreateRequest(processRequest);
 
-                            //if (resultRequestLog < 1)
-                            //    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString())));
+                            if (resultRequestLog < 1)
+								ErrorHandler.LogError(new Exception("ProcessRequest cannot be created! Object: " + processRequest.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 
                             var newRecord = _recordRepository.GetById(module, (int)record["id"], false);
                             await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
                         }
                         catch (Exception ex)
                         {
-                            //ErrorLog.GetDefault(null).Log(new Error(ex));
-                        }
+							ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
+						}
 
 
                         var processLog = new ProcessLog
@@ -480,15 +480,15 @@ namespace PrimeApps.App.Helpers
                         {
                             var resultCreateLog = await _processRepository.CreateLog(processLog);
 
-                            //if (resultCreateLog < 1)
-                            //    ErrorLog.GetDefault(null).Log(new Error(new Exception("ProcessLog cannot be created! Object: " + processLog.ToJsonString())));
+                            if (resultCreateLog < 1)
+								ErrorHandler.LogError(new Exception("ProcessLog cannot be created! Object: " + processLog.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
                         }
                         catch (Exception ex)
                         {
-                            //ErrorLog.GetDefault(null).Log(new Error(ex));
-                        }
+							ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
+						}
 
-                    }
+					}
 
                 }
             }

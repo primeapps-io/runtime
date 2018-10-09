@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Sentry;
 
 namespace PrimeApps.App
 {
@@ -130,48 +131,48 @@ namespace PrimeApps.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
+            using (SentrySdk.Init(Configuration.GetSection("AppSettings")["SentryClientKey"]))
             {
-                app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
-            }
-            else
-            {
-                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                if (env.IsDevelopment())
                 {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                    app.UseDeveloperExceptionPage();
+                    app.UseDatabaseErrorPage();
+                }
+                else
+                {
+                    app.UseForwardedHeaders(new ForwardedHeadersOptions
+                    {
+                        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                    });
+                }
+
+                app.UseHangfireDashboard();
+                app.UseWebOptimizer();
+                app.UseStaticFiles();
+                app.UseAuthentication();
+
+                app.UseCors(cors =>
+                  cors
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowAnyOrigin()
+                );
+
+                JobConfiguration(app, Configuration);
+
+                app.UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller=Home}/{action=Index}/{id?}"
+                    );
+
+                    routes.MapRoute(
+                        name: "DefaultApi",
+                        template: "api/{controller}/{id}"
+                    );
                 });
-
-                app.UseHttpsRedirection();
-                app.UseHsts();
             }
-
-            app.UseHangfireDashboard();
-            app.UseWebOptimizer();
-            app.UseStaticFiles();
-            app.UseAuthentication();
-
-            app.UseCors(cors =>
-              cors
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowAnyOrigin()
-            );
-
-            JobConfiguration(app, Configuration);
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}"
-                );
-
-                routes.MapRoute(
-                    name: "DefaultApi",
-                    template: "api/{controller}/{id}"
-                );
-            });
         }
     }
 }

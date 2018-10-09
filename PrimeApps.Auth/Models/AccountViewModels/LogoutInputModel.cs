@@ -7,5 +7,7 @@ namespace PrimeApps.Auth.UI
     public class LogoutInputModel
     {
         public string LogoutId { get; set; }
+
+        public string ReturnUrl { get; set; }
     }
 }

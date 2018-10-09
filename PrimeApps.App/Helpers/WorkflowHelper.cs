@@ -508,7 +508,7 @@ namespace PrimeApps.App.Helpers
 
 								if (fieldUpdateModule == null)
 								{
-									//ErrorLog.GetDefault(null).Log(new Error(new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name)));
+									ErrorHandler.LogError(new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 									return;
 								}
 
@@ -516,7 +516,7 @@ namespace PrimeApps.App.Helpers
 
 								if (currentRecordFieldUpdate == null)
 								{
-									//ErrorLog.GetDefault(null).Log(new Error(new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value)));
+									ErrorHandler.LogError(new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 									return;
 								}
 
@@ -566,7 +566,7 @@ namespace PrimeApps.App.Helpers
 
 								if (resultBefore < 0 && !modelState.IsValid)
 								{
-									//ErrorLog.GetDefault(null).Log(new Error(new Exception("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString())));
+									ErrorHandler.LogError(new Exception("Record cannot be updated! Object: " + recordFieldUpdate + " ModelState: " + modelState.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 									return;
 								}
 
@@ -580,7 +580,7 @@ namespace PrimeApps.App.Helpers
 
 									if (resultUpdate < 1)
 									{
-										//ErrorLog.GetDefault(null).Log(new Error(new Exception("Record cannot be updated! Object: " + recordFieldUpdate)));
+										ErrorHandler.LogError(new Exception("Record cannot be updated! Object: " + recordFieldUpdate), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 										return;
 									}
 
@@ -590,7 +590,7 @@ namespace PrimeApps.App.Helpers
 								}
 								catch (Exception ex)
 								{
-									//ErrorLog.GetDefault(null).Log(new Error(ex));
+									ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 								}
 
 								AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
@@ -651,7 +651,7 @@ namespace PrimeApps.App.Helpers
 
 							if (resultBefore < 0 && !modelState.IsValid)
 							{
-								//ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString())));
+								ErrorHandler.LogError(new Exception("Task cannot be created! Object: " + task + " ModelState: " + modelState.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 								return;
 							}
 
@@ -661,7 +661,7 @@ namespace PrimeApps.App.Helpers
 
 								if (resultCreate < 1)
 								{
-									//ErrorLog.GetDefault(null).Log(new Error(new Exception("Task cannot be created! Object: " + task)));
+									ErrorHandler.LogError(new Exception("Task cannot be created! Object: " + task), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 									return;
 								}
 
@@ -669,7 +669,7 @@ namespace PrimeApps.App.Helpers
 							}
 							catch (Exception ex)
 							{
-								//ErrorLog.GetDefault(null).Log(new Error(ex));
+								ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 								return;
 							}
 						}
@@ -770,7 +770,7 @@ namespace PrimeApps.App.Helpers
 							}
 							catch (Exception ex)
 							{
-								//ErrorLog.GetDefault(null).Log(new Error(ex));
+								ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 							}
 						}
 
@@ -906,12 +906,12 @@ namespace PrimeApps.App.Helpers
 						{
 							var resultCreateLog = await _workflowRepository.CreateLog(workflowLog);
 
-							//if (resultCreateLog < 1)
-							//    ErrorLog.GetDefault(null).Log(new Error(new Exception("WorkflowLog cannot be created! Object: " + workflowLog.ToJsonString())));
+							if (resultCreateLog < 1)
+								ErrorHandler.LogError(new Exception("WorkflowLog cannot be created! Object: " + workflowLog.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 						}
 						catch (Exception ex)
 						{
-							//ErrorLog.GetDefault(null).Log(new Error(ex));
+							ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
 						}
 
 					}

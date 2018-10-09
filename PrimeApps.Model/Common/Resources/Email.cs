@@ -9,6 +9,7 @@ namespace PrimeApps.Model.Common.Resources
     {
         [ResourceName("email_reset")]
         EmailReset,
+
         [ResourceName("email_status_successful")]
         EMailStatusSuccessful,
 

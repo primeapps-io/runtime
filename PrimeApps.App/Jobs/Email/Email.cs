@@ -82,9 +82,6 @@ namespace PrimeApps.App.Jobs.Email
 
                 var emailAddress = new EmailAddressAttribute();
 
-                if (string.IsNullOrWhiteSpace(mail.EmailTo.ToString()) || !emailAddress.IsValid(mail.EmailTo))
-                    return true;
-
                 // generate email message
                 myMessage = new MailMessage()
                 {
