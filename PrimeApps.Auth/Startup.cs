@@ -157,7 +157,7 @@ namespace PrimeApps.Auth
                 .AddProfileService<CustomProfileService>()
                 .AddRedirectUriValidator<CustomRedirectUriValidator>()
                 .AddSigningCredential(LoadCertificate());
-                
+
             services.AddAuthentication()
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
@@ -265,11 +265,14 @@ namespace PrimeApps.Auth
             }
             else
             {
-                // app.UseExceptionHandler("/Home/Error");
-                app.UseDeveloperExceptionPage(); //TODO: Temporary, remove later.
-                app.UseDatabaseErrorPage(); //TODO: Temporary, remove later.
-                // app.UseHttpsRedirection();
-                // app.UseHsts();
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
+
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHttpsRedirection();
+                app.UseHsts();
             }
 
             var supportedCultures = new[]

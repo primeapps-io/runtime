@@ -12,10 +12,10 @@ COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
 RUN dotnet restore "PrimeApps.App/PrimeApps.App.csproj"
 COPY . .
 WORKDIR "/src/PrimeApps.App"
-RUN dotnet build "PrimeApps.App.csproj" --no-restore -c Debug -o /app
+RUN dotnet build "PrimeApps.App.csproj" --no-restore -c Release -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.App.csproj" --no-restore -c Debug -o /app
+RUN dotnet publish "PrimeApps.App.csproj" --no-restore -c Release -o /app
 
 FROM base AS final
 WORKDIR /app
