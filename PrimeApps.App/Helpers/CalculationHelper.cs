@@ -48,29 +48,7 @@ namespace PrimeApps.App.Helpers
 			_serviceScopeFactory = serviceScopeFactory;
 			_currentUser = UserHelper.GetCurrentUser(_context);
 		}
-
-		public async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, JObject currentRecord)
-		{
-			try
-			{
-				using (var _scope = _serviceScopeFactory.CreateScope())
-				{
-					var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-					using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
-					{
-						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
-						{
-							warehouse.DatabaseName = appUser.WarehouseDatabaseName;
-							using (var settingRepository = new SettingRepository(databaseContext, _configuration))
-							{
-								using (var userRepository = new UserRepository(databaseContext, _configuration))
-								{
-									using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
-									{
-										moduleRepository.UserId = appUser.TenantId;
-										recordRepository.UserId = appUser.TenantId;
-										picklistRepository.UserId = appUser.TenantId;
-										settingRepository.UserId = appUser.TenantId;
+        
         public CalculationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
         {
             _configuration = configuration;

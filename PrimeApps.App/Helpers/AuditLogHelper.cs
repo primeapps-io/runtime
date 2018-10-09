@@ -44,9 +44,7 @@ namespace PrimeApps.App.Helpers
 
             _currentUser = currentUser;
         }
-        private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
-			_currentUser = UserHelper.GetCurrentUser(_context);
-		}
+       
 		private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
 		public async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)
