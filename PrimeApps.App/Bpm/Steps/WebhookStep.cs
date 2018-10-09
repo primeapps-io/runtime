@@ -45,7 +45,8 @@ namespace PrimeApps.App.Bpm.Steps
             //var tempRef = context.Workflow.Reference.Split('|');
             //var _currentUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
             //var tenantLanguage = tempRef[2];
-
+            
+            //TODO REf Kontrol
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 

@@ -95,7 +95,7 @@ namespace PrimeApps.App.Controllers
             //Load string JSON Data on WorkFlowEngine
             var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
             var workflowDefinition = _definitionLoader.LoadDefinition(str);
-            
+
             if (workflowDefinition == null)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 

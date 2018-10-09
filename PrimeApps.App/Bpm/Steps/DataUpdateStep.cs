@@ -42,11 +42,8 @@ namespace PrimeApps.App.Bpm.Steps
             if (context.Workflow.Reference == null)
                 throw new NullReferenceException();
 
-            //var tempRef = context.Workflow.Reference.Split('|');
-            //var _currentUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
-            //var tenantLanguage = tempRef[2];
-
-            var appUser = JsonConvert.DeserializeObject<Reference>(context.Workflow.Reference);
+            //TODO REf Kontrol
+            var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
             var newRequest = JObject.Parse(Request.Replace("\\", ""));
@@ -75,12 +72,14 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
-                        if (newRequest["FieldUpdate"].IsNullOrEmpty() || newRequest["Module"].IsNullOrEmpty())
+                        if (newRequest["FieldUpdate"].IsNullOrEmpty() || newRequest["module_id"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
                         var fieldUpdate = newRequest["FieldUpdate"].ToObject<BpmDataUpdate>();
+
                         var moduleID = newRequest["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleID);
+
                         var recordId = newRequest["record"].ToObject<int>();
                         var record = _recordRepository.GetById(module, recordId);
 
@@ -251,7 +250,7 @@ namespace PrimeApps.App.Bpm.Steps
                             }
 
                             //TODO RecordHelper
-                            //AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
+                            _recordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
                         }
 
                         return ExecutionResult.Next();

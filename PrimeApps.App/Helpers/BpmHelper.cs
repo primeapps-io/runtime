@@ -299,7 +299,7 @@ namespace PrimeApps.App.Helpers
 
                     var lookupModuleNames = new List<string>();
                     ICollection<Module> lookupModules = null;
-                    
+
                     foreach (var workflow in bpmWorkflows)
                     {
                         if (!string.IsNullOrEmpty(workflow.ChangedFields) && operationType != OperationType.insert)
@@ -621,11 +621,13 @@ namespace PrimeApps.App.Helpers
         public string ReferenceCreateToForBpmHost(UserItem appUser)
         {
             //var reference = appUser.TenantId + "|" + appUser.Id + "|" + appUser.Language;
+            var lang = string.IsNullOrEmpty(appUser.Language) ? appUser.TenantLanguage : appUser.Language;
+
             var tempReference = new Model.Common.Bpm.Reference
             {
                 Id = appUser.Id,
                 Culture = appUser.Culture,
-                Language = appUser.Language,
+                Language = lang,
                 TenantId = appUser.TenantId,
                 TimeZone = appUser.TimeZone
             };

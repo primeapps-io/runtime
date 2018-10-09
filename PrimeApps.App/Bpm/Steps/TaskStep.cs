@@ -69,7 +69,7 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
-                        if (newRequest["CreateTask"].IsNullOrEmpty() || newRequest["Module"].IsNullOrEmpty())
+                        if (newRequest["CreateTask"].IsNullOrEmpty() || newRequest["module_id"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
                         var createTask = newRequest["CreateTask"];
