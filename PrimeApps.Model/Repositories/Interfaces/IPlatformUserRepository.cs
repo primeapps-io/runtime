@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<PlatformUser> Get(string email);
         Task<PlatformUser> GetWithTenants(string email);
         Task<int> CreateUser(PlatformUser user);
-
+        Task<int> DeleteAsync(PlatformUser user);
         Task UpdateAsync(PlatformUser userToEdit);
         Task<PlatformUser> GetUserByAutoId(int tenantID);
         Task<EmailAvailableType> IsEmailAvailable(string email, int appId);

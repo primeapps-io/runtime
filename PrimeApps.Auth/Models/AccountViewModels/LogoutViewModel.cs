@@ -7,5 +7,6 @@ namespace PrimeApps.Auth.UI
     public class LogoutViewModel : LogoutInputModel
     {
         public bool ShowLogoutPrompt { get; set; }
+
     }
 }

@@ -18,6 +18,10 @@ using PrimeApps.App.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using PrimeApps.Model.Common.Resources;
+using System.Web;
 
 namespace PrimeApps.App.Controllers
 {
@@ -124,6 +128,7 @@ namespace PrimeApps.App.Controllers
                     Owner = user,
                     UseUserSettings = true,
                     GuidId = Guid.NewGuid(),
+                    Title = activateBindingModel.FirstName + " " + activateBindingModel.LastName,
                     License = new TenantLicense
                     {
                         UserLicenseCount = 5,
@@ -211,7 +216,7 @@ namespace PrimeApps.App.Controllers
                     var senderEmail = template.MailSenderEmail ?? app.Setting.MailSenderEmail;
                     var senderName = template.MailSenderName ?? app.Setting.MailSenderName;
 
-                    notification.AddRecipient(senderEmail);
+                    notification.AddRecipient(activateBindingModel.Email);
                     notification.AddToQueue(senderEmail, senderName);
 
                 }
@@ -261,6 +266,72 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("user_created")]
+        public async Task<IActionResult> UserCreated([FromBody]JObject request)
+        {
+            if (request["email"].IsNullOrEmpty() || request["app_id"].IsNullOrEmpty())
+                return BadRequest();
+
+            var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+
+            Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString()));
+
+            if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
+            {
+                var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/user/confirm_email?email={0}&code={1}&returnUrl={2}";
+
+                var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "email_confirm", request["culture"].ToString().Substring(0, 2));
+                var content = template.Content;
+                
+                content = content.Replace("{:FirstName}", request["first_name"].ToString());
+                content = content.Replace("{:LastName}", request["last_name"].ToString());
+                content = content.Replace("{:Email}", request["email"].ToString());
+                content = content.Replace("{:Url}", string.Format(url, request["email"].ToString(), WebUtility.UrlEncode(request["code"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
+
+                Email notification = new Email(template.Subject, content, _configuration);
+
+                var senderEmail = template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail;
+                var senderName = template.MailSenderName ?? applicationInfo.Setting.MailSenderName;
+
+                notification.AddRecipient(request["email"].ToString());
+                notification.AddToQueue(senderEmail, senderName);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("send_password_reset")]
+        public async Task<IActionResult> SendPasswordReset([FromBody]JObject request)
+        {
+            if (request["email"].IsNullOrEmpty() || request["code"].IsNullOrEmpty())
+                return BadRequest();
+
+            var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+
+            var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/Account/ResetPassword?code={0}&guid={1}&returnUrl={2}";
+            var user = await _platformUserRepository.Get(request["email"].ToString());
+
+            var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "password_reset", request["culture"].ToString().Substring(0, 2));
+            var content = template.Content;
+
+            content = content.Replace("{:PasswordResetUrl}", string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()), new Guid(request["guid_id"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
+            content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);
+
+            Email notification = new Email(template.Subject, content, _configuration);
+
+            var senderEmail = template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail;
+            var senderName = template.MailSenderName ?? applicationInfo.Setting.MailSenderName;
+
+            notification.AddRecipient(request["email"].ToString());
+            notification.AddToQueue(senderEmail, senderName);
+
+            return Ok();
+        }
+
         // POST account/logout
         [Route("logout")]
         public async Task<IActionResult> Logout()
@@ -270,7 +341,7 @@ namespace PrimeApps.App.Controllers
             Response.Cookies.Delete("tenant_id");
             await HttpContext.SignOutAsync();
 
-            return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout" });
+            return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain });
         }
 
         private async Task DeactivateUser(Tenant tenant)

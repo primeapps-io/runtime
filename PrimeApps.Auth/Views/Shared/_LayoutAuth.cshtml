@@ -5,19 +5,17 @@
 @inject IViewLocalizer Localizer
 @{
 	var app = "";
-	var desc = "";
 	var color = "";
-	if (ViewBag.AppInfo != null)
+	if (Model.ApplicationInfo != null)
 	{
-		app = ViewBag.AppInfo["app"].Value;
-		color = ViewBag.AppInfo["color"].Value;
+		app = Model.ApplicationInfo.Name;
+		color = Model.ApplicationInfo.Theme["color"].ToString();
 	}
-	var googleCode = app == "crm" ? "UA-78675728-1" : app == "kobi" ? "UA-112270470-1" : "UA-112242194-1";
-	var cdnUrlStatic = ViewBag.AppInfo["cdnUrl"].Value;
-	var customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
-	var customImage = ViewBag.AppInfo["customImage"] != null ? ViewBag.AppInfo["customImage"].Value.ToString() : "";
-	var favicon = ViewBag.AppInfo["favicon"].Value;
-	var banner = JsonConvert.DeserializeObject(ViewBag.AppInfo["banner"].Value);
+	var googleCode = Model.ApplicationInfo?.Settings?.GoogleAnalytics;
+	var cdnUrlStatic = Model.ApplicationInfo?.CdnUrl;
+	var customDomain = Model.ApplicationInfo?.CustomDomain;
+	var favicon = Model.ApplicationInfo?.Theme["favicon"].ToString();
+	var banner = Model.ApplicationInfo?.Theme["banner"];
 }
 
 <!DOCTYPE html>
@@ -30,7 +28,7 @@
 	<link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
 	<link rel="stylesheet" href="/styles/bundles-css/auth.css" asp-append-version="true" />
 	@*Styles.Render("~/bundles-css/auth")*@
-	<style>
+    <style>
 		.login-block {
 			float: left;
 			width: 100%;
@@ -39,6 +37,10 @@
 		.swal-text, .swal-title {
 			text-align: center;
 		}
+
+        .swal2-popup .swal2-styled.swal2-confirm {
+            background-color: @color;
+        }
 
 		.error {
 			text-align: center;
@@ -85,7 +87,7 @@
 		}
 
 		.banner-sec {
-			background: url(@banner["images"][0].Value) no-repeat center center;
+			background: url(@banner[0]["image"].ToString()) no-repeat center center;
 			background-size: cover;
 			min-height: 500px;
 			padding: 0;
@@ -292,32 +294,33 @@
 			}
 		}
 
-	</style>
+    </style>
 </head>
 <body>
-	<section class="login-block">
-		<div class="container">
-			<div class="row">
-				@RenderBody()
-				<div class="col-md-8 banner-sec">
-					<div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-						<div class="carousel-inner" role="listbox">
-							<div class="carousel-item active">
-								<div class="carousel-caption d-none d-md-block">
-									<div class="banner-text">
-										<p>@banner["descriptions"][0][ViewBag.Language].Value</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
+    <section class="login-block">
+        <div class="container">
+            <div class="row">
+                @RenderBody()
+                <div class="col-md-8 banner-sec">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner" role="listbox">
+                            <div class="carousel-item active">
+                                <div class="carousel-caption d-none d-md-block">
+                                    <div class="banner-text">
+                                        <p>@banner[0]["descriptions"][Model.Language].ToString()</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-	<script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
-	@*Scripts.Render("~/bundles-js/auth")*@
-	@RenderSection("scripts", required: false)
+    <script src="/scripts/bundles-js/auth.js" asp-append-version="true"></script>
+    @*Scripts.Render("~/bundles-js/auth")*@
+    @RenderSection("scripts", required: false)   
+
 </body>
 </html>

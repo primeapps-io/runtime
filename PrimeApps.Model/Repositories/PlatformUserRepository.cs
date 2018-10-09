@@ -114,6 +114,12 @@ namespace PrimeApps.Model.Repositories
             return user?.PlatformUser;
         }
 
+        public async Task<int> DeleteAsync (PlatformUser user)
+        {
+            DbContext.Users.Remove(user);
+            return await DbContext.SaveChangesAsync();
+        }
+
         public async Task<Tenant> GetTenantByEmailAndAppId(string email, int appId)
         {
             var userTenant = await DbContext.UserTenants

@@ -473,7 +473,7 @@ angular.module('primeapps')
 								if (record.hasOwnProperty(key)) {
 									var value = record[key];
 
-									if (key.indexOf(fieldName + '.') > -1) {
+                                    if (key.startsWith(fieldName + ".")) {
 										if (!lookupIsNull) {
 											var keyParts = key.split('.');
 

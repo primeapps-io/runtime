@@ -15,6 +15,7 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -547,6 +548,12 @@ namespace PrimeApps.App.Controllers
             };
 
             return Ok(userModel);
+        }
+
+        [Route("get_user_email_control"), HttpGet]
+        public async Task<EmailAvailableType> GetUserEmailControl(string email)
+        {
+            return await _platformUserRepository.IsEmailAvailable(email, AppUser.AppId);
         }
 
         [Route("get_users_by_profile_ids"), HttpPost]

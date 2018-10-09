@@ -21,11 +21,14 @@ namespace PrimeApps.Auth.UI
             _interaction = interaction;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string error)
         {
-			var appInfo = await _applicationRepository.GetWithAuth(Request.Host.Value);
-			return Redirect(Request.Scheme + "://" + appInfo.Setting.AppDomain);
-			//return View();
+            /*var appInfo = await _applicationRepository.GetWithAuth(Request.Host.Value);
+
+            if(appInfo != null)
+                return Redirect(Request.Scheme + "://" + appInfo.Setting.Domain);*/
+            ViewBag.Error = error;
+            return View();
         }
 
         /// <summary>

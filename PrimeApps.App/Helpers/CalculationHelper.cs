@@ -2761,8 +2761,7 @@ namespace PrimeApps.App.Helpers
                                                     }
                                                     catch (Exception ex)
                                                     {
-                                                        //TODO Removed
-                                                        //ErrorLog.GetDefault(null).Log(new Error(ex));
+                                                        ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
                                                     }
                                                 }
 

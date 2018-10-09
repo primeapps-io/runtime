@@ -117,58 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CreateAccount" xml:space="preserve">
-    <value>Create My Account</value>
+  <data name="ConfirmEmailErrorContent" xml:space="preserve">
+    <value>E-Posta adresiniz onaylanırken bir sorun oluştu.</value>
   </data>
-  <data name="CreateInfo" xml:space="preserve">
-    <value>By clicking on 'Create My Account' button, you agree to {0} and {1}</value>
+  <data name="ConfirmEmailErrorTitle" xml:space="preserve">
+    <value>Beklenmedik bir sorun oluştu</value>
   </data>
-  <data name="Email" xml:space="preserve">
-    <value>E-Mail</value>
-  </data>
-  <data name="EN" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="FirstName" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="Free" xml:space="preserve">
-    <value>Please fill out the form below and start using your &lt;strong&gt;free trial with full of features for 15 days !&lt;/strong&gt;</value>
-  </data>
-  <data name="InvalidEmail" xml:space="preserve">
-    <value>Please enter a valid e-mail.</value>
-  </data>
-  <data name="LastName" xml:space="preserve">
-    <value>Last Name</value>
-  </data>
-  <data name="LoginForm" xml:space="preserve">
-    <value>Already have an account? Sign-in.</value>
-  </data>
-  <data name="NameMinimum" xml:space="preserve">
-    <value>Please enter minimum of 2 (two) characters for your name/lastname.</value>
-  </data>
-  <data name="Password" xml:space="preserve">
-    <value>Password</value>
-  </data>
-  <data name="PasswordMinimum" xml:space="preserve">
-    <value>Password must be minimum 6 characters.</value>
-  </data>
-  <data name="Policy" xml:space="preserve">
-    <value>Ofisim.com Privacy Policy</value>
-  </data>
-  <data name="RegisterFieldsRequired" xml:space="preserve">
-    <value>All fields are required.</value>
-  </data>
-  <data name="RegisterWithOffice" xml:space="preserve">
-    <value>Fast registration with Office 365</value>
-  </data>
-  <data name="Terms" xml:space="preserve">
-    <value>Ofisim.com Terms &amp; Conditions</value>
-  </data>
-  <data name="TR" xml:space="preserve">
-    <value>Türkçe</value>
-  </data>
-  <data name="UserExist" xml:space="preserve">
-    <value>You already registered with this email. Please try another e-mail address to sign up.</value>
+  <data name="Ok" xml:space="preserve">
+    <value>Tamam</value>
   </data>
 </root>
