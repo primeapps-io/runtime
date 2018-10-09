@@ -2,8 +2,8 @@
 
 var app = angular.module('primeapps', []);
 
-app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$modal', '$filter', '$location', 'ModuleService', 'config', '$http', '$state', 'helper', 'ngToast',
-    function ($rootScope, $scope, moment, $modal, $filter, $location, ModuleService, config, $http, $state, helper, ngToast) {
+app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$modal', '$filter', '$location', 'ModuleService', 'config', '$http', '$state', 'helper', 'ngToast', 'components',
+    function ($rootScope, $scope, moment, $modal, $filter, $location, ModuleService, config, $http, $state, helper, ngToast, components) {
         $scope.loggedInUser = $rootScope.user.id;
         $scope.owner = $filter('filter')($rootScope.users, { id: ($location.search().user ? parseInt($location.search().user) : $rootScope.user.id) }, true)[0];
         $scope.userWeek = parseInt($location.search().week);
@@ -492,6 +492,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
         };
 
         $scope.sendToProcessApproval = function () {
+            components.run('BeforeSendToProcessApproval', 'Script', $scope, null);
             $scope.manuelApproveRequest = true;
             var isValid = true;
             for (var i = 0; i < $scope.days.length; i++) {
@@ -511,6 +512,7 @@ app.controller('TimetrackerController', ['$rootScope', '$scope', 'moment', '$mod
 
                 ModuleService.sendApprovalManuel(request)
                     .then(function () {
+                        components.run('AfterSendToProcessApproval', 'Script', $scope, null);
                         $scope.hasManuelProcess = false;
                         $scope.waitingForApproval = true;
                         $scope.freeze = true;

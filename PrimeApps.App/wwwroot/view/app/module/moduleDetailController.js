@@ -1978,9 +1978,23 @@ angular.module('primeapps')
             };
 
             $scope.sendToProcessApproval = function () {
+                $scope.executeCode = false;
+
+                components.run('BeforeSendToProcessApproval', 'Script', $scope, $scope.record);
+
+                if ($scope.executeCode) {
+                    return;
+                }
 
                 if ($scope.module.name === 'izinler') {
-                    var val = ModuleService.customValidations($scope.module, $scope.record, true);
+                    var val = "";
+                    /*
+                     * skipValidation parametresi component içinde setlenerek validasyonların atlanması sağlanıyor.
+                     * #2438 nolu task için geliştirildi.
+                     * */
+                    if (!$scope.skipValidation)
+                        val = ModuleService.customValidations($scope.module, $scope.record);
+
                     if (val != "") {
                         ngToast.create({
                             //content: $filter('translate')('Module.SuccessMessage', { title: $scope.module['label_' + $rootScope.language + '_singular'] }),
@@ -2000,6 +2014,7 @@ angular.module('primeapps')
 
                 ModuleService.sendApprovalManuel(request)
                     .then(function () {
+                        components.run('AfterSendToProcessApproval', 'Script', $scope, $scope.record);
                         $scope.hasManuelProcess = false;
                         $scope.waitingForApproval = true;
                         $scope.record.freeze = true;

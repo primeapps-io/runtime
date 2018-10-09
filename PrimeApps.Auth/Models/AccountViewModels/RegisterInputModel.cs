@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.UI
 {
-	public class RegisterViewModel
-	{
+	public class RegisterInputModel : ApplicationViewModel
+    {
 		[DataMember(Name = "email"), Display(Name = "Email"), EmailAddress, Required]
 		public string Email { get; set; }
 		
@@ -36,5 +36,7 @@ namespace PrimeApps.Auth.UI
 		[DataMember(Name = "last_name")]
 		public string LastName { get; set; }
 		//public string PhoneNumber { get; set; }
+
+        public bool ReadOnly { get; set; }
 	}
 }

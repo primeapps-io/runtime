@@ -6,25 +6,22 @@
 	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
 
 	var app = "primeapps";
-	var logo = "";
 	var customDomain = false;
 	string customLanguage = null;
 	bool multiLanguage = true;
 	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
-	if (ViewBag.AppInfo != null)
+	if (Model.ApplicationInfo != null)
 	{
-		logo = ViewBag.AppInfo["logo"].Value;
-		app = ViewBag.AppInfo["app"].Value;
-		multiLanguage = Convert.ToBoolean(ViewBag.AppInfo["multiLanguage"].Value.ToLower());
-		ViewBag.Title = ViewBag.AppInfo["title"].Value;
-		customDomain = ViewBag.AppInfo["customDomain"] != null ? ViewBag.AppInfo["customDomain"].Value : false;
+		app = Model.ApplicationInfo.Name;
+		multiLanguage = Model.ApplicationInfo.MultiLanguage;
+		ViewBag.Title = Model.ApplicationInfo.Title;
+		customDomain = Model.ApplicationInfo.CustomDomain;
 		//customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
 	}
-	var otherLang = ViewBag.AppInfo["language"] == "tr" ? "en" : "tr";
-	var error = ViewBag.Error;
+	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
 }
 <div class="col-md-4 login-sec">
-	<img class="logo-img" src="@logo" />
+	<img class="logo-img" src="@Model.ApplicationInfo.Logo" />
 	@if (!customDomain)
 	{
 		<span class="free-info-header">
@@ -33,7 +30,7 @@
 	}
 
 	<form asp-route="Login" class="login-form" role="form" id="login-form">
-		<input type="hidden" asp-for="ReturnUrl" />
+		<input type="hidden" asp-for="@Model.ReturnUrl" />
 		<div class="form-group">
 			<div class="input-group input-group-first">
 				<span class="input-group-addon">
@@ -52,14 +49,14 @@
 				<input type="password" class="form-control" placeholder="@Localizer["Password"]" asp-for="Password" id="Password" autocomplete="off">
 			</div>
 		</div>
-		@if (error != null)
+		@if (!string.IsNullOrWhiteSpace(Model.Error))
 		{
-			if (error == "WrongInfo")
+			if (Model.Error == "WrongInfo")
 			{
-				<div class="error">@Localizer[error]</div>
-			}
-			else if (error == "notFound")
-			{
+				<div class="error">@Localizer[Model.Error]</div>
+            }
+            else if (Model.Error == "notFound")
+            {
 				<div class="error">@Localizer["NotFound"]</div>
 			}
 		}
@@ -97,106 +94,47 @@
 						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "en", ReturnUrl = path })">@Localizer["EN"]</a> <span>|</span>
 					}
 				}
-				<a href="@Url.Action("ForgotPassword", "Auth", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
+				<a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
 			</div>
 		</div>
 	</form>
 </div>
-@*
-	<div class="login-page">
-			<div class="page-header">
-				<h1>Login</h1>
-			</div>
-
-			<partial name="_ValidationSummary" />
-
-			<div class="row">
-				@if (Model.EnableLocalLogin)
-				{
-					<div class="col-sm-6">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">Local Login</h3>
-							</div>
-							<div class="panel-body">
-
-								<form asp-route="Login">
-									<input type="hidden" asp-for="ReturnUrl" />
-
-									<fieldset>
-										<div class="form-group">
-											<label asp-for="Username"></label>
-											<input class="form-control" placeholder="Username" asp-for="Username" autofocus>
-										</div>
-										<div class="form-group">
-											<label asp-for="Password"></label>
-											<input type="password" class="form-control" placeholder="Password" asp-for="Password" autocomplete="off">
-										</div>
-										@if (Model.AllowRememberLogin)
-										{
-											<div class="form-group login-remember">
-												<label asp-for="RememberLogin">
-													<input asp-for="RememberLogin">
-													<strong>Remember My Login</strong>
-												</label>
-											</div>
-										}
-
-										<div>
-											<p>The default users are alice/bob, password: Pass123$</p>
-										</div>
-
-										<div class="form-group">
-											<button class="btn btn-primary" name="button" value="login">Login</button>
-											<button class="btn btn-default" name="button" value="cancel">Cancel</button>
-										</div>
-									</fieldset>
-								</form>
-							</div>
-						</div>
-					</div>
-				}
-
-				@if (Model.VisibleExternalProviders.Any())
-				{
-					<div class="col-md-6 col-sm-6 external-providers">
-						<div class="panel panel-default">
-							<div class="panel-heading">
-								<h3 class="panel-title">External Login</h3>
-							</div>
-							<div class="panel-body">
-								<ul class="list-inline">
-									@foreach (var provider in Model.VisibleExternalProviders)
-									{
-										<li>
-											<a class="btn btn-default"
-											   asp-action="ExternalLogin"
-											   asp-route-provider="@provider.AuthenticationScheme"
-											   asp-route-returnUrl="@Model.ReturnUrl">
-												@provider.DisplayName
-											</a>
-										</li>
-									}
-								</ul>
-							</div>
-						</div>
-					</div>
-				}
-
-				@if (!Model.EnableLocalLogin && !Model.VisibleExternalProviders.Any())
-				{
-					<div class="alert alert-warning">
-						<strong>Invalid login request</strong>
-						There are no login schemes configured for this client.
-					</div>
-				}
-			</div>
-		</div>*@
 
 @section scripts {
 	<script>
 		$(document).ready(function() {
-			var postTry = false;
+            var postTry = false;
+
+            if ("@Model.Success" === "accountActivated") {
+                swal({
+                    title: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.JoinSuccessTitle)",
+                    text: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.JoinSuccessMessage)",
+                    type: "success",
+                    button: "OfisimCRM.App.Resources.Auth.Resource.Ok",
+                });
+            } else if ("@Model.Success" === "PasswordChanged") {
+                swal({
+                    title: "@Localizer["PasswordSuccessTitle"]",
+                    text: "@Localizer["PasswordSuccessMessage"]",
+                    type: "success",
+                    button: "@Localizer["Ok"]",
+                });
+            } else if ("@Model.Success" === "notActive") {
+                swal({
+                    title: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
+                    text: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
+                    type: "error",
+                    button: "OfisimCRM.App.Resources.Auth.Resource.Ok",
+                });
+            } else if ("@Model.Success" === "NotValidApp") {
+                swal({
+                    title: "@Localizer["NotValidAppTitle"])",
+                    text: "@string.Format(Localizer["NotValidAppContent"].ToString(), Model.ApplicationInfo.Name.ToUpper())",
+
+                    type: "error",
+                    button: "@Localizer["Ok"]",
+                });
+            }
 
             $("#Email, #Password").keyup(function() {
                 if (postTry) {

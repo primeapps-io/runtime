@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
@@ -113,8 +113,22 @@ angular.module('primeapps')
 
             ModuleService.getPicklists($scope.moduleModal)
                 .then(function (picklists) {
-                    $scope.picklistsModuleModal = picklists;
-                    ModuleService.setDefaultValues($scope.moduleModal, $scope.recordModal, picklists);
+					$scope.picklistsModuleModal = angular.copy(picklists);
+					ModuleService.setDefaultValues($scope.moduleModal, $scope.recordModal, picklists);
+					/**
+					 * Calender üzerinde etkinlik oluşturulacağında Aktivite Tipi picklistinde sadece "Etkinlik seçeneği olmalıdır"
+					 */
+					if ($scope.moduleModal['name'] === 'activities') {
+						var field = $filter('filter')($scope.moduleModal.fields, { name: 'activity_type' }, true)[0];
+						if ($scope.picklistsModuleModal[field.picklist_id] && field) {
+							angular.forEach($scope.picklistsModuleModal[field.picklist_id], function (item) {
+								if (item.value != 'event' && item.system_code != 'event') {
+									item.hidden = true;
+								}
+							});
+						}
+					}
+
                     $scope.loadingModal = false;
                 });
 

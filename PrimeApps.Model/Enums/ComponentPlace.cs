@@ -15,6 +15,9 @@
         PicklistFilter = 10,
         BeforeApproveProcess = 11,
         BeforeRejectProcess = 12,
-        AfterApproveProcess = 13
+        AfterApproveProcess = 13,
+        AfterRejectProcess = 14,
+        BeforeSendToProcessApproval = 15,
+        AfterSendToProcessApproval = 16
     }
 }

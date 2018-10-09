@@ -35,7 +35,15 @@ namespace PrimeApps.Model.Repositories.Interfaces
 
 			return app ?? null;
 		}
-		public async Task<App> GetWithAuth(string domain)
+
+        public async Task<App> GetByName(string name)
+        {
+            return await DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefaultAsync(x => x.Name == name);
+        }
+
+        public async Task<App> GetWithAuth(string domain)
 		{
 			var app = await DbContext.Apps
 				.Include(x => x.Setting)

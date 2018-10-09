@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.UI
 {
-    public class ResetPasswordViewModel
+    public class ResetPasswordViewModel : ApplicationViewModel
     {
-		[Required]
-		[EmailAddress]
-		public string Email { get; set; }
-
 		[Required]
 		[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
 		[DataType(DataType.Password)]
@@ -23,5 +19,7 @@ namespace PrimeApps.Auth.UI
 		public string ConfirmPassword { get; set; }
 
 		public string Code { get; set; }
+
+        public Guid Guid { get; set; }
 	}
 }

@@ -14,11 +14,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace PrimeApps.Auth.Helpers
+namespace PrimeApps.Auth.UI
 {
     public class AuthHelper
     {
-        public static async Task<JObject> GetApplicationInfoAsync(IConfiguration configuration, HttpRequest request, HttpResponse response, string returnUrl, IApplicationRepository applicationRepository)
+        public static async Task<Application> GetApplicationInfoAsync(IConfiguration configuration, HttpRequest request, string returnUrl, IApplicationRepository applicationRepository)
         {
             var _language = !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
@@ -31,79 +31,122 @@ namespace PrimeApps.Auth.Helpers
             }
 
             var primeLang = _language ?? "tr";
-            var b = "{\"images\": [\"/images/login/banner/primeapps-background.jpg\"], \"descriptions\": [{\"en\": \"PrimeApps\", \"tr\": \"PrimeApps\"}]}";
-            var json = @"{
-							app: 'primeapps',
-							title: 'PrimeApps',
-							multiLanguage: 'true',
-							logo: '" + cdnUrlStatic + "/images/login/logos/login_primeapps.png', " +
-                            "description: { banner1: { image: '', desc_tr: '', desc_en: '' }}," +
-                            "desc_tr:'BUILD POWERFUL BUSINESS APPS 10X FASTER', " +
-                            "desc_en:'BUILD POWERFUL BUSINESS APPS 10X FASTER', " +
-                            "color: '#555198', " +
-                            "banner: '" + b + "'," +
-                            "customDomain: false, " +
-                            "language: '" + primeLang + "', " +
-                            "favicon: '" + cdnUrlStatic + "/images/favicon/primeapps.ico'," +
-                            "cdnUrl: '" + cdnUrlStatic + "'" +
-                        "}";
 
-            Uri url = null;
+            var application = new Application()
+            {
+                Name = "primeapps",
+                MultiLanguage = true,
+                Logo = cdnUrlStatic + "/images/login/logos/login_primeapps.png",
+                Theme = new JObject
+                {
+                    ["title"] = "PrimeApps",
+                    ["color"] = "#555198",
+                    ["favicon"] = cdnUrlStatic + "/images/favicon/primeapps.ico",
+                    ["banner"] = new JArray {
+                        new JObject {
+                            ["image"] = "/images/login/banner/primeapps-background.jpg",
+                            ["descriptions"] = new JObject {
+                                ["en"] = "",
+                                ["tr"] = "Personelinizin izin, avans, harcama, zimmet, eğitim ve özlük bilgilerini kolayca yönetin."
+                            }
+                        }
+                    }
+                },
+                CustomDomain = false,
+                Language = primeLang,
+                CdnUrl = cdnUrlStatic
+            };
 
-            if (!string.IsNullOrEmpty(returnUrl) && (returnUrl.Split("&")).Length > 1)
-                url = new Uri(HttpUtility.UrlDecode((returnUrl.Split("&")).Where(x => x.Contains("redirect_uri")).FirstOrDefault().Split("redirect_uri=")[1]));
+            var clientId = GetClientId(returnUrl);
 
-            if (!url.Authority.Contains("localhost") && !url.Authority.Contains("primeapps.io"))
+            var validUrls = configuration.GetValue("AppSettings:ValidUrls", String.Empty);
+            Array validUrlsArr = null;
+            if (!string.IsNullOrEmpty(validUrls))
+                validUrlsArr = validUrls.Split(";");
+
+            if (!string.IsNullOrEmpty(clientId))
             {
                 App result = null;
 
-                result = await applicationRepository.Get(url.Authority);
-
+                result = await applicationRepository.GetByName(clientId);
                 if (string.IsNullOrWhiteSpace(_language))
                     _language = result.Setting.Language ?? "tr";
 
                 if (result != null)
                 {
-                    var app = result.Name;
-                    var logo = result.Logo ?? cdnUrlStatic + "/images/login/logos/login_primeapps.png";
-                    var title = "";//result.Setting.AppTitle ?? "";
-                    var description = "";//result.Setting.Description ?? "";
-                    var color = "";//result.Setting.Color ?? "#555198";
-                    var favicon = "";//result.Setting.Favicon ?? cdnUrlStatic + "/images/favicon/primeapps.ico";
-                    var image = "";//result.Setting.Image ?? null;
-                    var banner = "";//result.Setting.Banner ?? cdnUrlStatic + "/images/login/banner/primeapps-background.jpg";
-                    var multiLanguage = result.UseTenantSettings;
-                    //Thread.CurrentThread.CurrentUICulture = lang == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
-                    json = @"{app: '" + app + "', " +
-                        "title: '" + title + "', " +
-                        "logo: '" + logo + "', " +
-                        "desc_tr:'" + description + "', " +
-                        "desc_en:'" + description + "', " +
-                        "color: '" + color + "', " +
-                        "customDomain: false, " +
-                        "language: '" + _language + "'," +
-                        "banner: '" + banner + "'," +
-                        "favicon: '" + favicon + "'," +
-                        "customImage: '" + image + "'," +
-                        "multiLanguage: '" + multiLanguage + "'," +
-                        "cdnUrl: '" + cdnUrlStatic + "' }";
+                    var appName = result.Name;
+                    string logo;
+                    JObject theme;
 
+                    if (Array.IndexOf(validUrlsArr, request.Host.Host) > -1)
+                    {
+                        theme = application.Theme;
+                        logo = cdnUrlStatic + "/images/login/logos/login_primeapps.png";
+                    }
+
+                    else
+                    {
+                        theme = !string.IsNullOrEmpty(result.Setting.AutTheme) ? JObject.Parse(result.Setting.AutTheme) : application.Theme;
+                        logo = result.Logo ?? cdnUrlStatic + "/images/login/logos/login_primeapps.png";
+                    }
+                        
+
+                    var multiLanguage = string.IsNullOrEmpty(result.Setting.Language);// result.UseTenantSettings;
+                    var domain = result.Setting.AppDomain;
+                    var appId = result.Id;
+                    //Thread.CurrentThread.CurrentUICulture = lang == "en" ? new CultureInfo("en-GB") : new CultureInfo("tr-TR");
+
+                    application = new Application()
+                    {
+                        Id = appId,
+                        Name = appName,
+                        Title = theme["title"].ToString(),
+                        MultiLanguage = multiLanguage,
+                        Logo = logo,
+                        Theme = theme,
+                        Color = theme["color"].ToString(),
+                        CustomDomain = false,
+                        Language = _language,
+                        Favicon = theme["favicon"].ToString(),
+                        CdnUrl = cdnUrlStatic,
+                        Domain = domain,
+                        Settings = new Settings
+                        {
+                            Culture = result.Setting.Culture,
+                            Currency = result.Setting.Currency,
+                            TimeZone = result.Setting.TimeZone,
+                            GoogleAnalytics = result.Setting.GoogleAnalyticsCode
+                        }
+                    };
                     //SetLanguage(response, request, _language);
-                    return JObject.Parse(json);
+                    return application;
 
                 }
             }
 
             //SetLanguage(response, request, _language);
-            return JObject.Parse(json);
+            return application;
         }
-        /*public static void SetLanguage(HttpResponse response, HttpRequest request, string lang)
-		{
-			response.Cookies.Append(
-				CookieRequestCultureProvider.DefaultCookieName,
-				CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(lang)),
-				new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
-			);
-		}*/
+        public static string CurrentLanguage(HttpRequest request)
+        {
+            return !string.IsNullOrEmpty(request.Cookies[".AspNetCore.Culture"]) ? request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
+        }
+
+        public static string GetClientId(string url)
+        {
+            if (!string.IsNullOrEmpty(url))
+            {
+                var queryStrings = url.Split("&");
+                if (queryStrings.Length > 0)
+                {
+                    var clientIdIndex = Array.FindIndex(queryStrings, x => x.Contains("client_id"));
+                    if (clientIdIndex >= 0)
+                    {
+                        return queryStrings[clientIdIndex].Split("client_id=")[1];
+                    }
+                }
+            }
+            return null;
+        }
     }
 }

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Auth.UI
 {
-    public class ForgotPasswordViewModel : ForgotPasswordInputModel
+    public class ForgotPasswordInputModel : ApplicationViewModel
     {
-		
-	}
+        [Required]
+        public string Email { get; set; }
+    }
 }

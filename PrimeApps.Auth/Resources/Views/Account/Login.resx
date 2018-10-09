@@ -159,4 +159,37 @@
   <data name="Google" xml:space="preserve">
     <value>Fast access with Google</value>
   </data>
+  <data name="AlreadyRegisterForApp" xml:space="preserve">
+    <value>It seems that you have already registered with this application. Please try logging in with your information.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>There is a problem !</value>
+  </data>
+  <data name="ModelStateNotValid" xml:space="preserve">
+    <value>Please enter valid information.</value>
+  </data>
+  <data name="NotValidAppContent" xml:space="preserve">
+    <value>You’ve tried to sign in with your {0} application account. Please try another e-mail address to sign in.</value>
+  </data>
+  <data name="NotValidAppTitle" xml:space="preserve">
+    <value>The information does not match the application.</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="PasswordSuccessMessage" xml:space="preserve">
+    <value>Now, you can login with your new password.</value>
+  </data>
+  <data name="PasswordSuccessTitle" xml:space="preserve">
+    <value>Your password has been reset successfully.</value>
+  </data>
+  <data name="TenantCreateError" xml:space="preserve">
+    <value>An error occurred while creating an account.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred.</value>
+  </data>
+  <data name="UserNotCreated" xml:space="preserve">
+    <value>There was a problem creating the user.</value>
+  </data>
 </root>

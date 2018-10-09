@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -31,24 +32,29 @@ namespace PrimeApps.Auth.Controllers
 		private IPlatformRepository _platformRepository;
 		private IApplicationRepository _applicationRepository;
 		private readonly IEventService _events;
-		public UserController(
+        private IConfiguration _configuration;
+        public UserController(
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager,
 			IEventService events,
 			IPlatformRepository platformRepository,
-			IApplicationRepository applicationRepository)
+			IApplicationRepository applicationRepository,
+            IConfiguration configuration)
 		{
 			_applicationRepository = applicationRepository;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_platformRepository = platformRepository;
+            _configuration = configuration;
 			_events = events;
 		}
 
 		[Route("confirm_email"), HttpGet]
-		public async Task<IActionResult> ConfirmEmail(string email, string token)
+		public async Task<IActionResult> ConfirmEmail(string email, string code, string returnUrl)
 		{
-			if (email == null || token == null)
+            return RedirectToAction("Index", "Home", new { error = "ConfirmEmailError" });
+
+            if (email == null || code == null)
 			{
 				ModelState.AddModelError("", "email and token are required.");
 				return BadRequest(ModelState);
@@ -58,13 +64,20 @@ namespace PrimeApps.Auth.Controllers
 			{
 				throw new ApplicationException($"Unable to load user with email: '{email}'.");
 			}
-			var result = await _userManager.ConfirmEmailAsync(user, token);
+			var result = await _userManager.ConfirmEmailAsync(user, code);
 
-			return result.Succeeded ? Ok() : (IActionResult)BadRequest(result.Errors.First().Description);
+            if (result.Succeeded)
+            {
+                var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
+                return Redirect(Request.Scheme + "://" + applicationInfo.Domain);
+            }
+
+            ViewBag.Error = "ConfirmEmailError";
+            return RedirectToAction("Index", "Account");
 		}
 
 		[Route("register/{organization}/{app}"), HttpPost]
-		public async Task<IActionResult> Register([FromBody]RegisterViewModel registerViewModel, string organization, string app)
+		public async Task<IActionResult> Register([FromBody]RegisterInputModel registerViewModel, string organization, string app)
 		{
 			if (string.IsNullOrEmpty(organization) || string.IsNullOrEmpty(app))
 			{
@@ -162,7 +175,7 @@ namespace PrimeApps.Auth.Controllers
 		}
 
 		[Route("register"), HttpPost]
-		public async Task<IActionResult> Register([FromBody]RegisterViewModel registerViewModel)
+		public async Task<IActionResult> Register([FromBody]RegisterInputModel registerViewModel)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -210,7 +223,7 @@ namespace PrimeApps.Auth.Controllers
 
 			return result.Succeeded ? Ok() : StatusCode(400);
 		}
-		public async Task<string> AddUser(RegisterViewModel registerViewModel)
+		public async Task<string> AddUser(RegisterInputModel registerViewModel)
 		{
 			var user = new ApplicationUser
 			{
