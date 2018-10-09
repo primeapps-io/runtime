@@ -301,8 +301,6 @@ namespace PrimeApps.Auth
                 });
 
                 app.UseExceptionHandler("/Home/Error");
-                app.UseHttpsRedirection();
-                app.UseHsts();
             }
 
             var supportedCultures = new[]
