@@ -31,17 +31,8 @@ namespace PrimeApps.Auth
             //     SeedData.EnsureSeedData(host.Services);
             //     return;
             // }
+            CreateWebHostBuilder(args).Build().Run();
 
-            try
-            {
-                CreateWebHostBuilder(args).Build().Run();
-            }
-            catch (Exception ex)
-            {
-            }
-            finally
-            {
-            }
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
