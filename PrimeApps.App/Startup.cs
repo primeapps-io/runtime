@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Sentry;
 
 namespace PrimeApps.App
 {
@@ -37,12 +38,6 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
 
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
@@ -136,20 +131,34 @@ namespace PrimeApps.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
-            else
+
+            bool enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
+            bool enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
+
+            if (enableHeaderForwarding)
             {
-                app.UseDeveloperExceptionPage(); //Todo: Temporary, remove it.
-                app.UseDatabaseErrorPage();//Todo: Temporary, remove it.
-                // app.UseHttpsRedirection();
-                // app.UseHsts();
-                app.UseForwardedHeaders();
+                var fordwardedHeaderOptions = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                };
+
+                fordwardedHeaderOptions.KnownNetworks.Clear();
+                fordwardedHeaderOptions.KnownProxies.Clear();
+
+                app.UseForwardedHeaders(fordwardedHeaderOptions);
             }
 
+            if (enableHttpsRedirection)
+            {
+                app.UseHsts().UseHttpsRedirection();
+            }
+            
             app.UseHangfireDashboard();
             app.UseWebOptimizer();
             app.UseStaticFiles();
@@ -177,5 +186,6 @@ namespace PrimeApps.App
                 );
             });
         }
+
     }
 }

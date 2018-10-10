@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using System;
-using Sentry;
 
 namespace PrimeApps.App
 {
@@ -12,10 +10,7 @@ namespace PrimeApps.App
 
         public static void Main(string[] args)
         {
-            using (SentrySdk.Init(Configuration.GetValue("AppSettings:SentryClientKey", String.Empty)))
-            {
-                CreateWebHostBuilder(args).Build().Run();
-            }
+            CreateWebHostBuilder(args).Build().Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)

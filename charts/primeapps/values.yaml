@@ -24,9 +24,8 @@ app:
     annotations:
      kubernetes.io/ingress.class: nginx
      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-     kubernetes.io/tls-acme: "false"
-     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
-    tls: false
+     kubernetes.io/tls-acme: "true"
+    tls: true
   probes:
     enabled: false
   secrets:
@@ -63,10 +62,12 @@ app:
         AzureSearch.Storage: "ofisimdev"
         AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
         UseCdn: "false"
-        AuthenticationServerURL: "http://auth-dev.primeapps.io"
+        AuthenticationServerURL: "https://auth-dev.primeapps.io"
         ClientId: "primeapps"
         ClientSecret: "secret"
-        RequireHttps: "false"
+        RequireHttps: "true"
+        ForwardHeaders: "true"
+        HttpsRedirection: "true"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"
@@ -77,12 +78,6 @@ app:
         Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
         IncludeRequestPayload: "true"
         IncludeActivityData: "true"
-        Logging:
-          MinimumBreadcrumbLevel: "Information"
-      Logging: 
-        IncludeScopes": "false"
-        LogLevel:
-          Default: "Trace"
   resources: {}
   nodeSelector: {}
   tolerations: []
@@ -109,9 +104,8 @@ auth:
     annotations:
      kubernetes.io/ingress.class: nginx
      certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-     kubernetes.io/tls-acme: "false"
-     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
-    tls: false
+     kubernetes.io/tls-acme: "true"
+    tls: true
   probes:
     enabled: false
   secrets:
@@ -125,7 +119,10 @@ auth:
       AppSettings:
         AuthCertLocation: "/cert/primeapps_id4.pfx"
         AuthCertExportKey: "1q2w3e4r5t"
-        PublicOrigin: "http://auth-dev.primeapps.io"
+        PublicOrigin: "https://auth-dev.primeapps.io"
+        ValidUrls: "localhost;primeapps.io"
+        ForwardHeaders: "true"
+        HttpsRedirection: "true"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"
@@ -136,12 +133,6 @@ auth:
         Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
         IncludeRequestPayload: "true"
         IncludeActivityData: "true"
-        Logging:
-          MinimumBreadcrumbLevel: "Information"
-      Logging: 
-        IncludeScopes": "false"
-        LogLevel:
-          Default: "Trace"
   resources: {}
   nodeSelector: {}
   tolerations: []
