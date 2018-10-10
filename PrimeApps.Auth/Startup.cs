@@ -151,9 +151,9 @@ namespace PrimeApps.Auth
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-			services.AddTransient<IPlatformRepository, PlatformRepository>();
-			services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
-			services.AddTransient<IApplicationRepository, ApplicationRepository>();
+            services.AddTransient<IPlatformRepository, PlatformRepository>();
+            services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
+            services.AddTransient<IApplicationRepository, ApplicationRepository>();
 
             var builder = services.AddIdentityServer(options =>
                 {
@@ -295,12 +295,28 @@ namespace PrimeApps.Auth
             }
             else
             {
-                app.UseForwardedHeaders(new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-                });
 
                 app.UseExceptionHandler("/Home/Error");
+            }
+            bool enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
+            bool enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
+
+            if (enableHeaderForwarding)
+            {
+                var fordwardedHeaderOptions = new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                };
+
+                fordwardedHeaderOptions.KnownNetworks.Clear();
+                fordwardedHeaderOptions.KnownProxies.Clear();
+
+                app.UseForwardedHeaders(fordwardedHeaderOptions);
+            }
+
+            if (enableHttpsRedirection)
+            {
+                app.UseHsts().UseHttpsRedirection();
             }
 
             var supportedCultures = new[]
