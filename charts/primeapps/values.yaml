@@ -62,12 +62,12 @@ app:
         AzureSearch.Storage: "ofisimdev"
         AzureSearch.AdminKey: "044D958A74716C3622C6977E47AA3FEE"
         UseCdn: "false"
-        AuthenticationServerURL: "auth-dev.primeapps.io"
-        ClientId: "ofisim_crm"
+        AuthenticationServerURL: "https://auth-dev.primeapps.io"
+        ClientId: "primeapps"
         ClientSecret: "secret"
         RequireHttps: "true"
         ForwardHeaders: "true"
-		    HttpsRedirection: "true"
+        HttpsRedirection: "true"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"
@@ -119,10 +119,10 @@ auth:
       AppSettings:
         AuthCertLocation: "/cert/primeapps_id4.pfx"
         AuthCertExportKey: "1q2w3e4r5t"
-        PublicOrigin: "http://auth-dev.primeapps.io"
+        PublicOrigin: "https://auth-dev.primeapps.io"
         ValidUrls: "localhost;primeapps.io"
         ForwardHeaders: "true"
-		    HttpsRedirection: "true"
+        HttpsRedirection: "true"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"
