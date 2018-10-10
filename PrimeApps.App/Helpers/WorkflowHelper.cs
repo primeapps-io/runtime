@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -682,7 +683,13 @@ namespace PrimeApps.App.Helpers
 
 								using (var client = new HttpClient())
 								{
-									var recordId = (int)record["id"];
+                                    /*
+                                     * If the server only supports higher TLS version like TLS 1.2 only, it will still fail unless your client PC is configured to use higher TLS version by default. 
+                                     * To overcome this problem add the following in your code.
+                                     */
+                                    System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                                    var recordId = (int)record["id"];
 									var jsonData = new JObject();
 									jsonData["id"] = recordId;
 
