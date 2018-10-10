@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 ENV ASPNETCORE_ENVIRONMENT Production
 ENV DOTNET_RUNNING_IN_CONTAINER=true
-
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 FROM microsoft/dotnet:2.1-sdk-alpine AS build
 WORKDIR /src
 COPY ["PrimeApps.Auth/PrimeApps.Auth.csproj", "PrimeApps.Auth/"]
@@ -20,5 +20,10 @@ RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
+
+# Install Visual Studio Remote Debugger
+RUN apk update
+RUN apk add zip unzip bash curl
+RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg  
 
 ENTRYPOINT ["dotnet","PrimeApps.Auth.dll"]
