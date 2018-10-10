@@ -387,7 +387,7 @@ namespace PrimeApps.Auth.UI
 
                     }
 
-                    var result = _platformUserRepository.CreateUser(platformUser).Result;
+                    var result = await _platformUserRepository.CreateUser(platformUser);
 
                     if (result == 0)
                     {
