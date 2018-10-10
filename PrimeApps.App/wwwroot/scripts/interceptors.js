@@ -18,6 +18,10 @@ angular.module('primeapps')
                     if (functionUrl && config.url.indexOf(functionUrl) > -1) {
                         config.headers['user_id'] = $rootScope.user.ID;
                         config.headers['tenant_id'] = $rootScope.user.tenantId;
+
+                        if ($rootScope.branchAvailable) {
+                            config.headers['branch_id'] = $rootScope.user.branchId;
+                        }
                     }
 
                     config.headers['X-Tenant-Id'] = $cookies.get('tenant_id');

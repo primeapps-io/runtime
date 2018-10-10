@@ -121,15 +121,34 @@ angular.module('primeapps')
                                         return deferred.promise;
                                     }
 
-                                    /*
-                                    * Check branch mode is available.
-                                    * */
-                                    if (response[11].status === 200 && response[11].data.value) {
-                                        $rootScope.branchAvailable = response[11].data.value === 't';
-                                    }
-
                                     var isDemo = responseAccount.data.user.isDemo || false;
                                     var account = responseAccount.data;
+
+                                    /*
+                                   * Check branch mode is available.
+                                   * */
+                                    if (response[11].status === 200 && response[11].data.value) {
+                                        $rootScope.branchAvailable = response[11].data.value === 't';
+
+                                        var calisanRequest = {
+                                            filters: [
+                                                { field: 'e_posta', operator: 'is', value: account.user.email, no: 1 },
+                                                { field: 'deleted', operator: 'equals', value: false, no: 2 }
+                                            ],
+                                            limit: 1
+                                        };
+
+                                        $http.post(config.apiUrl + 'record/find/calisanlar', calisanRequest)
+                                            .then(function (response) {
+                                                var calisan = response.data;
+                                                if (calisan.length > 0) {
+                                                    $rootScope.user.calisanId = calisan[0]['id'];
+                                                    $rootScope.user.branchId = calisan[0]['branch'];
+                                                } else if (account.user.profile.has_admin_rights) {
+                                                    $rootScope.user.branchId = 1;
+                                                }
+                                            });
+                                    }
                                     var modules = !isDemo ? response[0].data : $filter('filter')(response[0].data, function (value) {
                                         return value.created_by_id == account.user.id || value.system_type == 'system';
                                     }, true);
