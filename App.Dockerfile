@@ -17,12 +17,12 @@ RUN dotnet build "PrimeApps.App.csproj" --no-restore -c Release -o /app
 FROM build AS publish
 RUN dotnet publish "PrimeApps.App.csproj" --no-restore -c Release -o /app
 
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
 # Install Visual Studio Remote Debugger
 RUN apk update
 RUN apk add zip unzip bash curl
 RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg  
 
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
 ENTRYPOINT ["dotnet","PrimeApps.App.dll"]
