@@ -650,6 +650,9 @@ angular.module('primeapps')
                     var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
 
                     if (permission && permission[operation]) {
+                        if ((operation === 'Modify' || operation === 'Remove') && record && (!record.shared_users_edit || record.shared_users_edit.indexOf($rootScope.user.ID) === -1) && (record.shared_users && record.shared_users.indexOf($rootScope.user.ID) > -1)) {
+                            return false;
+                        }
                         return true;
                     } else if (record) {
                         /*
