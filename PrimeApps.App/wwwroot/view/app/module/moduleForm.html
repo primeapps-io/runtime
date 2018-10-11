@@ -71,455 +71,455 @@
                 </div>
                 <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
                 <div ng-show="!loading">
-                    <div class="subpanel" ng-repeat="section in module.sections | filter:{display_form:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && hasPermission(type, operations.modify, record) && hasSectionFullPermission(section)">
-                        <h5 class="subpanel-heading">
-                            {{
+					<div class="subpanel" ng-repeat="section in module.sections | filter:{display_form:true, deleted: false}:true | orderBy:'order'" ng-if="!section.hidden && ((id && hasPermission(type, operations.modify, record)) || (!id && hasPermission(type, operations.write, record))) && hasSectionFullPermission(section)">
+						<h5 class="subpanel-heading">
+							{{
  !section.custom_label ? section['label_' + language] :
                             section.custom_label
-                            }}
-                        </h5>
-                        <div class="subpanel-body">
-                            <div class="row">
-                                <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
-                                    <div class="form-group"
-                                         ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}"
-                                         ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, display_form:true, deleted: false}:true | orderBy:'order'"
-                                         ng-if="!field.hidden && field.data_type != 'number_auto' && (field.show_only_edit ? id : true) && hasFieldFullPermission(field)"
-                                         ng-show="field.name != 'activity_type' && field.name != 'transaction_type'">
-                                        <label for="name={{field.name}}" class="control-label" ng-if="!(module.name == 'izinler' && (field.name == 'from_entry_type' || field.name == 'to_entry_type'))" ng-class="{'col-sm-6':section.column_count === 2, 'col-sm-3':section.column_count === 1, 'required-field':field.validation.required}" style="{{field.style_label}}">
-                                            <span ng-if="field.validation.required && field.show_label">*</span>
-                                            <span ng-show="!field.custom_label && field.show_label">{{field['label_' + language]}}:</span>
-                                            <input type="checkbox" ng-model="record[field.name]" class="cell-handle" ng-show="field.data_type=='checkbox' && field.custom_label">
-                                        </label>
-                                        <div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-9': section.column_count === 1 && field.position !='left', 'checkbox': field.data_type === 'checkbox','col-sm-12':field.position==='left'}"
-                                             style="{{field.style_input}}">
+							}}
+						</h5>
+						<div class="subpanel-body">
+							<div class="row">
+								<div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-12': section.column_count === 1}" ng-repeat="column in section.columns track by $index">
+									<div class="form-group"
+										 ng-class="{'has-error': moduleForm.$submitted && moduleForm[field.name].$invalid}"
+										 ng-repeat="field in module.fields | filter:{section: section.name, section_column: column.no, display_form:true, deleted: false}:true | orderBy:'order'"
+										 ng-if="!field.hidden && field.data_type != 'number_auto' && (field.show_only_edit ? id : true) && hasFieldFullPermission(field)"
+										 ng-show="field.name != 'activity_type' && field.name != 'transaction_type'">
+										<label for="name={{field.name}}" class="control-label" ng-if="!(module.name == 'izinler' && (field.name == 'from_entry_type' || field.name == 'to_entry_type'))" ng-class="{'col-sm-6':section.column_count === 2, 'col-sm-3':section.column_count === 1, 'required-field':field.validation.required}" style="{{field.style_label}}">
+											<span ng-if="field.validation.required && field.show_label">*</span>
+											<span ng-show="!field.custom_label && field.show_label">{{field['label_' + language]}}:</span>
+											<input type="checkbox" ng-model="record[field.name]" class="cell-handle" ng-show="field.data_type=='checkbox' && field.custom_label">
+										</label>
+										<div ng-class="{'col-sm-6': section.column_count === 2, 'col-sm-9': section.column_count === 1 && field.position !='left', 'checkbox': field.data_type === 'checkbox','col-sm-12':field.position==='left'}"
+											 style="{{field.style_input}}">
 
-                                            <div ng-if="field.show_lock" class="clearfix">
-                                                <i style="margin-left: 5px; margin-top: 10px;" class="fa fa-lock fa-lg"></i>
-                                            </div>
+											<div ng-if="field.show_lock" class="clearfix">
+												<i style="margin-left: 5px; margin-top: 10px;" class="fa fa-lock fa-lg"></i>
+											</div>
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   placeholder="{{field.placeholder}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field);"
-                                                   ng-required="{{field.validation.required}}"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   ng-minlength="field.validation.min_length || 0"
-                                                   maxlength="{{field.validation.max_length || 50}}"
-                                                   pattern="{{field.validation.pattern}}"
-                                                   ui-mask="{{field.mask}}"
-                                                   ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && (!field.editable ? field.show_label : true) && !field.show_lock" />
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   placeholder="{{field.placeholder}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field);"
+												   ng-required="{{field.validation.required}}"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   ng-minlength="field.validation.min_length || 0"
+												   maxlength="{{field.validation.max_length || 50}}"
+												   pattern="{{field.validation.pattern}}"
+												   ui-mask="{{field.mask}}"
+												   ng-if="field.data_type === 'text_single' && field.data_type != 'number_auto' && !field.combination && (!field.editable ? field.show_label : true) && !field.show_lock" />
 
-                                            <pre name="{{field.name}}"
-                                                 class="form-control ng-animate-disabled"
-                                                 style="{{'padding-top: 5px; padding-left: 1px; border: 0px;height: 100% ' + field.style.input}}"
-                                                 tabindex="{{field.order}}"
-                                                 ng-bind-html="field.placeholder"
-                                                 ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label  && !field.show_lock"></pre>
+											<pre name="{{field.name}}"
+												 class="form-control ng-animate-disabled"
+												 style="{{'padding-top: 5px; padding-left: 1px; border: 0px;height: 100% ' + field.style.input}}"
+												 tabindex="{{field.order}}"
+												 ng-bind-html="field.placeholder"
+												 ng-if="field.data_type === 'text_single' && !field.editable && !field.show_label  && !field.show_lock"></pre>
 
-                                            <textarea name="{{field.name}}"
-                                                      class="form-control ng-animate-disabled"
-                                                      style="{{'overflow-x: hidden;' + field.style.input}}"
-                                                      tabindex="{{field.order}}"
-                                                      placeholder="{{field.placeholder}}"
-                                                      ng-model="record[field.name]"
-                                                      ng-change="fieldValueChange(field);"
-                                                      ng-required="{{field.validation.required}}"
-                                                      ng-minlength="field.validation.min_length || 0"
-                                                      maxlength="{{field.validation.max_length || 500}}"
-                                                      ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                      pattern="{{field.validation.pattern}}"
-                                                      auto-grow
-                                                      ng-if="field.data_type === 'text_multi' && !field.multiline_type_use_html"></textarea>
+											<textarea name="{{field.name}}"
+													  class="form-control ng-animate-disabled"
+													  style="{{'overflow-x: hidden;' + field.style.input}}"
+													  tabindex="{{field.order}}"
+													  placeholder="{{field.placeholder}}"
+													  ng-model="record[field.name]"
+													  ng-change="fieldValueChange(field);"
+													  ng-required="{{field.validation.required}}"
+													  ng-minlength="field.validation.min_length || 0"
+													  maxlength="{{field.validation.max_length || 500}}"
+													  ng-readonly="field.validation.readonly || (id && !field.editable)"
+													  pattern="{{field.validation.pattern}}"
+													  auto-grow
+													  ng-if="field.data_type === 'text_multi' && !field.multiline_type_use_html"></textarea>
 
-                                            <textarea ng-model="record[field.name]"
-                                                      ui-tinymce-multi="tinymceOptions"
-                                                      ng-required="{{field.validation.required}}"
-                                                      ng-if="field.data_type === 'text_multi' && field.multiline_type_use_html"></textarea>
+											<textarea ng-model="record[field.name]"
+													  ui-tinymce-multi="tinymceOptions"
+													  ng-required="{{field.validation.required}}"
+													  ng-if="field.data_type === 'text_multi' && field.multiline_type_use_html"></textarea>
 
-                                            <div class="inner-addon right-addon" ng-if="field.data_type === 'location'"
-                                                 ng-click="openLocationModal(field.name)">
-                                                <i class="glyphicon glyphicon-map-marker" style="height: 27px;"></i>
-                                                <input name="{{field.name}}" ng-model="record[field.name]"
-                                                       ng-readonly="field.validation.readonly" type="text"
-                                                       class="form-control" />
+											<div class="inner-addon right-addon" ng-if="field.data_type === 'location'"
+												 ng-click="openLocationModal(field.name)">
+												<i class="glyphicon glyphicon-map-marker" style="height: 27px;"></i>
+												<input name="{{field.name}}" ng-model="record[field.name]"
+													   ng-readonly="field.validation.readonly" type="text"
+													   class="form-control" />
 
-                                            </div>
+											</div>
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   placeholder="{{field.placeholder}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field); calculate(field);"
-                                                   ng-required="field.validation.required"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   ng-trim="false"
-                                                   ng-minlength="field.validation.min_length || 0"
-                                                   maxlength="{{field.validation.max_length || 15}}"
-                                                   min-value="field.validation.min || Number.MIN_VALUE"
-                                                   max-value="field.validation.max || Number.MAX_VALUE"
-                                                   numeric
-                                                   ng-if="field.data_type === 'number' && !field.show_lock" />
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   placeholder="{{field.placeholder}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field); calculate(field);"
+												   ng-required="field.validation.required"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   ng-trim="false"
+												   ng-minlength="field.validation.min_length || 0"
+												   maxlength="{{field.validation.max_length || 15}}"
+												   min-value="field.validation.min || Number.MIN_VALUE"
+												   max-value="field.validation.max || Number.MAX_VALUE"
+												   numeric
+												   ng-if="field.data_type === 'number' && !field.show_lock" />
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   placeholder="{{field.placeholder}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field); calculate(field);"
-                                                   ng-required="field.validation.required"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   maxlength="{{field.validation.max_length || 19}}"
-                                                   min-value="field.validation.min || Number.MIN_VALUE"
-                                                   max-value="field.validation.max || Number.MAX_VALUE"
-                                                   places="field.decimal_places || 2"
-                                                   rounding="field.rounding"
-                                                   number-decimal
-                                                   ng-if="field.data_type === 'number_decimal' && !field.show_lock" />
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   placeholder="{{field.placeholder}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field); calculate(field);"
+												   ng-required="field.validation.required"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   maxlength="{{field.validation.max_length || 19}}"
+												   min-value="field.validation.min || Number.MIN_VALUE"
+												   max-value="field.validation.max || Number.MAX_VALUE"
+												   places="field.decimal_places || 2"
+												   rounding="field.rounding"
+												   number-decimal
+												   ng-if="field.data_type === 'number_decimal' && !field.show_lock" />
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   placeholder="{{field.placeholder}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field); calculate(field);"
-                                                   ng-required="field.validation.required"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   maxlength="{{field.validation.max_length || 21}}"
-                                                   min-value="field.validation.min || 0"
-                                                   max-value="field.validation.max || Number.MAX_VALUE"
-                                                   places="field.decimal_places || 2"
-                                                   rounding="field.rounding"
-                                                   currency-symbol="field.currency_symbol || currencySymbol"
-                                                   number-currency
-                                                   ng-if="field.data_type === 'currency' && !field.show_lock" />
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   placeholder="{{field.placeholder}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field); calculate(field);"
+												   ng-required="field.validation.required"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   maxlength="{{field.validation.max_length || 21}}"
+												   min-value="field.validation.min || 0"
+												   max-value="field.validation.max || Number.MAX_VALUE"
+												   places="field.decimal_places || 2"
+												   rounding="field.rounding"
+												   currency-symbol="field.currency_symbol || currencySymbol"
+												   number-currency
+												   ng-if="field.data_type === 'currency' && !field.show_lock" />
 
-                                            <input type="email"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   placeholder="{{field.placeholder}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field);"
-                                                   ng-required="{{field.validation.required}}"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   ng-minlength="field.validation.min_length || 0"
-                                                   maxlength="{{field.validation.max_length || 100}}"
-                                                   ng-if="field.data_type === 'email' && !field.show_lock" />
+											<input type="email"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   placeholder="{{field.placeholder}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field);"
+												   ng-required="{{field.validation.required}}"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   ng-minlength="field.validation.min_length || 0"
+												   maxlength="{{field.validation.max_length || 100}}"
+												   ng-if="field.data_type === 'email' && !field.show_lock" />
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
-                                                   ng-required="{{field.validation.required}}"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   data-autoclose="1"
-                                                   data-date-type="iso"
-                                                   data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
-                                                   data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
-                                                   data-icon-left="fa fa-chevron-left"
-                                                   data-icon-right="fa fa-chevron-right"
-                                                   bs-datepicker
-                                                   ng-if="field.data_type === 'date'">
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
+												   ng-required="{{field.validation.required}}"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   data-autoclose="1"
+												   data-date-type="iso"
+												   data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
+												   data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
+												   data-icon-left="fa fa-chevron-left"
+												   data-icon-right="fa fa-chevron-right"
+												   bs-datepicker
+												   ng-if="field.data_type === 'date'">
 
-                                            <div class="clearfix" ng-if="field.data_type === 'date_time'">
-                                                <input type="text"
-                                                       name="{{field.name}}"
-                                                       class="form-control ng-animate-disabled pull-left datetime-date"
-                                                       style="{{(module.name === 'izinler' && izinTuruData && (!izinTuruData['saatlik_kullanim_yapilir'] && izinTuruData['sadece_tam_gun_olarak_kullanilir'])) ? field.style.input + ' width: 100% !important;' : field.style.input}}"
-                                                       tabindex="{{field.order}}"
-                                                       ng-model="record[field.name]"
-                                                       ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
-                                                       ng-required="{{field.validation.required}}"
-                                                       ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                       placeholder="{{'Common.Date' | translate}}"
-                                                       data-autoclose="1"
-                                                       data-date-type="iso"
-                                                       data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
-                                                       data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
-                                                       data-icon-left="fa fa-chevron-left"
-                                                       data-icon-right="fa fa-chevron-right"
-                                                       bs-datepicker>
-                                                <input type="text"
-                                                       class="form-control datetime-time ng-animate-disabled"
-                                                       style="{{field.style.input}}"
-                                                       tabindex="{{field.order}}"
-                                                       ng-model="record[field.name]"
-                                                       ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
-                                                       ng-disabled="!record[field.name] && !moduleForm[field.name].$dirty"
-                                                       placeholder="{{'Common.Time' | translate}}"
-                                                       data-autoclose="1"
-                                                       data-time-type="iso"
-                                                       data-icon-up="fa fa-chevron-up"
-                                                       data-icon-down="fa fa-chevron-down"
-                                                       data-length="1"
-                                                       data-minute-step="10"
-                                                       data-arrow-behavior="picker"
-                                                       bs-timepicker
-                                                       ng-hide="module.name === 'izinler' && izinTuruData && (!izinTuruData['saatlik_kullanim_yapilir'] || izinTuruData['yillik_izin'])">
+											<div class="clearfix" ng-if="field.data_type === 'date_time'">
+												<input type="text"
+													   name="{{field.name}}"
+													   class="form-control ng-animate-disabled pull-left datetime-date"
+													   style="{{(module.name === 'izinler' && izinTuruData && (!izinTuruData['saatlik_kullanim_yapilir'] && izinTuruData['sadece_tam_gun_olarak_kullanilir'])) ? field.style.input + ' width: 100% !important;' : field.style.input}}"
+													   tabindex="{{field.order}}"
+													   ng-model="record[field.name]"
+													   ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
+													   ng-required="{{field.validation.required}}"
+													   ng-readonly="field.validation.readonly || (id && !field.editable)"
+													   placeholder="{{'Common.Date' | translate}}"
+													   data-autoclose="1"
+													   data-date-type="iso"
+													   data-min-date="{{(field.validation.min ? (field.validation.min === 'today' ? currentDayMin : field.validation.min) : undefined)}}"
+													   data-max-date="{{(field.validation.max ? (field.validation.max === 'today' ? currentDayMax : field.validation.max) : undefined)}}"
+													   data-icon-left="fa fa-chevron-left"
+													   data-icon-right="fa fa-chevron-right"
+													   bs-datepicker>
+												<input type="text"
+													   class="form-control datetime-time ng-animate-disabled"
+													   style="{{field.style.input}}"
+													   tabindex="{{field.order}}"
+													   ng-model="record[field.name]"
+													   ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
+													   ng-disabled="!record[field.name] && !moduleForm[field.name].$dirty"
+													   placeholder="{{'Common.Time' | translate}}"
+													   data-autoclose="1"
+													   data-time-type="iso"
+													   data-icon-up="fa fa-chevron-up"
+													   data-icon-down="fa fa-chevron-down"
+													   data-length="1"
+													   data-minute-step="10"
+													   data-arrow-behavior="picker"
+													   bs-timepicker
+													   ng-hide="module.name === 'izinler' && izinTuruData && (!izinTuruData['saatlik_kullanim_yapilir'] || izinTuruData['yillik_izin'])">
 
-                                                <select class="form-control ng-animate-disabled custom-readonly"
-                                                        name="{{field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type'}}"
-                                                        style="width:29% !important;font-size: 10px;"
-                                                        tabindex="{{field.order + 1}}"
-                                                        ng-model="record[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']"
-                                                        ng-change="fieldValueChange(customLeaveFields[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']);"
-                                                        ng-required="{{true}}"
-                                                        ng-options="o as o.label[language] for o in picklistsModule[customLeaveFields[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type'].picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
-                                                        ng-if="module.name == 'izinler' && izinTuruData && !izinTuruData['saatlik_kullanim_yapilir'] && !izinTuruData['sadece_tam_gun_olarak_kullanilir'] && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi')"></select>
-                                            </div>
+												<select class="form-control ng-animate-disabled custom-readonly"
+														name="{{field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type'}}"
+														style="width:29% !important;font-size: 10px;"
+														tabindex="{{field.order + 1}}"
+														ng-model="record[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']"
+														ng-change="fieldValueChange(customLeaveFields[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type']);"
+														ng-required="{{true}}"
+														ng-options="o as o.label[language] for o in picklistsModule[customLeaveFields[field.name === 'baslangic_tarihi' ? 'from_entry_type' : 'to_entry_type'].picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
+														ng-if="module.name == 'izinler' && izinTuruData && !izinTuruData['saatlik_kullanim_yapilir'] && !izinTuruData['sadece_tam_gun_olarak_kullanilir'] && (field.name === 'baslangic_tarihi' || field.name === 'bitis_tarihi')"></select>
+											</div>
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
-                                                   ng-required="{{field.validation.required}}"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   data-autoclose="1"
-                                                   data-time-type="iso"
-                                                   data-icon-up="fa fa-chevron-up"
-                                                   data-icon-down="fa fa-chevron-down"
-                                                   data-length="1"
-                                                   data-minute-step="10"
-                                                   data-arrow-behavior="picker"
-                                                   placeholder="{{'Common.Time' | translate}}"
-                                                   bs-timepicker
-                                                   ng-if="field.data_type === 'time'">
-                                            <div style="text-align: justify; text-justify: inter-word; margin-bottom: 6px;"
-                                                 class="ng-animate-disabled"
-                                                 tabindex="{{cell.field.order}}"
-                                                 ng-model="field.custom_label"
-                                                 ng-class="{'required-field':field.validation.required, 'col-sm-12':field.position==='left'} "
-                                                 ng-if="(field.data_type === 'picklist' ||field.data_type === 'rating') && field.custom_label">
-                                                {{field.custom_label}}
-                                            </div>
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field); moduleForm[field.name].$setValidity('date', true);"
+												   ng-required="{{field.validation.required}}"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   data-autoclose="1"
+												   data-time-type="iso"
+												   data-icon-up="fa fa-chevron-up"
+												   data-icon-down="fa fa-chevron-down"
+												   data-length="1"
+												   data-minute-step="10"
+												   data-arrow-behavior="picker"
+												   placeholder="{{'Common.Time' | translate}}"
+												   bs-timepicker
+												   ng-if="field.data_type === 'time'">
+											<div style="text-align: justify; text-justify: inter-word; margin-bottom: 6px;"
+												 class="ng-animate-disabled"
+												 tabindex="{{cell.field.order}}"
+												 ng-model="field.custom_label"
+												 ng-class="{'required-field':field.validation.required, 'col-sm-12':field.position==='left'} "
+												 ng-if="(field.data_type === 'picklist' ||field.data_type === 'rating') && field.custom_label">
+												{{field.custom_label}}
+											</div>
 
-                                            <select class="form-control ng-animate-disabled custom-readonly"
-                                                    name="{{field.name}}"
-                                                    style="{{field.style.input}}"
-                                                    tabindex="{{field.order}}"
-                                                    ng-model="record[field.name]"
-                                                    ng-change="fieldValueChange(field);"
-                                                    ng-required="{{field.validation.required}}"
-                                                    ng-disabled="field.validation.readonly || (id && !field.editable)"
-                                                    ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:picklistFilter() track by o.id"
-                                                    ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !(module.name == 'izinler' && (field.name == 'from_entry_type' || field.name == 'to_entry_type'))">
-                                                <option value="">{{'Common.Select' | translate}}</option>
-                                            </select>
+											<select class="form-control ng-animate-disabled custom-readonly"
+													name="{{field.name}}"
+													style="{{field.style.input}}"
+													tabindex="{{field.order}}"
+													ng-model="record[field.name]"
+													ng-change="fieldValueChange(field);"
+													ng-required="{{field.validation.required}}"
+													ng-disabled="field.validation.readonly || (id && !field.editable)"
+													ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:picklistFilter() track by o.id"
+													ng-if="field.data_type === 'picklist' && ( field.view_type === 'dropdown' || field.view_type === '' || field.view_type === undefined) && !(module.name == 'izinler' && (field.name == 'from_entry_type' || field.name == 'to_entry_type'))">
+												<option value="">{{'Common.Select' | translate}}</option>
+											</select>
 
-                                            <span style="position: absolute;right: -268px;;top: 6px;width: 277px;" class="product-info" ng-if="module.name == 'izinler' && field.data_type === 'lookup' && field.name == 'izin_turu' && izinTuruData && izinTuruData['aciklama']">
-                                                <i class="fa fa-info-circle" aria-hidden="true"
-                                                   data-title="{{izinTuruData['aciklama']}}"
-                                                   data-trigger="hover"
-                                                   data-placement="bottom"
-                                                   bs-tooltip=""></i>
-                                            </span>
+											<span style="position: absolute;right: -268px;;top: 6px;width: 277px;" class="product-info" ng-if="module.name == 'izinler' && field.data_type === 'lookup' && field.name == 'izin_turu' && izinTuruData && izinTuruData['aciklama']">
+												<i class="fa fa-info-circle" aria-hidden="true"
+												   data-title="{{izinTuruData['aciklama']}}"
+												   data-trigger="hover"
+												   data-placement="bottom"
+												   bs-tooltip=""></i>
+											</span>
 
-                                            <div ng-repeat="radio in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'}"
-                                                 ng-if="field.data_type === 'picklist' &&  field.view_type ==='radio'"
-                                                 ng-class="{'col-sm-12':field.position==='left'}">
-                                                <input id="{{field.name+radio.id}}"
-                                                       tabindex="{{field.order}}"
-                                                       ng-disabled="field.validation.readonly || (id && !field.editable)"
-                                                       ng-required="{{field.validation.required}}"
-                                                       name="{{field.name}}"
-                                                       type="radio"
-                                                       ng-model="record[field.name]"
-                                                       ng-change="fieldValueChange(field);"
-                                                       ng-value="radio">
-                                                <label for="{{field.name+radio.id}}"
-                                                       style="font-size: 16px;font-weight: 300 !important;">
-                                                    {{radio.label[language]}}
-                                                </label>
-                                            </div>
+											<div ng-repeat="radio in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'}"
+												 ng-if="field.data_type === 'picklist' &&  field.view_type ==='radio'"
+												 ng-class="{'col-sm-12':field.position==='left'}">
+												<input id="{{field.name+radio.id}}"
+													   tabindex="{{field.order}}"
+													   ng-disabled="field.validation.readonly || (id && !field.editable)"
+													   ng-required="{{field.validation.required}}"
+													   name="{{field.name}}"
+													   type="radio"
+													   ng-model="record[field.name]"
+													   ng-change="fieldValueChange(field);"
+													   ng-value="radio">
+												<label for="{{field.name+radio.id}}"
+													   style="font-size: 16px;font-weight: 300 !important;">
+													{{radio.label[language]}}
+												</label>
+											</div>
 
-                                            <input type="checkbox"
-                                                   name="{{field.name}}"
-                                                   class="ng-animate-disabled custom-readonly"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   ng-checked="record[field.name]"
-                                                   ng-disabled="field.validation.readonly || (id && !field.editable)"
-                                                   ng-model="record[field.name]"
-                                                   ng-change="fieldValueChange(field);"
-                                                   ng-if="field.data_type === 'checkbox' && !field.custom_label">
+											<input type="checkbox"
+												   name="{{field.name}}"
+												   class="ng-animate-disabled custom-readonly"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   ng-checked="record[field.name]"
+												   ng-disabled="field.validation.readonly || (id && !field.editable)"
+												   ng-model="record[field.name]"
+												   ng-change="fieldValueChange(field);"
+												   ng-if="field.data_type === 'checkbox' && !field.custom_label">
 
-                                            <span class="ng-animate-disabled"
-                                                  tabindex="{{cell.field.order}}"
-                                                  ng-model="field.custom_label"
-                                                  ng-if="field.data_type === 'checkbox' && field.custom_label">{{field.custom_label}}</span>
+											<span class="ng-animate-disabled"
+												  tabindex="{{cell.field.order}}"
+												  ng-model="field.custom_label"
+												  ng-if="field.data_type === 'checkbox' && field.custom_label">{{field.custom_label}}</span>
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   ng-value="record[field.combination.field_1] && record[field.combination.field_2] ? record[field.combination.field_1] + ' ' + record[field.combination.field_2] : null"
-                                                   ng-readonly="true"
-                                                   ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock" />
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   ng-value="record[field.combination.field_1] && record[field.combination.field_2] ? record[field.combination.field_1] + ' ' + record[field.combination.field_2] : null"
+												   ng-readonly="true"
+												   ng-if="field.data_type === 'text_single' && field.combination && !field.show_lock" />
 
-                                            <tags-input name="{{field.name}}"
-                                                        tabindex="{{field.order}}"
-                                                        ng-model="record[field.name]"
-                                                        display-property="labelStr"
-                                                        key-property="id"
-                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                        replace-spaces-with-dashes="false"
-                                                        add-from-autocomplete-only="true"
-                                                        min-length="1"
-                                                        ng-required="{{field.validation.required}}"
-                                                        ng-if="field.data_type === 'multiselect'">
-                                                <auto-complete source="multiselect($query, field)"
-                                                               min-length="0"
-                                                               load-on-focus="true"
-                                                               load-on-empty="true"
-                                                               max-results-to-show="9999"></auto-complete>
-                                            </tags-input>
-                                            <tags-input name="{{field.name}}"
-                                                        tabindex="{{field.order}}"
-                                                        ng-model="record[field.name]"
-                                                        display-property="text"
-                                                        placeholder="{{'Common.TagPlaceholder' | translate}}"
-                                                        ng-required="{{field.validation.required}}"
-                                                        replace-spaces-with-dashes="false"
-                                                        ng-if="field.data_type === 'tag'">
-                                                <auto-complete source="tags($query, field)"
-                                                               load-on-focus="true"
-                                                               load-on-empty="true"
-                                                               max-results-to-show="9999"></auto-complete>
-                                            </tags-input>
-                                            <span class="file-input btn btn-primary btn-sm btn-file" ng-if="field.data_type === 'document'">
-                                                {{'Documents.ChooseFiles' | translate}}
-                                                <input id="fileDocument_{{field.name}}"
-                                                       type="file"
-                                                       name="{{field.name}}"
-                                                       class="fileInput"
-                                                       tabindex="{{field.order}}"
-                                                       nv-file-select uploader="uploaderBasic(field)"
-                                                       ng-model='record[field.name]'
-                                                       ng-required="{{field.validation.required}}"
-                                                       ng-if="field.data_type === 'document'" />
+											<tags-input name="{{field.name}}"
+														tabindex="{{field.order}}"
+														ng-model="record[field.name]"
+														display-property="labelStr"
+														key-property="id"
+														placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+														replace-spaces-with-dashes="false"
+														add-from-autocomplete-only="true"
+														min-length="1"
+														ng-required="{{field.validation.required}}"
+														ng-if="field.data_type === 'multiselect'">
+												<auto-complete source="multiselect($query, field)"
+															   min-length="0"
+															   load-on-focus="true"
+															   load-on-empty="true"
+															   max-results-to-show="9999"></auto-complete>
+											</tags-input>
+											<tags-input name="{{field.name}}"
+														tabindex="{{field.order}}"
+														ng-model="record[field.name]"
+														display-property="text"
+														placeholder="{{'Common.TagPlaceholder' | translate}}"
+														ng-required="{{field.validation.required}}"
+														replace-spaces-with-dashes="false"
+														ng-if="field.data_type === 'tag'">
+												<auto-complete source="tags($query, field)"
+															   load-on-focus="true"
+															   load-on-empty="true"
+															   max-results-to-show="9999"></auto-complete>
+											</tags-input>
+											<span class="file-input btn btn-primary btn-sm btn-file" ng-if="field.data_type === 'document'">
+												{{'Documents.ChooseFiles' | translate}}
+												<input id="fileDocument_{{field.name}}"
+													   type="file"
+													   name="{{field.name}}"
+													   class="fileInput"
+													   tabindex="{{field.order}}"
+													   nv-file-select uploader="uploaderBasic(field)"
+													   ng-model='record[field.name]'
+													   ng-required="{{field.validation.required}}"
+													   ng-if="field.data_type === 'document'" />
 
-                                            </span>
-                                            <label for="fileDocument_{{field.name}}" ng-if="field.data_type === 'document'" ng-value='record[field.name]' id="lbl_fileDocument_{{field.name}}">{{record[field.name]}}</label>
-                                            <span ng-show="record[field.name]" ng-if="field.data_type === 'document'">
-                                                <a href ng-if="field.data_type === 'document'" ng-click="removeDocument(field)">
-                                                    <i class="fa fa-minus-circle"></i>
-                                                </a>
-                                            </span>
+											</span>
+											<label for="fileDocument_{{field.name}}" ng-if="field.data_type === 'document'" ng-value='record[field.name]' id="lbl_fileDocument_{{field.name}}">{{record[field.name]}}</label>
+											<span ng-show="record[field.name]" ng-if="field.data_type === 'document'">
+												<a href ng-if="field.data_type === 'document'" ng-click="removeDocument(field)">
+													<i class="fa fa-minus-circle"></i>
+												</a>
+											</span>
 
-                                            <div ng-if="field.data_type === 'image'" class="image-type">
-                                                <span class="file-input btn btn-primary btn-sm btn-file"
-                                                      ng-disabled="fileLoadingCounter>0">
-                                                    {{'Documents.ChooseFiles' | translate}}
-                                                    <input id="fileImage_{{field.name}}"
-                                                           type="file"
-                                                           name="{{field.name}}"
-                                                           class="fileInput"
-                                                           tabindex="{{field.order}}"
-                                                           nv-file-select uploader="uploaderImage(field)"
-                                                           ng-model='record[field.name]'
-                                                           ng-required="{{field.validation.required}}"
-                                                           ng-if="field.data_type === 'image'" />
+											<div ng-if="field.data_type === 'image'" class="image-type">
+												<span class="file-input btn btn-primary btn-sm btn-file"
+													  ng-disabled="fileLoadingCounter>0">
+													{{'Documents.ChooseFiles' | translate}}
+													<input id="fileImage_{{field.name}}"
+														   type="file"
+														   name="{{field.name}}"
+														   class="fileInput"
+														   tabindex="{{field.order}}"
+														   nv-file-select uploader="uploaderImage(field)"
+														   ng-model='record[field.name]'
+														   ng-required="{{field.validation.required}}"
+														   ng-if="field.data_type === 'image'" />
 
-                                                </span>
-                                                <label for="fileImage_{{field.name}}"
-                                                       ng-if="field.data_type === 'image'"
-                                                       ng-value='record[field.name]'
-                                                       id="lbl_fileDocument_{{field.name}}">{{record[field.name]}}</label>
-                                                <span ng-show="record[field.name]" ng-if="field.data_type === 'image'">
-                                                    <a ng-show="fileLoadingCounter<1" href
-                                                       ng-if="field.data_type === 'image'"
-                                                       ng-click="removeDocument(field)">
-                                                        <i class="fa fa-minus-circle"></i>
-                                                    </a>
-                                                    <i ng-if="fileLoadingCounter>0"
-                                                       class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
-                                                </span>
-                                            </div>
+												</span>
+												<label for="fileImage_{{field.name}}"
+													   ng-if="field.data_type === 'image'"
+													   ng-value='record[field.name]'
+													   id="lbl_fileDocument_{{field.name}}">{{record[field.name]}}</label>
+												<span ng-show="record[field.name]" ng-if="field.data_type === 'image'">
+													<a ng-show="fileLoadingCounter<1" href
+													   ng-if="field.data_type === 'image'"
+													   ng-click="removeDocument(field)">
+														<i class="fa fa-minus-circle"></i>
+													</a>
+													<i ng-if="fileLoadingCounter>0"
+													   class="fa  fa-spinner fa-spin ng-animate-disabled"></i>
+												</span>
+											</div>
 
-                                            <input-stars style="margin-left: 11px;"
-                                                         ng-if="field.data_type === 'rating'"
-                                                         max="{{field.validation.min_length}}"
-                                                         allow-half
-                                                         icon-base="fa fa-fw"
-                                                         icon-empty="fa-star-o"
-                                                         icon-half="fa-star-half-o"
-                                                         icon-full="fa-star"
-                                                         icon-hover-full="fa-star"
-                                                         ng-model="record[field.name]">
-                                            </input-stars>
+											<input-stars style="margin-left: 11px;"
+														 ng-if="field.data_type === 'rating'"
+														 max="{{field.validation.min_length}}"
+														 allow-half
+														 icon-base="fa fa-fw"
+														 icon-empty="fa-star-o"
+														 icon-half="fa-star-half-o"
+														 icon-full="fa-star"
+														 icon-hover-full="fa-star"
+														 ng-model="record[field.name]">
+											</input-stars>
 
-                                            <input type="text"
-                                                   name="{{field.name}}"
-                                                   class="form-control ng-animate-disabled"
-                                                   style="{{field.style.input}}"
-                                                   tabindex="{{field.order}}"
-                                                   placeholder="{{field.placeholder}}"
-                                                   ng-model="record[field.name]"
-                                                   ng-required="{{field.validation.required}}"
-                                                   ng-readonly="field.validation.readonly || (id && !field.editable)"
-                                                   ng-minlength="field.validation.min_length || 0"
-                                                   maxlength="{{field.validation.max_length || 400}}"
-                                                   pattern="{{field.validation.pattern}}"
-                                                   ng-if="field.data_type === 'url'  && !field.show_lock" />
+											<input type="text"
+												   name="{{field.name}}"
+												   class="form-control ng-animate-disabled"
+												   style="{{field.style.input}}"
+												   tabindex="{{field.order}}"
+												   placeholder="{{field.placeholder}}"
+												   ng-model="record[field.name]"
+												   ng-required="{{field.validation.required}}"
+												   ng-readonly="field.validation.readonly || (id && !field.editable)"
+												   ng-minlength="field.validation.min_length || 0"
+												   maxlength="{{field.validation.max_length || 400}}"
+												   pattern="{{field.validation.pattern}}"
+												   ng-if="field.data_type === 'url'  && !field.show_lock" />
 
-                                            <ui-select name="{{field.name}}" ng-change="fieldValueChange(field);" ng-required="{{field.validation.required}}" ng-disabled="field.validation.readonly || (id && !field.editable)" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
-                                                <ui-select-match placeholder="{{('Common.Select' | translate)}}">{{$select.selected.primary_value}}</ui-select-match>
-                                                <ui-select-choices repeat="user in dropdownFieldDatas[field.name] | filter:{primary_value: $select.search} | orderBy:'primary_value'">
-                                                    <div ng-bind-html="user.primary_value | highlight: $select.search"></div>
-                                                </ui-select-choices>
-                                            </ui-select>
+											<ui-select name="{{field.name}}" ng-change="fieldValueChange(field);" ng-required="{{field.validation.required}}" ng-disabled="field.validation.readonly || (id && !field.editable)" ng-click="setDropdownData(field)" ng-model="record[field.name]" ng-if="field.data_type === 'lookup' && field.show_as_dropdown">
+												<ui-select-match placeholder="{{('Common.Select' | translate)}}">{{$select.selected.primary_value}}</ui-select-match>
+												<ui-select-choices repeat="user in dropdownFieldDatas[field.name] | filter:{primary_value: $select.search} | orderBy:'primary_value'">
+													<div ng-bind-html="user.primary_value | highlight: $select.search"></div>
+												</ui-select-choices>
+											</ui-select>
 
-                                            <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
-                                            <angucomplete-alt input-name="{{field.name}}"
-                                                              id="{{field.name}}"
-                                                              input-class="form-control ng-animate-disabled"
-                                                              match-class="highlight-angucomplete"
-                                                              field-tabindex="{{field.order}}"
-                                                              field-required="field.validation.required"
-                                                              disable-input="field.validation.readonly || (id && !field.editable)"
-                                                              pause="200"
-                                                              selected-object="record[field.name]"
-                                                              initial-value="record[field.name]"
-                                                              remote-api-handler="lookup"
-                                                              search-fields="name"
-                                                              title-field="primary_value"
-                                                              minlength="1"
-                                                              template-url="view/common/angucomplete.html"
-                                                              focus-in="setCurrentLookupField(field)"
-                                                              text-searching="{{'Common.Searching' | translate}}"
-                                                              text-no-results="{{'Common.NoResults' | translate}}"
-                                                              use-original-object="true"
-                                                              value-changed="fieldValueChange(field);"
-                                                              create-new="openFormModal"
-                                                              hide-create-new="hideCreateNew(field)"
-                                                              ng-if="field.data_type === 'lookup' && !field.show_as_dropdown" />
-                                            <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+											<!--Create new input above. angucomplete-alt must be at the bottom of the form-->
+											<angucomplete-alt input-name="{{field.name}}"
+															  id="{{field.name}}"
+															  input-class="form-control ng-animate-disabled"
+															  match-class="highlight-angucomplete"
+															  field-tabindex="{{field.order}}"
+															  field-required="field.validation.required"
+															  disable-input="field.validation.readonly || (id && !field.editable)"
+															  pause="200"
+															  selected-object="record[field.name]"
+															  initial-value="record[field.name]"
+															  remote-api-handler="lookup"
+															  search-fields="name"
+															  title-field="primary_value"
+															  minlength="1"
+															  template-url="view/common/angucomplete.html"
+															  focus-in="setCurrentLookupField(field)"
+															  text-searching="{{'Common.Searching' | translate}}"
+															  text-no-results="{{'Common.NoResults' | translate}}"
+															  use-original-object="true"
+															  value-changed="fieldValueChange(field);"
+															  create-new="openFormModal"
+															  hide-create-new="hideCreateNew(field)"
+															  ng-if="field.data_type === 'lookup' && !field.show_as_dropdown" />
+											<!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
                     <div class="subpanel expand">
                         <h5 class="subpanel-heading" ng-click="expanded = !expanded">
                             {{
