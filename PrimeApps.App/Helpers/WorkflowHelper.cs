@@ -499,7 +499,7 @@ namespace PrimeApps.App.Helpers
 								{
 									foreach (var field in module.Fields)
 									{
-										if (field.LookupType != null && field.LookupType != "users" && field.LookupType == fieldUpdate.Module && !record[field.Name + "." + fieldUpdate.Field].IsNullOrEmpty())
+										if (field.LookupType != null && field.LookupType != "users" && field.LookupType == fieldUpdate.Module)
 										{
 											fieldUpdateRecords.Add(fieldUpdate.Module, (int)record[field.Name + ".id"]);
 										}
