@@ -1,7 +1,7 @@
 FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
 WORKDIR /app
 EXPOSE 80
- 
+
 ENV ASPNETCORE_ENVIRONMENT Docker
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
@@ -25,7 +25,7 @@ COPY --from=publish /app .
 
 # Install Visual Studio Remote Debugger
 RUN apk update
-RUN apk add zip unzip bash curl
+RUN apk --no-cache add zip unzip bash curlapk procps
 RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg  
 
 ENTRYPOINT ["dotnet","PrimeApps.App.dll"]

@@ -25,7 +25,7 @@ COPY --from=publish /app .
 
 # Install Visual Studio Remote Debugger
 RUN apk update
-RUN apk add zip unzip bash curl
+RUN apk --no-cache add zip unzip bash curlapk procps
 RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg  
 
 ENTRYPOINT ["dotnet","PrimeApps.Auth.dll"]
