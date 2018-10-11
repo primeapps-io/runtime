@@ -45,7 +45,7 @@
     <a href="#/app/moduleForm/{{relatedModule.related_module}}?stype={{$parent.transactionType.system_code}}&ptype={{$parent.$parent.$parent.$parent.type}}&pid={{$parent.$parent.$parent.$parent.id}}&rtab={{ relatedModule.detail_view_type != 'flat' ?  relatedModule.id :''}}"
        class="btn btn-sm btn-custom"
        ng-show="$parent.hasPermission(relatedModule.related_module, operations.write)"
-       ng-repeat="transactionType in $parent.$parent.picklistsModule.transaction_type"
+       ng-repeat="transactionType in $parent.$parent.picklistsModule.transaction_type | filter:{show:true}"
        ng-if="relatedModule.related_module === 'current_accounts' && relatedModule.relation_type != 'many_to_many' && !relatedModule.readonly && !$parent.$parent.$parent.record.freeze">
         <i class="fa fa-plus"></i> {{'Module.New' |
         translate:{title:transactionType.label[language]} }}

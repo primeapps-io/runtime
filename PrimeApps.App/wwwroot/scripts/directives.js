@@ -478,7 +478,23 @@ angular.module('primeapps')
                         if (salesInvoiceModule.length < 1)
                             $scope.salesInvoiceModule = false;
                         else
+                        {
                             $scope.salesInvoiceModule = true;
+
+                            if ($scope.relatedModule.detail_view_type != 'flat') {
+                                var transactionType =
+                                    $scope.$parent.$parent.$parent['picklistsModule'].transaction_type;
+                            } else {
+                                var transactionType = $scope.$parent.$parent['picklistsModule'].transaction_type;
+                            }
+                            angular.forEach(transactionType, function (item) {
+                                if (item.system_code === 'sales_invoice')
+                                    item.show = false;
+                                if (item.system_code === 'purchase_invoice')
+                                    item.show = false;
+                            });
+
+                        }
 
 
                         var counts = [10, 25, 50, 100];
