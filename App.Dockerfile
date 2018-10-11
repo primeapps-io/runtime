@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-aspnetcore-runtime-alpine AS base
+FROM microsoft/dotnet:2.1-aspnetcore-runtime-stretch-slim AS base
 WORKDIR /app
 EXPOSE 80
 
@@ -6,7 +6,7 @@ ENV ASPNETCORE_ENVIRONMENT Docker
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 
-FROM microsoft/dotnet:2.1-sdk-alpine AS build
+FROM microsoft/dotnet:2.1-sdk-stretch AS build
 WORKDIR /src
 COPY ["PrimeApps.App/PrimeApps.App.csproj", "PrimeApps.App/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
@@ -24,8 +24,7 @@ WORKDIR /app
 COPY --from=publish /app .
 
 # Install Visual Studio Remote Debugger
-RUN apk update
-RUN apk --no-cache add zip unzip bash curl procps
-RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg  
+RUN apt-get update && apt-get install -y --no-install-recommends unzip
+RUN curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l ~/vsdbg  
 
 ENTRYPOINT ["dotnet","PrimeApps.App.dll"]
