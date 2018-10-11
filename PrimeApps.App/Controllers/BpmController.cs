@@ -68,7 +68,18 @@ namespace PrimeApps.App.Controllers
             return Ok(bpmEntity);
         }
 
-        [Route("find"), HttpPost]
+        [Route("get_all"), HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var bpmEntity = await _bpmRepository.GetAll();
+
+            if (bpmEntity.Count < 1)
+                return NotFound();
+
+            return Ok(bpmEntity);
+        }
+
+        [Route("find"), HttpGet]
         public async Task<ICollection<BpmWorkflow>> Find([FromBody]BpmFindRequest request)
         {
             var bpmWorkflows = await _bpmRepository.Find(request);
