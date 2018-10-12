@@ -61,8 +61,8 @@ namespace PrimeApps.App.Helpers
             if (string.IsNullOrEmpty(uniqueName))
                 uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
-            //send stream and parameters to storage upload helper method for temporary upload.
-            AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
+			//send stream and parameters to storage upload helper method for temporary upload.
+			 AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
             result = new DocumentUploadResult
             {
@@ -112,8 +112,8 @@ namespace PrimeApps.App.Helpers
             if (string.IsNullOrEmpty(uniqueName))
                 uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
-            //send stream and parameters to storage upload helper method for temporary upload.
-            AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
+			//send stream and parameters to storage upload helper method for temporary upload.
+			 AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
             result = new DocumentUploadResult
             {

@@ -124,7 +124,7 @@ namespace PrimeApps.App.Controllers
             await _templateRepostory.Update(templateEntity);
 
             if (template.Chunks > 0)
-                AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
+				await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             return Ok(templateEntity);
         }
