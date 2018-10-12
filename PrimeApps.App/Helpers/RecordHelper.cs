@@ -31,7 +31,7 @@ namespace PrimeApps.App.Helpers
         Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, Warehouse warehouse);
         void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
         void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
-        void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true);
+        void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
         JObject PrepareConflictError(PostgresException ex);
         bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
         Task CreateStageHistory(JObject record, JObject currentRecord = null);
@@ -429,10 +429,10 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true)
+        public void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
             Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
-            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Delete(appUser, record, module));
+            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Delete(appUser, record, module,timeZoneOffset));
 
             if (runWorkflows)
             {
