@@ -9,6 +9,7 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
+using PrimeApps.Model.Constants;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,6 +25,8 @@ namespace PrimeApps.App.Helpers
         Task UpdateEntity(BpmWorkflowBindingModel bpmWorkflowModel, BpmWorkflow bpmWorkflow, string tenantLanguage);
 
         string ReferenceCreateToForBpmHost(UserItem appUser);
+
+        JObject CreateDefinition(string code, int version, JObject diagram);
     }
     public class BpmHelper : IBpmHelper
     {
@@ -634,6 +637,110 @@ namespace PrimeApps.App.Helpers
             var reference = JObject.FromObject(tempReference);
 
             return reference.ToJsonString();
+        }
+
+        public JObject CreateDefinition(string code, int version, JObject diagram)
+        {
+            //Parse data from BPMN editor as Nodes and Links
+            var nodesData = diagram["nodeDataArray"].ToObject<JArray>();
+            var linksData = diagram["linkDataArray"].ToObject<JArray>();
+
+            #region Create new Jobject for BPM Engine
+
+            var jsonData = new JObject();
+
+            jsonData["Id"] = code;
+            jsonData["Version"] = version;
+            var StepsArray = new JArray();
+
+            //Create Steps
+            foreach (var node in nodesData)
+            {
+                var stepData = new JObject();
+
+                if (!node["key"].HasValues || !node["item"].HasValues)
+                    return null;
+
+                var nodeKeyValue = node["key"].ToString();
+                var itemData = BpmConstants.Find(node["item"].ToString());
+
+                if (itemData == null)
+                    return null;
+
+
+                stepData["Id"] = itemData.GetValueOrDefault(BpmConstants.Id);
+                var stepType = itemData.GetValueOrDefault(BpmConstants.StepType);
+                stepData["StepType"] = stepType;
+
+                #region Special Step
+
+                var tempInput = new JObject();
+                var DoArray = new JArray();
+                var IsSpecialStep = false;
+
+                switch (stepType)
+                {
+                    case "Timer":
+                        if (!node["Inputs"].HasValues)
+                            return null;
+
+                        tempInput["Interval"] = node["Inputs"].ToJsonString();
+                        stepData["Inputs"] = tempInput;
+
+                        IsSpecialStep = true;
+
+                        break;
+
+                    case "Parallel":
+                        break;
+                    case "WaitFor":
+                        break;
+                    case "Saga":
+                        break;
+                    default:
+                        break;
+                }
+                #endregion Special Step End
+
+                if (node["dataType"].HasValues)
+                    stepData["DataType"] = node["dataType"].Value<string>();
+
+                if (IsSpecialStep)
+                {
+                    var tempDo = new JArray();
+
+                    continue;
+                }
+
+                if (node["data"].HasValues)
+                {
+                    var request = new JObject();
+                    request["Request"] = JObject.Parse(node["data"].ToJsonString());
+                    stepData["Inputs"] = request;
+                }
+
+                //We are looking for an node link for NexStepId 
+                var searchLink = linksData.Where(q => q["from"].ToString() == nodeKeyValue).FirstOrDefault();
+
+                if (searchLink == null)
+                    continue;
+                
+                //Get next key of node
+                var nextStepKey = searchLink["to"].ToString();
+                //We find data of node in Nodes Data
+                var nextStepNodeData = nodesData.Where(q => q["key"].ToString() == nextStepKey).FirstOrDefault();
+                var nextItemData = BpmConstants.Find(nextStepNodeData["item"].ToString());
+
+                stepData["NextStepId"] = nextItemData.GetValueOrDefault(BpmConstants.Id);
+
+                StepsArray.Add(stepData);
+            }
+
+            jsonData["Steps"] = StepsArray;
+
+            #endregion Create new Jobject for BPM Engine End
+
+            return jsonData;
         }
     }
 

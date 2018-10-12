@@ -100,11 +100,13 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.Language);
-            bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
-            bpmWorkflow.DefinitionJson["Version"] = 1;
+            //bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
+            //bpmWorkflow.DefinitionJson["Version"] = 1;
+
+            var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, 1, JObject.Parse(bpmWorkflow.DiagramJson));
 
             //Load string JSON Data on WorkFlowEngine
-            var str = JsonConvert.SerializeObject(bpmWorkflow.DefinitionJson);
+            var str = JsonConvert.SerializeObject(definitionJson);
             var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
             if (workflowDefinition == null)
