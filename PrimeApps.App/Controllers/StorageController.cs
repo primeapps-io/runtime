@@ -261,8 +261,8 @@ namespace PrimeApps.App.Controllers
                 var chunk = 0;
                 var chunks = 1; //one part chunk
 
-                //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
+				//send stream and parameters to storage upload helper method for temporary upload.
+				await AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
 
                 var result = new DocumentUploadResult();
                 result.ContentType = parser.ContentType;

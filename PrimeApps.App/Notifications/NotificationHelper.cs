@@ -31,7 +31,7 @@ namespace PrimeApps.App.Notifications
         Task IsOwnerChanged(UserItem appUser, JObject record, JObject oldRecord, Module module);
         Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module);
         Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module);
-        Task Delete(UserItem appUser, JObject record, Module module);
+        Task Delete(UserItem appUser, JObject record, Module module, int timezoneOffset);
         Task SendTaskNotification(JObject record, UserItem appUser, Module module);
     }
 
@@ -264,14 +264,14 @@ namespace PrimeApps.App.Notifications
         /// <param name="record"></param>
         /// <param name="module"></param>
         /// <returns></returns>
-        public async Task Delete(UserItem appUser, JObject record, Module module)
+        public async Task Delete(UserItem appUser, JObject record, Module module, int timeZoneOffset = 180)
         {
             string moduleName = module?.Name?.ToLower();
 
             switch (moduleName)
             {
                 case "activities":
-                    await ActivityHelper.Delete(appUser, record, module, _configuration);
+                    await _activityHelper.Delete(appUser, record, module, _configuration, timezoneOffset: timeZoneOffset);
                     break;
             }
         }

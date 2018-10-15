@@ -216,7 +216,7 @@ angular.module('primeapps')
                         var entityId = $scope.entityId;
                         var stateType = $stateParams.type;
                         $scope.module = $filter('filter')($scope.$root.modules, { name: stateType }, true)[0];
-                        var moduleId = $scope.moduleId;
+                        var moduleId = $scope.module.id;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
                             url: config.apiUrl + 'Document/upload_large',

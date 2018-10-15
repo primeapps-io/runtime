@@ -693,13 +693,13 @@ namespace PrimeApps.App.Helpers
 
 								using (var client = new HttpClient())
 								{
-                                    /*
+									/*
                                      * If the server only supports higher TLS version like TLS 1.2 only, it will still fail unless your client PC is configured to use higher TLS version by default. 
                                      * To overcome this problem add the following in your code.
                                      */
-                                    System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+									System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
-                                    var recordId = (int)record["id"];
+									var recordId = (int)record["id"];
 									var jsonData = new JObject();
 									jsonData["id"] = recordId;
 
@@ -882,6 +882,7 @@ namespace PrimeApps.App.Helpers
 								{
 									using (var userRepository = new UserRepository(databaseContext, _configuration))
 									{
+										userRepository.CurrentUser = _currentUser;
 										var recipientUser = await userRepository.GetById((int)record["owner.id"]);
 
 										if (recipientUser == null)

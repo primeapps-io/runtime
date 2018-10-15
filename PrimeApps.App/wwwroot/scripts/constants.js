@@ -547,7 +547,8 @@ angular.module('primeapps')
             },
             system_code: 'collection',
             value: 'collection',
-            order: 1
+            order: 1,
+            show: true
         },
         {
             type: 2,
@@ -558,31 +559,34 @@ angular.module('primeapps')
             },
             system_code: 'payment',
             value: 'payment',
-            order: 2
+            order: 2,
+            show: true
         }
-         ,
-         {
-             type: 1,
-             id: 352,
-             label: {
-                 en: 'Sales Invoice',
-                 tr: 'Satış Faturası'
-             },
-             system_code: 'sales_invoice',
-             value: 'sales_invoice',
-             order: 3
-         },
-         {
-             type: 2,
-             id: 353,
-             label: {
-                 en: 'Purchase Invoice',
-                 tr: 'Alış Faturası'
-             },
-             system_code: 'purchase_invoice',
-             value: 'purchase_invoice',
-             order: 4
-         }
+        ,
+        {
+            type: 1,
+            id: 352,
+            label: {
+                en: 'Sales Invoice',
+                tr: 'Satış Faturası'
+            },
+            system_code: 'sales_invoice',
+            value: 'sales_invoice',
+            order: 3,
+            show: true
+        },
+        {
+            type: 2,
+            id: 353,
+            label: {
+                en: 'Purchase Invoice',
+                tr: 'Alış Faturası'
+            },
+            system_code: 'purchase_invoice',
+            value: 'purchase_invoice',
+            order: 4,
+            show: true
+        }
     ])
 
     .constant('yesNo', [
