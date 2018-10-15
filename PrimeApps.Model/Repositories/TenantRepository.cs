@@ -139,14 +139,21 @@ namespace PrimeApps.Model.Repositories
 			var minusFourteenDays = DateTime.Now.AddDays(-14);
 			var minusFourteenDaysPlusOneHours = minusFourteenDays.AddHours(1);
 
-			return await DbContext.Tenants
+			var tenants = await DbContext.Tenants
 				.Include(x => x.License)
-				.Include(x => x.TenantUsers.Where(z => z.UserId == x.Id))
-				.Include(x => x.TenantUsers.Select(z => z.PlatformUser))
+				.Include(x => x.TenantUsers)
+				.Include(x => (x.TenantUsers as UserTenant).PlatformUser)
 				.Include(x => x.App)
 				.Include(x => x.App.Setting)
 				.Where(x => x.CreatedAt > minusFourteenDays && x.CreatedAt <= minusFourteenDaysPlusOneHours && !x.License.IsPaidCustomer)
 				.ToListAsync();
+			
+			foreach (var tenant in tenants)
+			{
+				tenant.TenantUsers = tenant.TenantUsers.Where(x => x.UserId == tenant.Id).ToList();
+			}
+
+			return tenants;
 		}
 	}
 }
