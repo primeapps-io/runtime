@@ -516,8 +516,7 @@ namespace PrimeApps.Auth.UI
                     }
 
                     //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
-                    //Queue.QueueBackgroundWorkItem(async token => await _platformWorkflowHelper.Run(OperationType.insert, app));
-
+                    Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(vm.ApplicationInfo,tenant, tenantUser));
                 }
                 catch (Exception ex)
                 {
