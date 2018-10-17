@@ -182,7 +182,7 @@ namespace PrimeApps.App.Helpers
 										break;
 								}
 							}
-							else return;
+							else continue;
 						}
 
 						if (!hasProcessFilter)
