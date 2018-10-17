@@ -63,6 +63,8 @@ namespace PrimeApps.Model.Entities.Tenant
 
         public virtual BpmCategory Category { get; set; }
 
+        public virtual Module Module { get; set; }
+
         public virtual ICollection<BpmRecordFilter> Filters { get; set; }
 
         [NotMapped]

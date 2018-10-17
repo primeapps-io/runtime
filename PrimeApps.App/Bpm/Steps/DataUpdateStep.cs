@@ -46,7 +46,10 @@ namespace PrimeApps.App.Bpm.Steps
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
-            var newRequest = JObject.Parse(Request.Replace("\\", ""));
+            var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
+
+            if (newRequest.IsNullOrEmpty())
+                throw new DataMisalignedException("Cannot find Request");
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {

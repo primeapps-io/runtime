@@ -7,7 +7,10 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IBpmRepository : IRepositoryBaseTenant
     {
-        Task<BpmWorkflow> Get(int id);
+        Task<BpmWorkflow> GetById(int id);
+
+        Task<BpmWorkflow> GetByCode(string code);
+
         Task<List<BpmWorkflow>> GetAll(string code = null, int? version = null, bool active = true, bool deleted = false);
 
         Task<List<BpmWorkflow>> GetByModuleId(int moduleId, bool active = true, bool deleted = false);

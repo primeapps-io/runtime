@@ -60,7 +60,7 @@ namespace PrimeApps.App.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
-            var bpmEntity = await _bpmRepository.Get(id);
+            var bpmEntity = await _bpmRepository.GetById(id);
 
             if (bpmEntity == null)
                 return NotFound();
@@ -68,8 +68,20 @@ namespace PrimeApps.App.Controllers
             return Ok(bpmEntity);
         }
 
+        //TODO
+        //[Route("get/{code:int}"), HttpGet]
+        //public async Task<IActionResult> Get(string code)
+        //{
+        //    var bpmEntity = await _bpmRepository.GetByCode(code);
+
+        //    if (bpmEntity == null)
+        //        return NotFound();
+
+        //    return Ok(bpmEntity);
+        //}
+
         [Route("get_all"), HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(string code = null, int? version = null, bool active = true, bool deleted = false)
         {
             var bpmEntity = await _bpmRepository.GetAll();
 
@@ -100,10 +112,13 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.Language);
-            //bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
-            //bpmWorkflow.DefinitionJson["Version"] = 1;
-
+            
             var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, 1, JObject.Parse(bpmWorkflow.DiagramJson));
+
+            if (definitionJson.IsNullOrEmpty())
+                return BadRequest();
+
+            bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
 
             //Load string JSON Data on WorkFlowEngine
             var str = JsonConvert.SerializeObject(definitionJson);
@@ -118,7 +133,7 @@ namespace PrimeApps.App.Controllers
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
-            await _workflowHost.StartWorkflow(bpmWorkflow.DefinitionJson["Id"].ToString(), reference: referance);
+            await _workflowHost.StartWorkflow(bpmWorkflowEntity.Code.ToString(), reference: referance);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);
@@ -130,7 +145,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var bpmWorkflowEntity = await _bpmRepository.Get(id);
+            var bpmWorkflowEntity = await _bpmRepository.GetById(id);
 
             if (bpmWorkflowEntity == null)
                 return NotFound();
@@ -167,7 +182,7 @@ namespace PrimeApps.App.Controllers
         [Route("delete/{id:int}"), HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            var bpmWorkflowEntity = await _bpmRepository.Get(id);
+            var bpmWorkflowEntity = await _bpmRepository.GetById(id);
 
             if (bpmWorkflowEntity == null)
                 return NotFound();

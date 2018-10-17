@@ -15,16 +15,22 @@ namespace PrimeApps.Model.Repositories
         public BpmRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         #region BpmWorkflow
-        public async Task<BpmWorkflow> Get(int id)
+        public async Task<BpmWorkflow> GetById(int id)
         {
-            var bpmWorkFlow = await DbContext.BpmWorkflows.Where(q => q.Id == id && !q.Deleted).FirstOrDefaultAsync();
+            var bpmWorkFlow = await GetBpmWorkflowQuery().Where(q => q.Id == id && !q.Deleted).FirstOrDefaultAsync();
+
+            return bpmWorkFlow;
+        }
+        public async Task<BpmWorkflow> GetByCode(string code)
+        {
+            var bpmWorkFlow = await GetBpmWorkflowQuery().Where(q => q.Code == code && !q.Deleted).FirstOrDefaultAsync();
 
             return bpmWorkFlow;
         }
 
         public async Task<List<BpmWorkflow>> GetAll(string code = null, int? version = null, bool active = true, bool deleted = false)
         {
-            var bpmWorkFlows = DbContext.BpmWorkflows.Where(q => q.Deleted == deleted && q.Active == active);
+            var bpmWorkFlows = GetBpmWorkflowQuery().Where(q => q.Deleted == deleted && q.Active == active);
 
             if (code != null)
                 bpmWorkFlows = bpmWorkFlows.Where(q => q.Code == code);
@@ -43,14 +49,14 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<List<BpmWorkflow>> GetAllBasic()
         {
-            var bpmWorkFlows = await DbContext.BpmWorkflows.Where(q => !q.Deleted).ToListAsync();
+            var bpmWorkFlows = await GetBpmWorkflowQuery().Where(q => !q.Deleted).ToListAsync();
 
             return bpmWorkFlows;
         }
 
         public async Task<ICollection<BpmWorkflow>> Find(BpmFindRequest request)
         {
-            var bpmWorkFlow = await DbContext.BpmWorkflows.Where(q => !q.Deleted).Take(request.Limit).ToListAsync();
+            var bpmWorkFlow = await GetBpmWorkflowQuery().Where(q => !q.Deleted).Take(request.Limit).ToListAsync();
 
             if (bpmWorkFlow.Count() < 1)
                 return null;
@@ -129,5 +135,15 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
         #endregion BpmWorkflowLog
+
+        private IQueryable<BpmWorkflow> GetBpmWorkflowQuery()
+        {
+            return DbContext.BpmWorkflows
+                .Include(x => x.Filters).Where(z => !z.Deleted)
+                .Include(x=>x.Category)
+                .Include(x => x.Module)
+                .Include(x => x.Module.Fields);
+        }
+
     }
 }

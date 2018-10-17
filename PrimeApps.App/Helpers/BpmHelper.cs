@@ -294,7 +294,7 @@ namespace PrimeApps.App.Helpers
                 {
                     _userRepository.CurrentUser = _picklistRepository.CurrentUser = _BpmWorkflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
                     var bpmWorkflows = await _BpmWorkflowRepository.GetByModuleId(module.Id);
-                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString())).ToList();
+                    bpmWorkflows = bpmWorkflows.Where(q => q.OperationsArray.Contains(operationType.ToString()) && q.Active).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
                     if (bpmWorkflows.Count < 1)
@@ -588,10 +588,16 @@ namespace PrimeApps.App.Helpers
                                 }
 
                             }
-
+                            
                             if (mismatchedCount > 0)
                                 continue;
                         }
+
+                        //TODO Start Bpm Engine
+                        var Request = new JObject();
+                        Request["module"] = module.Id;
+                        Request["record"] = record;
+                        //
 
                         var workflowLog = new BpmWorkflowLog
                         {
@@ -656,9 +662,12 @@ namespace PrimeApps.App.Helpers
             //Create Steps
             foreach (var node in nodesData)
             {
+                if (node["item"].Value<string>() == "End")
+                    continue;
+
                 var stepData = new JObject();
 
-                if (!node["key"].HasValues || !node["item"].HasValues)
+                if (node["key"].IsNullOrEmpty() || node["item"].IsNullOrEmpty())
                     return null;
 
                 var nodeKeyValue = node["key"].ToString();
@@ -681,7 +690,7 @@ namespace PrimeApps.App.Helpers
                 switch (stepType)
                 {
                     case "Timer":
-                        if (!node["Inputs"].HasValues)
+                        if (node["Inputs"].IsNullOrEmpty())
                             return null;
 
                         tempInput["Interval"] = node["Inputs"].ToJsonString();
@@ -702,7 +711,7 @@ namespace PrimeApps.App.Helpers
                 }
                 #endregion Special Step End
 
-                if (node["dataType"].HasValues)
+                if (!node["dataType"].IsNullOrEmpty())
                     stepData["DataType"] = node["dataType"].Value<string>();
 
                 if (IsSpecialStep)
@@ -712,10 +721,10 @@ namespace PrimeApps.App.Helpers
                     continue;
                 }
 
-                if (node["data"].HasValues)
+                if (!node["data"].IsNullOrEmpty())
                 {
                     var request = new JObject();
-                    request["Request"] = JObject.Parse(node["data"].ToJsonString());
+                    request["Request"] = JObject.Parse(node["data"].ToJsonString()).ToJsonString();
                     stepData["Inputs"] = request;
                 }
 
@@ -724,14 +733,15 @@ namespace PrimeApps.App.Helpers
 
                 if (searchLink == null)
                     continue;
-                
+
                 //Get next key of node
                 var nextStepKey = searchLink["to"].ToString();
                 //We find data of node in Nodes Data
                 var nextStepNodeData = nodesData.Where(q => q["key"].ToString() == nextStepKey).FirstOrDefault();
                 var nextItemData = BpmConstants.Find(nextStepNodeData["item"].ToString());
 
-                stepData["NextStepId"] = nextItemData.GetValueOrDefault(BpmConstants.Id);
+                if (nextItemData != null)
+                    stepData["NextStepId"] = nextItemData.GetValueOrDefault(BpmConstants.Id);
 
                 StepsArray.Add(stepData);
             }
