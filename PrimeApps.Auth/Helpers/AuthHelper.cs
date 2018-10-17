@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PrimeApps.Auth.Helpers;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
@@ -160,7 +161,7 @@ namespace PrimeApps.Auth.UI
 
 			using (var httpClient = new HttpClient())
 			{
-				if (tenant.Id != null)
+				if (tenant.Id > 0)
 				{
 					var request = new JObject();
 					request["tenant_id"] = tenant.Id;
@@ -169,14 +170,14 @@ namespace PrimeApps.Auth.UI
 					request["phone"] = tenantUser.Phone;
 					request["email"] = tenantUser.Email;
 
-
 					httpClient.DefaultRequestHeaders.Accept.Clear();
 					httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 					var response = await httpClient.PostAsync(app.Settings.TenantOperationWebhook, new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json"));
 
 					if (!response.IsSuccessStatusCode)
 					{
-						
+						var resp = await response.Content.ReadAsStringAsync();
+						ErrorHandler.LogError(new Exception(resp),"Status Code: "+response.StatusCode +" tenant_id: " + tenant.Id + " first_name: " + tenantUser.FirstName + " last_name: " + tenantUser.LastName + " phone: " + tenantUser.Phone + " email: " + tenantUser.Email);
 					}
 				}
 			}
