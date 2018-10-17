@@ -200,7 +200,7 @@ namespace PrimeApps.App.Jobs.Email
 
 				if (myMessage.To.Count < 1)
 					return true;
-				
+
 
 				if (!string.IsNullOrWhiteSpace(email.CC))
 				{
@@ -279,7 +279,7 @@ namespace PrimeApps.App.Jobs.Email
 
 					if (!record.IsNullOrEmpty())
 					{
-						record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
+						record = await RecordHelper.FormatRecordValues(module, record, moduleRepository, picklistRepository, _configuration, subscriber.GuidId, subscriber.Setting.Language, subscriber.Setting.Culture, 180, lookupModules, true);
 
 						if (contentFields.Count > 0)
 						{
@@ -301,7 +301,7 @@ namespace PrimeApps.App.Jobs.Email
 							if (module.Name == "izinler" && !record["calisan.id"].IsNullOrEmpty())
 							{
 								var format = "Gün";
-								if (!record["izin_turu.saatlik_kullanim_yapilir"].IsNullOrEmpty() && (bool)record["izin_turu.saatlik_kullanim_yapilir"])
+								if (!record["izin_turu.saatlik_kullanim_yapilir"].IsNullOrEmpty() && record["izin_turu.saatlik_kullanim_yapilir"].HasValues)
 									format = "Saat";
 
 								var tarih = (string)record["baslangic_tarihi"] + " - " + record["bitis_tarihi"] + " / " + record["hesaplanan_alinacak_toplam_izin"] + " " + format;

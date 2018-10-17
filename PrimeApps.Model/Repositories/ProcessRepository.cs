@@ -170,7 +170,8 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Filters).Where(z => !z.Deleted)
                 .Include(x => x.Approvers).Where(z => !z.Deleted)
                 .Include(x => x.Module)
-                .Include(x => x.Module.Fields);
+                .Include(x => x.Module.Fields)
+				.Include(x=> x.Module.Dependencies);
         }
 
         private IQueryable<Process> GetProcessQueryForAll()
