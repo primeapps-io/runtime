@@ -39,5 +39,6 @@ namespace PrimeApps.Auth.UI
         public string Currency { get; set; }
         public string TimeZone { get; set; }
         public string GoogleAnalytics { get; set; }
-    }
+		public string TenantOperationWebhook { get; set; }
+	}
 }

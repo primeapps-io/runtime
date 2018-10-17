@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 
 namespace PrimeApps.App.Jobs
 {
@@ -15,10 +17,12 @@ namespace PrimeApps.App.Jobs
 	public class AccountCleanup
 	{
 		private IConfiguration _configuration;
+		private IServiceScopeFactory _serviceScopeFactory;
 
-		public AccountCleanup(IConfiguration configuration)
+		public AccountCleanup(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
 		{
 			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
 		}
 
 		/// <summary>
@@ -29,45 +33,35 @@ namespace PrimeApps.App.Jobs
 			IList<int> expiredTenants = new List<int>();
 			var connectionString = "";
 
-			using (var platformDbContext = new PlatformDBContext(_configuration))
-			using (var tenantRepository = new TenantRepository(platformDbContext, _configuration))
+			using (var scope = _serviceScopeFactory.CreateScope())
 			{
+				var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))
+				{
+					// Get expired inactive tenant ids.
+					expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
+					connectionString = platformDBContext.Database.GetDbConnection().ConnectionString;
+				}
 
-				// Get expired inactive tenant ids.
-				expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
-				connectionString = platformDbContext.Database.GetDbConnection().ConnectionString;
-			}
 
-			var dropSql = $"DROP DATABASE IF EXISTS";
-
-			// create a connection to the server without specifying a database.
-			using (var connection = new NpgsqlConnection(Postgres.GetConnectionString(connectionString, -1)))
-			{
-				connection.Open();
 
 				foreach (var tenantId in expiredTenants)
 				{
-					// create a command by using the template in dropSql variable for drop script. Ex. DROP DATABASE IF EXISTS tenant9999; 
-					using (var command = new NpgsqlCommand($"{dropSql} tenant{tenantId};", connection))
+					var dropSql = "DROP DATABASE IF EXISTS tenant" + tenantId+";";
+					try
 					{
-						try
-						{
-							// it will execute drop query and won't fail in case database does not exist.
-							command.ExecuteNonQuery();
-						}
-						catch (Exception ex)
-						{
-							// the query will fail in any unexpected case rather then non-existing database, and it will be logged here with the details. 
-							//Error err = new Error(ex);
-							//err.Detail = $"Expired tenant {tenantId} could not be removed by Account Cleanup Job";
-							//ErrorLog.GetDefault(null).Log(err);
-							ErrorHandler.LogError(ex, $"Expired tenant {tenantId} could not be removed by Account Cleanup Job" + " " + "tenant_id:" + tenantId);
-						}
+						platformDBContext.Database.ExecuteSqlCommand(dropSql);
+
+					}
+					catch (Exception ex)
+					{
+						// the query will fail in any unexpected case rather then non-existing database, and it will be logged here with the details. 
+						//Error err = new Error(ex);
+						//err.Detail = $"Expired tenant {tenantId} could not be removed by Account Cleanup Job";
+						//ErrorLog.GetDefault(null).Log(err);
+						ErrorHandler.LogError(ex, $"Expired tenant {tenantId} could not be removed by Account Cleanup Job" + " " + "tenant_id:" + tenantId);
 					}
 				}
-
-				// close the connection before it is disposed by the current using scope.
-				connection.Close();
 			}
 		}
 	}

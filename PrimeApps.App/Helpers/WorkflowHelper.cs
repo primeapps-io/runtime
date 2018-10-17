@@ -723,7 +723,7 @@ namespace PrimeApps.App.Helpers
 										lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
 
 										var recordData = _recordRepository.GetById(module, recordId, false, lookupModules, true);
-										recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.Language, appUser.Culture, 180, lookupModules);
+										recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules);
 
 										foreach (var dataString in data)
 										{

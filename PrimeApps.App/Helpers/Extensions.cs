@@ -165,22 +165,6 @@ namespace PrimeApps.App.Helpers
         }
 
         /// <summary>
-        /// This is an extension method to convert object to json string
-        /// </summary>
-        /// <param name="token">token</param>
-        /// <returns></returns>
-        public static string ToJsonString(this object source)
-        {
-            var jsonSerializerSettings = new JsonSerializerSettings
-            {
-                PreserveReferencesHandling = PreserveReferencesHandling.None,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-
-            return JsonConvert.SerializeObject(source, Formatting.Indented, jsonSerializerSettings);
-        }
-
-        /// <summary>
         /// This is an extension method to truncate string with ellipsis
         /// </summary>
         /// <param name="value">value</param>
