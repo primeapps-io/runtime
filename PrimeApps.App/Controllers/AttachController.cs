@@ -522,6 +522,11 @@ namespace PrimeApps.App.Controllers
 						orderCount = 1;
 						productFormatted["product.products.name"] = productFormatted["separator"] + "-product_separator_separator";
 					}
+					else
+					{
+						productFormatted["order"] = orderCount.ToString();
+						orderCount++;
+					}
 
 					productsFormatted.Add(productFormatted);
 				}
