@@ -1,10 +1,12 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
     .controller('ViewFormController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ModuleService', 'ViewService', '$http', 'config',
         function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ModuleService, ViewService, $http, config) {
-            var id = $location.search().id;
+
+			var clone = $location.search().clone;
+			var id = $location.search().id;
             var module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
             $scope.costumeDate = "this_day()";
             $scope.dateFormat = [
@@ -516,8 +518,18 @@ angular.module('primeapps')
             };
 
             $scope.save = function () {
-                function validate() {
+				function validate() {
+
                     var isValid = true;
+					/**
+                     * boolean clone
+                     * boolean id
+                     * View'den, kopyalama linki("clone=true&id=") üzerinden gelen clone = true oluyor
+                     * Eğer clone = true ise yeni View create edilecektir
+                     * Yeni View'in create edilmesi için id = false olmalıdır
+                     * */
+					if (clone)
+						id = false;
 
                     if ($scope.fields.selectedFields.length < 1) {
                         $scope.viewForm.$setValidity('field', false);
