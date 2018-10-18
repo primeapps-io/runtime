@@ -45,7 +45,7 @@ namespace PrimeApps.App.Bpm.Steps
             //var tempRef = context.Workflow.Reference.Split('|');
             //var _currentUser = new CurrentUser { TenantId = int.Parse(tempRef[0]), UserId = int.Parse(tempRef[1]) };
             //var tenantLanguage = tempRef[2];
-            
+
             //TODO REf Kontrol
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
@@ -109,7 +109,7 @@ namespace PrimeApps.App.Bpm.Steps
                             lookupModules.Add(ModuleHelper.GetFakeUserModule());
 
                             var recordData = _recordRepository.GetById(module, recordId, false, lookupModules, true);
-                            recordData = await RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.Language, appUser.Culture, 180, lookupModules);
+                            recordData = await RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules);
 
                             foreach (var dataString in data)
                             {
