@@ -1,13 +1,15 @@
 ﻿
+using PrimeApps.Model.Entities.Tenant;
+
 namespace PrimeApps.Model.Common.Bpm
 {
     public class BpmDataUpdate
     {
-        public int WorkflowId { get; set; }
+        public int? WorkflowId { get; set; }
 
-        public string Module { get; set; }
+        public Module Module { get; set; }
 
-        public string Field { get; set; }
+        public Field Field { get; set; }
 
         public string Value { get; set; }
 

@@ -45,8 +45,7 @@ namespace PrimeApps.App.Bpm.Steps
             //TODO REf Kontrol
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
-
-            var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
+            var newRequest = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
 
             if (newRequest.IsNullOrEmpty())
                 throw new DataMisalignedException("Cannot find Request");
@@ -75,16 +74,21 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
-                        if (newRequest["FieldUpdate"].IsNullOrEmpty() || newRequest["module_id"].IsNullOrEmpty())
+                        var data = JObject.FromObject(context.Workflow.Data);
+
+                        if (newRequest.IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
-                        var fieldUpdate = newRequest["FieldUpdate"].ToObject<BpmDataUpdate>();
+                        var fieldUpdate = new BpmDataUpdate();
+                        fieldUpdate.Module = await _moduleRepository.GetById(newRequest["module_id"].Value<int>());
+                        fieldUpdate.Field = await _moduleRepository.GetField(newRequest["field_id"].Value<int>());
+                        fieldUpdate.Value = newRequest["value"].Value<string>();
 
-                        var moduleID = newRequest["module_id"].ToObject<int>();
+                        var moduleID = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleID);
 
-                        var recordId = newRequest["record"].ToObject<int>();
-                        var record = _recordRepository.GetById(module, recordId);
+                        var record = data["record"].ToObject<JObject>();
+
 
                         var fieldUpdateRecords = new Dictionary<string, int>();
                         var isDynamicUpdate = false;
@@ -92,10 +96,10 @@ namespace PrimeApps.App.Bpm.Steps
                         var firstModule = string.Empty;
                         var secondModule = string.Empty;
 
-                        if (fieldUpdate.Module.Contains(','))
+                        if (fieldUpdate.Module.Name.Contains(','))
                         {
                             isDynamicUpdate = true;
-                            var modules = fieldUpdate.Module.Split(',');
+                            var modules = fieldUpdate.Module.Name.Split(',');
                             firstModule = modules[0];
                             secondModule = modules[1];
 
@@ -146,7 +150,7 @@ namespace PrimeApps.App.Bpm.Steps
                         }
                         else
                         {
-                            if (fieldUpdate.Module == module.Name)
+                            if (fieldUpdate.Module.Name == module.Name)
                             {
                                 fieldUpdateRecords.Add(module.Name, (int)record["id"]);
                             }
@@ -154,9 +158,9 @@ namespace PrimeApps.App.Bpm.Steps
                             {
                                 foreach (var field in module.Fields)
                                 {
-                                    if (field.LookupType != null && field.LookupType != "users" && field.LookupType == fieldUpdate.Module && !record[field.Name + "." + fieldUpdate.Field].IsNullOrEmpty())
+                                    if (field.LookupType != null && field.LookupType != "users" && field.LookupType == fieldUpdate.Module.Name && !record[field.Name + "." + fieldUpdate.Field].IsNullOrEmpty())
                                     {
-                                        fieldUpdateRecords.Add(fieldUpdate.Module, (int)record[field.Name + ".id"]);
+                                        fieldUpdateRecords.Add(fieldUpdate.Module.Name, (int)record[field.Name + ".id"]);
                                     }
                                 }
                             }
@@ -187,7 +191,7 @@ namespace PrimeApps.App.Bpm.Steps
                             recordFieldUpdate["id"] = currentRecordFieldUpdate["id"];
 
                             if (!isDynamicUpdate)
-                                recordFieldUpdate[fieldUpdate.Field] = fieldUpdate.Value;
+                                recordFieldUpdate[fieldUpdate.Field.Name] = fieldUpdate.Value;
                             else
                             {
                                 if (type == 0 || type == 1 || type == 2)
@@ -200,7 +204,7 @@ namespace PrimeApps.App.Bpm.Steps
                                     }
 
                                     if (isLookup)
-                                        recordFieldUpdate[fieldUpdate.Field] = record[fieldUpdate.Value + ".id"];
+                                        recordFieldUpdate[fieldUpdate.Field.Name] = record[fieldUpdate.Value + ".id"];
                                     else
                                     {
                                         bool isTag = false;
@@ -211,13 +215,13 @@ namespace PrimeApps.App.Bpm.Steps
                                         }
 
                                         if (isTag)
-                                            recordFieldUpdate[fieldUpdate.Field] = string.Join(",", record[fieldUpdate.Value]);
+                                            recordFieldUpdate[fieldUpdate.Field.Name] = string.Join(",", record[fieldUpdate.Value]);
                                         else
-                                            recordFieldUpdate[fieldUpdate.Field] = record[fieldUpdate.Value];
+                                            recordFieldUpdate[fieldUpdate.Field.Name] = record[fieldUpdate.Value];
                                     }
                                 }
                                 else if (type == 3 || type == 4)
-                                    recordFieldUpdate[fieldUpdate.Field] = record[firstModule + "." + fieldUpdate.Value];
+                                    recordFieldUpdate[fieldUpdate.Field.Name] = record[firstModule + "." + fieldUpdate.Value];
                             }
 
 

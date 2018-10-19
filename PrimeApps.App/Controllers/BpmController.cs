@@ -68,17 +68,17 @@ namespace PrimeApps.App.Controllers
             return Ok(bpmEntity);
         }
 
-        //TODO
-        //[Route("get/{code:int}"), HttpGet]
-        //public async Task<IActionResult> Get(string code)
-        //{
-        //    var bpmEntity = await _bpmRepository.GetByCode(code);
+        
+        [Route("get/{code}"), HttpGet]
+        public async Task<IActionResult> Get(string code)
+        {
+            var bpmEntity = await _bpmRepository.GetByCode(code);
 
-        //    if (bpmEntity == null)
-        //        return NotFound();
+            if (bpmEntity == null)
+                return Ok(null);
 
-        //    return Ok(bpmEntity);
-        //}
+            return Ok(bpmEntity);
+        }
 
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll(string code = null, int? version = null, bool active = true, bool deleted = false)
@@ -86,7 +86,7 @@ namespace PrimeApps.App.Controllers
             var bpmEntity = await _bpmRepository.GetAll();
 
             if (bpmEntity.Count < 1)
-                return NotFound();
+                return Ok(null);
 
             return Ok(bpmEntity);
         }
@@ -120,20 +120,20 @@ namespace PrimeApps.App.Controllers
 
             bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
 
-            //Load string JSON Data on WorkFlowEngine
-            var str = JsonConvert.SerializeObject(definitionJson);
-            var workflowDefinition = _definitionLoader.LoadDefinition(str);
+            ////Load string JSON Data on WorkFlowEngine
+            //var str = JsonConvert.SerializeObject(definitionJson);
+            //var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-            if (workflowDefinition == null)
-                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //if (workflowDefinition == null)
+            //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
-            await _workflowHost.StartWorkflow(bpmWorkflowEntity.Code.ToString(), reference: referance);
+            //var referance = _bpmHelper.ReferenceCreateToForBpmHost(AppUser);
+            //await _workflowHost.StartWorkflow(bpmWorkflowEntity.Code.ToString(), reference: referance);
 
             var uri = new Uri(Request.GetDisplayUrl());
             return Created(uri.Scheme + "://" + uri.Authority + "/api/bpm/get/" + bpmWorkflowEntity.Id, bpmWorkflowEntity);

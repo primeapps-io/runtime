@@ -470,6 +470,7 @@ namespace PrimeApps.App.Helpers
 
                             var newRecord = _recordRepository.GetById(module, (int)record["id"], false);
                             await _workflowHelper.Run(operationType, newRecord, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+                            //TODO BPM RUN
                         }
                         catch (Exception ex)
                         {
@@ -1455,6 +1456,7 @@ namespace PrimeApps.App.Helpers
 
                     var record = _recordRepository.GetById(process.Module, request.RecordId, false);
                     await _workflowHelper.Run(request.OperationType, record, process.Module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate);
+                    //TODO BPM RUN
 
                     if (process.Module.Name == "izinler")
                         await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.update, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);

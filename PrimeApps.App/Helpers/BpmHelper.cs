@@ -15,6 +15,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using WorkflowCore.Interface;
+using Newtonsoft.Json;
+using WorkflowCore.Models;
 
 namespace PrimeApps.App.Helpers
 {
@@ -24,6 +27,8 @@ namespace PrimeApps.App.Helpers
 
         Task UpdateEntity(BpmWorkflowBindingModel bpmWorkflowModel, BpmWorkflow bpmWorkflow, string tenantLanguage);
 
+        Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, JObject previousRecord = null);
+
         string ReferenceCreateToForBpmHost(UserItem appUser);
 
         JObject CreateDefinition(string code, int version, JObject diagram);
@@ -31,22 +36,40 @@ namespace PrimeApps.App.Helpers
     public class BpmHelper : IBpmHelper
     {
         private CurrentUser _currentUser;
+        private IWorkflowHost _workflowHost;
+        private IWorkflowRegistry _workflowRegistry;
+        private IPersistenceProvider _workflowStore;
+        private IDefinitionLoader _definitionLoader;
         private IHttpContextAccessor _context;
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
 
-        public BpmHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration)
+        public BpmHelper(IServiceScopeFactory serviceScopeFactory, IHttpContextAccessor context, IConfiguration configuration, IWorkflowHost workflowHost, IWorkflowRegistry workflowRegistry, IPersistenceProvider workflowStore, IDefinitionLoader definitionLoader)
         {
+            _workflowHost = workflowHost;
+            _workflowRegistry = workflowRegistry;
+            _workflowStore = workflowStore;
+            _definitionLoader = definitionLoader;
+
             _context = context;
             _currentUser = UserHelper.GetCurrentUser(_context);
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
         }
 
+        public BpmHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+            _configuration = configuration;
+
+            _currentUser = currentUser;
+        }
+
         public async Task<BpmWorkflow> CreateEntity(BpmWorkflowBindingModel bpmWorkflowModel, string tenantLanguage)
         {
             var bpmWorkflow = new BpmWorkflow
             {
+                Active = bpmWorkflowModel.Active,
                 Name = bpmWorkflowModel.Name,
                 Code = bpmWorkflowModel.Code,
                 Description = bpmWorkflowModel.Description,
@@ -277,7 +300,7 @@ namespace PrimeApps.App.Helpers
 
         }
 
-        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, JObject previousRecord)
+        public async Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, JObject previousRecord = null)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -588,16 +611,50 @@ namespace PrimeApps.App.Helpers
                                 }
 
                             }
-                            
+
                             if (mismatchedCount > 0)
                                 continue;
                         }
 
                         //TODO Start Bpm Engine
-                        var Request = new JObject();
-                        Request["module"] = module.Id;
-                        Request["record"] = record;
-                        //
+
+                        string runId = string.Empty;
+                        var data = new JObject();
+                        data["module_id"] = module.Id;
+                        data["record"] = record;
+
+                        var code = workflow.Code;
+                        var version = workflow.Version;
+                        var referance = ReferenceCreateToForBpmHost(appUser);
+                        WorkflowDefinition currentWorkflow = null;
+
+                        try
+                        {
+                            currentWorkflow = _workflowRegistry.GetDefinition(code);
+
+                        }
+                        catch (Exception e)
+                        {
+                            currentWorkflow = null;
+                        }
+
+                        if (currentWorkflow == null)
+                        {
+                            var str = workflow.DefinitionJson.ToString();
+                            var workflowDefinition = _definitionLoader.LoadDefinition(str);
+
+                            if (workflowDefinition == null)
+                                throw new ApplicationException(System.Net.HttpStatusCode.BadRequest.ToString());
+                        }
+
+                        runId = await _workflowHost.StartWorkflow<JObject>(code, data, referance);
+
+
+                        //if (currentWorkflow == null)
+                        //    new Exception("Workflow cannot be start! Workflow ID: " + runId);
+
+
+                        //End Bpm Engine
 
                         var workflowLog = new BpmWorkflowLog
                         {
@@ -724,7 +781,7 @@ namespace PrimeApps.App.Helpers
                 if (!node["data"].IsNullOrEmpty())
                 {
                     var request = new JObject();
-                    request["Request"] = JObject.Parse(node["data"].ToJsonString()).ToJsonString();
+                    request["Request"] = "\"" + node["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
                     stepData["Inputs"] = request;
                 }
 

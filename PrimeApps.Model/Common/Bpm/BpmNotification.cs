@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Entities.Tenant;
+﻿using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,22 +14,22 @@ namespace PrimeApps.Model.Common.Bpm
 
         [MaxLength(200)]
         public string Subject { get; set; }
-        
+
         public string Message { get; set; }
 
-        [ MaxLength(4000)]
+        [MaxLength(4000)]
         public string Recipients { get; set; }
 
         [MaxLength(4000)]
-        public string CC { get; set; }
+        public JArray CC { get; set; }
 
         [MaxLength(4000)]
-        public string Bcc { get; set; }
-        
+        public JArray Bcc { get; set; }
+
         public int? Schedule { get; set; }
 
         public virtual BpmWorkflow BpmWorkflow { get; set; }
-        
+
         public string[] RecipientsArray
         {
             get
@@ -44,41 +45,65 @@ namespace PrimeApps.Model.Common.Bpm
                     Recipients = string.Join(",", value.Select(x => x.ToString()).ToArray());
             }
         }
-        
+
         public ICollection<UserBasic> RecipientList { get; set; }
 
-        
+
         public string[] CCArray
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(CC))
+                if (CC.IsNullOrEmpty())
                     return null;
 
-                return CC.Split(',');
+                List<string> data=new List<string>();
+
+                foreach (var item in CC)
+                    data.Add(item["email"].Value<string>());
+
+                return data.ToArray<string>();
             }
             set
             {
-                if (value != null && value.Length > 0)
-                    CC = string.Join(",", value.Select(x => x.ToString()).ToArray());
+                if (value != null)
+                {
+                    JArray data = new JArray();
+                    foreach (var cc in value)
+                    {
+                        data["email"] = cc;
+                    }
+                    CC = data;
+                }
             }
         }
-        
+
         public ICollection<UserBasic> CCList { get; set; }
-        
+
         public string[] BccArray
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(Bcc))
+                if (Bcc.IsNullOrEmpty())
                     return null;
 
-                return Bcc.Split(',');
+                List<string> data = new List<string>();
+
+                foreach (var item in CC)
+                    data.Add(item.Value<string>());
+
+                return data.ToArray<string>();
             }
             set
             {
-                if (value != null && value.Length > 0)
-                    Bcc = string.Join(",", value.Select(x => x.ToString()).ToArray());
+                if (value != null)
+                {
+                    JArray data = new JArray();
+                    foreach (var cc in value)
+                    {
+                        data["email"] = cc;
+                    }
+                    Bcc = data;
+                } 
             }
         }
 

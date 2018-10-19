@@ -72,26 +72,38 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
 
-                        if (newRequest["SendNotification"].IsNullOrEmpty() || newRequest["module_id"].IsNullOrEmpty())
+                        var data = JObject.FromObject(context.Workflow.Data);
+
+                        if (newRequest["send_notification"].IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
-                        var sendNotification = newRequest["SendNotification"].ToObject<BpmNotification>();
+                        var tempSendNotification = newRequest["send_notification"];
+                        var sendNotification = new BpmNotification
+                        {
+                            Subject = tempSendNotification["subject"].Value<string>(),
+                            Message = tempSendNotification["message"].Value<string>(),
+                            //  RecipientsArray = tempSendNotification["recipients"].ToObject<string[]>(),
+                            CC = !tempSendNotification["cc"].IsNullOrEmpty() ? tempSendNotification["cc"].ToObject<JArray>() : new JArray(),
+                            Bcc = !tempSendNotification["bcc"].IsNullOrEmpty() ? tempSendNotification["bcc"].ToObject<JArray>() : new JArray(),
+                            Schedule = tempSendNotification["schedule"]["value"].Value<string>() == "now" ? 0 : tempSendNotification["schedule"]["value"].ToObject<int>()
+                        };
+
                         var recipients = sendNotification.RecipientsArray;
 
-                        var moduleId = newRequest["module_id"].ToObject<int>();
+                        var moduleId = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleId);
 
-                        var recordId = newRequest["record"].ToObject<int>();
-                        var record = _recordRepository.GetById(module, recordId);
-                        
+                        //var recordId = data["record"].ToObject<int>();
+                        var record = data["record"].ToObject<JObject>();//_recordRepository.GetById(module, recordId);
+
                         var sendNotificationCC = sendNotification.CC;
                         var sendNotificationBCC = sendNotification.Bcc;
 
-                        if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1 && !sendNotification.CC.Contains("@"))
-                            sendNotificationCC = (string)record[sendNotification.CC];
+                        if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1/* && !sendNotification.CC.Contains("@")*/)
+                            sendNotificationCC = !record[sendNotification.CCArray[0]].IsNullOrEmpty() ? record[sendNotification.CCArray[0]].ToObject<JArray>():null ;
 
-                        if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 && !sendNotification.Bcc.Contains("@"))
-                            sendNotificationBCC = (string)record[sendNotification.Bcc];
+                        if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 /* && !sendNotification.Bcc.Contains("@")*/)
+                            sendNotificationBCC = !record[sendNotification.BccArray[0]].IsNullOrEmpty() ? record[sendNotification.BccArray[0]].ToObject<JArray>():null;
 
                         string domain;
 
@@ -166,7 +178,7 @@ namespace PrimeApps.App.Bpm.Steps
                         if (sendNotification.Schedule.HasValue)
                             email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC, sendNotificationBCC, appUser: appUser, addRecordSummary: false);
+                        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotification.CCArray.ToString(), sendNotification.BccArray.ToString(), appUser: appUser, addRecordSummary: false);
 
                         //var workflowLog = new BpmWorkflowLog
                         //{
