@@ -72,6 +72,7 @@ namespace PrimeApps.App.Helpers
                 Active = bpmWorkflowModel.Active,
                 Name = bpmWorkflowModel.Name,
                 Code = bpmWorkflowModel.Code,
+                Version = 1,
                 Description = bpmWorkflowModel.Description,
                 CategoryId = bpmWorkflowModel.CategoryId,
                 StartTime = bpmWorkflowModel.StartTime,

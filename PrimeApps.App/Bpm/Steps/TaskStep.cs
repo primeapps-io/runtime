@@ -43,7 +43,10 @@ namespace PrimeApps.App.Bpm.Steps
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
-            var newRequest = JObject.Parse(Request.Replace("\\", ""));
+            var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
+
+            if (newRequest.IsNullOrEmpty())
+                throw new DataMisalignedException("Cannot find Request");
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -69,14 +72,15 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
-                        if (newRequest["CreateTask"].IsNullOrEmpty() || newRequest["module_id"].IsNullOrEmpty())
+                        var data = JObject.FromObject(context.Workflow.Data);
+
+                        if (newRequest.IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
-                        var createTask = newRequest["CreateTask"];
-                        var moduleId = newRequest["module_id"].ToObject<int>();
+                        var createTask = newRequest["create_task"];
+                        var moduleId = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleId);
-                        var recordId = newRequest["record"].ToObject<int>();
-                        var record = _recordRepository.GetById(module, recordId);
+                        var record = data["record"].ToObject<JObject>();
 
                         var moduleActivity = await _moduleRepository.GetByName("activities");
 

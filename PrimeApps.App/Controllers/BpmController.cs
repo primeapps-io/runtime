@@ -68,7 +68,7 @@ namespace PrimeApps.App.Controllers
             return Ok(bpmEntity);
         }
 
-        
+
         [Route("get/{code}"), HttpGet]
         public async Task<IActionResult> Get(string code)
         {
@@ -112,7 +112,7 @@ namespace PrimeApps.App.Controllers
                 return BadRequest(ModelState);
 
             var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.Language);
-            
+
             var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, 1, JObject.Parse(bpmWorkflow.DiagramJson));
 
             if (definitionJson.IsNullOrEmpty())
@@ -188,6 +188,8 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
+
+            await _workflowHost.SuspendWorkflow(bpmWorkflowEntity.Code);
 
             return Ok();
         }

@@ -50,7 +50,10 @@ namespace PrimeApps.App.Bpm.Steps
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
-            var newRequest = JObject.Parse(Request.Replace("\\", ""));
+            var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
+
+            if (newRequest.IsNullOrEmpty())
+                throw new DataMisalignedException("Cannot find Request");
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -77,10 +80,13 @@ namespace PrimeApps.App.Bpm.Steps
                     {
                         _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
 
-                        var recordId = newRequest["record"].ToObject<int>();
-                        var moduleId = newRequest["module_id"].ToObject<int>();
+                        var data = JObject.FromObject(context.Workflow.Data);
+
+                        var record= data["record"].ToObject<JObject>();
+
+                        var moduleId = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleId);
-                        var record = _recordRepository.GetById(module, recordId);
+                        
                         var webHook = newRequest["webhook"];
 
                         if (!webHook.HasValues)
@@ -88,10 +94,11 @@ namespace PrimeApps.App.Bpm.Steps
 
                         var jsonData = new JObject();
                         jsonData["id"] = record["id"];
-
+                        var recordId = record["id"].ToObject<int>();
+                        
                         if (webHook["Parameters"].HasValues)
                         {
-                            var data = webHook["Parameters"].Value<string>().Split(',');
+                            var parameters = webHook["Parameters"].Value<string>().Split(',');
                             var lookModuleNames = new List<string>();
                             ICollection<Module> lookupModules = null;
 
@@ -111,7 +118,7 @@ namespace PrimeApps.App.Bpm.Steps
                             var recordData = _recordRepository.GetById(module, recordId, false, lookupModules, true);
                             recordData = await RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules);
 
-                            foreach (var dataString in data)
+                            foreach (var dataString in parameters)
                             {
                                 var dataObject = dataString.Split('|');
                                 var parameterName = dataObject[0];
