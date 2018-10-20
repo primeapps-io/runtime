@@ -3,9 +3,10 @@ using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace PrimeApps.App.Controllers
 {
@@ -80,20 +81,19 @@ namespace PrimeApps.App.Controllers
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 
-            //var cacheRepository = (ICacheRepository)HttpContext.RequestServices.GetService(typeof(ICacheRepository));
+            var cacheService = (IDistributedCache)HttpContext.RequestServices.GetService(typeof(IDistributedCache));
+            var key = typeof(TenantUser).Name + "-" + appUser.Id;
+            var tenantUser = JsonConvert.DeserializeObject<TenantUser>(cacheService.GetString(key));
 
-            //string key = typeof(TenantUser).Name + "-" + appUser.Id;
-            //var tenantUser = cacheRepository.Get<TenantUser>(key);
+            if (tenantUser == null)
+            {
+                var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+                tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
+                
+                tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-            //if (tenantUser == null)
-            //{
-            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-
-            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
-            var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
-
-           // var result = cacheRepository.Add(key, tenantUser);
-            //}
+                cacheService.SetString(key, JsonConvert.SerializeObject(tenantUser));
+            }
 
             appUser.RoleId = tenantUser.RoleId ?? 0;
             appUser.ProfileId = tenantUser.RoleId ?? 0;
