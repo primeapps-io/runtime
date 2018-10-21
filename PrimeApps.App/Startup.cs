@@ -128,7 +128,7 @@ namespace PrimeApps.App
             services.AddDistributedRedisCache(option =>
             {
                 option.Configuration = Configuration.GetConnectionString("RedisConnection");
-                option.InstanceName = "master";
+                option.InstanceName = "db1";
             });
 
             AuthConfiguration(services, Configuration, HostingEnvironment);

@@ -29,17 +29,21 @@ namespace PrimeApps.App.Controllers
 
             var cacheService = (IDistributedCache)context.HttpContext.RequestServices.GetService(typeof(IDistributedCache));
             var email = context.HttpContext.User.FindFirst("email").Value;
-            var key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
-            var platformUser = JsonConvert.DeserializeObject<PlatformUser>(cacheService.GetString(key));
+            var key = "platform_user_" + email + "_" + tenantId;
+            var platformUserCache = cacheService.GetString(key);
+            PlatformUser platformUser = null;
+
+            if (!string.IsNullOrEmpty(platformUserCache))
+                platformUser = JsonConvert.DeserializeObject<PlatformUser>(platformUserCache);
 
             if (platformUser == null)
             {
                 var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
                 platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
-                
+
                 platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-                cacheService.SetString(key, JsonConvert.SerializeObject(platformUser));
+                cacheService.SetString(key, JsonConvert.SerializeObject(platformUser, Formatting.Indented, CacheSerializerSettings));
             }
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)

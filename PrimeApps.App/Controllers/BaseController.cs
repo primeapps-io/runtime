@@ -27,6 +27,11 @@ namespace PrimeApps.App.Controllers
             }
         }
 
+        public JsonSerializerSettings CacheSerializerSettings => new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
         public void SetCurrentUser(IRepositoryBaseTenant repository)
         {
             if (AppUser != null)
@@ -82,17 +87,21 @@ namespace PrimeApps.App.Controllers
             }
 
             var cacheService = (IDistributedCache)HttpContext.RequestServices.GetService(typeof(IDistributedCache));
-            var key = typeof(TenantUser).Name + "-" + appUser.Id;
-            var tenantUser = JsonConvert.DeserializeObject<TenantUser>(cacheService.GetString(key));
+            var key = "tenant_user_" + appUser.Id;
+            var tenantUserCache = cacheService.GetString(key);
+            TenantUser tenantUser = null;
+
+            if (!string.IsNullOrEmpty(tenantUserCache))
+                tenantUser = JsonConvert.DeserializeObject<TenantUser>(tenantUserCache);
 
             if (tenantUser == null)
             {
                 var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
                 tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
-                
+
                 tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-                cacheService.SetString(key, JsonConvert.SerializeObject(tenantUser));
+                cacheService.SetString(key, JsonConvert.SerializeObject(tenantUser, Formatting.Indented, CacheSerializerSettings));
             }
 
             appUser.RoleId = tenantUser.RoleId ?? 0;
