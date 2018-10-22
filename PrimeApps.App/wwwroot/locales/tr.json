@@ -1409,7 +1409,7 @@
       "Name": "İş Kuralı Adı",
       "Module": "Çalıştırılacak Modül",
       "Status": "Durum",
-      "DeleteLogs": "Önceden çlaışmış olan tek seferlik akışlar için tekrar çalışmasına izin ver",
+      "DeleteLogs": "Önceden çalışmış olan tek seferlik akışlar için tekrar çalışmasına izin ver",
       "RuleTrigger": "Çalıştırılma Koşulu",
       "RelatedField": "İlgili Alan",
       "WhenFieldChanged": "Sadece ilgili alandaki değer değiştiğinde çalıştır",
