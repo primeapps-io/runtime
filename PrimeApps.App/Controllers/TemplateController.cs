@@ -102,10 +102,9 @@ namespace PrimeApps.App.Controllers
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            //TODO Removed
-            /*if (template.Chunks > 0)
-                Storage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.InstanceId), template.Chunks);*/
-            
+            if (template.Chunks > 0)
+                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
+
             return Created(Request.Scheme + "://" + Request.Host + "/api/template/get/" + templateEntity.Id, templateEntity);
         }
 
