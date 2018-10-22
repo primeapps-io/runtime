@@ -46,7 +46,7 @@ namespace PrimeApps.Auth
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { "https://auth-dev.primeapps.io/signin-oidc" },
+                    RedirectUris = { "https://dev.primeapps.io/signin-oidc" },
                     PostLogoutRedirectUris = { "https://auth-dev.primeapps.io/signout-callback-oidc" },
 
                     AllowedScopes =
