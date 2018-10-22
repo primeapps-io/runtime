@@ -389,10 +389,6 @@ namespace PrimeApps.App.Helpers
 						var instance = tRepo.Get(appUser.TenantId);
 						if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
 						{
-							//TODO Removed
-							/*if (!string.IsNullOrEmpty(fromEmail))
-                                from = fromEmail;
-                            else*/
 							from = instance.Setting.MailSenderEmail;
 							fromName = instance.Setting.MailSenderName;
 						}

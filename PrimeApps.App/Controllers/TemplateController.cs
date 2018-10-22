@@ -14,7 +14,7 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/template"), Authorize]
-	public class TemplateController : ApiBaseController
+    public class TemplateController : ApiBaseController
     {
         private readonly ITemplateRepository _templateRepostory;
         private readonly IUserRepository _userRepository;
@@ -32,15 +32,15 @@ namespace PrimeApps.App.Controllers
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_templateRepostory);
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_templateRepostory);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var template = await _templateRepostory.GetById(id);
@@ -70,31 +70,27 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]TemplateBindingModel template)
         {
-            //TODO Removed - Storage atılamadığı için hata dönüyor veritabanına eklenmesini engelliyor.
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             var templateEntity = await TemplateHelper.CreateEntity(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);
 
             if (result < 1)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             if (template.Chunks > 0)
                 await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
-            //return Created(Request.Scheme + "://" + Request.Host + "/api/template/get/" + templateEntity.Id, templateEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/template/get/" + templateEntity.Id, templateEntity);
         }
 
         [Route("create_excel"), HttpPost]
         public async Task<IActionResult> CreateExcel(TemplateBindingModel template)
         {
-            //TODO Removed - Storage atılamadığı için hata dönüyor veritabanına eklenmesini engelliyor.
-            //if (!ModelState.IsValid)
-            //    return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+               return BadRequest(ModelState);
 
             var templateEntity = await TemplateHelper.CreateEntityExcel(template, _userRepository);
             var result = await _templateRepostory.Create(templateEntity);
@@ -123,7 +119,7 @@ namespace PrimeApps.App.Controllers
             await _templateRepostory.Update(templateEntity);
 
             if (template.Chunks > 0)
-				await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
+                await AzureStorage.CommitFile(template.Content, $"templates/{template.Content}", template.ContentType, string.Format("inst-{0}", AppUser.TenantGuid), template.Chunks, _configuration);
 
             return Ok(templateEntity);
         }

@@ -37,6 +37,7 @@ using Microsoft.EntityFrameworkCore;
 using PrimeApps.Model.Enums;
 using PrimeApps.Auth.Services;
 using Newtonsoft.Json.Linq;
+using System.Reflection;
 
 namespace PrimeApps.Auth.UI
 {
@@ -149,7 +150,7 @@ namespace PrimeApps.Auth.UI
                 if (!string.IsNullOrEmpty(vm.ApplicationInfo.Domain))
                     return Redirect(Request.Scheme + "://" + vm.ApplicationInfo.Domain);
                 else
-                    return RedirectToAction(nameof(AccountController.Index), "Account");
+                    return RedirectToAction(nameof(AccountController), nameof(AccountController.Index));
             }
 
             var cookieLang = AuthHelper.CurrentLanguage(Request);
@@ -297,233 +298,12 @@ namespace PrimeApps.Auth.UI
                 return View(vm);
             }
 
-            var identityUser = await _userManager.FindByNameAsync(model.Email);
-            var newIdentityUser = false;
-            if (identityUser == null)
+            var createUserRespone = await CreateUser(model, vm.ApplicationInfo, vm.ReturnUrl);
+
+            if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
             {
-                newIdentityUser = true;
-                var applicationUser = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    NormalizedEmail = model.Email,
-                    NormalizedUserName = !string.IsNullOrEmpty(model.FirstName) ? model.FirstName + " " + model.LastName : ""
-                };
-
-                var result = await _userManager.CreateAsync(applicationUser, model.Password);
-
-                if (!result.Succeeded)
-                {
-                    vm.Error = "UserNotCreated";
-                    return View(vm);
-                }
-
-                result = _userManager.AddClaimsAsync(applicationUser, new Claim[]{
-                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(model.FirstName) ? model.FirstName + " " + model.LastName : ""),
-                    new Claim(JwtClaimTypes.GivenName, model.FirstName),
-                    new Claim(JwtClaimTypes.FamilyName, model.LastName),
-                    new Claim(JwtClaimTypes.Email, model.Email),
-                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
-                }).Result;
-
-                identityUser = await _userManager.FindByEmailAsync(model.Email);
-            }
-
-            if (vm.ApplicationInfo != null)
-            {
-                var token = "";
-                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : vm.ApplicationInfo.Settings.Culture;
-
-                /*var activateModel = new ActivateBindingModels
-                {
-                    email = model.Email,
-                    app_id = applicationInfo.Id,
-                    culture = culture,
-                    first_name = model.FirstName,
-                    last_name = model.LastName,
-                    email_confirmed = identityUser.EmailConfirmed
-                };*/
-
-                if (!identityUser.EmailConfirmed)
-                    token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
-
-                var newPlatformUser = false;
-                PlatformUser platformUser = await _platformUserRepository.GetWithTenants(model.Email);
-
-                if (platformUser != null)
-                {
-                    var appTenant = platformUser.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == vm.ApplicationInfo.Id);
-
-                    if (appTenant != null)
-                    {
-                        vm.Error = "AlreadyRegisterForApp";
-                        return View(vm);
-                    }
-                }
-                else
-                {
-                    newPlatformUser = true;
-                    platformUser = new PlatformUser
-                    {
-                        Email = model.Email,
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Setting = new PlatformUserSetting()
-                    };
-
-                    if (!string.IsNullOrEmpty(culture))
-                    {
-                        platformUser.Setting.Culture = culture;
-                        platformUser.Setting.Language = culture.Substring(0, 2);
-                        //tenant.Setting.TimeZone =
-                        platformUser.Setting.Currency = culture;
-                    }
-                    else
-                    {
-                        platformUser.Setting.Culture = vm.ApplicationInfo.Settings.Culture;
-                        platformUser.Setting.Currency = vm.ApplicationInfo.Settings.Currency;
-                        platformUser.Setting.Language = vm.ApplicationInfo.Language;
-                        platformUser.Setting.TimeZone = vm.ApplicationInfo.Settings.TimeZone;
-
-                    }
-
-                    var result = await _platformUserRepository.CreateUser(platformUser);
-
-                    if (result == 0)
-                    {
-                        DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, null, null);
-                        vm.Error = "UnexpectedError";
-                        return View(vm);
-                    }
-
-                    platformUser = await _platformUserRepository.GetWithTenants(model.Email);
-                }
-
-                var tenantId = 0;
-                Tenant tenant = null;
-                //var tenantId = 2032;
-                try
-                {
-                    tenant = new Tenant
-                    {
-                        //Id = tenantId,
-                        AppId = vm.ApplicationInfo.Id,
-                        Owner = platformUser,
-                        UseUserSettings = true,
-                        Title = model.FirstName + " " + model.LastName,
-                        GuidId = Guid.NewGuid(),
-                        License = new TenantLicense
-                        {
-                            UserLicenseCount = 5,
-                            ModuleLicenseCount = 2
-                        },
-                        Setting = new TenantSetting
-                        {
-                            Culture = vm.ApplicationInfo.Settings.Culture,
-                            Currency = vm.ApplicationInfo.Settings.Currency,
-                            Language = vm.ApplicationInfo.Language,
-                            TimeZone = vm.ApplicationInfo.Settings.TimeZone
-                        },
-                        CreatedBy = platformUser
-                    };
-
-                    await _tenantRepository.CreateAsync(tenant);
-                    tenantId = tenant.Id;
-
-                    platformUser.TenantsAsOwner.Add(tenant);
-                    await _platformUserRepository.UpdateAsync(platformUser);
-
-                    var tenantUser = new TenantUser
-                    {
-                        Id = platformUser.Id,
-                        Email = platformUser.Email,
-                        FirstName = platformUser.FirstName,
-                        LastName = platformUser.LastName,
-                        FullName = $"{platformUser.FirstName} {platformUser.LastName}",
-                        IsActive = true,
-                        IsSubscriber = false,
-                        Culture = platformUser.Setting.Culture,
-                        Currency = vm.ApplicationInfo.Settings.Currency,
-                        CreatedAt = platformUser.CreatedAt,
-                        CreatedByEmail = platformUser.Email
-                    };
-
-                    await Postgres.CreateDatabaseWithTemplate(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, vm.ApplicationInfo.Id);
-
-                    _userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-                    _profileRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-                    _roleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-                    _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-
-                    _profileRepository.TenantId = _roleRepository.TenantId = _userRepository.TenantId = _recordRepository.TenantId = tenantId;
-
-                    tenantUser.IsSubscriber = true;
-                    await _userRepository.CreateAsync(tenantUser);
-
-                    var userProfile = await _profileRepository.GetDefaultAdministratorProfileAsync();
-                    var userRole = await _roleRepository.GetByIdAsync(1);
-
-                    tenantUser.Profile = userProfile;
-                    tenantUser.Role = userRole;
-
-
-                    await _userRepository.UpdateAsync(tenantUser);
-                    await _recordRepository.UpdateSystemData(platformUser.Id, DateTime.UtcNow, tenant.Setting.Language, vm.ApplicationInfo.Id);
-
-
-                    platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
-
-                    //user.TenantId = user.Id;
-                    //tenant.License.HasAnalyticsLicense = true;
-                    await _platformUserRepository.UpdateAsync(platformUser);
-                    await _tenantRepository.UpdateAsync(tenant);
-
-                    await _recordRepository.UpdateSampleData(platformUser);
-                    //await Cache.ApplicationUser.Add(user.Email, user.Id);
-                    //await Cache.User.Get(user.Id);
-
-                    var url = Request.Scheme + "://" + vm.ApplicationInfo.Domain + "/api/account/user_created";
-
-                    var requestModel = new JObject
-                    {
-                        ["email"] = model.Email,
-                        ["app_id"] = vm.ApplicationInfo.Id,
-                        ["guid_id"] = identityUser.Id,
-                        ["tenant_language"] = tenant.Setting.Language,
-                        ["code"] = token,
-                        ["user_exist"] = newPlatformUser,
-                        ["email_confirmed"] = identityUser.EmailConfirmed,
-                        ["culture"] = culture,
-                        ["first_name"] = model.FirstName,
-                        ["last_name"] = model.LastName,
-                        ["return_url"] = vm.ReturnUrl
-                    };
-
-                    using (var httpClient = new HttpClient())
-                    {
-                        httpClient.BaseAddress = new Uri(url);
-                        httpClient.DefaultRequestHeaders.Accept.Clear();
-                        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                        var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json"));
-
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
-                            vm.Error = "TenantCreateError";
-                            return View(vm);
-                            //TODO Loglara Eklenebilir.
-                        }
-                    }
-
-                    //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
-                    Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(vm.ApplicationInfo,tenant, tenantUser));
-                }
-                catch (Exception ex)
-                {
-                    DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
-
-                    throw ex;
-                }
+                vm.Error = createUserRespone["Error"].ToString();
+                return View(vm);
             }
 
             if (User?.Identity.IsAuthenticated == true)
@@ -536,7 +316,8 @@ namespace PrimeApps.Auth.UI
             var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, lockoutOnFailure: false);
 
             if (signInResult.Succeeded)
-                await _events.RaiseAsync(new UserLoginSuccessEvent(identityUser.UserName, identityUser.Id, identityUser.UserName));
+                await _events.RaiseAsync(new UserLoginSuccessEvent(model.Email, createUserRespone["identity_user_id"].ToString(), model.Email));
+
 
             if (vm.ApplicationInfo != null)
                 return Redirect(Request.Scheme + "://" + vm.ApplicationInfo.Domain);
@@ -544,24 +325,64 @@ namespace PrimeApps.Auth.UI
             return RedirectToAction(nameof(HomeController), nameof(HomeController.Index));
         }
 
+        [Route("api/account/create"), HttpPost]
+        public async Task<IActionResult> Create(CreateAccountBindingModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var app = await _applicationRepository.GetByName(model.AppName);
+
+            var application = new Application()
+            {
+                Id = app.Id,
+                Name = app.Name,
+                Language = model.Language ?? app.Setting.Language,
+                Domain = app.Setting.AppDomain,
+                Settings = new Settings
+                {
+                    Culture = model.Culture ?? app.Setting.Culture,
+                    Currency = app.Setting.Currency,
+                    TimeZone = app.Setting.TimeZone,
+                    GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
+                    TenantOperationWebhook = app.Setting.TenantOperationWebhook,
+                }
+            };
+
+            var createUserRespone = await CreateUser(new RegisterInputModel { Email = model.Email, Password = model.Password, Culture = model.Culture, FirstName = model.FirstName, LastName = model.LastName }, application, "");
+
+            if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
+                return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
+            
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail([FromQuery(Name = "email")]string email, [FromQuery(Name = "code")]string code)
         {
-            if (email == null || code == null)
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+            var vm = await BuildConfirmEmailViewModelAsync("");
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user == null)
-                throw new ApplicationException($"Unable to load user with user '{email}'.");
+            if (email == null || code == null)
+                vm.Error = "EmailConfirmMissingInfo";
 
-            var result = await _userManager.ConfirmEmailAsync(user, code);
+            else if (user == null)
+                vm.Error = "EmailConfirmUserNotFound";
 
-            if (!result.Succeeded)
-                ViewBag.Error = result.Errors.FirstOrDefault().Code; //InvaliedToken
+            else if (user.EmailConfirmed)
+                vm.Error = "EmailConfirmAlreadyConfirmed";
+            else
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, code);
 
-            return View();
+                if (!result.Succeeded)
+                    vm.Error = "EmailConfirmInvalidCode";
+            }
+
+            if (string.IsNullOrEmpty(vm.Error))
+                vm.Success = "EmailConfirmed";
+
+            return RedirectToAction(nameof(HomeController.Index), "Home", vm);
         }
 
         [HttpGet]
@@ -662,7 +483,7 @@ namespace PrimeApps.Auth.UI
                 return RedirectToAction("Login", "Account", new { vm.ReturnUrl, Success = "PasswordChanged" });
 
             vm.Error = "InvalidToken";
-            return View();
+            return View(vm);
         }
 
         /// <summary>
@@ -719,6 +540,13 @@ namespace PrimeApps.Auth.UI
             if (user != null)
             {
                 var clientId = AuthHelper.GetClientId(result.Properties.Items["returnUrl"]);
+                var model = new RegisterInputModel();
+                model.FirstName = result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname");
+                model.LastName = result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname");
+                model.Email = user.UserName;
+                model.Culture = CultureInfo.CurrentCulture.Name;
+                model.Password = Utils.GenerateRandomUnique(8);
+
 
                 if (!string.IsNullOrEmpty(clientId))
                 {
@@ -726,42 +554,53 @@ namespace PrimeApps.Auth.UI
                     var appInfo = await _applicationRepository.GetByName(clientId);
                     var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 
+                    var theme = JObject.Parse(appInfo.Setting.AutTheme);
+
+                    var _language = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
+
+                    var cdnUrlStatic = "";
+                    var cdnUrl = Configuration.GetSection("webOptimizer")["cdnUrl"];
+
+                    if (!string.IsNullOrEmpty(cdnUrl))
+                    {
+                        var versionStatic = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                        cdnUrlStatic = cdnUrl + "/" + versionStatic;
+                    }
+
+                    var application = new Application()
+                    {
+                        Id = appInfo.Id,
+                        Name = appInfo.Name,
+                        Title = theme["title"].ToString(),
+                        MultiLanguage = string.IsNullOrEmpty(appInfo.Setting.Language),
+                        Logo = appInfo.Logo,
+                        Theme = theme,
+                        Color = theme["color"].ToString(),
+                        CustomDomain = false,
+                        Language = _language,
+                        Favicon = theme["favicon"].ToString(),
+                        CdnUrl = cdnUrlStatic,
+                        Domain = appInfo.Setting.AppDomain,
+                        Settings = new Settings
+                        {
+                            Culture = appInfo.Setting.Culture,
+                            Currency = appInfo.Setting.Currency,
+                            TimeZone = appInfo.Setting.TimeZone,
+                            GoogleAnalytics = appInfo.Setting.GoogleAnalyticsCode,
+                            TenantOperationWebhook = appInfo.Setting.TenantOperationWebhook,
+                        }
+                    };
+
                     if (platformUser == null || userApp == null)
                     {
-                        var createUrl = Request.Scheme + "://" + appInfo.Setting.AppDomain + "/api/account/create";
+                        var createUserResponse = await CreateUser(model, application, "", true);
 
-                        var activateModel = new ActivateBindingModels
+                        if (!string.IsNullOrEmpty(createUserResponse["Error"].ToString()))
                         {
-                            email = user.UserName,
-                            app_id = appInfo.Id,
-                            culture = CultureInfo.CurrentCulture.Name,
-                            first_name = result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"),
-                            last_name = result.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"),
-                            email_confirmed = user.EmailConfirmed
-                        };
-
-                        using (var httpClient = new HttpClient())
-                        {
-                            httpClient.BaseAddress = new Uri(createUrl);
-                            httpClient.DefaultRequestHeaders.Accept.Clear();
-                            httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                            var response = await httpClient.PostAsync(createUrl, new StringContent(JsonConvert.SerializeObject(activateModel), Encoding.UTF8, "application/json"));
-
-                            /*if (!response.IsSuccessStatusCode)
-							{
-								ViewBag.AppInfo = AuthHelper.GetApplicationInfo(Configuration, Request, Response, returnUrl, _applicationRepository);
-								if (response.StatusCode == HttpStatusCode.Conflict)
-								{
-									ViewBag.Error = "alreadyRegisterForApp";
-									return View(registerViewModel);
-								}
-								else
-								{
-									ViewBag.Error = "unexpectedError";
-									return View(registerViewModel);
-								}
-							}*/
+                            /*vm.Error = createUserResponse["Error"].ToString();
+                            return View(vm);*/
                         }
+
                     }
                 }
             }
@@ -810,14 +649,14 @@ namespace PrimeApps.Auth.UI
             // build a model so the logout page knows what to display
             var vm = await BuildLogoutViewModelAsync(logoutId, returnUrl);
 
-            if (vm.ShowLogoutPrompt == false)
+            /*if (vm.ShowLogoutPrompt == false)
             {
                 // if the request for logout was properly authenticated from IdentityServer, then
                 // we don't need to show the prompt and can just log the user out directly.
                 return await Logout(vm);
-            }
+            }*/
 
-            return View(vm);
+            return await Logout(vm);
         }
 
         /// <summary>
@@ -897,6 +736,20 @@ namespace PrimeApps.Auth.UI
                 Error = error
             };
         }
+        private async Task<ConfirmEmailViewModel> BuildConfirmEmailViewModelAsync(string returnUrl, string success = "", string error = "")
+        {
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+
+            return new ConfirmEmailViewModel
+            {
+                ReturnUrl = returnUrl,
+                ApplicationInfo = applicationInfo,
+                Language = applicationInfo?.Language,
+                Success = success,
+                Error = error
+            };
+        }
+
         private async Task<ForgotPasswordViewModel> BuildForgotPasswordViewModelAsync(ForgotPasswordViewModel model, string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
@@ -1058,29 +911,26 @@ namespace PrimeApps.Auth.UI
         {
             var vm = new LogoutViewModel { LogoutId = logoutId, ShowLogoutPrompt = AccountOptions.ShowLogoutPrompt };
 
-            vm.ShowLogoutPrompt = false;
             vm.ReturnUrl = returnUrl;
+
+            if (User?.Identity.IsAuthenticated != true)
+            {
+                // if the user is not authenticated, then just show logged out page
+                vm.ShowLogoutPrompt = false;
+                return vm;
+            }
+
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context?.ShowSignoutPrompt == false)
+            {
+                // it's safe to automatically sign-out
+                vm.ShowLogoutPrompt = false;
+                return vm;
+            }
+
+            // show the logout prompt. this prevents attacks where the user
+            // is automatically signed out by another malicious web page.
             return vm;
-
-            //TODO Removed
-            /*if (User?.Identity.IsAuthenticated != true)
-			{
-				// if the user is not authenticated, then just show logged out page
-				vm.ShowLogoutPrompt = false;
-				return vm;
-			}
-
-			var context = await _interaction.GetLogoutContextAsync(logoutId);
-			if (context?.ShowSignoutPrompt == false)
-			{
-				// it's safe to automatically sign-out
-				vm.ShowLogoutPrompt = false;
-				return vm;
-			}
-
-			// show the logout prompt. this prevents attacks where the user
-			// is automatically signed out by another malicious web page.
-			return vm;*/
         }
 
         private async Task<LoggedOutViewModel> BuildLoggedOutViewModelAsync(string logoutId)
@@ -1324,6 +1174,253 @@ namespace PrimeApps.Auth.UI
 
             if (newIdentityUser)
                 await _userManager.DeleteAsync(user);
+        }
+
+        private async Task DeactivateUser(Tenant tenant)
+        {
+            await _tenantRepository.DeleteAsync(tenant);
+        }
+
+        private async Task<JObject> CreateUser(RegisterInputModel model, Application applicationInfo, string returnUrl, bool externalLogin = false)
+        {
+            var response = new JObject()
+            {
+                ["Error"] = null
+            };
+
+            var identityUser = await _userManager.FindByNameAsync(model.Email);
+            var newIdentityUser = false;
+            if (identityUser == null && !externalLogin)
+            {
+                newIdentityUser = true;
+                var applicationUser = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    NormalizedEmail = model.Email,
+                    NormalizedUserName = !string.IsNullOrEmpty(model.FirstName) ? model.FirstName + " " + model.LastName : ""
+                };
+
+                var result = await _userManager.CreateAsync(applicationUser, model.Password);
+
+                if (!result.Succeeded)
+                {
+                    response["Error"] = "UserNotCreated";
+                    return response;
+                }
+
+                result = _userManager.AddClaimsAsync(applicationUser, new Claim[]{
+                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(model.FirstName) ? model.FirstName + " " + model.LastName : ""),
+                    new Claim(JwtClaimTypes.GivenName, model.FirstName),
+                    new Claim(JwtClaimTypes.FamilyName, model.LastName),
+                    new Claim(JwtClaimTypes.Email, model.Email),
+                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
+                }).Result;
+
+                identityUser = await _userManager.FindByEmailAsync(model.Email);
+            }
+
+            if (applicationInfo != null)
+            {
+                var token = "";
+                var culture = !string.IsNullOrEmpty(model.Culture) ? model.Culture : applicationInfo.Settings.Culture;
+
+                /*var activateModel = new ActivateBindingModels
+                {
+                    email = model.Email,
+                    app_id = applicationInfo.Id,
+                    culture = culture,
+                    first_name = model.FirstName,
+                    last_name = model.LastName,
+                    email_confirmed = identityUser.EmailConfirmed
+                };*/
+
+                if (!externalLogin && !identityUser.EmailConfirmed)
+                    token = await _userManager.GenerateEmailConfirmationTokenAsync(identityUser);
+
+                var newPlatformUser = false;
+                PlatformUser platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+
+                if (platformUser != null)
+                {
+                    var appTenant = platformUser.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == applicationInfo.Id);
+
+                    if (appTenant != null)
+                    {
+                        response["Error"] = "AlreadyRegisterForApp";
+                        return response;
+                    }
+                }
+                else
+                {
+                    newPlatformUser = true;
+                    platformUser = new PlatformUser
+                    {
+                        Email = model.Email,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Setting = new PlatformUserSetting()
+                    };
+
+                    if (!string.IsNullOrEmpty(culture))
+                    {
+                        platformUser.Setting.Culture = culture;
+                        platformUser.Setting.Language = culture.Substring(0, 2);
+                        //tenant.Setting.TimeZone =
+                        platformUser.Setting.Currency = culture;
+                    }
+                    else
+                    {
+                        platformUser.Setting.Culture = applicationInfo.Settings.Culture;
+                        platformUser.Setting.Currency = applicationInfo.Settings.Currency;
+                        platformUser.Setting.Language = applicationInfo.Language;
+                        platformUser.Setting.TimeZone = applicationInfo.Settings.TimeZone;
+
+                    }
+
+                    var result = await _platformUserRepository.CreateUser(platformUser);
+
+                    if (result == 0)
+                    {
+                        DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, null, null);
+                        response["Error"] = "UnexpectedError";
+                        return response;
+                    }
+
+                    platformUser = await _platformUserRepository.GetWithTenants(model.Email);
+                }
+
+                var tenantId = 0;
+                Tenant tenant = null;
+                //var tenantId = 2032;
+                try
+                {
+                    tenant = new Tenant
+                    {
+                        //Id = tenantId,
+                        AppId = applicationInfo.Id,
+                        Owner = platformUser,
+                        UseUserSettings = true,
+                        Title = model.FirstName + " " + model.LastName,
+                        GuidId = Guid.NewGuid(),
+                        License = new TenantLicense
+                        {
+                            UserLicenseCount = 5,
+                            ModuleLicenseCount = 2
+                        },
+                        Setting = new TenantSetting
+                        {
+                            Culture = applicationInfo.Settings.Culture,
+                            Currency = applicationInfo.Settings.Currency,
+                            Language = applicationInfo.Language,
+                            TimeZone = applicationInfo.Settings.TimeZone
+                        },
+                        CreatedBy = platformUser
+                    };
+
+                    await _tenantRepository.CreateAsync(tenant);
+                    tenantId = tenant.Id;
+
+                    platformUser.TenantsAsOwner.Add(tenant);
+                    await _platformUserRepository.UpdateAsync(platformUser);
+
+                    var tenantUser = new TenantUser
+                    {
+                        Id = platformUser.Id,
+                        Email = platformUser.Email,
+                        FirstName = platformUser.FirstName,
+                        LastName = platformUser.LastName,
+                        FullName = $"{platformUser.FirstName} {platformUser.LastName}",
+                        IsActive = true,
+                        IsSubscriber = false,
+                        Culture = platformUser.Setting.Culture,
+                        Currency = applicationInfo.Settings.Currency,
+                        CreatedAt = platformUser.CreatedAt,
+                        CreatedByEmail = platformUser.Email
+                    };
+
+                    await Postgres.CreateDatabaseWithTemplate(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, applicationInfo.Id);
+
+                    _userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
+                    _profileRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
+                    _roleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
+                    _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
+
+                    _profileRepository.TenantId = _roleRepository.TenantId = _userRepository.TenantId = _recordRepository.TenantId = tenantId;
+
+                    tenantUser.IsSubscriber = true;
+                    await _userRepository.CreateAsync(tenantUser);
+
+                    var userProfile = await _profileRepository.GetDefaultAdministratorProfileAsync();
+                    var userRole = await _roleRepository.GetByIdAsync(1);
+
+                    tenantUser.Profile = userProfile;
+                    tenantUser.Role = userRole;
+
+
+                    await _userRepository.UpdateAsync(tenantUser);
+                    await _recordRepository.UpdateSystemData(platformUser.Id, DateTime.UtcNow, tenant.Setting.Language, applicationInfo.Id);
+
+
+                    platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
+
+                    //user.TenantId = user.Id;
+                    //tenant.License.HasAnalyticsLicense = true;
+                    await _platformUserRepository.UpdateAsync(platformUser);
+                    await _tenantRepository.UpdateAsync(tenant);
+
+                    await _recordRepository.UpdateSampleData(platformUser);
+                    //await Cache.ApplicationUser.Add(user.Email, user.Id);
+                    //await Cache.User.Get(user.Id);
+
+                    var url = Request.Scheme + "://" + applicationInfo.Domain + "/api/account/user_created";
+
+                    var requestModel = new JObject
+                    {
+                        ["email"] = model.Email,
+                        ["app_id"] = applicationInfo.Id,
+                        ["guid_id"] = identityUser.Id,
+                        ["tenant_language"] = tenant.Setting.Language,
+                        ["code"] = token,
+                        ["user_exist"] = newPlatformUser,
+                        ["email_confirmed"] = identityUser.EmailConfirmed,
+                        ["culture"] = culture,
+                        ["first_name"] = model.FirstName,
+                        ["last_name"] = model.LastName,
+                        ["return_url"] = returnUrl
+                    };
+
+                    using (var httpClient = new HttpClient())
+                    {
+                        httpClient.BaseAddress = new Uri(url);
+                        httpClient.DefaultRequestHeaders.Accept.Clear();
+                        httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                        var userCreatedResponse = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json"));
+
+                        if (!userCreatedResponse.IsSuccessStatusCode)
+                        {
+                            DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
+                            response["Error"] = "TenantCreateError";
+                            return response;
+                            //TODO Loglara Eklenebilir.
+                        }
+                    }
+
+                    //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
+                    Queue.QueueBackgroundWorkItem(x => AuthHelper.TenantOperationWebhook(applicationInfo, tenant, tenantUser));
+
+                    response["Success"] = true;
+                    response["identity_user_id"] = identityUser.Id;
+                }
+                catch (Exception ex)
+                {
+                    DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
+
+                    throw ex;
+                }
+            }
+
+            return response;
         }
     }
 }
