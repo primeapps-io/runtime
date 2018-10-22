@@ -339,7 +339,7 @@ namespace PrimeApps.App.Helpers
                         var emailData = new Dictionary<string, string>();
                         string domain;
 
-                        domain = "https://{0}.ofisim.com/";
+                        domain = "http://{0}.ofisim.com/";
 
                         var appDomain = "crm";
 
@@ -776,7 +776,7 @@ namespace PrimeApps.App.Helpers
                         var emailData = new Dictionary<string, string>();
                         string domain;
 
-                        domain = "https://{0}.ofisim.com/";
+                        domain = "http://{0}.ofisim.com/";
                         var appDomain = "crm";
 
                         switch (appUser.AppId)
@@ -924,7 +924,7 @@ namespace PrimeApps.App.Helpers
                             var emailData = new Dictionary<string, string>();
                             string domain;
 
-                            domain = "https://{0}.ofisim.com/";
+                            domain = "http://{0}.ofisim.com/";
                             var appDomain = "crm";
 
                             switch (appUser.AppId)
@@ -1013,7 +1013,7 @@ namespace PrimeApps.App.Helpers
                             var emailData = new Dictionary<string, string>();
                             string domain;
 
-                            domain = "https://{0}.ofisim.com/";
+                            domain = "http://{0}.ofisim.com/";
                             var appDomain = "crm";
 
                             switch (appUser.AppId)
@@ -1123,7 +1123,7 @@ namespace PrimeApps.App.Helpers
                     var emailData = new Dictionary<string, string>();
                     string domain;
 
-                    domain = "https://{0}.ofisim.com/";
+                    domain = "http://{0}.ofisim.com/";
                     var appDomain = "crm";
 
                     switch (appUser.AppId)
@@ -1258,7 +1258,7 @@ namespace PrimeApps.App.Helpers
                     var emailData = new Dictionary<string, string>();
                     string domain;
 
-                    domain = "https://{0}.ofisim.com/";
+                    domain = "http://{0}.ofisim.com/";
                     var appDomain = "crm";
 
                     switch (appUser.AppId)

@@ -275,7 +275,7 @@ namespace PrimeApps.App.Jobs.Email
 					moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 					var module = await moduleRepository.GetById(moduleId);
 					var lookupModules = await RecordHelper.GetLookupModules(module, moduleRepository, tenantLanguage: subscriber.Setting.Language);
-					var record = recordRepository.GetById(module, recordId, false, lookupModules);
+					var record = recordRepository.GetById(module, recordId, false, lookupModules, true);
 
 					if (!record.IsNullOrEmpty())
 					{
