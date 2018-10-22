@@ -117,13 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ConfirmEmailErrorContent" xml:space="preserve">
-    <value>E-Posta adresiniz onaylanırken bir sorun oluştu.</value>
+  <data name="EmailConfirmedContent" xml:space="preserve">
+    <value>E-Postanız başarılı bir şekilde onaylanmıştır. Uygulamayı kullanmaya devam edebilirsiniz.</value>
   </data>
-  <data name="ConfirmEmailErrorTitle" xml:space="preserve">
-    <value>Beklenmedik bir sorun oluştu</value>
+  <data name="EmailConfirmedTitle" xml:space="preserve">
+    <value>E-Posta Onaylandı</value>
+  </data>
+  <data name="EmailConfirmInvalidCodeContent" xml:space="preserve">
+    <value>Aktivasyon kodu yanlış veya süresi dolmuş olabilir.</value>
+  </data>
+  <data name="EmailConfirmInvalidCodeTitle" xml:space="preserve">
+    <value>Geçersiz aktivasyon kodu</value>
+  </data>
+  <data name="EmailConfirmMissingInfoContent" xml:space="preserve">
+    <value>Aktivasyon kodu ve e-posta adresi zorunludur.</value>
+  </data>
+  <data name="EmailConfirmMissingInfoTitle" xml:space="preserve">
+    <value>Eksik bilgiler mevcut !</value>
+  </data>
+  <data name="EmailConfirmUserNotFoundContent" xml:space="preserve">
+    <value>Bu e-posta ile kayıtlı bir kullanıcı bulunmuyor.</value>
+  </data>
+  <data name="EmailConfirmUserNotFoundTitle" xml:space="preserve">
+    <value>Kullanıcı bulunamadı</value>
   </data>
   <data name="Ok" xml:space="preserve">
     <value>Tamam</value>
+  </data>
+  <data name="EmailConfirmAlreadyConfirmedContent" xml:space="preserve">
+    <value>E-Posta adresi daha önce onaylanmıştır.</value>
+  </data>
+  <data name="EmailConfirmAlreadyConfirmedTitle" xml:space="preserve">
+    <value>Daha önce onaylanmış</value>
   </data>
 </root>

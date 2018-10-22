@@ -49,17 +49,23 @@ namespace PrimeApps.Model.Repositories
             }
 
             // Wait two minute for Sql Server database creation is completed
-            await Task.Delay(120000);
-            var warehouse = _platformWarehouseRepository.Create(new PlatformWarehouse()
+            // await Task.Delay(120000);
+ 
+
+             var warehouse = _platformWarehouseRepository.Create(new PlatformWarehouse()
             {
                 Completed = false,
                 DatabaseName = request.DatabaseName,
                 DatabaseUser = request.DatabaseUser,
                 PowerbiWorkspaceId = request.PowerBiWorkspaceId,
-                TenantId = request.TenantId
+                TenantId = request.TenantId,
+                CreatedById = request.TenantId,
+                UpdatedById = request.TenantId
+             });
 
-            });
-            //Model.Entities.Platform.PlatformWarehouse warehouse = Model.Entities.Platform.PlatformWarehouse.Create(request);
+          
+
+             //Model.Entities.Platform.PlatformWarehouse warehouse = Model.Entities.Platform.PlatformWarehouse.Create(request);
             await Sync(warehouse, modules, userEmail, tenantLanguage);
         }
 
@@ -93,20 +99,6 @@ namespace PrimeApps.Model.Repositories
                 }
             }
         }
-
-        Task IWarehouseRepository.Create(PlatformWarehouse warehouse, ICollection<Module> modules, string userEmail, string tenantLanguage)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IWarehouseRepository.Sync(PlatformWarehouse warehouse, ICollection<Module> modules, string userEmail, string tenantLanguage)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IWarehouseRepository.ChangePassword(string username, string password)
-        {
-            throw new NotImplementedException();
-        }
+ 
     }
 }

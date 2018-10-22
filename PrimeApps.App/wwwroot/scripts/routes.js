@@ -5,7 +5,7 @@ angular.module('primeapps')
     .config(['$stateProvider', '$urlRouterProvider',
         function ($stateProvider, $urlRouterProvider) {
 
-            if (window.location.hash.indexOf('#access_token') > -1) {
+            /*if (window.location.hash.indexOf('#access_token') > -1) {
                 var parseQueryString = function (queryString) {
                     var data = {}, pairs, pair, separatorIndex, escapedKey, escapedValue, key, value;
 
@@ -38,10 +38,16 @@ angular.module('primeapps')
 
                 var queryString = parseQueryString(window.location.hash.substr(1));
                 window.localStorage['access_token'] = queryString.access_token;
+            }*/
+
+            if (token){
+                window.localStorage['access_token'] = token;
             }
 
-            if (!window.localStorage.getItem('access_token'))
+            if (!window.localStorage.getItem('access_token')){
                 return;
+            }
+
 
             //app
             $stateProvider

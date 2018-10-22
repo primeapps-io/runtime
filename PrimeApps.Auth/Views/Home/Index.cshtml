@@ -5,16 +5,30 @@
 
 @section scripts {
     <script>
-	    $(document).ready(function() {
-            if ("@ViewBag.Error" == "ConfirmEmailError") {
+        $(document).ready(function () {
+            var showError = function (error) {
                 swal({
                     title: "@Localizer[ViewBag.Error + "Title"]",
                     text: "@Localizer[ViewBag.Error + "Content"]",
                     type: "error",
                     button: "@Localizer["Ok"]",
-                }).then((result) => {
-                    console.log(result);
                 });
+            }
+            var showSuccess = function (success) {
+                swal({
+                    title: "@Localizer[ViewBag.Success + "Title"]",
+                    text: "@Localizer[ViewBag.Success + "Content"]",
+                    type: "success",
+                    button: "@Localizer["Ok"]",
+                });
+            }
+
+            @if (!string.IsNullOrEmpty(ViewBag.Error)) {
+                @:showError();
+            }
+
+            @if (!string.IsNullOrEmpty(ViewBag.Success)) {
+                @:showSuccess();
             }
         });
     </script>

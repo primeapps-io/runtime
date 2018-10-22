@@ -701,7 +701,8 @@ angular.module('primeapps')
                     var module = $scope.module.name;
                     var templateId = $scope.quoteTemplate.id;
                     var templateName = $scope.quoteTemplate.name;
-                    $window.open("/attach/export_excel_no_data?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
+                    var viewId = $scope.view.id;
+                    $window.open("/attach/export_excel_no_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
                     ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
                 };
 
@@ -709,7 +710,8 @@ angular.module('primeapps')
                     var module = $scope.module.name;
                     var templateId = $scope.quoteTemplate.id;
                     var templateName = $scope.quoteTemplate.name;
-                    $window.open("/attach/export_excel_data?module=" + module + "&templateId=" + templateId + "&templateName=" + templateName, "_blank");
+                    var viewId = $scope.view.id;
+                    $window.open("/attach/export_excel_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
                     ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
                 };
 

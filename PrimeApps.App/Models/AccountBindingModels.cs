@@ -198,28 +198,29 @@ namespace PrimeApps.App.Models
     {
         internal object ModuleLicenseCount;
 
-        [Required, StringLength(100)]
+        [Required, StringLength(100), JsonProperty("email")]
         public string Email { get; set; }
 
-        [Required, StringLength(40)]
+        [Required, StringLength(40), JsonProperty("first_name")]
         public string FirstName { get; set; }
 
-        [Required, StringLength(40)]
+        [Required, StringLength(40), JsonProperty("last_name")]
         public string LastName { get; set; }
 
-        [Required, StringLength(100)]
+        [Required, StringLength(100), JsonProperty("phone")]
         public string Phone { get; set; }
 
-        [Required]
+        [Required, JsonProperty("profile_id")]
         public int ProfileId { get; set; }
 
-        [Required]
+        [Required, JsonProperty("role_id")]
         public int RoleId { get; set; }
 
-		/*[Required]
-		public int AppId { get; set; }*/
+        [Required, JsonProperty("app_id")]
+		public int AppId { get; set; }
 
-        public int? TenantId { get; set; }
+        [Required, JsonProperty("tenant_id")]
+        public int TenantId { get; set; }
 
         public bool IsOfficeUser { get; set; }
 

@@ -15,6 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<PlatformUser> GetSettings(int platformUserId);
         Task<PlatformUser> Get(string email);
         Task<PlatformUser> GetWithTenants(string email);
+        Task<PlatformUser> GetWithSettings(string email);
         Task<int> CreateUser(PlatformUser user);
         Task<int> DeleteAsync(PlatformUser user);
         Task UpdateAsync(PlatformUser userToEdit);
