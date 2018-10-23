@@ -137,13 +137,17 @@ namespace PrimeApps.App.Controllers
 
             var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
 
+            SentrySdk.CaptureMessage("User Created ApplicationInfo: " + applicationInfo, Sentry.Protocol.SentryLevel.Info);
+
             Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString()));
 
             if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
             {
                 var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
 
+                SentrySdk.CaptureMessage("User Created Url: " + url, Sentry.Protocol.SentryLevel.Info);
                 var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "email_confirm", request["culture"].ToString().Substring(0, 2));
+                SentrySdk.CaptureMessage("User Created Template: " + template, Sentry.Protocol.SentryLevel.Info);
                 var content = template.Content;
 
                 content = content.Replace("{:FirstName}", request["first_name"].ToString());
