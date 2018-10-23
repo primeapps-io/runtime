@@ -173,6 +173,7 @@ namespace PrimeApps.App.Controllers
             catch(Exception ex)
             {
                 SentrySdk.CaptureException(ex);
+                return BadRequest();
             }            
         }
 
