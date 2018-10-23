@@ -1378,6 +1378,7 @@ namespace PrimeApps.Auth.UI
                     //await Cache.User.Get(user.Id);
 
                     var url = Request.Scheme + "://" + applicationInfo.Domain + "/api/account/user_created";
+                    SentrySdk.CaptureMessage("User created url: " + url, Sentry.Protocol.SentryLevel.Info);
 
                     var requestModel = new JObject
                     {
@@ -1393,6 +1394,8 @@ namespace PrimeApps.Auth.UI
                         ["last_name"] = model.LastName,
                         ["return_url"] = returnUrl
                     };
+
+                    SentrySdk.CaptureMessage("User created model: " + requestModel, Sentry.Protocol.SentryLevel.Info);
 
                     using (var httpClient = new HttpClient())
                     {
