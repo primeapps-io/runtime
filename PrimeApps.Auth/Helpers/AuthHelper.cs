@@ -88,7 +88,7 @@ namespace PrimeApps.Auth.UI
             var uri = new Uri(returnUrl);
             var clientId = HttpUtility.ParseQueryString(uri.Query).Get("client_id");
 
-            if (clientId != null)
+            if (clientId == null)
                 throw new Exception("Client Id missing. Url: " + uri.Query);
 
             return clientId;
