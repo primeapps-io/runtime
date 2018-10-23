@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using PrimeApps.Model.Common.Resources;
 using System.Web;
+using Sentry;
 
 namespace PrimeApps.App.Controllers
 {
@@ -129,6 +130,8 @@ namespace PrimeApps.App.Controllers
         [Route("user_created")]
         public async Task<IActionResult> UserCreated([FromBody]JObject request)
         {
+            SentrySdk.CaptureMessage("User Created Api Method Model: " + request, Sentry.Protocol.SentryLevel.Info);
+
             if (request["email"].IsNullOrEmpty() || request["app_id"].IsNullOrEmpty())
                 return BadRequest();
 
