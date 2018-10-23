@@ -1404,13 +1404,13 @@ namespace PrimeApps.Auth.UI
                         httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
                         var userCreatedResponse = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(requestModel), Encoding.UTF8, "application/json"));
 
-                        if (!userCreatedResponse.IsSuccessStatusCode)
+                        /*if (!userCreatedResponse.IsSuccessStatusCode)
                         {
                             DatabaseRollback(identityUser, newIdentityUser, newPlatformUser, _platformUserRepository, _tenantRepository, tenant, platformUser);
                             response["Error"] = "TenantCreateError";
                             return response;
                             //TODO Loglara Eklenebilir.
-                        }
+                        }*/
                     }
 
                     //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
