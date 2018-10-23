@@ -8,6 +8,7 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using Sentry;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -66,6 +67,9 @@ namespace PrimeApps.Auth.UI
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
                 }
             };
+
+            if(application == null)
+                SentrySdk.CaptureMessage("Application is null.",Sentry.Protocol.SentryLevel.Info);
 
             return application;
         }
