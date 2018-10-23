@@ -38,6 +38,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Auth.Services;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
+using Sentry;
 
 namespace PrimeApps.Auth.UI
 {
@@ -291,6 +292,7 @@ namespace PrimeApps.Auth.UI
         public async Task<IActionResult> Register(RegisterInputModel model)
         {
             var vm = await BuildRegisterViewModelAsync(model);
+            SentrySdk.CaptureMessage(JsonConvert.SerializeObject(model), Sentry.Protocol.SentryLevel.Info);
 
             if (!ModelState.IsValid)
             {
@@ -299,6 +301,8 @@ namespace PrimeApps.Auth.UI
             }
 
             var createUserRespone = await CreateUser(model, vm.ApplicationInfo, vm.ReturnUrl);
+
+            SentrySdk.CaptureMessage(createUserRespone["Error"].ToString(), Sentry.Protocol.SentryLevel.Info);
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
             {
@@ -805,7 +809,7 @@ namespace PrimeApps.Auth.UI
                 ReturnUrl = returnUrl,
                 ExternalProviders = providers.ToArray(),
                 ApplicationInfo = applicationInfo,
-                Language = applicationInfo.Language,
+                Language = applicationInfo?.Language,
                 Success = success,
                 Error = error
             };
