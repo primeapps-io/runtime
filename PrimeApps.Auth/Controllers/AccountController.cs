@@ -39,6 +39,7 @@ using PrimeApps.Auth.Services;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 using Sentry;
+using PrimeApps.Auth.Helpers;
 
 namespace PrimeApps.Auth.UI
 {
@@ -292,8 +293,6 @@ namespace PrimeApps.Auth.UI
         public async Task<IActionResult> Register(RegisterInputModel model)
         {
             var vm = await BuildRegisterViewModelAsync(model);
-            SentrySdk.CaptureMessage(JsonConvert.SerializeObject(model), Sentry.Protocol.SentryLevel.Info);
-
             if (!ModelState.IsValid)
             {
                 vm.Error = "ModelStateNotValid";
@@ -301,11 +300,10 @@ namespace PrimeApps.Auth.UI
             }
 
             var createUserRespone = await CreateUser(model, vm.ApplicationInfo, vm.ReturnUrl);
-
-            SentrySdk.CaptureMessage(createUserRespone["Error"].ToString(), Sentry.Protocol.SentryLevel.Info);
-
+            
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
             {
+                ErrorHandler.LogMessage("IdentityServer Register Error: " + createUserRespone["Error"].ToString(), Sentry.Protocol.SentryLevel.Info);
                 vm.Error = createUserRespone["Error"].ToString();
                 return View(vm);
             }
@@ -1378,7 +1376,6 @@ namespace PrimeApps.Auth.UI
                     //await Cache.User.Get(user.Id);
 
                     var url = Request.Scheme + "://" + applicationInfo.Domain + "/api/account/user_created";
-                    SentrySdk.CaptureMessage("User created url: " + url, Sentry.Protocol.SentryLevel.Info);
 
                     var requestModel = new JObject
                     {
@@ -1394,8 +1391,6 @@ namespace PrimeApps.Auth.UI
                         ["last_name"] = model.LastName,
                         ["return_url"] = returnUrl
                     };
-
-                    SentrySdk.CaptureMessage("User created model: " + requestModel, Sentry.Protocol.SentryLevel.Info);
 
                     using (var httpClient = new HttpClient())
                     {

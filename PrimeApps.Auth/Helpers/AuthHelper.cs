@@ -67,10 +67,7 @@ namespace PrimeApps.Auth.UI
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
                 }
             };
-
-            if(application == null)
-                SentrySdk.CaptureMessage("Application is null.",Sentry.Protocol.SentryLevel.Info);
-
+           
             return application;
         }
 
@@ -91,9 +88,6 @@ namespace PrimeApps.Auth.UI
 
             var uri = new Uri(returnUrl);
             var clientId = HttpUtility.ParseQueryString(uri.Query).Get("client_id");
-
-            if (clientId == null)
-                throw new Exception("Client Id missing. Url: " + uri.Query);
 
             return clientId;
         }

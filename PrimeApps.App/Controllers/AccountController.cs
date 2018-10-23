@@ -88,7 +88,7 @@ namespace PrimeApps.App.Controllers
                     var data = response.Content.ReadAsStringAsync().Result;
                     return BadRequest(data);
                 }
-                
+
             }
 
             //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
@@ -130,51 +130,34 @@ namespace PrimeApps.App.Controllers
         [Route("user_created")]
         public async Task<IActionResult> UserCreated([FromBody]JObject request)
         {
-            try
-            {
-                SentrySdk.CaptureMessage("User Created Api Method Model: " + request, Sentry.Protocol.SentryLevel.Info);
-
-                if (request["email"].IsNullOrEmpty() || request["app_id"].IsNullOrEmpty())
-                    return BadRequest();
-
-                var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
-
-                Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString()));
-
-                if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
-                {
-                    var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
-
-                    SentrySdk.CaptureMessage("User Created Url: " + url, Sentry.Protocol.SentryLevel.Info);
-                    var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "email_confirm", request["culture"].ToString().Substring(0, 2));
-                    SentrySdk.CaptureMessage("User Created Template Subject: " + template.Subject, Sentry.Protocol.SentryLevel.Info);
-                    var content = template.Content;
-
-                    SentrySdk.CaptureMessage("User Created Template Content: " + content, Sentry.Protocol.SentryLevel.Info);
-
-                    content = content.Replace("{:FirstName}", request["first_name"].ToString());
-                    content = content.Replace("{:LastName}", request["last_name"].ToString());
-                    content = content.Replace("{:Email}", request["email"].ToString());
-                    content = content.Replace("{:Url}", string.Format(url, request["email"].ToString(), WebUtility.UrlEncode(request["code"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
-
-                    SentrySdk.CaptureMessage("User Created Content: " + content, Sentry.Protocol.SentryLevel.Info);
-                    Email notification = new Email(template.Subject, content, _configuration);
-
-                    SentrySdk.CaptureMessage("User Created senderEmail: " + template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail, Sentry.Protocol.SentryLevel.Info);
-                    var senderEmail = template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail;
-                    var senderName = template.MailSenderName ?? applicationInfo.Setting.MailSenderName;
-
-                    SentrySdk.CaptureMessage("User Created senderName: " + template.MailSenderName ?? applicationInfo.Setting.MailSenderName, Sentry.Protocol.SentryLevel.Info);
-                    notification.AddRecipient(request["email"].ToString());
-                    notification.AddToQueue(senderEmail, senderName);
-                }
-                return Ok();
-            }
-            catch(Exception ex)
-            {
-                SentrySdk.CaptureException(ex);
+            if (request["email"].IsNullOrEmpty() || request["app_id"].IsNullOrEmpty())
                 return BadRequest();
-            }            
+
+            var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
+
+            Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString()));
+
+            if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
+            {
+                var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
+
+                var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "email_confirm", request["culture"].ToString().Substring(0, 2));
+                var content = template.Content;
+
+                content = content.Replace("{:FirstName}", request["first_name"].ToString());
+                content = content.Replace("{:LastName}", request["last_name"].ToString());
+                content = content.Replace("{:Email}", request["email"].ToString());
+                content = content.Replace("{:Url}", string.Format(url, request["email"].ToString(), WebUtility.UrlEncode(request["code"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
+
+                Email notification = new Email(template.Subject, content, _configuration);
+
+                var senderEmail = template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail;
+                var senderName = template.MailSenderName ?? applicationInfo.Setting.MailSenderName;
+
+                notification.AddRecipient(request["email"].ToString());
+                notification.AddToQueue(senderEmail, senderName);
+            }
+            return Ok();
         }
 
         [HttpPost]
