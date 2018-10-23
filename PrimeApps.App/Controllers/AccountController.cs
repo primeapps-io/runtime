@@ -137,7 +137,7 @@ namespace PrimeApps.App.Controllers
 
             var applicationInfo = await _applicationRepository.Get(int.Parse(request["app_id"].ToString()));
 
-            SentrySdk.CaptureMessage("User Created ApplicationInfo: " + applicationInfo, Sentry.Protocol.SentryLevel.Info);
+            SentrySdk.CaptureMessage("User Created ApplicationInfo: " + JsonConvert.SerializeObject(applicationInfo), Sentry.Protocol.SentryLevel.Info);
 
             Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(new Guid(request["guid_id"].ToString()), int.Parse(request["app_id"].ToString()), request["tenant_language"].ToString()));
 
@@ -147,7 +147,7 @@ namespace PrimeApps.App.Controllers
 
                 SentrySdk.CaptureMessage("User Created Url: " + url, Sentry.Protocol.SentryLevel.Info);
                 var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "email_confirm", request["culture"].ToString().Substring(0, 2));
-                SentrySdk.CaptureMessage("User Created Template: " + template, Sentry.Protocol.SentryLevel.Info);
+                SentrySdk.CaptureMessage("User Created Template: " + JsonConvert.SerializeObject(template), Sentry.Protocol.SentryLevel.Info);
                 var content = template.Content;
 
                 content = content.Replace("{:FirstName}", request["first_name"].ToString());
@@ -155,11 +155,14 @@ namespace PrimeApps.App.Controllers
                 content = content.Replace("{:Email}", request["email"].ToString());
                 content = content.Replace("{:Url}", string.Format(url, request["email"].ToString(), WebUtility.UrlEncode(request["code"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
 
+                SentrySdk.CaptureMessage("User Created Content: " + JsonConvert.SerializeObject(content), Sentry.Protocol.SentryLevel.Info);
                 Email notification = new Email(template.Subject, content, _configuration);
 
+                SentrySdk.CaptureMessage("User Created senderEmail: " + template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail, Sentry.Protocol.SentryLevel.Info);
                 var senderEmail = template.MailSenderEmail ?? applicationInfo.Setting.MailSenderEmail;
                 var senderName = template.MailSenderName ?? applicationInfo.Setting.MailSenderName;
 
+                SentrySdk.CaptureMessage("User Created senderName: " + template.MailSenderName ?? applicationInfo.Setting.MailSenderName, Sentry.Protocol.SentryLevel.Info);
                 notification.AddRecipient(request["email"].ToString());
                 notification.AddToQueue(senderEmail, senderName);
             }
