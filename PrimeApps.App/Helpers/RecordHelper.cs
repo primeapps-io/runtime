@@ -459,7 +459,7 @@ namespace PrimeApps.App.Helpers
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
                 //Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse));
-                _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse).GetAwaiter();
+                _bpmHelper.Run(OperationType.delete, record, module, appUser, warehouse).GetAwaiter();
             }
 
 

@@ -617,7 +617,7 @@ namespace PrimeApps.App.Helpers
                                 continue;
                         }
 
-                        //TODO Start Bpm Engine
+                        //Start Bpm Engine
 
                         string runId = string.Empty;
                         var data = new JObject();
@@ -627,26 +627,19 @@ namespace PrimeApps.App.Helpers
                         var code = workflow.Code;
                         var version = workflow.Version;
                         var referance = ReferenceCreateToForBpmHost(appUser);
-                        WorkflowDefinition currentWorkflow = null;
+                        //WorkflowDefinition currentWorkflow = null;
+                        
+                        //currentWorkflow = _workflowRegistry.GetDefinition(code);
+                        
+                        //if (currentWorkflow == null)
+                        //{
+                        //    var str = workflow.DefinitionJson.ToString();
+                        //    var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-                        try
-                        {
-                            currentWorkflow = _workflowRegistry.GetDefinition(code);
-
-                        }
-                        catch (Exception e)
-                        {
-                            currentWorkflow = null;
-                        }
-
-                        if (currentWorkflow == null)
-                        {
-                            var str = workflow.DefinitionJson.ToString();
-                            var workflowDefinition = _definitionLoader.LoadDefinition(str);
-
-                            if (workflowDefinition == null)
-                                throw new ApplicationException(System.Net.HttpStatusCode.BadRequest.ToString());
-                        }
+                        //    currentWorkflow = _workflowRegistry.GetDefinition(code);
+                        //    if (workflowDefinition == null)
+                        //        throw new ApplicationException(System.Net.HttpStatusCode.BadRequest.ToString());
+                        //}
 
                         runId = await _workflowHost.StartWorkflow<JObject>(code, data, referance);
 

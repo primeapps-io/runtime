@@ -82,13 +82,13 @@ namespace PrimeApps.App.Bpm.Steps
                         {
                             Subject = tempSendNotification["subject"].Value<string>(),
                             Message = tempSendNotification["message"].Value<string>(),
-                            //  RecipientsArray = tempSendNotification["recipients"].ToObject<string[]>(),
+                            RecipientList = tempSendNotification["recipients"].ToObject<List<UserBasic>>(),
                             CC = !tempSendNotification["cc"].IsNullOrEmpty() ? tempSendNotification["cc"].ToObject<JArray>() : new JArray(),
                             Bcc = !tempSendNotification["bcc"].IsNullOrEmpty() ? tempSendNotification["bcc"].ToObject<JArray>() : new JArray(),
                             Schedule = tempSendNotification["schedule"]["value"].Value<string>() == "now" ? 0 : tempSendNotification["schedule"]["value"].ToObject<int>()
                         };
 
-                        var recipients = sendNotification.RecipientsArray;
+                        var recipients = sendNotification.RecipientList;
 
                         var moduleId = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleId);
@@ -100,10 +100,10 @@ namespace PrimeApps.App.Bpm.Steps
                         var sendNotificationBCC = sendNotification.Bcc;
 
                         if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1/* && !sendNotification.CC.Contains("@")*/)
-                            sendNotificationCC = !record[sendNotification.CCArray[0]].IsNullOrEmpty() ? record[sendNotification.CCArray[0]].ToObject<JArray>():null ;
+                            sendNotificationCC = !record[sendNotification.CCArray[0]].IsNullOrEmpty() ? record[sendNotification.CCArray[0]].ToObject<JArray>() : null;
 
                         if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 /* && !sendNotification.Bcc.Contains("@")*/)
-                            sendNotificationBCC = !record[sendNotification.BccArray[0]].IsNullOrEmpty() ? record[sendNotification.BccArray[0]].ToObject<JArray>():null;
+                            sendNotificationBCC = !record[sendNotification.BccArray[0]].IsNullOrEmpty() ? record[sendNotification.BccArray[0]].ToObject<JArray>() : null;
 
                         string domain;
 
@@ -151,34 +151,34 @@ namespace PrimeApps.App.Bpm.Steps
                         {
                             var recipient = recipientItem;
 
-                            if (recipient == "[owner]")
+                            if (recipient.Email == "[owner]")
                             {
                                 var recipentUser = await _userRepository.GetById((int)record["owner.id"]);
 
                                 if (recipentUser == null)
                                     continue;
 
-                                recipient = recipentUser.Email;
+                                recipient.Email = recipentUser.Email;
 
                             }
 
-                            if (recipients.Contains(recipient))
-                                continue;
+                            //if (recipients.Contains(recipient))
+                            //    continue;
 
-                            if (!recipient.Contains("@"))
+                            if (!recipient.Email.Contains("@"))
                             {
                                 if (!record[recipient].IsNullOrEmpty())
                                 {
-                                    recipient = (string)record[recipient];
+                                    recipient.Email = (string)record[recipient.Email];
                                 }
                             }
-                            email.AddRecipient(recipient);
+                            email.AddRecipient(recipient.Email);
                         }
 
                         if (sendNotification.Schedule.HasValue)
                             email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotification.CCArray.ToString(), sendNotification.BccArray.ToString(), appUser: appUser, addRecordSummary: false);
+                        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotification.CCArray == null ? "" : string.Join(",", sendNotification.CCArray), sendNotification.BccArray == null ? "" : string.Join(",", sendNotification.BccArray), appUser: appUser, addRecordSummary: false);
 
                         //var workflowLog = new BpmWorkflowLog
                         //{

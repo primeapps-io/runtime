@@ -87,7 +87,7 @@ namespace PrimeApps.App.Bpm.Steps
                         var moduleId = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleId);
                         
-                        var webHook = newRequest["webhook"];
+                        var webHook = newRequest["webHook"];
 
                         if (!webHook.HasValues)
                             throw new MissingFieldException("Cannot find child data");
@@ -96,9 +96,9 @@ namespace PrimeApps.App.Bpm.Steps
                         jsonData["id"] = record["id"];
                         var recordId = record["id"].ToObject<int>();
                         
-                        if (webHook["Parameters"].HasValues)
+                        if (!webHook["Parameters"].IsNullOrEmpty())
                         {
-                            var parameters = webHook["Parameters"].Value<string>().Split(',');
+                            var parameters = webHook["Parameters"];
                             var lookModuleNames = new List<string>();
                             ICollection<Module> lookupModules = null;
 
@@ -120,10 +120,10 @@ namespace PrimeApps.App.Bpm.Steps
 
                             foreach (var dataString in parameters)
                             {
-                                var dataObject = dataString.Split('|');
-                                var parameterName = dataObject[0];
-                                var moduleName = dataObject[1];
-                                var fieldName = dataObject[2];
+                                //var dataObject = dataString.Split('|');
+                                var parameterName = dataString["parameterName"].Value<string>();
+                                var moduleName = dataString["selectedModule"]["name"].Value<string>();
+                                var fieldName = dataString["selectedField"]["name"].Value<string>();
 
                                 if (moduleName != module.Name)
                                     jsonData[parameterName] = recordData[moduleName + "." + fieldName];
@@ -140,7 +140,7 @@ namespace PrimeApps.App.Bpm.Steps
                             }
                         }
 
-                        var methodType = webHook["MethodType"].ToObject<BpmHttpMethod>();
+                        var methodType = webHook["methodType"].ToObject<BpmHttpMethod>();
                         switch (methodType)
                         {
                             case BpmHttpMethod.Post:
@@ -151,13 +151,13 @@ namespace PrimeApps.App.Bpm.Steps
 
                                     var dataAsString = JsonConvert.SerializeObject(jsonData);
                                     var contentResetPasswordBindingModel = new StringContent(dataAsString);
-                                    await client.PostAsync(webHook["CallbackUrl"].Value<string>(), contentResetPasswordBindingModel);
+                                    await client.PostAsync(webHook["callbackUrl"].Value<string>(), contentResetPasswordBindingModel);
 
                                     //await client.PostAsJsonAsync(webHook.CallbackUrl, jsonData);
                                 }
                                 else
                                 {
-                                    await client.PostAsync(webHook["CallbackUrl"].Value<string>(), null);
+                                    await client.PostAsync(webHook["callbackUrl"].Value<string>(), null);
                                 }
 
                                 break;
@@ -168,11 +168,11 @@ namespace PrimeApps.App.Bpm.Steps
                                         jsonData.Children().Cast<JProperty>()
                                         .Select(q => q.Name + "=" + HttpUtility.UrlEncode(q.Value.ToString())));
 
-                                    await client.GetAsync(webHook["CallbackUrl"].Value<string>() + "?" + query);
+                                    await client.GetAsync(webHook["callbackUrl"].Value<string>() + "?" + query);
                                 }
                                 else
                                 {
-                                    await client.GetAsync(webHook["CallbackUrl"].Value<string>());
+                                    await client.GetAsync(webHook["callbackUrl"].Value<string>());
                                 }
                                 break;
                         }

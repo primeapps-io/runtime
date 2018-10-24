@@ -86,8 +86,8 @@ namespace PrimeApps.App.Bpm.Steps
 
                         var task = new JObject();
                         task["activity_type"] = "1";
-                        task["owner"] = createTask["Owner"];
-                        task["subject"] = createTask["Subject"];
+                        task["owner"] = createTask["owner"];
+                        task["subject"] = createTask["subject"];
 
                         if (module.Name == "activities")
                         {
@@ -105,30 +105,31 @@ namespace PrimeApps.App.Bpm.Steps
                             task["related_to"] = record["related_to"];
                         }
 
-                        task["task_due_date"] = DateTime.UtcNow.AddDays(task["TaskDueDate"].Value<double>());
+                        var dueDateValue = createTask["task_due_date"]["value"].ToString() == "now" ? 0 : createTask["task_due_date"]["value"].Value<double>();
+                        task["task_due_date"] = DateTime.UtcNow.AddDays(dueDateValue);
 
-                        if (createTask["TaskStatus"].HasValues)
-                            task["task_status"] = createTask["TaskStatus"];
+                        if (createTask["task_status"].HasValues)
+                            task["task_status"] = createTask["task_status"];
 
-                        if (createTask["TaskPriority"].HasValues)
-                            task["task_priority"] = createTask["TaskPriority"];
+                        if (createTask["task_priority"].HasValues)
+                            task["task_priority"] = createTask["task_priority"];
 
-                        if (createTask["TaskNotification"].HasValues)
-                            task["task_notification"] = createTask["TaskNotification"];
+                        if (createTask["task_notification"].HasValues)
+                            task["task_notification"] = createTask["task_notification"];
 
-                        if (createTask["TaskReminder"].HasValues)
-                            task["task_reminder"] = createTask["TaskReminder"];
+                        if (createTask["task_reminder"].HasValues)
+                            task["task_reminder"] = createTask["task_reminder"];
 
-                        if (createTask["ReminderRecurrence"].HasValues)
-                            task["reminder_recurrence"] = createTask["ReminderRecurrence"];
+                        if (createTask["reminder_recurrence"].HasValues)
+                            task["reminder_recurrence"] = createTask["reminder_recurrence"];
 
-                        if (!string.IsNullOrWhiteSpace(createTask["Description"].Value<string>()))
-                            task["description"] = createTask["Description"];
+                        if (!string.IsNullOrWhiteSpace(createTask["description"].Value<string>()))
+                            task["description"] = createTask["description"];
 
-                        if (createTask["Owner"].Value<int>() == 0)
+                        if (createTask["owner"].Value<int>() == 0)
                             task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
 
-                        task["created_by"] = createTask["CreatedById"];
+                        task["created_by"] = createTask["created_by_id"];
 
                         var modelState = new ModelStateDictionary();
                         var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleActivity, record, modelState, appUser.Language);

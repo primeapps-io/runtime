@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Constants
             { "Saga", new Dictionary<string, string>(){{ Id, "mySaga" }, { StepType, "WorkflowCore.Primitives.Sequence, WorkflowCore" } } }, //BPMN editorde hangi nesneye bagli olacagi belli degil?
             { "Start", new Dictionary<string, string>(){ { Id, "StartStep" }, { StepType, "PrimeApps.App.Bpm.Steps.StartStep, PrimeApps.App" } } },
             { "Notification Task", new Dictionary<string, string>(){ { Id, "NotificationStep" },{ StepType, "PrimeApps.App.Bpm.Steps.NotificationStep, PrimeApps.App" } } },
-            { "User Task", new Dictionary<string, string>(){ { Id, "" }, { StepType, "PrimeApps.App.Bpm.Steps, PrimeApps.App" } } },
+            { "User Task", new Dictionary<string, string>(){ { Id, "TaskStep" }, { StepType, "PrimeApps.App.Bpm.Steps.TaskStep, PrimeApps.App" } } },
             { "WebHook Task", new Dictionary<string, string>(){ { Id, "WebhookStep" }, { StepType, "PrimeApps.App.Bpm.Steps.WebhookStep, PrimeApps.App" } } },
             { "Data Task", new Dictionary<string, string>(){ { Id, "DataUpdateStep" }, { StepType, "PrimeApps.App.Bpm.Steps.DataUpdateStep, PrimeApps.App" } } }
         };

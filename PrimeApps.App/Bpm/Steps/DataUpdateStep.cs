@@ -45,7 +45,9 @@ namespace PrimeApps.App.Bpm.Steps
             //TODO REf Kontrol
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
             var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
-            var newRequest = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
+
+            var tempRequest = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
+            var newRequest = tempRequest?["field_update"];
 
             if (newRequest.IsNullOrEmpty())
                 throw new DataMisalignedException("Cannot find Request");

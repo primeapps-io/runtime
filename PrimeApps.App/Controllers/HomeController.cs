@@ -11,6 +11,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using WorkflowCore.Interface;
 
 namespace PrimeApps.App.Controllers
 {
@@ -18,11 +19,15 @@ namespace PrimeApps.App.Controllers
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
+        private IDefinitionLoader _definitionLoader;
+        private IWorkflowRegistry _workflowRegistry;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDefinitionLoader definitionLoader, IWorkflowRegistry workflowRegistry)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
+            _definitionLoader = definitionLoader;
+            _workflowRegistry = workflowRegistry;
         }
 
         [Authorize]
@@ -44,6 +49,8 @@ namespace PrimeApps.App.Controllers
 
             Response.Cookies.Append("tenant_id", tenant.Id.ToString());
 
+            await RegisterWorkflows(userId, tenant.Id);
+
             return View();
         }
 
@@ -52,6 +59,27 @@ namespace PrimeApps.App.Controllers
             //await SetValues();
 
             return View("Index");
+        }
+
+        private async Task RegisterWorkflows(int userId, int tenantId)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                using (var _BpmWorkflowRepository = new BpmRepository(databaseContext, _configuration))
+                {
+                    _BpmWorkflowRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = tenantId };
+                    var bpmWorkflows = await _BpmWorkflowRepository.GetAllBasic();
+                    foreach (var workflow in bpmWorkflows)
+                    {
+                        var str = workflow.DefinitionJson.ToString();
+                        //var currentWorkflow = _workflowRegistry.GetDefinition(workflow.Code);
+
+                        //if(currentWorkflow == null)
+                            _definitionLoader.LoadDefinition(str);
+                    }
+                }
+            }
         }
 
         private async Task SetValues(int userId, int tenantId)

@@ -111,21 +111,28 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var version = 1; //Static int value!
             var bpmWorkflowEntity = await _bpmHelper.CreateEntity(bpmWorkflow, AppUser.Language);
 
-            var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, 1, JObject.Parse(bpmWorkflow.DiagramJson));
+            //We must control to be same Workflow Code and version
+            var response = await _bpmRepository.GetAll(bpmWorkflowEntity.Code, version);
+
+            if(response.Count()>0)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+
+            var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
 
             if (definitionJson.IsNullOrEmpty())
                 return BadRequest();
 
             bpmWorkflowEntity.DefinitionJson = definitionJson.ToJsonString();
 
-            ////Load string JSON Data on WorkFlowEngine
-            //var str = JsonConvert.SerializeObject(definitionJson);
-            //var workflowDefinition = _definitionLoader.LoadDefinition(str);
+            //Load string JSON Data on WorkFlowEngine
+            var str = JsonConvert.SerializeObject(definitionJson);
+            var workflowDefinition = _definitionLoader.LoadDefinition(str);
 
-            //if (workflowDefinition == null)
-            //    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            if (workflowDefinition == null)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             var result = await _bpmRepository.Create(bpmWorkflowEntity);
 
@@ -161,8 +168,13 @@ namespace PrimeApps.App.Controllers
                 var newVersion = lastVersion + 1;
 
                 bpmWorkflowEntity.Version = newVersion;
-                bpmWorkflow.DefinitionJson["Version"] = newVersion;
-                bpmWorkflow.DefinitionJson["Id"] = bpmWorkflowEntity.Code;
+                var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, newVersion, JObject.Parse(bpmWorkflow.DiagramJson));
+                bpmWorkflow.DefinitionJson = definitionJson;
+
+            }
+            else
+            {
+                return NotFound();
             }
             //}
 
