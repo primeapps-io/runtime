@@ -61,7 +61,7 @@
                                     <i class="fa fa-plus"></i>
                                 </a>
                             </div>
-                            <div ng-hide="(day.dayOrder === 0 && !settings.includeWeekend) || (day.dayOrder === 6 && !settings.includeWeekend) || day.holiday" class="btn btn-sm btn-custom  pull-right" style="width: 300px; background-color:inherit !important; border-top: none; border-right : none">
+                            <div ng-hide="(day.dayOrder === 0 && !settings.includeWeekend) || (day.dayOrder === 6 && !settings.includeWeekend) || day.holiday || day.notDayOfCurrentMonth" class="btn btn-sm btn-custom  pull-right" style="width: 300px; background-color:inherit !important; border-top: none; border-right : none">
                                     <span ng-if="day.totalHour < settings.dayStandartHour" style="color:#635fb3; font-weight: bold !important; text-transform: uppercase;">
                                         <span ng-if="day.totalHour">{{'Timetracker.Total'|translate}}: {{day.totalHour}} {{'Timetracker.Hour'|translate}}</span> ( {{settings.dayStandartHour - day.totalHour}} {{'Timetracker.LessHour'|translate}} )
                                     </span>

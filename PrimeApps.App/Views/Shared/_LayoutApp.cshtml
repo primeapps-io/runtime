@@ -19,6 +19,7 @@
     var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
     var hasAdminRight = ViewBag.HasAdminRight;
     var tenantId = ViewBag.TenantId;
+    var token = ViewBag.Token;
 }
 
 <!DOCTYPE html>
@@ -53,6 +54,7 @@
 	    var blobUrl = '@blobUrl';
 	    var functionUrl = '@functionUrl';
         var tenantId = '@tenantId';
+        var token = '@token';
 
 		var getParameterByName = function (name) {
 			var url = window.location.href;

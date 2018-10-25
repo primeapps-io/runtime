@@ -19,6 +19,7 @@ using Sentry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -232,7 +233,7 @@ namespace PrimeApps.App.Controllers
 		public async Task<IActionResult> MyAccount()
 		{
 			AccountInfo acc = new AccountInfo();
-			List<UserAppInfo> apps = null;
+            List<UserAppInfo> apps = new List<UserAppInfo>();
 			acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
 
 
@@ -240,38 +241,23 @@ namespace PrimeApps.App.Controllers
 			{
 
 				var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
+                var user = await _platformUserRepository.Get(AppUser.Id);
 
-				//TODO Removed
-				/*using (var dbContext = new PlatformDBContext())
+                /*if (user.TenantsAsUser.Count > 0)
                 {
-                    apps = dbContext.UserApps.Where(x => x.UserId == AppUser.Id)
-                        .Select(i => new UserAppInfo()
-                        {
-                            Id = i.Id,
-                            Email = i.Email,
-                            TenantId = i.TenantId,
-                            UserId = i.UserId,
-                            Active = i.Active,
-                            AppId = i.AppId,
-                            MainTenantId = i.MainTenantId
-                        }).ToList();
-                }
-				
-                if (AppUser.AppId == 1 || AppUser.AppId == 4)
-                {
-                    var activeApp = apps.SingleOrDefault(x => x.Active);
-                    var mainTenant = await _platformUserRepository.Get(acc.user.ID);
-                    var mainApp = new UserAppInfo();
-                    mainApp.MainTenantId = mainTenant.Id;
-                    mainApp.Email = mainTenant.Email;
-                    mainApp.AppId = mainTenant.TenantsAsUser.Where(x => x.Id == AppUser.TenantId).FirstOrDefault().AppId;
-                    mainApp.TenantId = mainTenant.Id;
-                    mainApp.UserId = mainTenant.Id;
-                    mainApp.Active = activeApp == null;
-                    apps.Add(mainApp);
+                    foreach(var userApp in user.TenantsAsUser)
+                    {
+                        var app = new UserAppInfo();
+                        app.Email = userApp.PlatformUser.Email;
+                        app.AppId = userApp.Tenant.AppId;
+                        app.TenantId = userApp.Tenant.Id;
+                        app.UserId = userApp.UserId;
+                        app.Active = userApp.TenantId == AppUser.TenantId;
+                        apps.Add(app);
+                    }
                 }*/
 
-				acc.user.tenantLanguage = AppUser.TenantLanguage;
+                acc.user.tenantLanguage = AppUser.TenantLanguage;
 				acc.instances = tenant;
 				acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture, _configuration);
 				//acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
@@ -293,7 +279,6 @@ namespace PrimeApps.App.Controllers
 
 				if (acc.user.deactivated)
 					throw new ApplicationException(HttpStatusCode.Status409Conflict.ToString());
-				//throw new HttpResponseException(HttpStatusCode.Status409Conflict);
 
 				return Ok(acc);
 			}
@@ -337,177 +322,61 @@ namespace PrimeApps.App.Controllers
 			if (checkEmail == EmailAvailableType.NotAvailable)
 				return StatusCode(HttpStatusCode.Status409Conflict);
 
-			//Set warehouse database name
-			//_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+            //Set warehouse database name
+            //_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-			var tenantId = AppUser.TenantId;
-			var adminUserLocalId = AppUser.Id;
-			var adminUserGlobalId = AppUser.Id;
-			var adminUserEmail = AppUser.Email;
-			var culture = AppUser.Culture;
-			var currency = AppUser.Currency;
-			var picklistLanguage = AppUser.TenantLanguage;
-			var appId = AppUser.AppId;
-			var createdBy = AppUser.Email;
+            var appInfo = await _applicationRepository.Get(AppUser.AppId);
+            addUserBindingModel.TenantId = AppUser.TenantId;
+            addUserBindingModel.AppId = AppUser.AppId;
 
-			if (addUserBindingModel.TenantId.HasValue)
-			{
-				if (!AppUser.Email.EndsWith("@ofisim.com"))
-					return StatusCode(HttpStatusCode.Status403Forbidden);
+            using (var httpClient = new HttpClient())
+            {
+                var token = await HttpContext.GetTokenAsync("access_token");
+                var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
+                httpClient.BaseAddress = new Uri(url);
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-				var tenantWithOwner = await _platformUserRepository.GetTenantWithOwner(addUserBindingModel.TenantId.Value);
+                var json = JsonConvert.SerializeObject(addUserBindingModel);
+                var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
-				tenantId = addUserBindingModel.TenantId.Value;
-				adminUserLocalId = tenantWithOwner.OwnerId;
-				adminUserGlobalId = tenantWithOwner.OwnerId;
-				adminUserEmail = tenantWithOwner.Owner.Email;
-				culture = tenantWithOwner.Owner.Setting.Culture;
-				currency = tenantWithOwner.Owner.Setting.Currency;
-				appId = tenantWithOwner.AppId;
-				createdBy = tenantWithOwner.Owner.Email;
+                if (!response.IsSuccessStatusCode)
+					return BadRequest(response);
 
-				_userRepository.TenantId = tenantId;
-				_profileRepository.TenantId = tenantId;
-				_roleRepository.TenantId = tenantId;
-				_recordRepository.TenantId = tenantId;
-			}
+                using (var content = response.Content)
+                {
+                    var stringResult = content.ReadAsStringAsync().Result;
+                    if (!string.IsNullOrEmpty(stringResult))
+                    {
+                        var jsonResult = JObject.Parse(stringResult);
+                        if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
+                        {
+                            var template = _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, "email_confirm", AppUser.Culture.Substring(0, 2));
+                            if (template != null)
+                            {
+                                template.Content = template.Content.Replace("{:FirstName}", addUserBindingModel.FirstName);
+                                template.Content = template.Content.Replace("{:LastName}", addUserBindingModel.LastName);
+                                template.Content = template.Content.Replace("{:Email}", addUserBindingModel.Email);
+                                template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + addUserBindingModel.Email + "&code=" + WebUtility.UrlDecode(jsonResult["token"].ToString()));
 
+                                Email notification = new Email(template.Subject, template.Content, _configuration);
 
-			//Register
-			var tenant = _platformRepository.GetTenant(tenantId);
-
-			if (tenant.TenantUsers.Count >= tenant.License.UserLicenseCount)
-				return StatusCode(HttpStatusCode.Status402PaymentRequired);
-
-			var randomPassword = Utils.GenerateRandomUnique(8);
-
-			PlatformUser applicationUser = null;
-			if (checkEmail != EmailAvailableType.AvailableForApp)
-			{
-				applicationUser = new PlatformUser
-				{
-					Email = addUserBindingModel.Email,
-					FirstName = addUserBindingModel.FirstName,
-					LastName = addUserBindingModel.LastName,
-					Setting = new PlatformUserSetting()
-				};
-
-				applicationUser.Setting.Culture = tenant.Setting.Culture;
-				applicationUser.Setting.Language = tenant.Setting.Language;
-				//tenant.Setting.TimeZone = 
-				applicationUser.Setting.Currency = tenant.Setting.Currency;
+                                notification.AddRecipient(template.MailSenderEmail);
+                                notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
+                            }
+                        }
 
 
-				var result = _platformUserRepository.CreateUser(applicationUser).Result;
-				if (result == 0)
-				{
-					ModelState.AddModelError("", "user not created");
-					return BadRequest(ModelState);
-				}
-			}
-			else
-			{
-				applicationUser = await _platformUserRepository.Get(addUserBindingModel.Email);
-			}
+                        return Ok(jsonResult["password"].ToString());
+                    }
 
-			var appInfo = await _applicationRepository.Get(appId);
+                    if (response.IsSuccessStatusCode)
+                        return Ok();
 
-			using (var httpClient = new HttpClient())
-			{
-
-				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/register";
-				httpClient.BaseAddress = new Uri(url);
-				httpClient.DefaultRequestHeaders.Accept.Clear();
-				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-
-				var json = JsonConvert.SerializeObject(new RegisterBindingModel { Email = addUserBindingModel.Email, FirstName = addUserBindingModel.FirstName, LastName = addUserBindingModel.LastName, Password = randomPassword });
-				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
-
-				/*if (!response.IsSuccessStatusCode)
-					return BadRequest(response);*/
-
-				using (var content = response.Content)
-				{
-					var stringResult = content.ReadAsStringAsync().Result;
-					if (!string.IsNullOrEmpty(stringResult))
-					{
-						var jsonResult = JObject.Parse(stringResult);
-						if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
-						{
-							var template = _platformRepository.GetAppTemplate(appId, AppTemplateType.Email, "email_confirm", culture.Substring(0, 2));
-							if (template != null)
-							{
-								template.Content.Replace("{{:FIRSTNAME}}", addUserBindingModel.FirstName);
-								template.Content.Replace("{{:LASTNAME}}", addUserBindingModel.LastName);
-								template.Content.Replace("{{:EMAIL}}", addUserBindingModel.Email);
-								template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/activate?token=" + jsonResult["token"]);
-
-								Email notification = new Email(template.Subject, template.Content, _configuration);
-
-								notification.AddRecipient(template.MailSenderEmail);
-								notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
-							}
-						}
-					}
-				}
-			}
-
-			var registerModel = new RegisterBindingModel();
-			registerModel.Email = addUserBindingModel.Email;
-			registerModel.FirstName = addUserBindingModel.FirstName;
-			registerModel.LastName = addUserBindingModel.LastName;
-			registerModel.Password = randomPassword;
-			registerModel.License = "F89E4FBF-A50F-40BA-BBEC-FE027F3F1524";//Free license
-
-			var platformUser = await _platformUserRepository.Get(applicationUser.Id);
-
-			//Set warehouse database name
-			var warehouseInfo = await _platformWarehouseRepository.GetByTenantId(tenantId);
-
-			_warehouse.DatabaseName = warehouseInfo != null ? warehouseInfo.DatabaseName : "0";
-
-			var tenantUser = await _userRepository.GetById(platformUser.Id);
-
-			if (tenantUser == null)
-			{
-				tenantUser = new User
-				{
-					Id = platformUser.Id,
-					Email = addUserBindingModel.Email,
-					FirstName = addUserBindingModel.FirstName,
-					LastName = addUserBindingModel.LastName,
-					FullName = $"{addUserBindingModel.FirstName} {addUserBindingModel.LastName}",
-					Phone = addUserBindingModel.Phone,
-					Picture = "",
-					IsActive = true,
-					IsSubscriber = false,
-					Culture = culture,
-					Currency = currency,
-					CreatedAt = DateTime.UtcNow,
-					CreatedByEmail = adminUserEmail
-				};
-
-				await _userRepository.CreateAsync(tenantUser);
-			}
-			else
-			{
-				randomPassword = "*******";
-				tenantUser.IsActive = true;
-				await _userRepository.UpdateAsync(tenantUser);
-			}
-
-			await _profileRepository.AddUserAsync(platformUser.Id, addUserBindingModel.ProfileId);
-			await _roleRepository.AddUserAsync(platformUser.Id, addUserBindingModel.RoleId);
-
-			var currentTenant = _platformRepository.GetTenant(tenantId);
-
-			platformUser.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = platformUser });
-
-			await _platformUserRepository.UpdateAsync(platformUser);
-
-			await _platformUserRepository.UpdateAsync(platformUser);
-
-			return Ok(randomPassword);
+                    return BadRequest();
+                }
+            }
 		}
 
 		//TODO TenantId

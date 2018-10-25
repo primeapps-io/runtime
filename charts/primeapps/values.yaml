@@ -123,6 +123,7 @@ auth:
         ValidUrls: "localhost;primeapps.io"
         ForwardHeaders: "true"
         HttpsRedirection: "true"
+        AuthUrl: "https://auth-dev.primeapps.io"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"

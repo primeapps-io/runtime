@@ -22,6 +22,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using PrimeApps.Model.Common.Resources;
 using System.Web;
+using Sentry;
 
 namespace PrimeApps.App.Controllers
 {
@@ -58,182 +59,40 @@ namespace PrimeApps.App.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("create")]
-        public async Task<IActionResult> Create([FromBody]CreateBindingModels activateBindingModel)
+        public async Task<IActionResult> Create([FromBody]CreateBindingModels createBindingModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var userExist = true;
-            PlatformUser user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
-            var app = await _applicationRepository.Get(activateBindingModel.AppId);
+            Model.Entities.Platform.App app = null;
 
-            if (user != null)
-            {
-                var appTenant = user.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == activateBindingModel.AppId);
-
-                if (appTenant != null)
-                {
-                    ModelState.AddModelError("", "User is already registered for this app.");
-                    return Conflict(ModelState);
-                }
-            }
+            if (!string.IsNullOrEmpty(createBindingModel.AppName))
+                app = await _applicationRepository.GetByName(createBindingModel.AppName);
+            else if (createBindingModel.AppId != null)
+                app = await _applicationRepository.Get(createBindingModel.AppId);
             else
+                return BadRequest();
+
+            using (var client = new HttpClient())
             {
-                userExist = false;
-                user = new PlatformUser
-                {
-                    Email = activateBindingModel.Email,
-                    FirstName = activateBindingModel.FirstName,
-                    LastName = activateBindingModel.LastName,
-                    Setting = new PlatformUserSetting()
-                };
+                var url = Request.Scheme + "://" + app.Setting.AuthDomain + "/api/account/create";
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                if (!string.IsNullOrEmpty(activateBindingModel.Culture))
+                var dataAsString = JsonConvert.SerializeObject(createBindingModel);
+                var content = new StringContent(dataAsString);
+                var response = await client.PostAsync(url, content);
+                if (!response.IsSuccessStatusCode)
                 {
-                    user.Setting.Culture = activateBindingModel.Culture;
-                    user.Setting.Language = activateBindingModel.Culture.Substring(0, 2);
-                    //tenant.Setting.TimeZone =
-                    user.Setting.Currency = activateBindingModel.Culture;
-                }
-                else
-                {
-                    user.Setting.Culture = app.Setting.Culture;
-                    user.Setting.Currency = app.Setting.Currency;
-                    user.Setting.Language = app.Setting.Language;
-                    user.Setting.TimeZone = app.Setting.TimeZone;
-
+                    var data = response.Content.ReadAsStringAsync().Result;
+                    return BadRequest(data);
                 }
 
-                var result = _platformUserRepository.CreateUser(user).Result;
-
-                if (result == 0)
-                {
-                    ModelState.AddModelError("", "user not created");
-                    return BadRequest(ModelState);
-                }
-
-                user = await _platformUserRepository.GetWithTenants(activateBindingModel.Email);
             }
 
-            var tenantId = 0;
-            Tenant tenant = null;
-            //var tenantId = 2032;
-            try
-            {
-
-                tenant = new Tenant
-                {
-                    //Id = tenantId,
-                    AppId = activateBindingModel.AppId,
-                    Owner = user,
-                    UseUserSettings = true,
-                    GuidId = Guid.NewGuid(),
-                    Title = activateBindingModel.FirstName + " " + activateBindingModel.LastName,
-                    License = new TenantLicense
-                    {
-                        UserLicenseCount = 5,
-                        ModuleLicenseCount = 2
-                    },
-                    Setting = new TenantSetting
-                    {
-                        Culture = app.Setting.Culture,
-                        Currency = app.Setting.Currency,
-                        Language = app.Setting.Language,
-                        TimeZone = app.Setting.TimeZone
-                    },
-                    CreatedBy = user
-                };
-
-                await _tenantRepository.CreateAsync(tenant);
-                tenantId = tenant.Id;
-
-                user.TenantsAsOwner.Add(tenant);
-                await _platformUserRepository.UpdateAsync(user);
-
-                var tenantUser = new TenantUser
-                {
-                    Id = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    FullName = $"{user.FirstName} {user.LastName}",
-                    IsActive = true,
-                    IsSubscriber = false,
-                    Culture = user.Setting.Culture,
-                    Currency = app.Setting.Currency,
-                    CreatedAt = user.CreatedAt,
-                    CreatedByEmail = user.Email
-                };
-
-                await Postgres.CreateDatabaseWithTemplate(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, activateBindingModel.AppId);
-
-                _userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = user.Id };
-                _profileRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = user.Id };
-                _roleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = user.Id };
-                _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = user.Id };
-
-                _profileRepository.TenantId = _roleRepository.TenantId = _userRepository.TenantId = _recordRepository.TenantId = tenantId;
-
-                tenantUser.IsSubscriber = true;
-                await _userRepository.CreateAsync(tenantUser);
-
-                var userProfile = await _profileRepository.GetDefaultAdministratorProfileAsync();
-                var userRole = await _roleRepository.GetByIdAsync(1);
-
-                tenantUser.Profile = userProfile;
-                tenantUser.Role = userRole;
-
-
-                await _userRepository.UpdateAsync(tenantUser);
-                await _recordRepository.UpdateSystemData(user.Id, DateTime.UtcNow, tenant.Setting.Language, activateBindingModel.AppId);
-
-
-                user.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = user });
-
-                Queue.QueueBackgroundWorkItem(token => _documentHelper.UploadSampleDocuments(tenant.GuidId, activateBindingModel.AppId, tenant.Setting.Language));
-
-                //user.TenantId = user.Id;
-                //tenant.License.HasAnalyticsLicense = true;
-                await _platformUserRepository.UpdateAsync(user);
-                await _tenantRepository.UpdateAsync(tenant);
-
-                await _recordRepository.UpdateSampleData(user);
-                //await Cache.ApplicationUser.Add(user.Email, user.Id);
-                //await Cache.User.Get(user.Id);
-
-                if (!string.IsNullOrEmpty(activateBindingModel.Token) && (!userExist || !activateBindingModel.EmailConfirmed))
-                {
-                    var template = _platformRepository.GetAppTemplate(activateBindingModel.AppId, AppTemplateType.Email, "email_confirm", activateBindingModel.Culture.Substring(0, 2));
-                    var content = template.Content;
-
-                    content = content.Replace("{:FirstName}", activateBindingModel.FirstName);
-                    content = content.Replace("{:LastName}", activateBindingModel.LastName);
-                    content = content.Replace("{:Email}", activateBindingModel.Email);
-                    content = content.Replace("{:Url}", Request.Scheme + "://" + app.Setting.AuthDomain + "/user/confirm_email?email=" + activateBindingModel.Email + "&token=" + WebUtility.UrlEncode(activateBindingModel.Token));
-
-                    Email notification = new Email(template.Subject, content, _configuration);
-
-                    var senderEmail = template.MailSenderEmail ?? app.Setting.MailSenderEmail;
-                    var senderName = template.MailSenderName ?? app.Setting.MailSenderName;
-
-                    notification.AddRecipient(activateBindingModel.Email);
-                    notification.AddToQueue(senderEmail, senderName);
-
-                }
-
-                //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
-                //Queue.QueueBackgroundWorkItem(async token => await _platformWorkflowHelper.Run(OperationType.insert, app));
-
-            }
-            catch (Exception ex)
-            {
-                Postgres.DropDatabase(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, true);
-
-                await DeactivateUser(tenant);
-
-                throw ex;
-            }
-
+            //TODO Buraya webhook eklenecek. AppSetting üzerindeki TenantCreateWebhook alanı dolu kontrol edilecek doluysa bu url'e post edilecek
+            //Queue.QueueBackgroundWorkItem(async token => await _platformWorkflowHelper.Run(OperationType.insert, app));
             return Ok();
         }
         //return GetErrorResult(confirmResponse);
@@ -280,11 +139,11 @@ namespace PrimeApps.App.Controllers
 
             if (!string.IsNullOrEmpty(request["code"].ToString()) && (!bool.Parse(request["user_exist"].ToString()) || !bool.Parse(request["email_confirmed"].ToString())))
             {
-                var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/user/confirm_email?email={0}&code={1}&returnUrl={2}";
+                var url = Request.Scheme + "://" + applicationInfo.Setting.AuthDomain + "/account/confirmemail?email={0}&code={1}&returnUrl={2}";
 
                 var template = _platformRepository.GetAppTemplate(int.Parse(request["app_id"].ToString()), AppTemplateType.Email, "email_confirm", request["culture"].ToString().Substring(0, 2));
                 var content = template.Content;
-                
+
                 content = content.Replace("{:FirstName}", request["first_name"].ToString());
                 content = content.Replace("{:LastName}", request["last_name"].ToString());
                 content = content.Replace("{:Email}", request["email"].ToString());
@@ -298,7 +157,6 @@ namespace PrimeApps.App.Controllers
                 notification.AddRecipient(request["email"].ToString());
                 notification.AddToQueue(senderEmail, senderName);
             }
-
             return Ok();
         }
 
@@ -344,10 +202,6 @@ namespace PrimeApps.App.Controllers
             return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain });
         }
 
-        private async Task DeactivateUser(Tenant tenant)
-        {
-            await _tenantRepository.DeleteAsync(tenant);
-        }
     }
 }
 

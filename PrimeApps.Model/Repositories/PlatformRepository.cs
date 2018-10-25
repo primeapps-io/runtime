@@ -52,8 +52,6 @@ namespace PrimeApps.Model.Repositories
             return null;
         }
 
-		
-
 		public async Task<int> AppCreate(App app)
         {
             //app.UserId = CurrentUser.UserId;

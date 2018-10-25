@@ -25,7 +25,6 @@ namespace PrimeApps.App.Helpers
     {
         public static CurrentUser GetCurrentUser(IHttpContextAccessor context)
         {
-
             if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
                 return null;
 

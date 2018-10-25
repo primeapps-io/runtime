@@ -37,7 +37,7 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Shares)
                 .ThenInclude(x => x.TenantUser)
                 .Include(x => x.Permissions)
-                .Where(x => x.Deleted == false);
+                .Where(x => x.Code == null && x.Deleted == false);
 
             if (templateType != TemplateType.NotSet)
                 templates = templates.Where(x => x.TemplateType == templateType);

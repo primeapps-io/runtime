@@ -830,8 +830,8 @@ namespace PrimeApps.App.Helpers
 
                             string domain;
 
-                            domain = "https://{0}.ofisim.com/";
-                            var appDomain = "crm";
+							domain = "http://{0}.ofisim.com/";
+							var appDomain = "crm";
 
                             switch (appUser.AppId)
                             {
@@ -855,14 +855,14 @@ namespace PrimeApps.App.Helpers
 
                             //domain = "http://localhost:5554/";
 
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
-                            {
-                                var app = await _appRepository.Get(appUser.AppId);
-                                if (app != null)
-                                {
-                                    domain = "https://" + app.Setting.AppDomain + "/";
-                                }
-                            }
+							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+							{
+								var app = await _appRepository.Get(appUser.AppId);
+								if (app != null)
+								{
+									domain = "http://" + app.Setting.AppDomain + "/";
+								}
+							}
 
                             var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 

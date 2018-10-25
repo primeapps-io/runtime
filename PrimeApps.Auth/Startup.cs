@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -25,14 +24,9 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Repositories;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Converters;
-using System.Security.Claims;
 using IdentityServer4;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.HttpOverrides;
-using IdentityServer4.Configuration;
 using PrimeApps.Auth.Services;
 
 namespace PrimeApps.Auth
@@ -185,10 +179,16 @@ namespace PrimeApps.Auth
                 })
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<CustomProfileService>()
-                .AddRedirectUriValidator<CustomRedirectUriValidator>()
+                //.AddRedirectUriValidator<CustomRedirectUriValidator>()
                 .AddSigningCredential(LoadCertificate());
 
             services.AddAuthentication()
+                .AddJwtBearer(jwt =>
+                {
+                    jwt.Authority = Configuration.GetValue("AppSettings:AuthUrl", string.Empty);
+                    jwt.Audience = "api1";
+                    jwt.RequireHttpsMetadata = Configuration.GetValue("AppSettings:AuthUrl", string.Empty).Contains("https");
+                })
                 .AddOpenIdConnect("aad", "Azure AD", options =>
                 {
                     options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;

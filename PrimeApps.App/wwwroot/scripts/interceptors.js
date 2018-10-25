@@ -38,7 +38,7 @@ angular.module('primeapps')
                             $localStorage.remove('refresh_token');
                             $window.location.href = '/auth/SignOut';
                         } else {
-                            $window.location.href = '/auth/authorize';
+                            $window.location.href = '/';
                         }
 
 

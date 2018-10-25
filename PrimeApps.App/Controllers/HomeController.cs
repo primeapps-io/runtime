@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -36,12 +37,16 @@ namespace PrimeApps.App.Controllers
             var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
-            var appId = await applicationRepository.GetAppIdWithDomain(Request.Host.Value);
+            var app = await applicationRepository.GetAppWithDomain(Request.Host.Value);
 
-            var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+            var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, app.Id);
 
             if (tenant == null)
-                return BadRequest();
+            {
+                Response.Cookies.Delete("tenant_id");
+                await HttpContext.SignOutAsync();
+                return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
+            }
 
             var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
@@ -84,6 +89,8 @@ namespace PrimeApps.App.Controllers
 
         private async Task SetValues(int userId, int tenantId)
         {
+            ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
+
             var lang = Request.Cookies["_lang"];
             var language = lang ?? "tr";
 
