@@ -108,25 +108,25 @@ namespace PrimeApps.App.Bpm.Steps
                         var dueDateValue = createTask["task_due_date"]["value"].ToString() == "now" ? 0 : createTask["task_due_date"]["value"].Value<double>();
                         task["task_due_date"] = DateTime.UtcNow.AddDays(dueDateValue);
 
-                        if (createTask["task_status"].HasValues)
+                        if (!createTask["task_status"].IsNullOrEmpty())
                             task["task_status"] = createTask["task_status"];
 
-                        if (createTask["task_priority"].HasValues)
+                        if (!createTask["task_priority"].IsNullOrEmpty())
                             task["task_priority"] = createTask["task_priority"];
 
-                        if (createTask["task_notification"].HasValues)
+                        if (!createTask["task_notification"].IsNullOrEmpty())
                             task["task_notification"] = createTask["task_notification"];
 
-                        if (createTask["task_reminder"].HasValues)
+                        if (!createTask["task_reminder"].IsNullOrEmpty())
                             task["task_reminder"] = createTask["task_reminder"];
 
-                        if (createTask["reminder_recurrence"].HasValues)
+                        if (!createTask["reminder_recurrence"].IsNullOrEmpty())
                             task["reminder_recurrence"] = createTask["reminder_recurrence"];
 
                         if (!string.IsNullOrWhiteSpace(createTask["description"].Value<string>()))
                             task["description"] = createTask["description"];
 
-                        if (createTask["owner"].Value<int>() == 0)
+                        if (createTask["owner"].IsNullOrEmpty())
                             task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
 
                         task["created_by"] = createTask["created_by_id"];

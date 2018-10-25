@@ -39,7 +39,7 @@ namespace PrimeApps.App.Models
         public WorkflowProcessFilter ProcessFilter { get; set;}
 
         [MaxLength(4000)]
-        public string ChangedFields { get; set; }
+        public string Changed_Field { get; set; }
 
         public bool CanStartManuel { get; set; }
         

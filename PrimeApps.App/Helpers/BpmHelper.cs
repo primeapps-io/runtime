@@ -81,7 +81,7 @@ namespace PrimeApps.App.Helpers
                 RecordOperations = bpmWorkflowModel.RecordOperations,
                 Frequency = bpmWorkflowModel.Frequency,
                 ProcessFilter = bpmWorkflowModel.ProcessFilter,
-                ChangedFields = bpmWorkflowModel.ChangedFields,
+                ChangedFields = bpmWorkflowModel.Changed_Field,
                 CanStartManuel = bpmWorkflowModel.CanStartManuel,
                 DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString(),
                 DiagramJson = bpmWorkflowModel.DiagramJson,
@@ -198,7 +198,7 @@ namespace PrimeApps.App.Helpers
             bpmWorkflow.RecordOperations = bpmWorkflowModel.RecordOperations;
             bpmWorkflow.Frequency = bpmWorkflowModel.Frequency;
             bpmWorkflow.ProcessFilter = bpmWorkflowModel.ProcessFilter;
-            bpmWorkflow.ChangedFields = bpmWorkflowModel.ChangedFields;
+            bpmWorkflow.ChangedFields = bpmWorkflowModel.Changed_Field;
             bpmWorkflow.CanStartManuel = bpmWorkflowModel.CanStartManuel;
             bpmWorkflow.DefinitionJson = bpmWorkflowModel.DefinitionJson.ToJsonString();
             bpmWorkflow.DiagramJson = bpmWorkflowModel.DiagramJson;
