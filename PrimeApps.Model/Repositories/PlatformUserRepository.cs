@@ -148,7 +148,13 @@ namespace PrimeApps.Model.Repositories
         /// <returns></returns>
         public async Task<EmailAvailableType> IsEmailAvailable(string email, int appId)
         {
-            var user = await DbContext.Users.Include(x => x.TenantsAsUser).Include(x => x.TenantsAsOwner).Where(x => x.Email == email).SingleOrDefaultAsync();
+            var user = await DbContext.Users
+                .Include(x => x.TenantsAsUser)
+                    .ThenInclude(y => (y as UserTenant).Tenant)
+                .Include(x => x.TenantsAsOwner)
+                .Where(x => x.Email == email)
+                .SingleOrDefaultAsync();
+
             if (user != null)
             {
                 var appTenant = user.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == appId);
