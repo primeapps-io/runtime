@@ -2007,7 +2007,7 @@ namespace PrimeApps.Model.Helpers
 								var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, (string)record["currency"], picklistLanguage);
 
 								if (currencyPicklistItem != null)
-									culture.NumberFormat.CurrencySymbol = currencyPicklistItem.Value;
+									culture.NumberFormat.CurrencySymbol = currencyPicklistItem.Value ?? "";
 							}
 						}
 

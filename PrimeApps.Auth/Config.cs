@@ -46,7 +46,7 @@ namespace PrimeApps.Auth
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { "https://auth-dev.primeapps.io/signin-oidc" },
+                    RedirectUris = { "https://dev.primeapps.io/signin-oidc" },
                     PostLogoutRedirectUris = { "https://auth-dev.primeapps.io/signout-callback-oidc" },
 
                     AllowedScopes =
@@ -55,7 +55,35 @@ namespace PrimeApps.Auth
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1"
-                    }
+                    },
+                    AccessTokenLifetime = 864000
+                },
+                // OpenID Connect hybrid flow and client credentials client (PrimeApps)
+                new Client
+                {
+                    ClientId = "primeapps_local",
+                    ClientName = "PrimeApps",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                    AllowRememberConsent = false,
+                    AlwaysSendClientClaims = true,
+                    RequireConsent = false,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = { "http://localhost:5003/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:5003/signout-callback-oidc" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    },
+                    AccessTokenLifetime = 864000
                 },
 				// OpenID Connect hybrid flow and client credentials client (Ofisim CRM)
                 new Client
@@ -81,7 +109,8 @@ namespace PrimeApps.Auth
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1"
-                    }
+                    },
+                    AccessTokenLifetime = 864000
                 },
 				// OpenID Connect hybrid flow and client credentials client (Ofisim IK)
                 new Client
@@ -98,8 +127,8 @@ namespace PrimeApps.Auth
                         new Secret("secret".Sha256())
                     },
 
-                    RedirectUris = { "http://localhost:5003/signin-oidc" },
-                    PostLogoutRedirectUris = { "http://localhost:5003/signout-callback-oidc" },
+                    RedirectUris = { "http://localhost:5004/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:5004/signout-callback-oidc" },
 
                     AllowedScopes =
                     {
@@ -107,7 +136,8 @@ namespace PrimeApps.Auth
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Email,
                         "api1"
-                    }
+                    },
+                    AccessTokenLifetime = 864000
                 }
             };
         }

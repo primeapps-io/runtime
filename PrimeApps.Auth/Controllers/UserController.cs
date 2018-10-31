@@ -15,11 +15,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using User = PrimeApps.Model.Entities.Tenant.TenantUser;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Enums;
+using Microsoft.AspNetCore.Http;
+using PrimeApps.Model.Entities.Platform;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -31,187 +36,186 @@ namespace PrimeApps.Auth.Controllers
 		private readonly SignInManager<ApplicationUser> _signInManager;
 		private IPlatformRepository _platformRepository;
 		private IApplicationRepository _applicationRepository;
-		private readonly IEventService _events;
+        private IUserRepository _userRepository;
+        private IPlatformUserRepository _platformUserRepository;
+        private IProfileRepository _profileRepository;
+        private IRoleRepository _roleRepository;
+        private readonly IEventService _events;
         private IConfiguration _configuration;
         public UserController(
 			UserManager<ApplicationUser> userManager,
 			SignInManager<ApplicationUser> signInManager,
 			IEventService events,
 			IPlatformRepository platformRepository,
-			IApplicationRepository applicationRepository,
+            IPlatformUserRepository platformUserRepository,
+            IApplicationRepository applicationRepository,
+            IUserRepository userRepository,
+            IProfileRepository profileRepository,
+            IRoleRepository roleRepository,
+            IPlatformWarehouseRepository platformWarehouseRepository,
             IConfiguration configuration)
 		{
 			_applicationRepository = applicationRepository;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_platformRepository = platformRepository;
+            _userRepository = userRepository;
+            _profileRepository = profileRepository;
+            _platformUserRepository = platformUserRepository;
+            _roleRepository = roleRepository;
             _configuration = configuration;
 			_events = events;
 		}
 
-		[Route("confirm_email"), HttpGet]
-		public async Task<IActionResult> ConfirmEmail(string email, string code, string returnUrl)
-		{
-            return RedirectToAction("Index", "Home", new { error = "ConfirmEmailError" });
-
-            if (email == null || code == null)
-			{
-				ModelState.AddModelError("", "email and token are required.");
-				return BadRequest(ModelState);
-			}
-			var user = await _userManager.FindByEmailAsync(email);
-			if (user == null)
-			{
-				throw new ApplicationException($"Unable to load user with email: '{email}'.");
-			}
-			var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            if (result.Succeeded)
-            {
-                var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
-                return Redirect(Request.Scheme + "://" + applicationInfo.Domain);
-            }
-
-            ViewBag.Error = "ConfirmEmailError";
-            return RedirectToAction("Index", "Account");
-		}
-
-		[Route("register/{organization}/{app}"), HttpPost]
-		public async Task<IActionResult> Register([FromBody]RegisterInputModel registerViewModel, string organization, string app)
-		{
-			if (string.IsNullOrEmpty(organization) || string.IsNullOrEmpty(app))
-			{
-				ModelState.AddModelError("", "Your url must be like register/{organization}/{app}");
-				return BadRequest(ModelState);
-			}
-
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
-
-			var appInfo = await _applicationRepository.Get(organization, app);
-
-			if (appInfo == null)
-			{
-				ModelState.AddModelError("", "App is not avaiable.");
-				return BadRequest(ModelState);
-			}
-
-			var userExist = true;
-			var userCheck = _userManager.FindByNameAsync(registerViewModel.Email).Result;
-
-			if (userCheck == null)
-			{
-				userExist = false;
-				var result = await AddUser(registerViewModel);
-				if (!string.IsNullOrWhiteSpace(result))
-					return BadRequest(result);
-
-			}
-			var user = await _userManager.FindByNameAsync(registerViewModel.Email);
-			var token = "";
-
-			var culture = !string.IsNullOrEmpty(registerViewModel.Culture) ? registerViewModel.Culture : appInfo.App.Setting.Culture;
-
-			var url = Request.Scheme + "://" + appInfo.App.Setting.AppDomain.Replace("/ik", "") + "/api/account/create";
-
-			var activateModel = new ActivateBindingModels
-			{
-				email = registerViewModel.Email,
-				app_id = appInfo.App.Id,
-				culture = culture,
-				first_name = registerViewModel.FirstName,
-				last_name = registerViewModel.LastName,
-				email_confirmed = user.EmailConfirmed
-			};
-
-			if ((!userExist || !user.EmailConfirmed) && registerViewModel.SendActivation)
-			{
-				token = await GetConfirmToken(user);
-				activateModel.token = token;
-			}
-
-			using (var httpClient = new HttpClient())
-			{
-				httpClient.BaseAddress = new Uri(url);
-				httpClient.DefaultRequestHeaders.Accept.Clear();
-				httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-				var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(activateModel), Encoding.UTF8, "application/json"));
-
-				if (!response.IsSuccessStatusCode)
-				{
-					if (response.StatusCode == HttpStatusCode.Conflict)
-						return Conflict(response);
-					else
-						return BadRequest(response);
-				}
-			}
-
-			if (User?.Identity.IsAuthenticated == true)
-			{
-				// delete local authentication cookie
-				await _signInManager.SignOutAsync();
-				await _events.RaiseAsync(new UserLogoutSuccessEvent(User.GetSubjectId(), User.GetDisplayName()));
-			}
-
-			var signInResult = await _signInManager.PasswordSignInAsync(registerViewModel.Email, registerViewModel.Password, true, lockoutOnFailure: false);
-
-			if (signInResult.Succeeded)
-				await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.UserName));
-
-			return Created(appInfo.App.Setting.AppDomain, new { token, domain = appInfo.App.Setting.AppDomain });
-		}
-
-		[Route("confirm_token"), HttpGet]
-		public async Task<IActionResult> ConfirmTokenAsync(string email)
-		{
-			var user = await _userManager.FindByEmailAsync(email);
-			if (user == null)
-				return StatusCode(404, "{message:' user not found'}");
-			else if (user.EmailConfirmed)
-				return StatusCode(404, "{message: 'already confirmed'}");
-
-			return StatusCode(200, "{token:'" + Json(await GetConfirmToken(user) + "'}"));
-		}
-
-		[Route("register"), HttpPost]
-		public async Task<IActionResult> Register([FromBody]RegisterInputModel registerViewModel)
+		[Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
+		public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel addUserBindingModel)
 		{
 			if (!ModelState.IsValid)
 			{
 				ModelState.AddModelError("", "ModelState is not valid.");
 				return BadRequest(ModelState);
 			}
+            var a = _signInManager.IsSignedIn(User);
+            if (User?.Identity.IsAuthenticated == false)
+                return Unauthorized();
+            
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
+            //_platformUserRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId };
+            var currentPlatformUser = await _platformUserRepository.GetWithSettings(email);
+            var tenantCheck = currentPlatformUser.TenantsAsUser.SingleOrDefault(x => x.TenantId == addUserBindingModel.TenantId);
+ 
+            if (tenantCheck == null)
+                return Unauthorized();
 
-			var user = await _userManager.FindByNameAsync(registerViewModel.Email);
+            _userRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+
+            var currentTenantUser = _userRepository.GetByIdSync(currentPlatformUser.Id);
+
+            if(!currentTenantUser.Profile.HasAdminRights)
+                return Unauthorized();
+
+            var checkEmail = await _platformUserRepository.IsEmailAvailable(addUserBindingModel.Email, addUserBindingModel.AppId);
+
+            if (checkEmail == EmailAvailableType.NotAvailable)
+                return new StatusCodeResult(StatusCodes.Status409Conflict);
+
+            var tenant = _platformRepository.GetTenant(addUserBindingModel.TenantId);
+
+            if (tenant.TenantUsers.Count >= tenant.License.UserLicenseCount)
+                return new StatusCodeResult(StatusCodes.Status402PaymentRequired);
+
+            var randomPassword = Utils.GenerateRandomUnique(8);
+
+            PlatformUser applicationUser = null;
+            if (checkEmail != EmailAvailableType.AvailableForApp)
+            {
+                applicationUser = new PlatformUser
+                {
+                    Email = addUserBindingModel.Email,
+                    FirstName = addUserBindingModel.FirstName,
+                    LastName = addUserBindingModel.LastName,
+                    Setting = new PlatformUserSetting()
+                };
+
+                applicationUser.Setting.Culture = tenant.Setting.Culture;
+                applicationUser.Setting.Language = tenant.Setting.Language;
+                //tenant.Setting.TimeZone = 
+                applicationUser.Setting.Currency = tenant.Setting.Currency;
+
+
+                var createUserResult = await _platformUserRepository.CreateUser(applicationUser);
+
+                if (createUserResult == 0)
+                {
+                    ModelState.AddModelError("", "user not created");
+                    return BadRequest(ModelState);
+                }
+            }
+            else
+            {
+                applicationUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+            }
+
+            var appInfo = await _applicationRepository.Get(addUserBindingModel.AppId);
+            
+
+            var identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
+            string token = null;
 
 			//If user already registered check email is confirmed. If not return confirm token with status code.
-			if (user != null)
-				return !user.EmailConfirmed ? StatusCode(201, new { token = await GetConfirmToken(user) }) : (IActionResult)StatusCode(201);
+			if (identityUser != null && !identityUser.EmailConfirmed)
+				token = await GetConfirmToken(identityUser);
+            else
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = addUserBindingModel.Email,
+                    Email = addUserBindingModel.Email,
+                    NormalizedEmail = addUserBindingModel.Email,
+                    NormalizedUserName = !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""
+                };
+                var result = await _userManager.CreateAsync(user, randomPassword);
+                if (!result.Succeeded)
+                    return BadRequest(result);
 
 
-			var result = await AddUser(registerViewModel);
-			if (!string.IsNullOrWhiteSpace(result))
-				return BadRequest(result);
+                result = _userManager.AddClaimsAsync(user, new Claim[]{
+                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""),
+                    new Claim(JwtClaimTypes.GivenName, addUserBindingModel.FirstName),
+                    new Claim(JwtClaimTypes.FamilyName, addUserBindingModel.LastName),
+                    new Claim(JwtClaimTypes.Email, addUserBindingModel.Email),
+                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
+                }).Result;
 
-			user = await _userManager.FindByNameAsync(registerViewModel.Email);
-			var token = await GetConfirmToken(user);
+                identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
+                token = await GetConfirmToken(identityUser);
 
-			return StatusCode(201, new { token });
+            }
+            
+            var platformUser = await _platformUserRepository.Get(applicationUser.Id);
+            var tenantUser = await _userRepository.GetById(platformUser.Id);
+
+            if (tenantUser == null)
+            {
+                tenantUser = new User
+                {
+                    Id = platformUser.Id,
+                    Email = addUserBindingModel.Email,
+                    FirstName = addUserBindingModel.FirstName,
+                    LastName = addUserBindingModel.LastName,
+                    FullName = $"{addUserBindingModel.FirstName} {addUserBindingModel.LastName}",
+                    Phone = addUserBindingModel.Phone,
+                    Picture = "",
+                    IsActive = true,
+                    IsSubscriber = false,
+                    Culture = currentPlatformUser.Setting.Culture,
+                    Currency = currentPlatformUser.Setting.Currency.Substring(0, 2),
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedByEmail = currentPlatformUser.Email
+                };
+
+                await _userRepository.CreateAsync(tenantUser);
+            }
+            else
+            {
+                randomPassword = "*******";
+                tenantUser.IsActive = true;
+                await _userRepository.UpdateAsync(tenantUser);
+            }
+
+            _profileRepository.CurrentUser = _roleRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId, UserId = currentPlatformUser.Id };
+            await _profileRepository.AddUserAsync(platformUser.Id, addUserBindingModel.ProfileId);
+            await _roleRepository.AddUserAsync(platformUser.Id, addUserBindingModel.RoleId);
+
+            var currentTenant = _platformRepository.GetTenant(addUserBindingModel.TenantId);
+
+            platformUser.TenantsAsUser.Add(new UserTenant { Tenant = currentTenant, PlatformUser = platformUser });
+
+            await _platformUserRepository.UpdateAsync(platformUser);
+            
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
 		}
-
-		[HttpGet]
-		public IActionResult ChangePassword([FromQuery(Name = "token")] string token)
-		{
-			if (string.IsNullOrEmpty(token))
-			{
-				ModelState.AddModelError("", "token is required");
-				return BadRequest(ModelState);
-			}
-
-			return Ok();
-		}
-
+        
 		[Route("change_password"), HttpPost]
 		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel)
 		{
@@ -222,30 +226,6 @@ namespace PrimeApps.Auth.Controllers
 			var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
 
 			return result.Succeeded ? Ok() : StatusCode(400);
-		}
-		public async Task<string> AddUser(RegisterInputModel registerViewModel)
-		{
-			var user = new ApplicationUser
-			{
-				UserName = registerViewModel.Email,
-				Email = registerViewModel.Email,
-				NormalizedEmail = registerViewModel.Email,
-				NormalizedUserName = !string.IsNullOrEmpty(registerViewModel.FirstName) ? registerViewModel.FirstName + " " + registerViewModel.LastName : ""
-			};
-			var result = await _userManager.CreateAsync(user, registerViewModel.Password);
-			if (!result.Succeeded)
-				return "User not created error is : " + result.Errors.First().Description;
-
-
-			result = _userManager.AddClaimsAsync(user, new Claim[]{
-				new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(registerViewModel.FirstName) ? registerViewModel.FirstName + " " + registerViewModel.LastName : ""),
-				new Claim(JwtClaimTypes.GivenName, registerViewModel.FirstName),
-				new Claim(JwtClaimTypes.FamilyName, registerViewModel.LastName),
-				new Claim(JwtClaimTypes.Email, registerViewModel.Email),
-				new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
-			}).Result;
-
-			return "";
 		}
 
 		//Helpers

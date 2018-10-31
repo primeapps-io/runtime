@@ -145,7 +145,7 @@ angular.module('primeapps',
             }
 
             if (!isAuthenticated) {
-                $window.location.href = '/auth/authorize';
+                $window.location.href = '/';
                 return;
             }
 

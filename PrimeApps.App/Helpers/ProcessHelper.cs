@@ -339,7 +339,7 @@ namespace PrimeApps.App.Helpers
                         var emailData = new Dictionary<string, string>();
                         string domain;
 
-                        domain = "https://{0}.ofisim.com/";
+                        domain = "http://{0}.ofisim.com/";
 
                         var appDomain = "crm";
 
@@ -423,22 +423,22 @@ namespace PrimeApps.App.Helpers
                         if (!string.IsNullOrWhiteSpace(appUser.Culture) && Constants.CULTURES.Contains(appUser.Culture))
                             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(appUser.Culture);
 
-                        //if (operationType == OperationType.insert)
-                        //{
-                        //    var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-                        //    notification.AddRecipient(user.Email);
-                        //    notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-                        //}
-                        //else if (operationType == OperationType.update)
-                        //{
-                        //    var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-                        //    notification.AddRecipient(user.Email);
-                        //    notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
-                        //}
-                        //else if (operationType == OperationType.delete)
-                        //{
+                        if (operationType == OperationType.insert)
+                        {
+                            var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            notification.AddRecipient(user.Email);
+                            notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+                        }
+                        else if (operationType == OperationType.update)
+                        {
+                            var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            notification.AddRecipient(user.Email);
+                            notification.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], appUser: appUser);
+                        }
+                        else if (operationType == OperationType.delete)
+                        {
 
-                        //}
+                        }
 
                         var processRequest = new ProcessRequest
                         {
@@ -776,7 +776,7 @@ namespace PrimeApps.App.Helpers
                         var emailData = new Dictionary<string, string>();
                         string domain;
 
-                        domain = "https://{0}.ofisim.com/";
+                        domain = "http://{0}.ofisim.com/";
                         var appDomain = "crm";
 
                         switch (appUser.AppId)
@@ -843,13 +843,13 @@ namespace PrimeApps.App.Helpers
 
                         if (request.OperationType == OperationType.insert)
                         {
-                            var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                             notification.AddRecipient(user.Email);
                             notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                         }
                         else if (request.OperationType == OperationType.update)
                         {
-                            var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                             notification.AddRecipient(user.Email);
                             notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                         }
@@ -924,7 +924,7 @@ namespace PrimeApps.App.Helpers
                             var emailData = new Dictionary<string, string>();
                             string domain;
 
-                            domain = "https://{0}.ofisim.com/";
+                            domain = "http://{0}.ofisim.com/";
                             var appDomain = "crm";
 
                             switch (appUser.AppId)
@@ -990,13 +990,13 @@ namespace PrimeApps.App.Helpers
 
                             if (request.OperationType == OperationType.insert)
                             {
-                                var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                             }
                             else if (request.OperationType == OperationType.update)
                             {
-                                var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                                var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                                 notification.AddRecipient(user.Email);
                                 notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                             }
@@ -1013,7 +1013,7 @@ namespace PrimeApps.App.Helpers
                             var emailData = new Dictionary<string, string>();
                             string domain;
 
-                            domain = "https://{0}.ofisim.com/";
+                            domain = "http://{0}.ofisim.com/";
                             var appDomain = "crm";
 
                             switch (appUser.AppId)
@@ -1068,7 +1068,7 @@ namespace PrimeApps.App.Helpers
                             if (!string.IsNullOrWhiteSpace(user.Culture) && Constants.CULTURES.Contains(user.Culture))
                                 Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(user.Culture);
 
-                            var notification = new Email(EmailResource.ApprovalProcessApproveNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                            var notification = new Email(EmailResource.ApprovalProcessApproveNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                             notification.AddRecipient(user.Email);
                             notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                         }
@@ -1123,7 +1123,7 @@ namespace PrimeApps.App.Helpers
                     var emailData = new Dictionary<string, string>();
                     string domain;
 
-                    domain = "https://{0}.ofisim.com/";
+                    domain = "http://{0}.ofisim.com/";
                     var appDomain = "crm";
 
                     switch (appUser.AppId)
@@ -1182,13 +1182,13 @@ namespace PrimeApps.App.Helpers
 
                     if (request.OperationType == OperationType.insert)
                     {
-                        var notification = new Email(EmailResource.ApprovalProcessRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        var notification = new Email(EmailResource.ApprovalProcessRejectNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                         notification.AddRecipient(user.Email);
                         notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser, cc: beforeCc);
                     }
                     else if (request.OperationType == OperationType.update)
                     {
-                        var notification = new Email(EmailResource.ApprovalProcessUpdateRejectNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        var notification = new Email(EmailResource.ApprovalProcessUpdateRejectNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                         notification.AddRecipient(user.Email);
                         notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                     }
@@ -1258,7 +1258,7 @@ namespace PrimeApps.App.Helpers
                     var emailData = new Dictionary<string, string>();
                     string domain;
 
-                    domain = "https://{0}.ofisim.com/";
+                    domain = "http://{0}.ofisim.com/";
                     var appDomain = "crm";
 
                     switch (appUser.AppId)
@@ -1325,13 +1325,13 @@ namespace PrimeApps.App.Helpers
 
                     if (request.OperationType == OperationType.insert)
                     {
-                        var notification = new Email(EmailResource.ApprovalProcessCreateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        var notification = new Email(EmailResource.ApprovalProcessCreateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                         notification.AddRecipient(user.Email);
                         notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                     }
                     else if (request.OperationType == OperationType.update)
                     {
-                        var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        var notification = new Email(EmailResource.ApprovalProcessUpdateNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
                         notification.AddRecipient(user.Email);
                         notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                     }

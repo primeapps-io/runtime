@@ -117,13 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ConfirmEmailErrorContent" xml:space="preserve">
-    <value>A problem occurred while your e-mail was confirmed</value>
+  <data name="EmailConfirmedContent" xml:space="preserve">
+    <value>Your e-mail has been successfully confirmed. You can continue to use the application.</value>
   </data>
-  <data name="ConfirmEmailErrorTitle" xml:space="preserve">
-    <value>An unexpected problem has occurred</value>
+  <data name="EmailConfirmedTitle" xml:space="preserve">
+    <value>E-mail Confirmed</value>
+  </data>
+  <data name="EmailConfirmInvalidCodeContent" xml:space="preserve">
+    <value>The activation code may be incorrect or expired.</value>
+  </data>
+  <data name="EmailConfirmInvalidCodeTitle" xml:space="preserve">
+    <value>Invalid activation code</value>
+  </data>
+  <data name="EmailConfirmMissingInfoContent" xml:space="preserve">
+    <value>Activation code and e-mail are required.</value>
+  </data>
+  <data name="EmailConfirmMissingInfoTitle" xml:space="preserve">
+    <value>There are missing information !</value>
+  </data>
+  <data name="EmailConfirmUserNotFoundContent" xml:space="preserve">
+    <value>There is no registered user with this email.</value>
+  </data>
+  <data name="EmailConfirmUserNotFoundTitle" xml:space="preserve">
+    <value>User not found</value>
   </data>
   <data name="Ok" xml:space="preserve">
     <value>Ok</value>
+  </data>
+  <data name="EmailConfirmAlreadyConfirmedContent" xml:space="preserve">
+    <value>The e-mail address has already been confirmed.</value>
+  </data>
+  <data name="EmailConfirmAlreadyConfirmedTitle" xml:space="preserve">
+    <value>Already Confirmed</value>
   </data>
 </root>

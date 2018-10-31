@@ -70,6 +70,14 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Users.Where(x => x.Email == email).Select(x => x.Id).SingleOrDefaultAsync();
         }
+        public async Task<PlatformUser> GetWithSettings(string email)
+        {
+            return await DbContext.Users
+                .Include(x => x.Setting)
+                .Include(x => x.TenantsAsUser)
+                .Where(x => x.Email == email)
+                .SingleOrDefaultAsync();
+        }
 
         public async Task<PlatformUser> GetWithTenants(string email)
         {

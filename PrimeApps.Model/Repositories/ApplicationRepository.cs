@@ -19,7 +19,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 				.Include(x => x.Setting)
 				.FirstOrDefaultAsync(x => x.Setting.AppDomain == domain);
 		}
-		public async Task<App> Get(int id)
+        public async Task<App> Get(int? id)
 		{
 			return await DbContext.Apps
 				.Include(x => x.Setting)
@@ -60,5 +60,12 @@ namespace PrimeApps.Model.Repositories.Interfaces
 			return app == null ? 0 : app.AppId;
 		}
 
-	}
+        public async Task<App> GetAppWithDomain(string domain)
+        {
+            return await DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefaultAsync(x => x.Setting.AppDomain == domain);
+        }
+
+    }
 }

@@ -38,14 +38,14 @@ namespace PrimeApps.App.Controllers
             _configuration = configuration;
         }
 
-        public async Task<ActionResult> Authorize()
+        /*public async Task<ActionResult> Authorize()
         {
             var claims = new ClaimsPrincipal(User).Claims.ToArray();
             var identity = new ClaimsIdentity(claims, "Bearer");
             //Authentication.SignIn(identity);
             var token = await HttpContext.GetTokenAsync("access_token");
             return Redirect(Request.Scheme + "://" + Request.Host.Value + "#access_token=" + token);
-        }
+        }*/
 
         public async Task<ActionResult> Login(string returnUrl, string language = null, string error = null, string success = "")
         {
