@@ -32,6 +32,8 @@ namespace PrimeApps.App.Helpers
         string ReferenceCreateToForBpmHost(UserItem appUser);
 
         JObject CreateDefinition(string code, int version, JObject diagram);
+
+        JObject CreateDefinitonNew(string code, int version, JObject diagram);
     }
     public class BpmHelper : IBpmHelper
     {
@@ -628,9 +630,9 @@ namespace PrimeApps.App.Helpers
                         var version = workflow.Version;
                         var referance = ReferenceCreateToForBpmHost(appUser);
                         //WorkflowDefinition currentWorkflow = null;
-                        
+
                         //currentWorkflow = _workflowRegistry.GetDefinition(code);
-                        
+
                         //if (currentWorkflow == null)
                         //{
                         //    var str = workflow.DefinitionJson.ToString();
@@ -800,6 +802,78 @@ namespace PrimeApps.App.Helpers
             jsonData["Steps"] = StepsArray;
 
             #endregion Create new Jobject for BPM Engine End
+
+            return jsonData;
+        }
+
+        public JObject CreateDefinitonNew(string code, int version, JObject diagram)
+        {
+            //Parse data from BPMN editor as Nodes and Links
+            var nodesData = diagram["nodeDataArray"].ToObject<JArray>();
+            var linksData = diagram["linkDataArray"].ToObject<JArray>();
+
+            #region Create new Jobject for BPM Engine
+
+            var jsonData = new JObject();
+
+            jsonData["Id"] = code;
+            jsonData["Version"] = version;
+            var StepsArray = new JArray();
+
+            //Create Steps
+            foreach (var link in linksData)
+            {
+                var from = link["from"].Value<string>();
+                var to = link["to"].Value<string>();
+
+                var stepData = new JObject();
+
+                var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
+                var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
+
+                if (fromNode.IsNullOrEmpty() || toNode.IsNullOrEmpty())
+                    return null;
+
+                if (toNode["item"].Value<string>() == "End")
+                    break;
+
+                var fromStepInfo = BpmConstants.Find(fromNode["item"].Value<string>());
+
+                if (fromStepInfo == null)
+                    return null;
+
+                stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
+                var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
+                stepData["StepType"] = fromStepType;
+
+                //TODO Special Steps
+
+                //
+
+                if (!fromNode["dataType"].IsNullOrEmpty())
+                    stepData["DataType"] = fromNode["dataType"].Value<string>();
+
+                if (!fromNode["data"].IsNullOrEmpty())
+                {
+                    var request = new JObject();
+                    request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+                    stepData["Inputs"] = request;
+                }
+
+                var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
+
+                if (toStepInfo == null)
+                    return null;
+
+                stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
+
+                StepsArray.Add(stepData);
+
+            }
+
+            jsonData["Steps"] = StepsArray;
+
+            #endregion
 
             return jsonData;
         }
