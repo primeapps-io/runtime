@@ -7,7 +7,7 @@ namespace PrimeApps.Model.Entities.Tenant
 {
     [Table("components")]
 
-    public class Components : BaseEntity
+    public class Component : BaseEntity
     {
         [JsonProperty("name"), Column("name"), Required, MaxLength(15)]
         public string Name { get; set; }

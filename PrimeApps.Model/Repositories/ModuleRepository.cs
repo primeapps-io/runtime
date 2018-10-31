@@ -89,7 +89,7 @@ namespace PrimeApps.Model.Repositories
 
             return modules;
         }
-        public async Task<ICollection<Components>> GetComponents()
+        public async Task<ICollection<Component>> GetComponents()
         {
             var components = await DbContext.Modules
                 .Include(x => x.Components)

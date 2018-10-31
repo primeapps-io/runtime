@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories
 	{
 		public ComponentRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-		public async Task<List<Components>> GetByType(ComponentType type)
+		public async Task<List<Component>> GetByType(ComponentType type)
 		{
 			var components = await DbContext.Components
 				.Where(x => !x.Deleted && x.Type == type).ToListAsync();
