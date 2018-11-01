@@ -68,6 +68,7 @@ namespace PrimeApps.Auth.UI
                 }
             };
            
+            ErrorHandler.LogMessage("GetApplicationInfoAsync:: ReturnUrl: " + returnUrl + " ClientId: " + clientId + " AppId: " + app.Id + " App: " + app + " Application: " + application, Sentry.Protocol.SentryLevel.Info);
             return application;
         }
 
