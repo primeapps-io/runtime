@@ -46,7 +46,7 @@ namespace PrimeApps.App
 
             //Add Workflow service
             services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
-           
+
             //Register DI
             DIRegister(services, Configuration);
 
@@ -95,6 +95,7 @@ namespace PrimeApps.App
                         NoStore = true,
                     });
                 })
+                .AddWebApiConventions()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
                 {
@@ -162,7 +163,7 @@ namespace PrimeApps.App
             {
                 app.UseHsts().UseHttpsRedirection();
             }
-            
+
             app.UseHangfireDashboard();
             app.UseWebOptimizer();
             app.UseStaticFiles();

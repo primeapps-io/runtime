@@ -66,6 +66,7 @@ namespace PrimeApps.App
             services.AddScoped<Helpers.IBpmHelper, Helpers.BpmHelper>();
             services.AddScoped<Notifications.INotificationHelper, Notifications.NotificationHelper>();
             services.AddScoped<Notifications.IActivityHelper, Notifications.ActivityHelper>();
+            services.AddScoped<Helpers.IFunctionHelper, Helpers.FunctionHelper>();
             services.AddScoped<WarehouseHelper, WarehouseHelper>();
             services.AddScoped<Warehouse, Warehouse>();
             services.AddScoped<Jobs.Email.Email, Jobs.Email.Email>();
