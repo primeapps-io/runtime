@@ -214,7 +214,7 @@ namespace PrimeApps.Auth.UI
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
-                        ErrorHandler.LogMessage("PlatformUser: " + JObject.FromObject(platformUser), Sentry.Protocol.SentryLevel.Info);
+                        ErrorHandler.LogMessage("PlatformUser: " + JsonConvert.SerializeObject(platformUser, Formatting.Indented, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }), Sentry.Protocol.SentryLevel.Info);
                         if (platformUser.TenantsAsUser.Count() > 0)
                         {
                             var tenant = platformUser.TenantsAsUser.Where(x => x.Tenant.AppId == vm.ApplicationInfo.Id).FirstOrDefault();
@@ -300,7 +300,7 @@ namespace PrimeApps.Auth.UI
             }
 
             var createUserRespone = await CreateUser(model, vm.ApplicationInfo, vm.ReturnUrl);
-            
+
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
             {
                 ErrorHandler.LogMessage("IdentityServer Register Error: " + createUserRespone["Error"].ToString(), Sentry.Protocol.SentryLevel.Info);
@@ -355,7 +355,7 @@ namespace PrimeApps.Auth.UI
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
-            
+
             return Ok();
         }
 
