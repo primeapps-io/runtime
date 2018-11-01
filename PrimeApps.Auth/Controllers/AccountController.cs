@@ -207,13 +207,14 @@ namespace PrimeApps.Auth.UI
                 Array validUrlsArr = null;
                 if (!string.IsNullOrEmpty(validUrls))
                     validUrlsArr = validUrls.Split(";");
-
+                ErrorHandler.LogMessage("SignInSuccess: " + result.Succeeded + ", ApplicationInfo: " + JObject.FromObject(vm.ApplicationInfo), Sentry.Protocol.SentryLevel.Info);
                 if (result.Succeeded)
                 {
                     if (vm.ApplicationInfo != null && Array.IndexOf(validUrlsArr, Request.Host.Host) == -1)
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
+                        ErrorHandler.LogMessage("PlatformUser: " + JObject.FromObject(platformUser), Sentry.Protocol.SentryLevel.Info);
                         if (platformUser.TenantsAsUser.Count() > 0)
                         {
                             var tenant = platformUser.TenantsAsUser.Where(x => x.Tenant.AppId == vm.ApplicationInfo.Id).FirstOrDefault();
@@ -230,7 +231,6 @@ namespace PrimeApps.Auth.UI
                             vm.Error = "NotValidApp";
                             return View(vm);
                         }
-
                     }
 
                     var user = await _userManager.FindByNameAsync(model.Username);
@@ -253,7 +253,7 @@ namespace PrimeApps.Auth.UI
 
             // something went wrong, show form with error
             vm.Error = "WrongInfo";
-
+            ErrorHandler.LogMessage("User Login Error", Sentry.Protocol.SentryLevel.Info);
             return View(vm);
         }
 
