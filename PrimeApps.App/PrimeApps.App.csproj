@@ -33,5 +33,8 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\view\app\expensesheet\" />
+  </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4locales_4tr_1json__JSONSchema="en" /></VisualStudio></ProjectExtensions>
 </Project>

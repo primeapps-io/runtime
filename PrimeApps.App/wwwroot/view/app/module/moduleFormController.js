@@ -1092,6 +1092,10 @@ angular.module('primeapps')
                     delete record.transaction_type_system;
 
                 if (!$scope.id) {
+
+                    if ($scope.module.name === 'masraf_kalemleri' && !record.masraf)
+                        record.masraf = $scope.$parent.$parent.currentExpense.id;
+
                     ModuleService.insertRecord($scope.module.name, record)
                         .then(function onSuccess(response) {
                             var moduleProcesses = $filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true);
