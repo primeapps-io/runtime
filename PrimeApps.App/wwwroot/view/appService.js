@@ -280,7 +280,7 @@ angular.module('primeapps')
                                         }
                                     }
 
-                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'Type': 3 }, true)[0];
+                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'type': 3 }, true)[0];
 
                                     //custom menü
                                     $rootScope.customMenu = false;
