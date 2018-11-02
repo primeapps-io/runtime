@@ -2030,11 +2030,9 @@ namespace PrimeApps.Model.Helpers
 					case DataType.Multiselect:
 						var valueArray = (JArray)property.Value;
 
-						foreach (var value in valueArray)
-						{
-							recordNew[property.Key] += value + "; ";
-						}
-						break;
+                        var multiValue = valueArray.ToObject<List<string>>();
+                        recordNew[property.Key] = string.Join(";", multiValue);
+                        break;
 
 					case DataType.Checkbox:
 						var yesValue = picklistLanguage == "tr" ? "Evet" : "Yes";
