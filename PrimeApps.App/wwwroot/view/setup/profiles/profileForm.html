@@ -37,10 +37,10 @@
                                 <tbody>
                                     <tr ng-repeat="permission in profile.permissions">
                                         <td class="text-uppercase">{{permission.EntityTypeName}}</td>
-                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent" ng-click="!permission.read ? permission.modify = false : ''; !permission.read ? permission.write = false : ''; !permission.read ? permission.remove = false : '';" /><span></span></label></td>
-                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.modify" ng-disabled="profile.is_persistent" ng-click="permission.modify ? permission.read = true : '';" /><span></span></label></td>
-                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.write" ng-disabled="profile.is_persistent" ng-click="permission.write ? permission.read = true : '';" /><span></span></label></td>
-                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.remove" ng-disabled="profile.is_persistent" ng-click="permission.remove ? permission.read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Read" ng-disabled="profile.IsPersistent" ng-click="!permission.Read ? permission.Modify = false : ''; !permission.Read ? permission.Write = false : ''; !permission.Read ? permission.Remove = false : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Modify" ng-disabled="profile.IsPersistent || permission.Type === 3" ng-click="permission.Modify ? permission.Read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Write" ng-disabled="profile.IsPersistent" ng-click="permission.Write ? permission.Read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.Remove" ng-disabled="profile.IsPersistent || permission.Type === 3" ng-click="permission.Remove ? permission.Read = true : '';" /><span></span></label></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -59,8 +59,8 @@
                                                               ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Tasks' | translate}}</span></label>
                             <label class="ui-checkbox"><input type="checkbox" ng-model="profile.calendar"
                                                               ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Calendar' | translate}}</span></label>
-                            <label class="ui-checkbox"><input type="checkbox" ng-model="profile.newsfeed"
-                                                              ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>
+                            <!--<label class="ui-checkbox"><input type="checkbox" ng-model="profile.newsfeed"
+                                                              ng-disabled="profile.has_admin_rights" /><span>{{'Setup.Profiles.Newsfeed' | translate}}</span></label>-->
                             <label class="ui-checkbox"><input type="checkbox" ng-model="profile.dashboard" ng-disabled="profile.has_admin_rights" /><span>Pano</span></label>
                             <label class="ui-checkbox" ng-if="moduleRehber"><input type="checkbox"
                                                                                          ng-model="profile.home"

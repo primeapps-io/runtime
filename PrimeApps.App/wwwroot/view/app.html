@@ -154,7 +154,7 @@
                         <span class="sidebar-menu-label">{{'Layout.Menu.Dashboard' | translate}}</span>
                     </a>
                 </li>
-                <li ng-if="user.profile.newsfeed">
+                <li ng-if="permissionsNewsfeed.Read">
                     <a href="#/app/newsfeed" ng-click="routingPrism('#/app/newsfeed')"
                        ng-class="{'active': currentPath === '/app/newsfeed'}">
                         <div data-delay="300" data-placement="right" data-container="body" data-title="{{'Layout.Menu.Newsfeed' | translate}}" bs-tooltip class="fa-sidebar-icon-background"><i class="fa-sidebar-icon fa fa-comments"></i></div>
