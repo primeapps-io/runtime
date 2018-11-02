@@ -82,7 +82,7 @@ namespace PrimeApps.App.Bpm.Steps
                         {
                             Subject = tempSendNotification["subject"].Value<string>(),
                             Message = tempSendNotification["message"].Value<string>(),
-                            RecipientList = tempSendNotification["recipients"].ToObject<List<UserBasic>>(),
+                            RecipientList = tempSendNotification["recipients"].ToObject<JArray>(),
                             CC = !tempSendNotification["cc"].IsNullOrEmpty() ? tempSendNotification["cc"].ToObject<JArray>() : new JArray(),
                             Bcc = !tempSendNotification["bcc"].IsNullOrEmpty() ? tempSendNotification["bcc"].ToObject<JArray>() : new JArray(),
                             Schedule = tempSendNotification["schedule"]["value"].Value<string>() == "now" ? 0 : tempSendNotification["schedule"]["value"].ToObject<int>()
@@ -96,14 +96,18 @@ namespace PrimeApps.App.Bpm.Steps
                         //var recordId = data["record"].ToObject<int>();
                         var record = data["record"].ToObject<JObject>();//_recordRepository.GetById(module, recordId);
 
-                        var sendNotificationCC = sendNotification.CC;
-                        var sendNotificationBCC = sendNotification.Bcc;
+                        var sendNotificationCC = new JArray();//sendNotification.CC;
+                        var sendNotificationBCC = new JArray();//sendNotification.Bcc;
 
-                        if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1/* && !sendNotification.CC.Contains("@")*/)
-                            sendNotificationCC = !record[sendNotification.CCArray[0]].IsNullOrEmpty() ? record[sendNotification.CCArray[0]].ToObject<JArray>() : null;
+                      if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1/* && !sendNotification.CC.Contains("@")*/)
+                            sendNotificationCC.Add(!record[sendNotification.CCArray[0]].IsNullOrEmpty() ? record[sendNotification.CCArray[0].ToString()].ToString() : null);
+                        else
+                            sendNotificationCC = sendNotification.CC;
 
                         if (sendNotification.BccArray != null && sendNotification.BccArray.Length == 1 /* && !sendNotification.Bcc.Contains("@")*/)
-                            sendNotificationBCC = !record[sendNotification.BccArray[0]].IsNullOrEmpty() ? record[sendNotification.BccArray[0]].ToObject<JArray>() : null;
+                            sendNotificationBCC.Add(!record[sendNotification.BccArray[0]].IsNullOrEmpty() ? record[sendNotification.BccArray[0].ToString()].ToString() : null);
+                        else
+                            sendNotificationBCC = sendNotification.Bcc;
 
                         string domain;
 
@@ -150,35 +154,46 @@ namespace PrimeApps.App.Bpm.Steps
                         foreach (var recipientItem in recipients)
                         {
                             var recipient = recipientItem;
-
-                            if (recipient.Email == "[owner]")
+                            if (recipient.HasValues)
                             {
-                                var recipentUser = await _userRepository.GetById((int)record["owner.id"]);
+                                if (recipient["email"].ToString() == "[owner]")
+                                {
+                                    var recipentUser = await _userRepository.GetById((int)record["owner.id"]);
 
-                                if (recipentUser == null)
-                                    continue;
+                                    if (recipentUser == null)
+                                        continue;
 
-                                recipient.Email = recipentUser.Email;
+                                    recipient["email"] = recipentUser.Email;
 
+                                }
+                                if (!recipient["email"].ToString().Contains("@"))
+                                {
+                                    if (!record[recipient].IsNullOrEmpty())
+                                    {
+                                        recipient["email"] = (string)record[recipient["email"].ToString()];
+                                    }
+                                }
+                                email.AddRecipient(recipient["email"].ToString());
                             }
 
                             //if (recipients.Contains(recipient))
                             //    continue;
 
-                            if (!recipient.Email.Contains("@"))
+                            if (!recipient.HasValues)
                             {
-                                if (!record[recipient].IsNullOrEmpty())
+                                if (!record[recipient.ToString()].IsNullOrEmpty())
                                 {
-                                    recipient.Email = (string)record[recipient.Email];
+                                    recipient = (string)record[recipient.ToString()];
                                 }
+                                email.AddRecipient(recipient.ToString());
                             }
-                            email.AddRecipient(recipient.Email);
+
                         }
 
                         if (sendNotification.Schedule.HasValue)
                             email.SendOn = DateTime.UtcNow.AddDays(sendNotification.Schedule.Value);
 
-                        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotification.CCArray == null ? "" : string.Join(",", sendNotification.CCArray), sendNotification.BccArray == null ? "" : string.Join(",", sendNotification.BccArray), appUser: appUser, addRecordSummary: false);
+                        email.AddToQueue(appUser.TenantId, module.Id, (int)record["id"], "", "", sendNotificationCC == null ? "" : string.Join(",", sendNotificationCC.ToObject<string[]>()), sendNotificationBCC == null ? "" : string.Join(",", sendNotificationBCC.ToObject<string[]>()), appUser: appUser, addRecordSummary: false);
 
                         //var workflowLog = new BpmWorkflowLog
                         //{

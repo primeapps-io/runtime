@@ -22,7 +22,8 @@ namespace PrimeApps.Model.Constants
             { "Notification Task", new Dictionary<string, string>(){ { Id, "NotificationStep" },{ StepType, "PrimeApps.App.Bpm.Steps.NotificationStep, PrimeApps.App" } } },
             { "User Task", new Dictionary<string, string>(){ { Id, "TaskStep" }, { StepType, "PrimeApps.App.Bpm.Steps.TaskStep, PrimeApps.App" } } },
             { "WebHook Task", new Dictionary<string, string>(){ { Id, "WebhookStep" }, { StepType, "PrimeApps.App.Bpm.Steps.WebhookStep, PrimeApps.App" } } },
-            { "Data Task", new Dictionary<string, string>(){ { Id, "DataUpdateStep" }, { StepType, "PrimeApps.App.Bpm.Steps.DataUpdateStep, PrimeApps.App" } } }
+            { "Data Task", new Dictionary<string, string>(){ { Id, "DataUpdateStep" }, { StepType, "PrimeApps.App.Bpm.Steps.DataUpdateStep, PrimeApps.App" } } },
+            { "Function Task", new Dictionary<string, string>(){ { Id, "FunctionStep" }, { StepType, "PrimeApps.App.Bpm.Steps.FunctionStep, PrimeApps.App" } } }
         };
 
         public static Dictionary<string, string> Find(string key)

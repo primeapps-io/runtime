@@ -46,7 +46,7 @@ namespace PrimeApps.Model.Common.Bpm
             }
         }
 
-        public ICollection<UserBasic> RecipientList { get; set; }
+        public JArray RecipientList { get; set; }
 
 
         public string[] CCArray
@@ -56,10 +56,15 @@ namespace PrimeApps.Model.Common.Bpm
                 if (CC.IsNullOrEmpty())
                     return null;
 
-                List<string> data=new List<string>();
+                List<string> data = new List<string>();
 
                 foreach (var item in CC)
-                    data.Add(item["email"].Value<string>());
+                {
+                    if (item.HasValues)
+                        data.Add(item["email"].Value<string>());
+                    else
+                        data.Add(item.Value<string>());
+                }
 
                 return data.ToArray<string>();
             }
@@ -103,7 +108,7 @@ namespace PrimeApps.Model.Common.Bpm
                         data["email"] = cc;
                     }
                     Bcc = data;
-                } 
+                }
             }
         }
 
