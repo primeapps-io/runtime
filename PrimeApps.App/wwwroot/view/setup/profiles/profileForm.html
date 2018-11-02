@@ -38,9 +38,9 @@
                                     <tr ng-repeat="permission in profile.permissions">
                                         <td class="text-uppercase">{{permission.EntityTypeName}}</td>
                                         <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.read" ng-disabled="profile.is_persistent" ng-click="!permission.read ? permission.modify = false : ''; !permission.read ? permission.write = false : ''; !permission.read ? permission.remove = false : '';" /><span></span></label></td>
-                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.modify" ng-disabled="profile.is_persistent || permission.Type === 3" ng-click="permission.modify ? permission.read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.modify" ng-disabled="profile.is_persistent || permission.type === 3" ng-click="permission.modify ? permission.read = true : '';" /><span></span></label></td>
                                         <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.write" ng-disabled="profile.is_persistent" ng-click="permission.write ? permission.read = true : '';" /><span></span></label></td>
-                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.remove" ng-disabled="profile.is_persistent || permission.Type === 3" ng-click="permission.remove ? permission.read = true : '';" /><span></span></label></td>
+                                        <td class="text-center user-not-select"><label class="ui-checkbox"><input type="checkbox" ng-model="permission.remove" ng-disabled="profile.is_persistent || permission.type === 3" ng-click="permission.remove ? permission.read = true : '';" /><span></span></label></td>
                                     </tr>
                                 </tbody>
                             </table>
