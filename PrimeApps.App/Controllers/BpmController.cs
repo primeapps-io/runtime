@@ -120,7 +120,7 @@ namespace PrimeApps.App.Controllers
             if(response.Count()>0)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-            var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
+            var definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
 
             if (definitionJson.IsNullOrEmpty())
                 return BadRequest();
@@ -168,7 +168,7 @@ namespace PrimeApps.App.Controllers
                 var newVersion = lastVersion + 1;
 
                 bpmWorkflowEntity.Version = newVersion;
-                var definitionJson = _bpmHelper.CreateDefinition(bpmWorkflowEntity.Code, newVersion, JObject.Parse(bpmWorkflow.DiagramJson));
+                var definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, newVersion, JObject.Parse(bpmWorkflow.DiagramJson));
                 bpmWorkflow.DefinitionJson = definitionJson;
 
             }
@@ -185,8 +185,9 @@ namespace PrimeApps.App.Controllers
             if (workflowDefinition == null)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
+            var currentFiltersIds = bpmWorkflowEntity.Filters.Select(q => q.Id).ToList();
             await _bpmHelper.UpdateEntity(bpmWorkflow, bpmWorkflowEntity, AppUser.TenantLanguage);
-            await _bpmRepository.Update(bpmWorkflowEntity);
+            await _bpmRepository.Update(bpmWorkflowEntity, currentFiltersIds);
 
             return Ok(bpmWorkflowEntity);
         }
@@ -200,8 +201,9 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
-
-            await _workflowHost.SuspendWorkflow(bpmWorkflowEntity.Code);
+            var def = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
+            
+            //TODO We should be delete from Definition List?
 
             return Ok();
         }

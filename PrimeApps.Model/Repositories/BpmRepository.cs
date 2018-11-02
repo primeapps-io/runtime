@@ -78,8 +78,14 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Update(BpmWorkflow BpmWorkflow)
+        public async Task<int> Update(BpmWorkflow BpmWorkflow, List<int> currentFilterIds)
         {
+            foreach (var filterId in currentFilterIds)
+            {
+                var currenFilter = BpmWorkflow.Filters.First(q => q.Id == filterId);
+                BpmWorkflow.Filters.Remove(currenFilter);
+                DbContext.BpmRecordFilters.Remove(currenFilter);
+            }
             return await DbContext.SaveChangesAsync();
         }
 
@@ -140,7 +146,7 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.BpmWorkflows
                 .Include(x => x.Filters).Where(z => !z.Deleted)
-                .Include(x=>x.Category)
+                .Include(x => x.Category)
                 .Include(x => x.Module)
                 .Include(x => x.Module.Fields);
         }

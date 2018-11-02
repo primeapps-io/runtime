@@ -21,7 +21,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 
         Task<int> Create(BpmWorkflow note);
 
-        Task<int> Update(BpmWorkflow note);
+        Task<int> Update(BpmWorkflow note, List<int> currentFilterIds);
 
         Task<int> DeleteSoft(BpmWorkflow note);
 

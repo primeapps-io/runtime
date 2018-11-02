@@ -33,7 +33,7 @@ namespace PrimeApps.App.Helpers
 
         JObject CreateDefinition(string code, int version, JObject diagram);
 
-        JObject CreateDefinitonNew(string code, int version, JObject diagram);
+        JObject CreateDefinitionNew(string code, int version, JObject diagram);
     }
     public class BpmHelper : IBpmHelper
     {
@@ -806,11 +806,15 @@ namespace PrimeApps.App.Helpers
             return jsonData;
         }
 
-        public JObject CreateDefinitonNew(string code, int version, JObject diagram)
+        public JObject CreateDefinitionNew(string code, int version, JObject diagram)
         {
             //Parse data from BPMN editor as Nodes and Links
             var nodesData = diagram["nodeDataArray"].ToObject<JArray>();
             var linksData = diagram["linkDataArray"].ToObject<JArray>();
+            var linkCount = linksData.Count();
+
+            if (linkCount < 0)
+                return null;
 
             #region Create new Jobject for BPM Engine
 
@@ -820,62 +824,130 @@ namespace PrimeApps.App.Helpers
             jsonData["Version"] = version;
             var StepsArray = new JArray();
 
+            var startInfo = BpmConstants.Find("Start");
+            var startNode = nodesData.Where(q => q["item"].Value<string>() == "Start").FirstOrDefault();
+
+            if (startNode.IsNullOrEmpty())
+                return null;
+
             //Create Steps
-            foreach (var link in linksData)
-            {
-                var from = link["from"].Value<string>();
-                var to = link["to"].Value<string>();
+            var startLink = linksData.Where(q => q["from"].Value<string>() == startNode["key"].Value<string>()).First().ToObject<JObject>();
+            StepsArray = ReadList(linksData, nodesData, startLink, StepsArray);
 
-                var stepData = new JObject();
+            //foreach (var link in linksData)
+            //{
+            //    var from = link["from"].Value<string>();
+            //    var to = link["to"].Value<string>();
 
-                var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
-                var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
+            //    var stepData = new JObject();
 
-                if (fromNode.IsNullOrEmpty() || toNode.IsNullOrEmpty())
-                    return null;
+            //    var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
+            //    var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
 
-                if (toNode["item"].Value<string>() == "End")
-                    break;
+            //    if (fromNode.IsNullOrEmpty() || toNode.IsNullOrEmpty())
+            //        return null;
 
-                var fromStepInfo = BpmConstants.Find(fromNode["item"].Value<string>());
+            //    var fromStepInfo = BpmConstants.Find(fromNode["item"].Value<string>());
 
-                if (fromStepInfo == null)
-                    return null;
+            //    if (fromStepInfo == null)
+            //        return null;
 
-                stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
-                var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
-                stepData["StepType"] = fromStepType;
+            //    stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
+            //    var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
+            //    stepData["StepType"] = fromStepType;
 
-                //TODO Special Steps
+            //    //TODO Special Steps
 
-                //
+            //    //
 
-                if (!fromNode["dataType"].IsNullOrEmpty())
-                    stepData["DataType"] = fromNode["dataType"].Value<string>();
+            //    if (!fromNode["dataType"].IsNullOrEmpty())
+            //        stepData["DataType"] = fromNode["dataType"].Value<string>();
 
-                if (!fromNode["data"].IsNullOrEmpty())
-                {
-                    var request = new JObject();
-                    request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
-                    stepData["Inputs"] = request;
-                }
+            //    if (!fromNode["data"].IsNullOrEmpty())
+            //    {
+            //        var request = new JObject();
+            //        request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+            //        stepData["Inputs"] = request;
+            //    }
 
-                var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
+            //    if (toNode["item"].Value<string>() == "End")
+            //    {
+            //        StepsArray.Add(stepData);
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
 
-                if (toStepInfo == null)
-                    return null;
+            //        if (toStepInfo == null)
+            //            return null;
 
-                stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
-
-                StepsArray.Add(stepData);
-
-            }
+            //        stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
+            //        StepsArray.Add(stepData);
+            //    }
+            //}
 
             jsonData["Steps"] = StepsArray;
 
             #endregion
 
             return jsonData;
+        }
+
+        private JArray ReadList(JArray linksNode, JArray nodesData, JObject link, JArray StepsArray)
+        {
+            var from = link["from"].Value<string>();
+            var to = link["to"].Value<string>();
+
+            var stepData = new JObject();
+            var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
+            var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
+
+            if (fromNode.IsNullOrEmpty() || toNode.IsNullOrEmpty())
+                return null;
+
+            var fromStepInfo = BpmConstants.Find(fromNode["item"].Value<string>());
+
+            if (fromStepInfo == null)
+                return null;
+
+            stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
+            var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
+            stepData["StepType"] = fromStepType;
+
+            //TODO Special Steps
+
+            //
+
+            if (!fromNode["dataType"].IsNullOrEmpty())
+                stepData["DataType"] = fromNode["dataType"].Value<string>();
+
+            if (!fromNode["data"].IsNullOrEmpty())
+            {
+                var request = new JObject();
+                request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+                stepData["Inputs"] = request;
+            }
+
+            if (toNode["item"].Value<string>() == "End")
+            {
+                StepsArray.Add(stepData);
+                return StepsArray;
+            }
+            else
+            {
+                var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
+
+                if (toStepInfo == null)
+                    return null;
+
+                stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
+                StepsArray.Add(stepData);
+            }
+
+            var nextLink = linksNode.Where(q => q["from"].Value<string>() == to).FirstOrDefault();
+
+            return ReadList(linksNode, nodesData, nextLink.ToObject<JObject>(), StepsArray);
         }
     }
 

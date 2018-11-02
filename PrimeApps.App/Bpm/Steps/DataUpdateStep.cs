@@ -84,7 +84,7 @@ namespace PrimeApps.App.Bpm.Steps
                         var fieldUpdate = new BpmDataUpdate();
                         fieldUpdate.Module = await _moduleRepository.GetById(newRequest["module_id"].Value<int>());
                         fieldUpdate.Field = await _moduleRepository.GetField(newRequest["field_id"].Value<int>());
-                        fieldUpdate.Value = newRequest["value"].Value<string>();
+                        fieldUpdate.Value = newRequest["currentValue"].IsNullOrEmpty() ? newRequest["value"].Value<string>() : newRequest["currentValue"].Value<string>();
 
                         var moduleID = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleID);

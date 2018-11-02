@@ -109,30 +109,30 @@ namespace PrimeApps.App.Bpm.Steps
                         task["task_due_date"] = DateTime.UtcNow.AddDays(dueDateValue);
 
                         if (!createTask["task_status"].IsNullOrEmpty())
-                            task["task_status"] = createTask["task_status"];
+                            task["task_status"] = createTask["task_status"]["id"];
 
                         if (!createTask["task_priority"].IsNullOrEmpty())
-                            task["task_priority"] = createTask["task_priority"];
+                            task["task_priority"] = createTask["task_priority"]["id"];
 
                         if (!createTask["task_notification"].IsNullOrEmpty())
-                            task["task_notification"] = createTask["task_notification"];
+                            task["task_notification"] = createTask["task_notification"]["id"];
 
                         if (!createTask["task_reminder"].IsNullOrEmpty())
-                            task["task_reminder"] = createTask["task_reminder"];
+                            task["task_reminder"] = createTask["task_reminder"]["id"];
 
                         if (!createTask["reminder_recurrence"].IsNullOrEmpty())
-                            task["reminder_recurrence"] = createTask["reminder_recurrence"];
+                            task["reminder_recurrence"] = createTask["reminder_recurrence"]["id"];
 
                         if (!string.IsNullOrWhiteSpace(createTask["description"].Value<string>()))
                             task["description"] = createTask["description"];
 
-                        if (createTask["owner"].IsNullOrEmpty())
+                        if (record["owner"].IsNullOrEmpty())
                             task["owner"] = !record["owner"].IsNullOrEmpty() ? (int)record["owner"] : (int)record["owner.id"];
 
                         task["created_by"] = createTask["created_by_id"];
 
                         var modelState = new ModelStateDictionary();
-                        var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleActivity, record, modelState, appUser.Language);
+                        var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleActivity, task, modelState, appUser.Language);
 
                         if (resultBefore < 0 && !modelState.IsValid)
                         {
