@@ -1218,7 +1218,7 @@ namespace PrimeApps.App.Controllers
             var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
             var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
             var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
-            var format = "";
+            var label = "";
 
             var view = await _viewRepository.GetById(viewId);
 
@@ -1302,6 +1302,9 @@ namespace PrimeApps.App.Controllers
 
                 foreach (var viewField in viewFieldsList)
                 {
+                    if (viewField.Field.Contains(".primary"))
+                        continue;
+
                     /**
                      * viewField.Field.Contains(".")  ViewFields'lerdeki fieldlerin, fields nameler arasında yer almadığından dolayı split edilmiştir.
                      * örn: ViewFields = calisan.calisan_ad.primary fields.Name = calisan
@@ -1310,8 +1313,29 @@ namespace PrimeApps.App.Controllers
                     {
                         field = fields.FirstOrDefault(x => x.Name == viewField.Field);
 
-                        if (field != null)
-                            viewFields.Add(field);
+                        if (field == null)
+                            continue;
+
+                        field.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+
+                        viewFields.Add(field);
+                    }
+                    else
+                    {
+                        var viewFieldParts = viewField.Field.Split('.');
+                        var viewFieldModule = lookupModules.FirstOrDefault(x => x.Name == viewFieldParts[1] && !x.Deleted);
+
+                        if (viewFieldModule == null)
+                            continue;
+
+                        var viewFieldLookup = viewFieldModule.Fields.FirstOrDefault(x => x.Name == viewFieldParts[2] && !x.Deleted);
+
+                        if (viewFieldLookup == null)
+                            continue;
+
+                        viewFieldLookup.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+
+                        viewFields.Add(viewFieldLookup);
                     }
                 }
 
@@ -1342,56 +1366,65 @@ namespace PrimeApps.App.Controllers
 
             var records = _recordRepository.Find(moduleEntity.Name, findRequest);
 
+
+            string labelLocale = "";
             for (int i = 0; i < fields.Count; i++)
             {
                 var field = fields[i];
 
-                if (!dt.Columns.Contains(field.LabelTr))
+                label = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
+
+                if (field.Module != null && module != field.Module.Name)
+                {
+                    if (locale.Contains("tr"))
+                        labelLocale = label + " " + "(" + field.Module.LabelTrSingular + ")";
+                    else
+                        labelLocale = label + " " + "(" + field.Module.LabelEnSingular + ")";
+                }
+                else
+                    labelLocale = label;
+
+                if (!dt.Columns.Contains(labelLocale))
                 {
                     switch (field.DataType)
                     {
                         case DataType.Number:
                         case DataType.NumberAuto:
-                            format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                            dt.Columns.Add(format).DataType = typeof(int);
+                            dt.Columns.Add(labelLocale).DataType = typeof(int);
                             break;
                         case DataType.NumberDecimal:
                         case DataType.Currency:
-                            format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                            dt.Columns.Add(format).DataType = typeof(decimal);
+                            dt.Columns.Add(labelLocale).DataType = typeof(decimal);
                             break;
                         case DataType.Lookup:
-                            format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                            dt.Columns.Add(format);
+                            dt.Columns.Add(labelLocale);
                             break;
                         default:
-                            format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                            dt.Columns.Add(format).DataType = typeof(string);
+                            dt.Columns.Add(labelLocale).DataType = typeof(string);
                             break;
                     }
                 }
                 else
+                {
+                    labelLocale = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
                     switch (field.DataType)
                     {
                         case DataType.Number:
                         case DataType.NumberAuto:
-                            format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
-                            dt.Columns.Add(format).DataType = typeof(int);
+                            dt.Columns.Add(labelLocale).DataType = typeof(int);
                             break;
                         case DataType.NumberDecimal:
                         case DataType.Currency:
-                            format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
-                            dt.Columns.Add(format).DataType = typeof(decimal);
+                            dt.Columns.Add(labelLocale).DataType = typeof(decimal);
                             break;
                         case DataType.Lookup:
-                            format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                            dt.Columns.Add(format);
+                            dt.Columns.Add(labelLocale);
                             break;
                         default:
-                            format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
-                            dt.Columns.Add(format).DataType = typeof(string);
+                            dt.Columns.Add(labelLocale).DataType = typeof(string);
                             break;
                     }
+                }
             }
             for (int j = 0; j < records.Count; j++)
             {
@@ -1403,47 +1436,45 @@ namespace PrimeApps.App.Controllers
                     var field = fields[i];
 
                     //Lookuplarda field name boş geliyor.
-                    if ((field.DataType.ToString() != "Lookup") && (record[field.Name] == null || record[field.Name].IsNullOrEmpty()))
-                    {
+                    if (field.DataType != DataType.Lookup && record[!isViewFields ? field.Name : field.StyleInput].IsNullOrEmpty())
                         continue;
-                    }
 
                     switch (field.DataType)
                     {
                         case DataType.Date:
-                            record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDate);
+                            record[!isViewFields ? field.Name : field.StyleInput] = ((DateTime)record[!isViewFields ? field.Name : field.StyleInput]).AddMinutes((int)timezoneOffset).ToString(formatDate);
                             break;
                         case DataType.DateTime:
-                            record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
+                            record[!isViewFields ? field.Name : field.StyleInput] = ((DateTime)record[!isViewFields ? field.Name : field.StyleInput]).AddMinutes((int)timezoneOffset).ToString(formatDateTime);
                             break;
                         case DataType.Time:
-                            record[field.Name] = ((DateTime)record[field.Name]).AddMinutes((int)timezoneOffset).ToString(formatTime);
+                            record[!isViewFields ? field.Name : field.StyleInput] = ((DateTime)record[!isViewFields ? field.Name : field.StyleInput]).AddMinutes((int)timezoneOffset).ToString(formatTime);
                             break;
                     }
 
-
-                    if (field.DataType != Model.Enums.DataType.Lookup)
+                    if (field.DataType != DataType.Lookup)
                     {
+
                         switch (field.DataType)
                         {
                             case DataType.Number:
                             case DataType.NumberAuto:
-                                dr[i] = (int)record[field.Name];
+                                dr[i] = (int)record[!isViewFields ? field.Name : field.StyleInput];
                                 break;
                             case DataType.NumberDecimal:
                             case DataType.Currency:
-                                dr[i] = (decimal)record[field.Name];
+                                dr[i] = (decimal)record[!isViewFields ? field.Name : field.StyleInput];
                                 break;
                             case DataType.Multiselect:
-                                var multi = record[field.Name].ToObject<List<string>>();
+                                var multi = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
                                 dr[i] = string.Join("|", multi);
                                 break;
                             case DataType.Tag:
-                                var tag = record[field.Name].ToObject<List<string>>();
+                                var tag = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
                                 dr[i] = string.Join(",", tag);
                                 break;
                             default:
-                                dr[i] = record[field.Name];
+                                dr[i] = record[!isViewFields ? field.Name : field.StyleInput];
                                 break;
                         }
                     }
@@ -1457,9 +1488,15 @@ namespace PrimeApps.App.Controllers
                         else
                             continue;
 
-                        dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
+                        if (!field.Name.Contains(".") && isViewFields)
+                            dr[i] = (int)record[field.Name];
+
+                        else
+                            dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
+
                     }
                 }
+
                 dt.Rows.Add(dr);
             }
 
