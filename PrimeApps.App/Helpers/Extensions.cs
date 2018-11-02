@@ -205,7 +205,7 @@ namespace PrimeApps.App.Helpers
                 var bytes = Encoding.UTF8.GetBytes(input);
                 var hash = sha.ComputeHash(bytes);
 
-                return Convert.ToBase64String(hash);
+                return BitConverter.ToString(hash).Replace("-", "").ToLower();
             }
         }
 
@@ -242,7 +242,7 @@ namespace PrimeApps.App.Helpers
                 var bytes = Encoding.UTF8.GetBytes(input);
                 var hash = sha.ComputeHash(bytes);
 
-                return Convert.ToBase64String(hash);
+                return BitConverter.ToString(hash).Replace("-", "").ToLower();
             }
         }
 

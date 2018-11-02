@@ -12,8 +12,7 @@ namespace PrimeApps.App.Helpers
 {
     public interface IFunctionHelper
     {
-        JObject CreateRequest(FunctionBindingModel model);
-        JObject UpdateRequest(FunctionBindingModel model, JObject function);
+        JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null);
         Task<JObject> Get(string name);
         Task<string> GetFunctionUrl(string name);
         Task<HttpResponseMessage> Run(string functionUrl, string functionHttpMethod, string functionRequestBody);
@@ -30,7 +29,7 @@ namespace PrimeApps.App.Helpers
             _kubernetesClusterRootUrl = _configuration["AppSettings:KubernetesClusterRootUrl"];
         }
 
-        public JObject CreateRequest(FunctionBindingModel model)
+        public JObject CreateFunctionRequest(FunctionBindingModel model, JObject functionCurrent = null)
         {
             var function = new JObject();
             function["kind"] = "Function";
@@ -39,21 +38,51 @@ namespace PrimeApps.App.Helpers
             function["metadata"]["name"] = model.Name;
             function["metadata"]["namespace"] = "default";
             function["spec"] = new JObject();
-            function["spec"]["deps"] = model.Dependencies;
+            function["spec"]["checksum"] = "sha256:" + model.Name.ToSha256();
             function["spec"]["function"] = "";
-            function["spec"]["checksum"] = model.Name.ToSha256();
-            function["spec"]["handler"] = model.Handler;
-            function["spec"]["runtime"] = model.Runtime.GetAttributeOfType<EnumMemberAttribute>().Value;
-
-            return function;
-        }
-
-        public JObject UpdateRequest(FunctionBindingModel model, JObject function)
-        {
             function["spec"]["deps"] = model.Dependencies;
-            function["spec"]["function"] = model.Function;
             function["spec"]["handler"] = model.Handler;
             function["spec"]["runtime"] = model.Runtime.GetAttributeOfType<EnumMemberAttribute>().Value;
+
+            if (!functionCurrent.IsNullOrEmpty())
+            {
+                var finalizers = new JArray();
+                finalizers.Add("kubeless.io/function");
+
+                function["metadata"]["resourceVersion"] = (string)functionCurrent["metadata"]["resourceVersion"];
+                function["metadata"]["uid"] = (string)functionCurrent["metadata"]["uid"];
+                function["metadata"]["generation"] = (int)functionCurrent["metadata"]["generation"];
+                function["metadata"]["finalizers"] = finalizers;
+                function["spec"]["checksum"] = "sha256:" + model.Function.ToSha256();
+                function["spec"]["function"] = model.Function;
+                function["spec"]["function-content-type"] = "";
+                function["spec"]["deployment"] = new JObject();
+                function["spec"]["deployment"]["metadata"] = new JObject();
+                function["spec"]["deployment"]["metadata"]["creationTimestamp"] = null;
+                function["spec"]["deployment"]["spec"] = new JObject();
+                function["spec"]["deployment"]["spec"]["strategy"] = new JObject();
+                function["spec"]["deployment"]["spec"]["template"] = new JObject();
+                function["spec"]["deployment"]["spec"]["template"]["metadata"] = new JObject();
+                function["spec"]["deployment"]["spec"]["template"]["metadata"]["creationTimestamp"] = null;
+                function["spec"]["deployment"]["spec"]["template"]["spec"] = new JObject();
+                function["spec"]["deployment"]["spec"]["template"]["spec"]["containers"] = null;
+                function["spec"]["deployment"]["status"] = new JObject();
+                function["spec"]["horizontalPodAutoscaler"] = new JObject();
+                function["spec"]["horizontalPodAutoscaler"]["metadata"] = new JObject();
+                function["spec"]["horizontalPodAutoscaler"]["metadata"]["creationTimestamp"] = null;
+                function["spec"]["horizontalPodAutoscaler"]["spec"] = new JObject();
+                function["spec"]["horizontalPodAutoscaler"]["spec"]["maxReplicas"] = 0;
+                function["spec"]["horizontalPodAutoscaler"]["spec"]["scaleTargetRef"] = new JObject();
+                function["spec"]["horizontalPodAutoscaler"]["spec"]["scaleTargetRef"]["kind"] = "";
+                function["spec"]["horizontalPodAutoscaler"]["spec"]["scaleTargetRef"]["name"] = "";
+                function["spec"]["horizontalPodAutoscaler"]["status"] = new JObject();
+                function["spec"]["horizontalPodAutoscaler"]["status"]["conditions"] = null;
+                function["spec"]["horizontalPodAutoscaler"]["status"]["currentMetrics"] = null;
+                function["spec"]["horizontalPodAutoscaler"]["status"]["currentReplicas"] = 0;
+                function["spec"]["horizontalPodAutoscaler"]["status"]["desiredReplicas"] = 0;
+                function["service"] = new JObject();
+                function["timeout"] = "";
+            }
 
             return function;
         }
