@@ -74,7 +74,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var functionRequest = _functionHelper.CreateRequest(function);
+            var functionRequest = _functionHelper.CreateFunctionRequest(function);
             JObject result;
 
             using (var httpClient = new HttpClient())
@@ -106,7 +106,7 @@ namespace PrimeApps.App.Controllers
             if (functionObj.IsNullOrEmpty())
                 return NotFound();
 
-            var functionRequest = _functionHelper.UpdateRequest(function, functionObj);
+            var functionRequest = _functionHelper.CreateFunctionRequest(function, functionObj);
             JObject result;
 
             using (var httpClient = new HttpClient())
