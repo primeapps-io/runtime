@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -41,6 +43,9 @@ namespace PrimeApps.App.Controllers
         {
             var function = await _functionHelper.Get(name);
 
+            if (function.IsNullOrEmpty())
+                return NotFound();
+
             return Ok(function);
         }
 
@@ -54,7 +59,7 @@ namespace PrimeApps.App.Controllers
                 var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/functions";
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.GetAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
 
@@ -82,14 +87,16 @@ namespace PrimeApps.App.Controllers
                 var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions";
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.PostAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
+                result = JObject.Parse(content);
+
+                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.Conflict)
+                    return Conflict(result);
 
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
-
-                result = JObject.Parse(content);
             }
 
             return Created($"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{function.Name}", result);
@@ -114,9 +121,15 @@ namespace PrimeApps.App.Controllers
                 var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(functionRequest), Encoding.UTF8, "application/json"));
                 var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
+                    return NotFound();
+
+                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
+                    return NotFound();
 
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
@@ -142,9 +155,12 @@ namespace PrimeApps.App.Controllers
                 var url = $"{_kubernetesClusterRootUrl}/apis/kubeless.io/v1beta1/namespaces/default/functions/{name}";
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var response = await httpClient.DeleteAsync(url);
                 var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode && response.StatusCode == HttpStatusCode.NotFound)
+                    return NotFound();
 
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Kubernetes error. StatusCode: " + response.StatusCode + " Content: " + content);
@@ -161,7 +177,7 @@ namespace PrimeApps.App.Controllers
             var functionUrl = await _functionHelper.GetFunctionUrl(name);
 
             if (string.IsNullOrWhiteSpace(functionUrl))
-                return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
 
             string requestBody;
 
@@ -173,6 +189,25 @@ namespace PrimeApps.App.Controllers
             var response = await _functionHelper.Run(functionUrl, Request.Method, requestBody);
 
             return response;
+        }
+
+        [Route("get_pods/{name}"), HttpGet]
+        public async Task<IActionResult> GetPods(string name)
+        {
+            var pods = await _functionHelper.GetPods(name);
+
+            return Ok(pods);
+        }
+
+        [Route("get_logs/{podName}"), HttpGet]
+        public async Task<IActionResult> GetLogs(string podName)
+        {
+            var logs = await _functionHelper.GetLogs(podName);
+
+            if (logs == null)
+                return NotFound();
+
+            return Ok(logs);
         }
     }
 }

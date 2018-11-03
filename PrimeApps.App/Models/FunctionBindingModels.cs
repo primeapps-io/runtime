@@ -8,7 +8,6 @@ namespace PrimeApps.App.Models
         [Required, StringLength(200)]
         public string Name { get; set; }
 
-        [Required]
         public string Dependencies { get; set; }
 
         public string Function { get; set; }
@@ -18,5 +17,8 @@ namespace PrimeApps.App.Models
 
         [Required]
         public FunctionRuntime Runtime { get; set; }
+
+        [Required]
+        public FunctionContentType ContentType { get; set; }
     }
 }

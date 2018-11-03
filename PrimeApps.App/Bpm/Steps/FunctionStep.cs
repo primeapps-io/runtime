@@ -32,7 +32,7 @@ namespace PrimeApps.App.Bpm.Steps
             var request = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
 
             if (request == null || request.IsNullOrEmpty())
-                throw new DataMisalignedException("Cannot find Request");//TODO: Why DataMisalignedException? What is this?
+                throw new Exception("Cannot find Request");
 
             var functionName = (string)request["function_name"];
             var functionHttpMethod = (string)request["function_http_method"];
@@ -40,7 +40,7 @@ namespace PrimeApps.App.Bpm.Steps
             var functionUrl = await _functionHelper.GetFunctionUrl(functionName);
 
             if (string.IsNullOrWhiteSpace(functionUrl))
-                throw new Exception("FunctionUrl not found");
+                throw new Exception("Function not found.");
 
             var response = await _functionHelper.Run(functionUrl, functionHttpMethod, functionBody);
             var result = await response.Content.ReadAsStringAsync();
