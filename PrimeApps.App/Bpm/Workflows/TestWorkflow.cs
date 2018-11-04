@@ -1,35 +1,35 @@
 ﻿using Newtonsoft.Json.Linq;
 using PrimeApps.App.Bpm.Steps;
 using System;
+using PrimeApps.App.Models;
 using WorkflowCore.Interface;
+using WorkflowCore.Models;
 
 namespace PrimeApps.App.Bpm.Workflows
 {
-    public class TestWorkflow : IWorkflow<JObject>
+    public class TestWorkflow : IWorkflow<BpmReadDataModel>
     {
         public string Id => "TestWorkflow";
 
         public int Version => 1;
 
-        public void Build(IWorkflowBuilder<JObject> builder)
+        public void Build(IWorkflowBuilder<BpmReadDataModel> builder)
         {
             //Conditional sample
-            //var checkValue1 = new JObject();
-            //checkValue1["result"] = 1;
-
-            //var checkValue2 = new JObject();
-            //checkValue2["result"] = 2;
-            
-            //builder
-            //    .StartWith<StartStep>()
-            //    .Then<DataReadStep>()
-            //    .When(data => checkValue1).Do(then => then
-            //        .StartWith<DataCreateStep>()
-            //    )
-            //    .When(data => checkValue2).Do(then => then
-            //        .StartWith<DataDeleteStep>()
-            //    )
-            //    .Then<SmsStep>();
+            builder
+                .StartWith<StartStep>()
+                .Then<DataReadStep>()
+                .Input(step => step.Request, data => "{\"data_read\": {\"record_key\": \"title\"}}")
+                .Output(data => data.ConditionValue, step => step.Response)
+                .If(data => data.ConditionValue == "Bay").Do(then => then
+                    .StartWith<DataCreateStep>()
+                )
+                .If(data => data.ConditionValue == "Bayan").Do(then => then
+                    .StartWith<DataDeleteStep>()
+                )
+                .Then<SmsStep>()
+                .Then(x => ExecutionResult.Next())
+                .EndWorkflow();
 
             //Function sample
             //builder

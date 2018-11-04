@@ -53,7 +53,7 @@ namespace PrimeApps.App.Bpm.Steps
             var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
 
             if (newRequest.IsNullOrEmpty())
-                throw new DataMisalignedException("Cannot find Request");
+                throw new Exception("Cannot find Request");
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {

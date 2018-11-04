@@ -15,7 +15,7 @@ namespace PrimeApps.App.Models
 
         [Required, MaxLength(200)]
         public string Code { get; set; }
-        
+
         public string Description { get; set; }
 
         public int? CategoryId { get; set; }
@@ -36,13 +36,13 @@ namespace PrimeApps.App.Models
         public WorkflowFrequency Frequency { get; set; }
 
         [Required]
-        public WorkflowProcessFilter ProcessFilter { get; set;}
+        public WorkflowProcessFilter ProcessFilter { get; set; }
 
         [MaxLength(4000)]
         public string Changed_Field { get; set; }
 
         public bool CanStartManuel { get; set; }
-        
+
         public JObject DefinitionJson { get; set; }
 
         public string DiagramJson { get; set; }
@@ -53,5 +53,12 @@ namespace PrimeApps.App.Models
 
 
 
+    }
+
+    public class BpmReadDataModel
+    {
+        public string ConditionValue { get; set; }
+        public int ModuleId { get; set; }
+        public JObject Record { get; set; }
     }
 }
