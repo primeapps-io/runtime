@@ -17,13 +17,15 @@ namespace PrimeApps.Model.Constants
             { "Timer", new Dictionary<string, string>(){{Id,"myTimerStep"}, { StepType, "WorkflowCore.Primitives.Schedule, WorkflowCore" } } },
             { "Parallel", new Dictionary<string, string>(){{ Id, "myParallel" }, { StepType, "WorkflowCore.Primitives.Sequence, WorkflowCore" } } },
             { "WaitFor", new Dictionary<string, string>(){{ Id, "myWaitFor" }, { StepType, "WorkflowCore.Primitives.WaitFor, WorkflowCore" } } }, //BPMN editorde hangi nesneye bagli olacagi belli degil?
+            { "If", new Dictionary<string, string>(){{ Id, "myIf" }, { StepType, "WorkflowCore.Primitives.If, WorkflowCore" } } },
             { "Saga", new Dictionary<string, string>(){{ Id, "mySaga" }, { StepType, "WorkflowCore.Primitives.Sequence, WorkflowCore" } } }, //BPMN editorde hangi nesneye bagli olacagi belli degil?
             { "Start", new Dictionary<string, string>(){ { Id, "StartStep" }, { StepType, "PrimeApps.App.Bpm.Steps.StartStep, PrimeApps.App" } } },
             { "Notification Task", new Dictionary<string, string>(){ { Id, "NotificationStep" },{ StepType, "PrimeApps.App.Bpm.Steps.NotificationStep, PrimeApps.App" } } },
             { "User Task", new Dictionary<string, string>(){ { Id, "TaskStep" }, { StepType, "PrimeApps.App.Bpm.Steps.TaskStep, PrimeApps.App" } } },
             { "WebHook Task", new Dictionary<string, string>(){ { Id, "WebhookStep" }, { StepType, "PrimeApps.App.Bpm.Steps.WebhookStep, PrimeApps.App" } } },
             { "Data Task", new Dictionary<string, string>(){ { Id, "DataUpdateStep" }, { StepType, "PrimeApps.App.Bpm.Steps.DataUpdateStep, PrimeApps.App" } } },
-            { "Function Task", new Dictionary<string, string>(){ { Id, "FunctionStep" }, { StepType, "PrimeApps.App.Bpm.Steps.FunctionStep, PrimeApps.App" } } }
+            { "Function Task", new Dictionary<string, string>(){ { Id, "FunctionStep" }, { StepType, "PrimeApps.App.Bpm.Steps.FunctionStep, PrimeApps.App" } } },
+            { "Data Read Task", new Dictionary<string, string>(){ { Id, "DataReadStep" }, { StepType, "PrimeApps.App.Bpm.Steps.DataReadStep, PrimeApps.App" } } }
         };
 
         public static Dictionary<string, string> Find(string key)
