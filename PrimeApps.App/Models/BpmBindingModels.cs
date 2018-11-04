@@ -58,7 +58,7 @@ namespace PrimeApps.App.Models
     public class BpmReadDataModel
     {
         public string ConditionValue { get; set; }
-        public int ModuleId { get; set; }
-        public JObject Record { get; set; }
+        public int module_id { get; set; }
+        public JObject record { get; set; }
     }
 }

@@ -16,20 +16,20 @@ namespace PrimeApps.App.Bpm.Workflows
         public void Build(IWorkflowBuilder<BpmReadDataModel> builder)
         {
             //Conditional sample
-            builder
-                .StartWith<StartStep>()
-                .Then<DataReadStep>()
-                .Input(step => step.Request, data => "{\"data_read\": {\"record_key\": \"title\"}}")
-                .Output(data => data.ConditionValue, step => step.Response)
-                .If(data => data.ConditionValue == "Bay").Do(then => then
-                    .StartWith<DataCreateStep>()
-                )
-                .If(data => data.ConditionValue == "Bayan").Do(then => then
-                    .StartWith<DataDeleteStep>()
-                )
-                .Then<SmsStep>()
-                .Then(x => ExecutionResult.Next())
-                .EndWorkflow();
+            //builder
+            //    .StartWith<StartStep>()
+            //    .Then<DataReadStep>()
+            //    .Input(step => step.Request, data => "{\"data_read\": {\"record_key\": \"title\"}}")
+            //    .Output(data => data.ConditionValue, step => step.Response)
+            //    .If(data => data.ConditionValue == "Bay").Do(then => then
+            //        .StartWith<DataCreateStep>()
+            //    )
+            //    .If(data => data.ConditionValue == "Bayan").Do(then => then
+            //        .StartWith<DataDeleteStep>()
+            //    )
+            //    .Then<SmsStep>()
+            //    .Then(x => ExecutionResult.Next())
+            //    .EndWorkflow();
 
             //Function sample
             //builder

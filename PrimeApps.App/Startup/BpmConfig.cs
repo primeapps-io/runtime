@@ -18,15 +18,15 @@ namespace PrimeApps.App
             //App's and tenant's worflows should be register on runtime.
 
             //Register TestWorkflow
-            host.RegisterWorkflow<TestWorkflow, BpmReadDataModel>();
+            //host.RegisterWorkflow<TestWorkflow, BpmReadDataModel>();
 
             host.Start();
 
-            var record = new JObject { ["id"] = 19281 };//19281:bayan - 19282:bay
-            var data = new BpmReadDataModel { ModuleId = 3, Record = record };
-            var reference = "{ \"Id\": 2472,  \"Culture\": \"tr-TR\", \"TimeZone\": null, \"Language\": \"tr\", \"TenantId\": 2472}";
+            //var record = new JObject { ["id"] = 19281 };//19281:bayan - 19282:bay
+            //var data = new BpmReadDataModel { ModuleId = 3, Record = record };
+            //var reference = "{ \"Id\": 2472,  \"Culture\": \"tr-TR\", \"TimeZone\": null, \"Language\": \"tr\", \"TenantId\": 2472}";
 
-            host.StartWorkflow("TestWorkflow", 1, data, reference);
+            //host.StartWorkflow("TestWorkflow", 1, data, reference);
         }
     }
 }

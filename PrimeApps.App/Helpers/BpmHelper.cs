@@ -822,6 +822,8 @@ namespace PrimeApps.App.Helpers
 
             jsonData["Id"] = code;
             jsonData["Version"] = version;
+            //jsonData["DataType"] = "PrimeApps.App.Models.BpmReadDataModel, PrimeApps.App";
+
             var StepsArray = new JArray();
 
             var startInfo = BpmConstants.Find("Start");
@@ -833,59 +835,6 @@ namespace PrimeApps.App.Helpers
             //Create Steps
             var startLink = linksData.Where(q => q["from"].Value<string>() == startNode["key"].Value<string>()).First().ToObject<JObject>();
             StepsArray = ReadList(linksData, nodesData, startLink, StepsArray);
-
-            //foreach (var link in linksData)
-            //{
-            //    var from = link["from"].Value<string>();
-            //    var to = link["to"].Value<string>();
-
-            //    var stepData = new JObject();
-
-            //    var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
-            //    var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
-
-            //    if (fromNode.IsNullOrEmpty() || toNode.IsNullOrEmpty())
-            //        return null;
-
-            //    var fromStepInfo = BpmConstants.Find(fromNode["item"].Value<string>());
-
-            //    if (fromStepInfo == null)
-            //        return null;
-
-            //    stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
-            //    var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
-            //    stepData["StepType"] = fromStepType;
-
-            //    //TODO Special Steps
-
-            //    //
-
-            //    if (!fromNode["dataType"].IsNullOrEmpty())
-            //        stepData["DataType"] = fromNode["dataType"].Value<string>();
-
-            //    if (!fromNode["data"].IsNullOrEmpty())
-            //    {
-            //        var request = new JObject();
-            //        request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
-            //        stepData["Inputs"] = request;
-            //    }
-
-            //    if (toNode["item"].Value<string>() == "End")
-            //    {
-            //        StepsArray.Add(stepData);
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
-
-            //        if (toStepInfo == null)
-            //            return null;
-
-            //        stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
-            //        StepsArray.Add(stepData);
-            //    }
-            //}
 
             jsonData["Steps"] = StepsArray;
 
@@ -931,44 +880,62 @@ namespace PrimeApps.App.Helpers
                 var request = new JObject();
                 request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
                 stepData["Inputs"] = request;
-            }
 
+            }
+            
             if (toNode["item"].Value<string>() == "End")
             {
                 StepsArray.Add(stepData);
                 return StepsArray;
             }
 
+            if (fromNode["item"].Value<string>() == "Data Read Task")
+            {
+                //IF için output eklenmesi gerekiyor ama sürekli olarak tanımlanamadı hatası veriyor.
+                var temp = new JObject();
+                var condition = new JObject();
+
+                temp["value"] = "step.Response";
+                condition["ConditionValue"] = temp["value"];//"\"" + a["b"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+
+                stepData["Outputs"] = condition;
+            }
+
             if (!link["isDefault"].IsNullOrEmpty())
             {
                 if (link["isDefault"].Value<bool>() == false && !link["data"].IsNullOrEmpty()) //For IF condtion
                 {
-                    var readTask = BpmConstants.Find("Data Read Task");
-                    stepData["NextStepId"] = readTask.GetValueOrDefault(BpmConstants.Id) + from;
+                    //StepsArray.Add(stepData);
+                    //stepData = new JObject();
+
+                    //var readTask = BpmConstants.Find("Data Read Task");
+                    //stepData["NextStepId"] = readTask.GetValueOrDefault(BpmConstants.Id) + from;
 
                     var resultOldStep = StepsArray.Where(q => q["Id"].Value<string>() == stepData["Id"].Value<string>()).FirstOrDefault();
+                    var ifStepInfo = BpmConstants.Find("If");
 
                     if (resultOldStep.IsNullOrEmpty())
                     {
+                        stepData["NextStepId"] = ifStepInfo.GetValueOrDefault(BpmConstants.Id) + from + to;
                         StepsArray.Add(stepData);
                     }
 
                     stepData = new JObject();
 
-                    var resultDataRead = StepsArray.Where(q => q["Id"].Value<string>() == readTask.GetValueOrDefault(BpmConstants.Id) + from).FirstOrDefault();
-                    var ifStepInfo = BpmConstants.Find("If");
+                    //var resultDataRead = StepsArray.Where(q => q["Id"].Value<string>() == readTask.GetValueOrDefault(BpmConstants.Id) + from).FirstOrDefault();
+                    //
 
-                    if (resultDataRead.IsNullOrEmpty())
-                    {
-                        //Create DataReadStep
-                        stepData["Id"] = readTask.GetValueOrDefault(BpmConstants.Id) + from;
-                        stepData["StepType"] = readTask.GetValueOrDefault(BpmConstants.StepType);
+                    //if (resultDataRead.IsNullOrEmpty())
+                    //{
+                    //    //Create DataReadStep
+                    //    stepData["Id"] = readTask.GetValueOrDefault(BpmConstants.Id) + from;
+                    //    stepData["StepType"] = readTask.GetValueOrDefault(BpmConstants.StepType);
 
-                        //stepData["NextStepId"] = ifStepInfo.GetValueOrDefault(BpmConstants.Id) + from + to;
-                      
-                        StepsArray.Add(stepData);
-                        stepData = new JObject();
-                    }
+                    //    //stepData["NextStepId"] = ifStepInfo.GetValueOrDefault(BpmConstants.Id) + from + to;
+
+                    //    StepsArray.Add(stepData);
+                    //    stepData = new JObject();
+                    //}
 
                     //Create IfStep
 
@@ -979,7 +946,7 @@ namespace PrimeApps.App.Helpers
                     //TODO  WE NEED ADD NEXTSTEPID of IFSTEP
 
                     var request = new JObject();
-                    request["Condition"] = "\"" + link["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+                    request["Condition"] = link["data"]["condition"]; //"\"" + link["data"]["condition"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
                     stepData["Inputs"] = request;
 
                     var doArray = CreateIfDoArray(linksNode, nodesData, to, new JArray());

@@ -21,7 +21,7 @@ namespace PrimeApps.App.Bpm.Steps
 
         public string Request { get; set; }
         public string Response { get; set; }
-
+        
         public DataReadStep(IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
         {
             _configuration = configuration;
@@ -54,8 +54,10 @@ namespace PrimeApps.App.Bpm.Steps
 
             if (moduleId < 1 || recordId < 1)
             {
-                moduleId = ((BpmReadDataModel)context.Workflow.Data).ModuleId;
-                recordId = (int)((BpmReadDataModel)context.Workflow.Data).Record["id"];
+                var tempData = JObject.FromObject(context.Workflow.Data);
+
+                moduleId = tempData["module_id"].Value<int>();
+                recordId = tempData["record"]["id"].Value<int>();
             }
 
             JObject record;
@@ -76,7 +78,7 @@ namespace PrimeApps.App.Bpm.Steps
 
             var data = new BpmReadDataModel();
             data.ConditionValue = (string)record[recordKey];
-            data.Record = record;
+            data.record = record;
             Response = data.ConditionValue;
 
             return ExecutionResult.Outcome(data);
