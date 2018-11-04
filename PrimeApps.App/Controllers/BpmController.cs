@@ -24,6 +24,7 @@ namespace PrimeApps.App.Controllers
     public class BpmController : ApiBaseController
     {
         private IBpmRepository _bpmRepository;
+        private IWorkflowCoreRepository _workflowCoreRepository;
         private IWorkflowHost _workflowHost;
         private IWorkflowRegistry _workflowRegistry;
         private IPersistenceProvider _workflowStore;
@@ -33,6 +34,7 @@ namespace PrimeApps.App.Controllers
         private IBpmHelper _bpmHelper;
 
         public BpmController(IBpmRepository bpmRepository,
+            IWorkflowCoreRepository workflowCoreRepository,
             IBpmHelper bpmHelper,
             IWorkflowHost workflowHost,
             IWorkflowRegistry workflowRegistry,
@@ -41,6 +43,7 @@ namespace PrimeApps.App.Controllers
             IConfiguration configuration)
         {
             _bpmRepository = bpmRepository;
+            _workflowCoreRepository = workflowCoreRepository;
             _bpmHelper = bpmHelper;
             _configuration = configuration;
             _workflowHost = workflowHost;
@@ -117,7 +120,7 @@ namespace PrimeApps.App.Controllers
             //We must control to be same Workflow Code and version
             var response = await _bpmRepository.GetAll(bpmWorkflowEntity.Code, version);
 
-            if(response.Count()>0)
+            if (response.Count() > 0)
                 throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
             var definitionJson = _bpmHelper.CreateDefinitionNew(bpmWorkflowEntity.Code, version, JObject.Parse(bpmWorkflow.DiagramJson));
@@ -202,7 +205,7 @@ namespace PrimeApps.App.Controllers
 
             await _bpmRepository.DeleteSoft(bpmWorkflowEntity);
             var def = _workflowRegistry.GetDefinition(bpmWorkflowEntity.Code, bpmWorkflowEntity.Version);
-            
+
             //TODO We should be delete from Definition List?
 
             return Ok();
@@ -259,6 +262,22 @@ namespace PrimeApps.App.Controllers
             await _workflowHost.PublishEvent(eventName, eventKey, eventData);
 
             return Ok();
+        }
+
+        [Route("get_workflow_instances/{code}"), HttpGet]
+        public IActionResult GetWorkflowInstances(string code)
+        {
+            var executionPointers = _workflowCoreRepository.GetWorkflowInstances(code);
+
+            return Ok(executionPointers);
+        }
+
+        [Route("get_execution_pointers/{code}"), HttpGet]
+        public IActionResult GetExecutionPointers(string code)
+        {
+            var executionPointers = _workflowCoreRepository.GetExecutionPointers(code);
+
+            return Ok(executionPointers);
         }
     }
 }

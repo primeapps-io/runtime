@@ -14,7 +14,6 @@ namespace PrimeApps.Model.Repositories
     {
         public BpmRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        #region BpmWorkflow
         public async Task<BpmWorkflow> GetById(int id)
         {
             var bpmWorkFlow = await GetBpmWorkflowQuery().Where(q => q.Id == id && !q.Deleted).FirstOrDefaultAsync();
@@ -58,7 +57,7 @@ namespace PrimeApps.Model.Repositories
         {
             var bpmWorkFlow = await GetBpmWorkflowQuery().Where(q => !q.Deleted).Take(request.Limit).ToListAsync();
 
-            if (bpmWorkFlow.Count() < 1)
+            if (!bpmWorkFlow.Any())
                 return null;
 
             return bpmWorkFlow;
@@ -71,40 +70,37 @@ namespace PrimeApps.Model.Repositories
             return count;
         }
 
-        public async Task<int> Create(BpmWorkflow BpmWorkflow)
+        public async Task<int> Create(BpmWorkflow bpmWorkflow)
         {
-            DbContext.BpmWorkflows.Add(BpmWorkflow);
+            DbContext.BpmWorkflows.Add(bpmWorkflow);
 
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Update(BpmWorkflow BpmWorkflow, List<int> currentFilterIds)
+        public async Task<int> Update(BpmWorkflow bpmWorkflow, List<int> currentFilterIds)
         {
             foreach (var filterId in currentFilterIds)
             {
-                var currenFilter = BpmWorkflow.Filters.First(q => q.Id == filterId);
-                BpmWorkflow.Filters.Remove(currenFilter);
+                var currenFilter = bpmWorkflow.Filters.First(q => q.Id == filterId);
+                bpmWorkflow.Filters.Remove(currenFilter);
                 DbContext.BpmRecordFilters.Remove(currenFilter);
             }
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteSoft(BpmWorkflow BpmWorkflow)
+        public async Task<int> DeleteSoft(BpmWorkflow bpmWorkflow)
         {
-            BpmWorkflow.Deleted = true;
+            bpmWorkflow.Deleted = true;
 
             return await DbContext.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteHard(BpmWorkflow BpmWorkflow)
+        public async Task<int> DeleteHard(BpmWorkflow bpmWorkflow)
         {
-            DbContext.BpmWorkflows.Remove(BpmWorkflow);
+            DbContext.BpmWorkflows.Remove(bpmWorkflow);
 
             return await DbContext.SaveChangesAsync();
         }
-        #endregion BpmWorkflow
-
-        #region BpmWorkflowLog
 
         public async Task<bool> HasLog(int workflowId, int moduleId, int recordId)
         {
@@ -140,8 +136,7 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
-        #endregion BpmWorkflowLog
-
+        
         private IQueryable<BpmWorkflow> GetBpmWorkflowQuery()
         {
             return DbContext.BpmWorkflows
@@ -150,6 +145,5 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.Module)
                 .Include(x => x.Module.Fields);
         }
-
     }
 }
