@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Bpm.Workflows;
+using PrimeApps.App.Models;
 using WorkflowCore.Interface;
 
 namespace PrimeApps.App
@@ -17,15 +18,15 @@ namespace PrimeApps.App
             //App's and tenant's worflows should be register on runtime.
 
             //Register TestWorkflow
-            //host.RegisterWorkflow<TestWorkflow, JObject>();
+            host.RegisterWorkflow<TestWorkflow, BpmReadDataModel>();
 
             host.Start();
 
-            //var data = new JObject();
-            //data["id"] = 1;
-            //data["value"] = "Hello";
+            var record = new JObject { ["id"] = 19281 };//19281:bayan - 19282:bay
+            var data = new BpmReadDataModel { ModuleId = 3, Record = record };
+            var reference = "{ \"Id\": 2472,  \"Culture\": \"tr-TR\", \"TimeZone\": null, \"Language\": \"tr\", \"TenantId\": 2472}";
 
-            //host.StartWorkflow("TestWorkflow", 1, data);
+            host.StartWorkflow("TestWorkflow", 1, data, reference);
         }
     }
 }

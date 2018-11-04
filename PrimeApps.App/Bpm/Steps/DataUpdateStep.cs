@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PrimeApps.App.Helpers;
 using PrimeApps.Model.Common.Bpm;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Context;
@@ -34,6 +33,7 @@ namespace PrimeApps.App.Bpm.Steps
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
         }
+
         public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
             if (context == null)
@@ -42,52 +42,52 @@ namespace PrimeApps.App.Bpm.Steps
             if (context.Workflow.Reference == null)
                 throw new NullReferenceException();
 
-            //TODO REf Kontrol
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
-            var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+            var currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 
-            var tempRequest = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
-            var newRequest = tempRequest?["field_update"];
+            var request = Request != null ? JsonConvert.DeserializeObject<JObject>(Request.Replace("\\", "")) : null;
 
-            if (newRequest.IsNullOrEmpty())
-                throw new DataMisalignedException("Cannot find Request");
+            if (request == null || request.IsNullOrEmpty())
+                throw new Exception("Request cannot be null.");
 
-            using (var _scope = _serviceScopeFactory.CreateScope())
+            var dataUpdateRequest = request["field_update"];
+
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
 
-                using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
-                using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
+                using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+                using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                 {
-                    _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = _currentUser;
+                    platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = currentUser;
 
-                    var warehouse = new Model.Helpers.Warehouse(_analyticRepository, _configuration);
-                    var warehouseEntity = await _platformWarehouseRepository.GetByTenantId(_currentUser.TenantId);
+                    var warehouse = new Model.Helpers.Warehouse(analyticRepository, _configuration);
+                    var warehouseEntity = await platformWarehouseRepository.GetByTenantId(currentUser.TenantId);
 
                     if (warehouseEntity != null)
                         warehouse.DatabaseName = warehouseEntity.DatabaseName;
                     else
                         warehouse.DatabaseName = "0";
 
-                    using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
-                    using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
-                    using (var _recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, _currentUser))
+                    using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                    using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                    using (var recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, currentUser))
                     {
-                        _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                        moduleRepository.CurrentUser = recordRepository.CurrentUser = currentUser;
 
                         var data = JObject.FromObject(context.Workflow.Data);
 
-                        if (newRequest.IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
+                        if (dataUpdateRequest == null || dataUpdateRequest.IsNullOrEmpty() || data["module_id"].IsNullOrEmpty())
                             throw new MissingFieldException("Cannot find child data");
 
                         var fieldUpdate = new BpmDataUpdate();
-                        fieldUpdate.Module = await _moduleRepository.GetById(newRequest["module_id"].Value<int>());
-                        fieldUpdate.Field = await _moduleRepository.GetField(newRequest["field_id"].Value<int>());
-                        fieldUpdate.Value = newRequest["currentValue"].IsNullOrEmpty() ? newRequest["value"].Value<string>() : newRequest["currentValue"].Value<string>();
+                        fieldUpdate.Module = await moduleRepository.GetById(dataUpdateRequest["module_id"].Value<int>());
+                        fieldUpdate.Field = await moduleRepository.GetField(dataUpdateRequest["field_id"].Value<int>());
+                        fieldUpdate.Value = dataUpdateRequest["currentValue"].IsNullOrEmpty() ? dataUpdateRequest["value"].Value<string>() : dataUpdateRequest["currentValue"].Value<string>();
 
-                        var moduleID = data["module_id"].ToObject<int>();
-                        var module = await _moduleRepository.GetById(moduleID);
+                        var moduleId = data["module_id"].ToObject<int>();
+                        var module = await moduleRepository.GetById(moduleId);
 
                         var record = data["record"].ToObject<JObject>();
 
@@ -96,7 +96,7 @@ namespace PrimeApps.App.Bpm.Steps
                         var isDynamicUpdate = false;
                         var type = 0;
                         var firstModule = string.Empty;
-                        var secondModule = string.Empty;
+                        string secondModule;
 
                         if (fieldUpdate.Module.Name.Contains(','))
                         {
@@ -175,18 +175,18 @@ namespace PrimeApps.App.Bpm.Steps
                             if (fieldUpdateRecord.Key == module.Name)
                                 fieldUpdateModule = module;
                             else
-                                fieldUpdateModule = await _moduleRepository.GetByName(fieldUpdateRecord.Key);
+                                fieldUpdateModule = await moduleRepository.GetByName(fieldUpdateRecord.Key);
 
                             if (fieldUpdateModule == null)
                             {
-                                throw new DataMisalignedException("Module not found! ModuleName: " + fieldUpdateModule.Name);
+                                throw new Exception("Module not found! ModuleName: " + fieldUpdateModule.Name);
                             }
 
-                            var currentRecordFieldUpdate = _recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
+                            var currentRecordFieldUpdate = recordRepository.GetById(fieldUpdateModule, fieldUpdateRecord.Value, false);
 
                             if (currentRecordFieldUpdate == null)
                             {
-                                throw new DataMisalignedException("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value);
+                                throw new Exception("Record not found! ModuleName: " + fieldUpdateModule.Name + " RecordId:" + fieldUpdateRecord.Value);
                             }
 
                             var recordFieldUpdate = new JObject();
@@ -229,7 +229,7 @@ namespace PrimeApps.App.Bpm.Steps
 
 
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await _recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, false, currentRecordFieldUpdate, null);
+                            var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, false, currentRecordFieldUpdate, null);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {
@@ -237,11 +237,11 @@ namespace PrimeApps.App.Bpm.Steps
                             }
 
                             if (isDynamicUpdate)
-                                _recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
+                                recordRepository.MultiselectsToString(fieldUpdateModule, recordFieldUpdate);
 
                             try
                             {
-                                var resultUpdate = await _recordRepository.Update(recordFieldUpdate, fieldUpdateModule);
+                                var resultUpdate = await recordRepository.Update(recordFieldUpdate, fieldUpdateModule);
 
                                 if (resultUpdate < 1)
                                 {
@@ -250,7 +250,7 @@ namespace PrimeApps.App.Bpm.Steps
 
                                 // If module is opportunities create stage history
                                 if (fieldUpdateModule.Name == "opportunities")
-                                    await _recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
+                                    await recordHelper.UpdateStageHistory(recordFieldUpdate, currentRecordFieldUpdate);
 
                             }
                             catch (Exception ex)
@@ -259,7 +259,7 @@ namespace PrimeApps.App.Bpm.Steps
                             }
 
                             //TODO RecordHelper
-                            _recordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
+                            recordHelper.AfterUpdate(fieldUpdateModule, recordFieldUpdate, currentRecordFieldUpdate, appUser, warehouse, fieldUpdateModule.Id != module.Id, false);
                         }
 
                         return ExecutionResult.Next();
