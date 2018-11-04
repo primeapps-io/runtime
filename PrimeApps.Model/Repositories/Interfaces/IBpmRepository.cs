@@ -27,12 +27,10 @@ namespace PrimeApps.Model.Repositories.Interfaces
 
         Task<int> DeleteHard(BpmWorkflow note);
 
-        #region BpmWorkflowLog
         Task<bool> HasLog(int workflowId, int moduleId, int recordId);
 
         Task<int> CreateLog(BpmWorkflowLog workflowLog);
 
         Task<int> DeleteLogs(int workflowId);
-        #endregion
     }
 }
