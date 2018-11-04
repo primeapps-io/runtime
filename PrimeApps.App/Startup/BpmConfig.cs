@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using PrimeApps.App.Bpm.Workflows;
-using System.Collections.Generic;
 using WorkflowCore.Interface;
 
 namespace PrimeApps.App
@@ -18,13 +17,13 @@ namespace PrimeApps.App
             //App's and tenant's worflows should be register on runtime.
 
             //Register TestWorkflow
-        //   host.RegisterWorkflow<TestWorkflow, JObject>();
+            //host.RegisterWorkflow<TestWorkflow, JObject>();
 
             host.Start();
 
             //var data = new JObject();
             //data["id"] = 1;
-            //data["value"] = "Merhaba";
+            //data["value"] = "Hello";
 
             //host.StartWorkflow("TestWorkflow", 1, data);
         }

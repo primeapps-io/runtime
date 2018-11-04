@@ -13,12 +13,29 @@ namespace PrimeApps.App.Bpm.Workflows
 
         public void Build(IWorkflowBuilder<JObject> builder)
         {
-            builder
-                .StartWith<DataReadStep>();
-                //.Input(step => step.Request, data => data)
-                // //.Output(data => data, step => step)
-                //.Then<TaskStep>()
-                //.Input(step => step.Record, data => data);
+            //Conditional sample
+            //var checkValue1 = new JObject();
+            //checkValue1["result"] = 1;
+
+            //var checkValue2 = new JObject();
+            //checkValue2["result"] = 2;
+            
+            //builder
+            //    .StartWith<StartStep>()
+            //    .Then<DataReadStep>()
+            //    .When(data => checkValue1).Do(then => then
+            //        .StartWith<DataCreateStep>()
+            //    )
+            //    .When(data => checkValue2).Do(then => then
+            //        .StartWith<DataDeleteStep>()
+            //    )
+            //    .Then<SmsStep>();
+
+            //Function sample
+            //builder
+            //    .StartWith<StartStep>()
+            //    .Then<FunctionStep>()
+            //    .Input(step => step.Request, data => "{  \"function\": {    \"name\": \"core1\",    \"methodType\": \"post\",    \"postBody\": \"fatih test\"  }}");
         }
     }
 }

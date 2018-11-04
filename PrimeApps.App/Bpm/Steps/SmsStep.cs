@@ -8,9 +8,7 @@ namespace PrimeApps.App.Bpm.Steps
     {
         public override ExecutionResult Run(IStepExecutionContext context)
         {
-            var data = new JObject();
-            data["id"] = 1;
-            data["value"] = "Galip";
+            var data = context.Workflow.Data;
 
             return ExecutionResult.Outcome(data);
         }

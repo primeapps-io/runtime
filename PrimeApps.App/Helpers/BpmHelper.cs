@@ -643,7 +643,6 @@ namespace PrimeApps.App.Helpers
                         //        throw new ApplicationException(System.Net.HttpStatusCode.BadRequest.ToString());
                         //}
 
-                        runId = await _workflowHost.StartWorkflow<JObject>(code, data, referance);
 
 
                         //if (currentWorkflow == null)
@@ -661,6 +660,7 @@ namespace PrimeApps.App.Helpers
 
                         try
                         {
+                            runId = await _workflowHost.StartWorkflow<JObject>(code, data, referance);
                             var resultCreateLog = await _BpmWorkflowRepository.CreateLog(workflowLog);
 
                             //if (resultCreateLog < 1)

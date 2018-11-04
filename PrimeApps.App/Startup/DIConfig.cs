@@ -25,25 +25,23 @@ namespace PrimeApps.App
             services.AddHttpContextAccessor();
 
             // Register Repositories
-            foreach (var a in new string[] { "PrimeApps.Model" })
+            foreach (var assembly in new[] { "PrimeApps.Model" })
             {
-                Assembly loadedAss = Assembly.Load(a);
-
-                var allServices = loadedAss.GetTypes().Where(t =>
-                                    t.GetTypeInfo().IsClass &&
-                                    !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
+                var loadedAss = Assembly.Load(assembly);
+                var allServices = loadedAss.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
 
                 foreach (var type in allServices)
                 {
                     var allInterfaces = type.GetInterfaces().Where(x => x.Name.EndsWith("Repository")).ToList();
-                    var mainInterfaces = allInterfaces.Except
-                            (allInterfaces.SelectMany(t => t.GetInterfaces()));
+                    var mainInterfaces = allInterfaces.Except(allInterfaces.SelectMany(t => t.GetInterfaces()));
+
                     foreach (var itype in mainInterfaces)
                     {
-                        if (allServices.Any(x => !x.Equals(type) && itype.IsAssignableFrom(x)))
+                        if (allServices.Any(x => x != type && itype.IsAssignableFrom(x)))
                         {
                             throw new Exception("The " + itype.Name + " type has more than one implementations, please change your filter");
                         }
+
                         services.AddTransient(itype, type);
                     }
                 }
@@ -79,6 +77,7 @@ namespace PrimeApps.App
             services.AddScoped<Jobs.UpdateLeave, Jobs.UpdateLeave>();
             services.AddScoped<Jobs.EmployeeCalculation, Jobs.EmployeeCalculation>();
             services.AddScoped<Jobs.AccountCleanup, Jobs.AccountCleanup>();
+
             services.AddTransient<ApprovalStep>();
             services.AddTransient<DataCreateStep>();
             services.AddTransient<DataDeleteStep>();
@@ -90,6 +89,7 @@ namespace PrimeApps.App
             services.AddTransient<SmsStep>();
             services.AddTransient<TaskStep>();
             services.AddTransient<WebhookStep>();
+            services.AddTransient<FunctionStep>();
         }
     }
 }
