@@ -896,10 +896,14 @@ namespace PrimeApps.App.Helpers
 
         private JArray ReadList(JArray linksNode, JArray nodesData, JObject link, JArray StepsArray)
         {
+            if (link.IsNullOrEmpty())
+                return StepsArray;
+
             var from = link["from"].Value<string>();
             var to = link["to"].Value<string>();
 
             var stepData = new JObject();
+
             var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
             var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
 
@@ -934,20 +938,134 @@ namespace PrimeApps.App.Helpers
                 StepsArray.Add(stepData);
                 return StepsArray;
             }
-            else
+
+            if (!link["isDefault"].IsNullOrEmpty())
             {
-                var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
+                if (link["isDefault"].Value<bool>() == false && !link["data"].IsNullOrEmpty()) //For IF condtion
+                {
+                    var readTask = BpmConstants.Find("Data Read Task");
+                    stepData["NextStepId"] = readTask.GetValueOrDefault(BpmConstants.Id) + from;
 
-                if (toStepInfo == null)
-                    return null;
+                    var resultOldStep = StepsArray.Where(q => q["Id"].Value<string>() == stepData["Id"].Value<string>()).FirstOrDefault();
 
-                stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
-                StepsArray.Add(stepData);
+                    if (resultOldStep.IsNullOrEmpty())
+                    {
+                        StepsArray.Add(stepData);
+                    }
+
+                    stepData = new JObject();
+
+                    var resultDataRead = StepsArray.Where(q => q["Id"].Value<string>() == readTask.GetValueOrDefault(BpmConstants.Id) + from).FirstOrDefault();
+                    var ifStepInfo = BpmConstants.Find("If");
+
+                    if (resultDataRead.IsNullOrEmpty())
+                    {
+                        //Create DataReadStep
+                        stepData["Id"] = readTask.GetValueOrDefault(BpmConstants.Id) + from;
+                        stepData["StepType"] = readTask.GetValueOrDefault(BpmConstants.StepType);
+
+                        //stepData["NextStepId"] = ifStepInfo.GetValueOrDefault(BpmConstants.Id) + from + to;
+                      
+                        StepsArray.Add(stepData);
+                        stepData = new JObject();
+                    }
+
+                    //Create IfStep
+
+
+                    stepData["Id"] = ifStepInfo.GetValueOrDefault(BpmConstants.Id) + from + to;
+                    stepData["StepType"] = ifStepInfo.GetValueOrDefault(BpmConstants.StepType);
+
+                    //TODO  WE NEED ADD NEXTSTEPID of IFSTEP
+
+                    var request = new JObject();
+                    request["Condition"] = "\"" + link["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+                    stepData["Inputs"] = request;
+
+                    var doArray = CreateIfDoArray(linksNode, nodesData, to, new JArray());
+                    var tempDo = "[" + doArray.ToJsonString() + "]";
+
+
+                    stepData["Do"] = JsonConvert.DeserializeObject<JArray>(tempDo);
+
+                    StepsArray.Add(stepData);
+
+                    linksNode.Where(q => q["from"].Value<string>() == from && q["to"].Value<string>() == to).First()["used"] = true;
+
+                    var newIfLink = linksNode.Where(q => q["from"].Value<string>() == from && q["to"].Value<string>() != to && q["used"].IsNullOrEmpty()).FirstOrDefault();
+
+                    return ReadList(linksNode, nodesData, newIfLink.IsNullOrEmpty() ? null : newIfLink.ToObject<JObject>(), StepsArray);
+                }
             }
+
+            var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
+
+            if (toStepInfo == null)
+                return null;
+
+            stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
+            StepsArray.Add(stepData);
 
             var nextLink = linksNode.Where(q => q["from"].Value<string>() == to).FirstOrDefault();
 
             return ReadList(linksNode, nodesData, nextLink.ToObject<JObject>(), StepsArray);
+        }
+
+        private JArray CreateIfDoArray(JArray linksNode, JArray nodesData, string nextKey, JArray DoArray)
+        {
+            var link = linksNode.Where(q => q["from"].Value<string>() == nextKey).FirstOrDefault();
+
+            if (link.IsNullOrEmpty())
+                return DoArray;
+
+            var from = link["from"].Value<string>();
+            var to = link["to"].Value<string>();
+
+            var stepData = new JObject();
+
+            var fromNode = nodesData.Where(q => q["key"].Value<string>() == from).FirstOrDefault();
+            var toNode = nodesData.Where(q => q["key"].Value<string>() == to).FirstOrDefault();
+
+            if (fromNode.IsNullOrEmpty() || toNode.IsNullOrEmpty())
+                return null;
+
+            var fromStepInfo = BpmConstants.Find(fromNode["item"].Value<string>());
+
+            if (fromStepInfo == null)
+                return null;
+
+            stepData["Id"] = fromStepInfo.GetValueOrDefault(BpmConstants.Id) + fromNode["key"].Value<string>();
+            var fromStepType = fromStepInfo.GetValueOrDefault(BpmConstants.StepType);
+            stepData["StepType"] = fromStepType;
+
+            if (!fromNode["dataType"].IsNullOrEmpty())
+                stepData["DataType"] = fromNode["dataType"].Value<string>();
+
+            if (!fromNode["data"].IsNullOrEmpty())
+            {
+                var request = new JObject();
+                request["Request"] = "\"" + fromNode["data"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+                stepData["Inputs"] = request;
+            }
+
+            if (toNode["item"].Value<string>() == "End")
+            {
+                DoArray.Add(stepData);
+                return DoArray;
+            }
+
+            var toStepInfo = BpmConstants.Find(toNode["item"].Value<string>());
+
+            if (toStepInfo == null)
+                return null;
+
+            stepData["NextStepId"] = toStepInfo.GetValueOrDefault(BpmConstants.Id) + toNode["key"].Value<string>();
+            DoArray.Add(stepData);
+
+            var nextLink = linksNode.Where(q => q["from"].Value<string>() == to).FirstOrDefault();
+            var newNextKey = nextLink.IsNullOrEmpty() ? null : nextLink["from"].Value<string>();
+
+            return CreateIfDoArray(linksNode, nodesData, newNextKey, DoArray);
         }
     }
 
