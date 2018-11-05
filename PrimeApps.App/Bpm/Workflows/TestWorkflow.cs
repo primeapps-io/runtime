@@ -18,6 +18,7 @@ namespace PrimeApps.App.Bpm.Workflows
             //Conditional sample
             //builder
             //    .StartWith<StartStep>()
+            //    .WaitFor("record_update", data => "19281")
             //    .Then<DataReadStep>()
             //    .Input(step => step.Request, data => "{\"data_read\": {\"record_key\": \"title\"}}")
             //    .Output(data => data.ConditionValue, step => step.Response)
