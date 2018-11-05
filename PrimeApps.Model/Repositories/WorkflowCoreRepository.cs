@@ -22,12 +22,11 @@ namespace PrimeApps.Model.Repositories
             return workflowInstances;
         }
 
-        public JArray GetExecutionPointers(string code)
+        public JArray GetExecutionPointers(int workflowInstanceId)
         {
             var sql = "SELECT ep.*\n" +
-                      "FROM wfc.\"Workflow\" wc\n" +
-                      "JOIN wfc.\"ExecutionPointer\" ep ON ep.\"WorkflowId\" = wc.\"PersistenceId\"\n" +
-                      $"WHERE wc.\"WorkflowDefinitionId\" = '{code}'\n" +
+                      "JOIN wfc.\"ExecutionPointer\" ep\n" +
+                      $"WHERE ep.\"WorkflowId\" = '{workflowInstanceId}'\n" +
                       "ORDER BY ep.\"StepId\"";
 
             var executionPointers = DbContext.Database.SqlQueryDynamic(sql);

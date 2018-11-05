@@ -272,10 +272,10 @@ namespace PrimeApps.App.Controllers
             return Ok(executionPointers);
         }
 
-        [Route("get_execution_pointers/{code}"), HttpGet]
-        public IActionResult GetExecutionPointers(string code)
+        [Route("get_execution_pointers/{workflowInstanceId:int}"), HttpGet]
+        public IActionResult GetExecutionPointers(int workflowInstanceId)
         {
-            var executionPointers = _workflowCoreRepository.GetExecutionPointers(code);
+            var executionPointers = _workflowCoreRepository.GetExecutionPointers(workflowInstanceId);
 
             return Ok(executionPointers);
         }
