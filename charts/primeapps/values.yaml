@@ -68,7 +68,7 @@ app:
         RequireHttps: "true"
         ForwardHeaders: "true"
         HttpsRedirection: "true"
-        KubernetesClusterRootUrl: "http://localhost:8080"
+        KubernetesClusterRootUrl: "http://default-http-backend.kube-system.svc.cluster.local:8080"
       webOptimizer:
         enableCaching: "false"
         enableMemoryCache: "false"
