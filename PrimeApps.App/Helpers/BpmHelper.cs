@@ -889,17 +889,17 @@ namespace PrimeApps.App.Helpers
                 return StepsArray;
             }
 
-            if (fromNode["item"].Value<string>() == "Data Read Task")
-            {
-                //IF için output eklenmesi gerekiyor ama sürekli olarak tanımlanamadı hatası veriyor.
-                var temp = new JObject();
-                var condition = new JObject();
+            //////if (fromNode["item"].Value<string>() == "Data Read Task")
+            //////{
+            //////    //IF için output eklenmesi gerekiyor ama sürekli olarak tanımlanamadı hatası veriyor.
+            //////    var temp = new JObject();
+            //////    var condition = new JObject();
 
-                temp["value"] = "step.Response";
-                condition["ConditionValue"] = temp["value"];//"\"" + a["b"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+            //////    temp["value"] = "step.Response";
+            //////    condition["ConditionValue"] = temp["value"];//"\"" + a["b"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
 
-                stepData["Outputs"] = condition;
-            }
+            //////    stepData["Outputs"] = condition;
+            //////}
 
             if (!link["isDefault"].IsNullOrEmpty())
             {
@@ -944,10 +944,11 @@ namespace PrimeApps.App.Helpers
                     stepData["StepType"] = ifStepInfo.GetValueOrDefault(BpmConstants.StepType);
 
                     //TODO  WE NEED ADD NEXTSTEPID of IFSTEP
+                   // link["data"]["condition"] = new JObject();
 
-                    var request = new JObject();
-                    request["Condition"] = link["data"]["condition"]; //"\"" + link["data"]["condition"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
-                    stepData["Inputs"] = request;
+                    //////var request = new JObject();
+                    //////request["Condition"] = link["data"]["condition"]; //"\"" + link["data"]["condition"].ToString().Replace("\r", "").Replace("\n", "").Replace("\"", "\\\"") + "\"";
+                    //////stepData["Inputs"] = request;
 
                     var doArray = CreateIfDoArray(linksNode, nodesData, to, new JArray());
                     var tempDo = "[" + doArray.ToJsonString() + "]";
