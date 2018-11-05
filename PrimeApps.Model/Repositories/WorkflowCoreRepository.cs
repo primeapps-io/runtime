@@ -25,7 +25,7 @@ namespace PrimeApps.Model.Repositories
         public JArray GetExecutionPointers(int workflowInstanceId)
         {
             var sql = "SELECT ep.*\n" +
-                      "JOIN wfc.\"ExecutionPointer\" ep\n" +
+                      "FROM wfc.\"ExecutionPointer\" ep\n" +
                       $"WHERE ep.\"WorkflowId\" = '{workflowInstanceId}'\n" +
                       "ORDER BY ep.\"StepId\"";
 
