@@ -78,9 +78,9 @@ namespace PrimeApps.App.Controllers
                     foreach (var workflow in bpmWorkflows)
                     {
                         var str = workflow.DefinitionJson.ToString();
-                        //var currentWorkflow = _workflowRegistry.GetDefinition(workflow.Code);
+                        var currentWorkflow = _workflowRegistry.GetDefinition(workflow.Code);
 
-                        //if(currentWorkflow == null)
+                        if (currentWorkflow == null)
                             _definitionLoader.LoadDefinition(str);
                     }
                 }
