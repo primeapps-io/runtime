@@ -74,15 +74,15 @@ namespace PrimeApps.App.Controllers
                 using (var _BpmWorkflowRepository = new BpmRepository(databaseContext, _configuration))
                 {
                     _BpmWorkflowRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = tenantId };
-                    var bpmWorkflows = await _BpmWorkflowRepository.GetAllBasic();
-                    foreach (var workflow in bpmWorkflows)
-                    {
-                        var str = workflow.DefinitionJson.ToString();
-                        var currentWorkflow = _workflowRegistry.GetDefinition(workflow.Code);
+                    //var bpmWorkflows = await _BpmWorkflowRepository.GetAllBasic();
+                    //foreach (var workflow in bpmWorkflows)
+                    //{
+                    //    var str = workflow.DefinitionJson.ToString();
+                    //    var currentWorkflow = _workflowRegistry.GetDefinition(workflow.Code);
 
-                        if (currentWorkflow == null)
-                            _definitionLoader.LoadDefinition(str);
-                    }
+                    //    if (currentWorkflow == null)
+                    //        _definitionLoader.LoadDefinition(str);
+                    //}
                 }
             }
         }
