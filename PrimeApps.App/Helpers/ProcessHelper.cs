@@ -64,6 +64,7 @@ namespace PrimeApps.App.Helpers
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
+                using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
                     _processRequestRepository.CurrentUser = _moduleRepository.CurrentUser = _userRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
@@ -81,6 +82,12 @@ namespace PrimeApps.App.Helpers
 
                     if (processes.Count < 1)
                         return;
+
+                    var oldExpense = false;
+
+                    var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
+                    oldExpense = oldExpenseSetting != null;
+
 
                     foreach (var process in processes)
                     {
@@ -376,7 +383,7 @@ namespace PrimeApps.App.Helpers
                         {
                             url = domain + "#/app/timetracker?user=" + (int)record["created_by.id"] + "&year=" + (int)record["year"] + "&month=" + (int)record["month"] + "&week=" + (int)record["week"];
                         }
-                        else if (process.Module.Name == "masraflar")
+                        else if (process.Module.Name == "masraflar" && !oldExpense)
                         {
                             url = domain + "#/app/crm/expense?user=" + (int)record["created_by.id"] + "&id=" + (int)record["id"];
                         }
@@ -732,12 +739,18 @@ namespace PrimeApps.App.Helpers
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
+                using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
                     _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
                     //request.UpdatedById = appUser.LocalId;
                     request.UpdatedAt = DateTime.Now;
+
+                    var oldExpense = false;
+
+                    var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
+                    oldExpense = oldExpenseSetting != null;
 
                     if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1))
                     {
@@ -815,13 +828,13 @@ namespace PrimeApps.App.Helpers
                         if (process.Module.Name == "timetrackers")
                         {
                             var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-                            var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
+                            var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker)[0];
                             url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                         }
-                        else if (process.Module.Name == "masraflar")
+                        else if (process.Module.Name == "masraflar" && !oldExpense)
                         {
                             var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-                            var expenseRecord = _recordRepository.Find("masraflar", findExpense);
+                            var expenseRecord = _recordRepository.Find("masraflar", findExpense)[0];
                             url = domain + "#/app/crm/expense?id=" + (int)expenseRecord["id"];
                         }
                         else
@@ -907,6 +920,7 @@ namespace PrimeApps.App.Helpers
                         }
                         string beforeCc = "";
                         var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
+
                         if (!record["process_status_order"].IsNullOrEmpty() && processOrder != 1 && recordMail.Contains("@etiya.com") && process.Module.Name == "ise_alim_talepleri")
                         {
                             switch (processOrder)
@@ -969,13 +983,13 @@ namespace PrimeApps.App.Helpers
                             if (process.Module.Name == "timetrackers")
                             {
                                 var findTimetracker = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-                                var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
+                                var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker)[0];
                                 url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord["created_by.id"] + "&year=" + (int)timetrackerRecord["year"] + "&month=" + (int)timetrackerRecord["month"] + "&week=" + (int)timetrackerRecord["week"];
                             }
-                            else if (process.Module.Name == "masraflar")
+                            else if (process.Module.Name == "masraflar" && !oldExpense)
                             {
                                 var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
-                                var expenseRecord = _recordRepository.Find("masraflar", findExpense);
+                                var expenseRecord = _recordRepository.Find("masraflar", findExpense)[0];
                                 url = domain + "#/app/crm/expense?user=" + (int)expenseRecord["created_by.id"] + "&id=" + (int)expenseRecord["id"];
                             }
                             else
@@ -1067,7 +1081,7 @@ namespace PrimeApps.App.Helpers
                                 var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
                                 url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                             }
-                            else if (process.Module.Name == "masraflar")
+                            else if (process.Module.Name == "masraflar" && !oldExpense)
                             {
                                 var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                                 var expenseRecord = _recordRepository.Find("masraflar", findExpense);
@@ -1102,6 +1116,7 @@ namespace PrimeApps.App.Helpers
         public async Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse)
         {
             warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
@@ -1109,7 +1124,13 @@ namespace PrimeApps.App.Helpers
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
+                using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
+                    var oldExpense = false;
+
+                    var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
+                    oldExpense = oldExpenseSetting != null;
+
                     _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
@@ -1183,7 +1204,7 @@ namespace PrimeApps.App.Helpers
                         var timetrackerRecord = _recordRepository.Find("timetrackers", findTimetracker);
                         url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                     }
-                    else if (process.Module.Name == "masraflar")
+                    else if (process.Module.Name == "masraflar" && !oldExpense)
                     {
                         var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                         var expenseRecord = _recordRepository.Find("masraflar", findExpense);
@@ -1240,7 +1261,14 @@ namespace PrimeApps.App.Helpers
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
+                using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
+
+                    var oldExpense = false;
+
+                    var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
+                    oldExpense = oldExpenseSetting != null;
+
                     _moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
                     var process = await _processRepository.GetById(request.ProcessId);
 
@@ -1327,7 +1355,7 @@ namespace PrimeApps.App.Helpers
                             url = domain + "#/app/timetracker?user=" + (int)timetrackerRecord.First()["created_by"] + "&year=" + (int)timetrackerRecord.First()["year"] + "&month=" + (int)timetrackerRecord.First()["month"] + "&week=" + (int)timetrackerRecord.First()["week"];
                         }
                     }
-                    else if (process.Module.Name == "masraflar")
+                    else if (process.Module.Name == "masraflar" && !oldExpense)
                     {
                         var findExpense = new FindRequest { Filters = new List<Filter> { new Filter { Field = "id", Operator = Operator.Equals, Value = (int)request.RecordId, No = 1 } }, Limit = 9999 };
                         var expenseRecord = _recordRepository.Find("masraflar", findExpense);

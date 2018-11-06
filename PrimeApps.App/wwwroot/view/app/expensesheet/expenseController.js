@@ -90,7 +90,7 @@ angular.module('ofisim')
                     //Ayarlardan Masraf Dönemi Bitiş Tarihi ileri bir tarih alındığında Masraf Onaylandıysa veya diğer onay süreçleri reddedildi, onay bekliyor
                     //Gibi süreçlerde masraf kalemi girişi açılıyor kayıt freeze den çıkıyordu.
                     if ($scope.currentExpense && $scope.currentExpense.masraf_donemi_ay === nowMonth.labelStr && $scope.currentExpense.masraf_donemi_yil === nowYear) {
-                        if ($scope.currentExpense.process_status === 1 || $scope.currentExpense.process_status === 2 || $scope.currentExpense.process_status === 3)
+                        if ($scope.currentExpense.process_status === 1 || $scope.currentExpense.process_status === 2)
                             $scope.ExpenseItemFreeze = false;
                     }
                 }
@@ -116,6 +116,7 @@ angular.module('ofisim')
 
             //Aylar Picklistindeki değişen aylara göre işlemler yapılıyor.
             $scope.monthListChange = function () {
+                $scope.waitingForApproval = false;
                 if ($rootScope.language === "tr")
                     $scope.currentMonthSet = $scope.filter.selectMonth.label_tr;
                 else
@@ -327,7 +328,7 @@ angular.module('ofisim')
                 $scope.currentExpense.operation_type = $scope.currentExpense['process.process_requests.operation_type'];
                 //Masraf onaylandıysa veya reddedildiyse kayıt freeze ediliyor.
                 if ($scope.currentExpense) {
-                    if ($scope.currentExpense.process_status && $scope.currentExpense.process_status === 1 || $scope.currentExpense.process_status === 2 || $scope.currentExpense.process_status === 3)
+                    if ($scope.currentExpense.process_status && $scope.currentExpense.process_status === 1 || $scope.currentExpense.process_status === 2)
                         $scope.ExpenseItemFreeze = false;
                 }
                 for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
@@ -340,7 +341,7 @@ angular.module('ofisim')
                     if ($scope.currentExpense.process_status === 2)
                         $scope.isApproved = true;
 
-                    if ($scope.currentExpense.process_status === 1 || $scope.currentExpense.process_status === 2 || ($scope.currentExpense.process_status === 3 && $scope.currentExpense.updated_by !== $scope.currentUser.id))
+                    if ($scope.currentExpense.process_status === 1 || $scope.currentExpense.process_status === 2 || ($scope.currentExpense.updated_by !== $scope.currentUser.id))
                         $scope.freeze = true;
 
                     ModuleService.getProcess($scope.currentExpense.process_id)
@@ -385,13 +386,13 @@ angular.module('ofisim')
                 $scope.currentLookupField = { lookup_type: module };
 
                 $scope.formModal = $scope.formModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'views/app/crm/module/moduleFormModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'createModal'
-                    });
+                    scope: $scope,
+                    templateUrl: 'views/app/crm/module/moduleFormModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
@@ -407,33 +408,33 @@ angular.module('ofisim')
                 $scope.formType = 'modal';
                 $scope.item = item;
                 $scope.editformModal = $scope.editformModal || $modal({
-                        scope: $scope,
-                        resolve: {
-                            plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                                return $ocLazyLoad.load([
-                                    cdnUrl + 'views/app/crm/module/moduleFormController.js',
-                                    cdnUrl + 'views/app/crm/module/moduleFormModalController.js',
-                                    cdnUrl + 'views/app/crm/product/quoteProductsController.js',
-                                    cdnUrl + 'views/app/crm/product/quoteProductsService.js',
-                                    cdnUrl + 'views/app/crm/product/orderProductsController.js',
-                                    cdnUrl + 'views/app/crm/product/orderProductsService.js',
-                                    cdnUrl + 'views/app/crm/product/purchaseProductsController.js',
-                                    cdnUrl + 'views/app/crm/product/purchaseProductsService.js',
-                                    cdnUrl + 'views/app/crm/actionbutton/actionButtonFrameController.js',
-                                    cdnUrl + 'views/app/crm/product/salesInvoiceProductsController.js',
-                                    cdnUrl + 'views/app/crm/product/salesInvoiceProductsService.js',
-                                    cdnUrl + 'views/app/crm/product/purchaseInvoiceProductsController.js',
-                                    cdnUrl + 'views/app/crm/product/purchaseInvoiceProductsService.js'
-                                ]);
-                            }]
-                        },
-                        templateUrl: 'views/app/crm/module/moduleForm.html',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'editModal',
-                        container: 'body',
-                        controller: 'ModuleFormController'
-                    });
+                    scope: $scope,
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'views/app/crm/module/moduleFormController.js',
+                                cdnUrl + 'views/app/crm/module/moduleFormModalController.js',
+                                cdnUrl + 'views/app/crm/product/quoteProductsController.js',
+                                cdnUrl + 'views/app/crm/product/quoteProductsService.js',
+                                cdnUrl + 'views/app/crm/product/orderProductsController.js',
+                                cdnUrl + 'views/app/crm/product/orderProductsService.js',
+                                cdnUrl + 'views/app/crm/product/purchaseProductsController.js',
+                                cdnUrl + 'views/app/crm/product/purchaseProductsService.js',
+                                cdnUrl + 'views/app/crm/actionbutton/actionButtonFrameController.js',
+                                cdnUrl + 'views/app/crm/product/salesInvoiceProductsController.js',
+                                cdnUrl + 'views/app/crm/product/salesInvoiceProductsService.js',
+                                cdnUrl + 'views/app/crm/product/purchaseInvoiceProductsController.js',
+                                cdnUrl + 'views/app/crm/product/purchaseInvoiceProductsService.js'
+                            ]);
+                        }]
+                    },
+                    templateUrl: 'views/app/crm/module/moduleForm.html',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'editModal',
+                    container: 'body',
+                    controller: 'ModuleFormController'
+                });
 
                 $scope.editformModal.$promise.then($scope.editformModal.show);
             };
@@ -447,13 +448,13 @@ angular.module('ofisim')
 
             $scope.expenseSettingsModal = function () {
                 $scope.settingsFormModal = $scope.settingsFormModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'views/app/crm/expensesheet/expenseSettingsModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'createModal'
-                    });
+                    scope: $scope,
+                    templateUrl: 'views/app/crm/expensesheet/expenseSettingsModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
                 $scope.settingsFormModal.$promise.then($scope.settingsFormModal.show);
             };
@@ -520,8 +521,8 @@ angular.module('ofisim')
                             if ($scope.currentExpense.process_status === 1)
                                 $scope.ExpenseItemFreeze = false;
                         }).catch(function onError() {
-                        $scope.manuelApproveRequest = false;
-                    });
+                            $scope.manuelApproveRequest = false;
+                        });
                 } else {
                     ngToast.create({ content: $filter('translate')('Common.CanNotSendToProcess', { minSaat: $scope.settings.dayMinHour }), className: 'warning' });
                     $scope.manuelApproveRequest = false;
@@ -543,8 +544,8 @@ angular.module('ofisim')
                             $scope.currentExpense.process_status = 2;
                             $scope.waitingForApproval = true;
                         }).catch(function onError() {
-                        $scope.approving = false;
-                    });
+                            $scope.approving = false;
+                        });
                 }
             };
 
@@ -561,8 +562,8 @@ angular.module('ofisim')
                             $scope.currentExpense.process_status = 3;
                             $scope.rejectModal.hide();
                         }).catch(function onError() {
-                        $scope.rejecting = false;
-                    });
+                            $scope.rejecting = false;
+                        });
                 }
             };
 
@@ -577,9 +578,12 @@ angular.module('ofisim')
                             $scope.reapproving = false;
                             $scope.currentExpense.process_status = 1;
                             $scope.currentExpense.process_status_order++;
+                            //Onaya gönderildiği anda onay bekliyor aktif oluyor ve kayıt freeze ediliyor.
+                            if ($scope.currentExpense.process_status === 1)
+                                $scope.ExpenseItemFreeze = false;
                         }).catch(function onError() {
-                        $scope.reapproving = false;
-                    });
+                            $scope.reapproving = false;
+                        });
                 } else {
                     ngToast.create({ content: $filter('translate')('Common.CanNotSendToProcess', { minSaat: $scope.settings.dayMinHour }), className: 'warning' });
                     $scope.reapproving = false;
@@ -591,13 +595,13 @@ angular.module('ofisim')
             $scope.openRejectApprovalModal = function () {
                 if ($scope.runProcess) {
                     $scope.rejectModal = $scope.rejectModal || $modal({
-                            scope: $scope,
-                            templateUrl: 'views/app/crm/module/rejectProcessModal.html',
-                            animation: '',
-                            backdrop: 'static',
-                            show: false,
-                            tag: 'createModal'
-                        });
+                        scope: $scope,
+                        templateUrl: 'views/app/crm/module/rejectProcessModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false,
+                        tag: 'createModal'
+                    });
 
                     $scope.rejectModal.$promise.then($scope.rejectModal.show);
                 }
