@@ -12,7 +12,6 @@ using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.App.Notifications;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
-using Hangfire;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Entities.Platform;
@@ -20,8 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using Microsoft.Extensions.Configuration;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using WorkflowCore.Interface;
 
 namespace PrimeApps.App.Helpers
 {
@@ -58,7 +56,7 @@ namespace PrimeApps.App.Helpers
 
     public delegate bool ValidateFilterLogic(string filterLogic, List<Filter> filters);
 
-    public class RecordHelper : IRecordHelper
+    public class RecordHelper : IRecordHelper, IDisposable
     {
         private CurrentUser _currentUser;
         private IServiceScopeFactory _serviceScopeFactory;
@@ -69,25 +67,46 @@ namespace PrimeApps.App.Helpers
         private IProcessHelper _processHelper;
         private ICalculationHelper _calculationHelper;
         private IChangeLogHelper _changeLogHelper;
+        private IBpmHelper _bpmHelper;
         private IHttpContextAccessor _context;
+        private IWorkflowHost _workflowHost;
+
         public IBackgroundTaskQueue Queue { get; }
 
-        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IChangeLogHelper changeLogHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context)
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IAuditLogHelper auditLogHelper, INotificationHelper notificationHelper, IWorkflowHelper workflowHelper, IProcessHelper processHelper, ICalculationHelper calculationHelper, IChangeLogHelper changeLogHelper, IBpmHelper bpmHelper, IBackgroundTaskQueue queue, IHttpContextAccessor context, IWorkflowHost workflowHost)
         {
             _context = context;
             _serviceScopeFactory = serviceScopeFactory;
             _configuration = configuration;
-
             _currentUser = UserHelper.GetCurrentUser(_context);
-
             _auditLogHelper = auditLogHelper;
             _notificationHelper = notificationHelper;
             _workflowHelper = workflowHelper;
             _processHelper = processHelper;
             _calculationHelper = calculationHelper;
             _changeLogHelper = changeLogHelper;
+            _bpmHelper = bpmHelper;
+            _workflowHost = workflowHost;
 
             Queue = queue;
+        }
+
+        public RecordHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+            _configuration = configuration;
+
+            _currentUser = currentUser;
+            _auditLogHelper = new AuditLogHelper(configuration, serviceScopeFactory, currentUser);
+            _notificationHelper = new NotificationHelper(configuration, serviceScopeFactory, currentUser);
+            _workflowHelper = new WorkflowHelper(configuration, serviceScopeFactory, currentUser);
+            _processHelper = new ProcessHelper(configuration, serviceScopeFactory, currentUser);
+            _calculationHelper = new CalculationHelper(configuration, serviceScopeFactory, currentUser);
+            _bpmHelper = new BpmHelper(configuration, serviceScopeFactory, currentUser);
+            //TODO LogHelper
+            _changeLogHelper = new ChangeLogHelper();
+
+            Queue = new BackgroundTaskQueue();
         }
 
         public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
@@ -391,6 +410,7 @@ namespace PrimeApps.App.Helpers
             {
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.insert, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.insert, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.insert, record, module, appUser, warehouse));
             }
 
 
@@ -411,15 +431,9 @@ namespace PrimeApps.App.Helpers
             {
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.update, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate, currentRecord));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.update, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.update, record, module, appUser, warehouse));
 
-                //if (currentRecord["process_id"].IsNullOrEmpty())
-                //{
-                //    HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.Run(OperationType.update, record, module, appUser, warehouse));
-                //}
-                //else if (!currentRecord["process_status"].IsNullOrEmpty() && (int)currentRecord["process_status"] == 2)
-                //{
-                //    HostingEnvironment.QueueBackgroundWorkItem(clt => ProcessHelper.SendToApprovalApprovedRequest(OperationType.update, currentRecord, appUser, warehouse));
-                //}
+                //_workflowHost.PublishEvent("record_update", record["id"].ToString(), record["id"].ToString()).GetAwaiter();
             }
 
 
@@ -432,12 +446,13 @@ namespace PrimeApps.App.Helpers
         public void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180)
         {
             Queue.QueueBackgroundWorkItem(async token => await _auditLogHelper.CreateLog(appUser, (int)record["id"], GetRecordPrimaryValue(record, module), AuditType.Record, RecordActionType.Deleted, null, module));
-            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Delete(appUser, record, module,timeZoneOffset));
+            Queue.QueueBackgroundWorkItem(async token => await _notificationHelper.Delete(appUser, record, module, timeZoneOffset));
 
             if (runWorkflows)
             {
                 Queue.QueueBackgroundWorkItem(async token => await _workflowHelper.Run(OperationType.delete, record, module, appUser, warehouse, BeforeCreateUpdate, UpdateStageHistory, AfterUpdate, AfterCreate));
                 Queue.QueueBackgroundWorkItem(async token => await _processHelper.Run(OperationType.delete, record, module, appUser, warehouse, ProcessTriggerTime.Instant, BeforeCreateUpdate, GetAllFieldsForFindRequest, UpdateStageHistory, AfterUpdate, AfterCreate));
+                Queue.QueueBackgroundWorkItem(async token => await _bpmHelper.Run(OperationType.delete, record, module, appUser, warehouse));
             }
 
 
@@ -744,6 +759,10 @@ namespace PrimeApps.App.Helpers
                 UserId = appUser.Id
 
             };
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

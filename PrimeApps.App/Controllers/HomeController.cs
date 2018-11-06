@@ -12,6 +12,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
+using WorkflowCore.Interface;
 
 namespace PrimeApps.App.Controllers
 {
@@ -19,11 +20,15 @@ namespace PrimeApps.App.Controllers
     {
         private IConfiguration _configuration;
         private IServiceScopeFactory _serviceScopeFactory;
+        private IDefinitionLoader _definitionLoader;
+        private IWorkflowRegistry _workflowRegistry;
 
-        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, IDefinitionLoader definitionLoader, IWorkflowRegistry workflowRegistry)
         {
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
+            _definitionLoader = definitionLoader;
+            _workflowRegistry = workflowRegistry;
         }
 
         [Authorize]
@@ -48,7 +53,7 @@ namespace PrimeApps.App.Controllers
             await SetValues(userId, tenant.Id);
 
             Response.Cookies.Append("tenant_id", tenant.Id.ToString());
-
+            
             return View();
         }
 
@@ -59,6 +64,7 @@ namespace PrimeApps.App.Controllers
             return View("Index");
         }
 
+       
         private async Task SetValues(int userId, int tenantId)
         {
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");

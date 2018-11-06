@@ -503,6 +503,29 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<WorkflowLog>().HasIndex(x => x.Deleted);
+
+            //BpmCategory
+            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.Name);
+            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<BpmCategory>().HasIndex(x => x.Deleted);
+
+            //BpmWorkflow
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Code);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Name);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Version);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Active);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<BpmWorkflow>().HasIndex(x => x.Deleted);
+
+            //BpmWorkflowLog
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.RecordId);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.Deleted);
+
         }
 
         public DbSet<TenantUser> Users { get; set; }
@@ -570,5 +593,9 @@ namespace PrimeApps.Model.Context
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<BpmCategory> BpmCategories { get; set; }
+        public DbSet<BpmRecordFilter> BpmRecordFilters { get; set; }
+        public DbSet<BpmWorkflow> BpmWorkflows { get; set; }
+        public DbSet<BpmWorkflowLog> BpmWorkflowLogs { get; set; }
     }
 }
