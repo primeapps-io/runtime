@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using PrimeApps.Model.Entities.Tenant;
@@ -378,15 +378,18 @@ namespace PrimeApps.Model.Helpers
         {
             var userModule = new Module();
             userModule.Name = "users";
+            userModule.LabelTrSingular = "Kullanıcı";
+            userModule.LabelEnSingular = "User";
+            userModule.LabelTrPlural = "Kullanıcılar";
+            userModule.LabelEnPlural = "Users";
             userModule.Fields = new List<Field>();
-            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "email" });
-            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "first_name" });
-            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "last_name" });
-            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "full_name", Primary = true });
+            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "email", LabelTr = "EPosta", LabelEn = "EMail" });
+            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "first_name", LabelTr = "Ad", LabelEn = "First Name" });
+            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "last_name", LabelTr = "Soyad", LabelEn = "Last Name" });
+            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "full_name", LabelTr = "Ad Soyad", LabelEn = "Full Name", Primary = true });
             userModule.Fields.Add(new Field { DataType = DataType.Checkbox, Name = "is_active" });
             userModule.Fields.Add(new Field { DataType = DataType.Checkbox, Name = "is_subscriber" });
-            userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "phone" });
-            
+
             return userModule;
         }
 
