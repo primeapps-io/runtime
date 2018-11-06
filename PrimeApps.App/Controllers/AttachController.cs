@@ -1489,7 +1489,7 @@ namespace PrimeApps.App.Controllers
                             continue;
 
                         if (!field.Name.Contains(".") && isViewFields)
-                            dr[i] = (int)record[field.Name];
+                            dr[i] = record[field.Name];
 
                         else
                             dr[i] = record[field.Name + "." + field.LookupType + "." + primaryField.Name];
