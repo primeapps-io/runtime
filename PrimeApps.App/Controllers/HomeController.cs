@@ -53,9 +53,7 @@ namespace PrimeApps.App.Controllers
             await SetValues(userId, tenant.Id);
 
             Response.Cookies.Append("tenant_id", tenant.Id.ToString());
-
-            await RegisterWorkflows(userId, tenant.Id);
-
+            
             return View();
         }
 
@@ -66,27 +64,7 @@ namespace PrimeApps.App.Controllers
             return View("Index");
         }
 
-        private async Task RegisterWorkflows(int userId, int tenantId)
-        {
-            using (var _scope = _serviceScopeFactory.CreateScope())
-            {
-                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
-                using (var _BpmWorkflowRepository = new BpmRepository(databaseContext, _configuration))
-                {
-                    _BpmWorkflowRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = tenantId };
-                    //var bpmWorkflows = await _BpmWorkflowRepository.GetAllBasic();
-                    //foreach (var workflow in bpmWorkflows)
-                    //{
-                    //    var str = workflow.DefinitionJson.ToString();
-                    //    var currentWorkflow = _workflowRegistry.GetDefinition(workflow.Code);
-
-                    //    if (currentWorkflow == null)
-                    //        _definitionLoader.LoadDefinition(str);
-                    //}
-                }
-            }
-        }
-
+       
         private async Task SetValues(int userId, int tenantId)
         {
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
