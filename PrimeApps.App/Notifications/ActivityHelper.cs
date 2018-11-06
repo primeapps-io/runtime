@@ -47,13 +47,21 @@ namespace PrimeApps.App.Notifications
 			_configuration = configuration;
 		}
 
-		#region Create
-		public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180)
-		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				//Set warehouse database name
-				warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+        public ActivityHelper(IConfiguration configuration,IServiceScopeFactory serviceScopeFactory,CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+            _currentUser = currentUser;
+        }
+
+        #region Create
+        public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                //Set warehouse database name
+                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 

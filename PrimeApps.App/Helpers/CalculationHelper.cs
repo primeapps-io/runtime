@@ -41,12 +41,20 @@ namespace PrimeApps.App.Helpers
         private IConfiguration _configuration;
         private CurrentUser _currentUser;
 
-        public CalculationHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+		public CalculationHelper(IHttpContextAccessor context, IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+		{
+			_context = context;
+			_configuration = configuration;
+			_serviceScopeFactory = serviceScopeFactory;
+			_currentUser = UserHelper.GetCurrentUser(_context);
+		}
+        
+        public CalculationHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
         {
-            _context = context;
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
-            _currentUser = UserHelper.GetCurrentUser(_context);
+
+            _currentUser = currentUser;
         }
 
         public async Task Calculate(int recordId, Module module, UserItem appUser, Warehouse warehouse, OperationType operationType, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, JObject currentRecord)

@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using PrimeApps.App.Bpm.Steps;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -42,6 +43,9 @@ namespace PrimeApps.App
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
+
+            //Add Workflow service
+            services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
 
             //Register DI
             DIRegister(services, Configuration);
@@ -91,6 +95,7 @@ namespace PrimeApps.App
                         NoStore = true,
                     });
                 })
+                .AddWebApiConventions()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
                 {
@@ -158,7 +163,7 @@ namespace PrimeApps.App
             {
                 app.UseHsts().UseHttpsRedirection();
             }
-            
+
             app.UseHangfireDashboard();
             app.UseWebOptimizer();
             app.UseStaticFiles();
@@ -172,6 +177,7 @@ namespace PrimeApps.App
             );
 
             JobConfiguration(app, Configuration);
+            BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {
