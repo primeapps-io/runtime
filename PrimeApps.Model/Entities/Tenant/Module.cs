@@ -71,7 +71,7 @@ namespace PrimeApps.Model.Entities.Tenant
 
         public virtual ICollection<Reminder> Reminders { get; set; }
 
-        public virtual ICollection<Components> Components { get; set; }
+        public virtual ICollection<Component> Components { get; set; }
 
     }
 }

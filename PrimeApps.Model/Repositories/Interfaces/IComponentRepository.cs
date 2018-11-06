@@ -9,6 +9,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
 	public interface IComponentRepository : IRepositoryBaseTenant
 	{
-		Task<List<Components>> GetByType(ComponentType type);
+		Task<List<Component>> GetByType(ComponentType type);
 	}
 }

@@ -422,6 +422,20 @@
     "ShareNote": "Ne düşündüğünü ekip arkadaşlarınla paylaş",
     "LimitWarn": "Mesajınız 4000 karakterden fazla olamaz"
   },
+  "Expenses": {
+    "Expenses": "MASRAFLAR",
+    "AddExpenseItem": "Masraf Kalemi Ekle",
+    "ExpenseItems": "Masraf Kalemleri",
+    "TotalAmount": "Toplam Tutar",
+    "ExpenseSheetSettings": "Masraf Çizelgesi Ayarları",
+    "ExpensePeriodYear": "Masraf Dönemi (Yıl)",
+    "ExpensePeriodMonth": "Masraf Dönemi (Ay)",
+    "ExpenseEntryEndDate": "Masraf Dönemi Bitiş Tarihi",
+    "ProcessApprovalDate": "Yönetici Onay Tarihi",
+    "ExpensePeriodDescription": "Masraf Dönemi Açıklama",
+    "Years": "Yıllar",
+    "Months": "Aylar"
+  },
   "Tasks": {
     "Tasks": "Görevler",
     "RelatedTasks": "{{entity}} ile ilgili Görevler",

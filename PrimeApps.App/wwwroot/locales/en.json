@@ -422,6 +422,20 @@
     "ShareNote": "Share what you think with your teammates",
     "LimitWarn": "Your message is longer than 4000 characters"
   },
+  "Expenses": {
+    "Expenses": "EXPENSES",
+    "AddExpenseItem": "Add Expense Item",
+    "ExpenseItems": "Expense Items",
+    "TotalAmount": "Total Amount",
+    "ExpenseSheetSettings": "Expense Sheet Settings",
+    "ExpensePeriodYear": "Expense Period (Year)",
+    "ExpensePeriodMonth": "Expense Period (Month)",
+    "ExpenseEntryEndDate": "Expense Entry End Date",
+    "ProcessApprovalDate": "Process Approval Date",
+    "ExpensePeriodDescription": "Expense Period Description",
+    "Years": "Years",
+    "Months": "Months"
+  },
   "Tasks": {
     "Tasks": "Tasks",
     "RelatedTasks": "Tasks about {{entity}}",

@@ -10,6 +10,7 @@ namespace PrimeApps.Model.Enums
     {
         Module = 0,
         Document = 1,
-        Report = 2
+        Report = 2,
+        Newsfeed = 3
     }
 }

@@ -1,12 +1,11 @@
 <div class="note-list">
-
-    <div class="row row-custom" ng-show="newsfeed && !$parent.loadingNotes">
+    <div class="row row-custom" ng-show="newsfeed && !$parent.loadingNotes && $root.permissionsNewsfeed.write">
         <div>
             <form class="note-form form-inline" ng-submit="addNote(note)">
                 <div class="form-group">
                     <div class="input-group" style="width: 500px">
-                            <textarea placeholder="{{'Note.ShareNote' | translate}}" ui-tinymce="tinymceTemplate"  class="form-control" ng-model="note.text" focus="newNoteForm"
-                                      ng-required="true"></textarea>
+                        <textarea placeholder="{{'Note.ShareNote' | translate}}" ui-tinymce="tinymceTemplate" class="form-control" ng-model="note.text" focus="newNoteForm"
+                                  ng-required="true"></textarea>
                         <div style="float: right; margin-top:5px">
                             <button type="submit" class="btn btn-sm btn-primary" ng-disabled="!note.text" ladda="noteCreating"><i class="fa fa-check"></i> {{'Note.Submit' | translate}}</button>
                             <!--<button type="button" class="btn btn-sm btn-custom" ng-click="note = null; newNoteForm = false;">{{'Common.Cancel' | translate}}</button>-->
@@ -30,32 +29,33 @@
     <div class="media note clearfix" ng-repeat="note in $parent.notes | filter: {deleted:'!true'}">
         <span class="pull-left"><img style="height: 56px; width: 56px; border-radius: 56px" src="images/user-image.png" ng-src="{{note.created_by.picture ? note.created_by.picture : 'images/user-image.png'}}" class="img-rounded"></span>
         <div class="media-body">
-            <h5 class="media-heading"><span class="note-pre">{{note.created_by.full_name}}</span>
+            <h5 class="media-heading">
+                <span class="note-pre">{{note.created_by.full_name}}</span>
                 <span class="note-time">{{note.created_at | relativeTime}}</span>
                 <span class="action-buttons" ng-show="!$parent.$parent.$parent.record.freeze">
-                    <a href ng-click="note.textCurrent = note.text; note.showFormEdit = true; note.showForm = false;" ng-if="note.created_by.id === user.id">{{'Common.Edit' | translate}}</a>
-                    <span ng-if="note.created_by.id === user.id"> | </span>
-                    <a href ng-if="note.created_by.id === user.id || user.profile.has_admin_rights === true" confirm-click action="deleteNote(note)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</a>
+                    <a href ng-click="note.textCurrent = note.text; note.showFormEdit = true; note.showForm = false;" ng-if="note.created_by.id === user.ID">{{'Common.Edit' | translate}}</a>
+                    <span ng-if="note.created_by.id === user.ID"> | </span>
+                    <a href ng-if="note.created_by.id === user.ID || user.profile.HasAdminRights === true" confirm-click action="deleteNote(note)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</a>
                 </span>
             </h5>
             <div class="note-text">
-                <a ng-show="note.record_id && newsfeed" href="/#/app/module/{{(modules | filter: {id:note.module_id})[0].name}}?id={{note.record_id}}">{{note.record_primary_value}} <i class="fa fa-external-link "></i></a>
+                <a ng-show="note.record_id && newsfeed" href="/#/app/crm/module/{{(modules | filter: {id:note.module_id})[0].name}}?id={{note.record_id}}">{{note.record_primary_value}} <i class="fa fa-external-link "></i></a>
                 <pre class="note-pre" ng-if="!note.showFormEdit" compile="note.text"></pre>
                 <div class="btn-group">
-                    <a ng-show="(note.likes | filter: {id:user.id}).length < 1" class="btn btn-link btn-xs" ng-click="like(note, 'main')"><i class="fa fa-thumbs-up"></i>  <span class="note-action-buttons">{{'Note.Like' | translate}}</span></a>
-                    <a ng-show="(note.likes | filter: {id:user.id}).length > 0" class="btn btn-link btn-xs" ng-click="like(note, 'main')"><i class="fa fa-thumbs-down"></i>  <span class="note-action-buttons">{{'Note.Unlike' | translate}}</span></a>
+                    <a ng-show="(note.likes | filter: {id:user.ID}).length < 1" class="btn btn-link btn-xs" ng-click="like(note, 'main')"><i class="fa fa-thumbs-up"></i> <span class="note-action-buttons">{{'Note.Like' | translate}}</span></a>
+                    <a ng-show="(note.likes | filter: {id:user.ID}).length > 0" class="btn btn-link btn-xs" ng-click="like(note, 'main')"><i class="fa fa-thumbs-down"></i> <span class="note-action-buttons">{{'Note.Unlike' | translate}}</span></a>
 
-                    <a class="btn btn-link btn-xs" style="margin-left: 10px;" ng-click="noteLikesList(note.likes)" ng-show="(note.likes | filter: {id:user.id}).length > 0 && note.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)" class="fa fa-heart"></i> {{'Note.You' | translate}} <span ng-if="note.likes.length == 2"> {{'Note.And' | translate}} {{note.likes[0].full_name}}</span><span ng-if="note.likes.length > 2"> {{'Note.And' | translate}} {{note.likes.length - 1}} {{'Note.Other' | translate}}</span></a>
-                    <a class="btn btn-link btn-xs" style="margin-left: 10px;" ng-click="noteLikesList(note.likes)" ng-show="(note.likes | filter: {id:user.id}).length < 1 && note.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)"  class="fa fa-heart"></i><span ng-if="note.likes.length < 3"> {{note.likes[0].full_name}} </span><span ng-if="note.likes.length == 2"> {{'Note.And' | translate}} {{note.likes[1].full_name}}</span><span ng-if="note.likes.length > 2"> {{note.likes.length}}</span></a>
+                    <a class="btn btn-link btn-xs" style="margin-left: 10px;" ng-click="noteLikesList(note.likes)" ng-show="(note.likes | filter: {id:user.ID}).length > 0 && note.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)" class="fa fa-heart"></i> {{'Note.You' | translate}} <span ng-if="note.likes.length == 2"> {{'Note.And' | translate}} {{note.likes[0].full_name}}</span><span ng-if="note.likes.length > 2"> {{'Note.And' | translate}} {{note.likes.length - 1}} {{'Note.Other' | translate}}</span></a>
+                    <a class="btn btn-link btn-xs" style="margin-left: 10px;" ng-click="noteLikesList(note.likes)" ng-show="(note.likes | filter: {id:user.ID}).length < 1 && note.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)" class="fa fa-heart"></i><span ng-if="note.likes.length < 3"> {{note.likes[0].full_name}} </span><span ng-if="note.likes.length == 2"> {{'Note.And' | translate}} {{note.likes[1].full_name}}</span><span ng-if="note.likes.length > 2"> {{note.likes.length}}</span></a>
 
-                    <a style="margin-left: 10px;" ng-click="note.subNote = {}; note.showForm = !note.showForm; note.showFormEdit = false" ng-if="note.notes ? note.notes.length < 20 : true" ng-show="!$parent.$parent.$parent.record.freeze" class="btn btn-link btn-xs"><i class="fa fa-comments"></i>  <span class="note-action-buttons">{{'Note.Comment' | translate}}</span></a>
+                    <a style="margin-left: 10px;" ng-click="note.subNote = {}; note.showForm = !note.showForm; note.showFormEdit = false" ng-if="note.notes ? note.notes.length < 20 : true" ng-show="!$parent.$parent.$parent.record.freeze" class="btn btn-link btn-xs"><i class="fa fa-comments"></i> <span class="note-action-buttons">{{'Note.Comment' | translate}}</span></a>
                 </div>
 
 
                 <form class="form-inline list-note-form" ng-submit="updateNote(note)" ng-if="note.showFormEdit">
                     <div class="form-group">
                         <div class="input-group" style="width: 500px">
-                            <textarea ui-tinymce="tinymceTemplate"  class="form-control" ng-model="note.text" focus="note.showFormEdit"
+                            <textarea ui-tinymce="tinymceTemplate" class="form-control" ng-model="note.text" focus="note.showFormEdit"
                                       ng-required="true"></textarea>
                             <div style="margin-left: 340px; margin-top:5px">
                                 <button type="submit" class="btn btn-sm btn-primary" ng-disabled="!note.text" ladda="note.noteCreating"><i class="fa fa-check"></i> {{'Common.Update' | translate}}</button>
@@ -76,7 +76,7 @@
                     <div class="form-group">
                         <div class="input-group" style="width: 500px">
                             <!--<textarea rows="1" class="form-control" ng-model="note.subNote.text" focus="note.showForm" maxlength="500" auto-grow></textarea>-->
-                            <textarea ui-tinymce="tinymceTemplate"  class="form-control" ng-model="note.subNote.text" focus="note.showForm"
+                            <textarea ui-tinymce="tinymceTemplate" class="form-control" ng-model="note.subNote.text" focus="note.showForm"
                                       ng-required="true"></textarea>
                             <div style="margin-left: 350px; margin-top:5px">
                                 <button type="submit" class="btn btn-sm btn-primary" ng-disabled="!note.subNote.text" ladda="note.noteCreating"><i class="fa fa-check"></i> {{'Note.Submit' | translate}}</button>
@@ -96,9 +96,10 @@
             <div class="media subnote clearfix" ng-repeat="subNote in note.notes | filter: {deleted:'!true'} | orderBy:'created_at':true | limitTo:(note.subNoteLimit || 2)" ng-show="note.notes">
                 <span class="pull-left"><img style="width: 36px; height: 36px; border-radius: 36px" src="images/user-image.png" ng-src="{{subNote.created_by.picture ? subNote.created_by.picture : 'images/user-image.png'}}" class="img-rounded img48"></span>
                 <div class="media-body">
-                    <h5 class="media-heading"><span class="note-pre">{{subNote.created_by.full_name}}</span>
+                    <h5 class="media-heading">
+                        <span class="note-pre">{{subNote.created_by.full_name}}</span>
                         <span class="subnote-time">{{subNote.created_at | relativeTime}}</span>
-                        <span class="subnote-action-buttons" ng-if="subNote.created_by.id === user.id" ng-show="!$parent.$parent.$parent.record.freeze">
+                        <span class="subnote-action-buttons" ng-if="subNote.created_by.id === user.ID" ng-show="!$parent.$parent.$parent.record.freeze">
                             <a href ng-click="subNote.textCurrent = subNote.text; subNote.showFormEdit = true">{{'Common.Edit' | translate}}</a>
                             <span> | </span>
                             <a href confirm-click action="deleteNote(subNote, note)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Delete' | translate}}</a>
@@ -107,15 +108,15 @@
                     <div>
                         <pre ng-if="!subNote.showFormEdit" ng-bind-html="subNote.text" class="note-pre"></pre>
                         <div class="btn-group" style="margin-top: -5px">
-                            <a ng-show="(subNote.likes | filter: {id:user.id}).length < 1" class="btn btn-link btn-xs" ng-click="like(subNote, 'sub')"><i class="fa fa-thumbs-up"></i> <span class="note-action-buttons">{{'Note.Like' | translate}}</span></a>
-                            <a ng-show="(subNote.likes | filter: {id:user.id}).length > 0" class="btn btn-link btn-xs" ng-click="like(subNote, 'sub')"><i class="fa fa-thumbs-down"></i> <span class="note-action-buttons">{{'Note.Unlike' | translate}}</span></a>
-                            <a class="btn btn-link btn-xs" ng-click="noteLikesList(subNote.likes)" style="margin-left: 10px;" ng-show="(subNote.likes | filter: {id:user.id}).length > 0 && subNote.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)" class="fa fa-heart"></i> {{'Note.You' | translate}} <span ng-if="subNote.likes.length == 2"> {{'Note.And' | translate}} {{subNote.likes[0].full_name}}</span><span ng-if="subNote.likes.length > 2"> {{'Note.And' | translate}} {{subNote.likes.length - 1}} {{'Note.Other' | translate}}</span></a>
-                            <a class="btn btn-link btn-xs" ng-click="noteLikesList(subNote.likes)" style="margin-left: 10px;" ng-show="(subNote.likes | filter: {id:user.id}).length < 1 && subNote.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)"  class="fa fa-heart"></i><span ng-if="subNote.likes.length < 3"> {{subNote.likes[0].full_name}} </span><span ng-if="subNote.likes.length == 2"> {{'Note.And' | translate}} {{subNote.likes[1].full_name}}</span><span ng-if="subNote.likes.length > 2"> {{subNote.likes.length}}</span></a>
+                            <a ng-show="(subNote.likes | filter: {id:user.ID}).length < 1" class="btn btn-link btn-xs" ng-click="like(subNote, 'sub')"><i class="fa fa-thumbs-up"></i> <span class="note-action-buttons">{{'Note.Like' | translate}}</span></a>
+                            <a ng-show="(subNote.likes | filter: {id:user.ID}).length > 0" class="btn btn-link btn-xs" ng-click="like(subNote, 'sub')"><i class="fa fa-thumbs-down"></i> <span class="note-action-buttons">{{'Note.Unlike' | translate}}</span></a>
+                            <a class="btn btn-link btn-xs" ng-click="noteLikesList(subNote.likes)" style="margin-left: 10px;" ng-show="(subNote.likes | filter: {id:user.ID}).length > 0 && subNote.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)" class="fa fa-heart"></i> {{'Note.You' | translate}} <span ng-if="subNote.likes.length == 2"> {{'Note.And' | translate}} {{subNote.likes[0].full_name}}</span><span ng-if="subNote.likes.length > 2"> {{'Note.And' | translate}} {{subNote.likes.length - 1}} {{'Note.Other' | translate}}</span></a>
+                            <a class="btn btn-link btn-xs" ng-click="noteLikesList(subNote.likes)" style="margin-left: 10px;" ng-show="(subNote.likes | filter: {id:user.ID}).length < 1 && subNote.likes.length>0"><i style="color: rgba(255, 0, 0, 0.68)" class="fa fa-heart"></i><span ng-if="subNote.likes.length < 3"> {{subNote.likes[0].full_name}} </span><span ng-if="subNote.likes.length == 2"> {{'Note.And' | translate}} {{subNote.likes[1].full_name}}</span><span ng-if="subNote.likes.length > 2"> {{subNote.likes.length}}</span></a>
                         </div>
                         <form class="form-inline list-note-form" ng-submit="updateNote(subNote)" ng-if="subNote.showFormEdit">
                             <div class="form-group">
                                 <div class="input-group" style="width: 500px">
-                                    <textarea ui-tinymce="tinymceTemplate"  class="form-control" ng-model="subNote.text" focus="subNote.showFormEdit"
+                                    <textarea ui-tinymce="tinymceTemplate" class="form-control" ng-model="subNote.text" focus="subNote.showFormEdit"
                                               ng-required="true"></textarea>
                                     <div style="margin-left: 340px; margin-top:5px">
                                         <button type="submit" class="btn btn-sm btn-primary" ng-disabled="!subNote.text" ladda="subNote.noteUpdating"><i class="fa fa-check"></i> {{'Common.Update' | translate}}</button>
@@ -136,7 +137,8 @@
             <div ng-if="note.notes.length > 2" class="showAllNotes">
                 <a href ng-click="note.showAllNotes = !note.showAllNotes; note.subNoteLimit = note.showAllNotes ? note.notes.length : 2;">{{!note.showAllNotes ? ('Note.ShowAllComments' | translate) : ('Note.HideComments' | translate)}}</a>
             </div>
-        </div><hr>
+        </div>
+        <hr>
     </div>
     <div class="paging" ng-hide="$parent.hidePaging || $parent.loadingNotes">
         <a href ng-click="loadMore()" ng-if="!$parent.allNotesLoaded">
