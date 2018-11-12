@@ -1797,7 +1797,7 @@
         "Info5": "Picklist fields value must be already on the system.",
         "Info6": "Checkbox fields value must be Yes/No or true/false.",
         "Info7": "User fields value must be user's full name or email.",
-        "Info8": "Multiselect fields values are seperated by \"|\" sign. For example: Red | Green | Blue"
+        "Info8": "Multiselect and tag fields values are seperated by \"|\" sign. For example: Red | Green | Blue"
       },
       "DateOrders": {
         "DayMonthYear": "Day Month Year",

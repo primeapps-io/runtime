@@ -1796,7 +1796,7 @@
         "Info5": "Seçim listesi tipindeki alanların değerleri sistemde önceden kayıtlı olmalıdır.",
         "Info6": "Onay Kutusu tipindeki alanların değeri Evet/Hayır veya true/false olabilir.",
         "Info7": "Kullanıcı tipindeki alanların değeri kullanıcının adı soyadı veya eposta adresi olabilir.",
-        "Info8": "Çoklu seçim tipindeki alanların değerleri \"|\" işareti ile ayrılır. Örnek: Kırmızı | Yeşil | Mavi"
+        "Info8": "Çoklu seçim ve etiket tipindeki alanların değerleri \"|\" işareti ile ayrılır. Örnek: Kırmızı | Yeşil | Mavi"
       },
       "DateOrders": {
         "DayMonthYear": "Gün Ay Yıl",

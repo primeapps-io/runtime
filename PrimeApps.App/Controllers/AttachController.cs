@@ -1150,14 +1150,12 @@ namespace PrimeApps.App.Controllers
                             case DataType.Currency:
                                 dr[i] = (decimal)record[field.Name];
                                 break;
+                            case DataType.Tag:
                             case DataType.Multiselect:
                                 var multi = record[field.Name].ToObject<List<string>>();
                                 dr[i] = string.Join("|", multi);
                                 break;
-                            case DataType.Tag:
-                                var tag = record[field.Name].ToObject<List<string>>();
-                                dr[i] = string.Join(",", tag);
-                                break;
+                           
                             default:
                                 dr[i] = record[field.Name];
                                 break;
@@ -1471,7 +1469,7 @@ namespace PrimeApps.App.Controllers
                                 break;
                             case DataType.Tag:
                                 var tag = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
-                                dr[i] = string.Join(",", tag);
+                                dr[i] = string.Join("|", tag);
                                 break;
                             default:
                                 dr[i] = record[!isViewFields ? field.Name : field.StyleInput];
@@ -1742,13 +1740,10 @@ namespace PrimeApps.App.Controllers
                                 case DataType.Currency:
                                     dr[i] = (decimal)record[field.Name];
                                     break;
+                                case DataType.Tag:
                                 case DataType.Multiselect:
                                     var multi = record[field.Name].ToObject<List<string>>();
                                     dr[i] = string.Join("|", multi);
-                                    break;
-                                case DataType.Tag:
-                                    var tag = record[field.Name].ToObject<List<string>>();
-                                    dr[i] = string.Join(",", tag);
                                     break;
                                 default:
                                     dr[i] = record[field.Name];
@@ -2026,13 +2021,10 @@ namespace PrimeApps.App.Controllers
                                 case DataType.Currency:
                                     dr[i] = (decimal)record[field.Name];
                                     break;
+                                case DataType.Tag:
                                 case DataType.Multiselect:
                                     var multi = record[field.Name].ToObject<List<string>>();
                                     dr[i] = string.Join("|", multi);
-                                    break;
-                                case DataType.Tag:
-                                    var tag = record[field.Name].ToObject<List<string>>();
-                                    dr[i] = string.Join(",", tag);
                                     break;
                                 default:
                                     dr[i] = record[field.Name];

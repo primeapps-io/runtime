@@ -360,6 +360,17 @@ angular.module('primeapps')
                         case 'picklist':
                             fixedValue[key] = fixedValue[key].label[$rootScope.user.tenant_language];
                             break;
+                        case 'tag':
+                            var picklistItems = recordValue.split('|');
+                            recordValue = '{';
+
+                            for (var i = 0; i < picklistItems.length; i++) {
+                                recordValue += '"' + picklistItems[i] + '",';
+                            }
+
+                            if (recordValue)
+                                recordValue = recordValue.slice(0, -1) + '}';
+                            break;
                         case 'multiselect':
                             var values = '{';
 
