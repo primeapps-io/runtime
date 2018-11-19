@@ -1053,6 +1053,7 @@ angular.module('primeapps')
                             className: 'warning',
                             timeout: 8000
                         });
+                        $scope.submitting = false;
                         return;
                     }
                 }

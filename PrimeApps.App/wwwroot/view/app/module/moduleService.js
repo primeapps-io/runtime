@@ -2226,8 +2226,8 @@ angular.module('primeapps')
                                 //Etiya Özel Doğum Günü izni 1 hafta önce veya 3 hafta sonra kullanılması durumu
                                 if (izin_turu['1_hafta_once_ve_3_hafta_sonra_arasinda_kullanilir']) {
                                     var current = moment(record["baslangic_tarihi"]);
-                                    var first = moment(record["dogum_tarihi"]).set('year', moment().get('year')).subtract(1, 'weeks');
-                                    var end = moment(record["dogum_tarihi"]).set('year', moment().get('year')).add(3, 'weeks');
+                                    var first = moment(record["dogum_tarihi"]).set('year', current.get('year')).subtract(1, 'weeks');
+                                    var end = moment(record["dogum_tarihi"]).set('year', current.get('year')).add(3, 'weeks');
 
                                     var dateChecker = moment(current.format('YYYY-MM-DD')).isBetween(first.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'), null, '[]');
                                     if (!dateChecker) {
