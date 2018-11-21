@@ -497,11 +497,11 @@ namespace PrimeApps.App.Notifications
 
 					int reminderFrequency = 0;
 
-					/// task is already outdated.
-					if (taskDueDate < now) return;
+                    /// If task due date and reminder start date passed from now datetime, task is already outdated.
+                    if (taskDueDate < now && taskReminderStartDate < now) return;
 
-					/// set reminder end to the last minute of the day.
-					taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    /// set reminder end to the last minute of the day.
+                    taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
 
 
 					reminderExisting.ReminderStart = (DateTime)record["task_reminder"];//tarihleri beni kıllandırıyor kontrol edelim.
