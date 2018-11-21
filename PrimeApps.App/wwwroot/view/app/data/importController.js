@@ -485,7 +485,7 @@ angular.module('primeapps')
                             }
                             break;
                         case 'picklist':
-                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue }, true)[0];
+                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue })[0];
 
                             if (!picklistItem) {
                                 $scope.error.message = $filter('translate')('Data.Import.Error.PicklistItemNotFound');
@@ -498,7 +498,7 @@ angular.module('primeapps')
 
                             for (var i = 0; i < picklistItems.length; i++) {
                                 var picklistItemLabel = picklistItems[i];
-                                var multiselectPicklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: picklistItemLabel }, true)[0];
+                                var multiselectPicklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: picklistItemLabel })[0];
 
                                 if (!multiselectPicklistItem) {
                                     $scope.error.message = $filter('translate')('Data.Import.Error.MultiselectItemNotFound', { item: picklistItemLabel });
@@ -525,7 +525,7 @@ angular.module('primeapps')
                                     lookupIds.push(lookupIdItem);
                             }
 
-                            var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                            var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type })[0];
 
                             if (field.lookup_type === 'users') {
                                 lookupModule = {};
@@ -656,13 +656,10 @@ angular.module('primeapps')
                                     $scope.error.message = $filter('translate')('Data.Import.Error.Required');
                                     break;
                                 }
-
-                                if (!cellValue)
-                                    continue;
-
+                                
                                 var recordFieldValue = getRecordFieldValueAndValidate(cellValue, field, i + 2, fieldMapValue);
 
-                                if (angular.isUndefined(recordFieldValue))
+                                if ((cellValue && !recordFieldValue) || !recordFieldValue)
                                     break;
 
                                 record[fieldMapKey] = recordFieldValue;
