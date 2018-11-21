@@ -668,19 +668,6 @@ angular.module('primeapps')
                     });
             };
 
-
-            $scope.getDownloadViewUrlExcel = function () {
-                var module = $scope.module.name;
-                var viewId = $scope.view.id;
-                var isViewFields = $scope.export.moduleAllColumn;
-
-                if (isViewFields)
-                    $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");
-                else
-                    $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale, "_blank");
-                ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
-            };
-
             $scope.openExcelTemplate = function () {
                 $scope.excelCreating = true;
                 $scope.hasQuoteTemplateDisplayPermission = ModuleService.hasQuoteTemplateDisplayPermission;
@@ -695,24 +682,6 @@ angular.module('primeapps')
                         });
 
                     $scope.excelModal.$promise.then($scope.excelModal.show);
-                };
-
-                $scope.excelNoData = function () {
-                    var module = $scope.module.name;
-                    var templateId = $scope.quoteTemplate.id;
-                    var templateName = $scope.quoteTemplate.name;
-                    var viewId = $scope.view.id;
-                    $window.open("/attach/export_excel_no_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
-                    ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
-                };
-
-                $scope.excelData = function () {
-                    var module = $scope.module.name;
-                    var templateId = $scope.quoteTemplate.id;
-                    var templateName = $scope.quoteTemplate.name;
-                    var viewId = $scope.view.id;
-                    $window.open("/attach/export_excel_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
-                    ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
                 };
 
                 if ($scope.quoteTemplates) {

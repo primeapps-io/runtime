@@ -1187,7 +1187,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("export_excel_view")]
-        public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
+        public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, int profileId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
         {
             if (string.IsNullOrWhiteSpace(module))
             {
@@ -1195,7 +1195,7 @@ namespace PrimeApps.App.Controllers
             }
 
             var moduleEntity = await _moduleRepository.GetByName(module);
-            var fields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
+            var moduleFields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
             var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
             var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(nameModule);
@@ -1210,6 +1210,15 @@ namespace PrimeApps.App.Controllers
             var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
             var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
             var label = "";
+            var fields = new List<Field>();
+
+            foreach (var field in moduleFields)
+            {
+                var fieldPermission = HasFieldPermission(profileId, field, moduleEntity);
+
+                if (fieldPermission)
+                    fields.Add(field);
+            }
 
             var view = await _viewRepository.GetById(viewId);
 
@@ -2065,6 +2074,38 @@ namespace PrimeApps.App.Controllers
                 return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 
             }
+        }
+
+        private bool HasFieldPermission(int profileId, Field field, Module moduleEntity)
+        {
+            //Field Permission Control
+            if (field.Permissions.Count > 0)
+            {
+                foreach (var permission in field.Permissions)
+                {
+                    if (profileId == permission.ProfileId && permission.Type == FieldPermissionType.None)
+                        return false;
+
+                }
+            }
+
+            //Field Display Detail , Form , List Control
+            if (field.DisplayDetail == false && field.DisplayForm == false && field.DisplayList == false)
+                return false;
+
+            //Section Permission Control
+            var section = moduleEntity.Sections.Single(x => x.Name == field.Section);
+
+            if (section != null && section.Permissions.Count > 0)
+            {
+                foreach (var sectionPermission in section.Permissions)
+                {
+                    if (profileId == sectionPermission.ProfileId && sectionPermission.Type == SectionPermissionType.None)
+                        return false;
+                }
+            }
+
+            return true;
         }
     }
 }
