@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 angular.module('primeapps')
 
@@ -99,9 +99,14 @@ angular.module('primeapps')
                 dependencyTypeValueChange.value = 'value';
                 dependencyTypeValueChange.label = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
 
+                var dependencyTypeFreeze = {};
+                dependencyTypeFreeze.value = 'freeze';
+                dependencyTypeFreeze.label = 'Kayıt Dondurma';
+
                 $scope.dependencyTypes = [];
                 $scope.dependencyTypes.push(dependencyTypeDisplay);
                 $scope.dependencyTypes.push(dependencyTypeValueChange);
+                $scope.dependencyTypes.push(dependencyTypeFreeze);
             };
 
             var getValueChangeTypes = function () {
@@ -151,6 +156,9 @@ angular.module('primeapps')
                     case 'display':
                         return $scope.parentDisplayFields;
                         break;
+                    case 'freeze':
+                        return $scope.parentDisplayFields;
+                        break;
                     case 'value':
                         if ($scope.currentDependency.type === 'list_value')
                             return $scope.picklistFields;
@@ -163,6 +171,17 @@ angular.module('primeapps')
             $scope.getChildFields = function () {
                 switch ($scope.currentDependency.dependencyType) {
                     case 'display':
+                        angular.forEach($scope.childDisplayFields, function (field) {
+                            delete field.hidden;
+
+                            //Silinen alanlar alan bagimliklarinda gelmeye devam ediyordu.
+                            if (field.name === $scope.currentDependency.parent_field || field.deleted)
+                                field.hidden = true;
+                        });
+
+                        return $scope.childDisplayFields;
+                        break;
+                    case 'freeze':
                         angular.forEach($scope.childDisplayFields, function (field) {
                             delete field.hidden;
 

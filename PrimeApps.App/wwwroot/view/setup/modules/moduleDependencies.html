@@ -26,11 +26,11 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'">
-                                <td>{{dependency.dependencyType === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) : ('Setup.Modules.DependencyTypeValueChange' | translate)}}</td>
+                                <td>{{dependency.name}}</td>
                                 <td>{{dependency.parentField['label_'+language]}}</td>
                                 <td>{{ dependency.child_field ? dependency.childField['label_'+language] : '-'}}</td>
-                                <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}
-                                </td>
+                                <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
+
                                 <td class="text-right">
                                     <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(dependency)">{{'Common.Edit' | translate}}</button>
                                     <button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(dependency)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
