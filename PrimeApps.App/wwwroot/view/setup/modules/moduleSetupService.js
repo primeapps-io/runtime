@@ -848,6 +848,7 @@ angular.module('primeapps')
 
                         if (dependency.dependency_type === 'display') {
                             dependency.dependencyType = 'display';
+                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
 
                             if (dependency.values && !Array.isArray(dependency.values)) {
                                 var values = dependency.values.split(',');
@@ -858,8 +859,24 @@ angular.module('primeapps')
                                 });
                             }
                         }
+                        else if (dependency.dependency_type === 'freeze') {
+                            dependency.dependencyType = 'freeze';
+                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
+
+                            if (dependency.values && !Array.isArray(dependency.values)) {
+                                var values = dependency.values.split(',');
+                                dependency.values = [];
+
+                                angular.forEach(values, function (value) {
+                                    dependency.values.push(parseInt(value));
+                                });
+                            }
+                        }
+
                         else {
                             dependency.dependencyType = 'value';
+                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
+
 
                             if (dependency.field_map_parent) {
                                 dependency.field_map = {};
@@ -892,6 +909,16 @@ angular.module('primeapps')
                             var displayDependency = {};
                             displayDependency.id = dependency.id;
                             displayDependency.dependency_type = 'display';
+                            displayDependency.parent_field = dependency.parent_field;
+                            displayDependency.child_field = dependency.child_field;
+                            displayDependency.child_section = dependency.child_section;
+                            displayDependency.values = dependency.values;
+
+                            return displayDependency;
+                        case 'freeze':
+                            var displayDependency = {};
+                            displayDependency.id = dependency.id;
+                            displayDependency.dependency_type = 'freeze';
                             displayDependency.parent_field = dependency.parent_field;
                             displayDependency.child_field = dependency.child_field;
                             displayDependency.child_section = dependency.child_section;

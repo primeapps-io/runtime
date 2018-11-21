@@ -1098,6 +1098,7 @@
       "DependencyChildSection": "Affected Section",
       "AffectedAreaType": "Affected Area Type",
       "DependencyTypeDisplay": "Display",
+      "DependencyTypeFreeze": "Record Freeze",
       "DependencyTypeValueChange": "Value Change",
       "EditDependency": "Edit Field Dependency",
       "EditActionButton": "Edit Action Button",

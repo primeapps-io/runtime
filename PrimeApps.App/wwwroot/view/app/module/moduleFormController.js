@@ -216,21 +216,18 @@ angular.module('primeapps')
                 var type = false;
 
                 if (record.process_status === 1)
-                    type = true;
+                    return true;
 
                 if ($scope.module.dependencies.length > 0) {
                     var freezeDependencies = $filter('filter')($scope.module.dependencies, { dependency_type: 'freeze' }, true);
                     angular.forEach(freezeDependencies, function (dependency) {
-                        if (!type) {
-                            var freezeFields = $filter('filter')($scope.module.fields, { name: dependency.parent_field }, true);
-                            angular.forEach(freezeFields, function (field) {
-                                if (!type)
-                                    angular.forEach(dependency.values_array, function (value) {
-                                        if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
-                                            type = true;
-                                    });
+                        var freezeFields = $filter('filter')($scope.module.fields, { name: dependency.parent_field }, true);
+                        angular.forEach(freezeFields, function (field) {
+                            angular.forEach(dependency.values_array, function (value) {
+                                if (record[field.name] && (value == record[field.name] || value == record[field.name].id))
+                                    type = true;
                             });
-                        }
+                        });
                     });
                 }
                 return type;
@@ -1057,6 +1054,7 @@ angular.module('primeapps')
                             className: 'warning',
                             timeout: 8000
                         });
+                        $scope.submitting = false;
                         return;
                     }
                 }
