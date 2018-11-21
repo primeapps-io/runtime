@@ -175,7 +175,7 @@
     <value>Cep telefonu numarası 5 ile başlamalı ve 10 haneli olmalıdır.</value>
   </data>
   <data name="JoinSuccessMessage" xml:space="preserve">
-    <value>Sisteme giriş sayfasına yönlendiriliyorsunuz.</value>
+    <value>Eposta ve parolanız ile giriş yapabilirsiniz.</value>
   </data>
   <data name="JoinSuccessTitle" xml:space="preserve">
     <value>Üyeliğiniz başarılı bir şekilde gerçekleştirildi.</value>

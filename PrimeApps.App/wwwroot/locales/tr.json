@@ -168,7 +168,7 @@
     "ResendMailSuccess": "Doğrulama e-postası tekrar gönderildi.",
     "ActivationMessage": "Tebrikler! Bulunduğunuz sektörleri seçtikten sonra Ofisim.com hesabınızı hemen kullanmaya başlayabilirsiniz.",
     "ActivationMessageFree": "Hesabınız aktif ediliyor. Lütfen bekleyiniz...",
-    "ActivationSuccess": "Aktivasyonunuz başarı ile gerçekleşmiştir. Kullanıcı adı ve şifre bilgilerinizi girerek sisteme giriş yapabilirsiniz.",
+    "ActivationSuccess": "Aktivasyonunuz başarı ile gerçekleşmiştir. Eposta ve parolanız ile giriş yapabilirsiniz.",
     "StartAccount": "Hesabımı Başlat",
     "ActivationError": "Geçersiz aktivasyon kodu!",
     "PasswordConfirm": "Şifre (Tekrar)",
