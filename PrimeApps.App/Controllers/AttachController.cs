@@ -1483,13 +1483,10 @@ namespace PrimeApps.App.Controllers
                             case DataType.Currency:
                                 dr[i] = (decimal)record[!isViewFields ? field.Name : field.StyleInput];
                                 break;
+                            case DataType.Tag:
                             case DataType.Multiselect:
                                 var multi = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
                                 dr[i] = string.Join("|", multi);
-                                break;
-                            case DataType.Tag:
-                                var tag = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
-                                dr[i] = string.Join("|", tag);
                                 break;
                             default:
                                 dr[i] = record[!isViewFields ? field.Name : field.StyleInput];
