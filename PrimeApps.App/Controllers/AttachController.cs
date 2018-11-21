@@ -32,6 +32,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using PrimeApps.App.Models;
 using static PrimeApps.App.Controllers.DocumentController;
 
 namespace PrimeApps.App.Controllers
@@ -39,7 +40,6 @@ namespace PrimeApps.App.Controllers
     [Route("attach")]
     public class AttachController : MvcBaseController
     {
-
         private ITenantRepository _tenantRepository;
         private ITemplateRepository _templateRepository;
         private IModuleRepository _moduleRepository;
@@ -264,12 +264,14 @@ namespace PrimeApps.App.Controllers
         private async Task<bool> AddRelatedModuleRecords(Dictionary<string, JArray> relatedModuleRecords, List<Note> notes, Module moduleEntity, ICollection<Module> lookupModules, Aspose.Words.Document doc, JObject record, string module, int recordId, string currentCulture, int timezoneOffset)
         {
             // Get second level relations
-            var secondLevelRelationSetting = _settingsRepository.Get(SettingType.Template);
+            var templateSettings = _settingsRepository.Get(SettingType.Template);
             var secondLevels = new List<SecondLevel>();
+            var relationSorts = new Dictionary<string, string>();
 
-            if (secondLevelRelationSetting != null && secondLevelRelationSetting.Count > 0)
+            if (templateSettings != null && templateSettings.Count > 0)
             {
-                var secondLevelRelations = secondLevelRelationSetting.Where(x => x.Key == "second_level_relation_" + module).ToList();
+                var secondLevelRelations = templateSettings.Where(x => x.Key == "second_level_relation_" + module).ToList();
+                var relationsSortSettings = templateSettings.Where(x => x.Key == "relation_sorts_" + module).ToList();
 
                 foreach (var secondLevelRelation in secondLevelRelations)
                 {
@@ -305,6 +307,17 @@ namespace PrimeApps.App.Controllers
                         }
                     }
                 }
+
+                foreach (var relationsSort in relationsSortSettings)
+                {
+                    var relationsSortParts = relationsSort.Value.Split('|');
+
+                    foreach (var relationsSortPart in relationsSortParts)
+                    {
+                        var sortParts = relationsSortPart.Split(';');
+                        relationSorts.Add(sortParts[0], sortParts[1]);
+                    }
+                }
             }
 
             // Get related module records.
@@ -313,6 +326,20 @@ namespace PrimeApps.App.Controllers
                 if (!doc.Range.Text.Contains("{{#foreach " + relation.RelatedModule + "}}"))
                 {
                     continue;
+                }
+
+                var sortField = "created_at";
+                var sortDirection = SortDirection.Asc;
+
+                if (relationSorts.Count > 0)
+                {
+                    if (relationSorts.ContainsKey(relation.RelatedModule))
+                    {
+                        var relationSort = relationSorts[relation.RelatedModule].Split(',');
+
+                        sortField = relationSort[0];
+                        sortDirection = (SortDirection)Enum.Parse(typeof(SortDirection), relationSort[1]);
+                    }
                 }
 
                 var fields = await _recordHelper.GetAllFieldsForFindRequest(relation.RelatedModule);
@@ -330,8 +357,8 @@ namespace PrimeApps.App.Controllers
                             Value = recordId.ToString()
                         }
                     },
-                    SortField = "created_at",
-                    SortDirection = SortDirection.Asc,
+                    SortField = sortField,
+                    SortDirection = sortDirection,
                     Limit = 1000,
                     Offset = 0
                 };
@@ -1155,7 +1182,7 @@ namespace PrimeApps.App.Controllers
                                 var multi = record[field.Name].ToObject<List<string>>();
                                 dr[i] = string.Join("|", multi);
                                 break;
-                           
+
                             default:
                                 dr[i] = record[field.Name];
                                 break;
