@@ -350,8 +350,10 @@ namespace PrimeApps.Model.Repositories
             //that he owns so that the old and new parents can be cleaned and re - added from their OwnerList.
             if (roleToUpdate.Users.Count() > 0)
             {
-                userID = roleToUpdate.Users.First().Id.ToString();
-                tempOwnerList.Add(userID);
+                foreach (var user in roleToUpdate.Users)
+                {
+                    tempOwnerList.Add(user.Id.ToString());
+                }
                 tempOwnerList = tempOwnerList.Distinct().ToList();
             }
 
