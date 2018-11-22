@@ -36,8 +36,8 @@ namespace PrimeApps.Model.Repositories
                 Name = newProfileDTO.Name,
                 Dashboard = newProfileDTO.Dashboard,
                 Home = newProfileDTO.Home,
-	            CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
-				StartPage = newProfileDTO.StartPage,
+                CollectiveAnnualLeave = newProfileDTO.CollectiveAnnualLeave,
+                StartPage = newProfileDTO.StartPage,
                 ParentId = newProfileDTO.ParentId
             };
 
@@ -54,6 +54,16 @@ namespace PrimeApps.Model.Repositories
             DbContext.ProfilePermissions.Add(new ProfilePermission()
             {
                 Type = EntityType.Report,
+                Profile = newProfile,
+                Modify = true,
+                Read = true,
+                Write = true,
+                Remove = true
+            });
+
+            DbContext.ProfilePermissions.Add(new ProfilePermission()
+            {
+                Type = EntityType.Newsfeed,
                 Profile = newProfile,
                 Modify = true,
                 Read = true,
@@ -98,10 +108,11 @@ namespace PrimeApps.Model.Repositories
             profileToUpdate.Calendar = updatedProfileDTO.Calendar;
             profileToUpdate.Newsfeed = updatedProfileDTO.Newsfeed;
             profileToUpdate.Report = updatedProfileDTO.Report;
+            profileToUpdate.Newsfeed = updatedProfileDTO.Newsfeed;
             profileToUpdate.Dashboard = updatedProfileDTO.Dashboard;
             profileToUpdate.Home = updatedProfileDTO.Home;
-	        profileToUpdate.CollectiveAnnualLeave = updatedProfileDTO.CollectiveAnnualLeave;
-			profileToUpdate.StartPage = updatedProfileDTO.StartPage;
+            profileToUpdate.CollectiveAnnualLeave = updatedProfileDTO.CollectiveAnnualLeave;
+            profileToUpdate.StartPage = updatedProfileDTO.StartPage;
             profileToUpdate.ParentId = updatedProfileDTO.ParentId;
 
             DbContext.ProfilePermissions.RemoveRange(profileToUpdate.Permissions);
@@ -116,7 +127,7 @@ namespace PrimeApps.Model.Repositories
                     Write = newPermission.Write,
                     Profile = profileToUpdate,
                 };
-                
+
                 if (newPermission.ModuleId.HasValue)
                 {
                     profilePermission.Type = EntityType.Module;
@@ -132,6 +143,11 @@ namespace PrimeApps.Model.Repositories
                     if (newPermission.Type == 2)
                     {
                         profilePermission.Type = EntityType.Report;
+                    }
+
+                    if (newPermission.Type == 3)
+                    {
+                        profilePermission.Type = EntityType.Newsfeed;
                     }
                 }
 
@@ -205,8 +221,8 @@ namespace PrimeApps.Model.Repositories
                     Report = x.Report,
                     Dashboard = x.Dashboard,
                     Home = x.Home,
-	                CollectiveAnnualLeave = x.CollectiveAnnualLeave,
-					StartPage = x.StartPage,
+                    CollectiveAnnualLeave = x.CollectiveAnnualLeave,
+                    StartPage = x.StartPage,
                     ParentId = x.ParentId,
                     CreatedBy = x.CreatedById,
                     IsPersistent = x.IsPersistent,
@@ -256,8 +272,8 @@ namespace PrimeApps.Model.Repositories
                                    Report = x.Report,
                                    Dashboard = x.Dashboard,
                                    Home = x.Home,
-	                               CollectiveAnnualLeave = x.CollectiveAnnualLeave,
-								   StartPage = x.StartPage,
+                                   CollectiveAnnualLeave = x.CollectiveAnnualLeave,
+                                   StartPage = x.StartPage,
                                    ParentId = x.ParentId,
                                    UserIds = x.Users.Select(z => z.Id).ToList(),
                                    Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()

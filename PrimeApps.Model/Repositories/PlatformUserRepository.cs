@@ -75,6 +75,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser)
+                    .ThenInclude(y => (y as UserTenant).Tenant)
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
         }
@@ -84,6 +85,7 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser)
+                    .ThenInclude(y => (y as UserTenant).Tenant)
                 .Include(x => x.TenantsAsOwner)
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
@@ -92,8 +94,10 @@ namespace PrimeApps.Model.Repositories
         public async Task<Tenant> GetTenantWithOwner(int tenantId)
         {
             return await DbContext.Tenants
-                .Include(x => x.Owner).ThenInclude(x => x.Setting)
-                .Where(x => x.Id == tenantId).SingleOrDefaultAsync();
+                .Include(x => x.Owner)
+                    .ThenInclude(x => x.Setting)
+                .Where(x => x.Id == tenantId)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<int> CreateUser(PlatformUser user)

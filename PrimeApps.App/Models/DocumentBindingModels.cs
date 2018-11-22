@@ -1,11 +1,8 @@
-﻿using PrimeApps.Model.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using PrimeApps.Model.Entities.Tenant;
 
 namespace PrimeApps.App.Models
 {
-    public class DocumentBindingModels
+    public class DocumentBindingModel
     {
         public int ModuleId { get; set; }
 
@@ -16,6 +13,13 @@ namespace PrimeApps.App.Models
         public int TenantId { get; set; }
 
         public int ContainerId { get; set; }
+    }
 
+    public class SecondLevel
+    {
+        public int RelationId { get; set; }
+        public Module Module { get; set; }
+        public Module SubModule { get; set; }
+        public Relation SubRelation { get; set; }
     }
 }
