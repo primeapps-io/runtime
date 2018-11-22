@@ -9,7 +9,7 @@ angular.module('primeapps')
             function getProfiles() {
                 ProfileService.getAll()
                     .then(function (response) {
-                        $scope.profiles = ProfileService.getProfiles(response.data, $rootScope.workgroup.instanceID, true);
+                        $scope.profiles = ProfileService.getProfiles(response.data, $rootScope.workgroup.tenant_id, true);
                         $scope.loading = false;
                     })
                     .catch(function () {
@@ -42,7 +42,7 @@ angular.module('primeapps')
 
                 $scope.profileDeleting = true;
 
-                ProfileService.remove($scope.selectedProfile.id, transferProfileId, $rootScope.workgroup.instanceID)
+                ProfileService.remove($scope.selectedProfile.id, transferProfileId, $rootScope.workgroup.tenant_id)
                     .then(function () {
                         $scope.profileDeleting = false;
                         ngToast.create({content: $filter('translate')('Setup.Profiles.DeleteSuccess'), className: 'success'});

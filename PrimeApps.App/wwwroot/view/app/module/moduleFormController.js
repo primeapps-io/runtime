@@ -944,7 +944,7 @@ angular.module('primeapps')
                                 UniqueFileName: $scope.image[field.name].UniqueName,
                                 MimeType: $scope.image[field.name].Type,
                                 ChunkSize: 1,
-                                instanceId: $rootScope.workgroup.instanceID
+                                instanceId: $rootScope.workgroup.tenant_id
                             });
                         }
 
@@ -2383,7 +2383,7 @@ angular.module('primeapps')
                 data["recordId"] = $scope.record.id;
                 data["fieldName"] = field.name;
                 data["fileNameExt"] = helper.getFileExtension($scope.record[field.name]);
-                data["instanceId"] = $rootScope.workgroup.instanceID;
+                data["instanceId"] = $rootScope.workgroup.tenant_id;
 
                 $scope.record[field.name] = null;
                 if (field.data_type == 'document') {
@@ -2429,7 +2429,7 @@ angular.module('primeapps')
                     item.formData.push({ filename: $scope.record[field.name] });
                     item.formData.push({ recordid: $scope.record.id });
                     item.formData.push({ modulename: $scope.module.name })
-                    item.formData.push({ container: $rootScope.workgroup.instanceID })
+                    item.formData.push({ container: $rootScope.workgroup.tenant_id })
                     item.formData.push({ documentsearch: field.document_search })
 
                 };

@@ -5,7 +5,7 @@ angular.module('primeapps')
     .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService','$cookies',
         function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService,$cookies) {
             $scope.company = {};
-            $scope.company.instanceID = $rootScope.workgroup.instanceID;
+            $scope.company.instanceID = $rootScope.workgroup.tenant_id;
             $scope.company.title = $rootScope.workgroup.title;
             $scope.company.currency = $rootScope.workgroup.currency;
             $scope.company.culture = $rootScope.workgroup.setting.culture;

@@ -1420,7 +1420,7 @@ angular.module('primeapps')
                             UniqueFileName: response.UniqueName,
                             MimeType: item.uploader.queue[0].Type,
                             ChunkSize: 1,
-                            instanceId: $rootScope.workgroup.instanceID
+                            instanceId: $rootScope.workgroup.tenant_id
                         }).then(function (res) {
                             $scope.workflowModel.field_update.value = res.data;
                         });

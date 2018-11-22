@@ -52,7 +52,7 @@ angular.module('primeapps')
             function getDocuments(date) {
                 $scope.loading = !date;
 
-                DocumentService.getDocuments($rootScope.workgroup.instanceID, $scope.entityId, $scope.module.id)
+                DocumentService.getDocuments($rootScope.workgroup.tenant_id, $scope.entityId, $scope.module.id)
                     .then(function (response) {
                         var processResults = DocumentService.processDocuments(response.data, $rootScope.users, $scope.filter, $scope.sortPredicate, $scope.sortReverse);
                         $scope.documents = processResults.documentList;
@@ -67,7 +67,7 @@ angular.module('primeapps')
             $scope.filterDocuments = function (createdBy) {
                 $scope.filter.CreatedBy = createdBy;
 
-                DocumentService.getDocuments($rootScope.workgroup.instanceID, $scope.entityId, $scope.module.id)
+                DocumentService.getDocuments($rootScope.workgroup.tenant_id, $scope.entityId, $scope.module.id)
                     .then(function (response) {
                         var processResults = DocumentService.processDocuments(response.data, $rootScope.users, $scope.filter, $scope.sortPredicate, $scope.sortReverse);
                         $scope.documents = processResults.documentList;

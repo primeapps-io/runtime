@@ -351,7 +351,7 @@ angular.module('primeapps')
                     });
             };
 
-            $scope.dismiss = function (user, index) {
+            $scope.dismiss = function (user, index, close) {
                 $scope.userDeleting = true;
 
                 UserService.dismiss(user, $rootScope.workgroup.tenant_id)
@@ -370,10 +370,12 @@ angular.module('primeapps')
                             $scope.licensesUsed = license.data.used || 0;
                             $scope.licenseAvailable = $scope.licensesBought - $scope.licensesUsed;
                         });
+                        close();
 
                     })
                     .catch(function onError() {
                         $scope.userDeleting = false;
+                        close();
                     });
             };
 

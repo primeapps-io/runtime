@@ -15,6 +15,14 @@ angular.module('primeapps')
                 addUser: function (user) {
                     return $http.post(config.apiUrl + 'User/add_user', user);
                 },
+                deleteUser: function (user, instanceId) {
+                    return $http.post(config.apiUrl + 'Instance/Dismiss', {
+                        UserID: user.ID,
+                        EMail: user.email,
+                        HasAccount: user.hasAccount,
+                        InstanceID: instanceId
+                    });
+                },
                 getUserEmailControl: function (email) {
                     return $http.get(config.apiUrl + 'User/get_user_email_control?Email=' + email);
                 },
@@ -95,7 +103,29 @@ angular.module('primeapps')
                 },
 
                 deleteRecord: function (module, id) {
-                    return $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id);
+                    if ($rootScope.branchAvailable && module === 'calisanlar') {
+                        var deferred = $q.defer();
+
+                        var that = this;
+                        this.getRecord(module, id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    var user = $filter('filter')($rootScope.workgroup.users, { email: response.data['e_posta'] }, true)[0];
+                                    if (user) {
+                                        that.deleteUser(user, $rootScope.workgroup.tenant_id);
+                                    }
+                                    $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id)
+                                        .then(function (response) {
+                                            deferred.resolve(response);
+                                            return deferred.promise;
+                                        });
+                                }
+                            });
+                        return deferred.promise;
+                    }
+                    else {
+                        return $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id);
+                    }
                 },
 
                 addRelations: function (module, relatedModule, relations) {

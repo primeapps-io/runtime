@@ -22,7 +22,7 @@ angular.module('primeapps')
                     $scope.loadMore = function () {
                         $scope.pagingIcon = 'fa-spinner fa-spin';
 
-                        FeedService.getActivityFeedDelta($rootScope.workgroup.instanceID, $scope.pageIndex, $scope.entityId, $scope.entityType)
+                        FeedService.getActivityFeedDelta($rootScope.workgroup.tenant_id, $scope.pageIndex, $scope.entityId, $scope.entityType)
                             .then(function (response) {
                                 $scope.feed = $scope.feed.concat(response.data);
                                 $scope.count = response.data.length;
@@ -37,7 +37,7 @@ angular.module('primeapps')
 
                         activity.commentSending = true;
 
-                        FeedService.comment($rootScope.workgroup.instanceID, activity.ID, activity.comment, '')
+                        FeedService.comment($rootScope.workgroup.tenant_id, activity.ID, activity.comment, '')
                             .then(function () {
                                 var comment = {};
                                 comment.userID = $scope.$root.user.id;
@@ -86,7 +86,7 @@ angular.module('primeapps')
                                 return;
 
                             $scope.feedCreating = true;
-                            var instanceId = $scope.$root.workgroup.instanceID;
+                            var instanceId = $scope.$root.workgroup.tenant_id;
                             var text = feed.text;
 
                             FeedService.create(instanceId, $scope.entityId, $scope.entityType, text)
