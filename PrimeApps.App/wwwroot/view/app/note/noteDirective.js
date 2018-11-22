@@ -250,10 +250,12 @@ angular.module('primeapps')
 
                         NoteService.like(request)
                             .then(function () {
+                                $scope.likeButton = true;
                                 var id = note.id;
                                 NoteService.get(id)
                                     .then(function (noteResponse) {
                                         var currentNote = noteResponse.data;
+                                        $scope.likeButton = false;
                                         if (type === 'sub') {
                                             var note = $filter('filter')($scope.$parent.notes, { id: currentNote.note_id }, true)[0];
                                             for (var i = 0; i < note.notes.length; i++) {
