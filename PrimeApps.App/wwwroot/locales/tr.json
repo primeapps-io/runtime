@@ -1099,6 +1099,7 @@
       "DependencyChildSection": "Etkilenen Bölüm",
       "AffectedAreaType": "Etkilenen Tipi",
       "DependencyTypeDisplay": "Görünüm",
+      "DependencyTypeFreeze": "Kayıt Kilitleme",
       "DependencyTypeValueChange": "Değer Değişikliği",
       "EditDependency": "Alan Bağımlılığı Düzenleme",
       "EditActionButton": "Aksiyon Buton Düzenleme",

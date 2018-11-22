@@ -92,6 +92,7 @@ angular.module('primeapps')
                                                     $scope.getDynamicFieldUpdateModules($scope.module);
                                                     $scope.workflowModel = WorkflowService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                     $scope.getUpdatableModules();
+                                                    $scope.generateHookModules();
                                                 });
                                         }
 
@@ -687,7 +688,7 @@ angular.module('primeapps')
                         $scope.hookParameters.push(editParameter);
                     })
                 }
-                else if ($scope.id) {
+                else {
                     setWebHookModules();
                 }
             };

@@ -1095,9 +1095,6 @@ namespace PrimeApps.App.Controllers
                     {
                         case DataType.Number:
                         case DataType.NumberAuto:
-                            format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                            dt.Columns.Add(format).DataType = typeof(int);
-                            break;
                         case DataType.NumberDecimal:
                         case DataType.Currency:
                             format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
@@ -1118,9 +1115,6 @@ namespace PrimeApps.App.Controllers
                     {
                         case DataType.Number:
                         case DataType.NumberAuto:
-                            format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
-                            dt.Columns.Add(format).DataType = typeof(int);
-                            break;
                         case DataType.NumberDecimal:
                         case DataType.Currency:
                             format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
@@ -1171,8 +1165,6 @@ namespace PrimeApps.App.Controllers
                         {
                             case DataType.Number:
                             case DataType.NumberAuto:
-                                dr[i] = (int)record[field.Name];
-                                break;
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 dr[i] = (decimal)record[field.Name];
@@ -1222,7 +1214,7 @@ namespace PrimeApps.App.Controllers
 
 
         [Route("export_excel_view")]
-        public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
+        public async Task<ActionResult> ExportExcelView([FromQuery(Name = "module")]string module, int viewId, int profileId, string locale = "", bool? normalize = false, int? timezoneOffset = 180, string listFindRequestJson = "", bool isViewFields = false)
         {
             if (string.IsNullOrWhiteSpace(module))
             {
@@ -1230,8 +1222,9 @@ namespace PrimeApps.App.Controllers
             }
 
             var moduleEntity = await _moduleRepository.GetByName(module);
-            var fields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
+            var moduleFields = moduleEntity.Fields.Where(x => !x.Deleted).OrderBy(x => x.Id).ToList();
             var nameModule = AppUser.Culture.Contains("tr") ? moduleEntity.LabelTrPlural : moduleEntity.LabelEnPlural;
+            var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
             //byte[] bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(nameModule);
             //var moduleName = System.Text.Encoding.ASCII.GetString(bytes);
             Workbook workbook = new Workbook(FileFormatType.Xlsx);
@@ -1244,6 +1237,15 @@ namespace PrimeApps.App.Controllers
             var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
             var formatTime = currentCulture == "tr-TR" ? "HH:mm" : "h:mm a";
             var label = "";
+            var fields = new List<Field>();
+
+            foreach (var field in moduleFields)
+            {
+                var fieldPermission = HasFieldPermission(profileId, field, moduleEntity);
+
+                if (fieldPermission)
+                    fields.Add(field);
+            }
 
             var view = await _viewRepository.GetById(viewId);
 
@@ -1259,7 +1261,7 @@ namespace PrimeApps.App.Controllers
 
             if (!string.IsNullOrWhiteSpace(listFindRequestJson))
             {
-                var serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
+                serializerSettings = JsonHelper.GetDefaultJsonSerializerSettings();
                 listFindRequest = JsonConvert.DeserializeObject<FindRequest>(listFindRequestJson, serializerSettings);
             }
 
@@ -1341,9 +1343,12 @@ namespace PrimeApps.App.Controllers
                         if (field == null)
                             continue;
 
-                        field.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+                        var fieldJson = JsonConvert.SerializeObject(field, serializerSettings);
+                        var fieldClone = JsonConvert.DeserializeObject<Field>(fieldJson, serializerSettings);
 
-                        viewFields.Add(field);
+                        fieldClone.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+
+                        viewFields.Add(fieldClone);
                     }
                     else
                     {
@@ -1358,9 +1363,12 @@ namespace PrimeApps.App.Controllers
                         if (viewFieldLookup == null)
                             continue;
 
-                        viewFieldLookup.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+                        var viewFieldLookupJson = JsonConvert.SerializeObject(viewFieldLookup, serializerSettings);
+                        var viewFieldLookupClone = JsonConvert.DeserializeObject<Field>(viewFieldLookupJson, serializerSettings);
 
-                        viewFields.Add(viewFieldLookup);
+                        viewFieldLookupClone.StyleInput = viewField.Field;//Mecburen eklendi. Fatih Sever ekledi :) Asagidaki döngüde ihtiyaç olduğu için bu sekilde eklendi.
+
+                        viewFields.Add(viewFieldLookupClone);
                     }
                 }
 
@@ -1393,6 +1401,7 @@ namespace PrimeApps.App.Controllers
 
 
             string labelLocale = "";
+
             for (int i = 0; i < fields.Count; i++)
             {
                 var field = fields[i];
@@ -1407,16 +1416,25 @@ namespace PrimeApps.App.Controllers
                         labelLocale = label + " " + "(" + field.Module.LabelEnSingular + ")";
                 }
                 else
-                    labelLocale = label;
+                {
+                    if (field.StyleInput != null && field.StyleInput.Contains('.'))
+                    {
+                        var fieldStyleInput = field.StyleInput.Split('.');
+                        labelLocale = label + " " + "(" + fieldStyleInput[0] + ")";
+                    }
+                    else
+                    {
+                        labelLocale = label;
+                    }
+
+                }
 
                 if (!dt.Columns.Contains(labelLocale))
                 {
                     switch (field.DataType)
                     {
                         case DataType.Number:
-                        case DataType.NumberAuto:
-                            dt.Columns.Add(labelLocale).DataType = typeof(int);
-                            break;
+                        case DataType.NumberAuto:                         
                         case DataType.NumberDecimal:
                         case DataType.Currency:
                             dt.Columns.Add(labelLocale).DataType = typeof(decimal);
@@ -1431,13 +1449,15 @@ namespace PrimeApps.App.Controllers
                 }
                 else
                 {
-                    labelLocale = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
+                    if (field.StyleInput != null)
+                        labelLocale = locale.Contains("tr") ? field.LabelTr + " (" + field.StyleInput + ")" : field.LabelEn + " (" + field.StyleInput + ")";
+                    else
+                        labelLocale = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
+
                     switch (field.DataType)
                     {
                         case DataType.Number:
-                        case DataType.NumberAuto:
-                            dt.Columns.Add(labelLocale).DataType = typeof(int);
-                            break;
+                        case DataType.NumberAuto:                          
                         case DataType.NumberDecimal:
                         case DataType.Currency:
                             dt.Columns.Add(labelLocale).DataType = typeof(decimal);
@@ -1490,13 +1510,10 @@ namespace PrimeApps.App.Controllers
                             case DataType.Currency:
                                 dr[i] = (decimal)record[!isViewFields ? field.Name : field.StyleInput];
                                 break;
+                            case DataType.Tag:
                             case DataType.Multiselect:
                                 var multi = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
                                 dr[i] = string.Join("|", multi);
-                                break;
-                            case DataType.Tag:
-                                var tag = record[!isViewFields ? field.Name : field.StyleInput].ToObject<List<string>>();
-                                dr[i] = string.Join("|", tag);
                                 break;
                             default:
                                 dr[i] = record[!isViewFields ? field.Name : field.StyleInput];
@@ -1682,10 +1699,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:
-                                format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                                dt.Columns.Add(format).DataType = typeof(int);
-                                break;
+                            case DataType.NumberAuto:                             
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
@@ -1705,10 +1719,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:
-                                format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
-                                dt.Columns.Add(format).DataType = typeof(int);
-                                break;
+                            case DataType.NumberAuto:                            
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
@@ -1760,9 +1771,7 @@ namespace PrimeApps.App.Controllers
                             switch (field.DataType)
                             {
                                 case DataType.Number:
-                                case DataType.NumberAuto:
-                                    dr[i] = (int)record[field.Name];
-                                    break;
+                                case DataType.NumberAuto:                               
                                 case DataType.NumberDecimal:
                                 case DataType.Currency:
                                     dr[i] = (decimal)record[field.Name];
@@ -1962,10 +1971,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:
-                                format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
-                                dt.Columns.Add(format).DataType = typeof(int);
-                                break;
+                            case DataType.NumberAuto:                            
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
@@ -1986,10 +1992,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:
-                                format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
-                                dt.Columns.Add(format).DataType = typeof(int);
-                                break;
+                            case DataType.NumberAuto:                             
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
@@ -2041,9 +2044,7 @@ namespace PrimeApps.App.Controllers
                             switch (field.DataType)
                             {
                                 case DataType.Number:
-                                case DataType.NumberAuto:
-                                    dr[i] = (int)record[field.Name];
-                                    break;
+                                case DataType.NumberAuto:                                
                                 case DataType.NumberDecimal:
                                 case DataType.Currency:
                                     dr[i] = (decimal)record[field.Name];
@@ -2097,6 +2098,38 @@ namespace PrimeApps.App.Controllers
                 return File(memory, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
 
             }
+        }
+
+        private bool HasFieldPermission(int profileId, Field field, Module moduleEntity)
+        {
+            //Field Permission Control
+            if (field.Permissions.Count > 0)
+            {
+                foreach (var permission in field.Permissions)
+                {
+                    if (profileId == permission.ProfileId && permission.Type == FieldPermissionType.None)
+                        return false;
+
+                }
+            }
+
+            //Field Display Detail , Form , List Control
+            if (field.DisplayDetail == false && field.DisplayForm == false && field.DisplayList == false)
+                return false;
+
+            //Section Permission Control
+            var section = moduleEntity.Sections.Single(x => x.Name == field.Section);
+
+            if (section != null && section.Permissions.Count > 0)
+            {
+                foreach (var sectionPermission in section.Permissions)
+                {
+                    if (profileId == sectionPermission.ProfileId && sectionPermission.Type == SectionPermissionType.None)
+                        return false;
+                }
+            }
+
+            return true;
         }
     }
 }

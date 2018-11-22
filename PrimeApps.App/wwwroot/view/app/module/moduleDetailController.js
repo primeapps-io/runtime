@@ -205,8 +205,8 @@ angular.module('primeapps')
                             }
 
                         }).then(function () {
-                        $scope.isActive[$state.params.rptype] = true;
-                    });
+                            $scope.isActive[$state.params.rptype] = true;
+                        });
                 });
             }
 
@@ -303,6 +303,16 @@ angular.module('primeapps')
                 }
             };
 
+            $scope.picklistFilter = function (param) {
+                return function (item) {
+                    $scope.componentFilter = {};
+                    $scope.componentFilter.item = item;
+                    $scope.componentFilter.result = true;
+                    components.run('PicklistFilter', 'Script', $scope);
+                    return !item.hidden && !item.inactive && $scope.componentFilter.result;
+                };
+            };
+
             ModuleService.getPicklists($scope.module)
                 .then(function (picklists) {
                     $scope.picklistsModule = picklists;
@@ -314,9 +324,19 @@ angular.module('primeapps')
                                 $state.go('app.crm.dashboard');
                                 return;
                             }
+                            if ($scope.module.name != 'activities') {
+                                //If Set default value for picklist field, we set dependency value
+                                angular.forEach($scope.module.fields, function (field) {
+                                    ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule);
+                                    if (field.default_value && field.data_type == 'picklist') {
+                                        $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
+                                        $scope.fieldValueChange(field);
+                                    }
+                                });
+                            }
 
                             var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.picklistsModule);
-                            
+
                             for (var i = 0; i < $rootScope.approvalProcesses.length; i++) {
                                 var currentProcess = $rootScope.approvalProcesses[i];
                                 if (currentProcess.module_id === $scope.module.id && currentProcess.trigger_time === 'manuel')
@@ -973,13 +993,13 @@ angular.module('primeapps')
                 $scope.formModalShown = true;
 
                 $scope.formModal = $scope.formModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/module/moduleFormModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'formModal'
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/module/moduleFormModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'formModal'
+                });
 
                 $scope.formModal.$promise.then($scope.formModal.show);
             };
@@ -1478,22 +1498,22 @@ angular.module('primeapps')
 
             $scope.showActivityButtons = function () {
                 $scope.activityButtonsPopover = $scope.activityButtonsPopover || $popover(angular.element(document.getElementById('activityButtons')), {
-                        templateUrl: 'view/common/newactivity.html',
-                        placement: 'bottom',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'view/common/newactivity.html',
+                    placement: 'bottom',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                        templateUrl: 'view/common/newtransaction.html',
-                        placement: 'bottom',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'view/common/newtransaction.html',
+                    placement: 'bottom',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.getCurrentTime = function () {
@@ -1506,12 +1526,12 @@ angular.module('primeapps')
 
                 var openPdfModal = function () {
                     $scope.PdfModal = $scope.PdfModal || $modal({
-                            scope: $scope,
-                            templateUrl: 'view/app/module/modulePdfModal.html',
-                            animation: '',
-                            backdrop: 'static',
-                            show: false
-                        });
+                        scope: $scope,
+                        templateUrl: 'view/app/module/modulePdfModal.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                     $scope.PdfModal.$promise.then($scope.PdfModal.show);
                 };
@@ -1551,12 +1571,12 @@ angular.module('primeapps')
                             }
                             $scope.quoteTemplate = $scope.quoteTemplates[0];
                             $scope.PdfModal = $scope.PdfModal || $modal({
-                                    scope: $scope,
-                                    templateUrl: 'view/app/module/modulePdfModal.html',
-                                    animation: '',
-                                    backdrop: 'static',
-                                    show: false
-                                });
+                                scope: $scope,
+                                templateUrl: 'view/app/module/modulePdfModal.html',
+                                animation: '',
+                                backdrop: 'static',
+                                show: false
+                            });
 
                             openPdfModal();
                         }
@@ -1580,13 +1600,13 @@ angular.module('primeapps')
                 $scope.selectedRelatedModule = relatedModule;
                 $scope.selectedRelatedModule['relatedModuleInModal'] = true;
                 $scope.addModal = $scope.addModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/module/moduleAddModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'relatedModuleInModal'
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/module/moduleAddModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'relatedModuleInModal'
+                });
 
                 $scope.addModal.$promise.then($scope.addModal.show);
             };
@@ -1602,11 +1622,11 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/email/singleEmailModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/email/singleEmailModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 if (!notShow)
                     $scope.mailModal.$promise.then($scope.mailModal.show);
@@ -1621,11 +1641,11 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.mailModal = $scope.mailModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/email/singleEmailModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/email/singleEmailModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 if (!notShow)
                     $scope.mailModal.$promise.then($scope.mailModal.show);
@@ -1639,11 +1659,11 @@ angular.module('primeapps')
 
                 /*Generates and displays modal form for the mail*/
                 $scope.smsModal = $scope.smsModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/sms/singleSMSModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/sms/singleSMSModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.smsModal.$promise.then($scope.smsModal.show);
             };
@@ -1662,12 +1682,12 @@ angular.module('primeapps')
                 else {
                     $scope.frameUrl = url;
                     $scope.frameModal = $scope.frameModal || $modal({
-                            scope: $scope,
-                            controller: 'ActionButtonFrameController',
-                            templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
-                            backdrop: 'static',
-                            show: false
-                        });
+                        scope: $scope,
+                        controller: 'ActionButtonFrameController',
+                        templateUrl: 'view/app/actionbutton/actionButtonFrameModal.html',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                     $scope.frameModal.$promise.then($scope.frameModal.show);
                 }
@@ -1693,12 +1713,12 @@ angular.module('primeapps')
 
             $scope.showTransactionButtons = function () {
                 $scope.transactionButtonsPopover = $scope.transactionButtonsPopover || $popover(angular.element(document.getElementById('transactionButtons')), {
-                        templateUrl: 'view/common/newtransaction.html',
-                        placement: 'bottom',
-                        autoClose: true,
-                        scope: $scope,
-                        show: true
-                    });
+                    templateUrl: 'view/common/newtransaction.html',
+                    placement: 'bottom',
+                    autoClose: true,
+                    scope: $scope,
+                    show: true
+                });
             };
 
             $scope.getmoduledownloadurl = function (fileName, fieldName) {
@@ -1773,12 +1793,12 @@ angular.module('primeapps')
             $scope.openLocationModal = function (filedName) {
                 $scope.filedName = filedName;
                 $scope.locationModal = $scope.frameModal || $modal({
-                        scope: $scope,
-                        controller: 'locationFormModalController',
-                        templateUrl: 'view/app/location/locationFormModal.html',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    controller: 'locationFormModalController',
+                    templateUrl: 'view/app/location/locationFormModal.html',
+                    backdrop: 'static',
+                    show: false
+                });
                 $scope.locationModal.$promise.then($scope.locationModal.show);
             };
             //webhook request func for action button
@@ -1911,8 +1931,8 @@ angular.module('primeapps')
                         $scope.approving = false;
                         $scope.waitingForApproval = true;
                     }).catch(function onError() {
-                    $scope.approving = false;
-                });
+                        $scope.approving = false;
+                    });
             }
 
             $scope.rejectProcess = function (message) {
@@ -1931,8 +1951,8 @@ angular.module('primeapps')
                         $scope.record.process_status = 3;
                         $scope.rejectModal.hide();
                     }).catch(function onError() {
-                    $scope.rejecting = false;
-                });
+                        $scope.rejecting = false;
+                    });
             }
 
             $scope.reApproveProcess = function () {
@@ -1946,19 +1966,19 @@ angular.module('primeapps')
                         $scope.record.process_status = 1;
                         $scope.record.process_status_order++;
                     }).catch(function onError() {
-                    $scope.reapproving = false;
-                });
+                        $scope.reapproving = false;
+                    });
             }
 
             $scope.openRejectApprovalModal = function () {
                 $scope.rejectModal = $scope.rejectModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/module/rejectProcessModal.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false,
-                        tag: 'createModal'
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/module/rejectProcessModal.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false,
+                    tag: 'createModal'
+                });
 
                 $scope.rejectModal.$promise.then($scope.rejectModal.show);
             };
@@ -2008,12 +2028,12 @@ angular.module('primeapps')
                         $scope.record.process_status = 1;
                         $scope.record.process_status_order++;
                     }).catch(function onError(response) {
-                    $scope.manuelApproveRequest = false;
-                    if (response.status === 400) {
-                        if (response.data.model_state && response.data.model_state['filters_not_match'])
-                            ngToast.create({ content: $filter('translate')('Common.FiltersNotMatched'), className: 'warning' });
-                    }
-                });
+                        $scope.manuelApproveRequest = false;
+                        if (response.status === 400) {
+                            if (response.data.model_state && response.data.model_state['filters_not_match'])
+                                ngToast.create({ content: $filter('translate')('Common.FiltersNotMatched'), className: 'warning' });
+                        }
+                    });
             };
 
             //converts sales order to sales invoice

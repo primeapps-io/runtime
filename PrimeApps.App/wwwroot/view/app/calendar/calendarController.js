@@ -175,6 +175,16 @@ angular.module('primeapps')
                                                 if (!eventItem[startDateField.name])
                                                     eventItem[startDateField.name] = eventItem[endDateField.name];
 
+                                                if (event.type == 'izinler' && eventItem[endDateField.name]) {
+                                                    var endDate = eventItem[endDateField.name];
+                                                    var endDateSplit = endDate.split('T');
+                                                    var endDateSplitIndex = endDateSplit[0].split('-');
+                                                    var endDateCalculate = parseInt(endDateSplitIndex[2]) - 1;
+                                                    var splitDate = endDateSplit[0].split('-');
+                                                    var dateFormat = splitDate[0] + '-' + splitDate[1] + '-' + endDateCalculate.toString() + 'T' + endDateSplit[1];
+                                                    eventItem[endDateField.name] = dateFormat;
+                                                }
+
                                                 event.startsAt = moment.utc(eventItem[startDateField.name]).toDate();
                                                 event.endsAt = moment.utc(eventItem[endDateField.name]).toDate();
 
