@@ -55,7 +55,7 @@ angular.module('primeapps')
 
             if (!$scope.id) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -321,8 +321,7 @@ angular.module('primeapps')
                         .then(function (recordData) {
                             if (Object.keys(recordData.data).length === 0) {
                                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                                $state.go('app.crm.dashboard');
-                                return;
+                                $state.go('app.dashboard');
                             }
                             if ($scope.module.name != 'activities') {
                                 //If Set default value for picklist field, we set dependency value

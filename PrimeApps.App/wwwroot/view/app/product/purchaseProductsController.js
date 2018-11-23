@@ -16,7 +16,7 @@ angular.module('primeapps')
 
             if (!$scope.purchaseProductModule) {
                 ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 

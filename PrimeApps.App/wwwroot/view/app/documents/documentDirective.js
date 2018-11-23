@@ -27,7 +27,7 @@ angular.module('primeapps')
                         $scope.lightBox = false;
                         $scope.type = $stateParams.type;
                         $scope.module = $filter('filter')($scope.$root.modules, { name: $stateParams.type }, true)[0];
-                        $scope.moduleId = $scope.moduleId;
+                        $scope.moduleId = $scope.module.id;
 
 
                         var tenant_id = $scope.$root.workgroup.tenant_id;
