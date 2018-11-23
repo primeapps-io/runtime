@@ -47,13 +47,21 @@ namespace PrimeApps.App.Notifications
 			_configuration = configuration;
 		}
 
-		#region Create
-		public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180)
-		{
-			using (var _scope = _serviceScopeFactory.CreateScope())
-			{
-				//Set warehouse database name
-				warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+        public ActivityHelper(IConfiguration configuration,IServiceScopeFactory serviceScopeFactory,CurrentUser currentUser)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+            _currentUser = currentUser;
+        }
+
+        #region Create
+        public async Task Create(UserItem appUser, JObject record, Module module, Warehouse warehouse, bool createForExisting = true, int timezoneOffset = 180)
+        {
+            using (var _scope = _serviceScopeFactory.CreateScope())
+            {
+                //Set warehouse database name
+                warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
 				var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 
@@ -489,11 +497,11 @@ namespace PrimeApps.App.Notifications
 
 					int reminderFrequency = 0;
 
-					/// task is already outdated.
-					if (taskDueDate < now) return;
+                    /// If task due date and reminder start date passed from now datetime, task is already outdated.
+                    if (taskDueDate < now && taskReminderStartDate < now) return;
 
-					/// set reminder end to the last minute of the day.
-					taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+                    /// set reminder end to the last minute of the day.
+                    taskDueDate = taskDueDate.AddHours(23).AddMinutes(59).AddSeconds(59);
 
 
 					reminderExisting.ReminderStart = (DateTime)record["task_reminder"];//tarihleri beni kıllandırıyor kontrol edelim.

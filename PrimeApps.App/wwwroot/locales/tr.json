@@ -168,7 +168,7 @@
     "ResendMailSuccess": "Doğrulama e-postası tekrar gönderildi.",
     "ActivationMessage": "Tebrikler! Bulunduğunuz sektörleri seçtikten sonra Ofisim.com hesabınızı hemen kullanmaya başlayabilirsiniz.",
     "ActivationMessageFree": "Hesabınız aktif ediliyor. Lütfen bekleyiniz...",
-    "ActivationSuccess": "Aktivasyonunuz başarı ile gerçekleşmiştir. Kullanıcı adı ve şifre bilgilerinizi girerek sisteme giriş yapabilirsiniz.",
+    "ActivationSuccess": "Aktivasyonunuz başarı ile gerçekleşmiştir. Eposta ve parolanız ile giriş yapabilirsiniz.",
     "StartAccount": "Hesabımı Başlat",
     "ActivationError": "Geçersiz aktivasyon kodu!",
     "PasswordConfirm": "Şifre (Tekrar)",
@@ -421,6 +421,20 @@
     "Unlike": "Beğenmekten Vazgeç",
     "ShareNote": "Ne düşündüğünü ekip arkadaşlarınla paylaş",
     "LimitWarn": "Mesajınız 4000 karakterden fazla olamaz"
+  },
+  "Expenses": {
+    "Expenses": "MASRAFLAR",
+    "AddExpenseItem": "Masraf Kalemi Ekle",
+    "ExpenseItems": "Masraf Kalemleri",
+    "TotalAmount": "Toplam Tutar",
+    "ExpenseSheetSettings": "Masraf Çizelgesi Ayarları",
+    "ExpensePeriodYear": "Masraf Dönemi (Yıl)",
+    "ExpensePeriodMonth": "Masraf Dönemi (Ay)",
+    "ExpenseEntryEndDate": "Masraf Dönemi Bitiş Tarihi",
+    "ProcessApprovalDate": "Yönetici Onay Tarihi",
+    "ExpensePeriodDescription": "Masraf Dönemi Açıklama",
+    "Years": "Yıllar",
+    "Months": "Aylar"
   },
   "Tasks": {
     "Tasks": "Görevler",
@@ -1085,6 +1099,7 @@
       "DependencyChildSection": "Etkilenen Bölüm",
       "AffectedAreaType": "Etkilenen Tipi",
       "DependencyTypeDisplay": "Görünüm",
+      "DependencyTypeFreeze": "Kayıt Kilitleme",
       "DependencyTypeValueChange": "Değer Değişikliği",
       "EditDependency": "Alan Bağımlılığı Düzenleme",
       "EditActionButton": "Aksiyon Buton Düzenleme",
@@ -1782,7 +1797,7 @@
         "Info5": "Seçim listesi tipindeki alanların değerleri sistemde önceden kayıtlı olmalıdır.",
         "Info6": "Onay Kutusu tipindeki alanların değeri Evet/Hayır veya true/false olabilir.",
         "Info7": "Kullanıcı tipindeki alanların değeri kullanıcının adı soyadı veya eposta adresi olabilir.",
-        "Info8": "Çoklu seçim tipindeki alanların değerleri \"|\" işareti ile ayrılır. Örnek: Kırmızı | Yeşil | Mavi"
+        "Info8": "Çoklu seçim ve etiket tipindeki alanların değerleri \"|\" işareti ile ayrılır. Örnek: Kırmızı | Yeşil | Mavi"
       },
       "DateOrders": {
         "DayMonthYear": "Gün Ay Yıl",

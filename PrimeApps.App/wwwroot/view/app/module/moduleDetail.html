@@ -431,7 +431,7 @@ relatedModule['label_'
                                                 <a href
                                                    editable-custom--select="record[field.name]"
                                                    e-ng-change="record[field.name] = $data; fieldValueChange(field);"
-                                                   e-ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:{inactive:'!true'} track by o.id"
+                                                   e-ng-options="o as o.label[language] for o in picklistsModule[field.picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
                                                    oncancel="record[field.name] = recordState[field.name]; fieldValueChange(field);"
                                                    onaftersave="update()"
                                                    ng-if="field.data_type === 'picklist'">

@@ -207,7 +207,6 @@ namespace PrimeApps.Auth.UI
                 Array validUrlsArr = null;
                 if (!string.IsNullOrEmpty(validUrls))
                     validUrlsArr = validUrls.Split(";");
-
                 if (result.Succeeded)
                 {
                     if (vm.ApplicationInfo != null && Array.IndexOf(validUrlsArr, Request.Host.Host) == -1)
@@ -230,7 +229,6 @@ namespace PrimeApps.Auth.UI
                             vm.Error = "NotValidApp";
                             return View(vm);
                         }
-
                     }
 
                     var user = await _userManager.FindByNameAsync(model.Username);
@@ -253,7 +251,6 @@ namespace PrimeApps.Auth.UI
 
             // something went wrong, show form with error
             vm.Error = "WrongInfo";
-
             return View(vm);
         }
 
@@ -300,10 +297,9 @@ namespace PrimeApps.Auth.UI
             }
 
             var createUserRespone = await CreateUser(model, vm.ApplicationInfo, vm.ReturnUrl);
-            
+
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
             {
-                ErrorHandler.LogMessage("IdentityServer Register Error: " + createUserRespone["Error"].ToString(), Sentry.Protocol.SentryLevel.Info);
                 vm.Error = createUserRespone["Error"].ToString();
                 return View(vm);
             }
@@ -355,7 +351,7 @@ namespace PrimeApps.Auth.UI
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
                 return BadRequest(new { ErrorMessage = createUserRespone["Error"].ToString() });
-            
+
             return Ok();
         }
 

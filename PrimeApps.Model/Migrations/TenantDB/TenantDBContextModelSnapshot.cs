@@ -280,6 +280,255 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("audit_logs");
                 });
 
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("Order")
+                        .HasColumnName("order");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("bpm_categories");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmRecordFilter", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Field")
+                        .IsRequired()
+                        .HasColumnName("field")
+                        .HasMaxLength(120);
+
+                    b.Property<int>("No");
+
+                    b.Property<int>("Operator");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnName("workflow_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("WorkflowId");
+
+                    b.ToTable("bpm_record_filters");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmWorkflow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<bool>("Active")
+                        .HasColumnName("active");
+
+                    b.Property<bool>("CanStartManuel")
+                        .HasColumnName("can_start_manuel");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("ChangedFields")
+                        .HasColumnName("changed_fields")
+                        .HasMaxLength(4000);
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnName("code")
+                        .HasMaxLength(200);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("DefinitionJson")
+                        .HasColumnName("definition_json");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Description")
+                        .HasColumnName("description");
+
+                    b.Property<string>("DiagramJson")
+                        .HasColumnName("diagram_json");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnName("end_time");
+
+                    b.Property<int>("Frequency")
+                        .HasColumnName("frequency");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("ProcessFilter")
+                        .HasColumnName("process_filter");
+
+                    b.Property<string>("RecordOperations")
+                        .IsRequired()
+                        .HasColumnName("record_operations")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnName("start_time");
+
+                    b.Property<int>("TriggerType")
+                        .HasColumnName("trigger_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("Version")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Active");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("Code");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("Version");
+
+                    b.ToTable("bpm_workflows");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmWorkflowLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnName("module_id");
+
+                    b.Property<int>("RecordId")
+                        .HasColumnName("record_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("WorkflowId")
+                        .HasColumnName("workflow_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("ModuleId");
+
+                    b.HasIndex("RecordId");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.HasIndex("WorkflowId");
+
+                    b.ToTable("bpm_workflow_logs");
+                });
+
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Calculation", b =>
                 {
                     b.Property<int>("Id")
@@ -4118,6 +4367,68 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmCategory", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmRecordFilter", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.BpmWorkflow", "Workflow")
+                        .WithMany("Filters")
+                        .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmWorkflow", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.BpmCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.BpmWorkflowLog", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.BpmWorkflow", "BpmWorkflow")
+                        .WithMany()
+                        .HasForeignKey("WorkflowId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Calculation", b =>

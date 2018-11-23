@@ -422,6 +422,20 @@
     "ShareNote": "Share what you think with your teammates",
     "LimitWarn": "Your message is longer than 4000 characters"
   },
+  "Expenses": {
+    "Expenses": "EXPENSES",
+    "AddExpenseItem": "Add Expense Item",
+    "ExpenseItems": "Expense Items",
+    "TotalAmount": "Total Amount",
+    "ExpenseSheetSettings": "Expense Sheet Settings",
+    "ExpensePeriodYear": "Expense Period (Year)",
+    "ExpensePeriodMonth": "Expense Period (Month)",
+    "ExpenseEntryEndDate": "Expense Entry End Date",
+    "ProcessApprovalDate": "Process Approval Date",
+    "ExpensePeriodDescription": "Expense Period Description",
+    "Years": "Years",
+    "Months": "Months"
+  },
   "Tasks": {
     "Tasks": "Tasks",
     "RelatedTasks": "Tasks about {{entity}}",
@@ -1084,6 +1098,7 @@
       "DependencyChildSection": "Affected Section",
       "AffectedAreaType": "Affected Area Type",
       "DependencyTypeDisplay": "Display",
+      "DependencyTypeFreeze": "Record Freeze",
       "DependencyTypeValueChange": "Value Change",
       "EditDependency": "Edit Field Dependency",
       "EditActionButton": "Edit Action Button",
@@ -1783,7 +1798,7 @@
         "Info5": "Picklist fields value must be already on the system.",
         "Info6": "Checkbox fields value must be Yes/No or true/false.",
         "Info7": "User fields value must be user's full name or email.",
-        "Info8": "Multiselect fields values are seperated by \"|\" sign. For example: Red | Green | Blue"
+        "Info8": "Multiselect and tag fields values are seperated by \"|\" sign. For example: Red | Green | Blue"
       },
       "DateOrders": {
         "DayMonthYear": "Day Month Year",

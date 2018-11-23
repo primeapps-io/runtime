@@ -277,14 +277,21 @@ angular.module('primeapps')
                                             $rootScope.showModal = function () {
                                                 $localStorage.write('ModalShow', false);
                                             };
-
                                         }
                                     }
+
+                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'type': 3 }, true)[0];
 
                                     //custom menü
                                     $rootScope.customMenu = false;
                                     var menu = response[10].data;
                                     if (menu) {
+                                        //Custom Menüde Haber Akışının Profil Yetkilendirmelerden görünümü kapatılınca Menüye gelmemesi sağlanıyor.
+                                        var newsfeedShow = $filter('filter')(menu, { 'route': 'newsfeed' }, true)[0];
+                                        if (newsfeedShow && $rootScope.permissionsNewsfeed && $rootScope.permissionsNewsfeed.Read === false) {
+                                            var newsfeedIndex = menu.indexOf(newsfeedShow);
+                                            menu.splice(newsfeedIndex, 1);
+                                        }
                                         $rootScope.customMenu = true;
                                         $rootScope.menu = $filter('orderBy')(menu, 'order', false);
                                     }
@@ -398,7 +405,7 @@ angular.module('primeapps')
                                             $rootScope.phoneSettings = phoneSettings;
                                         else
                                             $rootScope.phoneSettings = {};
-                                        
+
                                         $rootScope.phoneSettings.sipLicenseCount = $rootScope.workgroup.licenses.sip_license_count;
                                         //getUserSpecific sipAccount Info
                                         if (phoneSettings.sipUsers) {

@@ -1,36 +1,21 @@
-using Aspose.Words;
-using Aspose.Words.MailMerging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage.Blob;
-using MimeMapping;
 using Newtonsoft.Json.Linq;
-using Npgsql;
-using PrimeApps.App.Extensions;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Document;
-using PrimeApps.Model.Common.Note;
-using PrimeApps.Model.Common.Record;
-using PrimeApps.Model.Entities.Tenant;
-using PrimeApps.Model.Enums;
-using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Document = PrimeApps.Model.Entities.Tenant.Document;
-using SaveFormat = Aspose.Words.SaveFormat;
 
 namespace PrimeApps.App.Controllers
 {
@@ -77,136 +62,136 @@ namespace PrimeApps.App.Controllers
             base.OnActionExecuting(context);
         }
 
-		[Route("upload_hex"), HttpPost]
-		public async Task<IActionResult> UploadHex([FromBody]JObject data)
-		{
-			string instanceId,
-			  file,
-			  description,
-			  moduleName,
-			  moduleId,
-			  recordId,
-			  fileName;
-			moduleName = data["module_name"]?.ToString();
-			file = data["file"]?.ToString();
-			description = data["description"]?.ToString();
-			moduleId = data["module_id"]?.ToString();
-			recordId = data["record_id"]?.ToString();
-			fileName = data["file_name"]?.ToString();
-			instanceId = data["instance_id"]?.ToString();
+        [Route("upload_hex"), HttpPost]
+        public async Task<IActionResult> UploadHex([FromBody]JObject data)
+        {
+            string instanceId,
+              file,
+              description,
+              moduleName,
+              moduleId,
+              recordId,
+              fileName;
+            moduleName = data["module_name"]?.ToString();
+            file = data["file"]?.ToString();
+            description = data["description"]?.ToString();
+            moduleId = data["module_id"]?.ToString();
+            recordId = data["record_id"]?.ToString();
+            fileName = data["file_name"]?.ToString();
+            instanceId = data["instance_id"]?.ToString();
 
-			int parsedModuleId;
-			Guid parsedInstanceId = Guid.NewGuid();
-			int parsedRecordId;
-			byte[] fileBytes;
+            int parsedModuleId;
+            Guid parsedInstanceId = Guid.NewGuid();
+            int parsedRecordId;
+            byte[] fileBytes;
 
-			if (string.IsNullOrEmpty(file))
-				return BadRequest("Please send file hex string.");
+            if (string.IsNullOrEmpty(file))
+                return BadRequest("Please send file hex string.");
 
-			if (string.IsNullOrEmpty(recordId))
-				return BadRequest("Please send record_id.");
+            if (string.IsNullOrEmpty(recordId))
+                return BadRequest("Please send record_id.");
 
-			if (!int.TryParse(recordId, out parsedRecordId))
-				return BadRequest("Please send valid record_id.");
+            if (!int.TryParse(recordId, out parsedRecordId))
+                return BadRequest("Please send valid record_id.");
 
-			if (string.IsNullOrEmpty(fileName))
-				return BadRequest("Please send file hex string.");
+            if (string.IsNullOrEmpty(fileName))
+                return BadRequest("Please send file hex string.");
 
-			if (fileName.Split('.').Length != 2)
-				return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
+            if (fileName.Split('.').Length != 2)
+                return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
 
-			if (string.IsNullOrEmpty(instanceId))
-				return BadRequest("Please send instance_id.");
+            if (string.IsNullOrEmpty(instanceId))
+                return BadRequest("Please send instance_id.");
 
-			if (!string.IsNullOrEmpty(instanceId))
-				if (!Guid.TryParse(instanceId, out parsedInstanceId))
-					return BadRequest("Please send valid instance_id.");
+            if (!string.IsNullOrEmpty(instanceId))
+                if (!Guid.TryParse(instanceId, out parsedInstanceId))
+                    return BadRequest("Please send valid instance_id.");
 
-			if (!string.IsNullOrEmpty(moduleId))
-			{
-				var isNumeric = int.TryParse(moduleId, out parsedModuleId);
-				if (!isNumeric)
-					return BadRequest("Please send integer for module_id parameter.");
+            if (!string.IsNullOrEmpty(moduleId))
+            {
+                var isNumeric = int.TryParse(moduleId, out parsedModuleId);
+                if (!isNumeric)
+                    return BadRequest("Please send integer for module_id parameter.");
 
-				var module = await _moduleRepository.GetById(parsedModuleId);
+                var module = await _moduleRepository.GetById(parsedModuleId);
 
-				if (module == null)
-					return BadRequest("Module not found.");
-			}
-			else if (!string.IsNullOrEmpty(moduleName))
-			{
-				var module = await _moduleRepository.GetByNameBasic(moduleName);
+                if (module == null)
+                    return BadRequest("Module not found.");
+            }
+            else if (!string.IsNullOrEmpty(moduleName))
+            {
+                var module = await _moduleRepository.GetByNameBasic(moduleName);
 
-				if (module == null)
-					return BadRequest("Module not found.");
+                if (module == null)
+                    return BadRequest("Module not found.");
 
-				parsedModuleId = module.Id;
-			}
-			else
-				return BadRequest("Please send module_id or module_name paratemer.");
+                parsedModuleId = module.Id;
+            }
+            else
+                return BadRequest("Please send module_id or module_name paratemer.");
 
-			try
-			{
-				fileBytes = Enumerable.Range(0, file.Length)
-					 .Where(x => x % 2 == 0)
-					 .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
-					 .ToArray();
-			}
-			catch (Exception ex)
-			{
-				return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
-			}
+            try
+            {
+                fileBytes = Enumerable.Range(0, file.Length)
+                     .Where(x => x % 2 == 0)
+                     .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
+                     .ToArray();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
+            }
 
-			var chunks = fileBytes.Split(2048 * 1024).ToList(); //split to 2 mb.
-			var ext = Path.GetExtension(fileName);
-			var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+            var chunks = fileBytes.Split(2048 * 1024).ToList(); //split to 2 mb.
+            var ext = Path.GetExtension(fileName);
+            var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
 
-			for (var i = 0; i < chunks.Count; i++)
-			{
-				//send stream and parameters to storage upload helper method for temporary upload.
-				await AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, GetMimeType(ext), _configuration);
-			}
+            for (var i = 0; i < chunks.Count; i++)
+            {
+                //send stream and parameters to storage upload helper method for temporary upload.
+                await AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, GetMimeType(ext), _configuration);
+            }
 
-			/*var result = new DocumentUploadResult();
+            /*var result = new DocumentUploadResult();
 			result.ContentType = ;
 			result.UniqueName = uniqueName;
 			result.Chunks = chunks.Count;*/
 
-			string uniqueStandardizedName = fileName.Replace(" ", "-");
+            string uniqueStandardizedName = fileName.Replace(" ", "-");
 
-			uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
+            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
 
-			Document currentDoc = new Document()
-			{
-				FileSize = fileBytes.Length,
-				Description = description,
-				ModuleId = parsedModuleId,
-				Name = fileName,
-				CreatedAt = DateTime.UtcNow,
-				Type = GetMimeType(ext),
-				UniqueName = uniqueName,
-				RecordId = parsedRecordId,
-				Deleted = false
-			};
-			if (await _documentRepository.CreateAsync(currentDoc) != null)
-			{
-				//transfer file to the permanent storage by committing it.
-				await AzureStorage.CommitFile(uniqueName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), chunks.Count, _configuration);
-				return Ok(currentDoc.Id.ToString());
-			}
+            Document currentDoc = new Document()
+            {
+                FileSize = fileBytes.Length,
+                Description = description,
+                ModuleId = parsedModuleId,
+                Name = fileName,
+                CreatedAt = DateTime.UtcNow,
+                Type = GetMimeType(ext),
+                UniqueName = uniqueName,
+                RecordId = parsedRecordId,
+                Deleted = false
+            };
+            if (await _documentRepository.CreateAsync(currentDoc) != null)
+            {
+                //transfer file to the permanent storage by committing it.
+                await AzureStorage.CommitFile(uniqueName, currentDoc.UniqueName, currentDoc.Type, string.Format("inst-{0}", AppUser.TenantGuid), chunks.Count, _configuration);
+                return Ok(currentDoc.Id.ToString());
+            }
 
-			return BadRequest("Couldn't Create Document!");
+            return BadRequest("Couldn't Create Document!");
 
-			//this request invalid because there is no file, return fail code to the client.
-			//return NotFound();
-		}
+            //this request invalid because there is no file, return fail code to the client.
+            //return NotFound();
+        }
 
-		/// <summary>
-		/// Uploads files by the chucks as a stream.
-		/// </summary>
-		/// <param name="fileContents">The file contents.</param>
-		/// <returns>System.String.</returns>
-		[Route("Upload"), HttpPost]
+        /// <summary>
+        /// Uploads files by the chucks as a stream.
+        /// </summary>
+        /// <param name="fileContents">The file contents.</param>
+        /// <returns>System.String.</returns>
+        [Route("Upload"), HttpPost]
         public async Task<IActionResult> Upload()
         {
             DocumentUploadResult result;
@@ -224,6 +209,7 @@ namespace PrimeApps.App.Controllers
 
             return Ok(result);
         }
+
         [Route("Upload_Excel"), HttpPost]
         public async Task<IActionResult> UploadExcel()
         {
@@ -315,6 +301,7 @@ namespace PrimeApps.App.Controllers
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
         }
+
         /// <summary>
         /// Using at record document type upload for single file
         /// </summary>
@@ -443,6 +430,7 @@ namespace PrimeApps.App.Controllers
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
         }
+
         [Route("remove_document"), HttpPost]
         public async Task<IActionResult> RemoveModuleDocument([FromBody]JObject data)
         {
@@ -593,7 +581,7 @@ namespace PrimeApps.App.Controllers
         /// <param name="InstanceID">The instance identifier.</param>
         /// <returns>IList{DTO.DocumentResult}.</returns>
         [Route("GetEntityDocuments"), HttpPost]
-        public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentBindingModels req)
+        public async Task<IActionResult> GetEntityDocuments([FromBody] DocumentBindingModel req)
         {
 
             //Get last 5 entity documents and return it to the client.
@@ -806,7 +794,7 @@ namespace PrimeApps.App.Controllers
 
             return NotFound();
 
-        }      
+        }
 
         [Route("document_search"), HttpPost]
         public async Task<IActionResult> SearchDocument([FromBody]DocumentFilterRequest filterRequest)
@@ -827,8 +815,8 @@ namespace PrimeApps.App.Controllers
                 return Ok(results);
             }
             return BadRequest();
-        }   
-        
+        }
+
         [Route("find"), HttpPost]
         public async Task<ICollection<DocumentResult>> Find([FromBody]DocumentFindRequest request)
         {
@@ -843,79 +831,70 @@ namespace PrimeApps.App.Controllers
             return await _documentRepository.Count(request);
         }
 
-        public class SecondLevel
+        public string GetMimeType(string name)
         {
-            public int RelationId { get; set; }
-            public Module Module { get; set; }
-            public Module SubModule { get; set; }
-            public Relation SubRelation { get; set; }
-
+            var type = name.Split('.')[1];
+            switch (type)
+            {
+                case "gif":
+                    return "image/bmp";
+                case "bmp":
+                    return "image/bmp";
+                case "jpeg":
+                case "jpg":
+                    return "image/jpeg";
+                case "png":
+                    return "image/png";
+                case "tif":
+                case "tiff":
+                    return "image/tiff";
+                case "doc":
+                    return "application/msword";
+                case "docx":
+                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "pdf":
+                    return "application/pdf";
+                case "ppt":
+                    return "application/vnd.ms-powerpoint";
+                case "pptx":
+                    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                case "xlsx":
+                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case "xls":
+                    return "application/vnd.ms-excel";
+                case "csv":
+                    return "text/csv";
+                case "xml":
+                    return "text/xml";
+                case "txt":
+                    return "text/plain";
+                case "zip":
+                    return "application/zip";
+                case "ogg":
+                    return "application/ogg";
+                case "mp3":
+                    return "audio/mpeg";
+                case "wma":
+                    return "audio/x-ms-wma";
+                case "wav":
+                    return "audio/x-wav";
+                case "wmv":
+                    return "audio/x-ms-wmv";
+                case "swf":
+                    return "application/x-shockwave-flash";
+                case "avi":
+                    return "video/avi";
+                case "mp4":
+                    return "video/mp4";
+                case "mpeg":
+                    return "video/mpeg";
+                case "mpg":
+                    return "video/mpeg";
+                case "qt":
+                    return "video/quicktime";
+                default:
+                    return "image/jpeg";
+            }
         }
-
-		public string GetMimeType(string name)
-		{
-			var type = name.Split('.')[1];
-			switch (type)
-			{
-				case "gif":
-					return "image/bmp";
-				case "bmp":
-					return "image/bmp";
-				case "jpeg":
-				case "jpg":
-					return "image/jpeg";
-				case "png":
-					return "image/png";
-				case "tif":
-				case "tiff":
-					return "image/tiff";
-				case "doc":
-					return "application/msword";
-				case "docx":
-					return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-				case "pdf":
-					return "application/pdf";
-				case "ppt":
-					return "application/vnd.ms-powerpoint";
-				case "pptx":
-					return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-				case "xlsx":
-					return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-				case "xls":
-					return "application/vnd.ms-excel";
-				case "csv":
-					return "text/csv";
-				case "xml":
-					return "text/xml";
-				case "txt":
-					return "text/plain";
-				case "zip":
-					return "application/zip";
-				case "ogg":
-					return "application/ogg";
-				case "mp3":
-					return "audio/mpeg";
-				case "wma":
-					return "audio/x-ms-wma";
-				case "wav":
-					return "audio/x-wav";
-				case "wmv":
-					return "audio/x-ms-wmv";
-				case "swf":
-					return "application/x-shockwave-flash";
-				case "avi":
-					return "video/avi";
-				case "mp4":
-					return "video/mp4";
-				case "mpeg":
-					return "video/mpeg";
-				case "mpg":
-					return "video/mpeg";
-				case "qt":
-					return "video/quicktime";
-				default:
-					return "image/jpeg";
-			}
-		}
-	}
+    }
 }

@@ -14,28 +14,37 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
-	public interface IAuditLogHelper
-	{
-		Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type,
-			RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null);
-	}
+    public interface IAuditLogHelper
+    {
+        Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type,
+            RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null);
+    }
 
-	public class AuditLogHelper : IAuditLogHelper
-	{
-		private IHttpContextAccessor _context;
-		private IConfiguration _configuration;
-		private IServiceScopeFactory _serviceScopeFactory;
-		private CurrentUser _currentUser;
+    public class AuditLogHelper : IAuditLogHelper
+    {
+        private IHttpContextAccessor _context;
+        private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
+        private CurrentUser _currentUser;
 
-		public AuditLogHelper(IConfiguration configuration, IAuditLogRepository auditLogRepository, IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory)
-		{
-			_context = context;
-			_serviceScopeFactory = serviceScopeFactory;
+        public AuditLogHelper(IConfiguration configuration, IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory)
+        {
+            _context = context;
+            _serviceScopeFactory = serviceScopeFactory;
 
-			_configuration = configuration;
+            _configuration = configuration;
 
-			_currentUser = UserHelper.GetCurrentUser(_context);
-		}
+            _currentUser = UserHelper.GetCurrentUser(_context);
+        }
+
+        public AuditLogHelper(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory, CurrentUser currentUser)
+        {
+            _serviceScopeFactory = serviceScopeFactory;
+            _configuration = configuration;
+
+            _currentUser = currentUser;
+        }
+       
 		private readonly List<string> ExcludedModules = new List<string> { "stage_history", "quote_products", "order_products" };
 
 		public async Task CreateLog(UserItem appUser, int? recordId, string recordName, AuditType type, RecordActionType? recordActionType, SetupActionType? setupActionType, Module module = null)

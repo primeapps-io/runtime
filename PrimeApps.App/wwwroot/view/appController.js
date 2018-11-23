@@ -14,6 +14,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.addingApp = false;
         $scope.tenants = $rootScope.multiTenant;
         $scope.isTimetrackerExist = false;
+        $scope.isExpenseExist = false;
         $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
 
         $rootScope.isMobile = function () {
@@ -337,6 +338,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         if ($filter('filter')($rootScope.modules, { name: 'timetrackers' }, true).length > 0)
             $scope.isTimetrackerExist = true;
 
+        //Yeni Masraf yapısını gösterme
+        if ($filter('filter')($rootScope.modules, { name: 'masraflar' }, true).length > 0)
+            $scope.isExpenseExist = true;
+
         $rootScope.openHelp = function (id) {
             HelpService.getById(id).then(function (response) {
                 $scope.helpLinkTemplate = response.data;
@@ -383,49 +388,49 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     if (isModuleList) {
                         HelpService.getModuleType('sidemodal', 'modulelist', module.id)
                             .then(function (response) {
-                                    $scope.helpTemplatesSide = response.data;
-                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                        $scope.noneHelpTemplate = false;
-                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $scope.noneHelpTemplate = false;
+                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
-                                    }
-                                    else {
-                                        $scope.helpTemplateSideModal = null;
-                                        $scope.noneHelpTemplate = true;
-                                    }
                                 }
+                                else {
+                                    $scope.helpTemplateSideModal = null;
+                                    $scope.noneHelpTemplate = true;
+                                }
+                            }
                             );
                     }
                     else if (isModuleDetail) {
                         HelpService.getModuleType('sidemodal', 'moduledetail', module.id)
                             .then(function (response) {
-                                    $scope.helpTemplatesSide = response.data;
-                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                        $scope.noneHelpTemplate = false;
-                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $scope.noneHelpTemplate = false;
+                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
-                                    }
-                                    else {
-                                        $scope.helpTemplateSideModal = null;
-                                        $scope.noneHelpTemplate = true;
-                                    }
                                 }
+                                else {
+                                    $scope.helpTemplateSideModal = null;
+                                    $scope.noneHelpTemplate = true;
+                                }
+                            }
                             );
                     }
                     else {
                         HelpService.getModuleType('sidemodal', 'moduleform', module.id)
                             .then(function (response) {
-                                    $scope.helpTemplatesSide = response.data;
-                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                        $scope.noneHelpTemplate = false;
-                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $scope.noneHelpTemplate = false;
+                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
-                                    }
-                                    else {
-                                        $scope.helpTemplateSideModal = null;
-                                        $scope.noneHelpTemplate = true;
-                                    }
                                 }
+                                else {
+                                    $scope.helpTemplateSideModal = null;
+                                    $scope.noneHelpTemplate = true;
+                                }
+                            }
                             );
                     }
                 }
@@ -530,24 +535,24 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 if (isModuleList) {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                    $scope.openHelpModal();
-                                }
-
+                            $scope.helpTemplatesSide = response.data;
+                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                $scope.openHelpModal();
                             }
+
+                        }
                         );
                 }
                 else {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                    $scope.openHelpModal();
-                                }
+                            $scope.helpTemplatesSide = response.data;
+                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                $scope.openHelpModal();
                             }
+                        }
                         );
                 }
             }
