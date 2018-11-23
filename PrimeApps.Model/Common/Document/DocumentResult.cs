@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 
 namespace PrimeApps.Model.Common.Document
 {
@@ -7,6 +8,11 @@ namespace PrimeApps.Model.Common.Document
     /// </summary>
     public class DocumentResult
     {
+        private IConfiguration _configuration;
+        public DocumentResult(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         /// <summary>
         /// ID of the document.
         /// </summary>
@@ -58,6 +64,16 @@ namespace PrimeApps.Model.Common.Document
         public virtual string CreatedByName { get; set; }
 
         /// <summary>
+        /// Document full URL.
+        /// </summary>
+        public virtual string FileUrl
+        {
+            get
+            {
+                return GetDocumentUrl(ContainerId, UniqueName);
+            }
+        }
+        /// <summary>
         /// Document nonentity record id
         /// </summary>
         public virtual int RecordId { get; set; }
@@ -65,5 +81,13 @@ namespace PrimeApps.Model.Common.Document
         /// Document associated module id
         /// </summary>
         public virtual int ModuleId { get; set; }
+
+        private string GetDocumentUrl(Guid ContainerId, string uniqueName)
+        {
+            var containerName = string.Format("inst-{0}", ContainerId);
+            var blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+
+            return blobUrl + "/" + containerName + "/" + uniqueName;
+        }
     }
 }

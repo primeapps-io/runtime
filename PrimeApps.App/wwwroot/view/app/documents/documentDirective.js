@@ -46,7 +46,7 @@ angular.module('primeapps')
                         };
 
                         $scope.update = function (document) {
-                            if (!$scope.editedDocument || !$scope.editedDocument.NamePlain || !$scope.editedDocument.NamePlain.trim())
+                            if (!$scope.editedDocument || !$scope.editedDocument.name_plain || !$scope.editedDocument.name_plain.trim())
                                 return;
 
                             $scope.documentUpdating = true;
