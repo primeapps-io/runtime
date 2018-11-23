@@ -12,11 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.App.Bpm.Steps;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
-using Sentry;
 
 namespace PrimeApps.App
 {
@@ -39,7 +37,6 @@ namespace PrimeApps.App
 
         public void ConfigureServices(IServiceCollection services)
         {
-
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
@@ -60,16 +57,7 @@ namespace PrimeApps.App
                     new CultureInfo("tr-TR")
                 };
                 options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
-
-                // You must explicitly state which cultures your application supports.
-                // These are the cultures the app supports for formatting 
-                // numbers, dates, etc.
-
                 options.SupportedCultures = supportedCultures;
-
-                // These are the cultures the app supports for UI strings, 
-                // i.e. we have localized resources for.
-
                 options.SupportedUICultures = supportedCultures;
             });
 
@@ -132,8 +120,7 @@ namespace PrimeApps.App
 
             AuthConfiguration(services, Configuration, HostingEnvironment);
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
@@ -192,6 +179,5 @@ namespace PrimeApps.App
                 );
             });
         }
-
     }
 }
