@@ -17,31 +17,24 @@ namespace PrimeApps.Console
 {
     public partial class Startup
     {
-        public IHostingEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            Configuration = builder;
-            HostingEnvironment = env;
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
-            GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
-            services.AddHangfire(x => x.UseStorage(hangfireStorage));
-            
             //Register DI
             DIRegister(services, Configuration);
 
-            services.AddDirectoryBrowser();
+            //Configure Authentication
+            AuthConfiguration(services, Configuration);
+
+            var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
+            GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
+            services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -69,14 +62,14 @@ namespace PrimeApps.Console
             });
 
             services.AddMvc(opt =>
-            {
-                opt.CacheProfiles.Add("Nocache",
-                new CacheProfile()
                 {
-                    Location = ResponseCacheLocation.None,
-                    NoStore = true,
-                });
-            })
+                    opt.CacheProfiles.Add("Nocache",
+                    new CacheProfile()
+                    {
+                        Location = ResponseCacheLocation.None,
+                        NoStore = true,
+                    });
+                })
                 .AddWebApiConventions()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(opt =>
@@ -102,7 +95,6 @@ namespace PrimeApps.Console
                 .AddDataAnnotationsLocalization();
 
             RegisterBundle(services);
-            AuthConfiguration(services, Configuration, HostingEnvironment);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -114,8 +106,8 @@ namespace PrimeApps.Console
                 app.UseDatabaseErrorPage();
             }
 
-            bool enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
-            bool enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
+            var enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
+            var enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
 
             if (enableHeaderForwarding)
             {

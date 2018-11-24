@@ -6,6 +6,7 @@ using PrimeApps.Model.Context;
 using System;
 using System.Linq;
 using System.Reflection;
+using PrimeApps.Console.Services;
 
 namespace PrimeApps.Console
 {
@@ -13,6 +14,7 @@ namespace PrimeApps.Console
     {
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
+            //services.AddDbContext<ConsoleDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("ConsoleDBConnection")));
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
@@ -20,11 +22,11 @@ namespace PrimeApps.Console
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
 
-            // Register Repositories
+            //Register all repositories
             foreach (var assembly in new[] { "PrimeApps.Model" })
             {
-                var loadedAss = Assembly.Load(assembly);
-                var allServices = loadedAss.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
+                var assemblies = Assembly.Load(assembly);
+                var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
 
                 foreach (var type in allServices)
                 {
@@ -45,8 +47,6 @@ namespace PrimeApps.Console
 
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-
-            
         }
     }
 }
