@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -107,16 +102,6 @@ namespace PrimeApps.Console
                 .AddDataAnnotationsLocalization();
 
             RegisterBundle(services);
-
-            var awsOptions = Configuration.GetAWSOptions();
-            awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
-            awsOptions.Credentials = new BasicAWSCredentials(
-                Configuration.GetSection("AppSettings")["StorageAccessKey"],
-                Configuration.GetSection("AppSettings")["StorageSecretKey"]);
-            services.AddDefaultAWSOptions(awsOptions);
-            services.AddAWSService<IAmazonS3>();
-            services.AddTransient<IUnifiedStorage, UnifiedStorage>();
-
             AuthConfiguration(services, Configuration, HostingEnvironment);
         }
 
@@ -163,7 +148,6 @@ namespace PrimeApps.Console
             );
 
             JobConfiguration(app, Configuration);
-            BpmConfiguration(app, Configuration);
 
             app.UseMvc(routes =>
             {
