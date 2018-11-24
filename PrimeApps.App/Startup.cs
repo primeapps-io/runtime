@@ -20,34 +20,26 @@ namespace PrimeApps.App
 {
     public partial class Startup
     {
-        public IHostingEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            Configuration = builder;
-            HostingEnvironment = env;
+            Configuration = configuration;
         }
-
         public void ConfigureServices(IServiceCollection services)
         {
+            //Register DI
+            DIRegister(services, Configuration);
+
+            //Configure Authentication
+            AuthConfiguration(services, Configuration);
+
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
             services.AddHangfire(x => x.UseStorage(hangfireStorage));
 
             //Add Workflow service
             services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
-
-            //Register DI
-            DIRegister(services, Configuration);
-
-            services.AddDirectoryBrowser();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -117,10 +109,9 @@ namespace PrimeApps.App
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
-
-            AuthConfiguration(services, Configuration, HostingEnvironment);
         }
-        
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
@@ -130,8 +121,8 @@ namespace PrimeApps.App
                 app.UseDatabaseErrorPage();
             }
 
-            bool enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
-            bool enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
+            var enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
+            var enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
 
             if (enableHeaderForwarding)
             {

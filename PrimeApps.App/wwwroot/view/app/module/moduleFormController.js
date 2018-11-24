@@ -63,7 +63,7 @@ angular.module('primeapps')
 
             if (!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -276,7 +276,7 @@ angular.module('primeapps')
                 if (!$scope.hasProcessEditPermission) {
                     if ($scope.id && (($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights))) {
                         ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                        $state.go('app.crm.dashboard');
+                        $state.go('app.dashboard');
                     }
                 }
 
@@ -460,7 +460,7 @@ angular.module('primeapps')
                         .then(function onSuccess(recordData) {
                             if (Object.keys(recordData.data).length === 0) {
                                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                                $state.go('app.crm.dashboard');
+                                $state.go('app.dashboard');
                                 return;
                             }
 

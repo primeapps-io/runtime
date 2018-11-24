@@ -123,7 +123,7 @@ angular.module('primeapps')
 								cdnUrl + 'view/app/actionbutton/actionButtonFrameController.js',
                                 cdnUrl + 'view/app/email/templateService.js',
                                 cdnUrl + 'view/app/leave/collectiveLeaveController.js',
-                                cdnUrl + 'views/app/crm/module/exportDataController.js'
+                                cdnUrl + 'view/app/module/exportDataController.js'
                             ]);
                         }]
                     }

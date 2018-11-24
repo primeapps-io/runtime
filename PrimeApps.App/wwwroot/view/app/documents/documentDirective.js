@@ -27,7 +27,7 @@ angular.module('primeapps')
                         $scope.lightBox = false;
                         $scope.type = $stateParams.type;
                         $scope.module = $filter('filter')($scope.$root.modules, { name: $stateParams.type }, true)[0];
-                        $scope.moduleId = $scope.moduleId;
+                        $scope.moduleId = $scope.module.id;
 
 
                         var tenant_id = $scope.$root.workgroup.tenant_id;
@@ -46,7 +46,7 @@ angular.module('primeapps')
                         };
 
                         $scope.update = function (document) {
-                            if (!$scope.editedDocument || !$scope.editedDocument.NamePlain || !$scope.editedDocument.NamePlain.trim())
+                            if (!$scope.editedDocument || !$scope.editedDocument.name_plain || !$scope.editedDocument.name_plain.trim())
                                 return;
 
                             $scope.documentUpdating = true;
