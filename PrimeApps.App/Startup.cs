@@ -26,6 +26,7 @@ namespace PrimeApps.App
         {
             Configuration = configuration;
         }
+
         public void ConfigureServices(IServiceCollection services)
         {
             //Register DI
@@ -111,7 +112,6 @@ namespace PrimeApps.App
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
