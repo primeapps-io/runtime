@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,7 +7,7 @@ namespace PrimeApps.App
 {
     public partial class Startup
     {
-        public static void AuthConfiguration(IServiceCollection services, IConfiguration configuration, IHostingEnvironment env)
+        public static void AuthConfiguration(IServiceCollection services, IConfiguration configuration)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
