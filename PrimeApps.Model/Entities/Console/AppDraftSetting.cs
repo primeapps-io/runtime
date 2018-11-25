@@ -2,10 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Platform
+namespace PrimeApps.Model.Entities.Console
 {
     [Table("app_settings")]
-    public class AppSetting
+    public class AppDraftSetting
     {
         [JsonIgnore]
         [Column("app_id"), Key]
@@ -47,6 +47,6 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("tenant_operation_webhook")]
         public string TenantOperationWebhook { get; set; }
 
-        public virtual App App { get; set; }
+        public virtual AppDraft App { get; set; }
     }
 }
