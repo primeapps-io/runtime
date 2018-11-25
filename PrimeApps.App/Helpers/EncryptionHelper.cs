@@ -19,7 +19,7 @@ namespace PrimeApps.App.Helpers
 
         public static string Encrypt(string clearText, int fieldId, UserItem appUser, IConfiguration _configuration)
         {
-            /*
+            /*/
              string encryptionKey;
 
             //saves the key to elastic server
@@ -73,7 +73,7 @@ namespace PrimeApps.App.Helpers
 
         public static string Decrypt(string cipherText, int fieldId, UserItem appUser, IConfiguration _configuration)
         {
-            /*
+            /*/
              var elasticConnectionSettings = new Nest.ConnectionSettings(new Uri(_configuration.GetConnectionString("ElasticConnection")));
             elasticConnectionSettings.DefaultIndex("encrypted_fields");
             elasticConnectionSettings.BasicAuthentication("elastic", "uC4yW8JABl63IVBUOlXeQFoX");
