@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Platform
+namespace PrimeApps.Model.Entities.Console
 {
     [Table("apps")]
-    public class App : BaseEntity
+    public class AppDraft : BaseEntity
     {
         [Column("name"), MaxLength(50)]
         public string Name { get; set; }
@@ -20,18 +20,17 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("logo")]
         public string Logo { get; set; }
 
-        [Column("app_draft_id")]
-        public int AppDraftId { get; set; }
+        [Column("templet_id"), ForeignKey("Templet")]
+        public int TempletId { get; set; }
 
         [Column("use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
 
-        public virtual AppSetting Setting { get; set; }
+        public virtual Templet Templet { get; set; }
+
+        public virtual AppDraftSetting Setting { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<AppTemplate> Templates { get; set; }
-
-        [JsonIgnore]
-        public virtual ICollection<Tenant> Tenants { get; set; }
+        public virtual ICollection<AppCollaborator> Collaborators { get; set; }
     }
 }

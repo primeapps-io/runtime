@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PrimeApps.Model.Entities.Platform
+namespace PrimeApps.Model.Entities.Console
 {
     [Table("team_users")]
     public class TeamUser
@@ -11,10 +11,7 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("team_id")]
         public int TeamId { get; set; }
 
-        [Column("role")]
-        public string Role { get; set; }
-
-        public virtual PlatformUser PlatformUser { get; set; }
+        public virtual ConsoleUser ConsoleUser { get; set; }
 
         public virtual Team Team { get; set; }
     }
