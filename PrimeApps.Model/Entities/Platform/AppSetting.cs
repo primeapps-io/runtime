@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Entities.Platform
         public string Language { get; set; }
 
         [Column("auth_theme", TypeName = "jsonb")]
-        public string AutTheme { get; set; }
+        public string AuthTheme { get; set; }
 
         [Column("app_theme", TypeName = "jsonb")]
         public string AppTheme { get; set; }

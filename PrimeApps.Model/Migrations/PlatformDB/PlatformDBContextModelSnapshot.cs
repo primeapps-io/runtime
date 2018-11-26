@@ -26,6 +26,9 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<int>("AppDraftId")
+                        .HasColumnName("app_draft_id");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
 
@@ -50,9 +53,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasColumnName("name")
                         .HasMaxLength(50);
 
-                    b.Property<int?>("TemplateId")
-                        .HasColumnName("template_id");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
 
@@ -64,6 +64,8 @@ namespace PrimeApps.Model.Migrations.PlatformDB
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppDraftId");
+
                     b.HasIndex("CreatedAt");
 
                     b.HasIndex("CreatedById");
@@ -71,8 +73,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("Deleted");
 
                     b.HasIndex("Name");
-
-                    b.HasIndex("TemplateId");
 
                     b.HasIndex("UpdatedAt");
 
@@ -93,12 +93,12 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasColumnName("app_theme")
                         .HasColumnType("jsonb");
 
-                    b.Property<string>("AutTheme")
-                        .HasColumnName("auth_theme")
-                        .HasColumnType("jsonb");
-
                     b.Property<string>("AuthDomain")
                         .HasColumnName("auth_domain");
+
+                    b.Property<string>("AuthTheme")
+                        .HasColumnName("auth_theme")
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Culture")
                         .HasColumnName("culture");
@@ -240,72 +240,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.ToTable("exchange_rates");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Organization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<string>("Label")
-                        .HasColumnName("label")
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Name")
-                        .HasColumnName("name")
-                        .HasMaxLength(700);
-
-                    b.Property<int>("OwnerId")
-                        .HasColumnName("owner_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("Deleted");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("UpdatedAt");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("organizations");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.OrganizationUser", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnName("organization_id");
-
-                    b.HasKey("UserId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("organization_users");
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.PlatformUser", b =>
                 {
                     b.Property<int>("Id")
@@ -431,84 +365,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("warehouses");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Team", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnName("created_at");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnName("created_by");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnName("deleted");
-
-                    b.Property<string>("Name")
-                        .HasColumnName("name")
-                        .HasMaxLength(700);
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnName("organization_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("Deleted");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("UpdatedAt");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("teams");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.TeamApp", b =>
-                {
-                    b.Property<int>("AppId")
-                        .HasColumnName("app_id");
-
-                    b.Property<int>("TeamId")
-                        .HasColumnName("team_id");
-
-                    b.HasKey("AppId", "TeamId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("team_apps");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.TeamUser", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("TeamId")
-                        .HasColumnName("team_id");
-
-                    b.Property<string>("Role")
-                        .HasColumnName("role");
-
-                    b.HasKey("UserId", "TeamId");
-
-                    b.HasIndex("TeamId");
-
-                    b.ToTable("team_users");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Tenant", b =>
@@ -723,36 +579,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Organization", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.OrganizationUser", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
-                        .WithMany("UserOrganizations")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Organization", "Organization")
-                        .WithMany("OrganizationUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.PlatformUserSetting", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "User")
@@ -776,49 +602,6 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Team", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Organization", "Organization")
-                        .WithMany("Teams")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.TeamApp", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.App", "App")
-                        .WithMany("AppTeams")
-                        .HasForeignKey("AppId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Team", "Team")
-                        .WithMany("TeamApps")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PrimeApps.Model.Entities.Platform.TeamUser", b =>
-                {
-                    b.HasOne("PrimeApps.Model.Entities.Platform.PlatformUser", "PlatformUser")
-                        .WithMany("UserTeams")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("PrimeApps.Model.Entities.Platform.Team", "Team")
-                        .WithMany("TeamUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Platform.Tenant", b =>

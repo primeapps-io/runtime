@@ -18,7 +18,7 @@ namespace PrimeApps.App.ActionFilters
             }
 
             var configuration = (IConfiguration)filterContext.HttpContext.RequestServices.GetService(typeof(IConfiguration));
-            var allowInsecureHttp = bool.Parse(configuration.GetSection("AppSettings")["AllowInsecureHttp"]);
+            var allowInsecureHttp = !bool.Parse(configuration.GetSection("AppSettings")["RequireHttps"]);
 
             if (!filterContext.HttpContext.Request.IsHttps && !allowInsecureHttp)
             {

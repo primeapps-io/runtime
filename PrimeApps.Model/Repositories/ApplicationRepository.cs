@@ -2,39 +2,26 @@
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using PrimeApps.Model.Repositories.Interfaces;
 
-namespace PrimeApps.Model.Repositories.Interfaces
+namespace PrimeApps.Model.Repositories
 {
-	public class ApplicationRepository : RepositoryBasePlatform, IApplicationRepository
-	{
-		public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
-		public async Task<App> Get(string domain)
-		{
-			return await DbContext.Apps
-				.Include(x => x.Setting)
-				.FirstOrDefaultAsync(x => x.Setting.AppDomain == domain);
-		}
+    public class ApplicationRepository : RepositoryBasePlatform, IApplicationRepository
+    {
+        public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public async Task<App> Get(string domain)
+        {
+            return await DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefaultAsync(x => x.Setting.AppDomain == domain);
+        }
         public async Task<App> Get(int? id)
-		{
-			return await DbContext.Apps
-				.Include(x => x.Setting)
-				.FirstOrDefaultAsync(x => x.Id == id);
-		}
-
-		public async Task<TeamApp> Get(string organizationName, string appName)
-		{
-			var app = await DbContext.TeamApps
-				.Include(y => y.App).ThenInclude(x => x.Setting)
-				.Include(y => y.Team).ThenInclude(x => x.Organization)
-				.FirstOrDefaultAsync(x => x.Team.Organization.Name == organizationName && x.App.Name == appName);
-
-			return app ?? null;
-		}
+        {
+            return await DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
 
         public async Task<App> GetByName(string name)
         {
@@ -44,21 +31,21 @@ namespace PrimeApps.Model.Repositories.Interfaces
         }
 
         public async Task<App> GetWithAuth(string domain)
-		{
-			var app = await DbContext.Apps
-				.Include(x => x.Setting)
-				.FirstOrDefaultAsync(x => x.Setting.AuthDomain == domain);
+        {
+            var app = await DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefaultAsync(x => x.Setting.AuthDomain == domain);
 
-			return app;
-		}
+            return app;
+        }
 
-		public async Task<int> GetAppIdWithDomain(string domain)
-		{
-			var app = await DbContext.AppSettings
-				.FirstOrDefaultAsync(x => x.AppDomain == domain);
+        public async Task<int> GetAppIdWithDomain(string domain)
+        {
+            var app = await DbContext.AppSettings
+                .FirstOrDefaultAsync(x => x.AppDomain == domain);
 
-			return app == null ? 0 : app.AppId;
-		}
+            return app?.AppId ?? 0;
+        }
 
         public async Task<App> GetAppWithDomain(string domain)
         {
@@ -66,6 +53,5 @@ namespace PrimeApps.Model.Repositories.Interfaces
                 .Include(x => x.Setting)
                 .FirstOrDefaultAsync(x => x.Setting.AppDomain == domain);
         }
-
     }
 }

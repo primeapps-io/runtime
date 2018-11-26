@@ -552,7 +552,7 @@ namespace PrimeApps.Auth.UI
                     var appInfo = await _applicationRepository.GetByName(clientId);
                     var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 
-                    var theme = JObject.Parse(appInfo.Setting.AutTheme);
+                    var theme = JObject.Parse(appInfo.Setting.AuthTheme);
 
                     var _language = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
 
 namespace PrimeApps.Model.Entities.Platform
 {
@@ -26,7 +23,7 @@ namespace PrimeApps.Model.Entities.Platform
 
 		[Column("language")]
 		public string Language { get; set; }
-		//Tenant One to One
+
 		public virtual PlatformUser User { get; set; }
 	}
 }

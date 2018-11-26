@@ -99,45 +99,6 @@ namespace PrimeApps.Model.Context
                 .HasForeignKey<AppSetting>(b => b.AppId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<TeamApp>()
-               .HasKey(t => new { t.AppId, t.TeamId });
-
-            modelBuilder.Entity<TeamApp>()
-                .HasOne(pt => pt.App)
-                .WithMany(p => p.AppTeams)
-                .HasForeignKey(pt => pt.AppId);
-
-            modelBuilder.Entity<TeamApp>()
-                .HasOne(pt => pt.Team)
-                .WithMany(t => t.TeamApps)
-                .HasForeignKey(pt => pt.TeamId);
-
-            modelBuilder.Entity<TeamUser>()
-               .HasKey(t => new { t.UserId, t.TeamId });
-
-            modelBuilder.Entity<TeamUser>()
-                .HasOne(pt => pt.PlatformUser)
-                .WithMany(p => p.UserTeams)
-                .HasForeignKey(pt => pt.TeamId);
-
-            modelBuilder.Entity<TeamUser>()
-                .HasOne(pt => pt.Team)
-                .WithMany(t => t.TeamUsers)
-                .HasForeignKey(pt => pt.UserId);
-
-            modelBuilder.Entity<OrganizationUser>()
-               .HasKey(t => new { t.UserId, t.OrganizationId });
-
-            modelBuilder.Entity<OrganizationUser>()
-                .HasOne(pt => pt.PlatformUser)
-                .WithMany(p => p.UserOrganizations)
-                .HasForeignKey(pt => pt.OrganizationId);
-
-            modelBuilder.Entity<OrganizationUser>()
-                .HasOne(pt => pt.Organization)
-                .WithMany(t => t.OrganizationUsers)
-                .HasForeignKey(pt => pt.UserId);
-
             modelBuilder.Entity<UserTenant>()
                .HasKey(t => new { t.UserId, t.TenantId });
 
@@ -155,11 +116,6 @@ namespace PrimeApps.Model.Context
                .HasMany(p => p.Tenants)
                .WithOne(i => i.App)
                .HasForeignKey(b => b.AppId);
-
-            modelBuilder.Entity<Team>()
-                .HasOne(p => p.Organization)
-                .WithMany(b => b.Teams)
-                .HasForeignKey(p => p.OrganizationId);
 
             modelBuilder.Entity<Tenant>()
                 .HasOne(p => p.Owner)
@@ -193,7 +149,7 @@ namespace PrimeApps.Model.Context
 
             //App
             modelBuilder.Entity<App>().HasIndex(x => x.Name);
-            modelBuilder.Entity<App>().HasIndex(x => x.TemplateId);
+            modelBuilder.Entity<App>().HasIndex(x => x.AppDraftId);
             modelBuilder.Entity<App>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<App>().HasIndex(x => x.Deleted);
@@ -232,17 +188,6 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TenantLicense>().HasIndex(x => x.DeactivatedAt);
             modelBuilder.Entity<TenantLicense>().HasIndex(x => x.SuspendedAt);
 
-            //Organization
-            modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
-            modelBuilder.Entity<Organization>().HasIndex(x => x.CreatedAt);
-            modelBuilder.Entity<Organization>().HasIndex(x => x.UpdatedAt);
-            modelBuilder.Entity<Organization>().HasIndex(x => x.Deleted);
-
-            //Team
-            modelBuilder.Entity<Team>().HasIndex(x => x.CreatedAt);
-            modelBuilder.Entity<Team>().HasIndex(x => x.UpdatedAt);
-            modelBuilder.Entity<Team>().HasIndex(x => x.Deleted);
-
             //UserTenants
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.UserId);
             modelBuilder.Entity<UserTenant>().HasIndex(x => x.TenantId);
@@ -254,13 +199,8 @@ namespace PrimeApps.Model.Context
         public DbSet<AppSetting> AppSettings { get; set; }
         public DbSet<AppTemplate> AppTemplates { get; set; }
         public DbSet<Tenant> Tenants { get; set; }
-        public DbSet<Organization> Organizations { get; set; }
         public DbSet<TenantSetting> TenantSettings { get; set; }
         public DbSet<TenantLicense> TenantLicenses { get; set; }
-        public DbSet<Team> Teams { get; set; }
-        public DbSet<TeamUser> TeamUsers { get; set; }
-        public DbSet<TeamApp> TeamApps { get; set; }
-        public DbSet<OrganizationUser> OrganizationUsers { get; set; }
         public DbSet<ExchangeRate> ExchangeRates { get; set; }
         public DbSet<PlatformWarehouse> Warehouses { get; set; }
         public DbSet<UserTenant> UserTenants { get; set; }

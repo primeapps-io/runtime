@@ -42,7 +42,7 @@ namespace PrimeApps.Auth.UI
             if (string.IsNullOrWhiteSpace(language))
                 language = app.Setting.Language ?? "tr";
 
-            var theme = JObject.Parse(app.Setting.AutTheme);
+            var theme = JObject.Parse(app.Setting.AuthTheme);
 
             var application = new Application
             {

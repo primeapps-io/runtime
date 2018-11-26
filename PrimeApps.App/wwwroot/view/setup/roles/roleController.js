@@ -11,7 +11,7 @@ angular.module('primeapps')
                     content: $filter('translate')('Common.Forbidden'),
                     className: 'warning'
                 });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 

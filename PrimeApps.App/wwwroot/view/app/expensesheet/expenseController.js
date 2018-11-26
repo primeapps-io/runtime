@@ -184,7 +184,7 @@ angular.module('ofisim')
                                     }
                                     else {
                                         ngToast.create({ content: $filter('translate')('Common.TimetrackerNotFound'), className: 'warning' });
-                                        $state.go('app.crm.dashboard');
+                                        $state.go('app.dashboard');
                                     }
                                 });
                         } else {
