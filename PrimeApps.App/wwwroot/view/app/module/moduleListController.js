@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleListController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ngTableParams', 'blockUI', 'exportFile', '$popover', '$modal', 'operations', 'activityTypes', 'transactionTypes', 'ModuleService', '$http',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ngTableParams, blockUI, exportFile, $popover, $modal, operations, activityTypes, transactionTypes, ModuleService, $http) {
+    .controller('ModuleListController', ['$rootScope', '$scope', 'ngToast', '$sce', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ngTableParams', 'blockUI', 'exportFile', '$popover', '$modal', 'operations', 'activityTypes', 'transactionTypes', 'ModuleService', '$http',
+        function ($rootScope, $scope, ngToast, $sce, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ngTableParams, blockUI, exportFile, $popover, $modal, operations, activityTypes, transactionTypes, ModuleService, $http) {
             $scope.type = $stateParams.type;
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
@@ -183,6 +183,10 @@ angular.module('primeapps')
                     $scope.frameModal.$promise.then($scope.frameModal.show);
                 }
 
+            };
+
+            $scope.trustAsHtml = function (value) {
+                return $sce.trustAsHtml(value);
             };
 
             //webhook request func for action button

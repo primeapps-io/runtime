@@ -577,7 +577,7 @@ relatedModule['label_'
                                                        ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}"
                                                        ng-click="editHtmlEditor[field.name] = true"
                                                        ng-show="!editHtmlEditor[field.name]">
-                                                        <div class="editable-html-container" ng-bind-html="record[field.name] ? record[field.name] : 'Common.Empty' | translate"></div>
+                                                        <div class="editable-html-container" ng-bind-html="trustAsHtml(record[field.name] ? record[field.name] : 'Common.Empty' | translate)"></div>
                                                         <span><i class="fa fa-pencil"></i></span>
                                                     </a>
                                                     <div ng-class="{'col-sm-9': section.column_count === 2, 'col-sm-11':section.column_count === 1}" style="padding-right: 0;" ng-show="editHtmlEditor[field.name]">
@@ -604,7 +604,7 @@ relatedModule['label_'
                                                     {{record[field.name].labelStr}}
                                                 </span>
                                                 <span ng-switch-when="text_multi">
-                                                    <span ng-if="field.multiline_type_use_html === true" ng-bind-html="record[field.name]"></span>
+                                                    <span ng-if="field.multiline_type_use_html === true" ng-bind-html="trustAsHtml(record[field.name])"></span>
                                                     <span ng-if="field.multiline_type_use_html !== true">{{field.valueFormatted}}</span>
                                                 </span>
                                                 <span ng-switch-when="checkbox">

@@ -72,6 +72,10 @@ angular.module('primeapps')
                     });
             };
 
+            $scope.trustAsHtml = function (value) {
+                return $sce.trustAsHtml(value);
+            };
+
             $scope.dropdownFields = $filter('filter')($scope.module.fields, { data_type: 'lookup', show_as_dropdown: true }, true);
             $scope.dropdownFieldDatas = {};
             for (var i = 0; i < $scope.dropdownFields.length; i++) {
