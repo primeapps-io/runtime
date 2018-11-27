@@ -53,6 +53,9 @@ namespace PrimeApps.Model.Enums
         BeforeSendToProcessApproval = 15,
 
         [EnumMember(Value = "after_send_to_process_approval")]
-        AfterSendToProcessApproval = 16
+        AfterSendToProcessApproval = 16,
+
+        [EnumMember(Value = "before_list_request")]
+        BeforeListRequest = 17
     }
 }

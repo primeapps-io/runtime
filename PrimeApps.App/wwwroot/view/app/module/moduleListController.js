@@ -287,6 +287,14 @@ angular.module('primeapps')
                             return;
                         }
 
+                        var record = ModuleService.processRecordSingle(recordData.data, $scope.module, $scope.modulePicklists);
+
+                        $scope.executeCode = false;
+                        components.run('BeforeDelete', 'Script', $scope, record);
+
+                        if ($scope.executeCode)
+                            return;
+
                         ModuleService.deleteRecord($scope.module.name, id)
                             .then(function () {
                                 $cache.remove(cacheKey);

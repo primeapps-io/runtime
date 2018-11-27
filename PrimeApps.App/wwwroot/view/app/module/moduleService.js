@@ -1,7 +1,7 @@
 angular.module('primeapps')
 
-    .factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo',
-        function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo) {
+    .factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo', 'components',
+        function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo, components) {
             return {
                 myAccount: function () {
                     return $http.post(config.apiUrl + 'User/MyAccount', {});
@@ -1714,6 +1714,7 @@ angular.module('primeapps')
 
                         if (record[dependency.field] === undefined) {
                             dependent.hidden = true;
+                            delete record[dependency.dependent_field];
                             continue;
                         }
 
@@ -1723,6 +1724,7 @@ angular.module('primeapps')
                         if (angular.isArray(recordValue)) {
                             if (!record[dependency.field].length) {
                                 dependent.hidden = true;
+                                delete record[dependency.dependent_field];
                                 continue;
                             }
 
@@ -1749,12 +1751,23 @@ angular.module('primeapps')
 
                         if (!dependency.otherwise && !dependentValue) {
                             dependent.hidden = true;
+                            delete record[dependency.dependent_field];
                             continue;
                         }
 
                         if (dependency.otherwise && dependentValue) {
                             dependent.hidden = true;
+                            delete record[dependency.dependent_field];
                             continue;
+                        }
+
+                        if (!dependency.dependent_section) {
+                            var dependencyField = $filter('filter')(module.fields, { name: dependency.field }, true)[0];
+                            if (dependencyField.hidden) {
+                                dependent.hidden = true;
+                                delete record[dependency.dependent_field];
+                                continue;
+                            }
                         }
 
                         dependent.hidden = false;
@@ -3436,7 +3449,10 @@ angular.module('primeapps')
                                                                 $cache.put(key, cacheItem);
 
                                                             var findRecords = function (findRequest, cacheItem) {
-                                                                that.findRecords(scope.module.name, findRequest)
+                                                                scope.listFindRequest = findRequest;
+                                                                components.run('BeforeListRequest', 'Script', scope);
+
+                                                                that.findRecords(scope.module.name, scope.listFindRequest)
                                                                     .then(function (response) {
                                                                         var hasFilter = false;
 
@@ -3469,7 +3485,7 @@ angular.module('primeapps')
                                                                         //Get number of record which is displaying in table.
                                                                         if (relatedModule && !scope.relatedModuleInModal) {
                                                                             var recordIds = [];
-                                                                            var findRequest = {
+                                                                            scope.listFindRequest = {
                                                                                 fields: relatedModule.relation_type === 'one_to_many' ? ['id'] : [scope.module.name + '_id'],
                                                                                 filters: [{
                                                                                     field: relatedModule.relation_type === 'one_to_many' ? relatedModule.relation_field : scope.parentModule + "_id",
@@ -3481,9 +3497,9 @@ angular.module('primeapps')
                                                                                 offset: 0
                                                                             };
                                                                             var relationType = relatedModule.relation_type ? relatedModule.relation_type : 'many_to_many';
-                                                                            findRequest[relationType] = scope.parentModule;
+                                                                            scope.listFindRequest[relationType] = scope.parentModule;
 
-                                                                            that.findRecords(scope.module.name, findRequest)
+                                                                            that.findRecords(scope.module.name, scope.listFindRequest)
                                                                                 .then(function (response) {
                                                                                     if (response.data.length > 0) {
                                                                                         for (var i = 0; i < response.data.length; i++) {

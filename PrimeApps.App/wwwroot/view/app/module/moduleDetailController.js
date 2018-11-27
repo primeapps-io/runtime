@@ -928,7 +928,12 @@ angular.module('primeapps')
             };
 
             $scope.delete = function () {
+                $scope.executeCode = false;
                 components.run('BeforeDelete', 'Script', $scope, $scope.record);
+
+                if ($scope.executeCode)
+                    return;
+
                 ModuleService.deleteRecord($scope.module.name, $scope.record.id)
                     .then(function () {
                         components.run('AfterDelete', 'Script', $scope, $scope.record);

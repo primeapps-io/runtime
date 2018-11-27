@@ -72,6 +72,7 @@ namespace PrimeApps.App.Helpers
                 using (var _workflowRepository = new WorkflowRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                using (var _profileRepository = new ProfileRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
                 {
@@ -573,7 +574,7 @@ namespace PrimeApps.App.Helpers
 
 
                                 var modelState = new ModelStateDictionary();
-                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, false, currentRecordFieldUpdate, appUser: appUser);
+                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                 if (resultBefore < 0 && !modelState.IsValid)
                                 {
@@ -658,7 +659,7 @@ namespace PrimeApps.App.Helpers
                             task["created_by"] = workflow.CreatedById;
 
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage);
+                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: appUser);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {
@@ -830,8 +831,8 @@ namespace PrimeApps.App.Helpers
 
                             string domain;
 
-							domain = "http://{0}.ofisim.com/";
-							var appDomain = "crm";
+                            domain = "http://{0}.ofisim.com/";
+                            var appDomain = "crm";
 
                             switch (appUser.AppId)
                             {
@@ -855,14 +856,14 @@ namespace PrimeApps.App.Helpers
 
                             //domain = "http://localhost:5554/";
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
-							{
-								var app = await _appRepository.Get(appUser.AppId);
-								if (app != null)
-								{
-									domain = "http://" + app.Setting.AppDomain + "/";
-								}
-							}
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            {
+                                var app = await _appRepository.Get(appUser.AppId);
+                                if (app != null)
+                                {
+                                    domain = "http://" + app.Setting.AppDomain + "/";
+                                }
+                            }
 
                             var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 

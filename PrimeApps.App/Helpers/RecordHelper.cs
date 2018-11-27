@@ -13,6 +13,7 @@ using PrimeApps.App.Notifications;
 using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Common.Record;
 using Microsoft.AspNetCore.Http;
+using ModelModuleHelper = PrimeApps.Model.Helpers.ModuleHelper;
 using PrimeApps.App.Services;
 using PrimeApps.Model.Entities.Platform;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,13 +21,14 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using Microsoft.Extensions.Configuration;
 using WorkflowCore.Interface;
+using System.Text.RegularExpressions;
 
 namespace PrimeApps.App.Helpers
 {
     public interface IRecordHelper
     {
-        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
-        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, Warehouse warehouse);
+        Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+        Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, IProfileRepository profileRepository, ModelStateDictionary modelState, Warehouse warehouse);
         void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true);
         void AfterUpdate(Module module, JObject record, JObject currentRecord, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
         void AfterDelete(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180);
@@ -44,7 +46,7 @@ namespace PrimeApps.App.Helpers
         void SetCurrentUser(UserItem appUser);
     }
 
-    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
+    public delegate Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null);
 
     public delegate Task UpdateStageHistory(JObject record, JObject currentRecord);
 
@@ -109,7 +111,7 @@ namespace PrimeApps.App.Helpers
             Queue = new BackgroundTaskQueue();
         }
 
-        public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
+        public async Task<int> BeforeCreateUpdate(Module module, JObject record, ModelStateDictionary modelState, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, bool convertPicklists = true, JObject currentRecord = null, UserItem appUser = null)
         {
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -120,6 +122,7 @@ namespace PrimeApps.App.Helpers
                     _moduleRepository.CurrentUser = _picklistRepository.CurrentUser = _currentUser;
                     //TODO: Validate metadata
                     //TODO: Profile permission check
+                    var operationUpdate = !record["id"].IsNullOrEmpty();
                     var picklistItemIds = new List<int>();
                     JObject recordNew = new JObject();
 
@@ -137,7 +140,7 @@ namespace PrimeApps.App.Helpers
                         if (field == null)
                         {
                             modelState.AddModelError(prop.Key, $"Field '{prop.Key}' not found.");
-                            return -1;
+                            return StatusCodes.Status400BadRequest;
                         }
 
                         if (prop.Value.IsNullOrEmpty())
@@ -155,7 +158,7 @@ namespace PrimeApps.App.Helpers
                             if (!prop.Value.IsNumeric())
                             {
                                 modelState.AddModelError(prop.Key, $"Value of '{prop.Key}' field must be numeric.");
-                                return -1;
+                                return StatusCodes.Status400BadRequest;
                             }
 
                             picklistItemIds.Add((int)prop.Value);
@@ -200,7 +203,7 @@ namespace PrimeApps.App.Helpers
                             if (!(prop.Value is JArray))
                             {
                                 modelState.AddModelError(prop.Key, $"Value of '{prop.Key}' field must be array.");
-                                return -1;
+                                return StatusCodes.Status400BadRequest;
                             }
 
                             var multiselectPicklistItemIds = new List<int>();
@@ -210,7 +213,7 @@ namespace PrimeApps.App.Helpers
                                 if (!item.IsNumeric())
                                 {
                                     modelState.AddModelError(prop.Key, $"All items of '{prop.Key}' field value must be numeric.");
-                                    return -1;
+                                    return StatusCodes.Status400BadRequest;
                                 }
 
                                 multiselectPicklistItemIds.Add((int)item);
@@ -321,6 +324,90 @@ namespace PrimeApps.App.Helpers
                         }
                     }
 
+                    if (module.Name != "sales_orders")
+                    {
+                        //Validate metadata
+                        var moduleFields = module.Fields.Where(x => !x.Deleted && x.DataType != DataType.NumberAuto).ToList();
+
+                        IDictionary<string, JToken> dictionary = record;
+
+                        for (int i = 0; i < moduleFields.Count; i++)
+                        {
+                            var moduleField = moduleFields[i];
+
+                            if (ModelModuleHelper.SystemFieldsExtended.Contains(moduleField.Name))
+                                continue;
+
+                            if (FieldHasDependencyOrCombination(module, moduleField, record, tenantLanguage, picklistRepository))
+                                continue;
+
+                            if (moduleField.Validation.Required != null && (bool)moduleField.Validation.Required &&
+                                ((!operationUpdate && record[moduleField.Name].IsNullOrEmpty()) ||
+                                (operationUpdate && dictionary.ContainsKey(moduleField.Name) && record[moduleField.Name].IsNullOrEmpty())))
+                            {
+                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' is required.");
+                                return StatusCodes.Status400BadRequest;
+                            }
+
+                            if (moduleField.Validation.Min != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) < moduleField.Validation.Min)
+                            {
+                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum value must be {moduleField.Validation.Min}.");
+                                return StatusCodes.Status400BadRequest;
+                            }
+
+                            if (moduleField.Validation.Max != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) > moduleField.Validation.Max)
+                            {
+                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' maximum value must be {moduleField.Validation.Max}.");
+                                return StatusCodes.Status400BadRequest;
+                            }
+
+                            if (moduleField.Validation.MinLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length < moduleField.Validation.MinLength)
+                            {
+                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MinLength}.");
+                                return StatusCodes.Status400BadRequest;
+                            }
+
+                            if (moduleField.Validation.MaxLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length > moduleField.Validation.MaxLength)
+                            {
+                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MaxLength}.");
+                                return StatusCodes.Status400BadRequest;
+                            }
+
+                            if (moduleField.Validation.Pattern != null && !record[moduleField.Name].IsNullOrEmpty())
+                            {
+                                Match match = Regex.Match((string)record[moduleField.Name], "^" + moduleField.Validation.Pattern + "$", RegexOptions.IgnoreCase);
+                                if (!match.Success)
+                                {
+                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' regex not match. Regex template: {moduleField.Validation.Pattern}");
+                                    return StatusCodes.Status400BadRequest;
+                                }
+                            }
+                        }
+                    }
+
+                    //Check profile permissions
+
+                    var userProfile = await profileRepository.GetProfileById(appUser.ProfileId);
+                    var modulePermission = userProfile.Permissions.Where(x => x.ModuleId == module.Id).FirstOrDefault();
+
+                    if (modulePermission == null)
+                    {
+                        modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
+                        return StatusCodes.Status403Forbidden;
+                    }
+
+                    if (!record["id"].IsNullOrEmpty() && !modulePermission.Modify)
+                    {
+                        modelState.AddModelError(module.Name, $"You dont have profile permission for update '{module.Name}' module.");
+                        return StatusCodes.Status403Forbidden;
+                    }
+
+                    if (record["id"].IsNullOrEmpty() && !modulePermission.Write)
+                    {
+                        modelState.AddModelError(module.Name, $"You dont have profile permission for create '{module.Name}' module.");
+                        return StatusCodes.Status403Forbidden;
+                    }
+
                     /*
 					 * Birleşim data tipi başka bir birleşim data tipiyle kullanılması durumu.
 					 * Bu durum oluştuğunda birleşim de kullanılan diğer birleşim alanı henüz hesaplanmamış ise
@@ -348,15 +435,29 @@ namespace PrimeApps.App.Helpers
                         else
                             record["freeze"] = false;
                     }
-                    return 0;
+                    return StatusCodes.Status200OK;
                 }
             }
         }
 
-        public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, Warehouse warehouse)
+        public async Task<int> BeforeDelete(Module module, JObject record, UserItem appUser, IProcessRepository processRepository, IProfileRepository profileRepository, ModelStateDictionary modelState, Warehouse warehouse)
         {
-            //TODO: Profile permission check
+            //Check profile permissions
 
+            var userProfile = await profileRepository.GetProfileById(appUser.ProfileId);
+            var modulePermission = userProfile.Permissions.Where(x => x.ModuleId == module.Id).FirstOrDefault();
+
+            if (modulePermission == null)
+            {
+                modelState.AddModelError(module.Name, $"You dont have profile permission for '{module.Name}' module.");
+                return StatusCodes.Status403Forbidden;
+            }
+
+            if (!modulePermission.Remove)
+            {
+                modelState.AddModelError(module.Name, $"You dont have profile permission for delete '{module.Name}' module.");
+                return StatusCodes.Status403Forbidden;
+            }
             // Check freeze
             if (!record.IsNullOrEmpty() && !record["process_id"].IsNullOrEmpty())
             {
@@ -394,7 +495,7 @@ namespace PrimeApps.App.Helpers
                     await _calculationHelper.Calculate((int)record["id"], module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
             }
 
-            return 0;
+            return StatusCodes.Status200OK;
         }
 
         public void AfterCreate(Module module, JObject record, UserItem appUser, Warehouse warehouse, bool runWorkflows = true, bool runCalculations = true, int timeZoneOffset = 180, bool runDefaults = true)
@@ -603,6 +704,65 @@ namespace PrimeApps.App.Helpers
                     record["activity_type_system"] = activityType.Value;
                 }
             }
+        }
+
+        public static bool FieldHasDependencyOrCombination(Module module, Field field, JObject record, string tenantLanguage, IPicklistRepository picklistRepository)
+        {
+            var dependencies = module.Dependencies.Where(x => !x.Deleted && x.DependencyType == DependencyType.Display && x.ChildField == field.Name).ToList();
+
+            if (dependencies.Count > 0)
+                return true;
+
+            if (field.Combination != null)
+                return true;
+
+            return false;
+
+            /*
+             * Dependencies kontrolleri düzgün yazılıp açılabilir. 
+             * Şimdilik field üzerinden dependency veya combination varsa backend de validasyonları kontrol etmiyoruz.
+             */
+            /*foreach (var dependency in dependencies)
+            {
+                var parentDependency = dependencies.Where(x => x.ChildField == dependency.ParentField).ToList();
+
+                if (parentDependency.Count > 0)
+                {
+
+                }
+                else
+                {
+                    var parentField = module.Fields.Where(x => !x.Deleted && x.Name == dependency.ParentField).FirstOrDefault();
+                    if (parentField.DataType == DataType.Picklist)
+                    {
+                        var picklistValues = new System.Collections.Generic.List<string>();
+                        var picklist = await picklistRepository.GetById((int)parentField.PicklistId);
+
+                        foreach (var value in dependency.ValuesArray)
+                        {
+                            var selectedOption = picklist.Items.Where(x => x.Id == int.Parse(value)).FirstOrDefault();
+                            picklistValues.Add(tenantLanguage == "en" ? selectedOption.LabelEn : selectedOption.LabelTr);
+                        }
+
+                        if (record[parentField.Name] != null && picklistValues.Contains(record[parentField.Name].ToString()))
+                            return !dependency.Otherwise;
+
+                        return dependency.Otherwise;
+                    }
+                    else if (parentField.DataType == DataType.Checkbox)
+                    {
+                        if (!record[parentField.Name].IsNullOrEmpty())
+                        {
+                            return dependency.Otherwise ? !(bool)record[parentField.Name] : (bool)record[parentField.Name];
+                        }
+
+                        return dependency.Otherwise;
+
+                    }
+                }
+            }
+            return true;
+            */
         }
 
         public async Task SetTransactionType(JObject record)

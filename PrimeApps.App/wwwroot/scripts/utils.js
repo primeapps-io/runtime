@@ -1526,10 +1526,12 @@ angular.module('primeapps')
         }
     }])
 
-    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', 'ModuleService',
-        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, ModuleService) {
+    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector',
+        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector) {
             return {
                 run: function (place, type, scope, record, field) {
+                    var ModuleService = $injector.get('ModuleService');
+
                     var components = $filter('orderBy')($filter('filter')(scope.module.components, function (component) {
                         return component.place === place && component.type === type && (component.module_id === scope.module.id || component.module_id === 0) && !component.deleted
                     }, true), 'order');

@@ -72,9 +72,11 @@ namespace PrimeApps.App.Bpm.Steps
 
                     using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
                     using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                    using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                    using (var profileRepository = new ProfileRepository(databaseContext, _configuration))
                     using (var recordHelper = new RecordHelper(_configuration, _serviceScopeFactory, currentUser))
                     {
-                        moduleRepository.CurrentUser = recordRepository.CurrentUser = currentUser;
+                        picklistRepository.CurrentUser = moduleRepository.CurrentUser = recordRepository.CurrentUser = currentUser;
 
                         var data = JObject.FromObject(context.Workflow.Data);
 
@@ -229,7 +231,7 @@ namespace PrimeApps.App.Bpm.Steps
 
 
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, false, currentRecordFieldUpdate, null);
+                            var resultBefore = await recordHelper.BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.Language, moduleRepository, picklistRepository, profileRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {

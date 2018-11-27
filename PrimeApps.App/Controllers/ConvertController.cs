@@ -16,7 +16,7 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers.QueryTranslation;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
+using System.Web.Http;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 
@@ -28,6 +28,7 @@ namespace PrimeApps.App.Controllers
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
+        private IProfileRepository _profileRepository;
         private IPicklistRepository _picklistRepository;
         private IDocumentRepository _documentRepository;
         private INoteRepository _noteRepository;
@@ -37,10 +38,11 @@ namespace PrimeApps.App.Controllers
 
 	    private IRecordHelper _recordHelper;
 
-        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, IRecordHelper recordHelper, IConfiguration configuration, Warehouse warehouse)
+        public ConvertController(IModuleRepository moduleRepository, IRecordRepository recordRepository, IPicklistRepository picklistRepository, IProfileRepository profileRepository, IDocumentRepository documentRepository, INoteRepository noteRepository, IConversionMappingRepository conversionMappingRepository, IRecordHelper recordHelper, IConfiguration configuration, Warehouse warehouse)
         {
             _moduleRepository = moduleRepository;
             _recordRepository = recordRepository;
+            _profileRepository = profileRepository;
             _picklistRepository = picklistRepository;
             _documentRepository = documentRepository;
             _noteRepository = noteRepository;
@@ -56,6 +58,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_moduleRepository);
             SetCurrentUser(_recordRepository);
+            SetCurrentUser(_profileRepository);
             SetCurrentUser(_picklistRepository);
             SetCurrentUser(_documentRepository);
             SetCurrentUser(_noteRepository);
@@ -173,10 +176,10 @@ namespace PrimeApps.App.Controllers
             {
                 account["owner"] = lead["owner"];
                 account["master_id"] = lead["id"];
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(accountModule, account, ModelState, AppUser.TenantLanguage, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(accountModule, account, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                if (resultBefore < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreate;
 
@@ -215,10 +218,10 @@ namespace PrimeApps.App.Controllers
                 if (account["id"] != null && contactModule.Fields.Any(x => x.Name == "account"))
                     contact["account"] = account["id"];
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(contactModule, contact, ModelState, AppUser.TenantLanguage, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(contactModule, contact, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                if (resultBefore < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreate;
 
@@ -259,10 +262,10 @@ namespace PrimeApps.App.Controllers
                 if (contact["id"] != null && opportunityModule.Fields.Any(x => x.Name == "contact"))
                     opportunity["contact"] = contact["id"];
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(opportunityModule, opportunity, ModelState, AppUser.TenantLanguage);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(opportunityModule, opportunity, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: AppUser);
 
-                if (resultBefore < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreate;
 
@@ -448,10 +451,10 @@ namespace PrimeApps.App.Controllers
                 var currencyPicklist = await _picklistRepository.FindItemByLabel(currencyfield.PicklistId.Value, (string)salesOrder["currency"], AppUser.TenantLanguage);
                 salesOrder["currency"] = AppUser.TenantLanguage == "tr" ? currencyPicklist.LabelTr : currencyPicklist.LabelEn;
             }
-            var resultBefore = await _recordHelper.BeforeCreateUpdate(salesOrderModule, salesOrder, ModelState, AppUser.TenantLanguage, false);
+            var resultBefore = await _recordHelper.BeforeCreateUpdate(salesOrderModule, salesOrder, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-            if (resultBefore < 0 && !ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                return StatusCode(resultBefore, ModelState);
 
             int resultCreate;
 
@@ -521,10 +524,10 @@ namespace PrimeApps.App.Controllers
                 if (quoteProduct["separator"] != null)
                     orderProduct["separator"] = quoteProduct["separator"];
 
-                var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(orderProductModule, orderProduct, ModelState, AppUser.TenantLanguage, false);
+                var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(orderProductModule, orderProduct, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                if (resultBeforeProduct < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreateProduct;
 
@@ -635,10 +638,10 @@ namespace PrimeApps.App.Controllers
             {
                 employee["owner"] = candidate["owner"];
                 employee["master_id"] = candidate["id"];
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(employeeModule, employee, ModelState, AppUser.TenantLanguage, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(employeeModule, employee, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                if (resultBefore < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreate;
 
@@ -844,10 +847,10 @@ namespace PrimeApps.App.Controllers
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
                 salesInvoice["asama"] = AppUser.TenantLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.TenantLanguage, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(salesInvoiceModule, salesInvoice, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                if (resultBefore < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreate;
 
@@ -916,10 +919,10 @@ namespace PrimeApps.App.Controllers
                     if (orderProduct["separator"] != null)
                         salesInvoicesProduct["separator"] = orderProduct["separator"];
 
-                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(salesInvoicesProductModule, salesInvoicesProduct, ModelState, AppUser.TenantLanguage, false);
+                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(salesInvoicesProductModule, salesInvoicesProduct, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                    if (resultBeforeProduct < 0 && !ModelState.IsValid)
-                        return BadRequest(ModelState);
+                    if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                        return StatusCode(resultBefore, ModelState);
 
                     int resultCreateProduct;
 
@@ -1119,10 +1122,10 @@ namespace PrimeApps.App.Controllers
                 var asamaTypes = await _picklistRepository.GetById(asamaField.PicklistId.Value);
                 purchaseInvoice["asama"] = AppUser.TenantLanguage == "tr" ? asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelTr : asamaTypes.Items.Single(x => x.SystemCode == "onaylandi").LabelEn;
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.TenantLanguage, false);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceModule, purchaseInvoice, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                if (resultBefore < 0 && !ModelState.IsValid)
-                    return BadRequest(ModelState);
+                if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                    return StatusCode(resultBefore, ModelState);
 
                 int resultCreate;
 
@@ -1192,10 +1195,10 @@ namespace PrimeApps.App.Controllers
                     if (purchaseOrderProduct["separator"] != null)
                         purchaseInvoicesProduct["separator"] = purchaseOrderProduct["separator"];
 
-                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceProductModule, purchaseInvoicesProduct, ModelState, AppUser.TenantLanguage, false);
+                    var resultBeforeProduct = await _recordHelper.BeforeCreateUpdate(purchaseInvoiceProductModule, purchaseInvoicesProduct, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, appUser: AppUser);
 
-                    if (resultBeforeProduct < 0 && !ModelState.IsValid)
-                        return BadRequest(ModelState);
+                    if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
+                        return StatusCode(resultBefore, ModelState);
 
                     int resultCreateProduct;
 
