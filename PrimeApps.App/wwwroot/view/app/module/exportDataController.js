@@ -1,6 +1,6 @@
-'use strict';
+﻿'use strict';
 
-angular.module('primeapps')
+angular.module('ofisim')
 
     .controller('ExportDataController', ['$rootScope', '$scope', '$filter', 'ngToast', '$window',
         function ($rootScope, $scope, $filter, ngToast, $window) {

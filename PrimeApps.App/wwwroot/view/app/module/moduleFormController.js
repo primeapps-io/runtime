@@ -1382,7 +1382,7 @@ angular.module('primeapps')
                             }
                         }
                     }
-                    if ($scope.type === 'sales_invoices') {
+                    else if ($scope.type === 'sales_invoices') {
                         var salesInvoiceProducts = [];
                         var no = 1;
                         var salesInvoiceProductsOrders = $filter('orderBy')($scope.salesInvoiceProducts, 'order');
@@ -1397,6 +1397,7 @@ angular.module('primeapps')
                             delete salesInvoiceProduct.vat;
                             delete salesInvoiceProduct.currencyConvertList;
                             delete salesInvoiceProduct.defaultCurrency;
+
                             if ($scope.clone) {
                                 delete (salesInvoiceProduct.id);
                                 delete (salesInvoiceProduct._rev);
@@ -1461,8 +1462,10 @@ angular.module('primeapps')
                                 }
                             }
                         }
+
+
                     }
-                    if ($scope.type === 'purchase_invoices') {
+                    else if ($scope.type === 'purchase_invoices') {
                         var purchaseInvoiceProducts = [];
                         var no = 1;
                         var purchaseInvoiceProductsOrders = $filter('orderBy')($scope.purchaseInvoiceProducts, 'order');
@@ -1785,7 +1788,7 @@ angular.module('primeapps')
                             $cache.remove('calendar_events');
 
                         if ($scope.saveAndNew) {
-                            if ($scope.type === 'quotes') {
+                            if ($scope.type === 'quotes' || $scope.type === 'sales_invoices') {
                                 ModuleService.getDailyRates()
                                     .then(function (response) {
                                         if (!response.data)
@@ -1800,14 +1803,26 @@ angular.module('primeapps')
                                         $scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
                                         $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
                                         $scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
-                                    })
+                                    });
+
+                                if ($scope.type === 'sales_invoices') {
+                                    $scope.salesInvoiceProducts.quantity = null;
+                                    $scope.salesInvoiceProducts.grand_total = "";
+                                    $scope.salesInvoiceProducts.product = {};
+                                    $scope.salesInvoiceProducts = [];
+                                    $scope.vatList = [];
+                                    $scope.record.grand_total = 0;
+                                 
+
+                                }
                             }
 
                             if ($scope.type == 'activities') {
                                 $scope.submitting = false;
                                 $scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
-                            } else if ($scope.type == 'current_accounts') {
+                            }
+                            else if ($scope.type == 'current_accounts') {
                                 $scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
                             }
@@ -1876,7 +1891,7 @@ angular.module('primeapps')
                 ModuleService.customActions($scope.module, $scope.record, $scope.moduleForm, $scope.picklistsModule, $scope);
                 components.run('FieldChange', 'Script', $scope, $scope.record, field);
 
-                if ($scope.moduleForm[field.name].$error)
+                if ($scope.moduleForm[field.name] && $scope.moduleForm[field.name].$error)
                     if ($scope.moduleForm[field.name].$error.unique)
                         $scope.moduleForm[field.name].$setValidity('unique', true);
 
