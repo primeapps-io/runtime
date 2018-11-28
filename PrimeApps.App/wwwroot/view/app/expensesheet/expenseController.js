@@ -1,5 +1,5 @@
 'use strict';
-angular.module('ofisim')
+angular.module('primeapps')
     .controller('ExpenseController', ['$rootScope', '$scope', 'moment', '$modal', '$filter', '$location', 'ModuleService', 'config', '$http', '$state', 'helper', 'ngToast',
         function ($rootScope, $scope, moment, $modal, $filter, $location, ModuleService, config, $http, $state, helper, ngToast) {
             var that = $scope;
