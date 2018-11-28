@@ -10,21 +10,25 @@
                         name="template"
                         ng-model="$parent.$parent.quoteTemplate"
                         ng-required="true"
-                        ng-options="o as o.name for o in quoteTemplates | filter:{active: true, isShown : true} track by o.id">
-                </select>
+                        ng-options="o as o.name for o in quoteTemplates | filter:{active: true, isShown : true} track by o.id"></select>
             </div>
             <div class="modal-footer clearfix">
                 <button type="button" class="btn btn-custom" ng-disabled="submittingModal"
-                        ng-click="$hide(); $parent.$parent.pdfCreating = false;">{{'Common.Cancel' | translate}}
+                        ng-click="$hide(); $parent.$parent.pdfCreating = false;">
+                    {{'Common.Cancel' | translate}}
                 </button>
                 <a class="btn btn-custom" ng-disabled="isShownWarning" ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}"
                    ng-click="excelData()"
-                   target="_blank"><i class="fa fa-file-excel-o pull-left" style="margin-top: 3px;padding-right: 6px;"></i>
-                    {{'Module.SourceDataExcluded' | translate }}</a>
+                   target="_blank">
+                    <i class="fa fa-file-excel-o pull-left" style="margin-top: 3px;padding-right: 6px;"></i>
+                    {{'Module.SourceDataExcluded' | translate }}
+                </a>
                 <a class="btn btn-custom" ng-disabled="isShownWarning" ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}"
                    ng-click="excelNoData()"
-                   target="_blank"><i class="fa fa-file-excel-o pull-left" style="margin-top: 3px;padding-right: 6px;"></i>
-                    {{'Module.SourceDataIncluded' | translate }}</a>
+                   target="_blank">
+                    <i class="fa fa-file-excel-o pull-left" style="margin-top: 3px;padding-right: 6px;"></i>
+                    {{'Module.SourceDataIncluded' | translate }}
+                </a>
             </div>
         </div>
     </div>

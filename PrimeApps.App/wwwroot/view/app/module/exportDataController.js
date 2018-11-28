@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-angular.module('ofisim')
+angular.module('primeapps')
 
     .controller('ExportDataController', ['$rootScope', '$scope', '$filter', 'ngToast', '$window',
         function ($rootScope, $scope, $filter, ngToast, $window) {
@@ -11,9 +11,9 @@ angular.module('ofisim')
                 var profileId = $rootScope.user.profile.ID;
                 var isViewFields = $scope.export.moduleAllColumn;
                 if (isViewFields)
-                    $window.open("/attach/ExportExcelView?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");
+                    $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + false + '&locale=' + $rootScope.locale, "_blank");
                 else
-                    $window.open("/attach/ExportExcelView?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale, "_blank");
+                    $window.open("/attach/export_excel_view?module=" + module + "&viewId=" + viewId + "&profileId=" + profileId + '&listFindRequestJson=' + JSON.stringify($scope.findRequest) + '&isViewFields=' + true + '&locale=' + $rootScope.locale, "_blank");
                 ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
             };
 
@@ -22,7 +22,7 @@ angular.module('ofisim')
                 var templateId = $scope.quoteTemplate.id;
                 var templateName = $scope.quoteTemplate.name;
                 var viewId = $scope.view.id;
-                $window.open("/attach/ExportExcelNoData?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
+                $window.open("/attach/export_excel_no_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
                 ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
             };
 
@@ -31,7 +31,7 @@ angular.module('ofisim')
                 var templateId = $scope.quoteTemplate.id;
                 var templateName = $scope.quoteTemplate.name;
                 var viewId = $scope.view.id;
-                $window.open("/attach/ExportExcelData?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
+                $window.open("/attach/export_excel_data?module=" + module + "&viewId=" + viewId + "&templateId=" + templateId + "&templateName=" + templateName + '&locale=' + $rootScope.locale + '&listFindRequestJson=' + JSON.stringify($scope.findRequest), "_blank");
                 ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
             };
 
