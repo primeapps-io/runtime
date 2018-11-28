@@ -130,21 +130,33 @@ angular.module('primeapps')
                 }
 
                 var addNewPermissions = function (actionButton) {
-                    actionButton.permissions = [];
+                    $scope.actionButtonPermission = [];
+                    if (actionButton.isNew)
+                        actionButton.permissions = [];
 
                     angular.forEach($rootScope.profiles, function (profile) {
-                        if (profile.is_persistent && profile.has_admin_rights)
+                        if (profile.IsPersistent && profile.HasAdminRights)
                             profile.Name = $filter('translate')('Setup.Profiles.Administrator');
 
-                        if (profile.is_persistent && !profile.has_admin_rights)
+                        if (profile.IsPersistent && !profile.HasAdminRights)
                             profile.Name = $filter('translate')('Setup.Profiles.Standard');
 
-                        actionButton.permissions.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
+                        $scope.actionButtonPermission.push({ profile_id: profile.Id, profile_name: profile.Name, type: 'full', profile_is_admin: profile.HasAdminRights });
                     });
                 };
 
+                if (!actionButton.isNew) {
+                    addNewPermissions(actionButton);
+                    if ($scope.actionButtonPermission.length != actionButton.permissions.length) {
+                        for (var i = actionButton.permissions.length; i < $scope.actionButtonPermission.length; i++) {
+                            actionButton.permissions.push($scope.actionButtonPermission[i]);
+                        }
+                    }
+                }
+
                 if (actionButton.isNew) {
                     addNewPermissions(actionButton);
+                    actionButton.permissions = $scope.actionButtonPermission;
                 }
                 else {
                     if (actionButton.permissions && actionButton.permissions.length > 0) {
