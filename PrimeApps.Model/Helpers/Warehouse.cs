@@ -351,6 +351,9 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var relation in relations)
                 {
+                    if (relation.Deleted == true)
+                        continue;
+
                     if (relation.RelationType == RelationType.ManyToMany)
                     {
                         CreateJunctionTable(database, module, relation, junctionTableNames);
