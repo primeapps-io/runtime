@@ -42,9 +42,10 @@ namespace PrimeApps.App.Jobs.Messaging.EMail.Providers
                         var mailMessage = new MailMessage();
                         mailMessage.Body = message.Body;
                         mailMessage.IsBodyHtml = true;
-                        mailMessage.SubjectEncoding = Encoding.UTF8;
-                        mailMessage.HeadersEncoding = Encoding.UTF8;
-                        mailMessage.Subject = message.Subject;
+                        //mailMessage.SubjectEncoding = Encoding.UTF8;
+                        //mailMessage.HeadersEncoding = Encoding.UTF8;
+                        mailMessage.Subject = "=?UTF-8?B?" + Convert.ToBase64String(Encoding.UTF8.GetBytes(message.Subject)) + "?=";
+
                         if (!string.IsNullOrWhiteSpace(message.Cc))
                         {
                             var ccList = message.Cc.Split(';');
