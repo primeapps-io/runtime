@@ -103,5 +103,18 @@ namespace PrimeApps.Model.Repositories
 
             await DbContext.SaveChangesAsync();
         }
+
+        public async Task<int> CreateMenuItems(MenuItem menuItem)
+        {
+            DbContext.MenuItems.Add(menuItem);
+
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<ICollection<MenuItem>> GetAllMenuItems()
+        {
+            return await DbContext.MenuItems
+                .Where(x => !x.Deleted).ToListAsync();
+        }
     }
 }

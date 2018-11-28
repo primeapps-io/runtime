@@ -15,5 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<MenuItem>> GetItems(int id);
         Task AddModuleToMenuAsync(Module module);
         Task DeleteModuleFromMenu(int id);
+        Task<ICollection<MenuItem>> GetAllMenuItems();
+        Task<int> CreateMenuItems(MenuItem menuItem);
     }
 }
