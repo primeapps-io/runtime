@@ -2229,11 +2229,11 @@ namespace PrimeApps.Model.Helpers
 					if (filter.Value.ToString().IndexOfAny(trChar.ToCharArray()) > -1)//"Turkish i problem" fix
 						return $"(LOWER({field}) NOT SIMILAR TO ${filterIndex} OR LOWER({field}) IS NULL)";
 
-					return $"LOWER({field}) <> ${filterIndex} OR LOWER({field}) IS NULL";
+					return $"(LOWER({field}) <> ${filterIndex} OR LOWER({field}) IS NULL)";
 				case Operator.Equals:
 					return $"{field} = ${filterIndex}";
 				case Operator.NotEqual:
-					return $"{field} <> ${filterIndex} OR {field} IS NULL";
+					return $"({field} <> ${filterIndex} OR {field} IS NULL)";
 				case Operator.Contains:
 				case Operator.StartsWith:
 				case Operator.EndsWith:
@@ -2245,7 +2245,7 @@ namespace PrimeApps.Model.Helpers
 					if (filter.Value.ToString().IndexOfAny(trChar.ToCharArray()) > -1)//"Turkish i problem" fix
 						return $"(LOWER({field}) NOT SIMILAR TO ${filterIndex} OR LOWER({field}) IS NULL)";
 
-					return $"LOWER({field}) NOT LIKE ${filterIndex} OR LOWER({field}) IS NULL";
+					return $"(LOWER({field}) NOT LIKE ${filterIndex} OR LOWER({field}) IS NULL)";
 				case Operator.Empty:
 					return $"{field} IS NULL";
 				case Operator.NotEmpty:
