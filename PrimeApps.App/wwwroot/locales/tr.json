@@ -125,6 +125,7 @@
     "PublicHoliday": "Resmi tatil günü.",
     "NoRecordFoundForToday": "Bu güne ait kayıt bulunmamaktadır.",
     "FiltersNotMatched": "Uygun bir onay akışı bulunamadığından onaya gönderilemiyor, lütfen sistem yöneticinizle temasa geçin.",
+    "ApproverNotFound": "Onaycı bulunamadığından onaya gönderilemiyor, lütfen sistem yöneticinizle temasa geçin.",
     "CanNotSendToProcess": "Günlük minimum çalışma süresinin ({{minSaat}} saat) altında saatlik girişi yaptınız. Lütfen ilgili gün için en az {{minSaat}} saatlik giriş yapınız.",
     "BankAndCaseChosen": "Lütfen banka veya kasadan yalnızca bir tanesini seçiniz.",
     "ChooseBankOrCase": "Lütfen banka veya kasa seçiniz.",

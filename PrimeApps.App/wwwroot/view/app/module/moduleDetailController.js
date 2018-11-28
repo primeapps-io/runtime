@@ -2039,7 +2039,16 @@ angular.module('primeapps')
                         $scope.manuelApproveRequest = false;
                         if (response.status === 400) {
                             if (response.data.model_state && response.data.model_state['filters_not_match'])
-                                ngToast.create({ content: $filter('translate')('Common.FiltersNotMatched'), className: 'warning' });
+                                ngToast.create({
+                                    content: $filter('translate')('Common.FiltersNotMatched'),
+                                    className: 'warning'
+                                });
+                            if (response.data.model_state && response.data.model_state['approver_not_found']) {
+                                ngToast.create({
+                                    content: $filter('translate')('Common.ApproverNotFound'),
+                                    className: 'warning'
+                                });
+                            }
                         }
                     });
             };
