@@ -1130,6 +1130,11 @@ angular.module('primeapps')
                         if (field.data_type == 'checkbox' && newRecord[field.name] === null && currentRecord[field.name])
                             newRecord[field.name] = false;
 
+                        if (field.deleted) {
+                            delete newRecord[field.name];
+                            continue;
+                        }
+
                         if (newRecord[field.name] !== undefined && newRecord[field.name] !== null) {
                             if (!newCurrentRecord)
                                 newCurrentRecord = {};
