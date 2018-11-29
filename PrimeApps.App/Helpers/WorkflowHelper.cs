@@ -76,7 +76,7 @@ namespace PrimeApps.App.Helpers
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
                 {
-                    _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
                     var workflows = await _workflowRepository.GetAll(module.Id, true);
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);

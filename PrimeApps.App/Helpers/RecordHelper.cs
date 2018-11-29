@@ -341,45 +341,48 @@ namespace PrimeApps.App.Helpers
                             if (FieldHasDependencyOrCombination(module, moduleField, record, tenantLanguage, picklistRepository))
                                 continue;
 
-                            if (moduleField.Validation.Required != null && (bool)moduleField.Validation.Required &&
+                            if(moduleField.Validation != null)
+                            {
+                                if (moduleField.Validation.Required != null && (bool)moduleField.Validation.Required &&
                                 ((!operationUpdate && record[moduleField.Name].IsNullOrEmpty()) ||
                                 (operationUpdate && dictionary.ContainsKey(moduleField.Name) && record[moduleField.Name].IsNullOrEmpty())))
-                            {
-                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' is required.");
-                                return StatusCodes.Status400BadRequest;
-                            }
-
-                            if (moduleField.Validation.Min != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) < moduleField.Validation.Min)
-                            {
-                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum value must be {moduleField.Validation.Min}.");
-                                return StatusCodes.Status400BadRequest;
-                            }
-
-                            if (moduleField.Validation.Max != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) > moduleField.Validation.Max)
-                            {
-                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' maximum value must be {moduleField.Validation.Max}.");
-                                return StatusCodes.Status400BadRequest;
-                            }
-
-                            if (moduleField.Validation.MinLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length < moduleField.Validation.MinLength)
-                            {
-                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MinLength}.");
-                                return StatusCodes.Status400BadRequest;
-                            }
-
-                            if (moduleField.Validation.MaxLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length > moduleField.Validation.MaxLength)
-                            {
-                                modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MaxLength}.");
-                                return StatusCodes.Status400BadRequest;
-                            }
-
-                            if (moduleField.Validation.Pattern != null && !record[moduleField.Name].IsNullOrEmpty())
-                            {
-                                Match match = Regex.Match((string)record[moduleField.Name], "^" + moduleField.Validation.Pattern + "$", RegexOptions.IgnoreCase);
-                                if (!match.Success)
                                 {
-                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' regex not match. Regex template: {moduleField.Validation.Pattern}");
+                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' is required.");
                                     return StatusCodes.Status400BadRequest;
+                                }
+
+                                if (moduleField.Validation.Min != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) < moduleField.Validation.Min)
+                                {
+                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum value must be {moduleField.Validation.Min}.");
+                                    return StatusCodes.Status400BadRequest;
+                                }
+
+                                if (moduleField.Validation.Max != null && !record[moduleField.Name].IsNullOrEmpty() && int.Parse((string)record[moduleField.Name]) > moduleField.Validation.Max)
+                                {
+                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' maximum value must be {moduleField.Validation.Max}.");
+                                    return StatusCodes.Status400BadRequest;
+                                }
+
+                                if (moduleField.Validation.MinLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length < moduleField.Validation.MinLength)
+                                {
+                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MinLength}.");
+                                    return StatusCodes.Status400BadRequest;
+                                }
+
+                                if (moduleField.Validation.MaxLength != null && !record[moduleField.Name].IsNullOrEmpty() && record[moduleField.Name].ToString().Length > moduleField.Validation.MaxLength)
+                                {
+                                    modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' minimum length must be {moduleField.Validation.MaxLength}.");
+                                    return StatusCodes.Status400BadRequest;
+                                }
+
+                                if (moduleField.Validation.Pattern != null && !record[moduleField.Name].IsNullOrEmpty())
+                                {
+                                    Match match = Regex.Match((string)record[moduleField.Name], "^" + moduleField.Validation.Pattern + "$", RegexOptions.IgnoreCase);
+                                    if (!match.Success)
+                                    {
+                                        modelState.AddModelError(moduleField.Name, $"Field '{moduleField.Name}' regex not match. Regex template: {moduleField.Validation.Pattern}");
+                                        return StatusCodes.Status400BadRequest;
+                                    }
                                 }
                             }
                         }
