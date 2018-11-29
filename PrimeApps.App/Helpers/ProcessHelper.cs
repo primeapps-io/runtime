@@ -301,7 +301,7 @@ namespace PrimeApps.App.Helpers
                                     approverLookupModule = approverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule() : approverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
                                 }
 
-                                if (record["firstApprover"] == null)
+                                if (record[firstApprover.Split('.')[0] + "." + approverLookupName] == null)
                                     throw new ProcessFilterNotMatchException("ProcessApproverNotFoundException");
 
                                 var approverUserRecord = _recordRepository.GetById(approverLookupModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false);
