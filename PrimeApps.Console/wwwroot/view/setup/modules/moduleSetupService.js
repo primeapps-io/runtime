@@ -734,7 +734,7 @@ angular.module('primeapps')
                     });
 
                     angular.forEach(moduleFields, function (field) {
-                        if (field.deleted)
+                        if (field.deleted && field.multiline_type != 'large')
                             return;
 
                         var selectedField = null;

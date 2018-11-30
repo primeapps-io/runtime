@@ -97,7 +97,7 @@
                             </div>
                             <div class="fields clearfix">
                                 <div id="availableFields" class="container-left">
-                                    <div ng-repeat="field in fields.availableFields | filter:{multiline_type:'!large'}"
+                                    <div ng-repeat="field in fields.availableFields"
                                          ng-class="{'dragable':!field.seperator, 'seperator':field.seperator, 'seperator-main':field.name === 'seperator-main'}">
                                         {{field.label}} <i class="fa fa-arrows" ng-if="!field.seperator"></i>
                                     </div>
