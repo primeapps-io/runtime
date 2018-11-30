@@ -1,0 +1,40 @@
+.usergroups {
+  .action-column {
+    width: 170px;
+  }
+
+  .group-name {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .group-description {
+    max-width: 340px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .required-label {
+    color: #990000;
+  }
+
+  tags-input {
+    max-width: 300px !important;
+
+    .tags {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  }
+
+  tags-input.ng-invalid .tags {
+    border-color: #cbd5dd;
+  }
+
+  .has-error tags-input .tags {
+    border-color: #a94442;
+  }
+}

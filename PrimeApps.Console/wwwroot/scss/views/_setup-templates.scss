@@ -1,0 +1,52 @@
+﻿.templates {
+  .table-container {
+    max-height: 340px;
+    margin-bottom: 30px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    tr {
+      &:hover {
+        background-color: #f8fafc;
+
+        .copy-button {
+          display: inline-block;
+        }
+      }
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 160px !important;
+    }
+  }
+
+  .module-select {
+    margin-bottom: 20px;
+  }
+
+  .instructions-list {
+    list-style: decimal;
+
+    li {
+      font-size: 14px;
+      padding: 10px;
+    }
+
+    .foreach-label {
+      display: block;
+
+      &:hover {
+        .copy-button {
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  .copy-button {
+    display: none;
+    color: #777;
+    cursor: pointer;
+  }
+}

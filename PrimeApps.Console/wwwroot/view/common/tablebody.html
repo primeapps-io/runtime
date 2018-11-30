@@ -1,0 +1,22 @@
+<a href="{{field.link}}" ng-if="!disableLinks && field.link && !field.isHtml" ng-class="{'field-primary':field.primary, 'field-lookup':(field.data_type === 'lookup'), 'field-email':(field.data_type === 'email' || field.data_type === 'url' || field.data_type === 'location'), 'field-currency':(field.data_type === 'currency')}" target="{{field.data_type === 'url'  || field.data_type === 'location'  ? '_blank' : '_self'}}">{{field.valueFormatted}}</a>
+<span ng-if="(!field.link || disableLinks) && !field.isHtml && field.data_type !='image' && field.data_type !='rating'"
+      ng-class="{'field-currency':(field.data_type === 'currency') , 'field-number':(field.data_type === 'number') }">{{field.valueFormatted}}</span>
+<span ng-if="field.isHtml" ng-bind-html="trustAsHtml(field.valueFormatted)"></span>
+
+<img ng-click="showLightBox(field,$index)"
+     ng-if="field.data_type=='image' && field.valueFormatted && field.valueFormatted !=null" class="img-responsive"
+
+     ng-style="field.image_size_list >0 ? {'max-width':field.image_size_list+'px'}  : {'max-width':'250px'}"
+     ng-src="{{ $root.config.imageUrl + field.valueFormatted }}">
+<input-stars
+        ng-if="field.data_type === 'rating'"
+        max="{{field.max}}"
+        readonly="true"
+        allow-half
+        icon-base="fa fa-fw"
+        icon-empty="fa-star-o"
+        icon-half="fa-star-half-o"
+        icon-full="fa-star"
+        icon-hover-full="fa-star"
+        ng-model="field.valueFormatted"
+></input-stars>

@@ -1,0 +1,12 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <h3 class="popover-title">{{'Common.Search' | translate}}</h3>
+    <div class="popover-content">
+        <ul class="list-unstyled">
+            <li style="position: relative;">
+                <input class="form-control" type="text" ng-model="$parent.filter.subject" ng-model-options="{debounce: {'default': 250, 'blur': 0} }" ng-change="$parent.currentPage = 1; allTasksLoaded = false; $parent.getTasks()" placeholder="{{'Common.Find' | translate}}">
+                <i class="fa fa-sm fa-spinner fa-pulse ng-animate-disabled" style="position: absolute; top: 10px; right: 5px;" ng-show="$parent.searching"></i>
+            </li>
+        </ul>
+    </div>
+</div>

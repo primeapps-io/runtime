@@ -8,13 +8,6 @@ namespace PrimeApps.Console
 	    {
 			services.AddWebOptimizer(pipeline =>
 			{
-				pipeline.AddJavaScriptBundle("scripts/bundles-js/auth.js",
-					"scripts/vendor/jquery.js",
-					"scripts/vendor/jquery-maskedinput.js",
-					"scripts/vendor/sweetalert.js",
-					"scripts/vendor/spin.js",
-					"scripts/vendor/ladda.js");
-                
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/app.js",
 					"scripts/app.js",
 					"scripts/interceptors.js",
@@ -27,19 +20,11 @@ namespace PrimeApps.Console
 					"view/authService.js",
 					"view/appService.js",
 					"view/appController.js",
-					"view/app/note/noteService.js",
-					"view/app/note/noteDirective.js",
-					"view/app/documents/documentService.js",
-					"view/app/documents/documentDirective.js",
 					"view/app/module/moduleService.js",
 					"view/setup/help/helpService.js",
 					"view/setup/setupController.js",
-					"view/setup/payment/paymentService.js",
-					"view/setup/payment/paymentDirective.js",
 					"view/setup/workgroups/workgroupService.js",
-					"view/setup/messaging/messagingService.js",
-					"view/app/payment/paymentFormController.js",
-					"view/app/phone/sipPhoneController.js");
+					"view/setup/messaging/messagingService.js");
 
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/vendor.js",
 					"scripts/vendor/angular.js",

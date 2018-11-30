@@ -1,0 +1,64 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/payment">{{'Setup.Nav.Tabs.PaymentInformation' | translate}}</a></li>
+        <li class="active"><a href="#/app/setup/paymenthistory">{{'Setup.Nav.Tabs.PaymentHistory' | translate}}</a></li>
+    </ul>
+</div>
+
+<div class="panel panel-default setup-panel paymentHistory">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading">{{'Setup.PaymentHistory.Title' | translate}}</h5>
+                <div class="subpanel-body">
+                    <div class="empty-message" ng-if="invoiceList.LicenseHistory.length < 1">{{'Setup.PaymentHistory.Message' | translate}}</div>
+
+                    <table class="table table-hover" ng-model="NaN" bs-collapse ng-if="invoiceList.LicenseHistory.length > 0">
+                        <thead>
+                        <tr>
+                            <th>{{'Setup.PaymentHistory.InvoiceDate' | translate}}</th>
+                            <th>{{'Setup.PaymentHistory.Amount' | translate}}</th>
+                            <th>{{'Setup.PaymentHistory.PaymentDate' | translate}}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat-start="invoice in invoiceList.LicenseHistory" bs-collapse-toggle>
+                            <td>{{invoice.InvoiceDate | msDate | date:'dd/MM/yyyy'}}</td>
+                            <td class="amount">{{invoice.Amount}} <i class="fa fa-{{invoice.Currency.toLowerCase()}}"></i></td>
+                            <td>{{invoice.ProcessDate | msDate | date:'dd/MM/yyyy'}}</td>
+                        </tr>
+                        <tr ng-repeat-end bs-collapse-target>
+                            <td class="paymentDetails">
+                                <h6>{{'Setup.PaymentHistory.Details' | translate}}</h6>
+                                <table class="table">
+                                    <tr ng-repeat="details in invoice.InvoiceDetails">
+                                        <td>{{'Setup.PaymentHistory.History' + details.Period | translate}} {{'Setup.PaymentHistory.History' + details.Code | translate}} ({{'Setup.PaymentHistory.Quantity' |
+                                            translate:{quantity:details.Count} }})
+                                        </td>
+                                        <td class="amount">{{details.Amount}} <i class="fa fa-{{details.Currency.toLowerCase()}}"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>{{'Setup.PaymentHistory.Total' | translate}} <span
+                                                ng-show="invoice.MountCount > 1">({{'Setup.PaymentHistory.MountCount' | translate:{month:invoice.MountCount} }})</span></b></td>
+                                        <td><b>{{invoice.Amount}} <i class="fa fa-{{invoice.Currency.toLowerCase()}}"></i></b></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+
+
+
+            <div class="callout callout-info" ng-if="invoiceList.LicenseHistory.length >0">
+                <p>{{'Common.Tips' | translate}}:</p>
+                <p> - {{'Setup.PaymentHistory.Tip' | translate}}</p>
+            </div>
+        </div>
+    </div>
+</div>

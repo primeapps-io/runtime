@@ -1,0 +1,65 @@
+#loader {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 100%;
+    background-color: #fff;
+    z-index: 9999;
+}
+
+.spin {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    left: 50%;
+    margin: -20px 0 0 -20px;
+}
+
+
+@keyframes ring {
+    0% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes ring {
+    0% {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
+.ring {
+    position: relative;
+    width: 50px !important;
+  height: 50px !important;
+    -webkit-transform: translate(-25px, -25px) scale(0.25) translate(25px, 25px);
+    transform: translate(-25px, -25px) scale(0.25) translate(25px, 25px);
+
+    div {
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        top: 20px;
+        left: 20px;
+        border-radius: 50%;
+        border: 20px solid #000;
+        border-color: #d5190f transparent #d5190f transparent;
+        -webkit-animation: ring 0.7s linear infinite;
+        animation: ring 0.7s linear infinite;
+    }
+}

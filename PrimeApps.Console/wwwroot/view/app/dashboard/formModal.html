@@ -1,0 +1,70 @@
+<div class="modal module-modal module-form-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="z-index: 99999999999;">
+        <div class="modal-content">
+            <form name="dashboardForm" class="form-horizontal form-custom" ng-submit="saveDashboard(dashboardForm)"
+                  autocomplete="off" novalidate>
+                <div class="modal-header">
+                    <h4 class="modal-title">{{ currentDashboard.id ? 'Dashboard.EditDashboard' :
+                        'Dashboard.NewDashboard' | translate }}</h4>
+                </div>
+                <div class="modal-body">
+                    <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-show="!loadingModal">
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.name.$invalid}">
+                            <label name="name" class="col-sm-2 control-label">Adı</label>
+                            <div class="col-sm-10"
+                                 ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.name.$invalid}">
+                                <input class="form-control ng-animate-disabled sender-label" name="name"
+                                       ng-model="currentDashboard.name" required/>
+
+                            </div>
+                        </div>
+                        <div class="row"
+                             ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.description.$invalid}">
+                            <label name="description" class="col-sm-2 control-label"> Açıklama</label>
+                            <div class="col-sm-10"
+                                 ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.description.$invalid}">
+                                <textarea class="form-control ng-animate-disabled" name="description"
+                                          ng-model="currentDashboard.description"></textarea>
+                            </div>
+                        </div>
+                        <div class="row"
+                             style="margin-bottom: 5px"
+                             ng-if="user.profile.has_admin_rights"
+                             ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.profile_id.$invalid}">
+
+                            <label ng-if="!currentDashboard.id" name="name"
+                                   class="col-sm-2 control-label">Profil</label>
+                            <div class="col-sm-10"
+                                 ng-class="{'has-error': dashboardForm.$submitted && dashboardForm.profile_id.$invalid}">
+                                <div class="sharing" ng-repeat="profile in dashboardprofile"
+                                     ng-if="!currentDashboard.id">
+                                    <label style="margin-top: 5px">
+                                        <input type="radio"
+                                               name="profile_id"
+                                               required
+                                               ng-model="currentDashboard.profile_id"
+                                               ng-value="profile.id">
+                                        {{ profile.Name }}
+                                    </label>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-disabled="submittingModal" ng-click="$hide()">
+                        {{'Common.Cancel' | translate}}
+                    </button>
+                    <button type="submit" class="btn btn-w-md btn-primary" ladda="submittingModal" ng-show="!forbidden">
+                        <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

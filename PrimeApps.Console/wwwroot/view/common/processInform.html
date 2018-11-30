@@ -1,0 +1,21 @@
+﻿<div class="popover">
+    <div class="arrow"></div>
+    <h3 ng-if="loadingProcessPopup" class="popover-title" style="text-align:center; width: 250px">&nbsp;<br />&nbsp;</h3>
+    <div ng-if="loadingProcessPopup" class="popover-content" style="width: 250px; height:150px">
+        <br /><div class="page-loading"><i style="margin-left:50%" class="fa fa-sm fa-spinner fa-pulse"></i></div>
+    </div>
+    <h3 ng-if="processStatusParam == 1 && !loadingProcessPopup" class="popover-title" style="text-align:center; width: 250px">{{processOrderParam}} {{'Setup.Workflow.ApprovelProcess.LevelWaiting' | translate}} <br />({{currentApprover}})</h3>
+    <h3 ng-if="processStatusParam == 2 && !loadingProcessPopup" class="popover-title" style="text-align:center; width: 250px">{{'Setup.Workflow.ApprovelProcess.Approved' | translate}} <br />({{updateTime}})</h3>
+    <h3 ng-if="processStatusParam == 3 && !loadingProcessPopup" class="popover-title" style="text-align:center; width: 250px">{{'Setup.Workflow.ApprovelProcess.Rejected' | translate}} <br />({{updateTime}})</h3>
+    <div ng-if="!loadingProcessPopup" class="popover-content" style="width: 250px; height:150px; text-align: center;">
+        <div ng-if="processStatusParam == 1 && !loadingProcessPopup">
+            <p ng-repeat="previousApprover in previousApprovers"><span style="float:left">{{$index+1}}. {{'Setup.Workflow.ApprovelProcess.ApproverForInform' | translate}}:</span> <span><b>{{previousApprover}}</b></span></p>
+        </div>
+        <div ng-if="processStatusParam == 2 && !loadingProcessPopup">
+            <p ng-repeat="previousApprover in previousApprovers"><span style="float:left">{{$index+1}}. {{'Setup.Workflow.ApprovelProcess.ApproverForInform' | translate}}:</span> <span><b>{{previousApprover}}</b></span></p>
+        </div>
+        <div ng-if="processStatusParam == 3 && !loadingProcessPopup">
+            <p><span style="float:left">{{'Setup.Workflow.ApprovelProcess.RejectApprover' | translate}}: </span>&nbsp;<span><b>{{rejectApprover}}</b></span></p>
+        </div>
+    </div>
+</div>
