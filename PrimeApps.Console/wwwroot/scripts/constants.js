@@ -669,7 +669,8 @@ angular.module('primeapps')
             'vat_percent',
             'using_stock',
             'stock_quantity',
-            'critical_stock_limit'
+            'critical_stock_limit',
+            'aktif_urun_hizmet'
         ],
         quotes: [
             'account',
@@ -681,7 +682,9 @@ angular.module('primeapps')
             'discount_percent',
             'discount_type',
             'vat_list',
-            'email'
+            'email',
+            'currency',
+            'discounted_total'
         ],
         sales_orders: [
             'account',
@@ -694,7 +697,9 @@ angular.module('primeapps')
             'discount_type',
             'vat_list',
             'email',
-            'currency'
+            'currency',
+            'discounted_total',
+            'approved'
         ],
         purchase_orders: [
             'supplier',
@@ -707,7 +712,9 @@ angular.module('primeapps')
             'discount_type',
             'vat_list',
             'email',
-            'currency'
+            'currency',
+            'approved',
+            'discounted_total'
         ],
         calisanlar: [
             'sabit_devreden_izin',
@@ -762,7 +769,18 @@ angular.module('primeapps')
             'transaction_type',
             'date',
             'customer',
-            'supplier'
+            'supplier',
+            'currency',
+            'borc_tl',
+            'alacak',
+            'bakiye_tl',
+            'borc_usd',
+            'alacak_usd',
+            'bakiye_usd',
+            'borc_euro',
+            'alacak_euro',
+            'bakiye_euro',
+            'payment_method'
         ],
         stock_transactions: [
             'transaction_date',
@@ -772,12 +790,78 @@ angular.module('primeapps')
             'sales_order',
             'purchase_order',
             'supplier',
-            'customer'
+            'customer',
+            'cikan_miktar',
+            'bakiye'
         ],
         holidays: [
             'date',
             'country'
+        ],
+        accounts: [
+            'aktif_firma'
+        ],
+        suppliers: [
+            'aktif_tedarikci'
+        ],
+        sales_invoices: [
+            'approved',
+            'currency',
+            'account',
+            'fatura_tarihi',
+            'grand_total',
+            'discount_amount',
+            'discount_percent',
+            'discount_type',
+            'discounted_total',
+            'total',
+            'vat_list'
+
+        ],
+        purchase_invoices: [
+            'approved',
+            'currency',
+            'tedarikci',
+            'fatura_tarihi',
+            'grand_total',
+            'discount_amount',
+            'discount_percent',
+            'discount_type',
+            'discounted_total',
+            'total',
+            'vat_list'
+        ],
+        kasalar: [
+            'para_birimi',
+            'guncel_bakiye',
+            'hesap_no',
+            'kasa_adi'
+        ],
+        bankalar: [
+            'banka_adi',
+            'hesap_no',
+            'para_birimi',
+            'guncel_bakiye'
+        ],
+        kasa_hareketleri: [
+            'kasa',
+            'islem_tarihi',
+            'hareket_tipi',
+            'borc',
+            'alacak',
+            'bakiye',
+            'ilgili_cari_hareket'
+        ],
+        banka_hareketleri: [
+            'islem_tarihi',
+            'hareket_tipi',
+            'banka',
+            'borc',
+            'alacak',
+            'bakiye',
+            'ilgili_cari_hareket'
         ]
+
     })
 
     .constant('systemReadonlyFields', {
