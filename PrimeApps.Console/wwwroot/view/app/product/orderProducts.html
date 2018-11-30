@@ -141,6 +141,7 @@
                                 rounding="fields['unit_price'].rounding || 2"
                                 currency-symbol="orderProduct.product.currency.value || currencySymbol"
                                 number-currency
+                                ng-disabled="fields['unit_price'].validation['readonly']"
                                 ng-if="!readonly"/>
                     </td>
                     <td ng-if="orderProduct.separator===undefined || orderProduct.separator===null"
