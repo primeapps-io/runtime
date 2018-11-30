@@ -18,10 +18,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class PlatformUserRepository : RepositoryBasePlatform, IPlatformUserRepository
     {
-        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
-        {
-
-        }
+        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<PlatformUser> Get(int platformUserId)
         {
@@ -126,7 +123,7 @@ namespace PrimeApps.Model.Repositories
             return user?.PlatformUser;
         }
 
-        public async Task<int> DeleteAsync (PlatformUser user)
+        public async Task<int> DeleteAsync(PlatformUser user)
         {
             DbContext.Users.Remove(user);
             return await DbContext.SaveChangesAsync();
@@ -220,5 +217,9 @@ namespace PrimeApps.Model.Repositories
             return moduleLicenseCount;
         }
 
+        public PlatformUser GetByEmail(string email)
+        {
+            return DbContext.Users.SingleOrDefault(x => x.Email == email);
+        }
     }
 }

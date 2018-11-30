@@ -1,0 +1,51 @@
+﻿@{
+    var googleCode = "UA-112242194-1";
+    //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+    //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
+    var token = ViewBag.Token;
+}
+
+<!DOCTYPE html>
+<html lang="{{language}}" ng-app="primeapps">
+<head>
+    <title>PrimeApps Console</title>
+    <link rel="icon" href="~/images/favicon/primeapps.ico" type="image/x-icon" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="robots" content="noindex" />
+    <meta name="googlebot" content="noindex">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="/styles/bundles-css/vendor.css" />
+    <link rel="stylesheet" href="/styles/bundles-css/app.css" />
+</head>
+<body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
+    @RenderBody()
+    <script>
+		var version = '@typeof(ControllerContext).Assembly.GetName().Version';
+		var cdnUrl = '@ViewBag.CdnUrlDynamic';
+        var token = '@token';
+		var blobUrl = '';
+		var functionUrl = '';
+        var tenantId = '0';
+        var components = '';
+		var isCustomDomain = false;
+
+		document.body.className = 'primeapps';
+		window.localStorage.setItem('theme', 'primeapps');
+
+		var loaderDiv = document.getElementById('loader');
+		loaderDiv.style.display = 'block';
+    </script>
+    <script src="/scripts/bundles-js/vendor.js"></script>
+    <script src="/scripts/bundles-js/app.js"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

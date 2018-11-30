@@ -1,0 +1,171 @@
+<div class="subpanel">
+    <h5 class="subpanel-heading">{{'Setup.Payment.Title1' | translate}}</h5>
+    <form name="paymentInfoForm" ng-submit="update(payment)" class="form-horizontal" novalidate>
+
+        <div class="subpanel-body">
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.CustomerName' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="customerName" class="form-control" maxlength="50" required ng-model="payment.CustomerName"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.Address' | translate}}</label>
+                <div class="col-sm-10">
+                    <textarea rows="1" name="address" class="form-control" maxlength="200" required auto-grow ng-model="payment.Address"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.District' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="district" class="form-control" maxlength="50" required ng-model="payment.District"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.Province' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="province" class="form-control" maxlength="50" required ng-model="payment.Province"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.PostalCode' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="postalCode" class="form-control" maxlength="6" ng-model="payment.PostalCode"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.PhoneNumber' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="phoneNumber" class="form-control" maxlength="20" required ng-model="payment.PhoneNumber"/>
+                </div>
+            </div>
+        </div>
+
+
+        <h5 class="subpanel-heading">{{'Setup.Payment.Title2' | translate}}</h5>
+        <div class="subpanel-body">
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.TaxOffice' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="taxOffice" class="form-control" maxlength="50" ng-model="payment.TaxOffice"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.TaxNumber' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="taxNumber" class="form-control" maxlength="50" ng-model="payment.TaxNumber"/>
+                </div>
+            </div>
+        </div>
+
+
+        <h5 class="subpanel-heading">{{'Setup.Payment.Title3' | translate}}</h5>
+        <div class="subpanel-body">
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.CardHolder' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="cardHolder" class="form-control" maxlength="40" required ng-model="payment.CardHolder"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.CardNumber' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="cardNumber" class="form-control" maxlength="19" required numeric placeholder="{{payment.CardNumberMask}}" ng-focus="payment.CardNumberMask = null" ng-model="payment.CardNumber" ng-change="changeCardType(payment.CardNumber)"/>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.Expiration' | translate}}</label>
+                <div class="col-sm-10">
+                    <select name="expirationMonth" class="form-control" required ng-options="o as o for o in expirationMonths" ng-model="payment.ExpirationMonth"></select>
+                    <select name="expirationYear" class="form-control" required ng-options="o as o for o in expirationYears" ng-model="payment.ExpirationYear"></select>
+                </div>
+            </div>
+
+            <div class="form-group" show-errors>
+                <label class="col-sm-2 control-label">{{'Setup.Payment.CVV' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="cvv" class="form-control" minlength="{{amexCard === 'on' ? 4 : 3}}" maxlength="{{amexCard === 'on' ? 4 : 3}}" required numeric ng-model="payment.CVV"/> <i class="fa fa-question-circle help" data-placement="right" data-title="{{'Setup.Payment.HelpCVV' | translate}}" bs-tooltip></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <ul class="cards list-unstyled">
+                        <li class="visa {{visaCard}}"></li>
+                        <li class="amex {{amexCard}}"></li>
+                        <li class="mastercard {{masterCard}}"></li>
+                        <li class="maestro {{maestroCard}}"></li>
+                        <li class="discover {{discoverCard}}"></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="paymentInfoForm.$submitted && (paymentInfoForm.$error.required || paymentInfoForm.$error.cardNumber)">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <div class="callout callout-danger">
+                        <p ng-if="paymentInfoForm.$error.required">{{'Setup.Payment.FormError' | translate}}</p>
+                        <p ng-if="paymentInfoForm.$error.cardNumber">{{'Setup.Payment.CardError' | translate}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-primary btn-w-lg" ladda="paymentUpdating"><i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="subpanel" ng-show="!payment.HasAdjustment">
+    <h5 class="subpanel-heading">{{'Setup.Payment.Title4' | translate}}</h5>
+    <div class="subpanel-body">
+        <form name="campaingForm" ng-submit="updateCampaign(payment)" style="margin-bottom: 20px;">
+            <div class="form-group clearfix">
+                <label class="col-sm-2 control-label">{{'Setup.Payment.CampaignCode' | translate}}</label>
+                <div class="col-sm-10">
+                    <input type="text" name="campaignCode" class="form-control" maxlength="50" required ng-model="payment.CampaignCode"/>
+                    <button type="submit" class="btn btn-primary btn-sm" ladda="campaignUpdating" ng-disabled="!payment.CampaignCode">{{'Setup.Payment.Use' | translate}}</button>
+                </div>
+            </div>
+
+            <div class="form-group clearfix" ng-show="campaingForm.$submitted && campaingForm.$error.campaignCode">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <div class="callout callout-danger">
+                        <p ng-if="campaingForm.$error.campaignCode">{{'Setup.Payment.CampaignCodeError' | translate}}</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="subpanel">
+    <h5 class="subpanel-heading">{{'Setup.Payment.Title5' | translate}}</h5>
+    <div class="subpanel-body">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">{{'Setup.Payment.Currency' | translate}}</label>
+                <div class="col-sm-10">
+                    <label class="ui-radio">
+                        <input type="radio" name="currency" ng-checked="user.currency == 'TRY'" ng-click="changeCurrency('TRY')"><span>{{'Setup.Settings.TurkishLira' | translate}}</span>
+                    </label>
+
+                    <label class="ui-radio">
+                        <input type="radio" name="currency" ng-checked="user.currency == 'USD'" ng-click="changeCurrency('USD')"><span>{{'Setup.Settings.Dollar' | translate}}</span>
+                    </label>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

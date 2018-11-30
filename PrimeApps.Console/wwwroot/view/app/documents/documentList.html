@@ -1,0 +1,66 @@
+<ul class="document-list">
+    <li ng-repeat="document in documents | limitTo:(documents.documentLimit || 30)" class="list-unstyled clearfix" ng-class="{editing: document == editedDocument}">
+        <span class="icon" ng-if="!(document.extension=='jpg'|| document.extension=='jpeg'|| document.extension=='gif' || document.extension=='bmp' || document.extension=='png')"><i class="{{icon(document.extension)}}"></i></span>
+        <img ng-if="document.extension=='jpg'|| document.extension=='jpeg'|| document.extension=='gif' || document.extension=='bmp' || document.extension=='png'"
+             ng-click="showLightBox(document,$index)" class="image-icon" ng-src="{{document.file_url}}"/>
+         <span class="document-buttons">
+                <i class="action-icon flaticon-pencil124" ng-click="edit(document)" title="{{'Common.Edit' | translate}}" ng-show="hasDocumentsPermission(operations.modify) && !$parent.$parent.record.freeze"></i>
+                <i class="action-icon flaticon-bin9" confirm-click action="remove(document, $index)" placement="right" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}" ng-show="hasDocumentsPermission(operations.remove) && !$parent.$parent.record.freeze"></i>
+        </span>
+        <span class="document">
+            <a target="_blank" ng-href="{{'/attach/download?fileId='+ document.id}}">{{document.name}}</a><span ng-show="document.description"> - {{document.description}}</span><br>
+            <span>{{document.created_by.full_name}}, {{document.created_time | relativeTime}}, {{document.file_size | size}}</span>
+            <span ng-if="document.parentEntityID && document.parentEntityID != entityId"> - </span>
+        </span>
+        <form class="document-form form-inline" ng-submit="update(document)">
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="{{'Documents.document_name' | translate}}" focus="document.editing" blur="document.editing=false;" maxlength="255" ng-model="document.name_plain"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <textarea rows="1" class="form-control" placeholder="{{'Documents.description' | translate}}" maxlength="200" ng-model="document.description" auto-grow></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary" ladda="documentUpdating" ng-disabled="!document.name_plain"><i class="fa fa-check"></i> {{'Common.Save' | translate}}</button>
+            <button type="button" class="btn btn-sm btn-custom" ng-click="cancelEdit(document)">{{'Common.Cancel' | translate}}</button>
+        </form>
+    </li>
+</ul>
+<div class="document-list-footer" ng-show="!isAll && documents.length > 0 && !$parent.record.freeze">
+    <a ng-href="{{'#/app/documents/'+type+'?id=' +  entityId}}">{{'Documents.ShowAllDocuments' |
+        translate}} <i class="fa fa-chevron-right"></i></a>
+</div>
+<div class="task-list-footer" ng-show="isAll">
+    <a href ng-click="documents.documentLimit = documents.length; documents.showAllDocuments = true;" ng-if="!documents.showAllDocuments && documents.length > 30">{{ 'Documents.ShowAllDocuments' | translate }} <i class="fa fa-chevron-right"></i></a>
+</div>
+<lightbox-directive class="angular-lightbox" ng-class="{ hidden : !lightBox }">
+    <article>
+        <header>
+            <ul class="pager">
+                <li class="previous" id="previous" ng-if="Index !=0"
+                    ng-click="showLightBox(documents[(Index-1)],(Index-1))"><a>
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                </a></li>
+                <li class="next" id="next" ng-if="(documents.length-2)>=Index"
+                    ng-click="showLightBox(documents[(Index+1)],(Index+1))"><a>
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                </a></li>
+            </ul>
+            <a class="close-btn" id="close-lightbox" ng-click="closeLightBox()"><i class="fa fa-times-circle"></i></a>
+        </header>
+        <content ng-click="closeLightBox()">
+            <p>{{ fileData.name }}</p>
+            <img ng-if="fileData.extension=='jpg'|| fileData.extension=='jpeg'|| fileData.extension=='gif' || fileData.extension=='bmp' || fileData.extension=='png'"
+                 ng-src="{{ fileData.FileUrl }}"/>
+            <span class="icon"
+                  ng-if="!(fileData.extension=='jpg'|| fileData.extension=='jpeg'|| fileData.extension=='gif' || fileData.extension=='bmp' || fileData.extension=='png')"><i
+                    class="{{icon(fileData.extension)}}"></i></span>
+
+        </content>
+        <footer>
+            <a class="download-btn" href="{{fileData.file_url}}" target="_blank"><i class="fa fa-download"></i></a>
+        </footer>
+    </article>
+</lightbox-directive>

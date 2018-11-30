@@ -1,0 +1,180 @@
+<div class="modal module-modal module-form-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="z-index: 99999999999;">
+        <div class="modal-content">
+            <form name="dashletFormModal" class="form-horizontal form-custom" ng-submit="saveDashlet(dashletFormModal)"
+                  autocomplete="off" novalidate>
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        {{ !currentDashlet.id ? ('Dashboard.NewDashlet' | translate) : ('Dashboard.EditDashlet' |
+                        translate) }}
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-show="!loadingModal">
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.dashlet_type.$invalid}">
+                            <label name="name" class="col-sm-4 control-label"> {{ 'Dashboard.Type' | translate}}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.dashlet_type.$invalid}">
+                                <select class="form-control"
+                                        ng-model="currentDashlet.dashlet_type"
+                                        name="dashlet_type"
+                                        required
+                                        ng-disabled="currentDashlet.id"
+                                        ng-options="o.name as o.label for o in DashletTypes"
+                                        ng-change="changeDashletType()">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="currentDashlet.dashlet_type ==='widget'" style="margin-bottom: 6px"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.datasource.$invalid}">
+                            <label name="description" class="col-sm-4 control-label"> {{'Dashboard.DataSource' |
+                                translate}}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.datasource.$invalid}">
+                                <label class="radio-inline">
+
+                                    <input type="radio" name="datasource" value="view"
+                                           ng-model="currentDashlet.dataSource">
+                                    {{'Dashboard.View' |
+                                    translate}}
+                                </label>
+                                <label class="radio-inline ">
+                                    <input type="radio" name="datasource" value="report"
+                                           ng-model="currentDashlet.dataSource">
+                                    {{'Dashboard.Report' |
+                                    translate}}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-if="currentDashlet.dashlet_type ==='chart' || (currentDashlet.dashlet_type ==='widget' && currentDashlet.dataSource ==='report' )"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.board.$invalid}">
+                            <label name="name" class="col-sm-4 control-label">{{ boardLabel }}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.board.$invalid}">
+                                <select class="form-control"
+                                        ng-model="currentDashlet.board"
+                                        required
+                                        name="board"
+                                        ng-change="changeBoard()"
+                                        ng-options="o.id as o.name for o in boards"
+                                >
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px" ng-if="currentDashlet.dataSource ==='view'"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.module_id.$invalid}">
+                            <label name="name" class="col-sm-4 control-label">{{'Dashboard.Module' |
+                                translate}}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.module_id.$invalid}">
+                                <select
+                                        class="form-control"
+                                        name="module_id"
+                                        required
+                                        ng-model="currentDashlet.module_id"
+                                        ng-change="selectModule()"
+                                        ng-options="o.id as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-if="views && currentDashlet.dataSource==='view'"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.view_id.$invalid}">
+                            <label name="name" class="col-sm-4 control-label">{{'Dashboard.View' |
+                                translate}}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.view_id.$invalid}">
+                                <select
+                                        class="form-control"
+                                        name="view_id"
+                                        required
+                                        ng-change="changeView()"
+                                        ng-model="currentDashlet.view_id"
+                                        ng-options="o.id as o['label_' + language] for o in views | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-if="views && currentDashlet.dataSource==='view'">
+                            <label name="name" class="col-sm-4 control-label">{{'Report.Widget.Color' |
+                                translate}}:</label>
+                            <div class="col-sm-8">
+                                <input name="colorpicker" type="color"
+                                       class="form-control"
+                                       ng-model="currentDashlet.color"
+                                >
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-if="views && currentDashlet.dataSource==='view'">
+                            <label name="name" class="col-sm-4 control-label">{{'Report.Widget.Icon' |
+                                translate}}:</label>
+                            <div class="col-sm-8">
+                                <button type="button" data-container="form"
+                                        class="form-control btn btn-default"
+                                        data-placeholder="{{'Common.Icon' | translate}}-"
+                                        ng-model="currentDashlet.icon"
+                                        data-html="1" data-toggle="true"
+                                        bs-options="icon.value as icon.label for icon in icons"
+                                        bs-select><span class="caret"></span></button>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-if="currentDashlet.dashlet_type === 'chart'"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.name.$invalid}">
+                            <label name="name" class="col-sm-4 control-label">{{ 'Dashboard.Width' | translate}}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.y_tile_length.$invalid}">
+                                <select class="form-control"
+                                        ng-model="currentDashlet.y_tile_length"
+                                        required
+                                        name="y_tile_length"
+                                        ng-options="o.value as o.label for o in dashletWidths"
+                                >
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: 5px"
+                             ng-if="currentDashlet.dashlet_type === 'chart'"
+                             ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.name.$invalid}">
+                            <label name="name" class="col-sm-4 control-label">{{ 'Dashboard.Height' |
+                                translate}}</label>
+                            <div class="col-sm-8"
+                                 ng-class="{'has-error': dashletFormModal.$submitted && dashletFormModal.y_tile_length.$invalid}">
+
+                                <select class="form-control"
+                                        ng-model="currentDashlet.x_tile_height"
+                                        required
+                                        name="y_tile_length"
+                                        ng-options="o.value as o.label for o in dashletHeights">
+                                    ng-options="o.value as o.label for o in dashletHeights">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-disabled="submittingModal" ng-click="$hide()">
+                        {{'Common.Cancel' | translate}}
+                    </button>
+                    <button type="submit" class="btn btn-w-md btn-primary" ladda="submittingModal" ng-show="!forbidden">
+                        <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

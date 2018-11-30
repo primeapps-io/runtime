@@ -1,0 +1,23 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <div class="popover-content app-launcher">
+        <ul class="list-unstyled">
+            <li ng-click="changeTenant(tenant); $hide();" ng-repeat="(i, tenant) in tenants">
+                <img ng-if="tenant.AppId == 4" src="/images/app-launcher-ik.png">
+                <img ng-if="tenant.AppId == 1" src="/images/app-launcher-crm.png">
+                Ofisim <span class="bold">{{tenant.AppId == 4 ? 'İK' : 'CRM'}}</span>
+                <span class="fa-stack" ng-if="isTenantActive(tenant)">
+                    <i class="fa fa-circle fa-stack-2x"></i>
+                    <i class="fa fa-check fa-stack-1x fa-inverse"></i>
+                </span>
+            </li>
+            <!--<li ng-hide="tenants.length > 1" style="background: #e6e5e5;">
+                <img src="/images/app-launcher-ik.png">
+                {{'Common.Activate' | translate}} <span class="bold">Ofisim {{tenant.AppId == 4 ? 'CRM' : 'İK'}}</span>
+                <span class="fa-stack" style="top: 16px;right: 5px;">
+                    <i class="fa fa-plus fa-stack-1x fa-inverse" style="color:black;"></i>
+                </span>
+            </li>-->
+        </ul>
+    </div>
+</div>
