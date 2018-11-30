@@ -84,6 +84,9 @@ namespace PrimeApps.App.Controllers
 
             await _roleRepository.UpdateAsync(roleToUpdate, role);
 
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
             if (roleChange)
                 BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));
         }
