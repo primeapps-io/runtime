@@ -1097,8 +1097,10 @@ angular.module('primeapps')
                                                         empty = false;
                                                     }
                                                 }
-                                            } else if (record[dependency.parent_field].id.toString() === value) {
-                                                empty = false;
+                                            } else if (record[dependency.parent_field].id != null && record[dependency.parent_field].id != ''){
+                                                if (record[dependency.parent_field].id.toString() === value) {
+                                                    empty = false;
+                                                }
                                             }
                                         }
                                         if (empty && dependency.child_field) {
