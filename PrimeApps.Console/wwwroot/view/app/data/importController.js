@@ -32,6 +32,12 @@ angular.module('primeapps')
                     if (field.name === 'task_reminder' || field.name === 'reminder_recurrence' || field.name === 'task_notification' || field.name === 'event_reminder')
                         field.deleted = true;
                 }
+
+                if ($scope.module.name === 'calisanlar') {
+                    if (field.name === 'isten_ayrilma_nedeni' || field.name === 'geri_donusu_uygun_mu' || field.name === 'isten_ayrilma_tarihi' || field.name === 'kullanici_profili' || field.name === 'kullanici_rolu')
+                        field.validation.required = false;
+                }
+
             });
 
             angular.forEach($scope.module.sections, function (section) {
