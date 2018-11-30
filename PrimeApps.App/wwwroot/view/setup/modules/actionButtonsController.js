@@ -135,13 +135,13 @@ angular.module('primeapps')
                         actionButton.permissions = [];
 
                     angular.forEach($rootScope.profiles, function (profile) {
-                        if (profile.IsPersistent && profile.HasAdminRights)
-                            profile.Name = $filter('translate')('Setup.Profiles.Administrator');
+                        if (profile.is_persistent && profile.is_persistent)
+                            profile.name = $filter('translate')('Setup.Profiles.Administrator');
 
-                        if (profile.IsPersistent && !profile.HasAdminRights)
-                            profile.Name = $filter('translate')('Setup.Profiles.Standard');
+                        if (profile.is_persistent && !profile.has_admin_rights)
+                            profile.name = $filter('translate')('Setup.Profiles.Standard');
 
-                        $scope.actionButtonPermission.push({ profile_id: profile.Id, profile_name: profile.Name, type: 'full', profile_is_admin: profile.HasAdminRights });
+                        $scope.actionButtonPermission.push({ profile_id: profile.id, profile_name: profile.name, type: 'full', profile_is_admin: profile.has_admin_rights });
                     });
                 };
 
