@@ -21,9 +21,9 @@ angular.module('primeapps')
 
                         angular.forEach(result.data, function (mappedModule) {
 
-                            var selectedAccountField = $filter('filter')($scope.accountModule.fields, { id: mappedModule.mapping_field_id }, $scope.accountModule, { id: mappedModule.mapping_module_id }, true)[0];
-                            var selectedContactField = $filter('filter')($scope.contactModule.fields, { id: mappedModule.mapping_field_id }, $scope.contactModule, { id: mappedModule.mapping_module_id }, true)[0];
-                            var selectedOpportunityField = $filter('filter')($scope.opportunityModule.fields, { id: mappedModule.mapping_field_id }, $scope.opportunityModule, { id: mappedModule.mapping_module_id }, true)[0];
+                            var selectedAccountField = $filter('filter')($scope.accountModule.fields, { id: mappedModule.mapping_field_id }, true, $scope.accountModule, { id: mappedModule.mapping_module_id }, true)[0];
+                            var selectedContactField = $filter('filter')($scope.contactModule.fields, { id: mappedModule.mapping_field_id }, true, $scope.contactModule, { id: mappedModule.mapping_module_id }, true)[0];
+                            var selectedOpportunityField = $filter('filter')($scope.opportunityModule.fields, { id: mappedModule.mapping_field_id }, true, $scope.opportunityModule, { id: mappedModule.mapping_module_id }, true)[0];
 
                             if (selectedAccountField) {
                                 $scope.accountModule.selectedFields[mappedModule.field_id] = selectedAccountField;
