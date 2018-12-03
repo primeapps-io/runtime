@@ -393,7 +393,11 @@ angular.module('primeapps')
                 var records = [];
 
                 var getRecordFieldValueAndValidate = function (cellValue, field, rowNo, cellName) {
-                    var recordValue = cellValue.toString().trim();
+                    var recordValue = '';
+
+                    if (cellValue)
+                        recordValue = cellValue.toString().trim();
+
                     $scope.error = {};
                     $scope.error.rowNo = rowNo;
                     $scope.error.cellName = cellName;
@@ -485,7 +489,7 @@ angular.module('primeapps')
                             }
                             break;
                         case 'picklist':
-                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue })[0];
+                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue }, true)[0];
 
                             if (!picklistItem) {
                                 $scope.error.message = $filter('translate')('Data.Import.Error.PicklistItemNotFound');
@@ -656,10 +660,13 @@ angular.module('primeapps')
                                     $scope.error.message = $filter('translate')('Data.Import.Error.Required');
                                     break;
                                 }
-                                
+
+                                if (!cellValue)
+                                    continue;
+
                                 var recordFieldValue = getRecordFieldValueAndValidate(cellValue, field, i + 2, fieldMapValue);
 
-                                if ((cellValue && !recordFieldValue) || !recordFieldValue)
+                                if (angular.isUndefined(recordFieldValue))
                                     break;
 
                                 record[fieldMapKey] = recordFieldValue;

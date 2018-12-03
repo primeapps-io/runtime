@@ -129,10 +129,12 @@ namespace PrimeApps.App.Helpers
                     // Check all fields is valid and prepare for related data types
                     foreach (var prop in record)
                     {
-                        if (Model.Helpers.ModuleHelper.SystemFields.Contains(prop.Key))
+                        if (ModelModuleHelper.SystemFields.Contains(prop.Key))
                             continue;
 
-                        if (Model.Helpers.ModuleHelper.ModuleSpecificFields(module).Contains(prop.Key))
+                        var specificFieldList = ModelModuleHelper.ModuleSpecificFields(module);
+
+                        if (specificFieldList.Count() > 0 && specificFieldList.Contains(prop.Key))
                             continue;
 
                         var field = module.Fields.FirstOrDefault(x => x.Name == prop.Key);
@@ -341,7 +343,7 @@ namespace PrimeApps.App.Helpers
                             if (FieldHasDependencyOrCombination(module, moduleField, record, tenantLanguage, picklistRepository))
                                 continue;
 
-                            if(moduleField.Validation != null)
+                            if (moduleField.Validation != null)
                             {
                                 if (moduleField.Validation.Required != null && (bool)moduleField.Validation.Required &&
                                 ((!operationUpdate && record[moduleField.Name].IsNullOrEmpty()) ||
