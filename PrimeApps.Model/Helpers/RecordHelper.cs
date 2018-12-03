@@ -2375,9 +2375,9 @@ namespace PrimeApps.Model.Helpers
             if (string.IsNullOrEmpty(word))
                 return "";
 
+            word = word.EscapeSimilarTo();
+
             var dataList = new List<string>();
-
-
 
             dataList.Add(word);
 

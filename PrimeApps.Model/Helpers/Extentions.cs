@@ -228,5 +228,11 @@ namespace PrimeApps.Model.Helpers
 
             return (attributes.Length > 0) ? (T)attributes[0] : null;
         }
+
+        public static string EscapeSimilarTo(this string value)
+        {
+            return Regex.Replace(value, "[\\(%|_\\)]", x => string.Format(@"\{0}", x.Value));
+        }
+
     }
 }
