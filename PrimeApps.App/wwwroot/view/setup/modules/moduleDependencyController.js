@@ -145,12 +145,27 @@ angular.module('primeapps')
                 switch ($scope.currentDependency.type) {
                     case 'list_value':
                         $scope.currentDependency.value_maps = {};
+                        $scope.currentDependency.values = [];
                         break;
                     case 'list_field':
                         $scope.currentDependency.field_map = {};
                         break;
                 }
             };
+
+            $scope.affectedAreaTypeChanged = function () {
+                $scope.currentDependency.child_field = null;
+                $scope.currentDependency.child_section = null;
+            };
+
+            $scope.parentValueChanged = function () {
+                $scope.currentDependency.child_field = null;
+                $scope.currentDependency.child_section = null;
+                $scope.currentDependency.value_maps = {};
+                $scope.currentDependency.values = [];
+                $scope.currentDependency.field_map = {};
+            };
+
             $scope.getParentFields = function () {
                 switch ($scope.currentDependency.dependencyType) {
                     case 'display':
@@ -271,9 +286,56 @@ angular.module('primeapps')
                 });
             };
 
+            //TODO
+            $scope.saveSingularControlDependencyForm = function () {
+                var currentDependency = angular.copy($scope.currentDependency);
+                var isUpdate = !currentDependency.isNew;
+                var search = $filter('filter')($scope.dependencies, { dependencyType: currentDependency.dependencyType }, true);
+
+                if (isUpdate && search.length == 1)
+                    return true;
+
+                switch (currentDependency.dependencyType) {
+                    case 'display':
+                        if (search.length > 0) {
+                            if ($scope.affectedAreaType == 'section' || currentDependency.child_section)
+                                search = $filter('filter')(search, { parent_field: currentDependency.parent_field, child_section: currentDependency.child_section }, true);
+                            else if ($scope.affectedAreaType == 'field' || currentDependency.child_field)
+                                search = $filter('filter')(search, { parent_field: currentDependency.parent_field, child_field: currentDependency.child_field }, true);
+
+                            if (search.length > 0)
+                                return false;
+                        }
+                        break;
+                    case 'value':
+                        if (search.length > 0) {
+                            search = $filter('filter')(search, { parent_field: currentDependency.parent_field, child_field: currentDependency.child_field, type: currentDependency.type }, true);
+
+                            if (search.length > 0)
+                                return false;
+                        }
+                        break;
+                    case 'freeze':
+                        search = $filter('filter')(search, { dependencyType: currentDependency.dependencyType, parent_field: currentDependency.parent_field }, true);
+                        if (search.length > 0)
+                            return false;
+                        break;
+                    default:
+                        return true;
+                }
+            };
+
+
             $scope.save = function (dependencyForm) {
                 if (!dependencyForm.$valid)
                     return;
+
+                var singularResult = $scope.saveSingularControlDependencyForm();
+
+                if (!singularResult) {
+                    ngToast.create({ content: $filter('translate')('Setup.Modules.DependencySameData'), className: 'warning' });
+                    return;
+                }
 
                 $scope.saving = true;
                 var dependency = angular.copy($scope.currentDependency);
