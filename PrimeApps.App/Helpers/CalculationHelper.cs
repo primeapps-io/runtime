@@ -3512,9 +3512,9 @@ namespace PrimeApps.App.Helpers
                             var hareketTipi = hareketTipleri.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)kasaHareketi["hareket_tipi"] : x.LabelEn == (string)kasaHareketi["hareket_tipi"]).SystemCode;
 
                             if (hareketTipi == "para_cikisi")
-                                balance -= (decimal)kasaHareketi["alacak"];
+                                balance -= kasaHareketi["alacak"].IsNullOrEmpty() ? 0 : (decimal)kasaHareketi["alacak"];
                             else
-                                balance += (decimal)kasaHareketi["borc"];
+                                balance += kasaHareketi["borc"].IsNullOrEmpty() ? 0 : (decimal)kasaHareketi["borc"];
 
                             kasaHareketi["bakiye"] = balance;
                             await _recordRepository.Update(kasaHareketi, kasaHareketiModule, isUtc: false);
