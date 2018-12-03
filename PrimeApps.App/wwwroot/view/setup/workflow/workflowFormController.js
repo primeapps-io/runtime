@@ -473,6 +473,7 @@ angular.module('primeapps')
             $scope.validateCreateTask = function () {
                 return $scope.workflowModel.create_task &&
                     $scope.workflowModel.create_task.owner &&
+                    $scope.workflowModel.create_task.owner.length == 1 &&
                     $scope.workflowModel.create_task.subject &&
                     $scope.workflowModel.create_task.task_due_date;
             };
