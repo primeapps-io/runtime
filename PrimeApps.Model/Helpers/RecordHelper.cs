@@ -2165,8 +2165,26 @@ namespace PrimeApps.Model.Helpers
 				}
 			}
 
-			// If value is array
-			if (filter.Value.GetType() == typeof(JArray))
+            //view_filters tablosuna, value kolonuna ' profileIds, 1;2;3 ' formatında yazılan profilleri filtrelemek için yazıldı
+            if (filter.Value.ToString().Split(',').Count() > 0 && filter.Value.ToString().Split(',').FirstOrDefault().ToString() == "profileIds")
+            {
+                var values = filter.Value.ToString().Split(',');
+                var profileIds = values[1].Split(';');
+
+                switch (filter.Operator)
+                {
+                    case Operator.NotIn:
+                        var ids = new List<int>();
+                        foreach (var value in profileIds)
+                        {
+                            ids.Add(Convert.ToInt32(value));
+                        }
+                        return $"{field} NOT IN ({String.Join(",", ids)})";
+                }
+            }
+
+            // If value is array
+            if (filter.Value.GetType() == typeof(JArray))
 			{
 				var values = (JArray)filter.Value;
 				var isString = values[0].Type == JTokenType.String;

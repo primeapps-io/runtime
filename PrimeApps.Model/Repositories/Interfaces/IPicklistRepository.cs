@@ -8,6 +8,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<Picklist> GetById(int id);
         Task<ICollection<Picklist>> GetAll();
+        Task<Picklist> GetPicklistByLabelEn(string labelEn);
+
         Task<ICollection<Picklist>> Find(List<int> ids);
         Task<PicklistItem> GetItemById(int id);
         Task<PicklistItem> GetItemBySystemCode(string systemCode);
