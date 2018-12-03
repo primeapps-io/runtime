@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Model.Common.Profile;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
@@ -11,10 +12,12 @@ namespace PrimeApps.App.Controllers
     public class ProfileController : ApiBaseController
     {
         private IProfileRepository _profileRepository;
+        private Warehouse _warehouse;
 
-        public ProfileController(IProfileRepository profileRepository)
+        public ProfileController(IProfileRepository profileRepository, Warehouse warehouse)
         {
             _profileRepository = profileRepository;
+            _warehouse = warehouse;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -32,8 +35,10 @@ namespace PrimeApps.App.Controllers
         [Route("Create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
         {
-            await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
+            //Set Warehouse
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
+            await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
             return Ok();
         }
@@ -45,6 +50,9 @@ namespace PrimeApps.App.Controllers
         [Route("Update"), HttpPost]
         public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
         {
+            //Set Warehouse
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
             await _profileRepository.UpdateAsync(UpdatedProfile, AppUser.TenantLanguage);
             return Ok();
         }

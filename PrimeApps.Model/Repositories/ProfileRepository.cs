@@ -97,7 +97,10 @@ namespace PrimeApps.Model.Repositories
 
             if (result > 0)
             {
-                if (_warehouse != null && _warehouse.DatabaseName != "0")
+                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+
+                if (_warehouse.DatabaseName != "0")
                 {
                     BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
                 }
@@ -176,7 +179,10 @@ namespace PrimeApps.Model.Repositories
 
             if (result > 0)
             {
-                if (_warehouse != null && _warehouse.DatabaseName != "0")
+                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+
+                if ( _warehouse.DatabaseName != "0")
                 {
                     BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
                 }

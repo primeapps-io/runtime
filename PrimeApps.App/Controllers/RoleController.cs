@@ -58,6 +58,9 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task Create([FromBody]RoleDTO role)
         {
+            //Set Warehouse
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
             await _roleRepository.CreateAsync(new Role()
             {
                 LabelEn = role.LabelEn,
