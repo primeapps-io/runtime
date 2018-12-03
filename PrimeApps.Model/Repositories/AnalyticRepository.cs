@@ -10,75 +10,79 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class AnalyticRepository : RepositoryBaseTenant, IAnalyticRepository
-    {
-        public AnalyticRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+	public class AnalyticRepository : RepositoryBaseTenant, IAnalyticRepository
+	{
+		public AnalyticRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public async Task<Analytic> GetById(int id)
-        {
-            var analytic = await DbContext.Analytics
-                .Include(x => x.Shares).ThenInclude(y => y.TenantUser)
-                .Include(x => x.CreatedBy)
-                .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
+		public async Task<Analytic> GetById(int id)
+		{
+			var analytic = await DbContext.Analytics
+				.Include(x => x.Shares).ThenInclude(y => y.TenantUser)
+				.Include(x => x.CreatedBy)
+				.FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
-            return analytic;
-        }
+			return analytic;
+		}
 
-        public async Task<ICollection<Analytic>> GetAll()
-        {
-            var analytics = await DbContext.Analytics
-                .Include(x => x.Shares).ThenInclude(y => y.TenantUser)
-                .Include(x => x.CreatedBy)
-                .Where(x => !x.Deleted)
-                .OrderBy(x => x.CreatedAt)
-                .ToListAsync();
+		public async Task<ICollection<Analytic>> GetAll()
+		{
+			var analytics = await DbContext.Analytics
+				.Include(x => x.Shares).ThenInclude(y => y.TenantUser)
+				.Include(x => x.CreatedBy)
+				.Where(x => !x.Deleted)
+				.OrderBy(x => x.CreatedAt)
+				.ToListAsync();
 
-            return analytics;
-        }
+			return analytics;
+		}
 
-        public async Task<ICollection<Analytic>> GetReports()
-        {
-            var analytics = await DbContext.Analytics
-                .Where(x => !x.Deleted)
-                .Where(x => x.SharingType == AnalyticSharingType.Everybody
-                || x.Shares.Any(j => j.UserId == CurrentUser.UserId))
-                .OrderBy(x => x.CreatedAt)
-                .ToListAsync();
+		public async Task<ICollection<Analytic>> GetReports(bool hasAdminProfile)
+		{
+			var analytics = DbContext.Analytics
+				.Where(x => !x.Deleted);
 
-            return analytics;
-        }
+			if (!hasAdminProfile)
+				analytics = analytics.Where(x => x.SharingType == AnalyticSharingType.Everybody
+												|| x.Shares.Any(j => j.UserId == CurrentUser.UserId)
+												|| x.CreatedById == CurrentUser.UserId);
 
-        public async Task<int> Create(Analytic analytic)
-        {
-            DbContext.Analytics.Add(analytic);
+			analytics.OrderBy(x => x.CreatedAt);
 
-            return await DbContext.SaveChangesAsync();
-        }
 
-        public async Task<int> Update(Analytic analytic)
-        {
-            return await DbContext.SaveChangesAsync();
-        }
+			return await analytics.ToListAsync(); ;
+		}
 
-        public async Task<int> DeleteSoft(Analytic analytic)
-        {
-            analytic.Deleted = true;
+		public async Task<int> Create(Analytic analytic)
+		{
+			DbContext.Analytics.Add(analytic);
 
-            return await DbContext.SaveChangesAsync();
-        }
+			return await DbContext.SaveChangesAsync();
+		}
 
-        public async Task<int> DeleteHard(Analytic analytic)
-        {
-            DbContext.Analytics.Remove(analytic);
+		public async Task<int> Update(Analytic analytic)
+		{
+			return await DbContext.SaveChangesAsync();
+		}
 
-            return await DbContext.SaveChangesAsync();
-        }
+		public async Task<int> DeleteSoft(Analytic analytic)
+		{
+			analytic.Deleted = true;
 
-        public async Task<int> DeleteAnalyticShare(AnalyticShares analytic, TenantUser user)
-        {
-            user.SharedAnalytics.Remove(analytic);
+			return await DbContext.SaveChangesAsync();
+		}
 
-            return await DbContext.SaveChangesAsync();
-        }
-    }
+		public async Task<int> DeleteHard(Analytic analytic)
+		{
+			DbContext.Analytics.Remove(analytic);
+
+			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<int> DeleteAnalyticShare(AnalyticShares analytic, TenantUser user)
+		{
+			user.SharedAnalytics.Remove(analytic);
+
+			return await DbContext.SaveChangesAsync();
+		}
+	}
 }
