@@ -1176,7 +1176,8 @@
 			"ConversionMapping": "Dönüştürme Eşleştirmesi",
 			"LeadConversionMapping": "Müşteri Adayı Dönüştürme Eşleştirmesi",
 			"CandidateConversionMapping": "Aday Dönüştürme Eşleştirmesi",
-			"QuoteConversionMapping": "Teklif Dönüştürme Eşleştirmesi"
+			"QuoteConversionMapping": "Teklif Dönüştürme Eşleştirmesi",
+			"HasBeenRecorded": "Kaydedildi"
 		},
 		"ImportHistory": {
 			"Title": "Veri İçe Aktarım Tarihçesi",

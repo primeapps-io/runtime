@@ -21,10 +21,10 @@
                                     ng-click="lastSelection = employeeModule.selectedFields[leadField.id]"
                                     ng-change="mappingModuleFieldChanged(employeeModule,leadField,lastSelection)";
                                     ng-model="employeeModule.selectedFields[leadField.id]"
-                                    ng-options="o as o['label_' + language] for o in employeeModule.fields | filter:lookupFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
+                                    ng-options="o as o['label_' + language] for o in employeeModule.fields | filter:lookupFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type'], name:leadField.name} track by o.id">
                                 <option value="">{{'Common.Select' | translate}}</option>
                             </select>
-                            <span ng-show="employeeModule.selectedFields[leadField.id] && showSuccessIcon[leadField.id][employeeModule.id] == true;" class="fa fa-check" style="color: #00A000">Kaydedildi</span>
+							<span ng-show="employeeModule.selectedFields[leadField.id] && showSuccessIcon[leadField.id][employeeModule.id] == true;" class="fa fa-check" style="color: #00A000">{{'Setup.Conversion.HasBeenRecorded' | translate}}</span>
                         </td>
                     </tr>
                     </tbody>

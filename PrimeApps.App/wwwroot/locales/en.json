@@ -1175,7 +1175,8 @@
 			"ConversionMapping": "Conversion Mapping",
 			"LeadConversionMapping": "Lead Conversion Mappings",
 			"CandidateConversionMapping": "Candidate Conversion Mappings",
-			"QuoteConversionMapping": "Quote Conversion Mapping"
+			"QuoteConversionMapping": "Quote Conversion Mapping",
+			"HasBeenRecorded": "Has been recorded"
 		},
 		"ImportHistory": {
 			"Title": "Import History",
