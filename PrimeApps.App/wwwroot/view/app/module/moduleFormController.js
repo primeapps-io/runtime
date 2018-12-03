@@ -4,21 +4,43 @@ angular.module('primeapps')
 
     .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components', '$cookies',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components, $cookies) {
-            $scope.type = $stateParams.type;
-            $scope.subtype = $stateParams.stype;
-            $scope.id = $location.search().id;
-            $scope.parentType = $location.search().ptype;
-            $scope.parentId = $location.search().pid;
-            $scope.returnTab = $location.search().rtab;
-            $scope.previousParentType = $location.search().pptype;
-            $scope.previousParentId = $location.search().ppid;
-            $scope.previousReturnTab = $location.search().prtab;
-            $scope.back = $location.search().back;
-            $scope.many = $location.search().many;
-            $scope.clone = $location.search().clone;
-            $scope.revise = $location.search().revise;
-            $scope.paramField = $location.search().field;
-            $scope.paramValue = $location.search().value;
+
+            if (!$scope.$parent.$parent.formType) {
+                $scope.type = $stateParams.type;
+                $scope.subtype = $stateParams.stype;
+                $scope.id = $location.search().id;
+                $scope.parentType = $location.search().ptype;
+                $scope.parentId = $location.search().pid;
+                $scope.returnTab = $location.search().rtab;
+                $scope.previousParentType = $location.search().pptype;
+                $scope.previousParentId = $location.search().ppid;
+                $scope.previousReturnTab = $location.search().prtab;
+                $scope.back = $location.search().back;
+                $scope.many = $location.search().many;
+                $scope.clone = $location.search().clone;
+                $scope.revise = $location.search().revise;
+                $scope.paramField = $location.search().field;
+                $scope.paramValue = $location.search().value;
+            } else {
+                var parent = $scope.$parent.$parent;
+                $scope.formType = parent.formType;
+                $scope.type = parent.type;
+                $scope.id = parent.id;
+                $scope.subtype = parent.stype;
+                $scope.parentType = parent.ptype;
+                $scope.parentId = parent.pid;
+                $scope.returnTab = parent.rtab;
+                $scope.previousParentType = parent.pptype;
+                $scope.previousParentId = parent.ppid;
+                $scope.previousReturnTab = parent.prtab;
+                $scope.back = parent.back;
+                $scope.many = parent.many;
+                $scope.clone = parent.clone;
+                $scope.revise = parent.revise;
+                $scope.paramField = parent.field;
+                $scope.paramValue = parent.value;
+
+            }
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
             $scope.hasDocumentsPermission = helper.hasDocumentsPermission;
