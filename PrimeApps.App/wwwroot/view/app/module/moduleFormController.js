@@ -292,9 +292,11 @@ angular.module('primeapps')
                     var setFieldDependencies = function () {
                         angular.forEach($scope.module.fields, function (field) {
                             ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule, $scope);
-                            if (field.default_value && field.data_type == 'picklist') {
-                                $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
-                                $scope.fieldValueChange(field);
+                            if ($scope.module.name != 'activities') {
+                                if (field.default_value && field.data_type == 'picklist') {
+                                    $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
+                                    $scope.fieldValueChange(field);
+                                }
                             }
                         });
                     };
@@ -1812,7 +1814,7 @@ angular.module('primeapps')
                                     $scope.salesInvoiceProducts = [];
                                     $scope.vatList = [];
                                     $scope.record.grand_total = 0;
-                                 
+
 
                                 }
                             }
