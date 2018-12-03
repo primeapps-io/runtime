@@ -1935,7 +1935,7 @@ namespace PrimeApps.App.Helpers
                                                 case "order_products":
                                                 case "purchase_order_products":
                                                     var prodMod = await moduleRepository.GetByName("products");
-                                                    var prodItem = recordRepository.GetById(prodMod, (int)record["product"], false);
+                                                    var prodItem = recordRepository.GetById(prodMod, record["product"].IsNullOrEmpty() ? 0 : (int)record["product"], false);
                                                     var currentModulePicklist = new PicklistItem();
                                                     var findRequestCurrentStockRecord = new FindRequest();
                                                     if (module.Name == "order_products")
