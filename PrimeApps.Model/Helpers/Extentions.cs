@@ -140,6 +140,7 @@ namespace PrimeApps.Model.Helpers
             using (var command = (NpgsqlCommand)database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = sql;
+                command.CommandType = CommandType.Text;
 
                 if (command.Connection.State != ConnectionState.Open)
                     command.Connection.Open();
