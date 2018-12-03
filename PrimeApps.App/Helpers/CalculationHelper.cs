@@ -413,7 +413,7 @@ namespace PrimeApps.App.Helpers
                                                     var salesInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(salesInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.TenantLanguage);
                                                     var currentAccountModule = await moduleRepository.GetByName("current_accounts");
                                                     var findRequestCurrentAccountRecord = new FindRequest { Filters = new List<Filter> { new Filter { Field = "satis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentAccountRecord = recordRepository.Find("current_accounts", findRequestCurrentAccountRecord);
+                                                    var currentAccountRecord = recordRepository.Find("current_accounts", findRequestCurrentAccountRecord, false);
 
                                                     //Firma Obj
                                                     var recordAccount = new JObject();
@@ -530,7 +530,7 @@ namespace PrimeApps.App.Helpers
                                                     var purchaseInvoiceStagePicklistItem = await picklistRepository.FindItemByLabel(purchaseInvoiceStagePicklist.PicklistId.Value, (string)record["asama"], appUser.TenantLanguage);
                                                     var currentSupplierModule = await moduleRepository.GetByName("current_accounts");
                                                     var findRequestCurrentAccountRecordForPurchase = new FindRequest { Filters = new List<Filter> { new Filter { Field = "alis_faturasi", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentAccountRecordForPurchase = recordRepository.Find("current_accounts", findRequestCurrentAccountRecordForPurchase);
+                                                    var currentAccountRecordForPurchase = recordRepository.Find("current_accounts", findRequestCurrentAccountRecordForPurchase, false);
 
                                                     //Firma Obj
                                                     var recordSupplier = new JObject();
@@ -718,7 +718,7 @@ namespace PrimeApps.App.Helpers
                                                                 var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
                                                                 var kasaModule = await moduleRepository.GetByName("kasalar");
                                                                 var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
+                                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi, false);
                                                                 var kasaHareketiRecord = new JObject();
                                                                 kasaHareketiRecord["owner"] = record["owner"];
                                                                 kasaHareketiRecord["islem_tarihi"] = record["date"];
@@ -777,7 +777,7 @@ namespace PrimeApps.App.Helpers
                                                                 var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
                                                                 var bankaModule = await moduleRepository.GetByName("bankalar");
                                                                 var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentBankaHareketiRecord = recordRepository.Find("banka_hareketleri", findRequestBankaHareketi);
+                                                                var currentBankaHareketiRecord = recordRepository.Find("banka_hareketleri", findRequestBankaHareketi, false);
                                                                 var bankaHareketiRecord = new JObject();
                                                                 bankaHareketiRecord["owner"] = record["owner"];
                                                                 bankaHareketiRecord["islem_tarihi"] = record["date"];
@@ -836,7 +836,7 @@ namespace PrimeApps.App.Helpers
                                                                 var kasaHareketiModule = await moduleRepository.GetByName("kasa_hareketleri");
                                                                 var kasaModule = await moduleRepository.GetByName("kasalar");
                                                                 var findRequestKasaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi);
+                                                                var currentKasaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestKasaHareketi, false);
 
                                                                 if (!currentKasaHareketiRecord.IsNullOrEmpty())
                                                                 {
@@ -858,7 +858,7 @@ namespace PrimeApps.App.Helpers
                                                                 var bankaHareketiModule = await moduleRepository.GetByName("banka_hareketleri");
                                                                 var bankaModule = await moduleRepository.GetByName("bankalar");
                                                                 var findRequestBankaHareketi = new FindRequest { Filters = new List<Filter> { new Filter { Field = "ilgili_cari_hareket", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                                var currentBankaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi);
+                                                                var currentBankaHareketiRecord = recordRepository.Find("kasa_hareketleri", findRequestBankaHareketi, false);
 
                                                                 if (!currentBankaHareketiRecord.IsNullOrEmpty())
                                                                 {
