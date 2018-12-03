@@ -11,7 +11,10 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Create(Dashboard dashboard);
         Task<ICollection<Chart>> GetAllChart();
         Task<ICollection<Widget>> GetAllWidget();
+        Task<Widget> GetWidgetById(int id);
         Task<Widget> GetWidgetByViewId(int id);
+        Task<int> UpdateNameWidgetsByViewId(string name, int id);
+        Task<int> DeleteSoftByViewId(int viewId);
 
     }
 }

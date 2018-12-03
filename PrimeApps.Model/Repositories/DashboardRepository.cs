@@ -64,11 +64,52 @@ namespace PrimeApps.Model.Repositories
             return await widgets.ToListAsync();
         }
 
+        public async Task<Widget> GetWidgetById(int id)
+        {
+            var widget = await DbContext.Widgets.Where(x => x.Id == id && !x.Deleted).FirstOrDefaultAsync();
+
+            return widget;
+        }
+
         public async Task<Widget> GetWidgetByViewId(int id)
         {
             var widget = await DbContext.Widgets.Where(x => !x.Deleted && x.ViewId == id).FirstOrDefaultAsync();
 
             return widget;
+        }
+
+        public async Task<int> UpdateNameWidgetsByViewId(string name, int id)
+        {
+            var widget = await GetWidgetByViewId(id);
+
+            if (widget != null)
+            {
+                widget.Name = name;
+
+                var result = await DbContext.SaveChangesAsync();
+
+                return result;
+            }
+
+            return 0;
+        }
+
+        public async Task<int> DeleteSoftByViewId(int viewId)
+        {
+            var widget = await GetWidgetByViewId(viewId);
+
+            if (widget == null)
+                return -1;
+
+            var dashlet = await DbContext.Dashlets.Where(x => x.WidgetId == widget.Id && !x.Deleted).FirstOrDefaultAsync();
+
+            if (dashlet == null)
+                return -1;
+
+            widget.Deleted = true;
+            dashlet.Deleted = true;
+
+            return await DbContext.SaveChangesAsync();
         }
 
     }
