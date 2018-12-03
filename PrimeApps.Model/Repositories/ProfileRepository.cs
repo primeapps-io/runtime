@@ -97,7 +97,7 @@ namespace PrimeApps.Model.Repositories
 
             if (result > 0)
             {
-                if (_warehouse.DatabaseName != "0")
+                if (_warehouse != null && _warehouse.DatabaseName != "0")
                 {
                     BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
                 }
@@ -176,7 +176,7 @@ namespace PrimeApps.Model.Repositories
 
             if (result > 0)
             {
-                if (_warehouse.DatabaseName != "0")
+                if (_warehouse != null && _warehouse.DatabaseName != "0")
                 {
                     BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
                 }
