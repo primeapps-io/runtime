@@ -292,7 +292,7 @@ angular.module('primeapps')
                 var isUpdate = !currentDependency.isNew;
                 var search = $filter('filter')($scope.dependencies, { dependencyType: currentDependency.dependencyType }, true);
 
-                if (isUpdate && search.length == 1)
+                if ((isUpdate && search.length == 1) || search.length <= 0)
                     return true;
 
                 switch (currentDependency.dependencyType) {
@@ -302,26 +302,31 @@ angular.module('primeapps')
                                 search = $filter('filter')(search, { parent_field: currentDependency.parent_field, child_section: currentDependency.child_section }, true);
                             else if ($scope.affectedAreaType == 'field' || currentDependency.child_field)
                                 search = $filter('filter')(search, { parent_field: currentDependency.parent_field, child_field: currentDependency.child_field }, true);
-
-                            if (search.length > 0)
-                                return false;
                         }
                         break;
                     case 'value':
                         if (search.length > 0) {
                             search = $filter('filter')(search, { parent_field: currentDependency.parent_field, child_field: currentDependency.child_field, type: currentDependency.type }, true);
-
-                            if (search.length > 0)
-                                return false;
                         }
                         break;
                     case 'freeze':
-                        search = $filter('filter')(search, { dependencyType: currentDependency.dependencyType, parent_field: currentDependency.parent_field }, true);
-                        if (search.length > 0)
-                            return false;
+                        if (search.length > 0) {
+                            search = $filter('filter')(search, { dependencyType: currentDependency.dependencyType, parent_field: currentDependency.parent_field }, true);
+                        }
                         break;
                     default:
                         return true;
+                }
+
+                if (isUpdate) {
+                    if (search.length <= 1)
+                        return true;
+                    else
+                        return false;
+                }
+                else {
+                    if (search.length > 0)
+                        return false;
                 }
             };
 
