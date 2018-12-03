@@ -71,9 +71,9 @@ namespace PrimeApps.Model.Repositories
             return widget;
         }
 
-        public async Task<List<Widget>> GetWidgetByViewId(int id)
+        public async Task<Widget> GetWidgetByViewId(int id)
         {
-            var widget = await DbContext.Widgets.Where(x => !x.Deleted && x.ViewId == id).ToListAsync();
+            var widget = await DbContext.Widgets.Where(x => !x.Deleted && x.ViewId == id).FirstOrDefaultAsync();
 
             return widget;
         }
@@ -103,7 +103,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> DeleteSoftByViewId(int viewId)
         {
-            var widgets = await GetWidgetByViewId(viewId);
+            var widgets = await GetWidgetAllByViewId(viewId);
 
             if (widgets.Count() <= 0)
                 return -1;
