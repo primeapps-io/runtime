@@ -744,14 +744,11 @@ namespace PrimeApps.Model.Helpers
 					case DataType.Number:
 					case DataType.NumberAuto:
 					case DataType.NumberDecimal:
-						if (!string.IsNullOrWhiteSpace(value))
-							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = Decimal.Parse(value), NpgsqlDbType = NpgsqlDbType.Numeric });
-						else
-							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Numeric });
-						break;
 					case DataType.Currency:
-						if (!string.IsNullOrWhiteSpace(value))
-							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = Decimal.Parse(value), NpgsqlDbType = NpgsqlDbType.Numeric });
+						decimal parseResult;
+
+						if (!string.IsNullOrWhiteSpace(value) && decimal.TryParse(value, out parseResult))
+							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = parseResult, NpgsqlDbType = NpgsqlDbType.Numeric });
 						else
 							command.Parameters.Add(new NpgsqlParameter { ParameterName = key, NpgsqlValue = DBNull.Value, NpgsqlDbType = NpgsqlDbType.Numeric });
 						break;
@@ -1884,7 +1881,7 @@ namespace PrimeApps.Model.Helpers
 			return sql;
 		}
 
-		public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false)
+		public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true)
 		{
 			var recordNew = new JObject();
 
@@ -1944,75 +1941,99 @@ namespace PrimeApps.Model.Helpers
 
 				switch (field.DataType)
 				{
+					case DataType.Number:
+						recordNew[property.Key] = (decimal)property.Value;
+						break;
 					case DataType.NumberDecimal:
-						var formatDecimal = "f" + (field.DecimalPlaces > 0 ? field.DecimalPlaces.ToString() : "2");
-						recordNew[property.Key] = ((decimal)property.Value).ToString(formatDecimal, culture);
+						if (formatNumeric)
+						{
+							var formatDecimal = "f" + (field.DecimalPlaces > 0 ? field.DecimalPlaces.ToString() : "2");
+							recordNew[property.Key] = ((decimal)property.Value).ToString(formatDecimal, culture);
+						}
+						else
+						{
+							recordNew[property.Key] = (decimal)property.Value;
+						}
 						break;
 					case DataType.NumberAuto:
-						recordNew[property.Key] = property.Value.ToString();
+						if (formatNumeric)
+						{
+							recordNew[property.Key] = property.Value.ToString();
 
-						if (!string.IsNullOrEmpty(field.AutoNumberPrefix))
-							recordNew[property.Key] = field.AutoNumberPrefix + recordNew[property.Key];
+							if (!string.IsNullOrEmpty(field.AutoNumberPrefix))
+								recordNew[property.Key] = field.AutoNumberPrefix + recordNew[property.Key];
 
-						if (!string.IsNullOrEmpty(field.AutoNumberSuffix))
-							recordNew[property.Key] = recordNew[property.Key] + field.AutoNumberSuffix;
+							if (!string.IsNullOrEmpty(field.AutoNumberSuffix))
+								recordNew[property.Key] = recordNew[property.Key] + field.AutoNumberSuffix;
+						}
+						else
+						{
+							recordNew[property.Key] = (decimal)property.Value;
+						}
 						break;
 					case DataType.Currency:
-						if (!string.IsNullOrEmpty(field.CurrencySymbol))
-							culture.NumberFormat.CurrencySymbol = field.CurrencySymbol;
-
-						if (!record["currency"].IsNullOrEmpty())
+						if (formatNumeric)
 						{
-							var currencyField = module.Fields.FirstOrDefault(x => x.Name == "currency");
+							if (!string.IsNullOrEmpty(field.CurrencySymbol))
+								culture.NumberFormat.CurrencySymbol = field.CurrencySymbol;
 
-							if (currencyField == null)
+							if (!record["currency"].IsNullOrEmpty())
 							{
-								switch (module.Name)
+								var currencyField = module.Fields.FirstOrDefault(x => x.Name == "currency");
+
+								if (currencyField == null)
 								{
-									case "quote_products":
-										if (moduleQuote == null)
-											moduleQuote = await moduleRepository.GetByName("quotes");
+									switch (module.Name)
+									{
+										case "quote_products":
+											if (moduleQuote == null)
+												moduleQuote = await moduleRepository.GetByName("quotes");
 
-										currencyField = moduleQuote.Fields.FirstOrDefault(x => x.Name == "currency");
-										break;
-									case "order_products":
-										if (moduleSalesOrder == null)
-											moduleSalesOrder = await moduleRepository.GetByName("sales_orders");
+											currencyField = moduleQuote.Fields.FirstOrDefault(x => x.Name == "currency");
+											break;
+										case "order_products":
+											if (moduleSalesOrder == null)
+												moduleSalesOrder = await moduleRepository.GetByName("sales_orders");
 
-										currencyField = moduleSalesOrder.Fields.FirstOrDefault(x => x.Name == "currency");
-										break;
-									case "purchase_order_products":
-										if (modulePurchaseOrder == null)
-											modulePurchaseOrder = await moduleRepository.GetByName("purchase_orders");
+											currencyField = moduleSalesOrder.Fields.FirstOrDefault(x => x.Name == "currency");
+											break;
+										case "purchase_order_products":
+											if (modulePurchaseOrder == null)
+												modulePurchaseOrder = await moduleRepository.GetByName("purchase_orders");
 
-										currencyField = modulePurchaseOrder.Fields.FirstOrDefault(x => x.Name == "currency");
-										break;
-									case "purchase_invoices_products":
-										if (modulePurchaseInvoice == null)
-											modulePurchaseInvoice = await moduleRepository.GetByName("purchase_invoices");
+											currencyField = modulePurchaseOrder.Fields.FirstOrDefault(x => x.Name == "currency");
+											break;
+										case "purchase_invoices_products":
+											if (modulePurchaseInvoice == null)
+												modulePurchaseInvoice = await moduleRepository.GetByName("purchase_invoices");
 
-										currencyField = modulePurchaseInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
-										break;
-									case "sales_invoices_products":
-										if (moduleSalesInvoice == null)
-											moduleSalesInvoice = await moduleRepository.GetByName("sales_invoices");
+											currencyField = modulePurchaseInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
+											break;
+										case "sales_invoices_products":
+											if (moduleSalesInvoice == null)
+												moduleSalesInvoice = await moduleRepository.GetByName("sales_invoices");
 
-										currencyField = moduleSalesInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
-										break;
+											currencyField = moduleSalesInvoice.Fields.FirstOrDefault(x => x.Name == "currency");
+											break;
+									}
+								}
+
+								if (currencyField != null)
+								{
+									var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, (string)record["currency"], picklistLanguage);
+
+									if (currencyPicklistItem != null)
+										culture.NumberFormat.CurrencySymbol = currencyPicklistItem.Value ?? "";
 								}
 							}
 
-							if (currencyField != null)
-							{
-								var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, (string)record["currency"], picklistLanguage);
-
-								if (currencyPicklistItem != null)
-									culture.NumberFormat.CurrencySymbol = currencyPicklistItem.Value ?? "";
-							}
+							var formatCurrency = "c" + (field.DecimalPlaces > 0 ? field.DecimalPlaces.ToString() : "2");
+							recordNew[property.Key] = ((decimal)property.Value).ToString(formatCurrency, culture);
 						}
-
-						var formatCurrency = "c" + (field.DecimalPlaces > 0 ? field.DecimalPlaces.ToString() : "2");
-						recordNew[property.Key] = ((decimal)property.Value).ToString(formatCurrency, culture);
+						else
+						{
+							recordNew[property.Key] = (decimal)property.Value;
+						}
 						break;
 					case DataType.Date:
 						var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
@@ -2030,9 +2051,9 @@ namespace PrimeApps.Model.Helpers
 					case DataType.Multiselect:
 						var valueArray = (JArray)property.Value;
 
-                        var multiValue = valueArray.ToObject<List<string>>();
-                        recordNew[property.Key] = string.Join(";", multiValue);
-                        break;
+						var multiValue = valueArray.ToObject<List<string>>();
+						recordNew[property.Key] = string.Join(";", multiValue);
+						break;
 
 					case DataType.Checkbox:
 						var yesValue = picklistLanguage == "tr" ? "Evet" : "Yes";

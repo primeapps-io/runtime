@@ -124,8 +124,10 @@
         <div class="panel-body" ng-class="{'tabconfig-body':!tabconfig}" ng-style="scrollHeight">
             <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
             <div ng-show="!loading" style="{{!tabconfig ? 'margin-right: 10px;' : ''}}">
-                <span style="margin-right: 15px" class="pull-right" ng-if="module.name =='timetrackers' && !isAvailableForSmallDevice() && record.custom_approver == currentUser.email && record.process_status == 1"><a href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}"><b>{{'Setup.Workflow.ApprovelProcess.GoToRecordApprove' | translate}} <i class="fa fa-external-link"></i></b></a></span>
-                <div class="dropdown action-dropdown-menu" ng-show="isAvailableForSmallDevice() && tabconfig">
+                <div>
+                    <span style="margin-right: 15px" class="pull-right" ng-if="module.name =='timetrackers' && !isAvailableForSmallDevice() && record.custom_approver == currentUser.email && record.process_status == 1"><a href="#/app/timetracker{{'?user=' + record.created_by.id + '&year=' + record.year +  '&month=' + record.month + '&week=' + record.week}}"><b>{{'Setup.Workflow.ApprovelProcess.GoToRecordApprove' | translate}} <i class="fa fa-external-link"></i></b></a></span>
+                </div>
+                <div class="dropdown action-dropdown-menu" style="width: 50%" ng-show="isAvailableForSmallDevice() && tabconfig">
                     <button type="button" class="btn btn-custom" bs-dropdown="dropdown" aria-haspopup="false"
                             data-toggle="dropdown-menu" aria-expanded="false" data-placement="bottom-right">
 

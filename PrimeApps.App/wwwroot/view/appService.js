@@ -324,6 +324,8 @@ angular.module('primeapps')
                                                             customMenuItem.label_tr = profileSetting.label_tr_plural;
                                                             customMenuItem.label_en = profileSetting.label_en_plural;
                                                             customMenuItem.menu_icon = profileSetting.menu_icon;
+                                                            moduleSetting.display = profileSetting.display;
+
                                                             if (!profileSetting.display)
                                                                 customMenuItem.hide = true;
                                                         }
