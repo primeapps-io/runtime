@@ -905,7 +905,7 @@ namespace PrimeApps.App.Helpers
                                                                     recordUpdate["balance"] = balance;
                                                                     break;
                                                                 default:
-                                                                    throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment.");
+                                                                    throw new Exception("Record transaction_type_system must be sales_invoice, collection, purchase_invoice or payment. Record: " + record["transaction_type_system"]);
                                                             }
 
                                                             recordUpdate["updated_by"] = (int)record["updated_by"];

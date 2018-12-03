@@ -819,7 +819,7 @@ angular.module('primeapps')
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
                     return false;
 
-                if (field.validation.readonly)
+                if (field.validation && field.validation.readonly)
                     return false;
 
                 return true;
