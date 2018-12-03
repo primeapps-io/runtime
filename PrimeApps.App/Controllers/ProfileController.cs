@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace PrimeApps.App.Controllers
 {
-	[Route("api/Profile")]
+    [Route("api/Profile")]
     public class ProfileController : ApiBaseController
     {
         private IProfileRepository _profileRepository;
@@ -17,24 +17,24 @@ namespace PrimeApps.App.Controllers
             _profileRepository = profileRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_profileRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_profileRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		/// <summary>
-		/// Creates a new profile.
-		/// </summary>
-		/// <param name="NewProfile"></param>
-		[Route("Create"), HttpPost]
+        /// <summary>
+        /// Creates a new profile.
+        /// </summary>
+        /// <param name="NewProfile"></param>
+        [Route("Create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]ProfileDTO NewProfile)
         {
-            await _profileRepository.CreateAsync(NewProfile);
+            await _profileRepository.CreateAsync(NewProfile, AppUser.TenantLanguage);
 
-            
+
             return Ok();
         }
 
@@ -45,7 +45,7 @@ namespace PrimeApps.App.Controllers
         [Route("Update"), HttpPost]
         public async Task<IActionResult> Update([FromBody]ProfileDTO UpdatedProfile)
         {
-            await _profileRepository.UpdateAsync(UpdatedProfile);
+            await _profileRepository.UpdateAsync(UpdatedProfile, AppUser.TenantLanguage);
             return Ok();
         }
 
@@ -58,7 +58,7 @@ namespace PrimeApps.App.Controllers
         {
             await _profileRepository.RemoveAsync(RemovalRequest.RemovedProfile.ID, RemovalRequest.TransferProfile.ID);
 
-            
+
             return Ok();
         }
 
@@ -70,7 +70,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetAll()
         {
             IEnumerable<ProfileWithUsersDTO> profileList = await _profileRepository.GetAllProfiles();
-            
+
             return Ok(profileList);
         }
 
@@ -83,7 +83,7 @@ namespace PrimeApps.App.Controllers
         {
             await _profileRepository.AddUserAsync(transfer.UserID, transfer.TransferedProfileID);
             /// update session cache
-            
+
             return Ok();
         }
 
@@ -91,7 +91,7 @@ namespace PrimeApps.App.Controllers
         public async Task<IActionResult> GetAllBasic()
         {
             var profiles = await _profileRepository.GetAll();
-            
+
             return Ok(profiles);
         }
     }

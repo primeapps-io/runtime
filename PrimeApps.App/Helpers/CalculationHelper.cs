@@ -74,7 +74,7 @@ namespace PrimeApps.App.Helpers
                             {
                                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                                 {
-                                    using (var profileRepository = new ProfileRepository(databaseContext, _configuration))
+                                    using (var profileRepository = new ProfileRepository(databaseContext, _configuration, warehouse))
                                     {
                                         using (var recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                         {
@@ -171,7 +171,7 @@ namespace PrimeApps.App.Helpers
                                                 case "branchs":
                                                     if (isBranch != null && isBranch.Value == "t")
                                                     {
-                                                        using (var roleRepository = new RoleRepository(databaseContext, _configuration))
+                                                        using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
                                                         {
                                                             if (!record["parent_branch"].IsNullOrEmpty())
                                                             {
@@ -194,7 +194,7 @@ namespace PrimeApps.App.Helpers
                                                                         OwnersList = new List<string>(),
                                                                         ReportsToId = (int)parentBranch["branch"],
                                                                         ShareData = false
-                                                                    });
+                                                                    }, appUser.TenantLanguage);
 
                                                                     record["branch"] = branchId;
 
@@ -219,7 +219,7 @@ namespace PrimeApps.App.Helpers
                                                                             ReportsTo = (int)parentBranch["branch"]
                                                                         };
 
-                                                                        await roleRepository.UpdateAsync(role, roleDTO);
+                                                                        await roleRepository.UpdateAsync(role, roleDTO, appUser.TenantLanguage);
                                                                     }
                                                                 }
 
@@ -251,7 +251,7 @@ namespace PrimeApps.App.Helpers
                                                                     if (!string.IsNullOrEmpty(role.Owners))
                                                                         roleToUpdate.ShareData = true;
 
-                                                                    await roleRepository.UpdateAsync(role, roleToUpdate);
+                                                                    await roleRepository.UpdateAsync(role, roleToUpdate, appUser.TenantLanguage);
 
                                                                 }
                                                             }
@@ -2435,7 +2435,7 @@ namespace PrimeApps.App.Helpers
                                                         if (calisanUserId > 0)
                                                             record["owner"] = calisanUserId;
 
-                                                        using (var roleRepository = new RoleRepository(databaseContext, _configuration))
+                                                        using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
                                                         {
                                                             var branchModule = await moduleRepository.GetByName("branchs");
                                                             var calisanlar = await moduleRepository.GetByName("calisanlar");
@@ -2491,7 +2491,7 @@ namespace PrimeApps.App.Helpers
                                                                     {
                                                                         if (missingSchema.Count > 0)
                                                                         {
-                                                                            var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository);
+                                                                            var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
                                                                             var user = userRepository.GetByEmail(record["e_posta"].ToString());
                                                                             await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
                                                                             await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
@@ -2538,7 +2538,7 @@ namespace PrimeApps.App.Helpers
                                                                          */
                                                                         if (missingSchema.Count > 0 && !(bool)record["branch_manager"])
                                                                         {
-                                                                            var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository);
+                                                                            var currentUserRoleId = await CreateMissingSchema(missingSchema, roleId, roleRepository, appUser);
                                                                             var user = userRepository.GetByEmail(record["e_posta"].ToString());
                                                                             await UpdateUserRoleAndProfile(user.Id, profileId, (int)currentUserRoleId, roleRepository, profileRepository);
                                                                             await SetAdvanceSharingWithOwners(roleId, (int)branchRecord["id"], branchModule, recordRepository, roleRepository);
@@ -3626,7 +3626,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public static async Task<int?> CreateMissingSchema(List<Profile> missingSchema, int roleId, RoleRepository roleRepository)
+        public static async Task<int?> CreateMissingSchema(List<Profile> missingSchema, int roleId, RoleRepository roleRepository, UserItem appUser)
         {
             int? parentId = null;
             for (var i = missingSchema.Count - 1; i > -1; i--)
@@ -3663,7 +3663,7 @@ namespace PrimeApps.App.Helpers
                     ReportsToId = schemaItem.ParentId == 0 ? roleId : parentId,
                     ShareData = false,
                     SystemCode = "branch-" + roleId + "/profile-" + schemaItem.Id.ToString()
-                });
+                }, appUser.TenantLanguage);
             }
             return parentId;
         }

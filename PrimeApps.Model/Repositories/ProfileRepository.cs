@@ -9,14 +9,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Profile;
+using PrimeApps.Model.Helpers;
+using Hangfire;
 
 namespace PrimeApps.Model.Repositories
 {
     public class ProfileRepository : RepositoryBaseTenant, IProfileRepository
     {
+        private Warehouse _warehouse;
+
         public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public async Task CreateAsync(ProfileDTO newProfileDTO)
+        public ProfileRepository(TenantDBContext dbContext, IConfiguration configuration, Warehouse warehouse) : base(dbContext, configuration)
+        {
+            _warehouse = warehouse;
+        }
+
+        public async Task CreateAsync(ProfileDTO newProfileDTO, string tenantLanguage)
         {
             Profile newProfile = new Profile()
             {
@@ -84,10 +93,18 @@ namespace PrimeApps.Model.Repositories
                 });
             }
             DbContext.Profiles.Add(newProfile);
-            await DbContext.SaveChangesAsync();
+            var result = await DbContext.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                if (_warehouse.DatabaseName != "0")
+                {
+                    BackgroundJob.Enqueue(() => _warehouse.CreateProfile(newProfile.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+                }
+            }
         }
 
-        public async Task UpdateAsync(ProfileDTO updatedProfileDTO)
+        public async Task UpdateAsync(ProfileDTO updatedProfileDTO, string tenantLanguage)
         {
 
             Profile profileToUpdate = await DbContext.Profiles.Include(x => x.Permissions).Where(x => x.Id == updatedProfileDTO.ID).SingleOrDefaultAsync();
@@ -155,7 +172,15 @@ namespace PrimeApps.Model.Repositories
                 DbContext.ProfilePermissions.Add(profilePermission);
             }
 
-            await DbContext.SaveChangesAsync();
+            var result = await DbContext.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                if (_warehouse.DatabaseName != "0")
+                {
+                    BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+                }
+            }
         }
 
         /// <summary>

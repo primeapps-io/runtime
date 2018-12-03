@@ -15,7 +15,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task RemoveOwners(Role role, JArray owners, int? tenantId = null);
         Task AddOwners(Role role, JArray owners, int? tenantId = null);
         Task AddUserAsync(int userId, int roleID, bool saveChanges = true, int? tenantId = null);
-        Task<int> CreateAsync(Role newRole);
+        Task<int> CreateAsync(Role newRole, string tenantLanguage);
         Task<Role> GetWithCode(string code);
         Task<List<Role>> GetByReportsToId(int id);
         Task GenerateDefaultRolesAsync(int userId);
@@ -27,6 +27,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task RemoveAsync(int roleID, int replacementRoleId);
         Task RemoveOwnersRecursiveAsync(Role role, ICollection<string> owners);
         Task RemoveUserAsync(int userId, int roleID);
-        Task UpdateAsync(Role roleToUpdate, RoleDTO role);
+        Task UpdateAsync(Role roleToUpdate, RoleDTO role, string tenantLanguage);
     }
 }

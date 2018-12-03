@@ -436,7 +436,7 @@ namespace PrimeApps.Model.Helpers
 
         public void SyncData(ICollection<Module> modules, string databaseName, CurrentUser currentUser, string tenantLanguage)
         {
-			_analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.CurrentUser = currentUser;
             _analyticRepository.TenantId = currentUser.TenantId;
 
             // Insert roles
@@ -601,6 +601,49 @@ namespace PrimeApps.Model.Helpers
             var role = GetRole(roleId, currentUser);
             CreateRole(role, databaseName, tenantLanguage);
         }
+
+        public void UpdateRole(Role role, string databaseName, CurrentUser currentUser, string tenantLanguage)
+        {
+            var resultRole = GetRole(role.Id, currentUser);
+
+            if (resultRole == null)
+                CreateRole(role, databaseName, tenantLanguage);
+            else
+            {
+                var connection = new SqlConnection(GetConnectionString(databaseName));
+
+                using (connection)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        var columns = new List<string>();
+                        var values = new List<string>();
+                        var sets = new List<string>();
+
+                        command.Parameters.Add(new SqlParameter { ParameterName = "label", SqlValue = tenantLanguage == "tr" ? role.LabelTr : role.LabelEn, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "owner", SqlValue = role.Owners, SqlDbType = SqlDbType.VarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "deleted", SqlValue = role.Deleted, SqlDbType = SqlDbType.Bit });
+
+                        foreach (SqlParameter parameter in command.Parameters)
+                        {
+                            columns.Add("[" + parameter.ParameterName + "]");
+                            values.Add("@" + parameter.ParameterName);
+                            sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
+                        }
+
+                        var sql = $"UPDATE [roles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {role.Id}";
+                        command.CommandText = sql;
+                        command.CommandType = CommandType.Text;
+
+                        if (command.Connection.State != ConnectionState.Open)
+                            connection.Open();
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
         public void CreateProfile(Profile profile, string databaseName, string tenantLanguage)
         {
             var connection = new SqlConnection(GetConnectionString(databaseName));
@@ -638,7 +681,7 @@ namespace PrimeApps.Model.Helpers
                 }
             }
         }
-        
+
         public void CreateProfile(int profileId, string databaseName, int tenantId, string tenantLanguage)
         {
             if (string.IsNullOrEmpty(tenantLanguage))
@@ -648,6 +691,50 @@ namespace PrimeApps.Model.Helpers
             CreateProfile(profile, databaseName, tenantLanguage);
         }
 
+        public void UpdateProfile(Profile profile, string databaseName, int tenantId, string tenantLanguage)
+        {
+            var resultRole = GetProfile(profile.Id, tenantId);
+
+            if (resultRole == null)
+                CreateProfile(profile, databaseName, tenantLanguage);
+            else
+            {
+                var connection = new SqlConnection(GetConnectionString(databaseName));
+
+                using (connection)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        var columns = new List<string>();
+                        var values = new List<string>();
+                        var sets = new List<string>();
+
+                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "has_admin_rights", SqlValue = profile.HasAdminRights, SqlDbType = SqlDbType.Bit });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "system_value", SqlValue = profile.SystemCode ?? string.Empty, SqlDbType = SqlDbType.NVarChar });
+
+                        foreach (SqlParameter parameter in command.Parameters)
+                        {
+                            columns.Add("[" + parameter.ParameterName + "]");
+                            values.Add("@" + parameter.ParameterName);
+                            sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
+                        }
+
+                        var sql = $"UPDATE [profiles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {profile.Id}";
+                        command.CommandText = sql;
+                        command.CommandType = CommandType.Text;
+
+                        if (command.Connection.State != ConnectionState.Open)
+                            connection.Open();
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
 
         public void CreateTenantUser(Entities.Tenant.TenantUser user, string databaseName, string tenantLanguage)
         {
@@ -1049,7 +1136,7 @@ namespace PrimeApps.Model.Helpers
         {
             var module = GetModule(moduleName, currentUser);
             var sqlRecords = $"SELECT * FROM {moduleName}_d WHERE \"import_id\" = '{importId}'";
-			_analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.CurrentUser = currentUser;
             _analyticRepository.TenantId = currentUser.TenantId;
             var records = _analyticRepository.DbContext.Database.SqlQueryDynamic(sqlRecords);
 
@@ -1060,8 +1147,8 @@ namespace PrimeApps.Model.Helpers
         {
             var sql = $"UPDATE {moduleName}_d SET deleted = true WHERE import_id = {importId}";
 
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
             _analyticRepository.DbContext.Database.ExecuteSqlCommand(sql);
         }
 
@@ -1235,7 +1322,7 @@ namespace PrimeApps.Model.Helpers
 
             tableProfiles.Create();
         }
-        
+
         private void CreateUsersTable(Database database)
         {
             var tableUsers = new Table(database, "users");
@@ -1700,8 +1787,8 @@ namespace PrimeApps.Model.Helpers
 
         private Role GetRole(int roleId, CurrentUser currentUser)
         {
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             var role = _analyticRepository.DbContext.Roles
                 .Single(x => x.Id == roleId);
@@ -1720,8 +1807,8 @@ namespace PrimeApps.Model.Helpers
 
         private TenantUser GetTenantUser(int userId, CurrentUser currentUser)
         {
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             var user = _analyticRepository.DbContext.Users
                 .Include(x => x.Profile)
@@ -1733,14 +1820,14 @@ namespace PrimeApps.Model.Helpers
 
         private Module GetModule(string moduleName, CurrentUser currentUser)
         {
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             var module = _analyticRepository.DbContext.Modules
                 .Include(x => x.Sections)
-				.Include(x => x.Fields).ThenInclude(y => (y as Field).Validation)
-				.Include(x => x.Fields).ThenInclude(y => (y as Field).Combination)
-				.Include(x => x.Relations)
+                .Include(x => x.Fields).ThenInclude(y => (y as Field).Validation)
+                .Include(x => x.Fields).ThenInclude(y => (y as Field).Combination)
+                .Include(x => x.Relations)
                 .Include(x => x.Dependencies)
                 .Include(x => x.Calculations)
                 .FirstOrDefault(x => x.Name == moduleName && !x.Deleted);
