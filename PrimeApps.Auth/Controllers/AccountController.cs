@@ -22,24 +22,20 @@ using System.Web;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Globalization;
-using System.Threading;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Repositories.Interfaces;
 using PrimeApps.Model.Entities.Platform;
-using PrimeApps.Auth.Models.UserViewModels;
 using System.Text;
-using System.Net;
 using IdentityServer4;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using Microsoft.EntityFrameworkCore;
-using PrimeApps.Model.Enums;
 using PrimeApps.Auth.Services;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
-using Sentry;
-using PrimeApps.Auth.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using PrimeApps.Auth.DTO;
 
 namespace PrimeApps.Auth.UI
 {
@@ -290,12 +286,50 @@ namespace PrimeApps.Auth.UI
         public async Task<IActionResult> Register(RegisterInputModel model)
         {
             var vm = await BuildRegisterViewModelAsync(model);
+            JArray actions = null;
+            JToken action = null;
+            JObject obj = null;
+
+            var externalLoginChecker = false;
             if (!ModelState.IsValid)
             {
                 vm.Error = "ModelStateNotValid";
                 return View(vm);
             }
 
+            var externalLogin = vm.ApplicationInfo.Settings.ExternalLogin != null ? JObject.Parse(vm.ApplicationInfo.Settings.ExternalLogin) : null;
+
+            if (externalLogin != null)
+            {
+                actions = (JArray)externalLogin["actions"];
+                action = actions.Where(x => x["type"] != null && x["type"].ToString() == "login").FirstOrDefault();
+
+                obj = new JObject
+                {
+                    ["email"] = model.Email,
+                    ["password"] = model.Password
+                };
+
+                var externalLoginSignIn = await ExternalAuthHelper.Login(externalLogin, action, obj);
+
+                if (externalLoginSignIn.Succeeded)
+                    externalLoginChecker = true;
+                else
+                {
+                    action = actions.Where(x => x["type"] != null && x["type"].ToString() == "check_user").FirstOrDefault();
+
+                    var externalLoginCheckUser = await ExternalAuthHelper.CheckUser(externalLogin, action, obj);
+
+                    if (externalLoginCheckUser.IsSuccessStatusCode)
+                    {
+                        vm.Error = "AlreadyRegisteredExternalLogin";
+                        ViewBag.AuthFlowTitle = action["title"].ToString();
+                        return View(vm);
+                    }
+                }
+            }
+
+            vm.ExternalLogin = externalLoginChecker;
             var createUserRespone = await CreateUser(model, vm.ApplicationInfo, vm.ReturnUrl);
 
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
@@ -303,6 +337,24 @@ namespace PrimeApps.Auth.UI
                 vm.Error = createUserRespone["Error"].ToString();
                 return View(vm);
             }
+
+            if (!vm.ExternalLogin)
+            {
+                obj = new JObject
+                {
+                    ["email"] = model.Email,
+                    ["password"] = model.Password,
+                    ["firstname"] = model.FirstName,
+                    ["lastname"] = model.LastName,
+                    ["fullname"] = model.FirstName + " " + model.LastName,
+                    ["language"] = vm.ApplicationInfo.Language,
+                    ["phone"] = model.PhoneNumber
+                };
+
+                action = actions.Where(x => x["type"] != null && x["type"].ToString() == "register").FirstOrDefault();
+
+                await ExternalAuthHelper.Register(externalLogin, action, obj);
+            }       
 
             if (User?.Identity.IsAuthenticated == true)
             {
@@ -457,7 +509,7 @@ namespace PrimeApps.Auth.UI
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string returnUrl = null)
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model, string client, string returnUrl = null)
         {
             var vm = await BuildResetPasswordViewModelAsync(model, returnUrl);
 
@@ -478,10 +530,75 @@ namespace PrimeApps.Auth.UI
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
 
             if (result.Succeeded)
+            {
+                var application = await _applicationRepository.GetByName(client);
+                var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
+
+                if (externalLogin != null)
+                {
+                    var actions = (JArray)externalLogin["actions"];
+                    var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "forgot_password").FirstOrDefault();
+
+                    var obj = new JObject
+                    {
+                        ["email"] = user.Email,
+                    };
+
+                    var externalLoginForgotPasswordResult = await ExternalAuthHelper.ForgotPassword(externalLogin, action, obj);
+
+                    if (externalLoginForgotPasswordResult.IsSuccessStatusCode)
+                    {
+                        action = actions.Where(x => x["type"] != null && x["type"].ToString() == "reset_password").FirstOrDefault();
+                        var resetToken = await externalLoginForgotPasswordResult.Content.ReadAsStringAsync();
+
+                        obj = new JObject
+                        {
+                            ["email"] = user.Email,
+                            ["password_reset_token"] = resetToken,
+                            ["new_password"] = model.Password
+                        };
+
+                        var externalLoginResetPasswordResult = await ExternalAuthHelper.ResetPassword(externalLogin, action, obj);
+
+                        if (externalLoginResetPasswordResult.IsSuccessStatusCode)
+                            return RedirectToAction("Login", "Account", new { vm.ReturnUrl, Success = "PasswordChanged" });
+                        else
+                        {
+                            vm.Error = "InvalidToken";
+                            return View(vm);
+                        }
+                    }
+                }
+
                 return RedirectToAction("Login", "Account", new { vm.ReturnUrl, Success = "PasswordChanged" });
+            }
 
             vm.Error = "InvalidToken";
             return View(vm);
+        }
+
+        [HttpPost, AllowAnonymous]
+        public async Task<bool> ExternalLoginForgotPassword([FromBody] ExternalLoginDTO model)
+        {
+            var application = await _applicationRepository.GetByName(model.client);
+            var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
+
+            if (externalLogin != null)
+            {
+                var actions = (JArray)externalLogin["actions"];
+                var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "forgot_password").FirstOrDefault();
+
+                var obj = new JObject
+                {
+                    ["email"] = model.email
+                };
+
+                var result = await ExternalAuthHelper.ForgotPassword(externalLogin, action, obj);
+
+                return result.IsSuccessStatusCode;
+            }
+
+            return false;
         }
 
         /// <summary>

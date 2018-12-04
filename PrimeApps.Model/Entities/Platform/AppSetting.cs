@@ -47,6 +47,9 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("tenant_operation_webhook")]
         public string TenantOperationWebhook { get; set; }
 
+        [Column("external_auth", TypeName = "jsonb")]
+        public string ExternalAuth { get; set; }
+
         public virtual App App { get; set; }
     }
 }

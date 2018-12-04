@@ -171,4 +171,25 @@
   <data name="UserExist" xml:space="preserve">
     <value>Bu bilgilerle daha önce kayıt olmuş gibi gözüküyorsunuz. Lütfen farklı bir e-posta hesabıyla kayıt olmayı deneyin.</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Beklenmedik bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</value>
+  </data>
+  <data name="ExternalLoginVerifyContent" xml:space="preserve">
+    <value>Farklı bir {0} uygulamasında hesabınız bulunmaktadır. &lt;br /&gt;Bu hesabınızın şifresini girerek uygulamayı kullanmaya başlayabilirsiniz.</value>
+  </data>
+  <data name="ExternalLoginVerifyTitle" xml:space="preserve">
+    <value>Hesabınız Bulunmaktadır</value>
+  </data>
+  <data name="ForgotPasswordSuccess" xml:space="preserve">
+    <value>E-posta adresinize parola sıfırlama işlemi için mail gönderdik. Mail içerisindeki bağlantıya tıklayarak parolanızı yenileyebilirsiniz.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="WrongInfo" xml:space="preserve">
+    <value>Hatalı e-posta veya şifre girdiniz.</value>
+  </data>
 </root>

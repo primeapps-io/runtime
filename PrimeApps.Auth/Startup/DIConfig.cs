@@ -3,10 +3,13 @@ using System.Linq;
 using System.Reflection;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Auth.Data;
+using PrimeApps.Auth.Models;
+using PrimeApps.Auth.Providers;
 using PrimeApps.Auth.Services;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
@@ -56,6 +59,8 @@ namespace PrimeApps.Auth
             services.AddTransient<IPlatformRepository, PlatformRepository>();
             services.AddTransient<IPlatformUserRepository, PlatformUserRepository>();
             services.AddTransient<IApplicationRepository, ApplicationRepository>();
+
+            services.AddScoped<SignInManager<ApplicationUser>, ApplicationSignInManager>();
         }
     }
 }

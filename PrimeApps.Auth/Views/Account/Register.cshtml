@@ -2,21 +2,23 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-	ViewBag.Title = "Register";
-	Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
 
-	string customLanguage = null;
-	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
-	bool multiLanguage = true;
-	if (Model.ApplicationInfo != null)
-	{
-		ViewBag.Title = Model.ApplicationInfo.Title;
-		customLanguage = !string.IsNullOrWhiteSpace(Model.ApplicationInfo.Language) ? Model.ApplicationInfo.Language : string.Empty;
-		multiLanguage = Model.ApplicationInfo.MultiLanguage;
-	}
-	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
-	var error = Model.Error;
-	var officeSignIn = false;
+    string customLanguage = null;
+    var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    bool multiLanguage = true;
+    if (Model.ApplicationInfo != null)
+    {
+        ViewBag.Title = Model.ApplicationInfo.Title;
+        customLanguage = !string.IsNullOrWhiteSpace(Model.ApplicationInfo.Language) ? Model.ApplicationInfo.Language : string.Empty;
+        multiLanguage = Model.ApplicationInfo.MultiLanguage;
+    }
+    var email = Model != null && Model.Email != null ? Model.Email : "";
+    var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
+    var client = Model.ApplicationInfo.Name ?? "";
+    var error = Model.Error;
+    var officeSignIn = false;
 }
 
 <div class="col-md-4 login-sec">
@@ -56,9 +58,9 @@
 			</div>
 		</div>
 
-		@if (!string.IsNullOrEmpty(error))
+		@if (!string.IsNullOrEmpty(error) && error == "UserExist")
 		{
-            <div class="error">@Localizer["UserExist"]</div>
+            <div class="error">@Localizer[error]</div>
 		}
 
 		<div class="error-all"></div>
@@ -102,8 +104,97 @@
 
 
 @section scripts {
-	<script type="text/javascript">
-			$(document).ready(function() {
+<script type="text/javascript">
+        $(document).ready(function () {
+            $(document).on('click', '#auth-flow-forgot-password', function () {
+                var data = {
+                    email: $("#swal-input-email").val(),
+                    client: "@client"
+                }
+
+                return fetch('/Account/ExternalLoginForgotPassword', {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    dataType: 'json',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        // "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrer: 'no-referrer', // no-referrer, *client
+                    body: JSON.stringify(data), // body data type must match "Content-Type" header)
+                })
+                    .then(response => {
+                        return response.text();
+                    })
+                    .then(res => {
+                        if (!JSON.parse(res.toLowerCase())) {
+                            return false;
+                        }
+                        $(".swal-forgot-password").toggleClass("swal-hide");
+                        return true;
+                    })
+                    .catch(error => {
+                        return false;
+                    })
+            });
+
+            if ("@error" === "AlreadyRegisteredExternalLogin") {
+                swal({
+                    title: "@Localizer["ExternalLoginVerifyTitle"]",
+                    html:
+                        "@Html.Raw(string.Format(Localizer["ExternalLoginVerifyContent"].Value, ViewBag.AuthFlowTitle == null ? "" : ViewBag.AuthFlowTitle))" +
+                        '<input type="text" readonly="" disabled="" value="@email" id="swal-input-email" class="swal2-input">' +
+                        '<input type="password" min- id="swal-input-password" placeholder="@Localizer["Password"]" class="swal2-input">' +
+                        '<a id="auth-flow-forgot-password" href="javascript:void(0);" class="col-md-12 swal-forgot-password" style="text-align: right;font-size: 13px;float: left;padding-right: 0px;padding-bottom: 10px;">Parolamı Unuttum</a>' +
+                        '<label style="text-align: center;font-size: 13px;padding-right: 0px;color: #28a745;" class="swal-hide swal-forgot-password">@Localizer["ForgotPasswordSuccess"]</label>',
+                    type: 'info',
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    cancelButtonText: "@Localizer["Cancel"]",
+                    confirmButtonText: "@Localizer["Login"]",
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        return fetch('/user/verify_user', {
+                            method: "POST", // *GET, POST, PUT, DELETE, etc.
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                                // "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            redirect: "follow", // manual, *follow, error
+                            referrer: "no-referrer", // no-referrer, *client
+                            body: JSON.stringify({ email: $("#swal-input-email").val(), password: $("#swal-input-password").val(), client:"@client"  }), // body data type must match "Content-Type" header)
+                        })
+                            .then(response => {
+                                return response.text();
+                            })
+                            .then(res => {
+                                if (!JSON.parse(res.toLowerCase())) {
+                                    swal.showValidationMessage("@Localizer["WrongInfo"]");
+                                    return false;
+                                }
+                                return true;
+                            })
+                            .catch(error => {
+                                swal.showValidationMessage(
+                                    "@Localizer["Error"]"
+                                );
+                                return false;
+                            })
+                    },
+                    allowOutsideClick: () => !swal.isLoading()
+                }).then((result) => {
+                    if (result.value) {
+                        $("#Password").val($("#swal-input-password").val());
+                        $("#register-form").submit();
+                        var l = Ladda.create($(".btn-login")[0]);
+                        l.start();
+                    }
+                })
+            }
+
+
 				var postTry = false;
 
 				$("#FirstName,#LastName, #Email, #Password").keyup(function() {
@@ -252,5 +343,5 @@
 					$(e.target).closest(".input-group").removeClass("input-focus");
 				});
 			});
-	</script>
+</script>
 }

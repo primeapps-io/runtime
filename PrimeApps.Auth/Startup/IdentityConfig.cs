@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Auth.Data;
 using PrimeApps.Auth.Models;
+using PrimeApps.Auth.Providers;
 
 namespace PrimeApps.Auth
 {
