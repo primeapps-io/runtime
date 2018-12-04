@@ -414,10 +414,6 @@ angular.module('primeapps')
 
             }
 
-            $scope.radioButtonTemplateClear = function () {
-                $scope.tinymceModel = null;
-            };
-
             $scope.setContent = function () {
                 if ($scope.modulePicklist) {
                     HelpService.getModuleType($scope.modalType, 'modulelist', $scope.modulePicklist.id)
@@ -463,6 +459,14 @@ angular.module('primeapps')
                     $scope.tinymceModel = null;
                     $scope.currentTemplate = null;
                 }
+            };
+
+
+            $scope.radioButtonTemplateClear = function () {
+                if ($scope.selectHelp === 'modules')
+                    $scope.setContent();
+                else
+                    $scope.setContentSettingsModul();
             };
 
             $scope.helpModalSave = function () {
