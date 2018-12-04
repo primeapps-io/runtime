@@ -56,7 +56,21 @@ angular.module('primeapps')
                         return true;
                     }
                 }
-            };
+			};
+
+			$scope.picklistFilter = function (leadField) {
+				return function (field) {
+					if (field.data_type === 'picklist' && leadField.data_type === 'picklist') {
+						if (field.picklist_id === leadField.picklist_id) {
+							return true;
+						}
+						return false;
+					}
+					else {
+						return true;
+					}
+				}
+			};
 
             $scope.mappingModuleFieldChanged = function (module, leadField, lastSelection) {
                 var conversionMapping = {};
