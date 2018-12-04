@@ -1001,7 +1001,7 @@ angular.module('primeapps')
                     }
 
                     //lookup field filters (from field_filters table)
-                    if (field.filters.length > 0) {
+                    if (field.filters) {
                         var no = findRequest.filters.length;
                         for (var z = 0; z < field.filters.length; z++) {
                             var filter = field.filters[z];
