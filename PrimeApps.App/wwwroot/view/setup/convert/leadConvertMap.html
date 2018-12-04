@@ -23,7 +23,7 @@
                                     ng-click="lastSelection = accountModule.selectedFields[leadField.id]"
                                     ng-change="mappingModuleFieldChanged(accountModule,leadField,lastSelection)";
                                     ng-model="accountModule.selectedFields[leadField.id]"
-                                    ng-options="o as o['label_' + language] for o in accountModule.fields | filter:lookupFilter(leadField) | filter:picklistFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
+                                    ng-options="o as o['label_' + language] for o in accountModule.fields | filter:customFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
                                 <option value="">{{'Common.Select' | translate}}</option>
                             </select>
 							<span ng-show="accountModule.selectedFields[leadField.id] && showSuccessIcon[leadField.id][accountModule.id] == true;" class="fa fa-check" style="color: #00A000">{{'Setup.Conversion.HasBeenRecorded' | translate}}</span>
@@ -34,7 +34,7 @@
                                     ng-click="lastSelection = contactModule.selectedFields[leadField.id]"
                                     ng-change="mappingModuleFieldChanged(contactModule,leadField,lastSelection);"
                                     ng-model="contactModule.selectedFields[leadField.id]"
-                                    ng-options="o as o['label_' + language] for o in contactModule.fields | filter:lookupFilter(leadField) | filter:picklistFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
+                                    ng-options="o as o['label_' + language] for o in contactModule.fields | filter:customFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
                                 <option value="">{{'Common.Select' | translate}}</option>
                             </select>
 							<span ng-show="contactModule.selectedFields[leadField.id] && showSuccessIcon[leadField.id][contactModule.id] == true;" class="fa fa-check" style="color: #00A000">{{'Setup.Conversion.HasBeenRecorded' | translate}}</span>
@@ -45,7 +45,7 @@
                                     ng-click="lastSelection = opportunityModule.selectedFields[leadField.id]"
                                     ng-change="mappingModuleFieldChanged(opportunityModule,leadField,lastSelection);"
                                     ng-model="opportunityModule.selectedFields[leadField.id]"
-                                    ng-options="o as o['label_' + language] for o in opportunityModule.fields | filter:lookupFilter(leadField) | filter:picklistFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
+                                    ng-options="o as o['label_' + language] for o in opportunityModule.fields | filter:customFilter(leadField) | filter:{deleted:'!true',validation:{readonly: '!true'},data_type:leadField['data_type']} track by o.id">
                                 <option value="">{{'Common.Select' | translate}}</option>
                             </select>
 							<span ng-show="opportunityModule.selectedFields[leadField.id] && showSuccessIcon[leadField.id][opportunityModule.id] == true;" class="fa fa-check" style="color: #00A000">{{'Setup.Conversion.HasBeenRecorded' | translate}}</span>
