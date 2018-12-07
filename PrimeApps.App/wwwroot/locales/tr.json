@@ -1547,7 +1547,7 @@
       "Info": {
         "Step1": "Dört adımda kolaylıkla oluşturabileceğiniz iş kuralları ile Ofisim.com modül kayıtlarında gerçekleşen, belli kriterlere uyan işlemler için belirlediğiniz kullanıcılara otomatik olarak e-posta ile bildirim gönderebilir ve görevler atayabilirsiniz.",
         "Step2": "İş kuralının çalıştırılması için belirli filtreler tanımlayabilirsiniz. Bu şekilde iş kuralı, seçtiğiniz modüldeki alan değerlerinin belirttiğiniz kriterlerde değişmesi durumunda tetiklenecektir. Örn. \"Müşteri Adayı Durumu\" eşittir \"İlgileniyor\" olduğunda iş kuralını tetikle şeklinde ayarlayabilirsiniz.",
-        "Step3": "İş kuralı tetilendiğinde gerçekleşmesini istediğiniz eylemleri seçiniz. Kullanıcılara e-posta ile bildirim gönderebilir ve görev atayabilirsiniz."
+        "Step3": "İş kuralı tetiklendiğinde gerçekleşmesini istediğiniz eylemleri seçiniz. Kullanıcılara e-posta ile bildirim gönderebilir ve görev atayabilirsiniz."
       },
       "SubmitSuccess": "İş kuralı başarılı bir şekilde kaydedildi.",
       "MaximumHookWarning": "Bir seferde maksimum 10 adet webhook parametresi gönderebilirsiniz."
