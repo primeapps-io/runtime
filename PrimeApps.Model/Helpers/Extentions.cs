@@ -234,5 +234,36 @@ namespace PrimeApps.Model.Helpers
             return Regex.Replace(value, "[\\(%|_\\)]", x => string.Format(@"\{0}", x.Value));
         }
 
+        public static T To<T>(this JToken token)
+        {
+            try
+            {
+                var type = typeof(T);
+                object newToken;
+
+                if (token.IsNullOrEmpty())
+                {
+                    if (type.Name.ToString() == "String")
+                    {
+                        newToken = "";
+                        return (T)newToken;
+                    }
+
+                    return default(T);
+                }
+
+                newToken = Convert.ChangeType(token, type);
+
+                if (newToken == null)
+                    return default(T);
+                else
+                    return (T)newToken;
+            }
+            catch (Exception ex)
+            {
+                return default(T);
+            }
+        }
+
     }
 }
