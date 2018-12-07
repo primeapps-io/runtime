@@ -227,36 +227,5 @@ namespace PrimeApps.Model.Helpers
 
             return (attributes.Length > 0) ? (T)attributes[0] : null;
         }
-
-        public static T To<T>(this JToken token)
-        {
-            try
-            {
-                var type = typeof(T);
-                object newToken;
-
-                if (token.IsNullOrEmpty())
-                {
-                    if (type.Name.ToString() == "String")
-                    {
-                        newToken = "";
-                        return (T)newToken;
-                    }
-
-                    return default(T);
-                }
-
-                newToken = Convert.ChangeType(token, type);
-
-                if (newToken == null)
-                    return default(T);
-                else
-                    return (T)newToken;
-            }
-            catch (Exception ex)
-            {
-                return default(T);
-            }
-        }
     }
 }
