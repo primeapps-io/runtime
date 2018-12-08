@@ -1059,7 +1059,43 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                })
+				})
+
+				.state('app.setup.menu', {
+					url: '/menu',
+					views: {
+						'app': {
+							templateUrl: cdnUrl + 'view/setup/menu/menu.html',
+							controller: 'MenuController'
+						}
+					},
+					resolve: {
+						plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+							return $ocLazyLoad.load([
+								cdnUrl + 'view/setup/menu/menuController.js',
+								cdnUrl + 'view/setup/menu/menuService.js'
+							]);
+						}]
+					}
+				})
+
+				.state('app.setup.menu_list', {
+					url: '/menu_list',
+					views: {
+						'app': {
+							templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
+							controller: 'MenuListController'
+						}
+					},
+					resolve: {
+						plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+							return $ocLazyLoad.load([
+								cdnUrl + 'view/setup/menu/menuListController.js',
+								cdnUrl + 'view/setup/menu/menuService.js'
+							]);
+						}]
+					}
+				})
 
                 .state('app.setup.workflows', {
                     url: '/workflows',
