@@ -174,26 +174,19 @@ namespace PrimeApps.App.Controllers
 		}
 
 		[Route("create"), HttpPost]
-		public async Task<IActionResult> Create(JObject request)
+		public async Task<IActionResult> Create([FromBody]List<Menu> menuList)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			if (!request["menu"].HasValues)
-				return BadRequest();
-
-			if (request["menu"].Type != JTokenType.Array)
-				return BadRequest("Please send record_ids array.");
-
 			var defaultMenu = new JObject();
 
-			var menu = new Menu();
-			for (int i = 0; i < ((JArray)request["menu"]).Count; i++)
+			for (int i = 0; i < menuList.Count; i++)
 			{
-				if ((bool)request["menu"][i]["default"])
+				if (menuList[i].Default)
 				{
 					defaultMenu["default"] = true;
-					defaultMenu["profile_id"] = (int)request["menu"][i]["profileId"];
+					defaultMenu["profile_id"] = menuList[i].ProfileId;
 				}
 
 				if (defaultMenu.Count > 0)
@@ -217,14 +210,14 @@ namespace PrimeApps.App.Controllers
 					}
 				}
 
-				menu = MenuHelper.CreateMenu((JObject)request["menu"][i]);
-				var result = await _menuRepository.CreateMenu(menu);
+				menuList[i] = MenuHelper.CreateMenu(menuList[i]);
+				var result = await _menuRepository.CreateMenu(menuList[i]);
 
 				if (result < 1)
 					throw new HttpResponseException(HttpStatusCode.InternalServerError);
 			}
 
-			return Ok(menu);
+			return Ok(menuList);
 		}
 
 		[Route("delete/{id:int}"), HttpDelete]
@@ -266,10 +259,10 @@ namespace PrimeApps.App.Controllers
 				if (menuList[i].Default)
 				{
 					defaultMenu["default"] = true;
-					defaultMenu["profile_id"] =menuList[i].ProfileId;
+					defaultMenu["profile_id"] = menuList[i].ProfileId;
 				}
 
-				menuEntity = MenuHelper.UpdateMenu(menuList[i]);
+				menuEntity = MenuHelper.UpdateMenu(menuList[i], menuEntity);
 				await _menuRepository.UpdateMenu(menuEntity);
 			}
 
@@ -291,7 +284,7 @@ namespace PrimeApps.App.Controllers
 			return Ok(menuEntity);
 		}
 		[Route("create/menu_items"), HttpPost]
-		public async Task<IActionResult> CreateMenuItems(JObject request)
+		public async Task<IActionResult> CreateMenuItems([FromBody]JObject request)
 		{
 			/**
 			 * moduleItem: modül
@@ -341,7 +334,7 @@ namespace PrimeApps.App.Controllers
 					}
 				}
 
-				//step 2
+				//step 2 if user added chield module than created
 				else if ((int)request["module"][i]["parentId"] > 0)
 				{
 					//module->request["module"][i]["menuName"].ToString()
@@ -355,7 +348,7 @@ namespace PrimeApps.App.Controllers
 						throw new HttpResponseException(HttpStatusCode.InternalServerError);
 				}
 
-				//step 3
+				//step 3 module and if only labelName
 				else
 				{
 					//If exist id, this is update label, else id is null this is new module
@@ -381,8 +374,27 @@ namespace PrimeApps.App.Controllers
 			return Ok(menuItem);
 		}
 
+		[Route("delete/menu_items"), HttpDelete]
+		public async Task<IActionResult> DeleteMenuItems([FromBody]int[] ids)
+		{
+			var menuItemsEntity = new MenuItem();
+			foreach (var id in ids)
+			{
+				if (id < 0)
+					return BadRequest("id is required");
+
+				menuItemsEntity = await _menuRepository.GetMenuItemsById(id);
+				if (menuItemsEntity == null)
+					return NotFound();
+
+				await _menuRepository.DeleteSoftMenuItems(id);
+			}
+
+			return Ok(menuItemsEntity);
+		}
+
 		[Route("update/menu_items"), HttpPut]
-		public async Task<IActionResult> UpdateMenuItems(JObject request)
+		public async Task<IActionResult> UpdateMenuItems([FromBody]JObject request)
 		{
 			var menuItem = new MenuItem();
 			for (int i = 0; i < ((JArray)request["menuLabel"]).Count; i++)

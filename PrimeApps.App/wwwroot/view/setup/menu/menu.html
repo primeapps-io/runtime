@@ -55,7 +55,7 @@
                                             name="profile_name"
                                             ng-model="profileItem"
                                             ng-required="!defaultMenu"
-                                            ng-options="o as o['Name'] for o in newProfiles | filter:{Deleted:'!true'} | orderNotZero | orderBy:'order'">
+                                            ng-options="o as o['name'] for o in newProfiles | filter:{deleted:'!true'}">
                                         <option value="">{{'Common.Select' | translate}}</option>
                                     </select>
                                 </div>

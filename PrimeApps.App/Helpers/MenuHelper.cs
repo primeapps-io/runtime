@@ -6,35 +6,28 @@ namespace OfisimCRM.App.Helpers
 {
 	public static class MenuHelper
 	{
-		public static Menu CreateMenu(JObject request, bool deleted = false)
-		{
-			string name = request["name"].ToString();
-			int profileId = (int)request["profileId"];
-			bool deflt = (bool)request["default"];
-			string description = request["description"].ToString();
-
-			var menu = new Menu()
-			{
-				Name = name,
-				ProfileId = profileId,
-				Default = deflt,
-				Deleted = deleted,
-				Description = description,
-			};
-
-			return menu;
-		}
-		public static Menu UpdateMenu(Menu menu)
+		public static Menu CreateMenu(Menu menu, bool deleted = false)
 		{
 			var newMenu = new Menu()
 			{
 				Name = menu.Name,
-				Default = menu.Default,
 				ProfileId = menu.ProfileId,
-				Description = menu.Description
+				Default = menu.Default,
+				Deleted = menu.Deleted,
+				Description = menu.Description,
 			};
 
 			return newMenu;
+		}
+		public static Menu UpdateMenu(Menu menu, Menu updateMenu)
+		{
+
+			updateMenu.Name = menu.Name;
+			updateMenu.Description = menu.Description;
+			updateMenu.Default = menu.Default;
+			updateMenu.ProfileId = menu.ProfileId;
+
+			return updateMenu;
 		}
 
 		public static MenuItem CreateMenuItems(JObject request, Menu menu, Module moduleEntity, MenuItem parent, bool step3 = false)
