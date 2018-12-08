@@ -1,8 +1,8 @@
 ﻿'use strict';
 
 angular.module('primeapps')
-    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService',
-        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService) {
+    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies',
+        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService, $cookies) {
             $scope.type = $stateParams.type;
             $scope.wizardStep = 0;
             $scope.fieldMap = {};
@@ -133,7 +133,8 @@ angular.module('primeapps')
             var uploader = $scope.uploader = new FileUploader({
                 headers: {
                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-Tenant-Id': $cookies.get('tenant_id')
                 },
                 queueLimit: 1
             });
@@ -273,12 +274,12 @@ angular.module('primeapps')
                 $scope.fixedField = field;
 
                 $scope.fixedValueModal = $scope.fixedValueModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/data/fixedValue.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/data/fixedValue.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.fixedValueModal.$promise.then(function () {
                     $scope.fixedValueModal.show();

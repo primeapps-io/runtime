@@ -121,7 +121,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("import_save_excel"), HttpPost]
-        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "importId")]int importId)
+        public async Task<IActionResult> ImportSaveExcel([FromQuery(Name = "import_id")]int importId)
         {
             var import = await _importRepository.GetById(importId);
 
