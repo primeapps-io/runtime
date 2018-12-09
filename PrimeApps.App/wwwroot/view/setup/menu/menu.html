@@ -105,7 +105,7 @@
                                                 class="form-control ng-animate-disabled"
                                                 name="module_name"
                                                 ng-model="moduleItem"
-                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'order'">
+                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'label_' + language + '_plural'">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
@@ -204,7 +204,7 @@
                                                                 ng-model="menuModuleList"
                                                                 ng-change="selectModule(menu.menuId, menu.no, menuModuleList)"
                                                                 ng-show="!menu.isEdit && !menu.name"
-                                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderNotZero | orderBy:'order'">
+                                                                ng-options="o as o['label_' + language + '_plural'] for o in newModuleList | filter:{display:'!false'} | orderBy:'label_' + language + '_plural'">
                                                             <option value="">{{'Common.Select' | translate}}</option>
                                                         </select>
                                                         <a style="color:#c78389; font-size: 10px !important; line-height: 14px !important; " ng-show="!menu.isEdit && !menu.name" href class="action-icon delete-role-button" ng-click="remove_(menu.menuId, menu.no, $index, menu.menuModuleType)" data-nodrag>
