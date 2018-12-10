@@ -1,0 +1,17 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width: 400px">
+        <div class="modal-content" style="border-radius: 0px !important;">
+            <form class="form">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{'Layout.Menu.Likes' | translate}}</h4>
+                </div>
+                <div class="modal-body">
+                    <p ng-repeat="user in $parent.likes"><span><img style="height: 40px; width: 40px; border-radius: 40px" src="images/user-image.png" ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}" class="img-rounded"><b style="margin-left: 10px">{{user.full_name}}</b></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-click="$hide()">{{'Common.Close' | translate}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

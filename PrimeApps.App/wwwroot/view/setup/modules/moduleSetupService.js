@@ -456,7 +456,11 @@ angular.module('primeapps')
                         var i = 2;
 
                         while (true) {
-                            var existingModule = $filter('filter')(allModules, { name: module.name }, true)[0];
+
+                            var findMatch = module.name.match(/(\D+)?\d/);
+                            var index = findMatch ? findMatch[0].length - 1 : -1;
+                            var newModuleName = index === 0 ? 'n' + module.name : module.name; // if first index value === 0, its starts_with number
+                            var existingModule = $filter('filter')(allModules, { name: newModuleName }, true)[0];
 
                             if (!existingModule)
                                 break;
@@ -487,7 +491,42 @@ angular.module('primeapps')
                                 sectionField.section = newSectionName;
                             });
 
-                            section.name = newSectionName;
+                            var cleanSlug = angular.copy(newSectionName);
+                            var existingSection = $filter('filter')(module.sections, { name: cleanSlug }, true)[0];
+
+                            if (existingSection) {
+                                do {
+                                    var sectionNameNumber;
+
+                                    if (existingSection.name.indexOf('_') > -1) {
+                                        var slugParts = existingSection.name.split('_');
+                                        var lastPart = slugParts[slugParts.length - 1];
+                                        sectionNameNumber = lastPart.replace(/\D/g, '');
+                                        lastPart = lastPart.replace(/[0-9]/g, '');
+                                        slugParts.pop();
+                                        cleanSlug = slugParts.join('_') + '_' + lastPart;
+                                    }
+                                    else {
+                                        sectionNameNumber = existingSection.name.replace(/\D/g, '');
+                                        cleanSlug = existingSection.name.replace(/[0-9]/g, '');
+                                    }
+
+                                    var newSlug = '';
+
+                                    if (sectionNameNumber)
+                                        newSlug = cleanSlug + (parseInt(sectionNameNumber) + 1);
+                                    else
+                                        newSlug = cleanSlug + 2;
+
+                                    existingSection = $filter('filter')(module.sections, { name: newSlug }, true)[0];
+
+                                    if (!existingSection)
+                                        section.name = newSlug;
+                                }
+                                while (existingSection)
+                            }
+                            else
+                                section.name = newSectionName;
                         }
                         //permissions
                         var sectionPermissions = angular.copy(section.permissions);

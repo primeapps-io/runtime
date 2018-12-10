@@ -140,6 +140,7 @@ namespace PrimeApps.Model.Helpers
             using (var command = (NpgsqlCommand)database.GetDbConnection().CreateCommand())
             {
                 command.CommandText = sql;
+                command.CommandType = CommandType.Text;
 
                 if (command.Connection.State != ConnectionState.Open)
                     command.Connection.Open();
@@ -227,5 +228,42 @@ namespace PrimeApps.Model.Helpers
 
             return (attributes.Length > 0) ? (T)attributes[0] : null;
         }
+
+        public static string EscapeSimilarTo(this string value)
+        {
+            return Regex.Replace(value, "[\\(%|_\\)]", x => string.Format(@"\{0}", x.Value));
+        }
+
+        public static T To<T>(this JToken token)
+        {
+            try
+            {
+                var type = typeof(T);
+                object newToken;
+
+                if (token.IsNullOrEmpty())
+                {
+                    if (type.Name.ToString() == "String")
+                    {
+                        newToken = "";
+                        return (T)newToken;
+                    }
+
+                    return default(T);
+                }
+
+                newToken = Convert.ChangeType(token, type);
+
+                if (newToken == null)
+                    return default(T);
+                else
+                    return (T)newToken;
+            }
+            catch (Exception ex)
+            {
+                return default(T);
+            }
+        }
+
     }
 }

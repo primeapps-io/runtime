@@ -1,0 +1,24 @@
+<div class="modal module-modal module-add-modal" tabindex="-1" role="dialog" ng-controller="ModuleAddModalController">
+    <div style="{{FullScreenShow}}" class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h4 class="modal-title pull-left">{{'Module.Add' | translate:{title: selectedRelatedModule['label_' + language + '_singular']} }}</h4>
+                <div class="pull-right">
+                    <a href ng-click="openCreateModal(selectedRelatedModule.related_module)" class="btn btn-sm btn-custom" ng-show="hasPermission(selectedRelatedModule.related_module, operations.write)"><i class="fa fa-plus"></i> {{'Module.New' | translate:{title:selectedRelatedModule['label_' + language + '_singular']} }}</a>
+                    <a href ng-click="refresh()" class="btn btn-sm btn-custom" title="{{'Common.Refresh' | translate}}"><i class="fa fa-refresh"></i></a>
+                    <a href ng-show="fullScreenIcon" ng-click="fullScreen()" class="btn btn-sm btn-custom" title="{{'Common.FullScreen' | translate}}"><i class="fa fa-arrows-alt"></i></a>
+                    <a href ng-show="!fullScreenIcon" ng-click="exitFullScreen()" class="btn btn-sm btn-custom" title="{{'Common.ExitFullScreen' | translate}}"><i class="fa fa fa-compress"></i></a>
+                    <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true"
+                            style="margin-left:30px;margin-top: 3px;" ng-click="$hide()"><i class="fa fa-close"></i></button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div related-module="relatedModule" parent-module="$parent.$parent.type" is-selectable="true" disable-select-all="true" disable-links="true" reload="refreshSubModules[relationKey]" sub-table></div>
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn btn-custom" ng-disabled="submittingModal" ng-click="$hide()">{{'Common.Cancel' | translate}}</button>
+                <button type="button" class="btn btn-w-md btn-primary" ng-click="addRecords()" ladda="recordsAdding"><i class="fa fa-check-circle pull-left"></i> {{'Common.Add' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

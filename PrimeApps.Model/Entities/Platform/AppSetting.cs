@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PrimeApps.Model.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -30,7 +31,7 @@ namespace PrimeApps.Model.Entities.Platform
         public string Language { get; set; }
 
         [Column("auth_theme", TypeName = "jsonb")]
-        public string AutTheme { get; set; }
+        public string AuthTheme { get; set; }
 
         [Column("app_theme", TypeName = "jsonb")]
         public string AppTheme { get; set; }
@@ -46,6 +47,12 @@ namespace PrimeApps.Model.Entities.Platform
 
         [Column("tenant_operation_webhook")]
         public string TenantOperationWebhook { get; set; }
+
+        [Column("external_auth", TypeName = "jsonb")]
+        public string ExternalAuth { get; set; }
+
+        [Column("registration_type")]
+        public RegistrationType RegistrationType { get; set; }
 
         public virtual App App { get; set; }
     }

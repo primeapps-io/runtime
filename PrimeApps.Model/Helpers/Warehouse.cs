@@ -103,6 +103,9 @@ namespace PrimeApps.Model.Helpers
             //Create roles table
             CreateRolesTable(database);
 
+            //Create profiles table
+            CreateProfilesTables(database);
+
             //Create users table
             CreateUsersTable(database);
         }
@@ -351,6 +354,9 @@ namespace PrimeApps.Model.Helpers
 
                 foreach (var relation in relations)
                 {
+                    if (relation.Deleted == true)
+                        continue;
+
                     if (relation.RelationType == RelationType.ManyToMany)
                     {
                         CreateJunctionTable(database, module, relation, junctionTableNames);
@@ -430,7 +436,7 @@ namespace PrimeApps.Model.Helpers
 
         public void SyncData(ICollection<Module> modules, string databaseName, CurrentUser currentUser, string tenantLanguage)
         {
-			_analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.CurrentUser = currentUser;
             _analyticRepository.TenantId = currentUser.TenantId;
 
             // Insert roles
@@ -439,6 +445,28 @@ namespace PrimeApps.Model.Helpers
             foreach (var role in roles)
             {
                 CreateRole(role, databaseName, tenantLanguage);
+            }
+
+            //Insert profiles
+            var profiles = _analyticRepository.DbContext.Profiles.Where(x => !x.Deleted).ToList();
+
+            foreach (var profile in profiles)
+            {
+                if (string.IsNullOrEmpty(profile.Name) && string.IsNullOrEmpty(profile.Description) && profile.IsPersistent)
+                {
+                    if (profile.HasAdminRights)
+                    {
+                        profile.Name = "Sistem Yöneticisi";
+                        profile.Description = "Bu profil tüm yetkilere sahiptir";
+                    }
+                    else
+                    {
+                        profile.Name = "Standart Kullanıcı";
+                        profile.Description = "Bu profil yönetimsel yetkilere sahip değildir";
+                    }
+                }
+
+                CreateProfile(profile, databaseName, tenantLanguage);
             }
 
             // Insert users
@@ -572,6 +600,140 @@ namespace PrimeApps.Model.Helpers
 
             var role = GetRole(roleId, currentUser);
             CreateRole(role, databaseName, tenantLanguage);
+        }
+
+        public void UpdateRole(Role role, string databaseName, CurrentUser currentUser, string tenantLanguage)
+        {
+            var resultRole = GetRole(role.Id, currentUser);
+
+            if (resultRole == null)
+                CreateRole(role, databaseName, tenantLanguage);
+            else
+            {
+                var connection = new SqlConnection(GetConnectionString(databaseName));
+
+                using (connection)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        var columns = new List<string>();
+                        var values = new List<string>();
+                        var sets = new List<string>();
+
+                        command.Parameters.Add(new SqlParameter { ParameterName = "label", SqlValue = tenantLanguage == "tr" ? role.LabelTr : role.LabelEn, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "owner", SqlValue = role.Owners, SqlDbType = SqlDbType.VarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "deleted", SqlValue = role.Deleted, SqlDbType = SqlDbType.Bit });
+
+                        foreach (SqlParameter parameter in command.Parameters)
+                        {
+                            columns.Add("[" + parameter.ParameterName + "]");
+                            values.Add("@" + parameter.ParameterName);
+                            sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
+                        }
+
+                        var sql = $"UPDATE [roles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {role.Id}";
+                        command.CommandText = sql;
+                        command.CommandType = CommandType.Text;
+
+                        if (command.Connection.State != ConnectionState.Open)
+                            connection.Open();
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+        public void CreateProfile(Profile profile, string databaseName, string tenantLanguage)
+        {
+            var connection = new SqlConnection(GetConnectionString(databaseName));
+
+            using (connection)
+            {
+                using (var command = connection.CreateCommand())
+                {
+                    var columns = new List<string>();
+                    var values = new List<string>();
+
+                    command.Parameters.Add(new SqlParameter { ParameterName = "id", SqlValue = profile.Id, SqlDbType = SqlDbType.Int });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "has_admin_rights", SqlValue = profile.HasAdminRights, SqlDbType = SqlDbType.Bit });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "system_code", SqlValue = profile.SystemCode ?? "", SqlDbType = SqlDbType.NVarChar });
+
+                    foreach (SqlParameter parameter in command.Parameters)
+                    {
+                        columns.Add("[" + parameter.ParameterName + "]");
+                        values.Add("@" + parameter.ParameterName);
+                    }
+
+                    var sql = $"INSERT INTO [profiles] (\n\t{string.Join(",\n\t", columns)}\n) \nVALUES (\n\t{string.Join(",\n\t", values)}\n)";
+
+                    command.CommandText = sql;
+                    command.CommandType = CommandType.Text;
+
+                    if (command.Connection.State != ConnectionState.Open)
+                        connection.Open();
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void CreateProfile(int profileId, string databaseName, int tenantId, string tenantLanguage)
+        {
+            if (string.IsNullOrEmpty(tenantLanguage))
+                tenantLanguage = "tr";
+
+            var profile = GetProfile(profileId, tenantId);
+            CreateProfile(profile, databaseName, tenantLanguage);
+        }
+
+        public void UpdateProfile(Profile profile, string databaseName, int tenantId, string tenantLanguage)
+        {
+            var resultRole = GetProfile(profile.Id, tenantId);
+
+            if (resultRole == null)
+                CreateProfile(profile, databaseName, tenantLanguage);
+            else
+            {
+                var connection = new SqlConnection(GetConnectionString(databaseName));
+
+                using (connection)
+                {
+                    using (var command = connection.CreateCommand())
+                    {
+                        var columns = new List<string>();
+                        var values = new List<string>();
+                        var sets = new List<string>();
+
+                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "has_admin_rights", SqlValue = profile.HasAdminRights, SqlDbType = SqlDbType.Bit });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
+                        command.Parameters.Add(new SqlParameter { ParameterName = "system_value", SqlValue = profile.SystemCode ?? string.Empty, SqlDbType = SqlDbType.NVarChar });
+
+                        foreach (SqlParameter parameter in command.Parameters)
+                        {
+                            columns.Add("[" + parameter.ParameterName + "]");
+                            values.Add("@" + parameter.ParameterName);
+                            sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
+                        }
+
+                        var sql = $"UPDATE [profiles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {profile.Id}";
+                        command.CommandText = sql;
+                        command.CommandType = CommandType.Text;
+
+                        if (command.Connection.State != ConnectionState.Open)
+                            connection.Open();
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
         }
 
         public void CreateTenantUser(Entities.Tenant.TenantUser user, string databaseName, string tenantLanguage)
@@ -974,7 +1136,7 @@ namespace PrimeApps.Model.Helpers
         {
             var module = GetModule(moduleName, currentUser);
             var sqlRecords = $"SELECT * FROM {moduleName}_d WHERE \"import_id\" = '{importId}'";
-			_analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.CurrentUser = currentUser;
             _analyticRepository.TenantId = currentUser.TenantId;
             var records = _analyticRepository.DbContext.Database.SqlQueryDynamic(sqlRecords);
 
@@ -985,8 +1147,8 @@ namespace PrimeApps.Model.Helpers
         {
             var sql = $"UPDATE {moduleName}_d SET deleted = true WHERE import_id = {importId}";
 
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
             _analyticRepository.DbContext.Database.ExecuteSqlCommand(sql);
         }
 
@@ -1116,6 +1278,49 @@ namespace PrimeApps.Model.Helpers
             pkRole.IndexKeyType = IndexKeyType.DriPrimaryKey;
 
             tableRoles.Create();
+        }
+
+        private void CreateProfilesTables(Database database)
+        {
+            var tableProfiles = new Table(database, "profiles");
+
+            var columnId = new Column(tableProfiles, "id", DataType.Int);
+            columnId.Nullable = false;
+            tableProfiles.Columns.Add(columnId);
+
+            var columnName = new Column(tableProfiles, "name", DataType.NVarChar(200));
+            columnName.Nullable = false;
+            tableProfiles.Columns.Add(columnName);
+
+            var columnDescription = new Column(tableProfiles, "description", DataType.NVarCharMax);
+            columnDescription.Nullable = true;
+            tableProfiles.Columns.Add(columnDescription);
+
+            var columnHasAdminRights = new Column(tableProfiles, "has_admin_rights", DataType.Bit);
+            columnHasAdminRights.Nullable = false;
+            tableProfiles.Columns.Add(columnHasAdminRights);
+
+            var columnParentId = new Column(tableProfiles, "parent_id", DataType.Int);
+            columnParentId.Nullable = false;
+            tableProfiles.Columns.Add(columnParentId);
+
+            var columnOrder = new Column(tableProfiles, "order", DataType.Int);
+            columnOrder.Nullable = false;
+            tableProfiles.Columns.Add(columnOrder);
+
+            var columnSystemCode = new Column(tableProfiles, "system_code", DataType.NVarCharMax);
+            columnSystemCode.Nullable = true;
+            tableProfiles.Columns.Add(columnSystemCode);
+
+            ////PK create
+            var pkProfile = new Microsoft.SqlServer.Management.Smo.Index(tableProfiles, "PK_profiles");
+            tableProfiles.Indexes.Add(pkProfile);
+            pkProfile.IndexedColumns.Add(new IndexedColumn(pkProfile, columnName.Name));
+            pkProfile.IsClustered = true;
+            pkProfile.IsUnique = true;
+            pkProfile.IndexKeyType = IndexKeyType.DriPrimaryKey;
+
+            tableProfiles.Create();
         }
 
         private void CreateUsersTable(Database database)
@@ -1582,8 +1787,8 @@ namespace PrimeApps.Model.Helpers
 
         private Role GetRole(int roleId, CurrentUser currentUser)
         {
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             var role = _analyticRepository.DbContext.Roles
                 .Single(x => x.Id == roleId);
@@ -1591,10 +1796,19 @@ namespace PrimeApps.Model.Helpers
             return role;
         }
 
+        private Profile GetProfile(int profileId, int tenantId)
+        {
+            _analyticRepository.TenantId = tenantId;
+
+            var profile = _analyticRepository.DbContext.Profiles.Single(x => x.Id == profileId && !x.Deleted);
+
+            return profile;
+        }
+
         private TenantUser GetTenantUser(int userId, CurrentUser currentUser)
         {
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             var user = _analyticRepository.DbContext.Users
                 .Include(x => x.Profile)
@@ -1606,14 +1820,14 @@ namespace PrimeApps.Model.Helpers
 
         private Module GetModule(string moduleName, CurrentUser currentUser)
         {
-			_analyticRepository.CurrentUser = currentUser;
-			_analyticRepository.TenantId = currentUser.TenantId;
+            _analyticRepository.CurrentUser = currentUser;
+            _analyticRepository.TenantId = currentUser.TenantId;
 
             var module = _analyticRepository.DbContext.Modules
                 .Include(x => x.Sections)
-				.Include(x => x.Fields).ThenInclude(y => (y as Field).Validation)
-				.Include(x => x.Fields).ThenInclude(y => (y as Field).Combination)
-				.Include(x => x.Relations)
+                .Include(x => x.Fields).ThenInclude(y => (y as Field).Validation)
+                .Include(x => x.Fields).ThenInclude(y => (y as Field).Combination)
+                .Include(x => x.Relations)
                 .Include(x => x.Dependencies)
                 .Include(x => x.Calculations)
                 .FirstOrDefault(x => x.Name == moduleName && !x.Deleted);

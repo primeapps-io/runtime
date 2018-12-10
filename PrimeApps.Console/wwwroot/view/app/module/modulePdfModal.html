@@ -1,0 +1,30 @@
+﻿<div class="modal module-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header clearfix">
+                <h4 class="modal-title pull-left">{{'Module.ChooseTemplate' | translate:{module:module['label_'+language+'_singular']} }}</h4>
+            </div>
+            <div class="modal-body">
+                <select class="form-control ng-animate-disabled"
+                        name="template"
+                        ng-model="$parent.$parent.quoteTemplate"
+                        ng-required="true"
+                        ng-options="o as o.name for o in quoteTemplates | filter:{active: true, isShown : true} track by o.id">
+                </select>
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn btn-custom" ng-disabled="submittingModal"
+                        ng-click="$hide(); $parent.$parent.pdfCreating = false;">{{'Common.Cancel' | translate}}
+                </button>
+                <a class="btn btn-custom" ng-disabled="isShownWarning" ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}"
+                   ng-click="$hide(); $parent.$parent.pdfCreating = false;getDownloadUrl('pdf')"
+                   target="_blank"><i class="fa fa-file-pdf-o pull-left" style="margin-top: 3px;"></i>
+                    {{'Module.DownloadPdf' | translate}}</a>
+                <a class="btn btn-custom" ng-disabled="isShownWarning" ng-class="{'btn-w-md':language==='tr', 'btn-w-lg':language==='en'}"
+                   ng-click="$hide(); $parent.$parent.pdfCreating = false;getDownloadUrl('docx');"
+                   target="_blank"><i class="fa fa-file-word-o pull-left" style="margin-top: 3px;"></i>
+                    {{'Module.DownloadWord' | translate}}</a>
+            </div>
+        </div>
+    </div>
+</div>

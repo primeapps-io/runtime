@@ -33,6 +33,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.1.0-preview1-final" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Migrations\ConsoleDB\" />
     <Folder Include="Migrations\PlatformDB\" />
     <Folder Include="Migrations\TenantDB\" />
   </ItemGroup>

@@ -17,30 +17,33 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.App.Controllers
 {
     [Route("api/view"), Authorize]
-	public class ViewController : ApiBaseController
+    public class ViewController : ApiBaseController
     {
         private IViewRepository _viewRepository;
         private IUserRepository _userRepository;
+        private IDashboardRepository _dashboardRepository;
 
-	    private IRecordHelper _recordHelper;
+        private IRecordHelper _recordHelper;
 
-        public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IRecordHelper recordHelper)
+        public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper)
         {
             _viewRepository = viewRepository;
             _userRepository = userRepository;
-	        _recordHelper = recordHelper;
+            _dashboardRepository = dashboardRepository;
+
+            _recordHelper = recordHelper;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_userRepository);
-			SetCurrentUser(_viewRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_userRepository);
+            SetCurrentUser(_viewRepository);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var viewEntity = await _viewRepository.GetById(id);
@@ -91,7 +94,7 @@ namespace PrimeApps.App.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get/" + viewEntity.Id, viewEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get/" + viewEntity.Id, viewEntity);
         }
 
@@ -122,6 +125,9 @@ namespace PrimeApps.App.Controllers
             await ViewHelper.UpdateEntity(view, viewEntity, _userRepository);
             await _viewRepository.Update(viewEntity, currentFieldIds, currentFilterIds);
 
+            string name = AppUser.TenantLanguage == "tr" ? viewEntity.LabelTr : viewEntity.LabelEn;
+            await _dashboardRepository.UpdateNameWidgetsByViewId(name, id);
+
             return Ok(viewEntity);
         }
 
@@ -134,6 +140,7 @@ namespace PrimeApps.App.Controllers
                 return NotFound();
 
             await _viewRepository.DeleteSoft(viewEntity);
+            await _dashboardRepository.DeleteSoftByViewId(id);
 
             return Ok();
         }
@@ -164,7 +171,7 @@ namespace PrimeApps.App.Controllers
                 //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
                 var uri = new Uri(Request.GetDisplayUrl());
-				return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
+                return Created(uri.Scheme + "://" + uri.Authority + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
                 //return Created(Request.Scheme + "://" + Request.Host + "/api/view/get_view_state/" + viewStateCreateEntity.ModuleId, viewStateCreateEntity);
             }
 

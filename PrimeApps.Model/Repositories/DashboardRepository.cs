@@ -64,11 +64,62 @@ namespace PrimeApps.Model.Repositories
             return await widgets.ToListAsync();
         }
 
+        public async Task<Widget> GetWidgetById(int id)
+        {
+            var widget = await DbContext.Widgets.Where(x => x.Id == id && !x.Deleted).FirstOrDefaultAsync();
+
+            return widget;
+        }
+
         public async Task<Widget> GetWidgetByViewId(int id)
         {
             var widget = await DbContext.Widgets.Where(x => !x.Deleted && x.ViewId == id).FirstOrDefaultAsync();
 
             return widget;
+        }
+
+        public async Task<List<Widget>> GetWidgetAllByViewId(int id)
+        {
+            var widget = await DbContext.Widgets.Where(x => !x.Deleted && x.ViewId == id).ToListAsync();
+
+            return widget;
+        }
+
+        public async Task<int> UpdateNameWidgetsByViewId(string name, int id)
+        {
+            var widget = await GetWidgetByViewId(id);
+
+            if (widget != null)
+            {
+                widget.Name = name;
+
+                var result = await DbContext.SaveChangesAsync();
+
+                return result;
+            }
+
+            return 0;
+        }
+
+        public async Task<int> DeleteSoftByViewId(int viewId)
+        {
+            var widgets = await GetWidgetAllByViewId(viewId);
+
+            if (widgets.Count() <= 0)
+                return -1;
+
+            foreach (var widget in widgets)
+            {
+                var dashlet = await DbContext.Dashlets.Where(x => x.WidgetId == widget.Id && !x.Deleted).FirstOrDefaultAsync();
+
+                if (dashlet == null)
+                    continue;
+
+                widget.Deleted = true;
+                dashlet.Deleted = true;
+            }
+
+            return await DbContext.SaveChangesAsync();
         }
 
     }

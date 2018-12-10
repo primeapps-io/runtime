@@ -189,13 +189,21 @@ namespace PrimeApps.App.Controllers
 				if (moduleEntity.Name == "izinler")
 					await _calculationHelper.Calculate((int)record["id"], moduleEntity, AppUser, _warehouse, OperationType.update, _recordHelper.BeforeCreateUpdate, _recordHelper.AfterUpdate, _recordHelper.GetAllFieldsForFindRequest);
 			}
-			catch (ProcessFilterNotMatchException ex)
-			{
-				ModelState.AddModelError("FiltersNotMatch", "Filters don't matched");
-				return BadRequest(ModelState);
-			}
+            catch (ProcessFilterNotMatchException ex)
+            {
+                if (ex.Message == "ProcessApproverNotFoundException")
+                {
+                    ModelState.AddModelError("ApproverNotFound", "Approver Not Found");
+                    return BadRequest(ModelState);
+                }
+                else
+                {
+                    ModelState.AddModelError("FiltersNotMatch", "Filters don't matched");
+                    return BadRequest(ModelState);
+                }
+            }
 
-			return Ok();
+            return Ok();
 		}
 	}
 }

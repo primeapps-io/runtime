@@ -26,7 +26,7 @@ namespace PrimeApps.App.Helpers
     public interface IProcessHelper
     {
         Task Run(OperationType operationType, JObject record, Module module, UserItem appUser, Warehouse warehouse, ProcessTriggerTime triggerTime, BeforeCreateUpdate BeforeCreateUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest, UpdateStageHistory UpdateStageHistory, AfterUpdate AfterUpdate, AfterCreate AfterCreate);
-        Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage);
+        Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, Warehouse warehouse, UserItem appUser);
         Task UpdateEntity(ProcessBindingModel processModel, Process process, string tenantLanguage);
         Task ApproveRequest(ProcessRequest request, UserItem appUser, Warehouse warehouse, BeforeCreateUpdate BeforeCreateUpdate, AfterUpdate AfterUpdate, GetAllFieldsForFindRequest GetAllFieldsForFindRequest);
         Task RejectRequest(ProcessRequest request, string message, UserItem appUser, Warehouse warehouse);
@@ -76,7 +76,7 @@ namespace PrimeApps.App.Helpers
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-                    _processRequestRepository.CurrentUser = _moduleRepository.CurrentUser = _userRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    _processRequestRepository.CurrentUser = _moduleRepository.CurrentUser = _userRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var requestInsert = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.insert);
                     var requestUpdate = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.update);
@@ -263,10 +263,37 @@ namespace PrimeApps.App.Helpers
                         //Set warehouse database name
                         warehouse.DatabaseName = appUser.WarehouseDatabaseName;
 
+                        //checks if fields exist approver, process_date, approver_order, process_status_picklist
+                        int fieldCount = 0;
+                        bool hasProcessFields = false;
+                        foreach (var field in module.Fields)
+                        {
+                            if (field.Name == "approver" || field.Name == "process_date" || field.Name == "approver_order" || field.Name == "process_status_list")
+                                fieldCount++;
+                        }
+
+                        if (fieldCount == 4)
+                            hasProcessFields = true;
+
+
                         var user = new TenantUser();
                         if (process.ApproverType == ProcessApproverType.StaticApprover)
                         {
                             user = await _userRepository.GetById(process.Approvers.First(x => x.Order == 1).UserId);
+                            if (hasProcessFields)
+                            {
+                                using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                                {
+                                    var processStatusPicklist = module.Fields.Single(x => x.Name == "process_status_list");
+                                    var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
+                                    record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
+                                    record["approver"] = user.Id;
+                                    record["process_date"] = DateTime.Now;
+                                    record["approver_order"] = 1;
+
+                                    await _recordRepository.Update(record, module, isUtc: false);
+                                }
+                            }
                         }
                         else
                         {
@@ -302,6 +329,9 @@ namespace PrimeApps.App.Helpers
                                 {
                                     approverLookupModule = approverLookupField.LookupType == "profiles" ? Model.Helpers.ModuleHelper.GetFakeProfileModule() : approverLookupField.LookupType == "roles" ? Model.Helpers.ModuleHelper.GetFakeRoleModule(appUser.TenantLanguage) : Model.Helpers.ModuleHelper.GetFakeUserModule();
                                 }
+
+                                if (record[firstApprover.Split('.')[0] + "." + approverLookupName] == null)
+                                    throw new ProcessFilterNotMatchException("ProcessApproverNotFoundException");
 
                                 var approverUserRecord = _recordRepository.GetById(approverLookupModule, (int)record[firstApprover.Split('.')[0] + "." + approverLookupName], false);
                                 var userMail = (string)approverUserRecord[approverLookupFieldName];
@@ -350,6 +380,21 @@ namespace PrimeApps.App.Helpers
                             {
                                 var approverMail = (string)record["custom_approver"];
                                 user = await _userRepository.GetByEmail(approverMail);
+                            }
+
+                            if (hasProcessFields)
+                            {
+                                using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                                {
+                                    var processStatusPicklist = module.Fields.Single(x => x.Name == "process_status_list");
+                                    var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
+                                    record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
+                                    record["approver"] = user.Id;
+                                    record["process_date"] = DateTime.Now;
+                                    record["approver_order"] = 1;
+
+                                    await _recordRepository.Update(record, module, isUtc: false);
+                                }
                             }
                         }
 
@@ -516,7 +561,7 @@ namespace PrimeApps.App.Helpers
             }
         }
 
-        public async Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage)
+        public async Task<Process> CreateEntity(ProcessBindingModel processModel, string tenantLanguage, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, Warehouse warehouse, UserItem appUser)
         {
             var process = new Process
             {
@@ -543,9 +588,9 @@ namespace PrimeApps.App.Helpers
                 {
                     _picklistRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
 
+                    var module = await _moduleRepository.GetById(processModel.ModuleId);
                     if (processModel.Filters != null && processModel.Filters.Count > 0)
                     {
-                        var module = await _moduleRepository.GetById(processModel.ModuleId);
                         var picklistItemIds = new List<int>();
                         process.Filters = new List<ProcessFilter>();
 
@@ -624,6 +669,150 @@ namespace PrimeApps.App.Helpers
 
                             process.Approvers.Add(processApprover);
                         }
+                    }
+
+                    //otomatik onaycı, onay durumu, işlem tarihi ve seviye ekleme
+                    int fieldCount = 0;
+                    bool hasProcessFields = false;
+                    foreach (var field in module.Fields)
+                    {
+                        if (field.Name == "approver" || field.Name == "process_date" || field.Name == "approver_order" || field.Name == "process_status_list")
+                            fieldCount++;
+                    }
+                    if (fieldCount == 4)
+                        hasProcessFields = true;
+
+                    if (!hasProcessFields)
+                    {
+                        int picklistId;
+                        var picklistResult = await _picklistRepository.GetPicklistByLabelEn("Process Status List");
+                        if (picklistResult == null)
+                        {
+                            var picklist = new PicklistBindingModel { LabelTr = "Onay Durum Listesi", LabelEn = "Process Status List", Items = new List<PicklistItemBindingModel>() };
+                            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Onay Bekliyor", LabelEn = "Waiting For Approval", Value = "waiting_for_approval", Order = 1 });
+                            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Onaylandı", LabelEn = "Approved", Value = "approved", Order = 2 });
+                            picklist.Items.Add(new PicklistItemBindingModel { LabelTr = "Reddedildi", LabelEn = "Rejected", Value = "rejected", Order = 3 });
+
+                            var picklistEntity = PicklistHelper.CreateEntity(picklist);
+                            var result = await picklistRepository.Create(picklistEntity);
+                            picklistId = picklistEntity.Id;
+                        }
+                        else
+                        {
+                            picklistId = picklistResult.Id;
+                        }
+                        var moduleChanges = new ModuleChanges();
+                        var section = module.Fields.Where(x => x.Name == "created_by").FirstOrDefault().Section;
+
+                        var processPicklist = new Field
+                        {
+                            Name = "process_status_list",
+                            DataType = DataType.Picklist,
+                            Deleted = false,
+                            DisplayDetail = false,
+                            DisplayForm = false,
+                            DisplayList = true,
+                            Editable = false,
+                            InlineEdit = false,
+                            LabelEn = "Process Status",
+                            LabelTr = "Onay Durumu",
+                            Order = (short)(module.Fields.Count + 3),
+                            PicklistId = picklistId,
+                            PicklistSortorder = SortOrder.Order,
+                            Section = section,
+                            SectionColumn = 2,
+                            ShowLabel = true,
+                            Validation = new FieldValidation
+                            {
+                                Readonly = false,
+                                Required = false
+                            }
+                        };
+                        module.Fields.Add(processPicklist);
+                        moduleChanges.FieldsAdded.Add(processPicklist);
+
+                        var approverField = new Field
+                        {
+                            Name = "approver",
+                            DataType = DataType.Lookup,
+                            Deleted = false,
+                            DisplayDetail = false,
+                            DisplayForm = false,
+                            DisplayList = true,
+                            Editable = false,
+                            InlineEdit = false,
+                            LabelEn = "Approver",
+                            LabelTr = "Onaylayıcı",
+                            LookupType = "users",
+                            LookupSearchType = LookupSearchType.StartsWith,
+                            Primary = false,
+                            Section = section,
+                            SectionColumn = 2,
+                            Order = (short)(module.Fields.Count + 1),
+                            ShowLabel = true,
+                            Validation = new FieldValidation
+                            {
+                                Readonly = false,
+                                Required = false
+                            }
+                        };
+                        module.Fields.Add(approverField);
+                        moduleChanges.FieldsAdded.Add(approverField);
+
+                        var processDate = new Field
+                        {
+                            Name = "process_date",
+                            DataType = DataType.Date,
+                            Deleted = false,
+                            DisplayDetail = false,
+                            DisplayForm = false,
+                            DisplayList = true,
+                            Editable = false,
+                            InlineEdit = false,
+                            LabelEn = "Process Date",
+                            LabelTr = "Onay İşlem Tarihi",
+                            Order = (short)(module.Fields.Count + 2),
+                            Section = section,
+                            SectionColumn = 2,
+                            ShowLabel = true,
+                            Validation = new FieldValidation
+                            {
+                                Readonly = false,
+                                Required = false
+                            }
+                        };
+                        module.Fields.Add(processDate);
+                        moduleChanges.FieldsAdded.Add(processDate);
+
+                        var approverOrder = new Field
+                        {
+                            Name = "approver_order",
+                            DataType = DataType.Number,
+                            Deleted = false,
+                            DisplayDetail = false,
+                            DisplayForm = false,
+                            DisplayList = true,
+                            Editable = false,
+                            InlineEdit = false,
+                            LabelEn = "Approver Order",
+                            LabelTr = "Onaycı Sırası",
+                            Order = (short)(module.Fields.Count + 4),
+                            Section = section,
+                            SectionColumn = 2,
+                            ShowLabel = true,
+                            Validation = new FieldValidation
+                            {
+                                Readonly = false,
+                                Required = false
+                            }
+                        };
+                        module.Fields.Add(approverOrder);
+                        moduleChanges.FieldsAdded.Add(approverOrder);
+
+                        warehouse.DatabaseName = appUser.WarehouseDatabaseName;
+
+                        await moduleRepository.AlterTable(module, moduleChanges, tenantLanguage);
+                        await moduleRepository.Update(module);
                     }
 
                     return process;
@@ -756,23 +945,55 @@ namespace PrimeApps.App.Helpers
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
                     //request.UpdatedById = appUser.LocalId;
                     request.UpdatedAt = DateTime.Now;
+
+                    //recorddaki ilgili process fieldlerini güncellemek için field kontrolü
+                    int fieldCount = 0;
+                    bool hasProcessFields = false;
+                    foreach (var field in process.Module.Fields)
+                    {
+                        if (field.Name == "approver" || field.Name == "process_date" || field.Name == "approver_order" || field.Name == "process_status_list")
+                            fieldCount++;
+                    }
+
+                    if (fieldCount == 4)
+                        hasProcessFields = true;
 
                     var oldExpense = false;
 
                     var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
                     oldExpense = oldExpenseSetting != null;
 
+                    var record = new JObject();
+                    var lookupModuleNames = new List<string>();
+                    ICollection<Module> lookupModules = null;
+
+                    foreach (var field in process.Module.Fields)
+                    {
+                        if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
+                            lookupModuleNames.Add(field.LookupType);
+                    }
+
+                    if (lookupModuleNames.Count > 0)
+                        lookupModules = await _moduleRepository.GetByNamesBasic(lookupModuleNames);
+                    else
+                        lookupModules = new List<Module>();
+
+                    lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
+                    if (process.ApproverType == ProcessApproverType.DynamicApprover)
+                        await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
+
+                    record = _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
+
                     if ((process.Approvers.Count != request.ProcessStatusOrder && process.ApproverType == ProcessApproverType.StaticApprover) || (process.ApproverType == ProcessApproverType.DynamicApprover && request.ProcessStatusOrder == 1 && process.ApproverField.Split(',').Length > 1))
                     {
                         request.ProcessStatusOrder++;
 
                         var user = new TenantUser();
-                        var record = new JObject();
                         if (process.ApproverType == ProcessApproverType.StaticApprover)
                         {
                             var nextApproverOrder = request.ProcessStatusOrder;
@@ -781,28 +1002,23 @@ namespace PrimeApps.App.Helpers
                         }
                         else
                         {
-                            var lookupModuleNames = new List<string>();
-                            ICollection<Module> lookupModules = null;
-
-                            foreach (var field in process.Module.Fields)
-                            {
-                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
-                                    lookupModuleNames.Add(field.LookupType);
-                            }
-
-                            if (lookupModuleNames.Count > 0)
-                                lookupModules = await _moduleRepository.GetByNamesBasic(lookupModuleNames);
-                            else
-                                lookupModules = new List<Module>();
-
-                            lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                            if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
-
-                            record = _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
                             var approverMail = (string)record["custom_approver_2"];
                             user = await _userRepository.GetByEmail(approverMail);
+                        }
 
+                        if (hasProcessFields)
+                        {
+                            using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                            {
+                                var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
+                                var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
+                                record["approver"] = user.Id;
+                                record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
+                                record["process_date"] = DateTime.Now;
+                                record["approver_order"] = request.ProcessStatusOrder;
+
+                                await _recordRepository.Update(record, process.Module, isUtc: false);
+                            }
                         }
 
                         var emailData = new Dictionary<string, string>();
@@ -902,37 +1118,12 @@ namespace PrimeApps.App.Helpers
 
                         if (request.OperationType == OperationType.delete)
                         {
-                            var _record = _recordRepository.GetById(process.Module, request.RecordId, !appUser.HasAdminProfile);
-                            await _recordRepository.Delete(_record, process.Module);
+                            record = _recordRepository.GetById(process.Module, request.RecordId, !appUser.HasAdminProfile);
+                            await _recordRepository.Delete(record, process.Module);
                         }
 
-
-                        var record = new JObject();
                         int processOrder = request.ProcessStatusOrder + 1;
-                        if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                        {
-                            var lookupModuleNames = new List<string>();
-                            ICollection<Module> lookupModules = null;
 
-                            foreach (var field in process.Module.Fields)
-                            {
-                                if (!field.Deleted && field.DataType == DataType.Lookup && field.LookupType != "users" && field.LookupType != "profiles" && field.LookupType != "roles" && field.LookupType != "relation" && !lookupModuleNames.Contains(field.LookupType))
-                                    lookupModuleNames.Add(field.LookupType);
-                            }
-
-
-                            if (lookupModuleNames.Count > 0)
-                                lookupModules = await _moduleRepository.GetByNamesBasic(lookupModuleNames);
-                            else
-                                lookupModules = new List<Module>();
-
-                            lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
-                            if (process.ApproverType == ProcessApproverType.DynamicApprover)
-                                await _calculationHelper.Calculate(request.RecordId, process.Module, appUser, warehouse, OperationType.insert, BeforeCreateUpdate, AfterUpdate, GetAllFieldsForFindRequest);
-
-                            record = _recordRepository.GetById(process.Module, request.RecordId, false, lookupModules);
-
-                        }
                         string beforeCc = "";
                         var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
 
@@ -1124,6 +1315,20 @@ namespace PrimeApps.App.Helpers
                             notification.AddToQueue(appUser.TenantId, process.Module.Id, request.RecordId, appUser: appUser);
                         }
                     }
+
+                    if (hasProcessFields)
+                    {
+                        using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                        {
+                            var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
+                            var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
+                            record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "approved").LabelTr : processStatus.Items.Single(x => x.Value == "approved").LabelEn;
+                            record["process_date"] = DateTime.Now;
+                            record["approver_order"] = request.ProcessStatusOrder;
+
+                            await _recordRepository.Update(record, process.Module, isUtc: false);
+                        }
+                    }
                 }
             }
         }
@@ -1148,10 +1353,35 @@ namespace PrimeApps.App.Helpers
                     var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
                     oldExpense = oldExpenseSetting != null;
 
-                    _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
+                    _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
                     var record = _recordRepository.GetById(process.Module, request.RecordId);
+
+                    //recorddaki ilgili process fieldlerini güncellemek için field kontrolü
+                    int fieldCount = 0;
+                    bool hasProcessFields = false;
+                    foreach (var field in process.Module.Fields)
+                    {
+                        if (field.Name == "approver" || field.Name == "process_date" || field.Name == "approver_order" || field.Name == "process_status_list")
+                            fieldCount++;
+                    }
+
+                    if (fieldCount == 4)
+                        hasProcessFields = true;
+
+                    if (hasProcessFields)
+                    {
+                        using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                        {
+                            var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
+                            var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
+                            record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "rejected").LabelTr : processStatus.Items.Single(x => x.Value == "rejected").LabelEn;
+                            record["process_date"] = DateTime.Now;
+
+                            await _recordRepository.Update(record, process.Module, isUtc: false);
+                        }
+                    }
 
                     string beforeCc = "";
                     var recordMail = !record["custom_approver"].IsNullOrEmpty() ? record["custom_approver"].ToString() : "";
@@ -1288,7 +1518,7 @@ namespace PrimeApps.App.Helpers
                     var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
                     oldExpense = oldExpenseSetting != null;
 
-                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
+                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
                     var process = await _processRepository.GetById(request.ProcessId);
 
                     request.ProcessStatusOrder++;
@@ -1328,6 +1558,34 @@ namespace PrimeApps.App.Helpers
                         var approverMail = (string)record["custom_approver"];
                         user = await _userRepository.GetByEmail(approverMail);
 
+                    }
+
+                    //recorddaki ilgili process fieldlerini güncellemek için field kontrolü
+                    int fieldCount = 0;
+                    bool hasProcessFields = false;
+                    foreach (var field in process.Module.Fields)
+                    {
+                        if (field.Name == "approver" || field.Name == "process_date" || field.Name == "approver_order" || field.Name == "process_status_list")
+                            fieldCount++;
+                    }
+
+                    if (fieldCount == 4)
+                        hasProcessFields = true;
+
+                    if (hasProcessFields)
+                    {
+                        using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                        {
+                            var processStatusPicklist = process.Module.Fields.Single(x => x.Name == "process_status_list");
+                            var processStatus = await picklistRepository.GetById(processStatusPicklist.PicklistId.Value);
+                            record["process_status_list"] = appUser.TenantLanguage == "tr" ? processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelTr : processStatus.Items.Single(x => x.Value == "waiting_for_approval").LabelEn;
+                            record["process_date"] = DateTime.Now;
+                            record["approver"] = user.Id;
+                            record["approver_order"] = 1;
+                            record["id"] = request.RecordId;
+
+                            await _recordRepository.Update(record, process.Module, isUtc: false);
+                        }
                     }
 
                     var emailData = new Dictionary<string, string>();

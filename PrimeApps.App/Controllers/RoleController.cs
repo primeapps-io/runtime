@@ -58,6 +58,9 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task Create([FromBody]RoleDTO role)
         {
+            //Set Warehouse
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+
             await _roleRepository.CreateAsync(new Role()
             {
                 LabelEn = role.LabelEn,
@@ -68,7 +71,7 @@ namespace PrimeApps.App.Controllers
                 OwnersList = role.Owners,
                 ReportsToId = role.ReportsTo,
                 ShareData = role.ShareData
-            });
+            }, AppUser.TenantLanguage);
         }
 
         [Route("update"), HttpPut]
@@ -82,7 +85,10 @@ namespace PrimeApps.App.Controllers
             Role roleToUpdate = await _roleRepository.GetByIdAsyncWithUsers(role.Id);
             if (roleToUpdate == null) return;
 
-            await _roleRepository.UpdateAsync(roleToUpdate, role);
+            await _roleRepository.UpdateAsync(roleToUpdate, role, AppUser.TenantLanguage);
+
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
             if (roleChange)
                 BackgroundJob.Enqueue(() => _roleHelper.UpdateUserRoleBulkAsync(_warehouse, AppUser));

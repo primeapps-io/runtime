@@ -1,0 +1,33 @@
+<div class="sub-menu">
+    <ul class="nav nav-tabs">
+        <li><a href="#/app/setup/users">{{'Setup.Nav.Tabs.Users' | translate}}</a></li>
+        <li><a href="#/app/setup/profiles">{{'Setup.Nav.Tabs.Profiles' | translate}}</a></li>
+        <li class="active"><a href="#/app/setup/roles">{{'Setup.Nav.Tabs.Roles' | translate}}</a></li>
+        <li><a href="#/app/setup/usergroups">{{'Setup.Nav.Tabs.UserGroups' | translate}}</a></li>
+        <li><a href="#/app/setup/usercustomshares">{{'Setup.UserCustomShares.Title' | translate}}</a></li>
+    </ul>
+</div>
+<div class="panel panel-default setup-panel roles">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading">{{'Setup.Roles.Title' | translate}}</h5>
+                <div class="subpanel-body" style="min-height: 300px">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <div ui-tree id="tree-root">
+                                <ol ui-tree-nodes ng-model="tree">
+                                    <li ng-repeat="node in tree" ui-tree-node ng-include="'view/setup/roles/roleTreeTemplate.html'"></li>
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <a href="#/app/setup/role" class="btn btn-custom btn-sm btn-w-lg pull-right"><i class="fa fa-plus pull-left"></i> {{'Setup.Roles.NewRole' | translate}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

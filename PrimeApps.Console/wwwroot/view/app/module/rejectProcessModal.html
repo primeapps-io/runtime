@@ -1,0 +1,18 @@
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{'Setup.Workflow.ApprovelProcess.RejectProcess' | translate}}</h4>
+                </div>
+                <div class="modal-body">
+                    <textarea name="message" id="message" class="form-control" rows="5" placeholder="{{'Setup.Workflow.ApprovelProcess.Message' | translate}}" maxlength="4000" required ng-model="message"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-click="$hide()">{{'Setup.Workflow.ApprovelProcess.Cancel' | translate}}</button>
+                    <button type="button" class="btn btn-w-lg btn-danger" ladda="rejecting" ng-click="rejectProcess(message)" ng-disabled="!message"><i class="fa fa-exclamation-circle pull-left"></i> {{'Setup.Workflow.ApprovelProcess.Reject' | translate}}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

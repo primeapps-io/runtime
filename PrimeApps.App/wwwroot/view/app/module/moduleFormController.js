@@ -4,21 +4,43 @@ angular.module('primeapps')
 
     .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components', '$cookies',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components, $cookies) {
-            $scope.type = $stateParams.type;
-            $scope.subtype = $stateParams.stype;
-            $scope.id = $location.search().id;
-            $scope.parentType = $location.search().ptype;
-            $scope.parentId = $location.search().pid;
-            $scope.returnTab = $location.search().rtab;
-            $scope.previousParentType = $location.search().pptype;
-            $scope.previousParentId = $location.search().ppid;
-            $scope.previousReturnTab = $location.search().prtab;
-            $scope.back = $location.search().back;
-            $scope.many = $location.search().many;
-            $scope.clone = $location.search().clone;
-            $scope.revise = $location.search().revise;
-            $scope.paramField = $location.search().field;
-            $scope.paramValue = $location.search().value;
+
+            if (!$scope.$parent.$parent.formType) {
+                $scope.type = $stateParams.type;
+                $scope.subtype = $stateParams.stype;
+                $scope.id = $location.search().id;
+                $scope.parentType = $location.search().ptype;
+                $scope.parentId = $location.search().pid;
+                $scope.returnTab = $location.search().rtab;
+                $scope.previousParentType = $location.search().pptype;
+                $scope.previousParentId = $location.search().ppid;
+                $scope.previousReturnTab = $location.search().prtab;
+                $scope.back = $location.search().back;
+                $scope.many = $location.search().many;
+                $scope.clone = $location.search().clone;
+                $scope.revise = $location.search().revise;
+                $scope.paramField = $location.search().field;
+                $scope.paramValue = $location.search().value;
+            } else {
+                var parent = $scope.$parent.$parent;
+                $scope.formType = parent.formType;
+                $scope.type = parent.type;
+                $scope.id = parent.id;
+                $scope.subtype = parent.stype;
+                $scope.parentType = parent.ptype;
+                $scope.parentId = parent.pid;
+                $scope.returnTab = parent.rtab;
+                $scope.previousParentType = parent.pptype;
+                $scope.previousParentId = parent.ppid;
+                $scope.previousReturnTab = parent.prtab;
+                $scope.back = parent.back;
+                $scope.many = parent.many;
+                $scope.clone = parent.clone;
+                $scope.revise = parent.revise;
+                $scope.paramField = parent.field;
+                $scope.paramValue = parent.value;
+
+            }
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
             $scope.hasDocumentsPermission = helper.hasDocumentsPermission;
@@ -63,7 +85,7 @@ angular.module('primeapps')
 
             if (!$scope.id && !$scope.hasPermission($scope.type, $scope.operations.write)) {
                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                $state.go('app.crm.dashboard');
+                $state.go('app.dashboard');
                 return;
             }
 
@@ -276,7 +298,7 @@ angular.module('primeapps')
                 if (!$scope.hasProcessEditPermission) {
                     if ($scope.id && (($scope.record.freeze && !$rootScope.user.profile.HasAdminRights) || ($scope.record.process_id && $scope.record.process_status != 3 && !$rootScope.user.profile.HasAdminRights))) {
                         ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                        $state.go('app.crm.dashboard');
+                        $state.go('app.dashboard');
                     }
                 }
 
@@ -292,9 +314,11 @@ angular.module('primeapps')
                     var setFieldDependencies = function () {
                         angular.forEach($scope.module.fields, function (field) {
                             ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule, $scope);
-                            if (field.default_value && field.data_type == 'picklist') {
-                                $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
-                                $scope.fieldValueChange(field);
+                            if ($scope.module.name != 'activities') {
+                                if (field.default_value && field.data_type == 'picklist') {
+                                    $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
+                                    $scope.fieldValueChange(field);
+                                }
                             }
                         });
                     };
@@ -460,7 +484,7 @@ angular.module('primeapps')
                         .then(function onSuccess(recordData) {
                             if (Object.keys(recordData.data).length === 0) {
                                 ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'warning' });
-                                $state.go('app.crm.dashboard');
+                                $state.go('app.dashboard');
                                 return;
                             }
 
@@ -944,7 +968,7 @@ angular.module('primeapps')
                                 UniqueFileName: $scope.image[field.name].UniqueName,
                                 MimeType: $scope.image[field.name].Type,
                                 ChunkSize: 1,
-                                instanceId: $rootScope.workgroup.instanceID
+                                instanceId: $rootScope.workgroup.tenant_id
                             });
                         }
 
@@ -1382,7 +1406,7 @@ angular.module('primeapps')
                             }
                         }
                     }
-                    if ($scope.type === 'sales_invoices') {
+                    else if ($scope.type === 'sales_invoices') {
                         var salesInvoiceProducts = [];
                         var no = 1;
                         var salesInvoiceProductsOrders = $filter('orderBy')($scope.salesInvoiceProducts, 'order');
@@ -1397,6 +1421,7 @@ angular.module('primeapps')
                             delete salesInvoiceProduct.vat;
                             delete salesInvoiceProduct.currencyConvertList;
                             delete salesInvoiceProduct.defaultCurrency;
+
                             if ($scope.clone) {
                                 delete (salesInvoiceProduct.id);
                                 delete (salesInvoiceProduct._rev);
@@ -1461,8 +1486,10 @@ angular.module('primeapps')
                                 }
                             }
                         }
+
+
                     }
-                    if ($scope.type === 'purchase_invoices') {
+                    else if ($scope.type === 'purchase_invoices') {
                         var purchaseInvoiceProducts = [];
                         var no = 1;
                         var purchaseInvoiceProductsOrders = $filter('orderBy')($scope.purchaseInvoiceProducts, 'order');
@@ -1785,7 +1812,7 @@ angular.module('primeapps')
                             $cache.remove('calendar_events');
 
                         if ($scope.saveAndNew) {
-                            if ($scope.type === 'quotes') {
+                            if ($scope.type === 'quotes' || $scope.type === 'sales_invoices') {
                                 ModuleService.getDailyRates()
                                     .then(function (response) {
                                         if (!response.data)
@@ -1800,14 +1827,26 @@ angular.module('primeapps')
                                         $scope.record.exchange_rate_usd_eur = (1 / dailyRates.usd) * dailyRates.eur;
                                         $scope.record.exchange_rate_eur_try = 1 / dailyRates.eur;
                                         $scope.record.exchange_rate_eur_usd = (1 / dailyRates.eur) * dailyRates.usd;
-                                    })
+                                    });
+
+                                if ($scope.type === 'sales_invoices') {
+                                    $scope.salesInvoiceProducts.quantity = null;
+                                    $scope.salesInvoiceProducts.grand_total = "";
+                                    $scope.salesInvoiceProducts.product = {};
+                                    $scope.salesInvoiceProducts = [];
+                                    $scope.vatList = [];
+                                    $scope.record.grand_total = 0;
+
+
+                                }
                             }
 
                             if ($scope.type == 'activities') {
                                 $scope.submitting = false;
                                 $scope.record['activity_type'] = $filter('filter')(activityTypes, { system_code: $scope.subtype }, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['activity_type'].label[$rootScope.language] });
-                            } else if ($scope.type == 'current_accounts') {
+                            }
+                            else if ($scope.type == 'current_accounts') {
                                 $scope.record['transaction_type'] = $filter('filter')(transactionTypes, { system_code: $scope.subtype }, true)[0];
                                 $scope.subtypeNameLang = $filter('translate')('Module.New', { title: $scope.record['transaction_type'].label[$rootScope.language] });
                             }
@@ -1876,7 +1915,7 @@ angular.module('primeapps')
                 ModuleService.customActions($scope.module, $scope.record, $scope.moduleForm, $scope.picklistsModule, $scope);
                 components.run('FieldChange', 'Script', $scope, $scope.record, field);
 
-                if ($scope.moduleForm[field.name].$error)
+                if ($scope.moduleForm[field.name] && $scope.moduleForm[field.name].$error)
                     if ($scope.moduleForm[field.name].$error.unique)
                         $scope.moduleForm[field.name].$setValidity('unique', true);
 
@@ -2383,7 +2422,7 @@ angular.module('primeapps')
                 data["recordId"] = $scope.record.id;
                 data["fieldName"] = field.name;
                 data["fileNameExt"] = helper.getFileExtension($scope.record[field.name]);
-                data["instanceId"] = $rootScope.workgroup.instanceID;
+                data["instanceId"] = $rootScope.workgroup.tenant_id;
 
                 $scope.record[field.name] = null;
                 if (field.data_type == 'document') {
@@ -2429,7 +2468,7 @@ angular.module('primeapps')
                     item.formData.push({ filename: $scope.record[field.name] });
                     item.formData.push({ recordid: $scope.record.id });
                     item.formData.push({ modulename: $scope.module.name })
-                    item.formData.push({ container: $rootScope.workgroup.instanceID })
+                    item.formData.push({ container: $rootScope.workgroup.tenant_id })
                     item.formData.push({ documentsearch: field.document_search })
 
                 };

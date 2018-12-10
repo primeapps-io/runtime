@@ -25,11 +25,11 @@ namespace PrimeApps.App
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();
 
-            // Register Repositories
+            //Register all repositories
             foreach (var assembly in new[] { "PrimeApps.Model" })
             {
-                var loadedAss = Assembly.Load(assembly);
-                var allServices = loadedAss.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
+                var assemblies = Assembly.Load(assembly);
+                var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
 
                 foreach (var type in allServices)
                 {

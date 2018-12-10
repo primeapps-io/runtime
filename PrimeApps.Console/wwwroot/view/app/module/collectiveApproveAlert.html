@@ -1,0 +1,21 @@
+﻿<div class="modal message-modal" tabindex="-1" role="dialog" ng-controller="ModuleFormController">
+	<div class="modal-dialog">
+		<div class="modal-content" style="width:380px;margin:auto;">
+			<div>
+				<div class="modal-header clearfix" style="background-color:white;border: none">
+					<button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true" ng-click="$hide()"><i class="fa fa-close"></i></button>
+				</div>
+				<div class="modal-body" style="height:100%">
+					<div class="row">
+						<label style="margin-left:20px;">{{'Module.SelectedRecordsCount' | translate}} {{selected}}</label>
+					</div>
+					<br />
+					<div class="pull-right">
+						<button type="button" class="btn btn-custom" ng-click="$hide()">{{'Common.Cancel' | translate}}</button>
+						<button type="button" class="btn btn-danger" ng-click="collectiveApproval();$hide()">{{'Setup.Workflow.ApprovelProcess.Approve' | translate}}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
