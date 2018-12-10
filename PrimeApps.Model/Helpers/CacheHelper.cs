@@ -6,13 +6,20 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PrimeApps.Model.Repositories
+namespace PrimeApps.Model.Helpers
 {
-    class CacheRepository : ICacheRepository
+    public interface ICacheHelper
+    {
+        Task<T> Get<T>(string key);
+        Task<bool> Set(string key, object data);
+        Task<bool> Remove(string key);
+    }
+
+    public class CacheHelper : ICacheHelper
     {
         private IDistributedCache _cacheService;
 
-        public CacheRepository(IDistributedCache cacheService)
+        public CacheHelper(IDistributedCache cacheService)
         {
             _cacheService = cacheService;
         }
@@ -59,7 +66,6 @@ namespace PrimeApps.Model.Repositories
 
             return true;
         }
-
-
+        
     }
 }

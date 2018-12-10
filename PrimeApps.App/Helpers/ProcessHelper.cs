@@ -67,6 +67,8 @@ namespace PrimeApps.App.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                 using (var _processRequestRepository = new ProcessRequestRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
@@ -377,7 +379,7 @@ namespace PrimeApps.App.Helpers
                         var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                         domain = string.Format(domain, subdomain);
 
-                        using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                        using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                         {
                             var app = await _appRepository.Get(appUser.AppId);
                             if (app != null)
@@ -533,6 +535,8 @@ namespace PrimeApps.App.Helpers
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
@@ -744,6 +748,8 @@ namespace PrimeApps.App.Helpers
 
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
@@ -824,7 +830,7 @@ namespace PrimeApps.App.Helpers
                         var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                         domain = string.Format(domain, subdomain);
 
-                        using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                        using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                         {
                             var app = await _appRepository.Get(appUser.AppId);
                             if (app != null)
@@ -979,7 +985,7 @@ namespace PrimeApps.App.Helpers
                             var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                             domain = string.Format(domain, subdomain);
 
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                             {
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
@@ -1074,7 +1080,7 @@ namespace PrimeApps.App.Helpers
                             var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                             domain = string.Format(domain, subdomain);
 
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                             {
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)
@@ -1130,6 +1136,8 @@ namespace PrimeApps.App.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
@@ -1197,7 +1205,7 @@ namespace PrimeApps.App.Helpers
                     var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                     domain = string.Format(domain, subdomain);
 
-                    using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                    using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                     {
                         var app = await _appRepository.Get(appUser.AppId);
                         if (app != null)
@@ -1266,6 +1274,8 @@ namespace PrimeApps.App.Helpers
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                 using (var _processRepository = new ProcessRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
@@ -1345,7 +1355,7 @@ namespace PrimeApps.App.Helpers
                     var subdomain = _configuration.GetSection("AppSettings")["TestMode"] == "true" ? "test" : appDomain;
                     domain = string.Format(domain, subdomain);
 
-                    using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                    using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                     {
                         var app = await _appRepository.Get(appUser.AppId);
                         if (app != null)

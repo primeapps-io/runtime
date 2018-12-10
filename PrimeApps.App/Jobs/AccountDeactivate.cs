@@ -8,6 +8,7 @@ using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PrimeApps.Model.Helpers;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace PrimeApps.App.Jobs
 {
@@ -28,8 +29,10 @@ namespace PrimeApps.App.Jobs
             {
                 var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-
-                using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+                var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+                
+                using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
                     var tenants = await tenantRepository.GetExpiredTenants();

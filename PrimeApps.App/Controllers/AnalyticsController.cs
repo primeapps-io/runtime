@@ -28,17 +28,19 @@ namespace PrimeApps.App.Controllers
         private IUserRepository _userRepository;
         private IPlatformWarehouseRepository _warehousePlatformRepository;
         private IConfiguration _configuration;
-	    private IDocumentHelper _documentHelper;
-	    private IPowerBiHelper _powerBiHelper;
+        private IDocumentHelper _documentHelper;
+        private IPowerBiHelper _powerBiHelper;
+        private IAnalyticsHelper _analyticsHelper;
 
-        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration, IDocumentHelper documentHelper, IPowerBiHelper powerBiHelper)
+        public AnalyticsController(Warehouse warehouseHelper, IAnalyticRepository analyticRepository, IUserRepository userRepository, IPlatformWarehouseRepository warehousePlatformRepository, IConfiguration configuration, IDocumentHelper documentHelper, IPowerBiHelper powerBiHelper,IAnalyticsHelper analyticsHelper)
         {
             _warehouseHelper = warehouseHelper;
             _analyticRepository = analyticRepository;
             _userRepository = userRepository;
             _warehousePlatformRepository = warehousePlatformRepository;
-	        _documentHelper = documentHelper;
-			_powerBiHelper = powerBiHelper;
+            _documentHelper = documentHelper;
+            _powerBiHelper = powerBiHelper;
+            _analyticsHelper = analyticsHelper;
             _configuration = configuration;
         }
 
@@ -89,7 +91,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_warehouse_info"), HttpGet]
         public async Task<IActionResult> GetWarehouseInfo()
         {
-            var warehouseInfo = await AnalyticsHelper.GetWarehouse(AppUser.TenantId, _configuration);
+            var warehouseInfo = await _analyticsHelper.GetWarehouse(AppUser.TenantId, _configuration);
 
             if (warehouseInfo == null)
                 return NotFound();
@@ -167,9 +169,9 @@ namespace PrimeApps.App.Controllers
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody]AnalyticBindingModel analytic)
         {
-			if (!ModelState.IsValid)
-				return BadRequest();
-            var analyticEntity = await AnalyticsHelper.CreateEntity(analytic, _userRepository);
+            if (!ModelState.IsValid)
+                return BadRequest();
+            var analyticEntity = await _analyticsHelper.CreateEntity(analytic, _userRepository);
             var result = await _analyticRepository.Create(analyticEntity);
 
             if (result < 1)
@@ -247,7 +249,7 @@ namespace PrimeApps.App.Controllers
                 }
             }
 
-            await AnalyticsHelper.UpdateEntity(analytic, analyticEntity, _userRepository);
+            await _analyticsHelper.UpdateEntity(analytic, analyticEntity, _userRepository);
             await _analyticRepository.Update(analyticEntity);
 
             return Ok(analyticEntity);

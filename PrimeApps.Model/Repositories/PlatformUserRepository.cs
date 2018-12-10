@@ -2,23 +2,20 @@
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.User;
-using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
     public class PlatformUserRepository : RepositoryBasePlatform, IPlatformUserRepository
     {
-        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper)
         {
         }
 
@@ -45,6 +42,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<PlatformUser> GetWithTenant(int platformUserId, int tenantId)
         {
+
             var user = await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser).ThenInclude(y => (y as UserTenant).Tenant).ThenInclude(z => z.Setting)
@@ -82,13 +80,44 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<PlatformUser> GetWithTenants(string email)
         {
-            return await DbContext.Users
+            var platformKey = "platform_user_" + email;
+            var tenantKey = "tenant_";
+
+            var cachedPlatformUser = await CacheHelper.Get<PlatformUser>(platformKey);
+
+            if (cachedPlatformUser != null)
+            {
+                tenantKey += cachedPlatformUser.Id;
+                var cachedTenant = await CacheHelper.Get<Tenant>(tenantKey);
+
+                if (cachedTenant != null)
+                {
+                    var tenantsAsUserCached = new List<UserTenant>();
+                    tenantsAsUserCached.Add(new UserTenant { Tenant = cachedTenant, TenantId = cachedTenant.Id });
+                    cachedPlatformUser.TenantsAsUser = tenantsAsUserCached;
+
+                    return cachedPlatformUser;
+                }
+            }
+
+            var user = await DbContext.Users
                 .Include(x => x.Setting)
                 .Include(x => x.TenantsAsUser)
                     .ThenInclude(y => (y as UserTenant).Tenant)
                 .Include(x => x.TenantsAsOwner)
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
+
+            var tenantForCache = user.TenantsAsUser.First().Tenant;
+            await CacheHelper.Set(tenantKey + user.Id, tenantForCache);
+
+            var tempUserForCache = user;
+            tempUserForCache.TenantsAsOwner = null;
+            tempUserForCache.TenantsAsUser = null;
+
+            await CacheHelper.Set(platformKey, tempUserForCache);
+
+            return user;
         }
 
         public async Task<Tenant> GetTenantWithOwner(int tenantId)

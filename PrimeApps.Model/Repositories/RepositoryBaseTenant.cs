@@ -5,6 +5,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -13,17 +14,20 @@ namespace PrimeApps.Model.Repositories
         private TenantDBContext _dbContext;
         private IConfiguration _configuration;
 
+
         public int? TenantId { get; set; }
 
         public int? UserId { get; set; }
 
         public CurrentUser CurrentUser { get; set; }
 
+       
+
         public RepositoryBaseTenant(TenantDBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
             _configuration = configuration;
-
+           
             if (dbContext.TenantId.HasValue && !TenantId.HasValue)
             {
                 TenantId = dbContext.TenantId;

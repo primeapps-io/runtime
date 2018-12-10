@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.App.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Jobs
 {
@@ -27,8 +28,10 @@ namespace PrimeApps.App.Jobs
             {
                 IList<int> expiredTenants;
                 var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (var tenantRepository = new TenantRepository(platformDBContext, _configuration))
+
+                using (var tenantRepository = new TenantRepository(platformDBContext, _configuration, cacheHelper))
                 {
                     expiredTenants = await tenantRepository.GetExpiredTenantIdsToDelete();
                 }

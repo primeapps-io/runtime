@@ -19,6 +19,7 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 
@@ -30,12 +31,14 @@ namespace PrimeApps.App.Controllers
         private readonly IStringLocalizer<AuthController> _localizer;
         private IPlatformRepository _platformRepository;
         private IConfiguration _configuration;
+        private ICacheHelper _cacheHelper;
 
-        public AuthController(IStringLocalizer<AuthController> localizer, IPlatformRepository platformRepository, IConfiguration configuration)
+        public AuthController(IStringLocalizer<AuthController> localizer, IPlatformRepository platformRepository, IConfiguration configuration, ICacheHelper cacheHelper)
         {
             _localizer = localizer;
             _platformRepository = platformRepository;
             _configuration = configuration;
+            _cacheHelper = cacheHelper;
         }
 
         /*public async Task<ActionResult> Authorize()
@@ -89,7 +92,7 @@ namespace PrimeApps.App.Controllers
             //SignInStatus result;
             var result = false;
             using (var platformDBContext = new PlatformDBContext(_configuration))
-            using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
+            using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration, _cacheHelper))
             {
                 user = await platformUserRepository.Get(model.Email);
                 appId = GetAppId(url);
@@ -240,7 +243,7 @@ namespace PrimeApps.App.Controllers
                 if (response.StatusCode == HttpStatusCode.BadRequest)
                 {
                     using (var platformDBContext = new PlatformDBContext(_configuration))
-                    using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
+                    using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration, _cacheHelper))
                     {
                         var user = await platformUserRepository.Get(registerBindingModel.Email);
                         if (user != null)
