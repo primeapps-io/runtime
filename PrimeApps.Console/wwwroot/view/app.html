@@ -5,12 +5,16 @@
                 <a class="navbar-brand" ng-href="{{app === 'crm' ? '#/app/dashboard' : '#/app/analytics/report'}}">
                     <img ng-src="{{workgroup.logo_url ? workgroup.logo_url : 'images/logo-header-'+ appLogo +'.jpg'}}"
                          border="0" class="logo" ng-class="{'ofisim-logo':!workgroup.logo_url}">
+
+
                 </a>
                 <button type="button" class="navbar-toggle ng-scope" ng-click="toggleFullLeftMenu()">
                     <span class="fa fa-bars fa-2x"></span>
                 </button>
+
             </div>
             <ul class="nav navbar-nav navbar-right">
+
                 <!--<li>-->
                 <!--<form class="navbar-form navbar-left search-form" data-toggle="dropdown">-->
                 <!--<div class="form-group">-->
@@ -39,59 +43,25 @@
                     </a>
                 </li>
 
-                <li class="sip-phone-container" ng-if="sipAccessRights && sipUser">
-                    <a id="sipPhoneBtn" ng-click="showSipPhone()"
-                       href class="nav-link">
-                        <i ng-if="!sipUser.events.IsRegistered" class="fa fa-phone-square fa-2x offlineColor"></i>
-                        <i ng-if="sipUser.events.IsRegistered"
-                           ng-class="sipPhone[app].$isShown ? 'sip-registered-open fa-times-circle' : 'sip-registered fa-phone-square' "
-                           class="fa  fa-2x "></i>
-                    </a>
-                    <div ng-hide="sipPhone[app].$isShown" ng-if="sipUser.events.IsRegistered && sipUser.lineInfo.State === 'Active'" class="sip-phone-active-timer box-shadow">
-                        {{sipUser.lineInfo.TalkingTimer | formatToMinuteAndSecond}}
-                    </div>
-                    <!--<div ng-hide="sipPhone[app].$isShown" ng-if="sipUser.events.IsRegistered && sipUser.lineInfo.State != 'Active' && sipUser.lineInfo.State != 'Ready'" class="sip-phone-state-info box-shadow">-->
-                    <!--{{sipUser.lineInfo.PhoneStatus}}-->
-                    <!--</div>-->
-                    <video style="display: none" autoplay>Video Disabled or Unavailable</video>
-                    <audio id="IncomingSound" style="display: none" preload="metadata">
-                        <source src="http://file.ofisim.com/static/ring.wav"
-                                type="audio/mpeg">
-                    </audio>
-                    <audio id="DialSound" style="display: none" preload="metadata">
-                        <source src="http://file.ofisim.com/static/call.mp3" type="audio/mpeg">
-                    </audio>
-                    <audio id="BusySound" style="display: none" preload="metadata">
-                        <source src="http://file.ofisim.com/static/busy.mp3" type="audio/mpeg">
-                    </audio>
+                <li class="rigth-oval-toolbar-item">
+                    <i class="fas fa-user"></i>
                 </li>
-                <li ng-hide="preview || multiTenant.length <= 1" class="app-launcher-container">
-                    <a href class="launcher-link" data-template-url="view/common/app-launcher.html" data-auto-close="1" data-placement="bottom" bs-popover><i class="fa fa-th fa-2x"></i></a>
+                <li class="rigth-oval-toolbar-item">
+                    <i class="fas fa-plus"></i>
                 </li>
-                <li>
-                    <span class="nav-link nav-profile">
-                        <img src="images/user-image.png" ng-src="{{user.picture ? user.picture : 'images/user-image.png'}}" class="img-circle" />
-                        <span>{{user.first_name}} {{user.last_name}}</span>
-                    </span>
-                </li>
-                <li ng-show="!preview">
-                    <a href class="nav-link ng-scope"
-                       ng-click="gotoSetup(app === 'crm' ? '#/app/setup/settings' : (user.profile.has_admin_rights ? '#/app/reports' : '#/app/analytics/report'))"
-                       data-title="{{'Layout.SettingsTooltip' | translate}}" data-trigger="hover"
-                       data-placement="bottom" bs-tooltip=""><span class="flaticon-cogwheel22"></span></a>
-                </li>
-                <li>
-                    <a href ng-click="logout()" class="nav-link" data-title="{{'Layout.LogoutTooltip' | translate}}" data-trigger="hover" data-placement="bottom" bs-tooltip><span class="flaticon-logout10"></span></a>
-                </li>
+
             </ul>
         </nav>
     </div>
     <div id="sidebar-wrapper">
         <ul class="sidebar-nav">
             <li class="sidebar-brand">
-                <a class="sidebar-brand-logo" href ng-click="toggleLeftMenu()">
-                    <i class="fa fa-bars fa-2x"></i>
-                </a>
+                <a href="#/app">
+                <img src="../images/primeapps/logo.png"
+                     srcset="../images/primeapps/logo@2x.png 2x,
+                              ../images/primeapps/logo@2x.png/logo@3x.png 3x"
+                     class="logo">
+                </a>6
             </li>
             <div ng-show="customMenu" class="panel-group collapse-menu" ng-model="multiplePanels.activePanels" bs-collapse>
                 <div class="panel-group">
