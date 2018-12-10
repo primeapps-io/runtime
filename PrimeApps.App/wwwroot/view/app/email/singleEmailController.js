@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('primeapps')
-    .controller('SingleEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$http', '$popover', 'ModuleService', 'TemplateService',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $http, $popover, ModuleService, TemplateService) {
+    .controller('SingleEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$http', '$popover', 'ModuleService', 'TemplateService', '$cookies',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $http, $popover, ModuleService, TemplateService, $cookies) {
             $scope.loadingModal = true;
             $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
 
@@ -268,7 +268,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -304,7 +305,7 @@ angular.module('primeapps')
                     fileUploaded: function (uploader, file, response) {
                         tinymce.activeEditor.windowManager.close();
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.PublicURL, { alt: file.name });
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                     },
                     error: function (file, error) {
@@ -331,7 +332,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -365,7 +367,7 @@ angular.module('primeapps')
                     },
                     fileUploaded: function (uploader, file, response) {
                         var resp = JSON.parse(response.response);
-                        uploadSuccessCallback(resp.PublicURL, { alt: file.name });
+                        uploadSuccessCallback(resp.public_url, { alt: file.name });
                         uploadSuccessCallback = null;
                         tinymce.activeEditor.windowManager.close();
                     },
