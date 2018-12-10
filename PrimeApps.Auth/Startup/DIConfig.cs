@@ -12,6 +12,7 @@ using PrimeApps.Auth.Models;
 using PrimeApps.Auth.Providers;
 using PrimeApps.Auth.Services;
 using PrimeApps.Model.Context;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 
@@ -53,6 +54,7 @@ namespace PrimeApps.Auth
             }
 
             services.AddHostedService<QueuedHostedService>();
+            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddSingleton<IProfileService, CustomProfileService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
