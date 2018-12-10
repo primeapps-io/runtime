@@ -66,7 +66,7 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "templets",
+                name: "templet_categories",
                 schema: "public",
                 columns: table => new
                 {
@@ -77,23 +77,22 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     created_at = table.Column<DateTime>(nullable: false),
                     updated_at = table.Column<DateTime>(nullable: true),
                     deleted = table.Column<bool>(nullable: false),
-                    name = table.Column<string>(maxLength: 50, nullable: true),
                     label = table.Column<string>(maxLength: 400, nullable: true),
                     description = table.Column<string>(maxLength: 4000, nullable: true),
-                    logo = table.Column<string>(nullable: true)
+                    image = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_templets", x => x.id);
+                    table.PrimaryKey("PK_templet_categories", x => x.id);
                     table.ForeignKey(
-                        name: "FK_templets_users_created_by",
+                        name: "FK_templet_categories_users_created_by",
                         column: x => x.created_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_templets_users_updated_by",
+                        name: "FK_templet_categories_users_updated_by",
                         column: x => x.updated_by,
                         principalSchema: "public",
                         principalTable: "users",
@@ -106,6 +105,13 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 schema: "public",
                 columns: table => new
                 {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    created_by = table.Column<int>(nullable: false),
+                    updated_by = table.Column<int>(nullable: true),
+                    created_at = table.Column<DateTime>(nullable: false),
+                    updated_at = table.Column<DateTime>(nullable: true),
+                    deleted = table.Column<bool>(nullable: false),
                     user_id = table.Column<int>(nullable: false),
                     organization_id = table.Column<int>(nullable: false),
                     role = table.Column<int>(nullable: false)
@@ -113,18 +119,33 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_organization_users", x => new { x.user_id, x.organization_id });
+                    table.UniqueConstraint("AK_organization_users_id", x => x.id);
                     table.ForeignKey(
-                        name: "FK_organization_users_users_organization_id",
-                        column: x => x.organization_id,
+                        name: "FK_organization_users_users_created_by",
+                        column: x => x.created_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_organization_users_organizations_user_id",
-                        column: x => x.user_id,
+                        name: "FK_organization_users_organizations_organization_id",
+                        column: x => x.organization_id,
                         principalSchema: "public",
                         principalTable: "organizations",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_organization_users_users_updated_by",
+                        column: x => x.updated_by,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_organization_users_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "public",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -172,7 +193,7 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 });
 
             migrationBuilder.CreateTable(
-                name: "apps",
+                name: "templets",
                 schema: "public",
                 columns: table => new
                 {
@@ -183,32 +204,31 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     created_at = table.Column<DateTime>(nullable: false),
                     updated_at = table.Column<DateTime>(nullable: true),
                     deleted = table.Column<bool>(nullable: false),
-                    name = table.Column<string>(maxLength: 50, nullable: true),
+                    category_id = table.Column<int>(nullable: false),
                     label = table.Column<string>(maxLength: 400, nullable: true),
                     description = table.Column<string>(maxLength: 4000, nullable: true),
                     logo = table.Column<string>(nullable: true),
-                    templet_id = table.Column<int>(nullable: false),
-                    use_tenant_settings = table.Column<bool>(nullable: false)
+                    image = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_apps", x => x.id);
+                    table.PrimaryKey("PK_templets", x => x.id);
                     table.ForeignKey(
-                        name: "FK_apps_users_created_by",
+                        name: "FK_templets_templet_categories_category_id",
+                        column: x => x.category_id,
+                        principalSchema: "public",
+                        principalTable: "templet_categories",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_templets_users_created_by",
                         column: x => x.created_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_apps_templets_templet_id",
-                        column: x => x.templet_id,
-                        principalSchema: "public",
-                        principalTable: "templets",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_apps_users_updated_by",
+                        name: "FK_templets_users_updated_by",
                         column: x => x.updated_by,
                         principalSchema: "public",
                         principalTable: "users",
@@ -228,23 +248,23 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 {
                     table.PrimaryKey("PK_team_users", x => new { x.user_id, x.team_id });
                     table.ForeignKey(
-                        name: "FK_team_users_users_team_id",
+                        name: "FK_team_users_teams_team_id",
                         column: x => x.team_id,
                         principalSchema: "public",
-                        principalTable: "users",
+                        principalTable: "teams",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_team_users_teams_user_id",
+                        name: "FK_team_users_users_user_id",
                         column: x => x.user_id,
                         principalSchema: "public",
-                        principalTable: "teams",
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "app_collaborators",
+                name: "apps",
                 schema: "public",
                 columns: table => new
                 {
@@ -255,45 +275,86 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     created_at = table.Column<DateTime>(nullable: false),
                     updated_at = table.Column<DateTime>(nullable: true),
                     deleted = table.Column<bool>(nullable: false),
-                    app_id = table.Column<int>(nullable: false),
-                    user_id = table.Column<int>(nullable: true),
-                    team_id = table.Column<int>(nullable: true),
-                    role = table.Column<int>(nullable: false)
+                    name = table.Column<string>(maxLength: 50, nullable: true),
+                    label = table.Column<string>(maxLength: 400, nullable: true),
+                    description = table.Column<string>(maxLength: 4000, nullable: true),
+                    logo = table.Column<string>(nullable: true),
+                    organization_id = table.Column<int>(nullable: false),
+                    templet_id = table.Column<int>(nullable: false),
+                    use_tenant_settings = table.Column<bool>(nullable: false),
+                    status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_app_collaborators", x => x.id);
+                    table.PrimaryKey("PK_apps", x => x.id);
                     table.ForeignKey(
-                        name: "FK_app_collaborators_apps_app_id",
-                        column: x => x.app_id,
-                        principalSchema: "public",
-                        principalTable: "apps",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_app_collaborators_users_created_by",
+                        name: "FK_apps_users_created_by",
                         column: x => x.created_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_app_collaborators_teams_team_id",
-                        column: x => x.team_id,
+                        name: "FK_apps_organizations_organization_id",
+                        column: x => x.organization_id,
                         principalSchema: "public",
-                        principalTable: "teams",
+                        principalTable: "organizations",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_app_collaborators_users_updated_by",
+                        name: "FK_apps_templets_templet_id",
+                        column: x => x.templet_id,
+                        principalSchema: "public",
+                        principalTable: "templets",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_apps_users_updated_by",
                         column: x => x.updated_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "app_profiles",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    created_by = table.Column<int>(nullable: false),
+                    updated_by = table.Column<int>(nullable: true),
+                    created_at = table.Column<DateTime>(nullable: false),
+                    updated_at = table.Column<DateTime>(nullable: true),
+                    deleted = table.Column<bool>(nullable: false),
+                    name = table.Column<string>(nullable: true),
+                    description = table.Column<string>(nullable: true),
+                    order = table.Column<int>(nullable: false),
+                    system_code = table.Column<string>(nullable: true),
+                    app_id = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_app_profiles", x => x.id);
                     table.ForeignKey(
-                        name: "FK_app_collaborators_users_user_id",
-                        column: x => x.user_id,
+                        name: "FK_app_profiles_apps_app_id",
+                        column: x => x.app_id,
+                        principalSchema: "public",
+                        principalTable: "apps",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_profiles_users_created_by",
+                        column: x => x.created_by,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_profiles_users_updated_by",
+                        column: x => x.updated_by,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "id",
@@ -331,6 +392,96 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "app_collaborators",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    created_by = table.Column<int>(nullable: false),
+                    updated_by = table.Column<int>(nullable: true),
+                    created_at = table.Column<DateTime>(nullable: false),
+                    updated_at = table.Column<DateTime>(nullable: true),
+                    deleted = table.Column<bool>(nullable: false),
+                    app_id = table.Column<int>(nullable: false),
+                    user_id = table.Column<int>(nullable: true),
+                    team_id = table.Column<int>(nullable: true),
+                    profile_id = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_app_collaborators", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_app_collaborators_apps_app_id",
+                        column: x => x.app_id,
+                        principalSchema: "public",
+                        principalTable: "apps",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_collaborators_users_created_by",
+                        column: x => x.created_by,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_collaborators_app_profiles_profile_id",
+                        column: x => x.profile_id,
+                        principalSchema: "public",
+                        principalTable: "app_profiles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_app_collaborators_teams_team_id",
+                        column: x => x.team_id,
+                        principalSchema: "public",
+                        principalTable: "teams",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_app_collaborators_users_updated_by",
+                        column: x => x.updated_by,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_app_collaborators_users_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "public",
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "app_profile_permissions",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    profile_id = table.Column<int>(nullable: false),
+                    feature = table.Column<int>(nullable: false),
+                    read = table.Column<bool>(nullable: false),
+                    write = table.Column<bool>(nullable: false),
+                    modify = table.Column<bool>(nullable: false),
+                    remove = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_app_profile_permissions", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_app_profile_permissions_app_profiles_profile_id",
+                        column: x => x.profile_id,
+                        principalSchema: "public",
+                        principalTable: "app_profiles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_app_collaborators_app_id",
                 schema: "public",
@@ -344,10 +495,10 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 column: "created_by");
 
             migrationBuilder.CreateIndex(
-                name: "IX_app_collaborators_role",
+                name: "IX_app_collaborators_profile_id",
                 schema: "public",
                 table: "app_collaborators",
-                column: "role");
+                column: "profile_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_app_collaborators_team_id",
@@ -366,6 +517,54 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 schema: "public",
                 table: "app_collaborators",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profile_permissions_profile_id",
+                schema: "public",
+                table: "app_profile_permissions",
+                column: "profile_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_app_id",
+                schema: "public",
+                table: "app_profiles",
+                column: "app_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_created_at",
+                schema: "public",
+                table: "app_profiles",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_created_by",
+                schema: "public",
+                table: "app_profiles",
+                column: "created_by");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_name",
+                schema: "public",
+                table: "app_profiles",
+                column: "name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_system_code",
+                schema: "public",
+                table: "app_profiles",
+                column: "system_code");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_updated_at",
+                schema: "public",
+                table: "app_profiles",
+                column: "updated_at");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_app_profiles_updated_by",
+                schema: "public",
+                table: "app_profiles",
+                column: "updated_by");
 
             migrationBuilder.CreateIndex(
                 name: "IX_apps_created_at",
@@ -392,6 +591,12 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 column: "name");
 
             migrationBuilder.CreateIndex(
+                name: "IX_apps_organization_id",
+                schema: "public",
+                table: "apps",
+                column: "organization_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_apps_templet_id",
                 schema: "public",
                 table: "apps",
@@ -410,10 +615,22 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 column: "updated_by");
 
             migrationBuilder.CreateIndex(
+                name: "IX_organization_users_created_by",
+                schema: "public",
+                table: "organization_users",
+                column: "created_by");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_organization_users_organization_id",
                 schema: "public",
                 table: "organization_users",
                 column: "organization_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_organization_users_updated_by",
+                schema: "public",
+                table: "organization_users",
+                column: "updated_by");
 
             migrationBuilder.CreateIndex(
                 name: "IX_organization_users_user_id",
@@ -512,6 +729,42 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 column: "updated_by");
 
             migrationBuilder.CreateIndex(
+                name: "IX_templet_categories_created_at",
+                schema: "public",
+                table: "templet_categories",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_templet_categories_created_by",
+                schema: "public",
+                table: "templet_categories",
+                column: "created_by");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_templet_categories_deleted",
+                schema: "public",
+                table: "templet_categories",
+                column: "deleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_templet_categories_updated_at",
+                schema: "public",
+                table: "templet_categories",
+                column: "updated_at");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_templet_categories_updated_by",
+                schema: "public",
+                table: "templet_categories",
+                column: "updated_by");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_templets_category_id",
+                schema: "public",
+                table: "templets",
+                column: "category_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_templets_created_at",
                 schema: "public",
                 table: "templets",
@@ -528,12 +781,6 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 schema: "public",
                 table: "templets",
                 column: "deleted");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_templets_name",
-                schema: "public",
-                table: "templets",
-                column: "name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_templets_updated_at",
@@ -555,6 +802,10 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "app_profile_permissions",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "app_settings",
                 schema: "public");
 
@@ -567,7 +818,7 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "apps",
+                name: "app_profiles",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -575,11 +826,19 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "templets",
+                name: "apps",
                 schema: "public");
 
             migrationBuilder.DropTable(
                 name: "organizations",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "templets",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "templet_categories",
                 schema: "public");
 
             migrationBuilder.DropTable(

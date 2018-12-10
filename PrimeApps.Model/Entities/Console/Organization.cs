@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Entities.Console
         [Column("icon"), MaxLength(200)]
         public string Icon { get; set; }
 
-        [Column("owner_id"), Required, ForeignKey("Owner")]
+        [Column("owner_id"), ForeignKey("Owner")]
         public int OwnerId { get; set; }
 
         public virtual ConsoleUser Owner { get; set; }

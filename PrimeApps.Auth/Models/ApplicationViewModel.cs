@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using PrimeApps.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +41,7 @@ namespace PrimeApps.Auth.UI
         public string TimeZone { get; set; }
         public string GoogleAnalytics { get; set; }
         public string ExternalLogin { get; set; }
+        public RegistrationType RegistrationType { get; set; }
 		public string TenantOperationWebhook { get; set; }
 	}
 }

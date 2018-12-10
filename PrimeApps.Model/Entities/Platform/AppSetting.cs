@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PrimeApps.Model.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -49,6 +50,9 @@ namespace PrimeApps.Model.Entities.Platform
 
         [Column("external_auth", TypeName = "jsonb")]
         public string ExternalAuth { get; set; }
+
+        [Column("registration_type")]
+        public RegistrationType RegistrationType { get; set; }
 
         public virtual App App { get; set; }
     }

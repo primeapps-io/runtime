@@ -15,13 +15,15 @@ namespace PrimeApps.Model.Entities.Console
         [Column("team_id"), ForeignKey("Team")]
         public int? TeamId { get; set; }
 
-        [Column("role")]
-        public ApplicationRole Role { get; set; }
+        [Column("profile_id"), ForeignKey("Profile")]
+        public int ProfileId { get; set; }
 
         public virtual AppDraft AppDraft { get; set; }
 
         public virtual ConsoleUser ConsoleUser { get; set; }
 
         public virtual Team Team { get; set; }
+        public virtual AppProfile Profile { get; set; }
+
     }
 }

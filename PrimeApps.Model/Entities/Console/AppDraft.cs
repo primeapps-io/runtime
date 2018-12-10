@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PrimeApps.Model.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,17 +21,26 @@ namespace PrimeApps.Model.Entities.Console
         [Column("logo")]
         public string Logo { get; set; }
 
+        [Column("organization_id"), ForeignKey("Organization")]
+        public int OrganizationId { get; set; }
+
         [Column("templet_id"), ForeignKey("Templet")]
         public int TempletId { get; set; }
 
         [Column("use_tenant_settings")]
         public bool UseTenantSettings { get; set; }
 
+        [Column("status")]
+        public AppDraftStatus Status { get; set; }
+        
         public virtual Templet Templet { get; set; }
-
+        
         public virtual AppDraftSetting Setting { get; set; }
-
-        [JsonIgnore]
+        
+        public virtual Organization Organization { get; set; }
+        
         public virtual ICollection<AppCollaborator> Collaborators { get; set; }
+
+        public virtual ICollection<AppProfile> Profiles { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace PrimeApps.Console
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddDbContext<ConsoleDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("ConsoleDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
+            services.AddScoped(p => new ConsoleDBContext(p.GetService<DbContextOptions<ConsoleDBContext>>()));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton(configuration);
             services.AddHttpContextAccessor();

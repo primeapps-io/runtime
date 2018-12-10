@@ -38,8 +38,8 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
 
-                    b.Property<int>("Role")
-                        .HasColumnName("role");
+                    b.Property<int>("ProfileId")
+                        .HasColumnName("profile_id");
 
                     b.Property<int?>("TeamId")
                         .HasColumnName("team_id");
@@ -59,7 +59,7 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("Role");
+                    b.HasIndex("ProfileId");
 
                     b.HasIndex("TeamId");
 
@@ -100,6 +100,12 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                         .HasColumnName("name")
                         .HasMaxLength(50);
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnName("organization_id");
+
+                    b.Property<int>("Status")
+                        .HasColumnName("status");
+
                     b.Property<int>("TempletId")
                         .HasColumnName("templet_id");
 
@@ -121,6 +127,8 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.HasIndex("Deleted");
 
                     b.HasIndex("Name");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("TempletId");
 
@@ -177,6 +185,92 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.HasKey("AppId");
 
                     b.ToTable("app_settings");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Console.AppProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("AppId")
+                        .HasColumnName("app_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Description")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Order")
+                        .HasColumnName("order");
+
+                    b.Property<string>("SystemCode")
+                        .HasColumnName("system_code");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("SystemCode");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("app_profiles");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Console.AppProfilePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<int>("Feature")
+                        .HasColumnName("feature");
+
+                    b.Property<bool>("Modify")
+                        .HasColumnName("modify");
+
+                    b.Property<int>("ProfileId")
+                        .HasColumnName("profile_id");
+
+                    b.Property<bool>("Read")
+                        .HasColumnName("read");
+
+                    b.Property<bool>("Remove")
+                        .HasColumnName("remove");
+
+                    b.Property<bool>("Write")
+                        .HasColumnName("write");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("app_profile_permissions");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Console.ConsoleUser", b =>
@@ -249,12 +343,37 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.Property<int>("OrganizationId")
                         .HasColumnName("organization_id");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
                     b.Property<int>("Role")
                         .HasColumnName("role");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
                     b.HasKey("UserId", "OrganizationId");
 
+                    b.HasAlternateKey("Id");
+
+                    b.HasIndex("CreatedById");
+
                     b.HasIndex("OrganizationId");
+
+                    b.HasIndex("UpdatedById");
 
                     b.HasIndex("UserId");
 
@@ -334,6 +453,9 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id");
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnName("category_id");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnName("created_at");
 
@@ -347,6 +469,9 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                         .HasColumnName("description")
                         .HasMaxLength(4000);
 
+                    b.Property<string>("Image")
+                        .HasColumnName("image");
+
                     b.Property<string>("Label")
                         .HasColumnName("label")
                         .HasMaxLength(400);
@@ -354,9 +479,54 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.Property<string>("Logo")
                         .HasColumnName("logo");
 
-                    b.Property<string>("Name")
-                        .HasColumnName("name")
-                        .HasMaxLength(50);
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("templets");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Console.TempletCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Description")
+                        .HasColumnName("description")
+                        .HasMaxLength(4000);
+
+                    b.Property<string>("Image")
+                        .HasColumnName("image");
+
+                    b.Property<string>("Label")
+                        .HasColumnName("label")
+                        .HasMaxLength(400);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnName("updated_at");
@@ -372,13 +542,11 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
 
                     b.HasIndex("Deleted");
 
-                    b.HasIndex("Name");
-
                     b.HasIndex("UpdatedAt");
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("templets");
+                    b.ToTable("templet_categories");
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Console.AppCollaborator", b =>
@@ -391,6 +559,11 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.AppProfile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Console.Team", "Team")
@@ -413,6 +586,11 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("PrimeApps.Model.Entities.Console.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("PrimeApps.Model.Entities.Console.Templet", "Templet")
                         .WithMany()
                         .HasForeignKey("TempletId")
@@ -428,6 +606,31 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
                     b.HasOne("PrimeApps.Model.Entities.Console.AppDraft", "App")
                         .WithOne("Setting")
                         .HasForeignKey("PrimeApps.Model.Entities.Console.AppDraftSetting", "AppId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Console.AppProfile", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Console.AppDraft", "AppDraft")
+                        .WithMany("Profiles")
+                        .HasForeignKey("AppId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Console.AppProfilePermission", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Console.AppProfile", "Profile")
+                        .WithMany("Permissions")
+                        .HasForeignKey("ProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -450,13 +653,22 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Console.OrganizationUser", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "ConsoleUser")
-                        .WithMany("UserOrganizations")
-                        .HasForeignKey("OrganizationId")
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("PrimeApps.Model.Entities.Console.Organization", "Organization")
                         .WithMany("OrganizationUsers")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "ConsoleUser")
+                        .WithMany("UserOrganizations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -480,18 +692,35 @@ namespace PrimeApps.Model.Migrations.ConsoleDB
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Console.TeamUser", b =>
                 {
-                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "ConsoleUser")
-                        .WithMany("UserTeams")
+                    b.HasOne("PrimeApps.Model.Entities.Console.Team", "Team")
+                        .WithMany("TeamUsers")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("PrimeApps.Model.Entities.Console.Team", "Team")
-                        .WithMany("TeamUsers")
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "ConsoleUser")
+                        .WithMany("UserTeams")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Console.Templet", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Console.TempletCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Console.TempletCategory", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Console.ConsoleUser", "CreatedBy")
                         .WithMany()

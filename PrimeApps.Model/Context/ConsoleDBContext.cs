@@ -87,12 +87,12 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<TeamUser>()
                 .HasOne(pt => pt.ConsoleUser)
                 .WithMany(p => p.UserTeams)
-                .HasForeignKey(pt => pt.TeamId);
+                .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<TeamUser>()
                 .HasOne(pt => pt.Team)
                 .WithMany(t => t.TeamUsers)
-                .HasForeignKey(pt => pt.UserId);
+                .HasForeignKey(pt => pt.TeamId);
 
             modelBuilder.Entity<OrganizationUser>()
                .HasKey(t => new { t.UserId, t.OrganizationId });
@@ -100,12 +100,12 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<OrganizationUser>()
                 .HasOne(pt => pt.ConsoleUser)
                 .WithMany(p => p.UserOrganizations)
-                .HasForeignKey(pt => pt.OrganizationId);
+                .HasForeignKey(pt => pt.UserId);
 
             modelBuilder.Entity<OrganizationUser>()
                 .HasOne(pt => pt.Organization)
                 .WithMany(t => t.OrganizationUsers)
-                .HasForeignKey(pt => pt.UserId);
+                .HasForeignKey(pt => pt.OrganizationId);
 
             BuildIndexes(modelBuilder);
         }
@@ -113,7 +113,7 @@ namespace PrimeApps.Model.Context
         public void BuildIndexes(ModelBuilder modelBuilder)
         {
             //AppCollaborator
-            modelBuilder.Entity<AppCollaborator>().HasIndex(x => x.Role);
+            modelBuilder.Entity<AppCollaborator>().HasIndex(x => x.ProfileId);
 
             //AppDraft
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.Name);
@@ -122,10 +122,14 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<AppDraft>().HasIndex(x => x.Deleted);
 
             //Templet
-            modelBuilder.Entity<Templet>().HasIndex(x => x.Name);
             modelBuilder.Entity<Templet>().HasIndex(x => x.CreatedAt);
             modelBuilder.Entity<Templet>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<Templet>().HasIndex(x => x.Deleted);
+
+            //TempletCategory
+            modelBuilder.Entity<TempletCategory>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<TempletCategory>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<TempletCategory>().HasIndex(x => x.Deleted);
 
             //Organization
             modelBuilder.Entity<Organization>().HasIndex(x => x.Name);
@@ -145,8 +149,15 @@ namespace PrimeApps.Model.Context
             //TeamUser
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.UserId);
             modelBuilder.Entity<TeamUser>().HasIndex(x => x.TeamId);
-        }
 
+            //AppProfile
+            modelBuilder.Entity<AppProfile>().HasIndex(x => x.Name);
+            modelBuilder.Entity<AppProfile>().HasIndex(x => x.AppId);
+            modelBuilder.Entity<AppProfile>().HasIndex(x => x.SystemCode);
+            modelBuilder.Entity<AppProfile>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<AppProfile>().HasIndex(x => x.UpdatedAt);
+            
+        }
         public DbSet<ConsoleUser> Users { get; set; }
         public DbSet<AppDraft> Apps { get; set; }
         public DbSet<AppDraftSetting> AppSettings { get; set; }
@@ -155,5 +166,9 @@ namespace PrimeApps.Model.Context
         public DbSet<OrganizationUser> OrganizationUsers { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamUsers { get; set; }
+        public DbSet<Templet> Templets { get; set; }
+        public DbSet<TempletCategory> TempletCategories { get; set; }
+        public DbSet<AppProfile> AppProfiles { get; set; }
+        public DbSet<AppProfilePermission> AppProfilesPermissions { get; set; }
     }
 }

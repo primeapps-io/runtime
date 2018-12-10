@@ -65,6 +65,7 @@ namespace PrimeApps.Auth.UI
                     TimeZone = app.Setting.TimeZone,
                     GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
                     ExternalLogin = app.Setting.ExternalAuth,
+                    RegistrationType = app.Setting.RegistrationType,
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
                 }
             };

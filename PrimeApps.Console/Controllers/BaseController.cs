@@ -42,6 +42,7 @@ namespace PrimeApps.Console.Controllers
         private UserItem GetUser()
         {
             var platformUser = (PlatformUser)HttpContext.Items["user"];
+            var organizationId = HttpContext.Items["organization_id"] != null ? (int)HttpContext.Items["organization_id"] : 0;
 
             var appUser = new UserItem
             {
@@ -51,7 +52,8 @@ namespace PrimeApps.Console.Controllers
                 Currency = platformUser.Setting?.Currency,
                 Culture = platformUser.Setting?.Culture,
                 Language = platformUser.Setting?.Language,
-                TimeZone = platformUser.Setting?.TimeZone
+                TimeZone = platformUser.Setting?.TimeZone,
+                OrganizationId = organizationId
             };
 
             return appUser;

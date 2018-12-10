@@ -19,7 +19,6 @@ using PrimeApps.Model.Entities.Platform;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Auth.Helpers;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Auth.DTO;
 
 namespace PrimeApps.Auth.Controllers
 {
@@ -261,7 +260,7 @@ namespace PrimeApps.Auth.Controllers
 		}
 
         [HttpPost("verify_user", Name="verify_user")]
-        public async Task<bool> VerifyUser([FromBody] ExternalLoginDTO model)
+        public async Task<bool> VerifyUser([FromBody] ExternalLoginBindingModel model)
         {
             var application = await _applicationRepository.GetByName(model.client);
             var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
