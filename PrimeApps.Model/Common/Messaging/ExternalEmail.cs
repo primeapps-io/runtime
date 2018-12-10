@@ -8,6 +8,7 @@
         public string Cc { get; set; }
         public string Bcc { get; set; }
         public string FromEmail { get; set; }
+        public string FromName { get; set; }
 
     }
 }

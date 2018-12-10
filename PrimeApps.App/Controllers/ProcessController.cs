@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 using Microsoft.AspNetCore.Mvc.Filters;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
@@ -23,17 +24,19 @@ namespace PrimeApps.App.Controllers
         private IViewRepository _viewRepository;
         private IPicklistRepository _picklistRepository;
 	    private IProcessHelper _processHelper;
+        private Warehouse _warehouse;
 
-        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IProcessHelper processHelper)
+        public ProcessController(IProcessRepository processRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IViewRepository viewRepository, IProcessHelper processHelper, Warehouse warehouse)
         {
             _processRepository = processRepository;
             _viewRepository = viewRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
 	        _processHelper = processHelper;
+            _warehouse = warehouse;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
 			SetCurrentUser(_processRepository);
@@ -74,7 +77,7 @@ namespace PrimeApps.App.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var processEntity = await _processHelper.CreateEntity(process, AppUser.TenantLanguage);
+            var processEntity = await _processHelper.CreateEntity(process, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _warehouse, AppUser);
             var result = await _processRepository.Create(processEntity);
 
             if (result < 1)

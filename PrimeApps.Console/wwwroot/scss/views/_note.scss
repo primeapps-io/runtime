@@ -1,0 +1,137 @@
+.note-list {
+  .note {
+    padding: 5px;
+
+    img {
+      max-width: 860px;
+      max-height: 540px;
+    }
+
+    .media-heading {
+      font-weight: 500;
+      color: #337ab7;
+      font-size: 13px;
+
+      .note-time {
+        color: #999;
+        font-size: 12px;
+        font-weight: 400;
+      }
+    }
+
+    .action-buttons {
+      margin-left: 5px;
+      display: none;
+      font-size: 11px !important;
+      font-weight: 400;
+    }
+
+    textarea {
+      min-width: 250px;
+      padding-left: 5px;
+      font-size: 12px;
+      line-height: 12px;
+    }
+
+    .note-text {
+      margin-bottom: 5px;
+      font-size: 14px;
+
+      .action {
+        font-weight: 500;
+      }
+    }
+
+    .showAllNotes {
+      margin: 10px 0;
+
+      a {
+        font-size: 11px;
+      }
+    }
+
+    .opened {
+      width: 500px !important;
+    }
+
+    .subnote {
+      font-size: 14px !important;
+
+      h5 {
+        font-size: 14px;
+
+        .subnote-time {
+          color: #999;
+          font-size: 12px;
+          font-weight: 400;
+        }
+      }
+
+      .subnote-action-buttons {
+        margin-left: 5px;
+        display: none;
+        font-size: 10px !important;
+        font-weight: 400;
+      }
+
+      &:hover {
+        .subnote-action-buttons {
+          display: inline-block;
+        }
+      }
+    }
+
+    .list-note-form {
+      .btn {
+        padding: 3px 10px !important;
+      }
+    }
+
+    &:hover {
+
+      .action-buttons {
+        display: inline-block;
+      }
+
+      pre {
+
+      }
+    }
+  }
+
+  .paging {
+    margin-top: 10px;
+
+    a {
+      i {
+        color: #8cb2d2;
+        font-size: 12px;
+      }
+
+      &:hover,
+      &:focus,
+      &:active {
+        text-decoration: none;
+
+        i {
+          color: #6691b6;
+        }
+      }
+    }
+  }
+}
+
+.note-form-container {
+  margin-bottom: 20px;
+  padding: 5px;
+  background-color: #f2f6fa;
+}
+
+.note-form {
+  textarea {
+    min-width: 400px;
+    padding-left: 5px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+}

@@ -35,8 +35,12 @@ namespace PrimeApps.Auth.UI
 
 		[DataMember(Name = "last_name")]
 		public string LastName { get; set; }
-		//public string PhoneNumber { get; set; }
+
+        [DataMember(Name = "phone_number")]
+        public string PhoneNumber { get; set; }
 
         public bool ReadOnly { get; set; }
-	}
+
+        public bool ExternalLogin { get; set; }
+    }
 }

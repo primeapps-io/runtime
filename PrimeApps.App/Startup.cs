@@ -12,33 +12,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using PrimeApps.App.Bpm.Steps;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
-using Sentry;
 
 namespace PrimeApps.App
 {
     public partial class Startup
     {
-        public IHostingEnvironment HostingEnvironment { get; }
         public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            Configuration = builder;
-            HostingEnvironment = env;
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            //Register DI
+            DIRegister(services, Configuration);
+
+            //Configure Authentication
+            AuthConfiguration(services, Configuration);
 
             var hangfireStorage = new PostgreSqlStorage(Configuration.GetConnectionString("PlatformDBConnection"));
             GlobalConfiguration.Configuration.UseStorage(hangfireStorage);
@@ -46,11 +41,6 @@ namespace PrimeApps.App
 
             //Add Workflow service
             services.AddWorkflow(x => x.UsePostgreSQL(Configuration.GetConnectionString("PlatformDBConnection"), false, true));
-
-            //Register DI
-            DIRegister(services, Configuration);
-
-            services.AddDirectoryBrowser();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -60,16 +50,7 @@ namespace PrimeApps.App
                     new CultureInfo("tr-TR")
                 };
                 options.DefaultRequestCulture = new RequestCulture("tr-TR", "tr-TR");
-
-                // You must explicitly state which cultures your application supports.
-                // These are the cultures the app supports for formatting 
-                // numbers, dates, etc.
-
                 options.SupportedCultures = supportedCultures;
-
-                // These are the cultures the app supports for UI strings, 
-                // i.e. we have localized resources for.
-
                 options.SupportedUICultures = supportedCultures;
             });
 
@@ -135,11 +116,8 @@ namespace PrimeApps.App
                 option.Configuration = Configuration.GetConnectionString("RedisConnection");
                 option.InstanceName = "db1";
             });
-
-            AuthConfiguration(services, Configuration, HostingEnvironment);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
 
@@ -149,8 +127,8 @@ namespace PrimeApps.App
                 app.UseDatabaseErrorPage();
             }
 
-            bool enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
-            bool enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
+            var enableHeaderForwarding = bool.Parse(Configuration.GetSection("AppSettings")["ForwardHeaders"]);
+            var enableHttpsRedirection = bool.Parse(Configuration.GetSection("AppSettings")["HttpsRedirection"]);
 
             if (enableHeaderForwarding)
             {
@@ -198,6 +176,5 @@ namespace PrimeApps.App
                 );
             });
         }
-
     }
 }

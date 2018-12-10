@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('WorkflowFormController', ['$rootScope', '$location', '$scope', '$filter', 'ngToast', 'helper', 'blockUI', '$state', 'operators', '$q', 'WorkflowService', 'ModuleService', 'config', '$localStorage', 'FileUploader', '$http',
-        function ($rootScope, $location, $scope, $filter, ngToast, helper, blockUI, $state, operators, $q, WorkflowService, ModuleService, config, $localStorage, FileUploader, $http) {
+    .controller('WorkflowFormController', ['$rootScope', '$location', '$scope', '$filter', 'ngToast', 'helper', 'blockUI', '$state', 'operators', '$q', 'WorkflowService', 'ModuleService', 'config', '$localStorage', 'FileUploader', '$http', '$cookies',
+        function ($rootScope, $location, $scope, $filter, ngToast, helper, blockUI, $state, operators, $q, WorkflowService, ModuleService, config, $localStorage, FileUploader, $http, $cookies) {
             $scope.loading = true;
             $scope.wizardStep = 0;
             $scope.id = $location.search().id;
@@ -206,7 +206,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -268,7 +269,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -473,6 +475,7 @@ angular.module('primeapps')
             $scope.validateCreateTask = function () {
                 return $scope.workflowModel.create_task &&
                     $scope.workflowModel.create_task.owner &&
+                    $scope.workflowModel.create_task.owner.length == 1 &&
                     $scope.workflowModel.create_task.subject &&
                     $scope.workflowModel.create_task.task_due_date;
             };
@@ -764,7 +767,7 @@ angular.module('primeapps')
             };
 
             $scope.SendNotificationCCModuleChanged = function () {
-                if ($scope.workflowModel.send_notification.cc.length == 0)
+                if ($scope.workflowModel.send_notification && $scope.workflowModel.send_notification.cc && $scope.workflowModel.send_notification.cc.length == 0)
                     $scope.workflowModel.send_notification.cc = null;
 
                 if ($scope.workflowModel.send_notification_ccmodule && $scope.workflowModel.send_notification) {
@@ -777,7 +780,7 @@ angular.module('primeapps')
             };
 
             $scope.SendNotificationBccModuleChanged = function () {
-                if ($scope.workflowModel.send_notification.bcc.length == 0)
+                if ($scope.workflowModel.send_notification && $scope.workflowModel.send_notification.bcc && $scope.workflowModel.send_notification.bcc.length == 0)
                     $scope.workflowModel.send_notification.bcc = null;
 
                 if ($scope.workflowModel.send_notification_bccmodule && $scope.workflowModel.send_notification) {
@@ -818,7 +821,7 @@ angular.module('primeapps')
                 if (field.data_type === 'lookup' && field.lookup_type === 'relation')
                     return false;
 
-                if (field.validation.readonly)
+                if (field.validation && field.validation.readonly)
                     return false;
 
                 return true;
@@ -1364,7 +1367,8 @@ angular.module('primeapps')
                     url: config.apiUrl + url,
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json' /// we have to set accept header to provide consistency between browsers.
+                        'Accept': 'application/json', /// we have to set accept header to provide consistency between browsers.
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     autoUpload: true
 
@@ -1420,7 +1424,7 @@ angular.module('primeapps')
                             UniqueFileName: response.UniqueName,
                             MimeType: item.uploader.queue[0].Type,
                             ChunkSize: 1,
-                            instanceId: $rootScope.workgroup.instanceID
+                            instanceId: $rootScope.workgroup.tenant_id
                         }).then(function (res) {
                             $scope.workflowModel.field_update.value = res.data;
                         });

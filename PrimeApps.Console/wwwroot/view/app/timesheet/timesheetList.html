@@ -1,0 +1,40 @@
+<div class="page calendar">
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+        <div ng-show="!loading">
+            <div class="subpanel">
+                <h5 class="subpanel-heading" style="padding-bottom: 40px">
+                    <span class="pull-left">Timesheet List</span>
+                    <span><a class="btn btn-custom pull-right" type="button" href="#/app/timesheet">Back</a></span>
+                </h5>
+
+                <div class="subpanel-body">
+                    <select ng-model="listFilter" ng-options="item.status as item.name for item in filterList" ng-init="listFilter = 'draft'" ng-change="getTimesheets(listFilter)" class="form-control ng-animate-disabled custom-readonly" style="width:29% !important"></select>
+                    <div class="empty-message" ng-show="timesheetList.length < 1" style="margin-top: 20px">No timesheet found.</div>
+                    <table ng-show="timesheetList.length > 0" class="table" style="margin-top: 20px">
+                        <thead>
+                            <tr>
+                                <th>Timesheet ID</th>
+                                <th>Timesheet Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="(key, value) in timesheetList | groupBy: '[related_timesheet,selected_project]'">
+                                <td class="profile-name">{{ value[0].related_timesheet }} - ({{value[0].approval_type}})</td>
+                                <td class="profile-name">{{ value[0].status }}</td>
+                                <td class="profile-name">
+                                    <a class="btn btn-default" ng-if="value[0].approval_type == 'billable'" href="#/app/timesheet?user={{value[0].owner}}&project={{value[0].selected_project}}&month={{value[0]['related_timesheet.timesheet.term']-1}}&ctype=0">Go To Timesheet</a>
+                                    <a class="btn btn-default" ng-if="value[0].approval_type == 'nonbillable'" href="#/app/timesheet?user={{value[0].owner}}&project={{value[0].selected_project}}&month={{value[0]['related_timesheet.timesheet.term']-1}}&ctype=1">Go To Timesheet</a>
+                                    <a class="btn btn-default" ng-if="value[0].approval_type == 'business'" href="#/app/timesheet?user={{value[0].owner}}&project={{value[0].selected_project}}&month={{value[0]['related_timesheet.timesheet.term']-1}}&ctype=2">Go To Timesheet</a>
+                                    <a class="btn btn-default" ng-if="value[0].approval_type == 'management'" href="#/app/timesheet?user={{value[0].owner}}&project=&month={{value[0]['related_timesheet.timesheet.term']-1}}">Go To Timesheet</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div></div>

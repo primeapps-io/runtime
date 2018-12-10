@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<Analytic> GetById(int id);
         Task<ICollection<Analytic>> GetAll();
-        Task<ICollection<Analytic>> GetReports();
+        Task<ICollection<Analytic>> GetReports(bool hasAdminProfile);
         Task<int> Create(Analytic analytic);
         Task<int> Update(Analytic analytic);
         Task<int> DeleteSoft(Analytic analytic);

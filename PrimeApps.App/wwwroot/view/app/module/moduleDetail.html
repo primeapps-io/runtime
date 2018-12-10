@@ -88,8 +88,8 @@
                 <a href="{{!back ? (!parentId ? '#/app/modules/' + type : ('#/app/module/' + parentModule + '?id=' + parentId + '&rptype=' + returnTab + (previousParentId ? ('&rpptype=' + previousParentType + '&rppid=' + previousParentId + '&rprtab=' + previousReturnTab) : ''))) : (back != 'calendar' && back != 'dashboard' && back != 'tasks' ? '#/app/modules/' + back : '#/app/' + back)}}" class="btn btn-sm btn-custom"><i class="fa fa-chevron-left"></i> {{'Common.Back' | translate}}</a>
                 <a ng-show="user.profile.lead_convert && module.name === 'leads' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('accounts', operations.write) && hasPermission('contacts', operations.write)" href="#/app/leadconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="LeadConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
                 <a ng-show="appId === 4 && module.name === 'adaylar' && record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('calisanlar', operations.write)" href="#/app/personalconvert{{'?id=' + record.id }}" class="btn btn-sm btn-custom" id="PersonalConvertButton" ng-disabled="loading"><i class="fa fa-retweet"></i> {{'Common.Convert' | translate}}</a>
-                <a ng-show="module.name === 'sales_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('sales_invoices', operations.write)" ng-disabled="salesOrderStageSystemCode != 'confirmed_order_stage' " confirm-click action="convertSalesOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="SalesOrderConvertButton"><i class="fa fa-retweet"></i> Satış Faturasına Dönüştür</a>
-                <a ng-show="module.name === 'purchase_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('purchase_invoices', operations.write)" ng-disabled="purchaseOrderStageSystemCode != 'confirmed_purchase_order_stage' " confirm-click action="convertPurchaseOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="PurchaseOrderConvertButton"><i class="fa fa-retweet"></i> Alış Faturasına Dönüştür</a>
+                <a ng-show="module.name === 'sales_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('sales_invoices', operations.write)" ng-disabled="salesOrderStageSystemCode != 'confirmed_order_stage' " confirm-click action="convertSalesOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="SalesOrderConvertButton"><i class="fa fa-retweet"></i> {{'Module.ConvertToSalesInvoice' | translate}}</a>
+                <a ng-show="module.name === 'purchase_orders' && !record.is_converted && hasPermission(type, operations.modify, record) && hasPermission('purchase_invoices', operations.write)" ng-disabled="purchaseOrderStageSystemCode != 'confirmed_purchase_order_stage' " confirm-click action="convertPurchaseOrder()" placement="bottom" confirm-message="Emin misiniz?" confirm-yes="Evet" confirm-no="Hayır" class="btn btn-sm btn-custom" id="PurchaseOrderConvertButton"><i class="fa fa-retweet"></i>{{'Module.ConvertToBuyingInvoice' | translate}}</a>
                 <a ng-if="user.profile.word_pdf_download" href ng-click="openExportDialog()" class="btn btn-sm btn-custom" data-spinner-color="#666" ladda="pdfCreating" ng-disabled="loading"><i class="fa fa-file-text-o"></i> {{'Module.Download' | translate}}</a>
                 <!--<a ng-click="showSingleSMSModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendSMS && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-mobile"></i> {{'Module.SendSMS' | translate }}</a>-->
                 <!--<a ng-click="showEMailModal()" class="btn btn-sm btn-custom" ng-if="user.profile.SendEmail && module.name != 'quotes'" ng-show="hasPermission(type, operations.read)" ng-disabled="loading"><i class="fa fa-envelope-o"></i> {{'Module.SendEMail' | translate }}</a>-->
@@ -577,7 +577,7 @@ relatedModule['label_'
                                                        ng-class="{'editable-empty':(record[field.name] === null || record[field.name] === undefined || !record[field.name].length)}"
                                                        ng-click="editHtmlEditor[field.name] = true"
                                                        ng-show="!editHtmlEditor[field.name]">
-                                                        <div class="editable-html-container" ng-bind-html="record[field.name] ? record[field.name] : 'Common.Empty' | translate"></div>
+                                                        <div class="editable-html-container" ng-bind-html="trustAsHtml(record[field.name] ? record[field.name] : 'Common.Empty' | translate)"></div>
                                                         <span><i class="fa fa-pencil"></i></span>
                                                     </a>
                                                     <div ng-class="{'col-sm-9': section.column_count === 2, 'col-sm-11':section.column_count === 1}" style="padding-right: 0;" ng-show="editHtmlEditor[field.name]">
@@ -604,7 +604,7 @@ relatedModule['label_'
                                                     {{record[field.name].labelStr}}
                                                 </span>
                                                 <span ng-switch-when="text_multi">
-                                                    <span ng-if="field.multiline_type_use_html === true" ng-bind-html="record[field.name]"></span>
+                                                    <span ng-if="field.multiline_type_use_html === true" ng-bind-html="trustAsHtml(record[field.name])"></span>
                                                     <span ng-if="field.multiline_type_use_html !== true">{{field.valueFormatted}}</span>
                                                 </span>
                                                 <span ng-switch-when="checkbox">
@@ -753,7 +753,7 @@ relatedModule['label_'
                     </div>
                     <div class="subpanel"
                          ng-repeat="relatedModule in module.relations | filter:{deleted:'!true',detail_view_type:'flat'} | orderBy:'order'"
-                         ng-show="hasPermission(relatedModule.related_module, operations.read) || (!tabconfig || relatedModule.detail_view_type==='flat')">
+                         ng-show="hasPermission(relatedModule.related_module, operations.read) && (!tabconfig || relatedModule.detail_view_type==='flat')">
                         <span id="relation{{relatedModule.id}}" class="panel-anchor"
                               ng-if="!tabconfig || relatedModule.detail_view_type==='flat'"></span>
                         <h5 class="subpanel-heading" ng-show="!tabconfig || relatedModule.detail_view_type==='flat'">

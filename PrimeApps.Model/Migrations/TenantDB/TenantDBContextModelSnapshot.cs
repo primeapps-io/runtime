@@ -56,7 +56,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnName("name")
-                        .HasMaxLength(15);
+                        .HasMaxLength(50);
 
                     b.Property<string>("Parameters")
                         .HasColumnName("parameters");
@@ -467,6 +467,8 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.HasIndex("Deleted");
 
+                    b.HasIndex("ModuleId");
+
                     b.HasIndex("Name");
 
                     b.HasIndex("UpdatedAt");
@@ -685,7 +687,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("charts");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Components", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Component", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1609,6 +1611,10 @@ namespace PrimeApps.Model.Migrations.TenantDB
 
                     b.Property<bool>("Deleted")
                         .HasColumnName("deleted");
+
+                    b.Property<string>("Description")
+                        .HasColumnName("description")
+                        .HasMaxLength(500);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -4409,6 +4415,11 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
+                        .WithMany()
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -4472,7 +4483,7 @@ namespace PrimeApps.Model.Migrations.TenantDB
                         .HasForeignKey("UpdatedById");
                 });
 
-            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Components", b =>
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Component", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()

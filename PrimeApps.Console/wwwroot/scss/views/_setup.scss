@@ -1,0 +1,241 @@
+.setup {
+  .menu {
+    width: 190px;
+    padding-top: 10px;
+    position: absolute;
+    text-align: right;
+
+    .nav-pills {
+      li {
+        a {
+          padding: 5px 10px;
+          font-weight: 500;
+        }
+      }
+
+      li > a:hover,
+      li > a:focus,
+      li.active > a,
+      li.active > a:hover,
+      li.active > a:focus {
+        color: #337ab7;
+        background-color: #d7dce4;
+      }
+    }
+  }
+
+  .menu-collapsed {
+    width: 20px;
+  }
+
+  .page {
+    min-height: 250px;
+    margin-left: 200px;
+    padding: 0;
+  }
+
+  .page-collapsed {
+    margin-left: 30px;
+  }
+
+  .page-wide {
+    margin-left: 0;
+  }
+
+  .sub-menu {
+    padding: 20px 0 0 15px;
+    border-bottom: solid 1px #ddd;
+
+    .nav-tabs {
+      border-bottom: none;
+
+      li > a:hover {
+        background-color: #f2f6fa;
+      }
+
+      li.active > a,
+      li.active > a:hover,
+      li.active > a:focus {
+        background-color: #fcfcfc;
+      }
+    }
+  }
+
+  h4 {
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 6px;
+    color: #6498c7;
+
+    i {
+      position: absolute;
+      margin-top: 2px;
+      padding: 0 8px;
+      color: #e4f1fc;
+      font-size: 14px;
+    }
+
+    .tooltip-inner {
+      padding: 10px 15px;
+      background-color: #3e5269;
+      text-align: left;
+    }
+
+    .tooltip.right .tooltip-arrow {
+      border-right-color: #3e5269;
+    }
+  }
+
+  form {
+    margin-bottom: 40px;
+  }
+
+  .form-control {
+    width: 300px;
+    height: 30px;
+    padding: 4px 6px;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 13px;
+    border-radius: 3px;
+  }
+
+  .control-label {
+    font-weight: 500 !important;
+  }
+
+  .popover {
+    form {
+      margin-bottom: 0;
+
+      .form-control {
+        width: 100%;
+        padding-left: 5px !important;
+      }
+    }
+  }
+
+  .ui-checkbox input[type=checkbox] + span {
+    &:before {
+      width: 14px;
+      height: 14px;
+      border-radius: 0;
+    }
+
+    &:after {
+      width: 6px;
+      height: 6px;
+      top: 8px;
+      left: -16px;
+    }
+  }
+
+  .table {
+    border: none;
+
+    thead > tr > th {
+      padding-left: 8px !important;
+      background-color: #fff;
+      border-bottom: 2px solid #ddd;
+      text-align: left;
+      font-weight: 500 !important;
+    }
+
+    a {
+      color: #428bca;
+    }
+  }
+
+  .setup-panel {
+    padding: 0 15px;
+
+    .panel-heading {
+      padding-top: 20px;
+      padding-bottom: 0;
+    }
+
+    .panel-heading-sub {
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .nav-tabs {
+      border-bottom: none;
+
+      li > a:hover {
+        background-color: #f2f6fa;
+      }
+
+      li.active > a,
+      li.active > a:hover,
+      li.active > a:focus {
+        background-color: #fcfcfc;
+      }
+    }
+  }
+
+  .not-allowed {
+    i {
+      float: left;
+      color: #e3b760;
+    }
+
+    p {
+      padding-left: 40px;
+    }
+  }
+
+  .empty-message {
+    padding-top: 15px;
+  }
+  .radio-btn-custom-label {
+    line-height: 15px;
+    text-align: justify;
+  }
+}
+
+.confirmation-modal {
+  i {
+    margin-top: 4px;
+    margin-left: 20px;
+    float: left;
+  }
+
+  .fa-exclamation-circle {
+    color: #a94952;
+  }
+
+  .fa-warning {
+    color: #e3b760;
+  }
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding-left: 60px;
+    line-height: 30px;
+    font-size: 20px;
+  }
+
+  p {
+    padding-left: 60px;
+    font-size: 13px;
+  }
+}
+
+.lead-convert-map {
+  .form-control {
+    width: 100%;
+  }
+}
+
+
+tags-input.ng-invalid {
+  .tags{
+    border-color: #cbd5dd;
+  }
+}
+
+.has-error tags-input .tags {
+  border-color: #a94442;
+}

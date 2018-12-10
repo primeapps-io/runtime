@@ -38,7 +38,7 @@ namespace PrimeApps.App.Helpers
                 var databaseContext = _scope.ServiceProvider.GetService<TenantDBContext>();
                 warehouse.DatabaseName = appUser.WarehouseDatabaseName;
                 using (var userRespository = new UserRepository(databaseContext, _configuration))
-                using (var roleRepository = new RoleRepository(databaseContext, _configuration))
+                using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
                 {
                     userRespository.CurrentUser = roleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 

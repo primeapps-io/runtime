@@ -127,5 +127,12 @@ namespace PrimeApps.Model.Repositories
 
             return await DbContext.SaveChangesAsync();
         }
+        public Task<Picklist> GetPicklistByLabelEn(string labelEn)
+        {
+            var picklist = DbContext.Picklists
+                .FirstOrDefaultAsync(x => !x.Deleted && x.LabelEn == labelEn);
+
+            return picklist;
+        }
     }
 }

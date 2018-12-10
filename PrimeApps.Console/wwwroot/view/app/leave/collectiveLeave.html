@@ -1,0 +1,114 @@
+<div class="modal" tabindex="-1" role="dialog" ng-controller="CollectiveLeaveController">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div>
+                <form name="collectiveLeaveModalForm" class="form-horizontal form-custom" ng-submit="submitCollectiveLeave()" autocomplete="off" novalidate ng-disabled="true">
+                    <div class="modal-header clearfix">
+                        <h4 class="modal-title pull-left">{{'Leave.CollectiveAnnualLeave' | translate}}</h4>
+                        <button type="button" class="close pull-right" data-dismiss="modal" aria-hidden="true"
+                                ng-click="!submittingModal && $hide(); $parent.$parent.$parent.refresh();"><i class="fa fa-close"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                        <div ng-show="!loadingModal">
+                            <div class="row form-group">
+                                <label name="senderLabel" class="col-sm-3 control-label">{{'Leave.FromDate' | translate}}</label>
+                                <div class="clearfix">
+                                    <input type="text"
+                                           name="baslangic_tarihi"
+                                           style="width: 40% !important;"
+                                           class="form-control ng-animate-disabled pull-left datetime-date"
+                                           ng-model="record['baslangic_tarihi']"
+                                           ng-disabled="submitted"
+                                           ng-change="fieldValueChange(); collectiveLeaveModalForm['baslangic_tarihi'].$setValidity('date', true);"
+                                           ng-required="required"
+                                           placeholder="{{'Common.Date' | translate}}"
+                                           data-autoclose="1"
+                                           data-date-type="iso"
+                                           data-icon-left="fa fa-chevron-left"
+                                           data-icon-right="fa fa-chevron-right"
+                                           tabindex="1"
+                                           bs-datepicker>
+                                    <select class="form-control ng-animate-disabled custom-readonly"
+                                            name="from_entry_type"
+                                            style="width:29% !important;font-size: 10px;"
+                                            tabindex="2"
+                                            ng-disabled="submitted"
+                                            ng-model="record['from_entry_type']"
+                                            ng-change="fieldValueChange(customLeaveFields['from_entry_type']);"
+                                            ng-required="required"
+                                            ng-options="o as o.label[language] for o in picklistsModule[customLeaveFields['from_entry_type'].picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
+                                            >
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-sm-3 control-label">{{'Leave.ToDate' | translate}} </label>
+                                <div class="clearfix">
+                                    <input type="text"
+                                           name="bitis_tarihi"
+                                           class="form-control ng-animate-disabled pull-left datetime-date"
+                                           style="width: 40% !important;"
+                                           tabindex="3"
+                                           ng-disabled="submitted"
+                                           ng-change="fieldValueChange(); collectiveLeaveModalForm['baslangic_tarihi'].$setValidity('date', true);"
+                                           ng-model="record['bitis_tarihi']"
+                                           ng-required="required"
+                                           placeholder="{{'Common.Date' | translate}}"
+                                           data-autoclose="1"
+                                           data-date-type="iso"
+                                           data-icon-left="fa fa-chevron-left"
+                                           data-icon-right="fa fa-chevron-right"
+                                           bs-datepicker>
+
+                                    <select class="form-control ng-animate-disabled custom-readonly"
+                                            name="to_entry_type"
+                                            style="width:29% !important;font-size: 10px;"
+                                            tabindex="4"
+                                            ng-disabled="submitted"
+                                            ng-model="record['to_entry_type']"
+                                            ng-change="fieldValueChange(customLeaveFields['to_entry_type']);"
+                                            ng-required="required"
+                                            ng-options="o as o.label[language] for o in picklistsModule[customLeaveFields['to_entry_type'].picklist_id] | filter:{inactive:'!true', hidden:'!true'} track by o.id"
+                                            >
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label class="col-sm-3 control-label">{{'Leave.RequestedDays' | translate}} </label>
+                                <input type="text"
+                                       name="hesaplanan_alinacak_toplam_izin"
+                                       class="form-control ng-animate-disabled"
+                                       style="width: 70%;"
+                                       tabindex="4"
+                                       placeholder=""
+                                       ng-model="record['hesaplanan_alinacak_toplam_izin']"
+                                       ng-change="fieldValueChange();"
+                                       ng-required="field.validation.required"
+                                       ng-readonly="true"
+                                       maxlength="19"
+                                       min-value="0"
+                                       max-value="Number.MAX_VALUE"
+                                       places="1"
+                                       number-decimal
+                                />
+                            </div>
+                        </div>
+                        <div class="clearfix">
+                            <div class="col-sm-12 text-right">
+                                <button type="submit" class="btn btn-w-md btn-primary" ng-disabled="(!record['baslangic_tarihi'] && !record['bitis_tarihi']) || submitted" ladda="submittingModal"><i class="fa fa-check-circle pull-left pull-right"></i> {{'Common.Add' | translate}}</button>
+                            </div>
+                        </div>
+                        <div class="clearfix" ng-if="notValidUser.length > 0" style="background-color: #e8e8e8;margin-top: 10px;padding-top: 10px;border-radius: 5px;">
+                            <div class="col-sm-12">
+                                <label class="col-sm-12" style="border-bottom: 1px solid #d0cbcb;">{{'Leave.UnassignedEmployees' | translate}}</label>
+                                <label class="col-sm-12" ng-repeat="(i, user) in notValidUser"><span style="font-weight: bold">{{'Setup.Users.UserFullName' | translate}}: </span>{{user.ad_soyad}} / <span style="font-weight: bold">{{'Setup.Users.UserEmail' | translate}}: </span>{{user.e_posta}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -100,6 +100,7 @@ namespace PrimeApps.App.Controllers
             if(components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
 
+            //TODO Account Suspended control !
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();

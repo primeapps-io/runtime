@@ -140,7 +140,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_reports"), HttpGet]
         public async Task<IActionResult> GetReports()
         {
-            var analytics = await _analyticRepository.GetReports();
+            var analytics = await _analyticRepository.GetReports(AppUser.HasAdminProfile);
             var reports = await _powerBiHelper.GetReports(AppUser, analytics);
 
             return Ok(reports);

@@ -1,0 +1,23 @@
+<div class="popover">
+    <div class="arrow"></div>
+    <div class="popover-content" style="max-width: 160px;">
+        <div ng-if="salesInvoiceModule">
+            <a href="#/app/moduleForm/{{type}}?stype={{transactionType.value}}" class="btn btn-sm btn-custom"
+               style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)"
+               ng-repeat="transactionType in transactionTypes"
+               ng-if="salesInvoiceModule && (transactionType.system_code =='payment' || transactionType.system_code =='collection') ">
+                {{transactionType.label[language]}}
+            </a>
+        </div>
+        <div ng-if="!salesInvoiceModule">
+            <a href="#/app/moduleForm/{{type}}?stype={{transactionType.value}}" class="btn btn-sm btn-custom"
+               style="display: block; margin-bottom: 5px;" ng-show="hasPermission(type, operations.write)"
+               ng-repeat="transactionType in transactionTypes" ng-if="!salesInvoiceModule">
+                {{transactionType.label[language]}}
+            </a>
+        </div>
+
+    </div>
+</div>
+
+

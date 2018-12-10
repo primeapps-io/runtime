@@ -1,0 +1,40 @@
+<div class="aside order-dashlet-form" style="z-index: 99999999999; overflow: auto;" tabindex="-1">
+    <div class="aside-dialog">
+        <div class="aside-content">
+            <form name="dashletOrderChange" class="form-horizontal form-custom" ng-submit="dashletOrderSave()"
+                  autocomplete="off" novalidate>
+                <div class="aside-body" style="    padding: 15px !important;">
+                    <div ng-show="loadingModal" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                    <div ng-show="!loadingModal">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="dashletOptionContainer">
+                                    <ul id="dashletOrderContainer" class="list-unstyled">
+                                        <li ng-repeat="dashlet in dashlets" class="option-drag   option-handle">
+                                            <i class="fa fa-arrows"></i> {{ dashlet.dashlet_type === 'widget' ?
+                                            dashlet.widget.name :
+                                            dashlet.chart_item.chart.caption }}
+
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-custom" ng-disabled="submittingModal"
+                            ng-click="cancelChangeOrder();">
+                        {{'Common.Cancel' | translate}}
+                    </button>
+                    <button type="submit" class="btn btn-w-md btn-primary" ladda="submittingModal" ng-show="!forbidden">
+                        <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

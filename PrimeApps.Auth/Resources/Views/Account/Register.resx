@@ -171,4 +171,25 @@
   <data name="UserExist" xml:space="preserve">
     <value>You already registered with this email. Please try another e-mail address to sign up.</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Unexpected error occurred. Please try again later.</value>
+  </data>
+  <data name="ExternalLoginVerifyContent" xml:space="preserve">
+    <value>You have an account with a different {0} application.&lt;br /&gt; You can start using the application by entering the password of this account.</value>
+  </data>
+  <data name="ExternalLoginVerifyTitle" xml:space="preserve">
+    <value>You have an account</value>
+  </data>
+  <data name="ForgotPasswordSuccess" xml:space="preserve">
+    <value>Please check your e-mail for a message from Ofisim.com then click on the link to change your password.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="WrongInfo" xml:space="preserve">
+    <value>E-mail or password is invalid.</value>
+  </data>
 </root>

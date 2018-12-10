@@ -1,7 +1,7 @@
 angular.module('primeapps')
 
-    .factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo',
-        function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo) {
+    .factory('ModuleService', ['$rootScope', '$http', 'config', '$q', '$filter', '$cache', '$window', 'helper', 'operations', 'ngTableParams', 'icons', 'dataTypes', 'operators', 'activityTypes', 'transactionTypes', 'yesNo', 'components',
+        function ($rootScope, $http, config, $q, $filter, $cache, $window, helper, operations, ngTableParams, icons, dataTypes, operators, activityTypes, transactionTypes, yesNo, components) {
             return {
                 myAccount: function () {
                     return $http.post(config.apiUrl + 'User/MyAccount', {});
@@ -14,6 +14,14 @@ angular.module('primeapps')
                 },
                 addUser: function (user) {
                     return $http.post(config.apiUrl + 'User/add_user', user);
+                },
+                deleteUser: function (user, instanceId) {
+                    return $http.post(config.apiUrl + 'Instance/Dismiss', {
+                        UserID: user.ID,
+                        EMail: user.email,
+                        HasAccount: user.hasAccount,
+                        InstanceID: instanceId
+                    });
                 },
                 getUserEmailControl: function (email) {
                     return $http.get(config.apiUrl + 'User/get_user_email_control?Email=' + email);
@@ -95,7 +103,29 @@ angular.module('primeapps')
                 },
 
                 deleteRecord: function (module, id) {
-                    return $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id);
+                    if ($rootScope.branchAvailable && module === 'calisanlar') {
+                        var deferred = $q.defer();
+
+                        var that = this;
+                        this.getRecord(module, id)
+                            .then(function (response) {
+                                if (response.data) {
+                                    var user = $filter('filter')($rootScope.workgroup.users, { email: response.data['e_posta'] }, true)[0];
+                                    if (user) {
+                                        that.deleteUser(user, $rootScope.workgroup.tenant_id);
+                                    }
+                                    $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id)
+                                        .then(function (response) {
+                                            deferred.resolve(response);
+                                            return deferred.promise;
+                                        });
+                                }
+                            });
+                        return deferred.promise;
+                    }
+                    else {
+                        return $http.delete(config.apiUrl + 'record/delete/' + module + '/' + id);
+                    }
                 },
 
                 addRelations: function (module, relatedModule, relations) {
@@ -971,7 +1001,7 @@ angular.module('primeapps')
                     }
 
                     //lookup field filters (from field_filters table)
-                    if (field.filters.length > 0) {
+                    if (field.filters) {
                         var no = findRequest.filters.length;
                         for (var z = 0; z < field.filters.length; z++) {
                             var filter = field.filters[z];
@@ -1099,6 +1129,11 @@ angular.module('primeapps')
 
                         if (field.data_type == 'checkbox' && newRecord[field.name] === null && currentRecord[field.name])
                             newRecord[field.name] = false;
+
+                        if (field.deleted) {
+                            delete newRecord[field.name];
+                            continue;
+                        }
 
                         if (newRecord[field.name] !== undefined && newRecord[field.name] !== null) {
                             if (!newCurrentRecord)
@@ -1684,6 +1719,7 @@ angular.module('primeapps')
 
                         if (record[dependency.field] === undefined) {
                             dependent.hidden = true;
+                            delete record[dependency.dependent_field];
                             continue;
                         }
 
@@ -1693,6 +1729,7 @@ angular.module('primeapps')
                         if (angular.isArray(recordValue)) {
                             if (!record[dependency.field].length) {
                                 dependent.hidden = true;
+                                delete record[dependency.dependent_field];
                                 continue;
                             }
 
@@ -1719,12 +1756,23 @@ angular.module('primeapps')
 
                         if (!dependency.otherwise && !dependentValue) {
                             dependent.hidden = true;
+                            delete record[dependency.dependent_field];
                             continue;
                         }
 
                         if (dependency.otherwise && dependentValue) {
                             dependent.hidden = true;
+                            delete record[dependency.dependent_field];
                             continue;
+                        }
+
+                        if (!dependency.dependent_section) {
+                            var dependencyField = $filter('filter')(module.fields, { name: dependency.field }, true)[0];
+                            if (dependencyField.hidden) {
+                                dependent.hidden = true;
+                                delete record[dependency.dependent_field];
+                                continue;
+                            }
                         }
 
                         dependent.hidden = false;
@@ -3406,7 +3454,10 @@ angular.module('primeapps')
                                                                 $cache.put(key, cacheItem);
 
                                                             var findRecords = function (findRequest, cacheItem) {
-                                                                that.findRecords(scope.module.name, findRequest)
+                                                                scope.listFindRequest = findRequest;
+                                                                components.run('BeforeListRequest', 'Script', scope);
+
+                                                                that.findRecords(scope.module.name, scope.listFindRequest)
                                                                     .then(function (response) {
                                                                         var hasFilter = false;
 
@@ -3439,7 +3490,7 @@ angular.module('primeapps')
                                                                         //Get number of record which is displaying in table.
                                                                         if (relatedModule && !scope.relatedModuleInModal) {
                                                                             var recordIds = [];
-                                                                            var findRequest = {
+                                                                            scope.listFindRequest = {
                                                                                 fields: relatedModule.relation_type === 'one_to_many' ? ['id'] : [scope.module.name + '_id'],
                                                                                 filters: [{
                                                                                     field: relatedModule.relation_type === 'one_to_many' ? relatedModule.relation_field : scope.parentModule + "_id",
@@ -3451,9 +3502,9 @@ angular.module('primeapps')
                                                                                 offset: 0
                                                                             };
                                                                             var relationType = relatedModule.relation_type ? relatedModule.relation_type : 'many_to_many';
-                                                                            findRequest[relationType] = scope.parentModule;
+                                                                            scope.listFindRequest[relationType] = scope.parentModule;
 
-                                                                            that.findRecords(scope.module.name, findRequest)
+                                                                            that.findRecords(scope.module.name, scope.listFindRequest)
                                                                                 .then(function (response) {
                                                                                     if (response.data.length > 0) {
                                                                                         for (var i = 0; i < response.data.length; i++) {

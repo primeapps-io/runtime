@@ -179,7 +179,7 @@ namespace PrimeApps.App.Controllers
                     externalEmail.AddRecipient(emailRecipient);
                 }
 
-                externalEmail.AddToQueue(cc: emailRequest.Cc, bcc: emailRequest.Bcc);
+                externalEmail.AddToQueue( cc: emailRequest.Cc, bcc: emailRequest.Bcc, fromEmail: emailRequest.FromEmail, Name: emailRequest.FromName);
 
                 return Ok(emailRequest.ToAddresses.Count());
             }

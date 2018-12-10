@@ -140,7 +140,8 @@ namespace PrimeApps.App.Controllers
             //Create dynamic table
             try
             {
-                var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
+				moduleEntity.Name = char.IsNumber(moduleEntity.Name[0]) ? "n" + moduleEntity.Name : moduleEntity.Name;
+				var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
 
                 if (resultCreateTable != -1)
                 {

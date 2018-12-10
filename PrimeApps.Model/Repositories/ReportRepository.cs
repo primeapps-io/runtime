@@ -102,8 +102,10 @@ namespace PrimeApps.Model.Repositories
 
 					var records = recordRepository.Find(report.Module.Name, findRequest, roleBasedEnabled, timezoneOffset);
 					var dataItem = new JObject();
-					var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-					var lookupModules = await RecordHelper.GetLookupModules(report.Module, moduleRepository, tenantLanguage: appUser.TenantLanguage);
+
+ 				    var currentCulture = appUser.Culture != null ? appUser.Culture : locale == "en" ? "en-US" : "tr-TR";
+
+                    var lookupModules = await RecordHelper.GetLookupModules(report.Module, moduleRepository, tenantLanguage: appUser.TenantLanguage);
 
 					if (!records.IsNullOrEmpty() && !records[0].IsNullOrEmpty())
 					{
@@ -161,8 +163,10 @@ namespace PrimeApps.Model.Repositories
 					}
 
 					var records = recordRepository.Find(report.Module.Name, findRequest, roleBasedEnabled, timezoneOffset);
-					var currentCulture = locale == "en" ? "en-US" : "tr-TR";
-					var lookupModules = await RecordHelper.GetLookupModules(report.Module, moduleRepository, tenantLanguage: appUser.TenantLanguage);
+
+				    var currentCulture = appUser.Culture != null ? appUser.Culture : locale == "en" ? "en-US" : "tr-TR";
+
+                    var lookupModules = await RecordHelper.GetLookupModules(report.Module, moduleRepository, tenantLanguage: appUser.TenantLanguage);
 
 					foreach (var record in records)
 					{

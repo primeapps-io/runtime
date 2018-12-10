@@ -72,10 +72,12 @@ namespace PrimeApps.App.Helpers
                 using (var _workflowRepository = new WorkflowRepository(databaseContext, _configuration))
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
+                using (var _profileRepository = new ProfileRepository(databaseContext, _configuration))
                 using (var _userRepository = new UserRepository(databaseContext, _configuration))
                 using (var _picklistRepository = new PicklistRepository(databaseContext, _configuration))
+                using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-                    _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    _profileRepository.CurrentUser = _userRepository.CurrentUser = _picklistRepository.CurrentUser = _workflowRepository.CurrentUser = _moduleRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
                     var workflows = await _workflowRepository.GetAll(module.Id, true);
                     workflows = workflows.Where(x => x.OperationsArray.Contains(operationType.ToString())).ToList();
                     var culture = CultureInfo.CreateSpecificCulture(appUser.Culture);
@@ -573,7 +575,7 @@ namespace PrimeApps.App.Helpers
 
 
                                 var modelState = new ModelStateDictionary();
-                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, false, currentRecordFieldUpdate, appUser: appUser);
+                                var resultBefore = await BeforeCreateUpdate(fieldUpdateModule, recordFieldUpdate, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, false, currentRecordFieldUpdate, appUser: appUser);
 
                                 if (resultBefore < 0 && !modelState.IsValid)
                                 {
@@ -658,7 +660,7 @@ namespace PrimeApps.App.Helpers
                             task["created_by"] = workflow.CreatedById;
 
                             var modelState = new ModelStateDictionary();
-                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage);
+                            var resultBefore = await BeforeCreateUpdate(moduleActivity, task, modelState, appUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: appUser);
 
                             if (resultBefore < 0 && !modelState.IsValid)
                             {
@@ -722,8 +724,14 @@ namespace PrimeApps.App.Helpers
 
                                         lookupModules.Add(Model.Helpers.ModuleHelper.GetFakeUserModule());
 
+                                        var webhookFormatNumeric = true;
+                                        var webhookRecordFormatSetting = await _settingRepository.GetByKeyAsync("webhook_format_numeric");
+
+                                        if (webhookRecordFormatSetting != null)
+                                            webhookFormatNumeric = bool.Parse(webhookRecordFormatSetting.Value);
+
                                         var recordData = _recordRepository.GetById(module, recordId, false, lookupModules, true);
-                                        recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules);
+                                        recordData = await Model.Helpers.RecordHelper.FormatRecordValues(module, recordData, _moduleRepository, _picklistRepository, _configuration, appUser.TenantGuid, appUser.Language, appUser.Culture, 180, lookupModules, false, webhookFormatNumeric);
 
                                         foreach (var dataString in data)
                                         {
@@ -740,8 +748,6 @@ namespace PrimeApps.App.Helpers
 
                                                 if (currentField.DataType == DataType.Lookup && currentField.LookupType == "users")
                                                     jsonData[parameterName] = recordData[fieldName + ".full_name"];
-                                                else if (currentField.DataType == DataType.Currency)
-                                                    jsonData[parameterName] = recordData[fieldName].ToString().Replace(currentField.CurrencySymbol, "");
                                                 else
                                                     jsonData[parameterName] = recordData[fieldName];
                                             }
@@ -830,8 +836,8 @@ namespace PrimeApps.App.Helpers
 
                             string domain;
 
-							domain = "http://{0}.ofisim.com/";
-							var appDomain = "crm";
+                            domain = "http://{0}.ofisim.com/";
+                            var appDomain = "crm";
 
                             switch (appUser.AppId)
                             {
@@ -855,14 +861,14 @@ namespace PrimeApps.App.Helpers
 
                             //domain = "http://localhost:5554/";
 
-							using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
-							{
-								var app = await _appRepository.Get(appUser.AppId);
-								if (app != null)
-								{
-									domain = "http://" + app.Setting.AppDomain + "/";
-								}
-							}
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            {
+                                var app = await _appRepository.Get(appUser.AppId);
+                                if (app != null)
+                                {
+                                    domain = "http://" + app.Setting.AppDomain + "/";
+                                }
+                            }
 
                             var url = domain + "#/app/module/" + module.Name + "?id=" + record["id"];
 
@@ -1150,7 +1156,7 @@ namespace PrimeApps.App.Helpers
                         foreach (var filterModel in workflowModel.Filters)
                         {
                             var field = module.Fields.Single(x => x.Name == filterModel.Field);
-                            var value = filterModel.Value.ToString();
+                            var value = filterModel.Value == null ? string.Empty : filterModel.Value.ToString();
 
                             if (filterModel.Operator != Operator.Empty && filterModel.Operator != Operator.NotEmpty)
                             {
@@ -1163,7 +1169,7 @@ namespace PrimeApps.App.Helpers
                                 {
                                     var picklistLabels = new List<string>();
 
-                                    var values = filterModel.Value.ToString().Split(',');
+                                    var values = value.Split(',');
 
                                     foreach (var val in values)
                                     {

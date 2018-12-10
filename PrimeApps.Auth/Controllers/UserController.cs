@@ -1,35 +1,29 @@
 ﻿using IdentityModel;
-using IdentityServer4.Events;
-using IdentityServer4.Extensions;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using PrimeApps.Auth.Models;
-using PrimeApps.Auth.Models.UserViewModels;
 using PrimeApps.Auth.UI;
-using PrimeApps.Model.Constants;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using User = PrimeApps.Model.Entities.Tenant.TenantUser;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
 using Microsoft.AspNetCore.Http;
 using PrimeApps.Model.Entities.Platform;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Newtonsoft.Json.Linq;
+using PrimeApps.Auth.Helpers;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Auth.Controllers
 {
-	[Route("user")]
-	[SecurityHeaders]
+    [Route("[controller]")]
+    [SecurityHeaders]
 	public class UserController : Controller
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
@@ -75,7 +69,6 @@ namespace PrimeApps.Auth.Controllers
 				ModelState.AddModelError("", "ModelState is not valid.");
 				return BadRequest(ModelState);
 			}
-            var a = _signInManager.IsSignedIn(User);
             if (User?.Identity.IsAuthenticated == false)
                 return Unauthorized();
             
@@ -213,11 +206,31 @@ namespace PrimeApps.Auth.Controllers
 
             await _platformUserRepository.UpdateAsync(platformUser);
             
+            var externalLogin = appInfo.Setting.ExternalAuth != null ? JObject.Parse(appInfo.Setting.ExternalAuth) : null;
+
+            if (externalLogin != null)
+            {
+                var actions = (JArray)externalLogin["actions"];
+                var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "register").FirstOrDefault();
+
+                var obj = new JObject
+                {
+                    ["email"] = addUserBindingModel.Email,
+                    ["password"] = randomPassword,
+                    ["first_name"] = addUserBindingModel.FirstName,
+                    ["last_name"] = addUserBindingModel.LastName,
+                    ["full_name"] = addUserBindingModel.FirstName + " " + addUserBindingModel.LastName,
+                    ["language"] = addUserBindingModel.Culture
+                };
+
+                await ExternalAuthHelper.Register(externalLogin, action, obj);
+            }
+
             return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
 		}
         
 		[Route("change_password"), HttpPost]
-		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel)
+		public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordViewModel changePasswordViewModel, [FromQuery] string client)
 		{
 			if (!ModelState.IsValid)
 				return Unauthorized();
@@ -225,11 +238,53 @@ namespace PrimeApps.Auth.Controllers
 			var user = await _userManager.FindByEmailAsync(changePasswordViewModel.Email);
 			var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
 
-			return result.Succeeded ? Ok() : StatusCode(400);
+            var application = await _applicationRepository.GetByName(client);
+            var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
+
+            if (result.Succeeded && externalLogin != null)
+            {
+                var actions = (JArray)externalLogin["actions"];
+                var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "change_password").FirstOrDefault();
+
+                var obj = new JObject
+                {
+                    ["email"] = changePasswordViewModel.Email,
+                    ["old_password"] = changePasswordViewModel.OldPassword,
+                    ["new_password"] = changePasswordViewModel.NewPassword
+                };
+
+                ExternalAuthHelper.ChangePassword(externalLogin, action, obj);
+            }
+
+            return result.Succeeded ? Ok() : StatusCode(400);
 		}
 
-		//Helpers
-		public async Task<string> GetConfirmToken(ApplicationUser user)
+        [HttpPost("verify_user", Name="verify_user")]
+        public async Task<bool> VerifyUser([FromBody] ExternalLoginBindingModel model)
+        {
+            var application = await _applicationRepository.GetByName(model.client);
+            var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
+
+            if (externalLogin != null)
+            {
+                var actions = (JArray)externalLogin["actions"];
+                var action = actions.Where(x => x["type"] != null && x["type"].ToString() == "login").FirstOrDefault();
+
+                var obj = new JObject
+                {
+                    ["email"] = model.email,
+                    ["password"] = model.password
+                };
+
+                var result = await ExternalAuthHelper.VerifyUser(externalLogin, action, obj);
+
+                return result.IsSuccessStatusCode;
+            }
+
+            return false;
+        }
+        //Helpers
+        public async Task<string> GetConfirmToken(ApplicationUser user)
 		{
 			return await _userManager.GenerateEmailConfirmationTokenAsync(user);
 		}

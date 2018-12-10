@@ -36,11 +36,24 @@ namespace PrimeApps.Model.Repositories
         /// </summary>
         /// <param name="newRole"></param>
         /// <returns></returns>
-        public async Task<int> CreateAsync(Role newRole)
+        public async Task<int> CreateAsync(Role newRole, string tenantLanguage)
         {
             DbContext.Roles.Add(newRole);
-            await DbContext.SaveChangesAsync();
-            return newRole.Id;
+            var result = await DbContext.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+
+                if (_warehouse.DatabaseName != "0")
+                {
+                    BackgroundJob.Enqueue(() => _warehouse.CreateRole(newRole.Id, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
+                }
+                return newRole.Id;
+            }
+
+            return -1;
         }
 
         public async Task<Role> GetWithCode(string code)
@@ -333,7 +346,7 @@ namespace PrimeApps.Model.Repositories
         /// </summary>
         /// <param name="updatedRole"></param>
         /// <returns></returns>
-        public async Task UpdateAsync(Role roleToUpdate, RoleDTO role)
+        public async Task UpdateAsync(Role roleToUpdate, RoleDTO role, string tenantLanguage)
         {
             int? oldRoleID = roleToUpdate.ReportsToId;
             roleToUpdate.Id = role.Id;
@@ -393,7 +406,18 @@ namespace PrimeApps.Model.Repositories
                 }
             }
 
-            await DbContext.SaveChangesAsync();
+            var result = await DbContext.SaveChangesAsync();
+
+            if (result > 0)
+            {
+                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                
+                if (_warehouse.DatabaseName != "0")
+                {
+                    BackgroundJob.Enqueue(() => _warehouse.UpdateRole(roleToUpdate, _warehouse.DatabaseName, CurrentUser, tenantLanguage));
+                }
+            }
         }
     }
 }

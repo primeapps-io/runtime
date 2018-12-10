@@ -602,7 +602,7 @@ namespace PrimeApps.App.Controllers
 			if (moduleEntity == null || mail == null)
 				return BadRequest();
 
-			var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage);
+			var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, mail, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: AppUser);
 
 			if (resultBefore < 0 && !ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -654,7 +654,7 @@ namespace PrimeApps.App.Controllers
 					{
 						foreach (var combinationField in combinationFields)
 						{
-							_recordHelper.SetCombinations(currentRecord, null, combinationField);
+							_recordHelper.SetCombinations(currentRecord, _moduleRepository, AppUser.Culture, null, combinationField, 180);
 						}
 
 						hasUpdate = true;

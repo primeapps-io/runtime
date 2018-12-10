@@ -18,9 +18,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class PlatformUserRepository : RepositoryBasePlatform, IPlatformUserRepository
     {
-        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
-        {
-        }
+        public PlatformUserRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public async Task<PlatformUser> Get(int platformUserId)
         {
@@ -136,11 +134,19 @@ namespace PrimeApps.Model.Repositories
             var userTenant = await DbContext.UserTenants
                 .Include(x => x.PlatformUser)
                 .Include(x => x.Tenant).ThenInclude(z => z.App)
+                /*.Include(x => x.TenantsAsUser).ThenInclude(z => z.Setting)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.License)
+				.Include(x => x.TenantsAsUser).ThenInclude(z => z.App).ThenInclude(z => z.Setting)*/
                 .SingleOrDefaultAsync(x => x.PlatformUser.Email == email && x.Tenant.AppId == appId);
 
             return userTenant?.Tenant;
         }
 
+        /// <summary>
+        /// Checks if that email address is available.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public async Task<EmailAvailableType> IsEmailAvailable(string email, int appId)
         {
             var user = await DbContext.Users
@@ -157,15 +163,16 @@ namespace PrimeApps.Model.Repositories
                 return appTenant != null ? EmailAvailableType.NotAvailable : EmailAvailableType.AvailableForApp;
             }
 
+            //return status.
             return EmailAvailableType.Available;
         }
 
         public async Task<List<PlatformUser>> GetAllByTenant(int tenantId)
         {
             var tenant = await DbContext.Tenants
-                .Include(x => x.TenantUsers)
-                .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
-                .FirstOrDefaultAsync(x => x.Id == tenantId);
+                 .Include(x => x.TenantUsers)
+                 .Include(x => x.TenantUsers.Select(z => z.PlatformUser))
+                 .FirstOrDefaultAsync(x => x.Id == tenantId);
 
             return tenant?.TenantUsers.Select(x => x.PlatformUser).ToList();
         }
@@ -177,14 +184,18 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<IList<Workgroup>> MyWorkgroups(int id)
         {
-            var result = await DbContext.Tenants
+            //create result lists.
+            IList<Workgroup> result = null;
+
+            //get instances by user id, then fetch entity types with it's fields.
+            result = await DbContext.Tenants
                 .Where(x => x.OwnerId == id)
-                .Select(i => new Workgroup
+                .Select(i => new Workgroup //create workgroup dto and assign its fields.
                 {
                     TenantId = i.Id,
                     Title = i.Title,
                     OwnerId = i.OwnerId,
-                    Users = i.TenantUsers.Select(u => new UserList//get users for the instance.
+                    Users = i.TenantUsers.Select(u => new UserList //get users for the instance.
                     {
                         Id = u.PlatformUser.Id,
                         userName = u.PlatformUser.FirstName + " " + u.PlatformUser.LastName,
@@ -194,15 +205,21 @@ namespace PrimeApps.Model.Repositories
                     }).OrderByDescending(x => x.isAdmin).ToList()
                 }).ToListAsync();
 
+            //return workgroup object.
             return result;
         }
 
         public async Task<int> GetTenantModuleLicenseCount(int tenantId)
         {
             var moduleLicenseCount = await DbContext.TenantLicenses.Where(x => x.TenantId == tenantId)
-                .Select(x => x.ModuleLicenseCount).SingleOrDefaultAsync();
+                  .Select(x => x.ModuleLicenseCount).SingleOrDefaultAsync();
 
             return moduleLicenseCount;
+        }
+
+        public PlatformUser GetByEmail(string email)
+        {
+            return DbContext.Users.SingleOrDefault(x => x.Email == email);
         }
     }
 }

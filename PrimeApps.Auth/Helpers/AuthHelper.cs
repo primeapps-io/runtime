@@ -42,7 +42,7 @@ namespace PrimeApps.Auth.UI
             if (string.IsNullOrWhiteSpace(language))
                 language = app.Setting.Language ?? "tr";
 
-            var theme = JObject.Parse(app.Setting.AutTheme);
+            var theme = JObject.Parse(app.Setting.AuthTheme);
 
             var application = new Application
             {
@@ -64,11 +64,13 @@ namespace PrimeApps.Auth.UI
                     Currency = app.Setting.Currency,
                     TimeZone = app.Setting.TimeZone,
                     GoogleAnalytics = app.Setting.GoogleAnalyticsCode,
+                    ExternalLogin = app.Setting.ExternalAuth,
+                    RegistrationType = app.Setting.RegistrationType,
                     TenantOperationWebhook = app.Setting.TenantOperationWebhook,
                 }
             };
            
-            ErrorHandler.LogMessage("GetApplicationInfoAsync:: ReturnUrl: " + returnUrl + " ClientId: " + clientId + " AppId: " + app.Id + " App: " + app + " Application: " + application, Sentry.Protocol.SentryLevel.Info);
+            //ErrorHandler.LogMessage("GetApplicationInfoAsync:: ReturnUrl: " + returnUrl + " ClientId: " + clientId + " AppId: " + app.Id + " App: " + app + " Application: " + application, Sentry.Protocol.SentryLevel.Info);
             return application;
         }
 

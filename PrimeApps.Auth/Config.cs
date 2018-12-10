@@ -138,6 +138,60 @@ namespace PrimeApps.Auth
                         "api1"
                     },
                     AccessTokenLifetime = 864000
+                },
+                // OpenID Connect hybrid flow and client credentials client (PrimeApps Console)
+                new Client
+                {
+                    ClientId = "primeapps_console",
+                    ClientName = "PrimeApps Console",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                    AllowRememberConsent = false,
+                    AlwaysSendClientClaims = true,
+                    RequireConsent = false,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = { "https://console-dev.primeapps.io/signin-oidc" },
+                    PostLogoutRedirectUris = { "https://console-dev.primeapps.io/signout-callback-oidc" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    },
+                    AccessTokenLifetime = 864000
+                },
+                // OpenID Connect hybrid flow and client credentials client (PrimeApps Console Local)
+                new Client
+                {
+                    ClientId = "primeapps_console_local",
+                    ClientName = "PrimeApps Console",
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
+                    AllowRememberConsent = false,
+                    AlwaysSendClientClaims = true,
+                    RequireConsent = false,
+
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = { "http://localhost:5005/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:5005/signout-callback-oidc" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    },
+                    AccessTokenLifetime = 864000
                 }
             };
         }

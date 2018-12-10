@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Entities.Platform;
@@ -19,17 +16,16 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> CreateUser(PlatformUser user);
         Task<int> DeleteAsync(PlatformUser user);
         Task UpdateAsync(PlatformUser userToEdit);
-        Task<PlatformUser> GetUserByAutoId(int tenantID);
+        Task<PlatformUser> GetUserByAutoId(int tenantId);
         Task<EmailAvailableType> IsEmailAvailable(string email, int appId);
         Task<Tenant> GetTenantWithOwner(int tenantId);
-
         Task<int> GetIdByEmail(string email);
         Task<List<PlatformUser>> GetAllByTenant(int tenantId);
         Task<string> GetEmail(int userId);
         Task<IList<Workgroup>> MyWorkgroups(int globalId);
         PlatformUser GetByEmailAndTenantId(string email, int tenantId);
         Task<Tenant> GetTenantByEmailAndAppId(string email, int appId);
-        Task<int> GetTenantModuleLicenseCount(int tenantID);
-
+        Task<int> GetTenantModuleLicenseCount(int tenantId);
+        PlatformUser GetByEmail(string email);
     }
 }

@@ -251,7 +251,7 @@ namespace PrimeApps.App.Controllers
 							else*/
                             ViewData["appName"] = "İK";
 
-                            ViewBag.Error = "User exist";
+                            ViewBag.Error = "UserExist";
                         }
                     }
                 }

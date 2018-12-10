@@ -41,7 +41,7 @@ namespace PrimeApps.Model.Repositories
 
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
-                if (_warehouse.DatabaseName != "0")
+                if (_warehouse != null && _warehouse.DatabaseName != "0")
                     BackgroundJob.Enqueue(() => _warehouse.CreateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser, user.Culture.Contains("tr") ? "tr" : "en"));
             }
 
@@ -141,7 +141,7 @@ namespace PrimeApps.Model.Repositories
             var result = await DbContext.SaveChangesAsync();
             if (result > 0 && !string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
             {
-                if (_warehouse.DatabaseName != "0")
+                if (_warehouse != null && _warehouse.DatabaseName != "0")
                     BackgroundJob.Enqueue(() => _warehouse.UpdateTenantUser(user.Id, _warehouse.DatabaseName, CurrentUser));
             }
         }
