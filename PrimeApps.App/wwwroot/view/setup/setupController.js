@@ -24,7 +24,8 @@ angular.module('primeapps')
                         { link: '#/app/setup/general', label: 'Setup.Nav.System', order: 8, app: 'crm' },
                         { link: '#/app/setup/workflows', label: 'Setup.Nav.Workflow', order: 9, app: 'crm' },
                         { link: '#/app/setup/approvel_process', label: 'Setup.Nav.ApprovelProcess', order: 10, app: 'crm' },
-                        { link: '#/app/setup/help', label: 'Setup.Nav.HelpGuide', order: 11, app: 'crm' }
+						{ link: '#/app/setup/help', label: 'Setup.Nav.HelpGuide', order: 11, app: 'crm' },
+						{ link: '#/app/setup/menu_list', label: 'Setup.Nav.Menu', order: 12, app: 'crm' }
                     ];
 
                     if ($rootScope.workgroup.has_analytics)

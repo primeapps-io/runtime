@@ -74,7 +74,7 @@ namespace PrimeApps.App.Helpers
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-                    _processRequestRepository.CurrentUser = _moduleRepository.CurrentUser = _userRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    _processRequestRepository.CurrentUser = _moduleRepository.CurrentUser = _userRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var requestInsert = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.insert);
                     var requestUpdate = await _processRequestRepository.GetByRecordId((int)record["id"], module.Name, OperationType.update);
@@ -939,7 +939,7 @@ namespace PrimeApps.App.Helpers
                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                 using (var _settingRepository = new SettingRepository(databaseContext, _configuration))
                 {
-                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser;
+                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _userRepository.CurrentUser = _recordRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
                     //request.UpdatedById = appUser.LocalId;
@@ -1345,7 +1345,7 @@ namespace PrimeApps.App.Helpers
                     var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
                     oldExpense = oldExpenseSetting != null;
 
-                    _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
+                    _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
 
                     var process = await _processRepository.GetById(request.ProcessId);
                     var record = _recordRepository.GetById(process.Module, request.RecordId);
@@ -1508,7 +1508,7 @@ namespace PrimeApps.App.Helpers
                     var oldExpenseSetting = await _settingRepository.GetByKeyAsync("old_expense");
                     oldExpense = oldExpenseSetting != null;
 
-                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser;
+                    _moduleRepository.CurrentUser = _processRepository.CurrentUser = _recordRepository.CurrentUser = _userRepository.CurrentUser = _currentUser = _settingRepository.CurrentUser = _currentUser;
                     var process = await _processRepository.GetById(request.ProcessId);
 
                     request.ProcessStatusOrder++;

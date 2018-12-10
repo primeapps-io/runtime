@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('HelpController', ['$rootScope', '$scope', 'HelpService', 'ngToast', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state',
-        function ($rootScope, $scope, HelpService, ngToast, $filter, $window, $modal, config, $localStorage, $location, $cache, $state) {
+    .controller('HelpController', ['$rootScope', '$scope', 'HelpService', 'ngToast', '$filter', '$window', '$modal', 'config', '$localStorage', '$location', '$cache', '$state','$cookies',
+        function ($rootScope, $scope, HelpService, ngToast, $filter, $window, $modal, config, $localStorage, $location, $cache, $state,$cookies) {
             $scope.moduleFilter = $filter('filter')($rootScope.modules, { deleted: false });
             $scope.selectHelp = 'modules';
             $scope.selectHelpRelation = 'any';
@@ -127,7 +127,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('primeapps')
-    .controller('BulkEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService',
-        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService) {
+    .controller('BulkEMailController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', 'ModuleService', 'TemplateService', '$cookies',
+        function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, ModuleService, TemplateService, $cookies) {
             $scope.loadingModal = true;
             $scope.module = $filter('filter')($rootScope.modules, { name: $stateParams.type }, true)[0];
             var uploadSuccessCallback,
@@ -84,7 +84,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -156,7 +157,8 @@ angular.module('primeapps')
                     url: config.apiUrl + 'Document/upload_attachment',
                     headers: {
                         'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'X-Tenant-Id': $cookies.get('tenant_id')
                     },
                     multipart_params: {
                         container: dialog_uid
@@ -305,12 +307,12 @@ angular.module('primeapps')
                     return;
 
                 $scope.addTemplatePopover = $scope.addTemplatePopover || $popover(angular.element(document.getElementById('addTemplate')), {
-                    templateUrl: 'view/app/email/addTemplate.html',
-                    placement: 'bottom-right',
-                    autoClose: true,
-                    scope: $scope,
-                    show: true
-                });
+                        templateUrl: 'view/app/email/addTemplate.html',
+                        placement: 'bottom-right',
+                        autoClose: true,
+                        scope: $scope,
+                        show: true
+                    });
             };
 
             $scope.addTemplate = function (type) {
@@ -383,17 +385,17 @@ angular.module('primeapps')
                     emailProviderType,
                     dialog_uid,
                     $scope.Subject).then(function (response) {
-                        $scope.submittingModal = false;
-                        $scope.mailModal.hide();
-                        $scope.$parent.$parent.$parent.isAllSelected = false;
-                        $scope.templateSubject = $scope.Subject;
-                        $scope.$parent.$parent.$parent.selectedRecords = [];
-                        $scope.$parent.$parent.$parent.selectedRows = [];
-                        if ($scope.$parent.$parent.emailSent) {
-                            $scope.$parent.$parent.emailSent();
-                        }
-                        ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
-                    })
+                    $scope.submittingModal = false;
+                    $scope.mailModal.hide();
+                    $scope.$parent.$parent.$parent.isAllSelected = false;
+                    $scope.templateSubject = $scope.Subject;
+                    $scope.$parent.$parent.$parent.selectedRecords = [];
+                    $scope.$parent.$parent.$parent.selectedRows = [];
+                    if ($scope.$parent.$parent.emailSent) {
+                        $scope.$parent.$parent.emailSent();
+                    }
+                    ngToast.create({ content: $filter('translate')('EMail.MessageQueued'), className: 'success' });
+                })
                     .catch(function () {
                         $scope.submittingModal = false;
                         $scope.mailModal.hide();
@@ -502,4 +504,4 @@ angular.module('primeapps')
             }
         }
     ])
-    ;
+;

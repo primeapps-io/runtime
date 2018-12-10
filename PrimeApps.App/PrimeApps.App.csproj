@@ -37,6 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\view\app\expensesheet\" />
+    <Folder Include="wwwroot\view\setup\menu\" />
   </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4locales_4tr_1json__JSONSchema="en" /></VisualStudio></ProjectExtensions>
 </Project>
