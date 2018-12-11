@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&subset=latin-ext");
 body {
-  background-color: #e5e6e6;
+  background-color: #f6f5f2 !important;
   color: #444444;
   font-family: "Nunito", sans-serif;
   font-size: 14px;
@@ -6426,6 +6426,8 @@ tags-input.ng-invalid .tags {
   .directory .active-profile:hover img {
     border-color: #666; }
 
+.primeapps body {
+  background-color: #f6f5f2 !important; }
 .primeapps .sidebar-nav a.active i {
   color: #635fb3; }
 .primeapps .sidebar-nav a:hover:not(.sidebar-brand-logo) {
@@ -6514,6 +6516,8 @@ tags-input.ng-invalid .tags {
   letter-spacing: normal;
   text-align: center;
   color: rgba(0, 0, 0, 0.5); }
+.primeapps .dashboard {
+  padding-top: 150px; }
 .primeapps .apps-first-screen-span {
   font-family: Nunito;
   font-size: 16px;
@@ -6537,4 +6541,123 @@ tags-input.ng-invalid .tags {
   width: 260px;
   height: 40px;
   border-radius: 30px;
-  background-color: rgba(13, 111, 170, 0.75); }
+  background-color: rgba(13, 111, 170, 0.75);
+  border: none;
+  margin-top: 30px;
+  margin-bottom: 30px; }
+.primeapps .new-app-content {
+  display: flex;
+  flex-direction: row;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center; }
+.primeapps .need-help-text {
+  color: rgba(0, 0, 0, 0.5);
+  font-family: Nunito;
+  font-size: 15px; }
+.primeapps .setup-layout {
+  padding-top: 109px;
+  margin-bottom: 50px; }
+  .primeapps .setup-layout .setup-title {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: bold;
+    color: #0d6faa;
+    margin-bottom: 16px; }
+  .primeapps .setup-layout .setup-nav {
+    background: #fff;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    padding-left: 30px;
+    padding-right: 30px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 5px; }
+    .primeapps .setup-layout .setup-nav li {
+      border-bottom: solid 1px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      height: 50px; }
+      .primeapps .setup-layout .setup-nav li a {
+        font-family: Nunito;
+        font-size: 16px !important;
+        font-weight: bold;
+        width: 90%;
+        color: rgba(0, 0, 0, 0.5) !important; }
+        .primeapps .setup-layout .setup-nav li a i {
+          font-size: 18px;
+          margin-right: 20px; }
+      .primeapps .setup-layout .setup-nav li .costume-bage {
+        height: 20px;
+        width: 20px;
+        background: rgba(0, 0, 0, 0.25);
+        color: #fff;
+        border-radius: 50%;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center; }
+  .primeapps .setup-layout .nav-pills > li.active > a, .primeapps .setup-layout .nav-pills > li.active > a:hover, .primeapps .setup-layout .nav-pills > li.active > a:focus {
+    background: initial !important;
+    color: #0d6faa !important; }
+  .primeapps .setup-layout .nav > li > a:hover, .primeapps .setup-layout .nav > li > a:focus {
+    background: initial !important;
+    color: #0d6faa !important; }
+  .primeapps .setup-layout .add-button {
+    border-radius: 30px;
+    background-color: rgba(13, 111, 170, 0.75);
+    font-weight: bold;
+    color: #fff !important; }
+  .primeapps .setup-layout .list-right-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end; }
+.primeapps .table {
+  border: none; }
+  .primeapps .table thead:first-child > tr:first-child > th {
+    line-height: 38px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    font-family: Nunito !important;
+    font-weight: 400 !important;
+    color: rgba(0, 0, 0, 0.5) !important;
+    padding-left: 20px !important; }
+  .primeapps .table tr td {
+    line-height: 47px;
+    color: rgba(0, 0, 0, 0.75) !important;
+    font-family: Nunito;
+    font-weight: 400 !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: 1px solid rgba(0, 0, 0, 0.05); }
+.primeapps .table-pagination {
+  height: 66px;
+  background: #fff;
+  margin: 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center; }
+  .primeapps .table-pagination .pagination-span {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 12px; }
+  .primeapps .table-pagination .items-per-page-select {
+    width: 55px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: none;
+    text-align: center;
+    border-radius: 5px;
+    height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align-last: center; }
+  .primeapps .table-pagination nav .pagination > .active > a, .primeapps .table-pagination nav .pagination > .active > a:hover {
+    background-color: rgba(17, 87, 163, 0.75) !important;
+    border-radius: 50%;
+    color: #fff !important; }
+  .primeapps .table-pagination nav .pagination li {
+    margin: 5px; }
+    .primeapps .table-pagination nav .pagination li a {
+      border: none;
+      margin: 5px;
+      color: rgba(0, 0, 0, 0.5) !important; }
+      .primeapps .table-pagination nav .pagination li a:hover {
+        background-color: rgba(17, 87, 163, 0.75) !important;
+        border-radius: 50%;
+        color: #fff !important; }
