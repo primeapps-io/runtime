@@ -10,9 +10,12 @@ namespace PrimeApps.Model.Helpers
 {
     public interface ICacheHelper
     {
-        Task<T> Get<T>(string key);
-        Task<bool> Set(string key, object data);
-        Task<bool> Remove(string key);
+        Task<T> GetAsync<T>(string key);
+        T Get<T>(string key);
+        Task<bool> SetAsync(string key, object data);
+        bool Set(string key, object data);
+        Task<bool> RemoveAsync(string key);
+        bool Remove(string key);
     }
 
     public class CacheHelper : ICacheHelper
@@ -29,7 +32,7 @@ namespace PrimeApps.Model.Helpers
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
-        public async Task<T> Get<T>(string key)
+        public async Task<T> GetAsync<T>(string key)
         {
             if (string.IsNullOrEmpty(key))
                 return default(T);
@@ -42,7 +45,20 @@ namespace PrimeApps.Model.Helpers
             return JsonConvert.DeserializeObject<T>(result);
         }
 
-        public async Task<bool> Set(string key, object data)
+        public T Get<T>(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return default(T);
+
+            var result = _cacheService.GetString(key);
+
+            if (string.IsNullOrEmpty(result))
+                return default(T);
+
+            return JsonConvert.DeserializeObject<T>(result);
+        }
+
+        public async Task<bool> SetAsync(string key, object data)
         {
             if (string.IsNullOrEmpty(key))
                 return false;
@@ -57,7 +73,22 @@ namespace PrimeApps.Model.Helpers
             return true;
         }
 
-        public async Task<bool> Remove(string key)
+        public bool Set(string key, object data)
+        {
+            if (string.IsNullOrEmpty(key))
+                return false;
+
+            var newData = JsonConvert.SerializeObject(data, Formatting.Indented, CacheSerializerSettings);
+
+            if (string.IsNullOrEmpty(newData))
+                return false;
+
+            _cacheService.SetString(key, newData);
+
+            return true;
+        }
+
+        public async Task<bool> RemoveAsync(string key)
         {
             if (string.IsNullOrEmpty(key))
                 return false;
@@ -66,6 +97,16 @@ namespace PrimeApps.Model.Helpers
 
             return true;
         }
-        
+
+        public bool Remove(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                return false;
+
+            _cacheService.RemoveAsync(key);
+
+            return true;
+        }
+
     }
 }

@@ -83,12 +83,12 @@ namespace PrimeApps.Model.Repositories
             var platformKey = "platform_user_" + email;
             var tenantKey = "tenant_";
 
-            var cachedPlatformUser = await CacheHelper.Get<PlatformUser>(platformKey);
+            var cachedPlatformUser = await CacheHelper.GetAsync<PlatformUser>(platformKey);
 
             if (cachedPlatformUser != null)
             {
                 tenantKey += cachedPlatformUser.Id;
-                var cachedTenant = await CacheHelper.Get<Tenant>(tenantKey);
+                var cachedTenant = await CacheHelper.GetAsync<Tenant>(tenantKey);
 
                 if (cachedTenant != null)
                 {
@@ -109,13 +109,13 @@ namespace PrimeApps.Model.Repositories
                 .SingleOrDefaultAsync();
 
             var tenantForCache = user.TenantsAsUser.First().Tenant;
-            await CacheHelper.Set(tenantKey + user.Id, tenantForCache);
+            await CacheHelper.SetAsync(tenantKey + user.Id, tenantForCache);
 
             var tempUserForCache = user;
             tempUserForCache.TenantsAsOwner = null;
             tempUserForCache.TenantsAsUser = null;
 
-            await CacheHelper.Set(platformKey, tempUserForCache);
+            await CacheHelper.SetAsync(platformKey, tempUserForCache);
 
             return user;
         }
