@@ -67,7 +67,6 @@ namespace PrimeApps.App.Controllers
 
 			foreach (var menuItem in menuItemsData)
 			{
-				menuItem.Route = menuItem.Route != null ? menuItem.Route.Replace("crm/", "") : null;
 				var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
 				if (hasPermission)
@@ -83,7 +82,6 @@ namespace PrimeApps.App.Controllers
 
 				foreach (var menuItem in menuCategory.MenuItems)
 				{
-					menuItem.Route = menuItem.Route != null ? menuItem.Route.Replace("crm/", "") : null;
 					var hasPermission = await CheckPermission(menuItem, tenantUser.Profile, instance);
 
 					if (hasPermission)
@@ -128,11 +126,17 @@ namespace PrimeApps.App.Controllers
 							return true;
 						break;
 					case "newsfeed":
-						if (profile.Newsfeed)
+						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
+						var hasNewsFeedPermission = UserHelper.CheckPermission(PermissionEnum.Read, null, EntityType.Newsfeed, currentProfile);
+
+						if (hasNewsFeedPermission)
 							return true;
 						break;
 					case "reports":
-						if (profile.Report)
+						currentProfile = await _profileRepository.GetProfileById(AppUser.ProfileId);
+						var hasReportsPermission = UserHelper.CheckPermission(PermissionEnum.Read, null, EntityType.Report, currentProfile);
+
+						if (hasReportsPermission)
 							return true;
 						break;
 					case "documentSearch":
