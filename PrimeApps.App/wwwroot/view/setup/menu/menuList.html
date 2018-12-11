@@ -23,8 +23,8 @@
                                 <tr ng-repeat="item in menuList | orderBy:'!default'">
                                     <td class="profile-name"><a href="#/app/setup/menu?id={{item.id}}">{{item.name}}</a></td>
                                     <td><p>{{item.profile_name}}</p></td>
-                                    <td><p ng-show="item.default">{{'Menu.DefaultValurTrue'|translate}} </p>
-                                        <p ng-show="!item.default">{{'Menu.DefaultValurFalse'|translate}}</p>
+                                    <td><p ng-show="item.default">{{'Menu.DefaultValueTrue'|translate}} </p>
+                                        <p ng-show="!item.default">{{'Menu.DefaultValueFalse'|translate}}</p>
                                     </td>
                                     <td class="text-right">
                                         <button id="actionButton-{{item.name}}" ng-disabled="user.isDemo" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(item)"><i class="fa fa-caret-down"></i></button>

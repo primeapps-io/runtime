@@ -71,13 +71,13 @@ namespace OfisimCRM.App.Helpers
 				if (!string.IsNullOrEmpty(moduleName))
 				{
 					parentId = parent.Id;
-					bool value = moduleEntity != null ? (moduleEntity.SystemType.HasFlag(SystemType.System) ? false : true) : false;
+					bool value = (bool)request["isDynamic"];//moduleEntity != null ? (moduleEntity.SystemType.HasFlag(SystemType.System) ? false : true) : false;
 					menuItem = new MenuItem()
 					{
 						MenuId = menu.Id,
 						ModuleId = moduleEntity != null ? moduleEntity?.Id : null,
 						ParentId = parentId,
-						Route = value ? moduleEntity.Name : string.IsNullOrWhiteSpace(route) ? "modules/" + moduleEntity.Name : "crm/" + module,
+						Route = module,//value ? moduleEntity.Name : string.IsNullOrWhiteSpace(route) ? "modules/" + moduleEntity.Name : "crm/" + module,
 						LabelEn = moduleName,
 						LabelTr = moduleName,
 						MenuIcon = moduleEntity != null ? moduleEntity.MenuIcon : request["icon"].ToString(),
@@ -94,14 +94,14 @@ namespace OfisimCRM.App.Helpers
 				route = request["route"].ToString();
 				module = request["menuName"].ToString();
 				moduleName = request["name"].ToString();
-				bool value = moduleEntity != null ? (moduleEntity.SystemType.HasFlag(SystemType.System) ? false : true) : false;
+				bool value = (bool)request["isDynamic"]; //moduleEntity != null ? (moduleEntity.SystemType.HasFlag(SystemType.System) ? false : true) : false;
 
 				menuItem = new MenuItem()
 				{
 					MenuId = menu.Id,
 					ModuleId = moduleEntity != null ? moduleEntity?.Id : null,
 					ParentId = (int)request["parentId"],
-					Route = value ? moduleEntity.Name : string.IsNullOrWhiteSpace(route) ? "modules/" + moduleEntity.Name : "crm/" + module,
+					Route = module,//value ? moduleEntity.Name : string.IsNullOrWhiteSpace(route) ? "modules/" + moduleEntity.Name : "crm/" + module,
 					LabelEn = string.IsNullOrWhiteSpace(moduleName) ? null : moduleName,
 					LabelTr = string.IsNullOrWhiteSpace(moduleName) ? null : moduleName,
 					MenuIcon = moduleEntity != null ? moduleEntity.MenuIcon : request["icon"].ToString(),
@@ -118,14 +118,14 @@ namespace OfisimCRM.App.Helpers
 				var moduleType = (string)request["menuModuleType"];
 				moduleName = request["name"].ToString();
 				var menuName = string.Equals(moduleType, "Tanım Giriş") ? "" : request["menuName"].ToString();
-				bool value = moduleEntity != null ? (moduleEntity.SystemType.HasFlag(SystemType.System) ? false : true) : false;
+				bool value = (bool)request["isDynamic"];//moduleEntity != null ? (moduleEntity.SystemType.HasFlag(SystemType.System) ? false : true) : false;
 				menuItem = new MenuItem()
 				{
 					MenuId = menu.Id,
 					ModuleId = moduleEntity != null ? moduleEntity?.Id : null,
 					ParentId = null,
 					//If menuName is null this is label and dont have a route
-					Route = value ? moduleEntity.Name : string.IsNullOrWhiteSpace(menuName) ? route : string.IsNullOrWhiteSpace(route) ? "modules/" + moduleEntity.Name : "crm/" + menuName,
+					Route = menuName,//value ? moduleEntity.Name : string.IsNullOrWhiteSpace(menuName) ? route : string.IsNullOrWhiteSpace(route) ? "modules/" + moduleEntity.Name : "crm/" + menuName,
 					LabelEn = string.IsNullOrWhiteSpace(moduleName) ? null : moduleName,
 					LabelTr = string.IsNullOrWhiteSpace(moduleName) ? null : moduleName,
 					MenuIcon = moduleEntity != null ? moduleEntity.MenuIcon : request["icon"].ToString(),
@@ -143,12 +143,12 @@ namespace OfisimCRM.App.Helpers
 			menuItem.MenuId = menuItem.MenuId;
 			menuItem.ModuleId = menuItem.ModuleId;
 			menuItem.ParentId = menuItem.ParentId;
-			menuItem.Route = menuItem.Route;
+			menuItem.Route = (string)request["menuName"]; //menuItem.Route;
 			menuItem.LabelEn = (string)request["name"];
 			menuItem.LabelTr = (string)request["name"];
 			menuItem.MenuIcon = (string)request["icon"];
 			menuItem.Order = (short)(int)request["no"];
-			menuItem.IsDynamic = false;
+			menuItem.IsDynamic = (bool)request["isDynamic"];
 
 			return menuItem;
 		}

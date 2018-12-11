@@ -2003,8 +2003,8 @@
 		"MenuNameRequiredError": "Menü Adı alanı zorunludur.",
 		"Icon": "Kategori Simgesi",
 		"CategoryName": "Kategori İsmi",
-		"DefaultValurTrue": "Evet",
-		"DefaultValurFalse": "Hayır",
+		"DefaultValueTrue": "Evet",
+		"DefaultValueFalse": "Hayır",
 		"MenuElementType": "Menü Öğe Tipi",
 		"Modules": "Modüller"
 	}
