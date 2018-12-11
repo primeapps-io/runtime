@@ -81,7 +81,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<PlatformUser> GetWithTenants(string email)
         {
             var platformKey = "platform_user_" + email;
-            var tenantKey = "tenant_";
+            var tenantKey = "tenant_user_";
 
             var cachedPlatformUser = await CacheHelper.GetAsync<PlatformUser>(platformKey);
 
@@ -143,7 +143,18 @@ namespace PrimeApps.Model.Repositories
 
         public PlatformUser GetByEmailAndTenantId(string email, int tenantId)
         {
-            var user = DbContext.UserTenants
+            //var platformKey = "platform_user_" + email;
+            //var tenantKey = "tenant_user_";
+            var user = new UserTenant();
+
+            //var cachedTenant = CacheHelper.Get<Tenant>(tenantKey);
+
+            //if (cachedTenant != null)
+            //{
+                
+            //}
+
+             user = DbContext.UserTenants
                 .Include(x => x.Tenant)
                 .Include(x => x.Tenant).ThenInclude(z => z.Setting)
                 .Include(x => x.Tenant).ThenInclude(z => z.License)
