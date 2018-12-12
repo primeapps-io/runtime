@@ -1,11 +1,17 @@
 ﻿'use strict';
 
 angular.module('primeapps')
-    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies',
-        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService, $cookies) {
+    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies', 'components',
+        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService, $cookies, components) {
             $scope.type = $stateParams.type;
             $scope.wizardStep = 0;
             $scope.fieldMap = {};
+            $scope.fixedValue = {};
+            $scope.importMapping = {};
+            $scope.mappingField = {};
+            $scope.selectedMapping = {};
+            $scope.mappingArray = [];
+            var isSubmitTrigger = false;
 
             $scope.module = $filter('filter')($rootScope.modules, { name: $scope.type }, true)[0];
 
@@ -40,6 +46,14 @@ angular.module('primeapps')
                 if (!fields.length)
                     section.deleted = true;
             });
+
+            ImportService.getAllMapping($scope.module.id)
+                .then(function (response) {
+                    if (response) {
+                        var result = response.data;
+                        $scope.mappingArray = result;
+                    }
+                });
 
             var readExcel = function (file, retry) {
                 var fileReader = new FileReader();
@@ -94,39 +108,41 @@ angular.module('primeapps')
                 }
 
                 $timeout(function () {
-                    $scope.fieldMap = {};
+                    if (!$scope.selectedMapping.name) {
+                        $scope.fieldMap = {};
 
-                    angular.forEach($scope.headerRow, function (value, key) {
-                        var used = false;
+                        angular.forEach($scope.headerRow, function (value, key) {
+                            var used = false;
 
-                        if ($rootScope.language === 'tr') {
-                            angular.forEach($scope.module.fields, function (field) {
-                                if (field.deleted)
-                                    return;
+                            if ($rootScope.language === 'tr') {
+                                angular.forEach($scope.module.fields, function (field) {
+                                    if (field.deleted)
+                                        return;
 
-                                if (field.label_tr.toLowerCaseTurkish() === value.trim().toLowerCaseTurkish()) {
-                                    used = true;
-                                    $scope.fieldMap[field.name] = key;
-                                }
-                            });
-                        }
-                        else {
-                            angular.forEach($scope.module.fields, function (field) {
-                                if (field.deleted)
-                                    return;
+                                    if (field.label_tr.toLowerCaseTurkish() === value.trim().toLowerCaseTurkish()) {
+                                        used = true;
+                                        $scope.fieldMap[field.name] = key;
+                                    }
+                                });
+                            }
+                            else {
+                                angular.forEach($scope.module.fields, function (field) {
+                                    if (field.deleted)
+                                        return;
 
-                                if (field.label_tr.toLowerCase() === value.trim().toLowerCase()) {
-                                    used = true;
-                                    $scope.fieldMap[field.name] = key;
-                                }
-                            });
-                        }
+                                    if (field.label_tr.toLowerCase() === value.trim().toLowerCase()) {
+                                        used = true;
+                                        $scope.fieldMap[field.name] = key;
+                                    }
+                                });
+                            }
 
-                        var cell = $filter('filter')($scope.cells, { column: key }, true)[0];
+                            var cell = $filter('filter')($scope.cells, { column: key }, true)[0];
 
-                        if (cell)
-                            cell.used = used;
-                    });
+                            if (cell)
+                                cell.used = used;
+                        });
+                    }
                 });
             };
 
@@ -274,12 +290,12 @@ angular.module('primeapps')
                 $scope.fixedField = field;
 
                 $scope.fixedValueModal = $scope.fixedValueModal || $modal({
-                        scope: $scope,
-                        templateUrl: 'view/app/data/fixedValue.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    templateUrl: 'view/app/data/fixedValue.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.fixedValueModal.$promise.then(function () {
                     $scope.fixedValueModal.show();
@@ -315,6 +331,227 @@ angular.module('primeapps')
 
                 if (!$scope.fixedValue[$scope.fixedField.name])
                     delete $scope.fieldMap[$scope.fixedField.name];
+            };
+
+            $scope.mappingSave = function (importMappingForm) {
+                $scope.savingTemplate = true;
+                $scope.importMapping.module_id = $scope.module.id;
+
+                if ($scope.$parent.$parent.fixedValue)
+                    $scope.$parent.$parent.fieldMap['fixed'] = angular.copy($scope.$parent.$parent.fixedValue);
+
+                if ($scope.fixedValueFormatted)
+                    $scope.$parent.$parent.fieldMap['fixedFormat'] = angular.copy($scope.$parent.$parent.fixedValueFormatted);
+
+                var fieldMap = angular.copy($scope.$parent.$parent.fieldMap);
+
+                if (fieldMap)
+                    $scope.importMapping.mapping = JSON.stringify(fieldMap);
+                else {
+                    ngToast.create({
+                        content: $filter('translate')('Data.Import.MappingNotFound'),
+                        className: 'warning',
+                        timeout: 6000
+                    });
+                    $scope.importMappingSaveModal.hide();
+                }
+
+                if ($scope.$parent.importMapping.skip)
+                    $scope.importMapping.skip = $scope.$parent.importMapping.skip;
+                else
+                    $scope.importMapping.skip = false;
+
+
+                if (!importMappingForm.$valid) {
+                    $scope.savingTemplate = false;
+                    return;
+                }
+
+                if ($scope.$parent.importMapping.name || $scope.$parent.selectedMapping) {
+                    $scope.importMapping.name = $scope.$parent.importMapping.name;
+
+                    if ($scope.$parent.selectedMapping.id) {
+                        ImportService.updateMapping($scope.$parent.selectedMapping.id, $scope.importMapping)
+                            .then(function (response) {
+                                var result = response.data;
+
+                                if (result) {
+                                    $timeout(function () {
+                                        ngToast.create({
+                                            content: $filter('translate')('Data.Import.MappingSaveSucces'),
+                                            className: 'success',
+                                            timeout: 6000
+                                        });
+                                        $scope.savingTemplate = false;
+                                        $scope.importMappingSaveModal.hide();
+
+                                    }, 500);
+                                }
+                                else
+                                    $scope.savingTemplate = false;
+                            })
+                            .catch(function (data) {
+                                ngToast.create({
+                                    content: $filter('translate')('Common.Error'),
+                                    className: 'danger',
+                                    timeout: 6000
+                                });
+                                $scope.savingTemplate = false;
+                                $scope.importMappingSaveModal.hide();
+                            });
+
+                    }
+                    else {
+                        ImportService.getMapping($scope.importMapping)
+                            .then(function (response) {
+                                var result = response.data;
+
+                                if (result) {
+                                    ngToast.create({
+                                        content: $filter('translate')('Data.Import.TryMappingName'),
+                                        className: 'warning',
+                                        timeout: 6000
+                                    });
+
+                                    $scope.$parent.importMapping = {};
+                                    $scope.savingTemplate = false;
+                                    $scope.importMappingSaveModal.hide();
+                                }
+                                else {
+                                    ImportService.saveMapping($scope.importMapping)
+                                        .then(function (response) {
+                                            var newData = response.data;
+
+                                            if (newData) {
+                                                $timeout(function () {
+                                                    ngToast.create({
+                                                        content: $filter('translate')('Data.Import.MappingSaveSucces'),
+                                                        className: 'success',
+                                                        timeout: 6000
+                                                    });
+                                                    $scope.savingTemplate = false;
+                                                    $scope.importMappingSaveModal.hide();
+
+                                                    ImportService.getAllMapping($scope.module.id)
+                                                        .then(function (value) {
+                                                            if (value.data) {
+
+                                                                $scope.$parent.$parent.$parent.mappingArray = value.data;
+                                                                $scope.$parent.$parent.$parent.selectedMapping = newData;
+                                                                $scope.mappingSelectedChange();
+                                                            }
+                                                        });
+                                                }, 500);
+                                            }
+                                            else
+                                                $scope.savingTemplate = false;
+                                        })
+                                        .catch(function (data) {
+                                            ngToast.create({
+                                                content: $filter('translate')('Common.Error'),
+                                                className: 'danger',
+                                                timeout: 6000
+                                            });
+                                            $scope.savingTemplate = false;
+                                            $scope.importMappingSaveModal.hide();
+                                        });
+                                }
+
+                            });
+                    }
+                }
+                else {
+                    $scope.importMapping = {};
+                    $scope.savingTemplate = false;
+                    return;
+                }
+            };
+
+            $scope.deleteMapping = function () {
+                components.run('BeforeDelete', 'Script', $scope, $scope.selectedMapping);
+
+                ImportService.deleteMapping($scope.selectedMapping)
+                    .then(function () {
+                        ngToast.create({
+                            content: $filter('translate')('Data.Import.DeletedMapping'),
+                            className: 'success',
+                            timeout: 6000
+                        });
+
+                        //components.run('AfterDelete', 'Script', $scope, $scope.selectedMapping);
+                        $state.go('app.moduleList', { type: $scope.type });
+                    })
+                    .catch(function (data) {
+                        ngToast.create({
+                            content: $filter('translate')('Common.Error'),
+                            className: 'danger',
+                            timeout: 6000
+                        });
+                    });
+            };
+
+
+            $scope.mappingModalCancel = function () {
+                $scope.importMapping = {};
+            };
+
+            $scope.openMappingModal = function () {
+                isSubmitTrigger = true;
+
+                if (!$scope.importForm.$valid)
+                    return;
+
+                $scope.importMappingSaveModal = $scope.importMappingSaveModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/data/importMappingSave.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
+
+                $scope.importMappingSaveModal.$promise.then(function () {
+                    $scope.importMappingSaveModal.show();
+                });
+            };
+
+            $scope.mappingSelectedChange = function () {
+                if ($scope.selectedMapping.id) {
+                    var result = $filter('filter')($scope.mappingArray, { id: $scope.selectedMapping.id }, true)[0];
+
+                    if (result) {
+                        $scope.importMapping.name = result.name;
+                        $scope.importMapping.skip = result.skip;
+
+                        var mappingData = angular.fromJson(result.mapping);
+
+                        if (mappingData) {
+                            if (mappingData.fixed) {
+                                $scope.fixedValue = mappingData.fixed;
+                                delete mappingData.fixed;
+                            }
+
+                            if (mappingData.fixedFormat) {
+                                $scope.fixedValueFormatted = mappingData.fixedFormat;
+                                delete mappingData.fixedFormat;
+                            }
+                            $scope.fieldMap = mappingData;
+                        }
+                    }
+                }
+            };
+
+            $scope.checkWizard = function () {
+                var hasAdmin = $scope.user.profile.has_admin_rights;
+
+                if ($scope.selectedMapping.skip && !hasAdmin) {
+                    $scope.wizardStep = 2;
+                    isSubmitTrigger = true;
+                    $scope.submit(true);
+                }
+                else {
+                    isSubmitTrigger = false;
+                    $scope.wizardStep = 1;
+                }
             };
 
             $scope.getDateFormat = function () {
@@ -359,7 +596,7 @@ angular.module('primeapps')
                             fixedValue[key] = parseFloat(fixedValue[key]);
                             break;
                         case 'picklist':
-                            fixedValue[key] = fixedValue[key].label[$rootScope.user.tenant_language];
+                            fixedValue[key] = fixedValue[key] != null ? fixedValue[key].label[$rootScope.user.tenant_language] : null;
                             break;
                         case 'tag':
                             var picklistItems = recordValue.split('|');
@@ -642,6 +879,9 @@ angular.module('primeapps')
                     $scope.error = null;
 
                     for (var fieldMapKey in $scope.fieldMap) {
+                        if (fieldMapKey === 'fixed' || fieldMapKey === 'fixedFormat') //To added excel import mapping 
+                            continue;
+
                         if ($scope.fieldMap.hasOwnProperty(fieldMapKey)) {
                             var fieldMapValue = $scope.fieldMap[fieldMapKey];
 
@@ -768,6 +1008,11 @@ angular.module('primeapps')
                 if (!$scope.importForm.$valid)
                     return;
 
+                if (isSubmitTrigger) {
+                    isSubmitTrigger = false;
+                    return;
+                }
+
                 if (!retry)
                     $scope.wizardStep = 2;
 
@@ -791,7 +1036,22 @@ angular.module('primeapps')
                 readExcel(file, true);
             };
 
+            $scope.saveLoaded = function () {
+                $scope.getLookupIds()
+                    .then(function (lookupIds) {
+                        $scope.lookupIds = lookupIds;
+                        $scope.records = $scope.prepareRecords();
+                        $scope.save();
+                    });
+
+            }
+
             $scope.save = function () {
+                if (!$scope.records && $scope.selectedMapping.id) {
+                    $scope.saveLoaded();
+                    return;
+                }
+
                 $scope.saving = true;
 
                 $timeout(function () {
@@ -825,7 +1085,8 @@ angular.module('primeapps')
                         $scope.saving = false;
                         $scope.longProcessing = false;
                     });
-            }
+            };
+
             $scope.combinationFilter = function (field) {
                 if (field.combination) {
                     return false;
