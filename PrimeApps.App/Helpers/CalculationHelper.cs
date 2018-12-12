@@ -1964,8 +1964,11 @@ namespace PrimeApps.App.Helpers
 
                                                     }
 
-                                                    var currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord, false);
+                                                    var currentStockRecord = new JArray();
                                                     var stockModule = await moduleRepository.GetByName("stock_transactions");
+
+                                                    if(stockModule !=null)
+                                                        currentStockRecord= recordRepository.Find("stock_transactions", findRequestCurrentStockRecord, false); 
 
                                                     if ((currentModulePicklist.SystemCode == "confirmed_purchase_order_stage" || currentModulePicklist.SystemCode == "confirmed_order_stage") && operationType != OperationType.delete)
                                                     {
