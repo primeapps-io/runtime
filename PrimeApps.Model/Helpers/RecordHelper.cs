@@ -1728,7 +1728,7 @@ namespace PrimeApps.Model.Helpers
                 foreach (var field in fields)
                 {
                     if (!record[field.Value].IsNullOrEmpty())
-                        recordValues.Add("'" + record[field.Value].ToString().Trim().Replace("'", "''") + "'");
+                        recordValues.Add("'" + ((string)record[field.Value]).Trim().Replace("'", "''") + "'");
                     else
                     {
                         if (field.Value == "created_by" || field.Value == "updated_by")
