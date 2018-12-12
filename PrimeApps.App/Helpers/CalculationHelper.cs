@@ -3374,9 +3374,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
                                 {
                                     if ((string)accountCurrentAccountTry["transaction_type_system"] == "sales_invoice")
-                                        balance += (decimal)accountCurrentAccountTry["borc_tl"];
+                                        balance += accountCurrentAccountTry["borc_tl"].To<decimal>();
                                     else
-                                        balance -= (decimal)accountCurrentAccountTry["alacak"];
+                                        balance -= accountCurrentAccountTry["alacak"].To<decimal>();
 
                                     accountCurrentAccountTry["bakiye_tl"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule, isUtc: false);
@@ -3393,9 +3393,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
                                 {
                                     if ((string)accountCurrentAccountEuro["transaction_type_system"] == "sales_invoice")
-                                        balance += (decimal)accountCurrentAccountEuro["borc_euro"];
+                                        balance += accountCurrentAccountEuro["borc_euro"].To<decimal>();
                                     else
-                                        balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
+                                        balance -= accountCurrentAccountEuro["alacak_euro"].To<decimal>(); ;
 
                                     accountCurrentAccountEuro["bakiye_euro"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule, isUtc: false);
@@ -3411,9 +3411,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
                                 {
                                     if ((string)accountCurrentAccountUsd["transaction_type_system"] == "sales_invoice")
-                                        balance += (decimal)accountCurrentAccountUsd["borc_usd"];
+                                        balance += accountCurrentAccountUsd["borc_usd"].To<decimal>();
                                     else
-                                        balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
+                                        balance -= accountCurrentAccountUsd["alacak_usd"].To<decimal>();
 
                                     accountCurrentAccountUsd["bakiye_usd"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule, isUtc: false);
@@ -3448,9 +3448,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
                                 {
                                     if ((string)accountCurrentAccountTry["transaction_type_system"] == "purchase_invoice")
-                                        balance -= (decimal)accountCurrentAccountTry["alacak"];
+                                        balance -= accountCurrentAccountTry["alacak"].To<decimal>();
                                     else
-                                        balance += (decimal)accountCurrentAccountTry["borc_tl"];
+                                        balance += accountCurrentAccountTry["borc_tl"].To<decimal>();
 
                                     accountCurrentAccountTry["bakiye_tl"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule, isUtc: false);
@@ -3467,9 +3467,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
                                 {
                                     if ((string)accountCurrentAccountEuro["transaction_type_system"] == "purchase_invoice")
-                                        balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
+                                        balance -= accountCurrentAccountEuro["alacak_euro"].To<decimal>();
                                     else
-                                        balance += (decimal)accountCurrentAccountEuro["borc_euro"];
+                                        balance += accountCurrentAccountEuro["borc_euro"].To<decimal>();
 
                                     accountCurrentAccountEuro["bakiye_euro"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule, isUtc: false);
@@ -3485,9 +3485,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
                                 {
                                     if ((string)accountCurrentAccountUsd["transaction_type_system"] == "purchase_invoice")
-                                        balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
+                                        balance -= accountCurrentAccountUsd["alacak_usd"].To<decimal>();
                                     else
-                                        balance += (decimal)accountCurrentAccountUsd["borc_usd"];
+                                        balance += accountCurrentAccountUsd["borc_usd"].To<decimal>();
 
                                     accountCurrentAccountUsd["bakiye_usd"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule, isUtc: false);
@@ -3521,9 +3521,9 @@ namespace PrimeApps.App.Helpers
                             var hareketTipi = hareketTipleri.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)kasaHareketi["hareket_tipi"] : x.LabelEn == (string)kasaHareketi["hareket_tipi"]).SystemCode;
 
                             if (hareketTipi == "para_cikisi")
-                                balance -= kasaHareketi["alacak"].IsNullOrEmpty() ? 0 : (decimal)kasaHareketi["alacak"];
+                                balance -= kasaHareketi["alacak"].To<decimal>();
                             else
-                                balance += kasaHareketi["borc"].IsNullOrEmpty() ? 0 : (decimal)kasaHareketi["borc"];
+                                balance += kasaHareketi["borc"].To<decimal>();
 
                             kasaHareketi["bakiye"] = balance;
                             await _recordRepository.Update(kasaHareketi, kasaHareketiModule, isUtc: false);
@@ -3554,9 +3554,9 @@ namespace PrimeApps.App.Helpers
                             var hareketTipi = hareketTipleri.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)bankaHareketi["hareket_tipi"] : x.LabelEn == (string)bankaHareketi["hareket_tipi"]).SystemCode;
 
                             if (hareketTipi == "para_cikisi")
-                                balance -= (decimal)bankaHareketi["alacak"];
+                                balance -= bankaHareketi["alacak"].To<decimal>();
                             else
-                                balance += (decimal)bankaHareketi["borc"];
+                                balance += bankaHareketi["borc"].To<decimal>();
 
                             bankaHareketi["bakiye"] = balance;
                             await _recordRepository.Update(bankaHareketi, bankaHareketiModule, isUtc: false);
@@ -3591,11 +3591,11 @@ namespace PrimeApps.App.Helpers
                             var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
                             if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
                             {
-                                balance += (decimal)stockTransaction["quantity"];
+                                balance +=stockTransaction["quantity"].To<decimal>();
                             }
                             else if (transactionTypePicklistItem.Value2 == "supplier_return" || transactionTypePicklistItem.Value2 == "stock_output")
                             {
-                                balance -= (decimal)stockTransaction["cikan_miktar"];
+                                balance -= stockTransaction["cikan_miktar"].To<decimal>();
                             }
 
                             stockTransaction["bakiye"] = balance;
