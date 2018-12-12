@@ -6572,6 +6572,24 @@ tags-input.ng-invalid .tags {
     padding-right: 30px;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
     border-radius: 5px; }
+    .primeapps .setup-layout .setup-nav .active:before {
+      left: 104%;
+      top: 50%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      border-color: rgba(136, 183, 213, 0);
+      border-left-color: #fff;
+      border-width: 30px;
+      margin-top: -30px; }
+    .primeapps .setup-layout .setup-nav .active:after {
+      border-color: rgba(194, 225, 245, 0);
+      border-left-color: #c2e1f5;
+      border-width: 36px;
+      margin-top: -36px; }
     .primeapps .setup-layout .setup-nav li {
       border-bottom: solid 1px rgba(0, 0, 0, 0.05);
       display: flex;
@@ -6661,3 +6679,127 @@ tags-input.ng-invalid .tags {
         background-color: rgba(17, 87, 163, 0.75) !important;
         border-radius: 50%;
         color: #fff !important; }
+.primeapps .modal-header {
+  background-color: #fff;
+  color: #000; }
+.primeapps .modal {
+  left: auto; }
+.primeapps .setup-modal, .primeapps module-modal {
+  background-color: #fff !important;
+  margin-top: 20px;
+  margin-right: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
+  padding-left: 40px;
+  padding-right: 40px; }
+  .primeapps .setup-modal .modal-dialog, .primeapps module-modal .modal-dialog {
+    height: 100%;
+    width: 600px !important;
+    overflow-x: auto;
+    margin: 0;
+    line-height: 33px !important; }
+    .primeapps .setup-modal .modal-dialog input[type="radio"], .primeapps .setup-modal .modal-dialog input[type="checkbox"], .primeapps module-modal .modal-dialog input[type="radio"], .primeapps module-modal .modal-dialog input[type="checkbox"] {
+      margin: 11px 0 0 !important;
+      margin-left: -18px !important; }
+    .primeapps .setup-modal .modal-dialog input[type="radio"]:checked + span:after, .primeapps module-modal .modal-dialog input[type="radio"]:checked + span:after {
+      width: 10px;
+      height: 10px;
+      top: 12px;
+      left: -16px; }
+    .primeapps .setup-modal .modal-dialog .form-group label, .primeapps module-modal .modal-dialog .form-group label {
+      text-align: left !important; }
+    .primeapps .setup-modal .modal-dialog .form-control, .primeapps module-modal .modal-dialog .form-control {
+      height: 35px; }
+    .primeapps .setup-modal .modal-dialog .fa.pull-left, .primeapps module-modal .modal-dialog .fa.pull-left {
+      margin-top: .15em;
+      margin-right: 5px; }
+  .primeapps .setup-modal .modal-body, .primeapps module-modal .modal-body {
+    max-height: 100% !important;
+    margin: 0 auto !important;
+    overflow-y: unset !important; }
+.primeapps .user-dropdown .user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+  .primeapps .user-dropdown .user-info .user-text h2 {
+    font-size: 20px;
+    color: #0d6faa;
+    font-weight: bold;
+    line-height: 18px;
+    margin: 0;
+    padding-bottom: 7px; }
+  .primeapps .user-dropdown .user-info .user-text h3 {
+    font-size: 14px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    margin: 0; }
+  .primeapps .user-dropdown .user-info .user-image {
+    background-color: rgba(0, 0, 0, 0.25);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 23px;
+    margin-right: 10px; }
+.primeapps .user-dropdown ul {
+  padding: 0;
+  padding-left: 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 10px;
+  padding-top: 10px; }
+  .primeapps .user-dropdown ul li {
+    list-style: none;
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold; }
+    .primeapps .user-dropdown ul li a {
+      color: rgba(0, 0, 0, 0.5); }
+      .primeapps .user-dropdown ul li a i {
+        width: 20px;
+        padding-right: 20px; }
+      .primeapps .user-dropdown ul li a:hover {
+        text-decoration: none;
+        color: #0d6faa; }
+.primeapps .user-dropdown .btn-logout {
+  width: 250px;
+  height: 30px;
+  margin-top: 26px;
+  margin-bottom: 26px; }
+.primeapps .top-header {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  height: 100%; }
+.primeapps .breadcrumb {
+  padding: 0;
+  margin-bottom: 0;
+  border-radius: inherit;
+  background-color: inherit;
+  padding-left: 30px;
+  color: rgba(0, 0, 0, 0.5); }
+  .primeapps .breadcrumb li {
+    font-size: 16px !important;
+    color: rgba(0, 0, 0, 0.5) !important;
+    font-weight: bold !important; }
+    .primeapps .breadcrumb li a {
+      color: rgba(0, 0, 0, 0.5) !important;
+      font-size: 14px !important;
+      font-weight: 400 !important; }
+      .primeapps .breadcrumb li a:hover {
+        color: #0d6faa; }
+.primeapps .btn i {
+  padding-right: 10px; }
+.primeapps .btn-radius {
+  border-radius: 30px; }
+.primeapps .btn-red {
+  background-color: rgba(206, 4, 4, 0.5);
+  color: #fff; }
+.primeapps .btn-blue {
+  background-color: rgba(13, 111, 170, 0.75);
+  color: #fff; }
