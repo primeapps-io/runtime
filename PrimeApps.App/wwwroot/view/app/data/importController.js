@@ -975,7 +975,7 @@ angular.module('primeapps')
                                             lookupRequest.push(lookupItem);
                                         }
 
-                                        if (lookupItem.values.indexOf(cellValue) < 0) {
+                                        if (cellValue && lookupItem.values.indexOf(cellValue) < 0) {
                                             lookupItem.values.push(cellValue);
                                         }
                                     }
