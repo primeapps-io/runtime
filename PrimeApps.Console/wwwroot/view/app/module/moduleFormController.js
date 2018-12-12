@@ -1999,7 +1999,7 @@ angular.module('primeapps')
                                                         quoteProductRecord.product.purchase_price = quoteProductRecord.purchase_price;
                                                     }
 
-                                                    if (quoteProductRecord.vat_percent == null || !quoteProductRecord.vat_percent) {
+                                                    if (quoteProductRecord.vat_percent < 0) {
                                                         quoteProductRecord.vat_percent = quoteProductRecord.product.vat_percent;
                                                     } else {
                                                         quoteProductRecord.product.vat_percent = quoteProductRecord.vat_percent;
@@ -2078,7 +2078,7 @@ angular.module('primeapps')
                                                         orderProductRecord.product.purchase_price = orderProductRecord.purchase_price;
                                                     }
 
-                                                    if (orderProductRecord.vat_percent == null || !orderProductRecord.vat_percent) {
+                                                    if (orderProductRecord.vat_percent < 0) {
                                                         orderProductRecord.vat_percent = orderProductRecord.product.vat_percent;
                                                     } else {
                                                         orderProductRecord.product.vat_percent = orderProductRecord.vat_percent;
@@ -2154,7 +2154,7 @@ angular.module('primeapps')
                                                         purchaseProductRecord.product.purchase_price = purchaseProductRecord.purchase_price;
                                                     }
 
-                                                    if (purchaseProductRecord.vat_percent == null || !purchaseProductRecord.vat_percent) {
+                                                    if (purchaseProductRecord.vat_percent < 0) {
                                                         purchaseProductRecord.vat_percent = purchaseProductRecord.product.vat_percent;
                                                     } else {
                                                         purchaseProductRecord.product.vat_percent = purchaseProductRecord.vat_percent;
@@ -2232,7 +2232,7 @@ angular.module('primeapps')
                                                         purchaseInvoiceProductRecord.product.purchase_price = purchaseInvoiceProductRecord.purchase_price;
                                                     }
 
-                                                    if (purchaseInvoiceProductRecord.vat_percent == null || !purchaseInvoiceProductRecord.vat_percent) {
+                                                    if (purchaseInvoiceProductRecord.vat_percent < 0) {
                                                         purchaseInvoiceProductRecord.vat_percent = purchaseInvoiceProductRecord.product.vat_percent;
                                                     } else {
                                                         purchaseInvoiceProductRecord.product.vat_percent = purchaseInvoiceProductRecord.vat_percent;
@@ -2311,7 +2311,7 @@ angular.module('primeapps')
                                                         salesInvoiceProductRecord.product.purchase_price = salesInvoiceProductRecord.purchase_price;
                                                     }
 
-                                                    if (salesInvoiceProductRecord.vat_percent == null || !salesInvoiceProductRecord.vat_percent) {
+                                                    if (salesInvoiceProductRecord.vat_percent < 0) {
                                                         salesInvoiceProductRecord.vat_percent = salesInvoiceProductRecord.product.vat_percent;
                                                     } else {
                                                         salesInvoiceProductRecord.product.vat_percent = salesInvoiceProductRecord.vat_percent;

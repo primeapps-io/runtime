@@ -127,7 +127,7 @@ angular.module('primeapps')
             };
 
             $scope.setVat = function (orderProduct) {
-                if (orderProduct.product.vat_percent) {
+                if (orderProduct.product.vat_percent != undefined) {
                     orderProduct.vat_percent = orderProduct.product.vat_percent;
                 }
             };
