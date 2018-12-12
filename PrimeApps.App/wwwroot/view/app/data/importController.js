@@ -87,7 +87,7 @@ angular.module('primeapps')
             };
 
             $scope.selectSheet = function (retry) {
-                $scope.rows = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { header: 'A' });
+                $scope.rows = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { raw: true, header: 'A' });
                 $scope.headerRow = angular.copy($scope.rows[0]);
                 $scope.rows.shift();
                 $scope.cells = [];
