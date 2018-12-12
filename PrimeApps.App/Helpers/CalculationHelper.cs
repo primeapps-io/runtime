@@ -1891,7 +1891,7 @@ namespace PrimeApps.App.Helpers
                                                     var stockModObj = await moduleRepository.GetByName("stock_transactions");
                                                     var salesOrderModulePicklist = await picklistRepository.FindItemByLabel(salesOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj);
+                                                    var currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj, false);
                                                     if ((operationType == OperationType.delete && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice") || (salesOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && salesOrderModulePicklist.SystemCode != "confirmed_order_stage" && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice"))
                                                     {
                                                         if (currentStockRecordArr.Count > 0)
@@ -1915,7 +1915,7 @@ namespace PrimeApps.App.Helpers
                                                     var stockModObj2 = await moduleRepository.GetByName("stock_transactions");
                                                     var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj2 = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2);
+                                                    var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2, false);
                                                     if (operationType == OperationType.delete || (purchaseOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && purchaseOrderModulePicklist.SystemCode != "confirmed_order_stage"))
                                                     {
                                                         if (currentStockRecordArr2.Count > 0)
@@ -1964,7 +1964,7 @@ namespace PrimeApps.App.Helpers
 
                                                     }
 
-                                                    var currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord);
+                                                    var currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord, false);
                                                     var stockModule = await moduleRepository.GetByName("stock_transactions");
 
                                                     if ((currentModulePicklist.SystemCode == "confirmed_purchase_order_stage" || currentModulePicklist.SystemCode == "confirmed_order_stage") && operationType != OperationType.delete)
@@ -1972,13 +1972,14 @@ namespace PrimeApps.App.Helpers
                                                         var modelStateTransaction = new ModelStateDictionary();
                                                         var transactionTypeField = stockModule.Fields.Single(x => x.Name == "stock_transaction_type");
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
+                                                        var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
 
                                                         var stock = new JObject();
                                                         stock["owner"] = appUser.Id;
                                                         stock["product"] = record["product"];
                                                         stock["transaction_date"] = DateTime.UtcNow.Date;
 
-                                                        if (module.Name == "order_products")
+                                                        if (module.Name == "order_products" && IsCikanMiktarField)
                                                         {
                                                             stock["cikan_miktar"] = record["quantity"];
                                                             stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_output").Id;
