@@ -1677,13 +1677,24 @@ namespace PrimeApps.Model.Helpers
 
             for (int i = 0; i < lookupValues.Count; i++)
             {
-                sql += $"{tableName}.\"{field}\" = ${i + 1} OR\n";
                 string str = (string)lookupValues[i];
+                int outValue;
+                var result = int.TryParse(str, out outValue);
 
-                if (str.Contains("'"))
-                    lookupValues[i] = str.Replace("'", "''");
+                if (result)
+                {
+                    sql += $"{tableName}.\"id\" = ${i + 1} OR\n";
+                    values.Add(outValue.ToString());
+                }
+                else
+                {
+                    sql += $"{tableName}.\"{field}\" = ${i + 1} OR\n";
+                   
+                    if (str.Contains("'"))
+                        lookupValues[i] = str.Replace("'", "''");
 
-                values.Add("'" + (string)lookupValues[i] + "'");
+                    values.Add("'" + (string)lookupValues[i] + "'");
+                }
             }
 
             sql = sql.Trim().Remove(sql.Length - 3);

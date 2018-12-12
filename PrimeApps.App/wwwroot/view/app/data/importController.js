@@ -763,7 +763,11 @@ angular.module('primeapps')
                             for (var j = 0; j < $scope.lookupIds[field.lookup_type].length; j++) {
                                 var lookupIdItem = $scope.lookupIds[field.lookup_type][j];
 
-                                if (lookupIdItem.value == recordValue)
+                                var isInt = recordValue % 1 === 0;
+
+                                if (isInt && lookupIdItem.id === parseInt(recordValue))
+                                    lookupIds.push(lookupIdItem);
+                                else if (lookupIdItem.value == recordValue)
                                     lookupIds.push(lookupIdItem);
                             }
 
