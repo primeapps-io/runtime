@@ -81,6 +81,11 @@ namespace PrimeApps.App.Jobs
 										Limit = 9999,
 										Offset = 0
 									};
+
+									//if calisanlar_d table exists  ise_baslama_tarihi_2 column we just added findRequest
+									if (module.Fields.Any(x => x.Name == "ise_baslama_tarihi_2"))
+										findRequest.Fields.Add("ise_baslama_tarihi_2");
+
 									var calisanlar = recordRepository.Find("calisanlar", findRequest, false);
 
 									foreach (JObject calisan in calisanlar)

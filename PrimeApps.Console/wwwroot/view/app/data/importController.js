@@ -1,8 +1,8 @@
 ﻿'use strict';
 
 angular.module('primeapps')
-    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService',
-        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService) {
+    .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies',
+        function ($rootScope, $scope, $stateParams, $state, config, $q, $localStorage, $filter, $popover, helper, FileUploader, ngToast, $modal, $timeout, $cache, emailRegex, ModuleService, ImportService, $cookies) {
             $scope.type = $stateParams.type;
             $scope.wizardStep = 0;
             $scope.fieldMap = {};
@@ -32,12 +32,6 @@ angular.module('primeapps')
                     if (field.name === 'task_reminder' || field.name === 'reminder_recurrence' || field.name === 'task_notification' || field.name === 'event_reminder')
                         field.deleted = true;
                 }
-
-                if ($scope.module.name === 'calisanlar') {
-                    if (field.name === 'isten_ayrilma_nedeni' || field.name === 'geri_donusu_uygun_mu' || field.name === 'isten_ayrilma_tarihi' || field.name === 'kullanici_profili' || field.name === 'kullanici_rolu')
-                        field.validation.required = false;
-                }
-
             });
 
             angular.forEach($scope.module.sections, function (section) {
@@ -139,7 +133,8 @@ angular.module('primeapps')
             var uploader = $scope.uploader = new FileUploader({
                 headers: {
                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-Tenant-Id': $cookies.get('tenant_id')
                 },
                 queueLimit: 1
             });
@@ -279,12 +274,12 @@ angular.module('primeapps')
                 $scope.fixedField = field;
 
                 $scope.fixedValueModal = $scope.fixedValueModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/app/data/fixedValue.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/app/data/fixedValue.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.fixedValueModal.$promise.then(function () {
                     $scope.fixedValueModal.show();
@@ -399,7 +394,11 @@ angular.module('primeapps')
                 var records = [];
 
                 var getRecordFieldValueAndValidate = function (cellValue, field, rowNo, cellName) {
-                    var recordValue = cellValue.toString().trim();
+                    var recordValue = '';
+
+                    if (cellValue)
+                        recordValue = cellValue.toString().trim();
+
                     $scope.error = {};
                     $scope.error.rowNo = rowNo;
                     $scope.error.cellName = cellName;
@@ -491,7 +490,7 @@ angular.module('primeapps')
                             }
                             break;
                         case 'picklist':
-                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue })[0];
+                            var picklistItem = $filter('filter')($scope.picklistsModule[field.picklist_id], { labelStr: recordValue }, true)[0];
 
                             if (!picklistItem) {
                                 $scope.error.message = $filter('translate')('Data.Import.Error.PicklistItemNotFound');
@@ -662,10 +661,13 @@ angular.module('primeapps')
                                     $scope.error.message = $filter('translate')('Data.Import.Error.Required');
                                     break;
                                 }
-                                
+
+                                if (!cellValue)
+                                    continue;
+
                                 var recordFieldValue = getRecordFieldValueAndValidate(cellValue, field, i + 2, fieldMapValue);
 
-                                if ((cellValue && !recordFieldValue) || !recordFieldValue)
+                                if (angular.isUndefined(recordFieldValue))
                                     break;
 
                                 record[fieldMapKey] = recordFieldValue;

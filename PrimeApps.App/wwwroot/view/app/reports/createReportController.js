@@ -406,6 +406,7 @@ angular.module('primeapps')
                     var getNumberRegex = /[^\d.-]/g;
                     if (filter.value.indexOf('now(') > -1) {
                         filter.costumeDate = "now()";
+                        return true;
                     }
                     if (filter.value.indexOf('today(') > -1) {
                         if (/\d+/.test(filter.value)) {
