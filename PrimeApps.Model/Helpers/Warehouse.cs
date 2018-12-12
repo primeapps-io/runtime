@@ -602,46 +602,42 @@ namespace PrimeApps.Model.Helpers
             CreateRole(role, databaseName, tenantLanguage);
         }
 
-        public void UpdateRole(Role role, string databaseName, CurrentUser currentUser, string tenantLanguage)
+        public void UpdateRole(int roleId, string databaseName, CurrentUser currentUser, string tenantLanguage)
         {
-            var resultRole = GetRole(role.Id, currentUser);
+            var role = GetRole(roleId, currentUser);
 
-            if (resultRole == null)
-                CreateRole(role, databaseName, tenantLanguage);
-            else
+            var connection = new SqlConnection(GetConnectionString(databaseName));
+
+            using (connection)
             {
-                var connection = new SqlConnection(GetConnectionString(databaseName));
-
-                using (connection)
+                using (var command = connection.CreateCommand())
                 {
-                    using (var command = connection.CreateCommand())
+                    var columns = new List<string>();
+                    var values = new List<string>();
+                    var sets = new List<string>();
+
+                    command.Parameters.Add(new SqlParameter { ParameterName = "label", SqlValue = tenantLanguage == "tr" ? role.LabelTr : role.LabelEn, SqlDbType = SqlDbType.NVarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "owner", SqlValue = role.Owners, SqlDbType = SqlDbType.VarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "deleted", SqlValue = role.Deleted, SqlDbType = SqlDbType.Bit });
+
+                    foreach (SqlParameter parameter in command.Parameters)
                     {
-                        var columns = new List<string>();
-                        var values = new List<string>();
-                        var sets = new List<string>();
-
-                        command.Parameters.Add(new SqlParameter { ParameterName = "label", SqlValue = tenantLanguage == "tr" ? role.LabelTr : role.LabelEn, SqlDbType = SqlDbType.NVarChar });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "owner", SqlValue = role.Owners, SqlDbType = SqlDbType.VarChar });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "deleted", SqlValue = role.Deleted, SqlDbType = SqlDbType.Bit });
-
-                        foreach (SqlParameter parameter in command.Parameters)
-                        {
-                            columns.Add("[" + parameter.ParameterName + "]");
-                            values.Add("@" + parameter.ParameterName);
-                            sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
-                        }
-
-                        var sql = $"UPDATE [roles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {role.Id}";
-                        command.CommandText = sql;
-                        command.CommandType = CommandType.Text;
-
-                        if (command.Connection.State != ConnectionState.Open)
-                            connection.Open();
-
-                        command.ExecuteNonQuery();
+                        columns.Add("[" + parameter.ParameterName + "]");
+                        values.Add("@" + parameter.ParameterName);
+                        sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
                     }
+
+                    var sql = $"UPDATE [roles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {role.Id}";
+                    command.CommandText = sql;
+                    command.CommandType = CommandType.Text;
+
+                    if (command.Connection.State != ConnectionState.Open)
+                        connection.Open();
+
+                    command.ExecuteNonQuery();
                 }
             }
+
         }
 
         public void CreateProfile(Profile profile, string databaseName, string tenantLanguage)
@@ -691,47 +687,42 @@ namespace PrimeApps.Model.Helpers
             CreateProfile(profile, databaseName, tenantLanguage);
         }
 
-        public void UpdateProfile(Profile profile, string databaseName, int tenantId, string tenantLanguage)
+        public void UpdateProfile(int profileId, string databaseName, int tenantId, string tenantLanguage)
         {
-            var resultRole = GetProfile(profile.Id, tenantId);
+            var profile = GetProfile(profileId, tenantId);
 
-            if (resultRole == null)
-                CreateProfile(profile, databaseName, tenantLanguage);
-            else
+            var connection = new SqlConnection(GetConnectionString(databaseName));
+
+            using (connection)
             {
-                var connection = new SqlConnection(GetConnectionString(databaseName));
-
-                using (connection)
+                using (var command = connection.CreateCommand())
                 {
-                    using (var command = connection.CreateCommand())
+                    var columns = new List<string>();
+                    var values = new List<string>();
+                    var sets = new List<string>();
+
+                    command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "has_admin_rights", SqlValue = profile.HasAdminRights, SqlDbType = SqlDbType.Bit });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "system_value", SqlValue = profile.SystemCode ?? string.Empty, SqlDbType = SqlDbType.NVarChar });
+
+                    foreach (SqlParameter parameter in command.Parameters)
                     {
-                        var columns = new List<string>();
-                        var values = new List<string>();
-                        var sets = new List<string>();
-
-                        command.Parameters.Add(new SqlParameter { ParameterName = "name", SqlValue = profile.Name, SqlDbType = SqlDbType.NVarChar });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "description", SqlValue = profile.Description, SqlDbType = SqlDbType.NVarChar });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "has_admin_rights", SqlValue = profile.HasAdminRights, SqlDbType = SqlDbType.Bit });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "parent_id", SqlValue = profile.ParentId, SqlDbType = SqlDbType.Int });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "order", SqlValue = profile.Order, SqlDbType = SqlDbType.Int });
-                        command.Parameters.Add(new SqlParameter { ParameterName = "system_value", SqlValue = profile.SystemCode ?? string.Empty, SqlDbType = SqlDbType.NVarChar });
-
-                        foreach (SqlParameter parameter in command.Parameters)
-                        {
-                            columns.Add("[" + parameter.ParameterName + "]");
-                            values.Add("@" + parameter.ParameterName);
-                            sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
-                        }
-
-                        var sql = $"UPDATE [profiles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {profile.Id}";
-                        command.CommandText = sql;
-                        command.CommandType = CommandType.Text;
-
-                        if (command.Connection.State != ConnectionState.Open)
-                            connection.Open();
-
-                        command.ExecuteNonQuery();
+                        columns.Add("[" + parameter.ParameterName + "]");
+                        values.Add("@" + parameter.ParameterName);
+                        sets.Add("[" + parameter.ParameterName + "] = @" + parameter.ParameterName);
                     }
+
+                    var sql = $"UPDATE [profiles] \nSET \n\t{string.Join(",\n\t", sets)} \nWHERE \n\t[id] = {profile.Id}";
+                    command.CommandText = sql;
+                    command.CommandType = CommandType.Text;
+
+                    if (command.Connection.State != ConnectionState.Open)
+                        connection.Open();
+
+                    command.ExecuteNonQuery();
                 }
             }
         }
