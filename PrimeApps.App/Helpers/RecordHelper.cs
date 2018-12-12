@@ -659,6 +659,14 @@ namespace PrimeApps.App.Helpers
 			var field2 = await _moduleRepository.GetFieldByName(fieldCombination.Combination.Field2);
 			var formatDate = currentCulture == "tr-TR" ? "dd.MM.yyyy" : "M/d/yyyy";
 			var formatDateTime = currentCulture == "tr-TR" ? "dd.MM.yyyy HH:mm" : "M/d/yyyy h:mm a";
+			var value1 = record[fieldCombination.Combination.Field1];
+			var value2 = record[fieldCombination.Combination.Field2];
+			DateTime dateTime;
+			bool isDateTime1 = false;
+			bool isDateTime2 = false;
+			isDateTime1 = DateTime.TryParse((string)value1, out dateTime);
+			isDateTime2 = DateTime.TryParse((string)value2, out dateTime);
+
 			if ((field1 != null && (field1.DataType == DataType.Date || field1.DataType == DataType.DateTime)) || (field2 != null && (field2.DataType == DataType.Date || field2.DataType == DataType.DateTime)))
 			{
 				if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty())
@@ -666,58 +674,63 @@ namespace PrimeApps.App.Helpers
 					switch (field1.DataType)
 					{
 						case DataType.Date:
-							record[fieldCombination.Combination.Field1] = ((string)record[fieldCombination.Combination.Field1]).Length < 11 ? record[fieldCombination.Combination.Field1] : ((DateTime)record[fieldCombination.Combination.Field1]).AddMinutes(timeZoneOffset).ToString(formatDate);
+							value1 = !isDateTime1 ? record[fieldCombination.Combination.Field1] : ((DateTime)record[fieldCombination.Combination.Field1]).AddMinutes(timeZoneOffset).ToString(formatDate);
 							break;
 						case DataType.DateTime:
-							record[fieldCombination.Combination.Field1] = ((string)record[fieldCombination.Combination.Field1]).Length < 17 ? record[fieldCombination.Combination.Field1] : ((DateTime)record[fieldCombination.Combination.Field1]).AddMinutes(timeZoneOffset).ToString(formatDateTime);
+							value1 = !isDateTime1 ? record[fieldCombination.Combination.Field1] : ((DateTime)record[fieldCombination.Combination.Field1]).AddMinutes(timeZoneOffset).ToString(formatDateTime);
 							break;
 					}
+
 				}
-				else if (!record[fieldCombination.Combination.Field2].IsNullOrEmpty())
+
+				if (!value2.IsNullOrEmpty())
 				{
 					switch (field2.DataType)
 					{
 						case DataType.Date:
-							record[fieldCombination.Combination.Field2] = ((string)record[fieldCombination.Combination.Field2]).Length < 11 ? record[fieldCombination.Combination.Field2] : ((DateTime)record[fieldCombination.Combination.Field2]).ToString(formatDate);
+							value2 = !isDateTime2 ? record[fieldCombination.Combination.Field2] : ((DateTime)record[fieldCombination.Combination.Field2]).ToString(formatDate);
 							break;
 						case DataType.DateTime:
-							record[fieldCombination.Combination.Field2] = ((string)record[fieldCombination.Combination.Field2]).Length < 17 ? record[fieldCombination.Combination.Field2] : ((DateTime)record[fieldCombination.Combination.Field2]).AddMinutes(timeZoneOffset).ToString(formatDateTime);
+							value2 = !isDateTime2 ? record[fieldCombination.Combination.Field2] : ((DateTime)record[fieldCombination.Combination.Field2]).AddMinutes(timeZoneOffset).ToString(formatDateTime);
 							break;
 					}
+
 				}
+
 			}
+
 			var isSet = false;
 			var combinationCharacter = !string.IsNullOrWhiteSpace(fieldCombination.Combination.CombinationCharacter) ? fieldCombination.Combination.CombinationCharacter : " ";
 
 			if (combinationCharacter == "<+>")
 				combinationCharacter = "";
 
-			if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty() && !record[fieldCombination.Combination.Field2].IsNullOrEmpty())
+			if (!value1.IsNullOrEmpty() && !value2.IsNullOrEmpty())
 			{
-				record[fieldCombination.Name] = record[fieldCombination.Combination.Field1] + combinationCharacter + record[fieldCombination.Combination.Field2];
+				record[fieldCombination.Name] = value1 + combinationCharacter + value2;
 				isSet = true;
 			}
 
 			if (!isSet && currentRecord != null)
 			{
-				if (!record[fieldCombination.Combination.Field1].IsNullOrEmpty() && record[fieldCombination.Combination.Field2].IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field2].IsNullOrEmpty())
+				if (!value1.IsNullOrEmpty() && value2.IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field2].IsNullOrEmpty())
 				{
-					record[fieldCombination.Name] = record[fieldCombination.Combination.Field1] + combinationCharacter + currentRecord[fieldCombination.Combination.Field2];
+					record[fieldCombination.Name] = value1 + combinationCharacter + currentRecord[fieldCombination.Combination.Field2];
 					isSet = true;
 				}
 
-				if (record[fieldCombination.Combination.Field1].IsNullOrEmpty() && !record[fieldCombination.Combination.Field2].IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field1].IsNullOrEmpty())
+				if (value1.IsNullOrEmpty() && !value2.IsNullOrEmpty() && !currentRecord[fieldCombination.Combination.Field1].IsNullOrEmpty())
 				{
-					record[fieldCombination.Name] = currentRecord[fieldCombination.Combination.Field1] + combinationCharacter + record[fieldCombination.Combination.Field2];
+					record[fieldCombination.Name] = currentRecord[fieldCombination.Combination.Field1] + combinationCharacter + value2;
 					isSet = true;
 				}
 			}
 
-			if (!isSet && !record[fieldCombination.Combination.Field1].IsNullOrEmpty())
-				record[fieldCombination.Name] = record[fieldCombination.Combination.Field1];
+			if (!isSet && !value1.IsNullOrEmpty())
+				record[fieldCombination.Name] = value1;
 
-			if (!isSet && !record[fieldCombination.Combination.Field2].IsNullOrEmpty())
-				record[fieldCombination.Name] = record[fieldCombination.Combination.Field2];
+			if (!isSet && !value2.IsNullOrEmpty())
+				record[fieldCombination.Name] = value2;
 		}
 
 		public async Task SetActivityType(JObject record)
