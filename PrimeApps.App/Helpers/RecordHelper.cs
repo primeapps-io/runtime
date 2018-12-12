@@ -677,7 +677,14 @@ namespace PrimeApps.App.Helpers
 							value1 = !isDateTime1 ? record[fieldCombination.Combination.Field1] : ((DateTime)record[fieldCombination.Combination.Field1]).AddMinutes(timeZoneOffset).ToString(formatDate);
 							break;
 						case DataType.DateTime:
-							value1 = !isDateTime1 ? record[fieldCombination.Combination.Field1] : ((DateTime)record[fieldCombination.Combination.Field1]).AddMinutes(timeZoneOffset).ToString(formatDateTime);
+							if (isDateTime1)
+							{
+								var date = DateTime.Parse(record[fieldCombination.Combination.Field1].ToString());
+								date = date.AddMinutes(timeZoneOffset);
+								value1 = date.ToString(formatDateTime);
+							}
+							else
+								value1 = record[fieldCombination.Combination.Field1];
 							break;
 					}
 
@@ -691,7 +698,14 @@ namespace PrimeApps.App.Helpers
 							value2 = !isDateTime2 ? record[fieldCombination.Combination.Field2] : ((DateTime)record[fieldCombination.Combination.Field2]).ToString(formatDate);
 							break;
 						case DataType.DateTime:
-							value2 = !isDateTime2 ? record[fieldCombination.Combination.Field2] : ((DateTime)record[fieldCombination.Combination.Field2]).AddMinutes(timeZoneOffset).ToString(formatDateTime);
+							if (isDateTime2)
+							{
+								var date = DateTime.Parse(record[fieldCombination.Combination.Field2].ToString());
+								date = date.AddMinutes(timeZoneOffset);
+								value2 = date.ToString(formatDateTime);
+							}
+							else
+								value2 = record[fieldCombination.Combination.Field2];
 							break;
 					}
 
