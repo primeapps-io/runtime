@@ -280,18 +280,11 @@ angular.module('primeapps')
                                         }
                                     }
 
-                                    $rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'type': 3 }, true)[0];
 
                                     //custom menü
                                     $rootScope.customMenu = false;
                                     var menu = response[10].data;
                                     if (menu) {
-                                        //Custom Menüde Haber Akışının Profil Yetkilendirmelerden görünümü kapatılınca Menüye gelmemesi sağlanıyor.
-                                        var newsfeedShow = $filter('filter')(menu, { 'route': 'newsfeed' }, true)[0];
-                                        if (newsfeedShow && $rootScope.permissionsNewsfeed && $rootScope.permissionsNewsfeed.Read === false) {
-                                            var newsfeedIndex = menu.indexOf(newsfeedShow);
-                                            menu.splice(newsfeedIndex, 1);
-                                        }
                                         $rootScope.customMenu = true;
                                         $rootScope.menu = $filter('orderBy')(menu, 'order', false);
                                     }
@@ -324,6 +317,8 @@ angular.module('primeapps')
                                                             customMenuItem.label_tr = profileSetting.label_tr_plural;
                                                             customMenuItem.label_en = profileSetting.label_en_plural;
                                                             customMenuItem.menu_icon = profileSetting.menu_icon;
+                                                            moduleSetting.display = profileSetting.display;
+
                                                             if (!profileSetting.display)
                                                                 customMenuItem.hide = true;
                                                         }
@@ -496,7 +491,9 @@ angular.module('primeapps')
                                     $rootScope.personalConvertShow = $filter('filter')($rootScope.moduleSettings, { key: 'personal_convert_show' }, true)[0];
                                     $rootScope.personalConvertShow = $rootScope.personalConvertShow ? $rootScope.personalConvertShow.value : false;
                                     $rootScope.permissionsReport = $filter('filter')($rootScope.user.profile.permissions, { type: 2 }, true)[0];
-                                    that.setCustomActivityTypes(activityTypes);
+									$rootScope.permissionsNewsfeed = $filter('filter')($rootScope.user.profile.permissions, { 'Type': 3 }, true)[0];
+
+									that.setCustomActivityTypes(activityTypes);
 
                                     helper.hideLoader();
                                     deferred.resolve(true);

@@ -4,21 +4,43 @@ angular.module('primeapps')
 
     .controller('ModuleFormController', ['$rootScope', '$scope', 'ngToast', '$filter', 'helper', '$location', '$state', '$stateParams', '$q', '$window', '$localStorage', '$cache', 'config', '$timeout', 'operations', '$modal', 'FileUploader', 'activityTypes', 'transactionTypes', 'ModuleService', 'DocumentService', '$http', 'resizeService', 'components', '$cookies',
         function ($rootScope, $scope, ngToast, $filter, helper, $location, $state, $stateParams, $q, $window, $localStorage, $cache, config, $timeout, operations, $modal, FileUploader, activityTypes, transactionTypes, ModuleService, DocumentService, $http, resizeService, components, $cookies) {
-            $scope.type = $stateParams.type;
-            $scope.subtype = $stateParams.stype;
-            $scope.id = $location.search().id;
-            $scope.parentType = $location.search().ptype;
-            $scope.parentId = $location.search().pid;
-            $scope.returnTab = $location.search().rtab;
-            $scope.previousParentType = $location.search().pptype;
-            $scope.previousParentId = $location.search().ppid;
-            $scope.previousReturnTab = $location.search().prtab;
-            $scope.back = $location.search().back;
-            $scope.many = $location.search().many;
-            $scope.clone = $location.search().clone;
-            $scope.revise = $location.search().revise;
-            $scope.paramField = $location.search().field;
-            $scope.paramValue = $location.search().value;
+
+            if (!$scope.$parent.$parent.formType) {
+                $scope.type = $stateParams.type;
+                $scope.subtype = $stateParams.stype;
+                $scope.id = $location.search().id;
+                $scope.parentType = $location.search().ptype;
+                $scope.parentId = $location.search().pid;
+                $scope.returnTab = $location.search().rtab;
+                $scope.previousParentType = $location.search().pptype;
+                $scope.previousParentId = $location.search().ppid;
+                $scope.previousReturnTab = $location.search().prtab;
+                $scope.back = $location.search().back;
+                $scope.many = $location.search().many;
+                $scope.clone = $location.search().clone;
+                $scope.revise = $location.search().revise;
+                $scope.paramField = $location.search().field;
+                $scope.paramValue = $location.search().value;
+            } else {
+                var parent = $scope.$parent.$parent;
+                $scope.formType = parent.formType;
+                $scope.type = parent.type;
+                $scope.id = parent.id;
+                $scope.subtype = parent.stype;
+                $scope.parentType = parent.ptype;
+                $scope.parentId = parent.pid;
+                $scope.returnTab = parent.rtab;
+                $scope.previousParentType = parent.pptype;
+                $scope.previousParentId = parent.ppid;
+                $scope.previousReturnTab = parent.prtab;
+                $scope.back = parent.back;
+                $scope.many = parent.many;
+                $scope.clone = parent.clone;
+                $scope.revise = parent.revise;
+                $scope.paramField = parent.field;
+                $scope.paramValue = parent.value;
+
+            }
             $scope.operations = operations;
             $scope.hasPermission = helper.hasPermission;
             $scope.hasDocumentsPermission = helper.hasDocumentsPermission;
@@ -292,9 +314,11 @@ angular.module('primeapps')
                     var setFieldDependencies = function () {
                         angular.forEach($scope.module.fields, function (field) {
                             ModuleService.setDependency(field, $scope.module, $scope.record, $scope.picklistsModule, $scope);
-                            if (field.default_value && field.data_type == 'picklist') {
-                                $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
-                                $scope.fieldValueChange(field);
+                            if ($scope.module.name != 'activities') {
+                                if (field.default_value && field.data_type == 'picklist') {
+                                    $scope.record[field.name] = $filter('filter')($scope.picklistsModule[field.picklist_id], { id: field.default_value })[0]
+                                    $scope.fieldValueChange(field);
+                                }
                             }
                         });
                     };
@@ -1812,7 +1836,7 @@ angular.module('primeapps')
                                     $scope.salesInvoiceProducts = [];
                                     $scope.vatList = [];
                                     $scope.record.grand_total = 0;
-                                 
+
 
                                 }
                             }
@@ -1999,7 +2023,7 @@ angular.module('primeapps')
                                                         quoteProductRecord.product.purchase_price = quoteProductRecord.purchase_price;
                                                     }
 
-                                                    if (quoteProductRecord.vat_percent < 0) {
+                                                    if (quoteProductRecord.vat_percent == null || !quoteProductRecord.vat_percent) {
                                                         quoteProductRecord.vat_percent = quoteProductRecord.product.vat_percent;
                                                     } else {
                                                         quoteProductRecord.product.vat_percent = quoteProductRecord.vat_percent;
@@ -2078,7 +2102,7 @@ angular.module('primeapps')
                                                         orderProductRecord.product.purchase_price = orderProductRecord.purchase_price;
                                                     }
 
-                                                    if (orderProductRecord.vat_percent < 0) {
+                                                    if (orderProductRecord.vat_percent == null || !orderProductRecord.vat_percent) {
                                                         orderProductRecord.vat_percent = orderProductRecord.product.vat_percent;
                                                     } else {
                                                         orderProductRecord.product.vat_percent = orderProductRecord.vat_percent;
@@ -2154,7 +2178,7 @@ angular.module('primeapps')
                                                         purchaseProductRecord.product.purchase_price = purchaseProductRecord.purchase_price;
                                                     }
 
-                                                    if (purchaseProductRecord.vat_percent < 0) {
+                                                    if (purchaseProductRecord.vat_percent == null || !purchaseProductRecord.vat_percent) {
                                                         purchaseProductRecord.vat_percent = purchaseProductRecord.product.vat_percent;
                                                     } else {
                                                         purchaseProductRecord.product.vat_percent = purchaseProductRecord.vat_percent;
@@ -2232,7 +2256,7 @@ angular.module('primeapps')
                                                         purchaseInvoiceProductRecord.product.purchase_price = purchaseInvoiceProductRecord.purchase_price;
                                                     }
 
-                                                    if (purchaseInvoiceProductRecord.vat_percent < 0) {
+                                                    if (purchaseInvoiceProductRecord.vat_percent == null || !purchaseInvoiceProductRecord.vat_percent) {
                                                         purchaseInvoiceProductRecord.vat_percent = purchaseInvoiceProductRecord.product.vat_percent;
                                                     } else {
                                                         purchaseInvoiceProductRecord.product.vat_percent = purchaseInvoiceProductRecord.vat_percent;
@@ -2311,7 +2335,7 @@ angular.module('primeapps')
                                                         salesInvoiceProductRecord.product.purchase_price = salesInvoiceProductRecord.purchase_price;
                                                     }
 
-                                                    if (salesInvoiceProductRecord.vat_percent < 0) {
+                                                    if (salesInvoiceProductRecord.vat_percent == null || !salesInvoiceProductRecord.vat_percent) {
                                                         salesInvoiceProductRecord.vat_percent = salesInvoiceProductRecord.product.vat_percent;
                                                     } else {
                                                         salesInvoiceProductRecord.product.vat_percent = salesInvoiceProductRecord.vat_percent;
