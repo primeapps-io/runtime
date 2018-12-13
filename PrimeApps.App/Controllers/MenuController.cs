@@ -419,7 +419,7 @@ namespace PrimeApps.App.Controllers
 					await _menuRepository.UpdateMenuItem(menuItem);
 				}
 			}
-			return Ok(menuItem);
+			return Ok(request);
 		}
 
 		[Route("get_menu/{id:int}"), HttpGet]

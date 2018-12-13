@@ -347,6 +347,13 @@ angular.module('primeapps')
 					}
 					//Create MenuItem
 					if ($scope.createArray.length > 0) {
+						//we just check if createArray item isUpdate 
+						if (isUpdate)
+							angular.forEach($scope.createArray, function (createItem) {
+								createItem.no = $filter('filter')($scope.menuLists, { parentId: 0, name: createItem.name, menuModuleType: createItem.menuModuleType }, true)[0].no;
+								createItem.menuId = createItem.no;
+							});
+
 						MenuService.createMenuItems($scope.createArray, !$scope.defaultMenu ? $scope.profileItem.id : systemSubscriberProfileId)
 							.then(function onSuccess() {
 								if (isUpdate) {
@@ -483,7 +490,7 @@ angular.module('primeapps')
 						if (moduleList.items.length > 0)
 							angular.forEach(moduleList.items, function (menuItem) {
 								menuItem.menuId = moduleList.menuId;
-							})
+							});
 					});
 
 					$scope.counter = $scope.counter - 1;
