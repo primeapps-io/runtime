@@ -1,4 +1,3 @@
-
 $primeapps-color: #635fb3;
 .primeapps {
   body {
@@ -68,6 +67,9 @@ $primeapps-color: #635fb3;
     border-radius: inherit;
   }
   .collapse-menu {
+    .collapse.am-collapse {
+      background-color: #121212;
+    }
     a {
       line-height: 55px !important;
       font-family: Nunito;
@@ -106,6 +108,7 @@ $primeapps-color: #635fb3;
     align-items: center;
     margin-left: 10px;
     cursor: pointer;
+
     i {
       font-size: 12px;
       color: #fff;
@@ -350,23 +353,30 @@ $primeapps-color: #635fb3;
   .modal {
     left: auto;
   }
-  .setup-modal, module-modal {
+
+  .setup-modal, .module-modal {
     background-color: #fff !important;
     margin-top: 20px;
     margin-right: 20px;
     border-radius: 5px;
     box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-    padding-left: 40px;
-    padding-right: 40px;
+    margin-bottom: 20px;
+    overflow: hidden;
     .modal-dialog {
       height: 100%;
-      width: 600px !important;
       overflow-x: auto;
       margin: 0;
       line-height: 33px !important;
       input[type="radio"], input[type="checkbox"] {
-        margin: 11px 0 0 !important;
-        margin-left: -18px !important;
+
+      }
+      .checkbox-inline input[type="checkbox"] {
+        position: relative !important;
+        margin-left: 0px !important;
+      }
+      .radio-inline input[type="radio"] {
+        position: relative !important;
+        margin-left: 0px !important;
       }
       input[type="radio"]:checked + span:after {
         width: 10px;
@@ -379,9 +389,7 @@ $primeapps-color: #635fb3;
           text-align: left !important;
         }
       }
-      .form-control {
-        height: 35px;
-      }
+
       .fa.pull-left {
         margin-top: .15em;
         margin-right: 5px;
@@ -391,9 +399,99 @@ $primeapps-color: #635fb3;
       max-height: 100% !important;
       margin: 0 auto !important;
       overflow-y: unset !important;
+      padding-top: 5px;
 
     }
+    .modal-content {
+      padding-left: 40px;
+      padding-right: 40px;
+      border: none;
+      .form-custom {
+        margin-bottom: 100px;
+        .field-form-body {
+          padding-top: 7px;
+        }
+      }
+      .modal-left-menu {
 
+        padding: 0px;
+        margin: 0px;
+        ul {
+          border-right: 2px solid rgba(0, 0, 0, 0.05);
+          width: 150px;
+          position: fixed;
+          li {
+            a {
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.75);
+              font-weight: 400;
+              &:hover {
+                background: none;
+                color: #0d6faa !important;
+                font-weight: bold !important;
+              }
+
+            }
+            .active {
+              background: none;
+              color: #0d6faa !important;
+              font-weight: bold !important;
+            }
+          }
+        }
+      }
+      .section {
+        h4 {
+          color: #0d6faa;
+          padding-bottom: 10px;
+          font-weight: bold;
+        }
+        .panel {
+          box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
+          padding: 26px;
+        }
+      }
+
+    }
+    .modal-header {
+      margin-bottom: 25px;
+      padding-left: 0;
+      margin-right: 40px;
+      margin-left: 40px;
+      display: flex;
+      padding-right: 0px;
+      border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+      .col-sm-6 {
+        display: flex;
+      }
+      .col-sm-rigth {
+        justify-content: flex-end;
+        padding: 0px;
+      }
+      h4 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #0d6faa;
+      }
+    }
+    .modal-400 {
+      width: 400px !important;
+    }
+    .modal-500 {
+      width: 500px !important;
+    }
+    .modal-600 {
+      width: 600px !important;
+    }
+    .modal-700 {
+      width: 700px !important;
+    }
+    .modal-800 {
+      width: 800px !important;
+    }
+    .modal-900 {
+      width: 900px !important;
+    }
   }
   .user-dropdown {
     .user-info {
@@ -478,22 +576,22 @@ $primeapps-color: #635fb3;
     padding: 0;
     margin-bottom: 0;
     border-radius: inherit;
-    background-color:inherit;
+    background-color: inherit;
     padding-left: 30px;
     color: rgba(0, 0, 0, 0.5);
-      li {
-        font-size: 16px !important;
+    li {
+      font-size: 16px !important;
+      color: rgba(0, 0, 0, 0.5) !important;
+      font-weight: bold !important;
+      a {
         color: rgba(0, 0, 0, 0.5) !important;
-        font-weight: bold !important;
-        a{
-          color: rgba(0, 0, 0, 0.5) !important;
-          font-size: 14px !important;
-          font-weight: 400 !important;
-          &:hover{
-            color: #0d6faa;
-          }
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        &:hover {
+          color: #0d6faa;
         }
       }
+    }
 
   }
   //Button
@@ -501,6 +599,9 @@ $primeapps-color: #635fb3;
     i {
       padding-right: 10px;
     }
+  }
+  .btn-bold {
+    font-weight: bold;
   }
   .btn-radius {
     border-radius: 30px;
@@ -513,6 +614,209 @@ $primeapps-color: #635fb3;
     background-color: rgba(13, 111, 170, 0.75);
     color: #fff
   }
+  .btn-gray {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: #fff
+  }
+  //Input
+  .form-group {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 20px !important;
+    label {
+      padding: 0;
+      color: rgba(0, 0, 0, 0.75);
+      font-size: 14px;
+      font-weight: bold !important;
+    }
+    .form-control {
+      border-radius: 2px;
+      background-color: rgba(0, 0, 0, 0.05);
+      border: none;
+      padding-left: 10px;
+      font-size: 16px;
+      font-weight: 400;
+      height: 40px !important;
+      max-width: none !important;
+      &[disabled] {
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
 
+  }
+  .callout {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .page-container {
+    margin-top: 160px !important;
+    margin-left: 20px !important;
+    margin-right: 20px;
+    .search-select {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      i {
+        position: absolute;
+        display: flex;
+        font-size: 23px;
+        justify-content: flex-start;
+        padding-right: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 14px;
+      }
+      .select-status {
+        box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+        border-radius: 5px;
+        height: 60px;
+        width: 100%;
+        border: none !important;
+        padding-left: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -o-appearance: none;
+      }
+
+    }
+    .app-layout-box {
+      cursor: pointer;
+      margin-top: 5px;
+      margin-bottom: 30px;
+      .tooltip.tooltip-success .tooltip-inner {
+        background-color: rgba(0, 0, 0, 0.75);
+        border-color: rgba(0, 0, 0, 0.75);
+        color: #fff;
+      }
+      .tooltip.tooltip-success.top .tooltip-arrow {
+        border-top-color: rgba(0, 0, 0, 0.75);
+      }
+      .app-box {
+        -webkit-transition: all 0.2s ease;
+        -moz-transition: all 0.2s ease;
+        -o-transition: all 0.2s ease;
+        -ms-transition: all 0.2s ease;
+        height: 200px;
+        border-radius: 5px;
+        box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        .image {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img {
+            width: 200px;
+            max-width: 100%;
+          }
+        }
+        .oval {
+          display: flex;
+          justify-content: flex-end;
+          span {
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+            margin: 15px;
+
+          }
+          .oval-green {
+            background-color: #92c549;
+          }
+          .oval-orange {
+            background-color: #e08340;
+          }
+        }
+        .icon-image {
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          i {
+            font-size: 67px;
+            color: rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
+      .app-info {
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 23px;
+        h3 {
+          line-height: 20px;
+          font-size: 20px;
+          color: rgba(0, 0, 0, 0.5);
+          font-weight: bold;
+          margin: 0px;
+          padding: 0px;
+        }
+        h4 {
+          margin: 0px;
+          padding: 0px;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 25px;
+          color: rgba(0, 0, 0, 0.5);
+        }
+      }
+      &:hover {
+        .app-box {
+          box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+        }
+        .app-info {
+          h4, h3 {
+            color: #0d6faa;
+          }
+        }
+      }
+    }
+
+  }
+  .search-input {
+    display: flex;
+    align-items: center;
+    .search-input-icon {
+      position: absolute;
+      padding-left: 20px;
+      font-size: 20px;
+      color: rgba(0, 0, 0, 0.1);
+    }
+    input {
+      padding-left: 50px !important;
+      color: rgba(0, 0, 0, 0.75);
+      ::placeholder {
+        color: rgba(0, 0, 0, 0.25);
+      }
+
+      :-ms-input-placeholder, ::-ms-input-placeholder {
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+    .app-search-input {
+      height: 60px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+  }
+  .scrollspy {
+
+  }
+
+  //titles
+  .h4-title {
+    font-size: 20px;
+  }
+  .blue-color {
+    color: #0d6faa;
+  }
+  .font-bold {
+    font-weight: bold;
+  }
 }
 

@@ -5452,8 +5452,6 @@ tags-input.ng-invalid .tags {
       .setup-modal .modal-content .modal-body .form-group label {
         font-weight: normal;
         text-align: right; }
-      .setup-modal .modal-content .modal-body .form-group .form-control {
-        max-width: 280px !important; }
       .setup-modal .modal-content .modal-body .form-group .checkbox-inline,
       .setup-modal .modal-content .modal-body .form-group .radio-inline {
         padding-top: 0; }
@@ -6459,6 +6457,8 @@ tags-input.ng-invalid .tags {
 .primeapps .sidebar-nav a.active {
   background-color: #121212 !important;
   border-radius: inherit; }
+.primeapps .collapse-menu .collapse.am-collapse {
+  background-color: #121212; }
 .primeapps .collapse-menu a {
   line-height: 55px !important;
   font-family: Nunito;
@@ -6684,39 +6684,103 @@ tags-input.ng-invalid .tags {
   color: #000; }
 .primeapps .modal {
   left: auto; }
-.primeapps .setup-modal, .primeapps module-modal {
+.primeapps .setup-modal, .primeapps .module-modal {
   background-color: #fff !important;
   margin-top: 20px;
   margin-right: 20px;
   border-radius: 5px;
   box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
-  padding-left: 40px;
-  padding-right: 40px; }
-  .primeapps .setup-modal .modal-dialog, .primeapps module-modal .modal-dialog {
+  margin-bottom: 20px;
+  overflow: hidden; }
+  .primeapps .setup-modal .modal-dialog, .primeapps .module-modal .modal-dialog {
     height: 100%;
-    width: 600px !important;
     overflow-x: auto;
     margin: 0;
     line-height: 33px !important; }
-    .primeapps .setup-modal .modal-dialog input[type="radio"], .primeapps .setup-modal .modal-dialog input[type="checkbox"], .primeapps module-modal .modal-dialog input[type="radio"], .primeapps module-modal .modal-dialog input[type="checkbox"] {
-      margin: 11px 0 0 !important;
-      margin-left: -18px !important; }
-    .primeapps .setup-modal .modal-dialog input[type="radio"]:checked + span:after, .primeapps module-modal .modal-dialog input[type="radio"]:checked + span:after {
+    .primeapps .setup-modal .modal-dialog .checkbox-inline input[type="checkbox"], .primeapps .module-modal .modal-dialog .checkbox-inline input[type="checkbox"] {
+      position: relative !important;
+      margin-left: 0px !important; }
+    .primeapps .setup-modal .modal-dialog .radio-inline input[type="radio"], .primeapps .module-modal .modal-dialog .radio-inline input[type="radio"] {
+      position: relative !important;
+      margin-left: 0px !important; }
+    .primeapps .setup-modal .modal-dialog input[type="radio"]:checked + span:after, .primeapps .module-modal .modal-dialog input[type="radio"]:checked + span:after {
       width: 10px;
       height: 10px;
       top: 12px;
       left: -16px; }
-    .primeapps .setup-modal .modal-dialog .form-group label, .primeapps module-modal .modal-dialog .form-group label {
+    .primeapps .setup-modal .modal-dialog .form-group label, .primeapps .module-modal .modal-dialog .form-group label {
       text-align: left !important; }
-    .primeapps .setup-modal .modal-dialog .form-control, .primeapps module-modal .modal-dialog .form-control {
-      height: 35px; }
-    .primeapps .setup-modal .modal-dialog .fa.pull-left, .primeapps module-modal .modal-dialog .fa.pull-left {
+    .primeapps .setup-modal .modal-dialog .fa.pull-left, .primeapps .module-modal .modal-dialog .fa.pull-left {
       margin-top: .15em;
       margin-right: 5px; }
-  .primeapps .setup-modal .modal-body, .primeapps module-modal .modal-body {
+  .primeapps .setup-modal .modal-body, .primeapps .module-modal .modal-body {
     max-height: 100% !important;
     margin: 0 auto !important;
-    overflow-y: unset !important; }
+    overflow-y: unset !important;
+    padding-top: 5px; }
+  .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
+    padding-left: 40px;
+    padding-right: 40px;
+    border: none; }
+    .primeapps .setup-modal .modal-content .form-custom, .primeapps .module-modal .modal-content .form-custom {
+      margin-bottom: 100px; }
+      .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
+        padding-top: 7px; }
+    .primeapps .setup-modal .modal-content .modal-left-menu, .primeapps .module-modal .modal-content .modal-left-menu {
+      padding: 0px;
+      margin: 0px; }
+      .primeapps .setup-modal .modal-content .modal-left-menu ul, .primeapps .module-modal .modal-content .modal-left-menu ul {
+        border-right: 2px solid rgba(0, 0, 0, 0.05);
+        width: 150px;
+        position: fixed; }
+        .primeapps .setup-modal .modal-content .modal-left-menu ul li a, .primeapps .module-modal .modal-content .modal-left-menu ul li a {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.75);
+          font-weight: 400; }
+          .primeapps .setup-modal .modal-content .modal-left-menu ul li a:hover, .primeapps .module-modal .modal-content .modal-left-menu ul li a:hover {
+            background: none;
+            color: #0d6faa !important;
+            font-weight: bold !important; }
+        .primeapps .setup-modal .modal-content .modal-left-menu ul li .active, .primeapps .module-modal .modal-content .modal-left-menu ul li .active {
+          background: none;
+          color: #0d6faa !important;
+          font-weight: bold !important; }
+    .primeapps .setup-modal .modal-content .section h4, .primeapps .module-modal .modal-content .section h4 {
+      color: #0d6faa;
+      padding-bottom: 10px;
+      font-weight: bold; }
+    .primeapps .setup-modal .modal-content .section .panel, .primeapps .module-modal .modal-content .section .panel {
+      box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
+      padding: 26px; }
+  .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
+    margin-bottom: 25px;
+    padding-left: 0;
+    margin-right: 40px;
+    margin-left: 40px;
+    display: flex;
+    padding-right: 0px;
+    border-bottom: 5px solid rgba(0, 0, 0, 0.05); }
+    .primeapps .setup-modal .modal-header .col-sm-6, .primeapps .module-modal .modal-header .col-sm-6 {
+      display: flex; }
+    .primeapps .setup-modal .modal-header .col-sm-rigth, .primeapps .module-modal .modal-header .col-sm-rigth {
+      justify-content: flex-end;
+      padding: 0px; }
+    .primeapps .setup-modal .modal-header h4, .primeapps .module-modal .modal-header h4 {
+      font-size: 20px;
+      font-weight: bold;
+      color: #0d6faa; }
+  .primeapps .setup-modal .modal-400, .primeapps .module-modal .modal-400 {
+    width: 400px !important; }
+  .primeapps .setup-modal .modal-500, .primeapps .module-modal .modal-500 {
+    width: 500px !important; }
+  .primeapps .setup-modal .modal-600, .primeapps .module-modal .modal-600 {
+    width: 600px !important; }
+  .primeapps .setup-modal .modal-700, .primeapps .module-modal .modal-700 {
+    width: 700px !important; }
+  .primeapps .setup-modal .modal-800, .primeapps .module-modal .modal-800 {
+    width: 800px !important; }
+  .primeapps .setup-modal .modal-900, .primeapps .module-modal .modal-900 {
+    width: 900px !important; }
 .primeapps .user-dropdown .user-info {
   display: flex;
   flex-direction: row;
@@ -6795,6 +6859,8 @@ tags-input.ng-invalid .tags {
         color: #0d6faa; }
 .primeapps .btn i {
   padding-right: 10px; }
+.primeapps .btn-bold {
+  font-weight: bold; }
 .primeapps .btn-radius {
   border-radius: 30px; }
 .primeapps .btn-red {
@@ -6803,3 +6869,155 @@ tags-input.ng-invalid .tags {
 .primeapps .btn-blue {
   background-color: rgba(13, 111, 170, 0.75);
   color: #fff; }
+.primeapps .btn-gray {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: #fff; }
+.primeapps .form-group {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 20px !important; }
+  .primeapps .form-group label {
+    padding: 0;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 14px;
+    font-weight: bold !important; }
+  .primeapps .form-group .form-control {
+    border-radius: 2px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: none;
+    padding-left: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    height: 40px !important;
+    max-width: none !important; }
+    .primeapps .form-group .form-control[disabled] {
+      color: rgba(0, 0, 0, 0.25); }
+.primeapps .callout {
+  font-size: 12px;
+  padding: 10px; }
+.primeapps .page-container {
+  margin-top: 160px !important;
+  margin-left: 20px !important;
+  margin-right: 20px; }
+  .primeapps .page-container .search-select {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center; }
+    .primeapps .page-container .search-select i {
+      position: absolute;
+      display: flex;
+      font-size: 23px;
+      justify-content: flex-start;
+      padding-right: 20px;
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 14px; }
+    .primeapps .page-container .search-select .select-status {
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      border-radius: 5px;
+      height: 60px;
+      width: 100%;
+      border: none !important;
+      padding-left: 20px;
+      color: rgba(0, 0, 0, 0.5);
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -o-appearance: none; }
+  .primeapps .page-container .app-layout-box {
+    cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 30px; }
+    .primeapps .page-container .app-layout-box .tooltip.tooltip-success .tooltip-inner {
+      background-color: rgba(0, 0, 0, 0.75);
+      border-color: rgba(0, 0, 0, 0.75);
+      color: #fff; }
+    .primeapps .page-container .app-layout-box .tooltip.tooltip-success.top .tooltip-arrow {
+      border-top-color: rgba(0, 0, 0, 0.75); }
+    .primeapps .page-container .app-layout-box .app-box {
+      -webkit-transition: all 0.2s ease;
+      -moz-transition: all 0.2s ease;
+      -o-transition: all 0.2s ease;
+      -ms-transition: all 0.2s ease;
+      height: 200px;
+      border-radius: 5px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column; }
+      .primeapps .page-container .app-layout-box .app-box .image {
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+        .primeapps .page-container .app-layout-box .app-box .image img {
+          width: 200px;
+          max-width: 100%; }
+      .primeapps .page-container .app-layout-box .app-box .oval {
+        display: flex;
+        justify-content: flex-end; }
+        .primeapps .page-container .app-layout-box .app-box .oval span {
+          width: 20px;
+          height: 20px;
+          border-radius: 10px;
+          box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+          margin: 15px; }
+        .primeapps .page-container .app-layout-box .app-box .oval .oval-green {
+          background-color: #92c549; }
+        .primeapps .page-container .app-layout-box .app-box .oval .oval-orange {
+          background-color: #e08340; }
+      .primeapps .page-container .app-layout-box .app-box .icon-image {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+        .primeapps .page-container .app-layout-box .app-box .icon-image i {
+          font-size: 67px;
+          color: rgba(0, 0, 0, 0.25); }
+    .primeapps .page-container .app-layout-box .app-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 23px; }
+      .primeapps .page-container .app-layout-box .app-info h3 {
+        line-height: 20px;
+        font-size: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        font-weight: bold;
+        margin: 0px;
+        padding: 0px; }
+      .primeapps .page-container .app-layout-box .app-info h4 {
+        margin: 0px;
+        padding: 0px;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 25px;
+        color: rgba(0, 0, 0, 0.5); }
+    .primeapps .page-container .app-layout-box:hover .app-box {
+      box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
+    .primeapps .page-container .app-layout-box:hover .app-info h4, .primeapps .page-container .app-layout-box:hover .app-info h3 {
+      color: #0d6faa; }
+.primeapps .search-input {
+  display: flex;
+  align-items: center; }
+  .primeapps .search-input .search-input-icon {
+    position: absolute;
+    padding-left: 20px;
+    font-size: 20px;
+    color: rgba(0, 0, 0, 0.1); }
+  .primeapps .search-input input {
+    padding-left: 50px !important;
+    color: rgba(0, 0, 0, 0.75); }
+    .primeapps .search-input input ::placeholder {
+      color: rgba(0, 0, 0, 0.25); }
+    .primeapps .search-input input :-ms-input-placeholder, .primeapps .search-input input ::-ms-input-placeholder {
+      color: rgba(0, 0, 0, 0.25); }
+  .primeapps .search-input .app-search-input {
+    height: 60px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    border: none;
+    font-size: 16px; }
+.primeapps .h4-title {
+  font-size: 20px; }
+.primeapps .blue-color {
+  color: #0d6faa; }
+.primeapps .font-bold {
+  font-weight: bold; }
