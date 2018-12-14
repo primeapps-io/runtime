@@ -132,16 +132,16 @@ namespace PrimeApps.App.Controllers
 				//if users avatar changed check update it.
 				//if (user.picture.Trim() == "")
 				//{
-					//if users avatar changed check update it.
+				//if users avatar changed check update it.
 
-					//if (userToEdit.avatar != null)
-					//{
-					//    //if the user had an avatar already, remove it from AzureStorage.
-					//    // AzureStorage.RemoveFile("user-images", userToEdit.avatar);
-					//}
+				//if (userToEdit.avatar != null)
+				//{
+				//    //if the user had an avatar already, remove it from AzureStorage.
+				//    // AzureStorage.RemoveFile("user-images", userToEdit.avatar);
+				//}
 
-					//update the new filename.
-					tenantUserToEdit.Picture = user.picture;
+				//update the new filename.
+				tenantUserToEdit.Picture = user.picture;
 				//}
 			}
 
@@ -233,7 +233,7 @@ namespace PrimeApps.App.Controllers
 		public async Task<IActionResult> MyAccount()
 		{
 			AccountInfo acc = new AccountInfo();
-            List<UserAppInfo> apps = new List<UserAppInfo>();
+			List<UserAppInfo> apps = new List<UserAppInfo>();
 			acc.user = await _userRepository.GetUserInfoAsync(AppUser.Id);
 
 
@@ -241,9 +241,9 @@ namespace PrimeApps.App.Controllers
 			{
 
 				var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
-                var user = await _platformUserRepository.Get(AppUser.Id);
+				var user = await _platformUserRepository.Get(AppUser.Id);
 
-                /*if (user.TenantsAsUser.Count > 0)
+				/*if (user.TenantsAsUser.Count > 0)
                 {
                     foreach(var userApp in user.TenantsAsUser)
                     {
@@ -257,7 +257,7 @@ namespace PrimeApps.App.Controllers
                     }
                 }*/
 
-                acc.user.tenantLanguage = AppUser.TenantLanguage;
+				acc.user.tenantLanguage = AppUser.TenantLanguage;
 				acc.instances = tenant;
 				acc.user.picture = AzureStorage.GetAvatarUrl(acc.user.picture, _configuration);
 				//acc.user.hasAnalytics = AppUser.HasAnalyticsLicense;
@@ -322,61 +322,67 @@ namespace PrimeApps.App.Controllers
 			if (checkEmail == EmailAvailableType.NotAvailable)
 				return StatusCode(HttpStatusCode.Status409Conflict);
 
-            //Set warehouse database name
-            //_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+			//Set warehouse database name
+			//_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            var appInfo = await _applicationRepository.Get(AppUser.AppId);
-            addUserBindingModel.TenantId = AppUser.TenantId;
-            addUserBindingModel.AppId = AppUser.AppId;
+			var appInfo = await _applicationRepository.Get(AppUser.AppId);
+			addUserBindingModel.TenantId = AppUser.TenantId;
+			addUserBindingModel.AppId = AppUser.AppId;
 
-            using (var httpClient = new HttpClient())
-            {
-                var token = await HttpContext.GetTokenAsync("access_token");
-                var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
-                httpClient.BaseAddress = new Uri(url);
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			using (var httpClient = new HttpClient())
+			{
+				var token = await HttpContext.GetTokenAsync("access_token");
+				var url = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/user/add_user";
+				httpClient.BaseAddress = new Uri(url);
+				httpClient.DefaultRequestHeaders.Accept.Clear();
+				httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+				httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-                var json = JsonConvert.SerializeObject(addUserBindingModel);
-                var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+				var json = JsonConvert.SerializeObject(addUserBindingModel);
+				var response = await httpClient.PostAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
 
-                if (!response.IsSuccessStatusCode)
+				if (!response.IsSuccessStatusCode)
 					return BadRequest(response);
 
-                using (var content = response.Content)
-                {
-                    var stringResult = content.ReadAsStringAsync().Result;
-                    if (!string.IsNullOrEmpty(stringResult))
-                    {
-                        var jsonResult = JObject.Parse(stringResult);
-                        if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
-                        {
-                            var template = _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, "email_confirm", AppUser.Culture.Substring(0, 2));
-                            if (template != null)
-                            {
-                                template.Content = template.Content.Replace("{:FirstName}", addUserBindingModel.FirstName);
-                                template.Content = template.Content.Replace("{:LastName}", addUserBindingModel.LastName);
-                                template.Content = template.Content.Replace("{:Email}", addUserBindingModel.Email);
-                                template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + addUserBindingModel.Email + "&code=" + WebUtility.UrlDecode(jsonResult["token"].ToString()));
+				using (var content = response.Content)
+				{
+					var stringResult = content.ReadAsStringAsync().Result;
+					if (!string.IsNullOrEmpty(stringResult))
+					{
+						var jsonResult = JObject.Parse(stringResult);
+						if (!string.IsNullOrEmpty(jsonResult["token"].ToString()))
+						{
+							var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "email_confirm");
+							foreach (var template in templates)
+							{
+								if (template != null)
+								{
+									template.Content = template.Content.Replace("{:FirstName}", addUserBindingModel.FirstName);
+									template.Content = template.Content.Replace("{:LastName}", addUserBindingModel.LastName);
+									template.Content = template.Content.Replace("{:Email}", addUserBindingModel.Email);
+									template.Content = template.Content.Replace("{:Url}", Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/account/confirmemail?email=" + addUserBindingModel.Email + "&code=" + WebUtility.UrlDecode(jsonResult["token"].ToString()));
 
-                                Email notification = new Email(template.Subject, template.Content, _configuration);
+									Email notification = new Email(template.Subject, template.Content, _configuration);
+									var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+									if (req != null)
+									{
+										notification.AddRecipient((string)req["MailSenderEmail"]);
+										notification.AddToQueue((string)req["MailSenderEmail"], (string)req["MailSenderName"]);
+									}
+								}
+							}
+						}
 
-                                notification.AddRecipient(template.MailSenderEmail);
-                                notification.AddToQueue(template.MailSenderEmail, template.MailSenderName);
-                            }
-                        }
 
+						return Ok(jsonResult["password"].ToString());
+					}
 
-                        return Ok(jsonResult["password"].ToString());
-                    }
+					if (response.IsSuccessStatusCode)
+						return Ok();
 
-                    if (response.IsSuccessStatusCode)
-                        return Ok();
-
-                    return BadRequest();
-                }
-            }
+					return BadRequest();
+				}
+			}
 		}
 
 		//TODO TenantId
