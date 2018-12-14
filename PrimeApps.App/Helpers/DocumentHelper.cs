@@ -140,7 +140,7 @@ namespace PrimeApps.App.Helpers
 
 		public async Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language, IPlatformRepository _platformRepository)
 		{
-			var templates = await _platformRepository.GetAppTemplate(appId, AppTemplateType.Document, null, null);
+			var templates = await _platformRepository.GetAppTemplate(appId, AppTemplateType.Document, language, null);
 			foreach (var template in templates)
 			{
 				var req = JsonConvert.DeserializeObject<JObject>(template.Settings);

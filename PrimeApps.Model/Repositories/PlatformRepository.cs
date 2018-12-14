@@ -26,16 +26,13 @@ namespace PrimeApps.Model.Repositories
 			return tenant;
 		}
 
-		public async Task<List<AppTemplate>> GetAppTemplate(int appId, AppTemplateType type, string language = null, string systemCode = null)
+		public async Task<List<AppTemplate>> GetAppTemplate(int appId, AppTemplateType type, string language, string systemCode = null)
 		{
 			var template = DbContext.AppTemplates
-				.Where(x => x.AppId == appId && x.Type == type && x.Active);
+				.Where(x => x.AppId == appId && x.Language == language && x.Type == type && x.Active);
 
 			if (!string.IsNullOrWhiteSpace(systemCode))
 				template = template.Where(x => x.SystemCode == systemCode);
-
-			if (!string.IsNullOrWhiteSpace(language))
-				template = template.Where(x => x.Language == language);
 
 			return await template.ToListAsync();
 		}
