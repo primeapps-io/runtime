@@ -59,7 +59,17 @@ $primeapps-color: #635fb3;
         padding-left: 15px !important;
       }
     }
-
+    .panel-body{
+      a{
+        background: none;
+        font-weight: 400;
+        font-size: 10px !important;
+        height: 36px;
+      }
+      .fa-sidebar-icon-background{
+        background: none !important;
+      }
+    }
   }
 ;
   .sidebar-nav a.active {
@@ -367,17 +377,7 @@ $primeapps-color: #635fb3;
       overflow-x: auto;
       margin: 0;
       line-height: 33px !important;
-      input[type="radio"], input[type="checkbox"] {
 
-      }
-      .checkbox-inline input[type="checkbox"] {
-        position: relative !important;
-        margin-left: 0px !important;
-      }
-      .radio-inline input[type="radio"] {
-        position: relative !important;
-        margin-left: 0px !important;
-      }
       input[type="radio"]:checked + span:after {
         width: 10px;
         height: 10px;
@@ -644,6 +644,15 @@ $primeapps-color: #635fb3;
     }
 
   }
+  .checkbox-inline input[type="checkbox"] {
+    position: relative !important;
+    margin-left: 0px !important;
+  }
+  .radio-inline input[type="radio"] {
+    position: relative !important;
+    margin-left: 0px !important;
+  }
+  //End Input
   .callout {
     font-size: 12px;
     padding: 10px;
@@ -726,6 +735,9 @@ $primeapps-color: #635fb3;
             background-color: #92c549;
           }
           .oval-orange {
+            background-color: #e08340;
+          }
+          .oval-gray {
             background-color: #e08340;
           }
         }

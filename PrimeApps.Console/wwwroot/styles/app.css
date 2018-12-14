@@ -6454,6 +6454,13 @@ tags-input.ng-invalid .tags {
   background-repeat: repeat !important; }
   .primeapps #sidebar-wrapper .sidebar-nav .sidebar-brand {
     padding-left: 15px !important; }
+  .primeapps #sidebar-wrapper .panel-body a {
+    background: none;
+    font-weight: 400;
+    font-size: 10px !important;
+    height: 36px; }
+  .primeapps #sidebar-wrapper .panel-body .fa-sidebar-icon-background {
+    background: none !important; }
 .primeapps .sidebar-nav a.active {
   background-color: #121212 !important;
   border-radius: inherit; }
@@ -6697,12 +6704,6 @@ tags-input.ng-invalid .tags {
     overflow-x: auto;
     margin: 0;
     line-height: 33px !important; }
-    .primeapps .setup-modal .modal-dialog .checkbox-inline input[type="checkbox"], .primeapps .module-modal .modal-dialog .checkbox-inline input[type="checkbox"] {
-      position: relative !important;
-      margin-left: 0px !important; }
-    .primeapps .setup-modal .modal-dialog .radio-inline input[type="radio"], .primeapps .module-modal .modal-dialog .radio-inline input[type="radio"] {
-      position: relative !important;
-      margin-left: 0px !important; }
     .primeapps .setup-modal .modal-dialog input[type="radio"]:checked + span:after, .primeapps .module-modal .modal-dialog input[type="radio"]:checked + span:after {
       width: 10px;
       height: 10px;
@@ -6892,6 +6893,12 @@ tags-input.ng-invalid .tags {
     max-width: none !important; }
     .primeapps .form-group .form-control[disabled] {
       color: rgba(0, 0, 0, 0.25); }
+.primeapps .checkbox-inline input[type="checkbox"] {
+  position: relative !important;
+  margin-left: 0px !important; }
+.primeapps .radio-inline input[type="radio"] {
+  position: relative !important;
+  margin-left: 0px !important; }
 .primeapps .callout {
   font-size: 12px;
   padding: 10px; }
@@ -6962,6 +6969,8 @@ tags-input.ng-invalid .tags {
         .primeapps .page-container .app-layout-box .app-box .oval .oval-green {
           background-color: #92c549; }
         .primeapps .page-container .app-layout-box .app-box .oval .oval-orange {
+          background-color: #e08340; }
+        .primeapps .page-container .app-layout-box .app-box .oval .oval-gray {
           background-color: #e08340; }
       .primeapps .page-container .app-layout-box .app-box .icon-image {
         height: 100%;
