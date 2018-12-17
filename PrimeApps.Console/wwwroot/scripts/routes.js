@@ -119,7 +119,7 @@ angular.module('primeapps')
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/teams/teams.html',
-                            controller: 'CollaboratorsController'
+                            controller: 'TeamsController'
                         }
                     },
                     resolve: {
@@ -132,7 +132,7 @@ angular.module('primeapps')
                     }
                 })
                 .state('app.organizationForm', {
-                    url: 'organizationForm?:organizationId',
+                    url: 'organization?:id',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/organizationform/organizationform.html',
@@ -148,7 +148,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('app.dashboard', {
                     url: 'dashboard',
                     views: {

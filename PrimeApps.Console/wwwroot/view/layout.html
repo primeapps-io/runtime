@@ -1,0 +1,96 @@
+<div id="wrapper">
+    <div id="navbar-wrapper">
+        <nav class="navbar navbar-upper">
+            <div class="navbar-header top-header">
+                <ul class="breadcrumb">
+                    <li><a href="#">Ofisim</a></li>
+                    <li><a href="#">People</a></li>
+                    <li>Collaborators 15</li>
+                </ul>
+                <button type="button" class="navbar-toggle ng-scope" ng-click="toggleFullLeftMenu()">
+                    <span class="fa fa-bars fa-2x"></span>
+                </button>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="rigth-oval-toolbar-item"
+                    aria-hidden="true"
+                    data-title="Test"
+                    data-template-url="view/common/user-dropdown.html"
+                    data-animation="am-flip-x"
+                    data-auto-close="1"
+                    data-placement="bottom-right"
+                    bs-popover
+                >
+                    <i class="fas fa-user"></i>
+                </li>
+                <li>
+                    <button style="border:none" type="button" class="rigth-oval-toolbar-item"
+                            placement="bottom-right"
+                            data-animation="am-flip-x"
+                            bs-dropdown
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-plus"></i>
+                    </button>
+
+                    <ul class="dropdown-menu new-app" role="menu">
+                        <div class="arrow"></div>
+                        <li>
+                            <a href="#anotherAction">
+                                Add New App
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#anotherAction">
+                                Add New Organization
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+
+
+        </nav>
+    </div>
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+            <li class="sidebar-brand">
+                <a href="#/app">
+                    <img src="../images/primeapps/logo.png"
+                         srcset="../images/primeapps/logo@2x.png 2x,
+                              ../images/primeapps/logo@2x.png/logo@3x.png 3x"
+                         class="logo">
+                </a>
+            </li>
+
+            <li class="sidebar-li">
+                <a href="#"><i class="fas fa-home"></i> All Apps</a>
+            </li>
+            <li class="open sidebar-li">
+                <a href="#"><i class="fas fa-home"></i> Ofisim </a>
+                <ul>
+                    <li><a class="active" href="#"><i class="fas fa-layer-group"></i> Apps</a></li>
+                    <li><a href="#"> <i class="fas fa-users"></i> People</a></li>
+                    <li><a href="#"> <i class="fas fa-users"></i> Manage</a></li>
+                </ul>
+            </li>
+            <li class="sidebar-li">
+                <a href="#"><i class="fas fa-plus background-white color-blue"></i> Add New</a>
+
+            </li>
+
+        </ul>
+        <div class="footer" style="bottom: 0;position: absolute;">
+            <div class="menu-togle" ng-click="toggleLeftMenu()">
+                <i class="fas fa-long-arrow-alt-left"></i>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-content-wrapper" class="container">
+        <div class="row clearfix">
+            <div ui-view="app"></div>
+        </div>
+    </div>
+</div>
