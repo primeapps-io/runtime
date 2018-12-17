@@ -617,7 +617,7 @@ namespace PrimeApps.Model.Helpers
                     var sets = new List<string>();
 
                     command.Parameters.Add(new SqlParameter { ParameterName = "label", SqlValue = tenantLanguage == "tr" ? role.LabelTr : role.LabelEn, SqlDbType = SqlDbType.NVarChar });
-                    command.Parameters.Add(new SqlParameter { ParameterName = "owner", SqlValue = role.Owners, SqlDbType = SqlDbType.VarChar });
+                    command.Parameters.Add(new SqlParameter { ParameterName = "owners", SqlValue = role.Owners, SqlDbType = SqlDbType.VarChar });
                     command.Parameters.Add(new SqlParameter { ParameterName = "deleted", SqlValue = role.Deleted, SqlDbType = SqlDbType.Bit });
 
                     foreach (SqlParameter parameter in command.Parameters)
