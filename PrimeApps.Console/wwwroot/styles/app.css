@@ -6448,7 +6448,8 @@ tags-input.ng-invalid .tags {
   background-color: #635fb3;
   color: white; }
 .primeapps .sidebar-nav {
-  margin-left: 0; }
+  margin-left: 0;
+  width: 100%; }
 .primeapps #sidebar-wrapper {
   background: url("../images/primeapps/menu_background.png") !important;
   background-repeat: repeat !important; }
@@ -6858,6 +6859,28 @@ tags-input.ng-invalid .tags {
       font-weight: 400 !important; }
       .primeapps .breadcrumb li a:hover {
         color: #0d6faa; }
+.primeapps .scratch-page {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  align-items: center; }
+  .primeapps .scratch-page .scratch-page-text h1 {
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 30px;
+    font-weight: 400; }
+  .primeapps .scratch-page .scratch-page-text span {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 16px;
+    font-weight: 400; }
+  .primeapps .scratch-page .scratch-box {
+    padding: 50px 10px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
+    margin: 20px;
+    font-size: 70px;
+    line-height: 70px;
+    color: rgba(0, 0, 0, 0.25); }
 .primeapps .btn i {
   padding-right: 10px; }
 .primeapps .btn-bold {
@@ -7003,6 +7026,8 @@ tags-input.ng-invalid .tags {
       box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
     .primeapps .page-container .app-layout-box:hover .app-info h4, .primeapps .page-container .app-layout-box:hover .app-info h3 {
       color: #0d6faa; }
+.primeapps .page-container.padding0 {
+  margin-top: 0px !important; }
 .primeapps .search-input {
   display: flex;
   align-items: center; }
@@ -7030,3 +7055,77 @@ tags-input.ng-invalid .tags {
   color: #0d6faa; }
 .primeapps .font-bold {
   font-weight: bold; }
+.primeapps .full-toggled .sidebar-li:hover {
+  position: fixed; }
+.primeapps #sidebar-wrapper .sidebar-brand a:hover {
+  background: none; }
+.primeapps #sidebar-wrapper ul {
+  width: 250px; }
+  .primeapps #sidebar-wrapper ul .open {
+    background-color: #121212; }
+  .primeapps #sidebar-wrapper ul li ul {
+    list-style: none; }
+    .primeapps #sidebar-wrapper ul li ul .active {
+      color: #fff; }
+    .primeapps #sidebar-wrapper ul li ul li {
+      line-height: 20px; }
+      .primeapps #sidebar-wrapper ul li ul li a {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px; }
+        .primeapps #sidebar-wrapper ul li ul li a i {
+          font-size: 14px;
+          background: none; }
+        .primeapps #sidebar-wrapper ul li ul li a:hover {
+          background: none;
+          color: #fff; }
+  .primeapps #sidebar-wrapper ul li a {
+    font-weight: bold;
+    font-size: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center; }
+    .primeapps #sidebar-wrapper ul li a i {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+      padding: 10px;
+      background: #9e005d;
+      border-radius: 50%;
+      margin-right: 13px; }
+.primeapps #sidebar-wrapper .color-blue {
+  color: #0d6faa; }
+.primeapps #sidebar-wrapper .background-white {
+  background: #ffffff; }
+.primeapps #sidebar-wrapper .footer .menu-togle i {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  margin-left: 15px; }
+.primeapps .dropdown-menu {
+  border: none;
+  margin-top: 32px;
+  box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.05);
+  margin-top: 40px !important;
+  border-radius: 5px; }
+  .primeapps .dropdown-menu:before, .primeapps .dropdown-menu:after {
+    bottom: 100%;
+    left: 86%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none; }
+  .primeapps .dropdown-menu:after {
+    border-color: rgba(136, 183, 213, 0);
+    border-bottom-color: #ffffff;
+    border-width: 10px; }
+  .primeapps .dropdown-menu li a {
+    line-height: 40px; }
+    .primeapps .dropdown-menu li a:hover {
+      background-color: rgba(17, 87, 163, 0.1);
+      color: #000; }
