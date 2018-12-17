@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-	.controller('ModuleFormSetupController', ['$rootScope', '$scope', '$filter', '$location', '$state', 'ngToast', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'AppService',
-		function ($rootScope, $scope, $filter, $location, $state, ngToast, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, AppService) {
+	.controller('ModuleFormSetupController', ['$rootScope', '$scope', '$filter', '$location', '$state', 'ngToast', '$q', '$popover', '$modal', 'helper', '$timeout', 'dragularService', 'defaultLabels', '$interval', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'LayoutService',
+		function ($rootScope, $scope, $filter, $location, $state, ngToast, $q, $popover, $modal, helper, $timeout, dragularService, defaultLabels, $interval, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, LayoutService) {
 			$scope.id = $location.search().id;
 			$scope.clone = $location.search().clone;
 			$scope.redirect = $location.search().redirect;
@@ -1259,7 +1259,7 @@ angular.module('primeapps')
 
 				resultPromise
 					.then(function onSuccess() {
-						AppService.getMyAccount(true)
+						LayoutService.getMyAccount(true)
 							.then(function () {
 								var moduleKey = $scope.module.name + "_" + $scope.module.name;
 								$cache.remove(moduleKey);
@@ -1312,7 +1312,7 @@ angular.module('primeapps')
 								$scope.editModal.hide();
 						}
 						else {
-							AppService.getMyAccount(true)
+							LayoutService.getMyAccount(true)
 								.then(function () {
 									if ($scope.editModal)
 										$scope.editModal.hide();

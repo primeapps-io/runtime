@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'AppService', 'OrganizationService','$cookies',
-        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, AppService, OrganizationService,$cookies) {
+    .controller('OrganizationController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'LayoutService', 'OrganizationService','$cookies',
+        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, LayoutService, OrganizationService,$cookies) {
             $scope.company = {};
             $scope.company.instanceID = $rootScope.workgroup.tenant_id;
             $scope.company.title = $rootScope.workgroup.title;
@@ -39,7 +39,7 @@ angular.module('primeapps')
                             uploader.clearQueue();
                         }
 
-                        AppService.getMyAccount(true);
+                        LayoutService.getMyAccount(true);
                     });
             }
 

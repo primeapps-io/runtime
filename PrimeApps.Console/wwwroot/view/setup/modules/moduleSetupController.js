@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-	.controller('ModuleSetupController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'AppService', 'LicenseService',
-		function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, AppService, LicenseService) {
+	.controller('ModuleSetupController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService', 'LicenseService',
+		function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, LayoutService, LicenseService) {
 			var getModules = function () {
 				$scope.modulesSetup = [];
 

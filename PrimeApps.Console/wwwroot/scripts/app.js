@@ -123,8 +123,8 @@ angular.module('primeapps',
             uiSelectConfig.resetSearchInput = true;
         }])
 
-    .run(['$rootScope', '$location', '$state', '$q', '$window', 'AuthService', 'AppService', 'editableOptions', '$localStorage', '$translate', '$cache', 'helper',
-        function ($rootScope, $location, $state, $q, $window, AuthService, AppService, editableOptions, $localStorage, $translate, $cache, helper) {
+    .run(['$rootScope', '$location', '$state', '$q', '$window', 'AuthService', 'LayoutService', 'editableOptions', '$localStorage', '$translate', '$cache', 'helper',
+        function ($rootScope, $location, $state, $q, $window, AuthService, LayoutService, editableOptions, $localStorage, $translate, $cache, helper) {
             var pending = false;
             editableOptions.theme = 'bs3';
             $rootScope.theme = $localStorage.read('theme');

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('MessagingController', ['$rootScope', '$scope', '$translate', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'MessagingService', 'ngTableParams', '$popover', 'AppService',
-        function ($rootScope, $scope, $translate, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, MessagingService, ngTableParams, $popover, AppService) {
+    .controller('MessagingController', ['$rootScope', '$scope', '$translate', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'MessagingService', 'ngTableParams', '$popover', 'LayoutService',
+        function ($rootScope, $scope, $translate, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, MessagingService, ngTableParams, $popover, LayoutService) {
             $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
             $scope.smsModel = angular.copy($rootScope.system.messaging.SMS);
             $scope.emailModel = angular.copy($rootScope.system.messaging.SystemEMail);

@@ -442,7 +442,7 @@ angular.module('primeapps')
     })
 
     .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService',
-        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations, ModuleService) {
+        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations) {
             return {
                 restrict: 'EA',
                 scope: {

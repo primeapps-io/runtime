@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-	.controller('MenuController', ['$rootScope', '$scope', '$filter', 'ngToast', 'MenuService', '$window', 'ModuleService', '$location', '$state', '$cache', '$modal', 'AppService',
-		function ($rootScope, $scope, $filter, ngToast, MenuService, $window, ModuleService, $location, $state, $cache, $modal, AppService) {
+	.controller('MenuController', ['$rootScope', '$scope', '$filter', 'ngToast', 'MenuService', '$window', 'ModuleService', '$location', '$state', '$cache', '$modal', 'LayoutService',
+		function ($rootScope, $scope, $filter, ngToast, MenuService, $window, ModuleService, $location, $state, $cache, $modal, LayoutService) {
 
 			$scope.loading = true;
 			$scope.id = $location.search().id;
@@ -355,19 +355,19 @@ angular.module('primeapps')
 										//Delete
 										if ($scope.deleteArray.length > 0)
 											MenuService.deleteMenuItems(deleteMenuItem()).then(function onSuccess() {
-												AppService.getMyAccount(true);
+												LayoutService.getMyAccount(true);
 												ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
 												$state.go('app.setup.menu_list');
 											});
 										else {
-											AppService.getMyAccount(true);
+											LayoutService.getMyAccount(true);
 											ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
 											$state.go('app.setup.menu_list');
 										}
 									});
 								}
 								else {
-									AppService.getMyAccount(true);
+									LayoutService.getMyAccount(true);
 									ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
 									$state.go('app.setup.menu_list');
 								}
@@ -381,12 +381,12 @@ angular.module('primeapps')
 							//Delete
 							if ($scope.deleteArray.length > 0)
 								MenuService.deleteMenuItems(deleteMenuItem()).then(function onSuccess() {
-									AppService.getMyAccount(true);
+									LayoutService.getMyAccount(true);
 									ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
 									$state.go('app.setup.menu_list');
 								});
 							else {
-								AppService.getMyAccount(true);
+								LayoutService.getMyAccount(true);
 								ngToast.create({ content: $filter('translate')('Menu.UpdateSucces'), className: 'success' });
 								$state.go('app.setup.menu_list');
 							}
@@ -414,7 +414,7 @@ angular.module('primeapps')
 						MenuService.createMenuItems($scope.menuLists, menu[0].profile_id).then(function onSuccess() {
 							ngToast.create({ content: $filter('translate')('Menu.MenuSaving'), className: 'success' });
 							$scope.loading = false;
-							AppService.getMyAccount(true);
+							LayoutService.getMyAccount(true);
 							$state.go('app.setup.menu_list');
 						});
 					});

@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleDependencyController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'AppService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, AppService) {
+    .controller('ModuleDependencyController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'ModuleSetupService', 'ModuleService', 'LayoutService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, ModuleSetupService, ModuleService, LayoutService) {
             var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
 
             if (!module) {
@@ -360,7 +360,7 @@ angular.module('primeapps')
                 var relationModel = ModuleSetupService.prepareDependency(angular.copy(dependency), $scope.module);
 
                 var success = function () {
-                    AppService.getMyAccount(true)
+                    LayoutService.getMyAccount(true)
                         .then(function () {
                             $scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
                             $scope.dependencies = $filter('filter')(ModuleSetupService.processDependencies($scope.module), { deleted: false }, true);
@@ -412,7 +412,7 @@ angular.module('primeapps')
 
                 ModuleService.deleteModuleDependency(dependency.id)
                     .then(function () {
-                        AppService.getMyAccount(true)
+                        LayoutService.getMyAccount(true)
                             .then(function () {
                                 var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
                                 $scope.dependencies.splice(dependencyIndex, 1);

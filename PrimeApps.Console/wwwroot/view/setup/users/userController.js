@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('UserController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', 'guidEmpty', '$popover', 'helper', 'UserService', 'WorkgroupService', 'AppService', 'ProfileService', 'RoleService', 'LicenseService', '$q', 'officeHelper',
-        function ($rootScope, $scope, $filter, $state, ngToast, guidEmpty, $popover, helper, UserService, WorkgroupService, AppService, ProfileService, RoleService, LicenseService, $q, officeHelper) {
+    .controller('UserController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', 'guidEmpty', '$popover', 'helper', 'UserService', 'WorkgroupService', 'LayoutService', 'ProfileService', 'RoleService', 'LicenseService', '$q', 'officeHelper',
+        function ($rootScope, $scope, $filter, $state, ngToast, guidEmpty, $popover, helper, UserService, WorkgroupService, LayoutService, ProfileService, RoleService, LicenseService, $q, officeHelper) {
             $scope.loading = true;
             $scope.isOfficeConnected = false;
             //user add button popover controller
@@ -363,7 +363,7 @@ angular.module('primeapps')
                             className: 'success'
                         });
 
-                        AppService.getMyAccount(true);
+                        LayoutService.getMyAccount(true);
 
                         LicenseService.getUserLicenseStatus().then(function onSuccess(license) {
                             $scope.licensesBought = license.data.total || 0;

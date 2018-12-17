@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('MenuListController', ['$rootScope', '$scope', '$filter', 'ngToast', '$dropdown', 'MenuService', '$window', 'ModuleService', 'AppService',
-        function ($rootScope, $scope, $filter, ngToast, $dropdown, MenuService, $window, ModuleService, AppService) {
+    .controller('MenuListController', ['$rootScope', '$scope', '$filter', 'ngToast', '$dropdown', 'MenuService', '$window', 'ModuleService', 'LayoutService',
+        function ($rootScope, $scope, $filter, ngToast, $dropdown, MenuService, $window, ModuleService, LayoutService) {
 
 
             // $scope.menuList = [];
@@ -68,7 +68,7 @@ angular.module('primeapps')
             };
 
             function getView() {
-                AppService.getMyAccount(true);
+                LayoutService.getMyAccount(true);
             }
 
         }]);

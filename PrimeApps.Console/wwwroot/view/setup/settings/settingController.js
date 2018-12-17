@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'AppService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state', 'officeHelper',
-        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, AppService, AuthService, ngTableParams, $popover, $cookies, $state, officeHelper) {
+    .controller('SettingController', ['$rootScope', '$scope', '$translate', 'tmhDynamicLocale', '$localStorage', 'ngToast', 'config', '$window', '$timeout', '$filter', 'blockUI', 'FileUploader', 'SettingService', 'MessagingService', 'LayoutService', 'AuthService', 'ngTableParams', '$popover', '$cookies', '$state', 'officeHelper',
+        function ($rootScope, $scope, $translate, tmhDynamicLocale, $localStorage, ngToast, config, $window, $timeout, $filter, blockUI, FileUploader, SettingService, MessagingService, LayoutService, AuthService, ngTableParams, $popover, $cookies, $state, officeHelper) {
             $scope.userModel = {};
             $scope.userModel.first_name = $rootScope.user.first_name;
             $scope.userModel.last_name = $rootScope.user.last_name;
@@ -285,7 +285,7 @@ angular.module('primeapps')
                     SettingService.editUser(userModel)
                         .then(function () {
                             uploader.clearQueue();
-                            AppService.getMyAccount(true);
+                            LayoutService.getMyAccount(true);
                         });
 
                 }

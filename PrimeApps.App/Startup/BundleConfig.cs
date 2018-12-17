@@ -25,7 +25,7 @@ namespace PrimeApps.App
 					"scripts/directives.js",
 					"scripts/filters.js",
 					"view/authService.js",
-					"view/appService.js",
+                    "view/appService.js",
 					"view/appController.js",
 					"view/app/note/noteService.js",
 					"view/app/note/noteDirective.js",
