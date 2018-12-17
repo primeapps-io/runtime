@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Common.Role;
 
@@ -11,44 +12,44 @@ namespace PrimeApps.Model.Common.User
         /// <summary>
         /// User ID
         /// </summary>
-        [DataMember]
-        public int ID { get; set; }
+        [JsonProperty("id"), DataMember(Name = "id")]
+        public int Id { get; set; }
 
         /// <summary>
         /// Email address
         /// </summary>
-        [DataMember]
-        public string email { get; set; }
+        [JsonProperty("email"), DataMember(Name = "email")]
+        public string Email { get; set; }
 
         /// <summary>
         /// First Name
         /// </summary>
-        [DataMember]
-        public string firstName { get; set; }
+        [JsonProperty("first_name"), DataMember(Name = "first_name")]
+        public string FirstName { get; set; }
 
         /// <summary>
         /// Last Name
         /// </summary>
-        [DataMember]
-        public string lastName { get; set; }
+        [JsonProperty("last_name"), DataMember(Name = "last_name")]
+        public string LastName { get; set; }
 
         /// <summary>
         ///Full name of user
         /// </summary>
-        [DataMember]
-        public string fullName { get; set; }
+        [JsonProperty("full_name"), DataMember(Name = "full_name")]
+        public string FullName { get; set; }
 
         /// <summary>
         /// Phone Number
         /// </summary>
-        [DataMember]
-        public string phone { get; set; }
+        [JsonProperty("phone"), DataMember(Name = "phone")]
+        public string Phone { get; set; }
 
 
         /// <summary>
         /// Avatar ID from file storage
         /// </summary>
-        [DataMember]
-        public string picture { get; set; }
+        [JsonProperty("picture"), DataMember(Name = "picture")]
+        public string Picture { get; set; }
     }
 }

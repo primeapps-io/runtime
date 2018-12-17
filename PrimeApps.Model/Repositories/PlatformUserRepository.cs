@@ -219,7 +219,7 @@ namespace PrimeApps.Model.Repositories
 
         public PlatformUser GetByEmail(string email)
         {
-            return DbContext.Users.SingleOrDefault(x => x.Email == email);
+            return DbContext.Users.Include(x => x.Setting).SingleOrDefault(x => x.Email == email);
         }
     }
 }

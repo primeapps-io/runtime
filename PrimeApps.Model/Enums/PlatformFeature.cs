@@ -6,9 +6,12 @@ namespace PrimeApps.Model.Enums
 {
     public enum PlatformFeature
     {
-        Module = 1,
-        BPM = 2,
-        Rules = 3,
-        Approvals = 4
+        App = 1,
+        Team = 2,
+        Collabrators = 3,
+        Module = 4,
+        BPM = 5,
+        Rules = 6,
+        Approvals = 7
     }
 }

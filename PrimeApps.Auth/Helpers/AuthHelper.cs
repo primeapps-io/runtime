@@ -37,7 +37,7 @@ namespace PrimeApps.Auth.UI
             }
 
             var clientId = GetClientId(returnUrl);
-            var app = await applicationRepository.GetByName(clientId);
+            var app = await applicationRepository.GetByNameAsync(clientId);
 
             if (string.IsNullOrWhiteSpace(language))
                 language = app.Setting.Language ?? "tr";

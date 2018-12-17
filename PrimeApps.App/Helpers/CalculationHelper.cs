@@ -104,8 +104,8 @@ namespace PrimeApps.App.Helpers
                                                         var parentField = module.Fields.Where(x => x.Name == dependency.ParentField).FirstOrDefault();
 
 
-                                                        /*var parentModule = await moduleRepository.GetByName(parentField.LookupType);
-                                                        var childModule = await moduleRepository.GetByName(childField.LookupType);*/
+                                                        /*var parentModule = await moduleRepository.GetByNameAsync(parentField.LookupType);
+                                                        var childModule = await moduleRepository.GetByNameAsync(childField.LookupType);*/
 
 
                                                         string parentRecordData;
@@ -2060,7 +2060,7 @@ namespace PrimeApps.App.Helpers
                                                 //            case "collection":
                                                 //                var customerId = (int)record["customer"];
                                                 //                balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
-                                                //                moduleUpdate = await moduleRepository.GetByName("accounts");
+                                                //                moduleUpdate = await moduleRepository.GetByNameAsync("accounts");
                                                 //                recordUpdate["id"] = customerId;
                                                 //                recordUpdate["balance"] = balance;
                                                 //                break;
@@ -2068,7 +2068,7 @@ namespace PrimeApps.App.Helpers
                                                 //            case "payment":
                                                 //                var supplierId = (int)record["supplier"];
                                                 //                balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
-                                                //                moduleUpdate = await moduleRepository.GetByName("suppliers");
+                                                //                moduleUpdate = await moduleRepository.GetByNameAsync("suppliers");
                                                 //                recordUpdate["id"] = supplierId;
                                                 //                recordUpdate["balance"] = balance;
                                                 //                break;
@@ -2308,7 +2308,7 @@ namespace PrimeApps.App.Helpers
                                                     {
                                                         if (!record["sector"].IsNullOrEmpty())
                                                         {
-                                                            var projectsModule = await moduleRepository.GetByName("projects");
+                                                            var projectsModule = await moduleRepository.GetByNameAsync("projects");
                                                             var valueArray = new JArray();
                                                             valueArray.Add((string)record["sector"]);
                                                             var findRequestEoiCoordinator = new FindRequest { Filters = new List<Filter> { new Filter { Field = "eoi_coordinator_and_rationale_writer_sectors", Operator = Operator.Contains, Value = valueArray, No = 1 } }, Limit = 1 };
@@ -3126,7 +3126,7 @@ namespace PrimeApps.App.Helpers
 
                     #endregion
 
-                    //var calisanlarModule = await moduleRepository.GetByName("calisanlar");
+                    //var calisanlarModule = await moduleRepository.GetByNameAsync("calisanlar");
                     try
                     {
                         var accountRecordUpdate = new JObject();

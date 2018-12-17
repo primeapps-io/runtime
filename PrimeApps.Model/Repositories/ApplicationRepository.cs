@@ -4,6 +4,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using System.Threading.Tasks;
 using PrimeApps.Model.Repositories.Interfaces;
+using System.Linq;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -23,11 +24,18 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<App> GetByName(string name)
+        public async Task<App> GetByNameAsync(string name)
         {
             return await DbContext.Apps
                 .Include(x => x.Setting)
                 .FirstOrDefaultAsync(x => x.Name == name);
+        }
+
+        public App GetByName(string name)
+        {
+            return DbContext.Apps
+                .Include(x => x.Setting)
+                .FirstOrDefault(x => x.Name == name);
         }
 
         public async Task<App> GetWithAuth(string domain)

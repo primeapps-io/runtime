@@ -24,9 +24,18 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<Team>> GetByUserId(int userId)
+        {
+            return await DbContext.Teams
+                .Include(x => x.TeamUsers)
+                .Where(x => !x.Deleted && (x.TeamUsers as TeamUser).UserId == userId)
+                .ToListAsync();
+        }
+
         public async Task<List<Team>> GetByOrganizationId(int organizationId)
         {
             return await DbContext.Teams
+                .Include(x => x.TeamUsers)
                 .Where(x => x.OrganizationId == organizationId && !x.Deleted)
                 .ToListAsync();
         }

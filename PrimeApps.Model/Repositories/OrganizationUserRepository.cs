@@ -17,20 +17,27 @@ namespace PrimeApps.Model.Repositories
         public OrganizationUserRepository(ConsoleDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
+        public async Task<OrganizationUser> Get(int userId, int organizationId)
+        {
+            return await DbContext.OrganizationUsers
+                .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<OrganizationUser>> GetByOrganizationId(int organizationId)
         {
             return await DbContext.OrganizationUsers
-                .Include(x => x.ConsoleUser)
                 .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .Include(x => x.ConsoleUser)
                 .ToListAsync();
         }
 
-        public async Task<List<OrganizationUser>> GetByUserId(int userId)
+        public async Task<OrganizationRole> GetUserRole(int userId, int organizationId)
         {
             return await DbContext.OrganizationUsers
-                .Include(x => x.Organization)
-                .Where(x => x.UserId == userId && !x.Organization.Deleted)
-                .ToListAsync();
+                .Where(x => x.UserId == userId && x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .Select(x => x.Role)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<int> Create(OrganizationUser user)

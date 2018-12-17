@@ -35,6 +35,7 @@ using PrimeApps.Auth.Services;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace PrimeApps.Auth.UI
 {
@@ -379,7 +380,7 @@ namespace PrimeApps.Auth.UI
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var app = await _applicationRepository.GetByName(model.AppName);
+            var app = await _applicationRepository.GetByNameAsync(model.AppName);
 
             var application = new Application()
             {
@@ -408,7 +409,9 @@ namespace PrimeApps.Auth.UI
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail([FromQuery(Name = "email")]string email, [FromQuery(Name = "code")]string code)
         {
-            var vm = await BuildConfirmEmailViewModelAsync("");
+            code = WebUtility.UrlDecode(code);
+
+            var vm = BuildConfirmEmailViewModelAsync("");
             var user = await _userManager.FindByEmailAsync(email);
 
             if (email == null || code == null)
@@ -529,7 +532,7 @@ namespace PrimeApps.Auth.UI
 
             if (result.Succeeded)
             {
-                var application = await _applicationRepository.GetByName(client);
+                var application = await _applicationRepository.GetByNameAsync(client);
                 var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
 
                 if (externalLogin != null)
@@ -578,7 +581,7 @@ namespace PrimeApps.Auth.UI
         [HttpPost, AllowAnonymous]
         public async Task<bool> ExternalLoginForgotPassword([FromBody] ExternalLoginBindingModel model)
         {
-            var application = await _applicationRepository.GetByName(model.client);
+            var application = await _applicationRepository.GetByNameAsync(model.client);
             var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
 
             if (externalLogin != null)
@@ -664,7 +667,7 @@ namespace PrimeApps.Auth.UI
                 if (!string.IsNullOrEmpty(clientId))
                 {
                     var platformUser = await _platformUserRepository.GetWithTenants(user.UserName);
-                    var appInfo = await _applicationRepository.GetByName(clientId);
+                    var appInfo = await _applicationRepository.GetByNameAsync(clientId);
                     var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 
                     var theme = JObject.Parse(appInfo.Setting.AuthTheme);
@@ -849,15 +852,15 @@ namespace PrimeApps.Auth.UI
                 Error = error
             };
         }
-        private async Task<ConfirmEmailViewModel> BuildConfirmEmailViewModelAsync(string returnUrl, string success = "", string error = "")
+        private ConfirmEmailViewModel BuildConfirmEmailViewModelAsync(string returnUrl, string success = "", string error = "")
         {
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            //var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
 
             return new ConfirmEmailViewModel
             {
                 ReturnUrl = returnUrl,
-                ApplicationInfo = applicationInfo,
-                Language = applicationInfo?.Language,
+                //ApplicationInfo = applicationInfo,
+                Language = CultureInfo.CurrentCulture.Name,
                 Success = success,
                 Error = error
             };

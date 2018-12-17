@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PrimeApps.App.Models;
-using PrimeApps.App.Models.ViewModel.Crm.View;
+using PrimeApps.Console.Models;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 
-namespace PrimeApps.App.Helpers
+namespace PrimeApps.Console.Helpers
 {
     public static class ViewHelper
     {

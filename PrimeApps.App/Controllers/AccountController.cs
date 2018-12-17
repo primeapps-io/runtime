@@ -66,12 +66,12 @@ namespace PrimeApps.App.Controllers
 
 			Model.Entities.Platform.App app = null;
 
-			if (!string.IsNullOrEmpty(createBindingModel.AppName))
-				app = await _applicationRepository.GetByName(createBindingModel.AppName);
-			else if (createBindingModel.AppId != null)
-				app = await _applicationRepository.Get(createBindingModel.AppId);
-			else
-				return BadRequest();
+            if (!string.IsNullOrEmpty(createBindingModel.AppName))
+                app = await _applicationRepository.GetByNameAsync(createBindingModel.AppName);
+            else if (createBindingModel.AppId != null)
+                app = await _applicationRepository.Get(createBindingModel.AppId);
+            else
+                return BadRequest();
 
 			using (var client = new HttpClient())
 			{

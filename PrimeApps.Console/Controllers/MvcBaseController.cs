@@ -15,11 +15,7 @@ namespace PrimeApps.Console.Controllers
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            var email = context.HttpContext.User.FindFirst("email").Value;
-            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            var platformUser = platformUserRepository.GetByEmail(email);
-
-            context.HttpContext.Items.Add("user", platformUser);
+            SetContextUser();
         }
     }
 }

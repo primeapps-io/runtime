@@ -61,7 +61,87 @@ namespace PrimeApps.Auth.Controllers
 			_events = events;
 		}
 
-		[Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
+        [Route("add_organization_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddOrganizationUser([FromBody]AddOrganizationUserBindingModel addUserBindingModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "ModelState is not valid.");
+                return BadRequest(ModelState);
+            }
+            if (User?.Identity.IsAuthenticated == false)
+                return Unauthorized();
+
+            var email = User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress")?.Value;
+            //_platformUserRepository.CurrentUser = new Model.Helpers.CurrentUser { TenantId = addUserBindingModel.TenantId };
+            var currentPlatformUser = await _platformUserRepository.GetWithSettings(email);
+
+            var platformUser = await _platformUserRepository.Get(addUserBindingModel.Email);
+
+            var randomPassword = Utils.GenerateRandomUnique(8);
+
+            if (platformUser == null)
+            {
+                platformUser = new PlatformUser
+                {
+                    Email = addUserBindingModel.Email,
+                    FirstName = addUserBindingModel.FirstName,
+                    LastName = addUserBindingModel.LastName,
+                    Setting = new PlatformUserSetting
+                    {
+                        Culture = currentPlatformUser.Setting.Culture,
+                        Language = currentPlatformUser.Setting.Language,
+                        Currency = currentPlatformUser.Setting.Currency,
+                        TimeZone = currentPlatformUser.Setting.TimeZone
+                    }
+                };
+
+                var createUserResult = await _platformUserRepository.CreateUser(platformUser);
+
+                if (createUserResult == 0)
+                {
+                    ModelState.AddModelError("", "user not created");
+                    return BadRequest(ModelState);
+                }
+            }
+
+            var identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
+            string token = null;
+
+            //If user already registered check email is confirmed. If not return confirm token with status code.
+            if (identityUser != null && !identityUser.EmailConfirmed)
+                token = await GetConfirmToken(identityUser);
+            else if(identityUser == null)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = addUserBindingModel.Email,
+                    Email = addUserBindingModel.Email,
+                    NormalizedEmail = addUserBindingModel.Email,
+                    NormalizedUserName = !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""
+                };
+                var result = await _userManager.CreateAsync(user, randomPassword);
+                if (!result.Succeeded)
+                    return BadRequest(result);
+
+
+                result = _userManager.AddClaimsAsync(user, new Claim[]{
+                    new Claim(JwtClaimTypes.Name, !string.IsNullOrEmpty(addUserBindingModel.FirstName) ? addUserBindingModel.FirstName + " " + addUserBindingModel.LastName : ""),
+                    new Claim(JwtClaimTypes.GivenName, addUserBindingModel.FirstName),
+                    new Claim(JwtClaimTypes.FamilyName, addUserBindingModel.LastName),
+                    new Claim(JwtClaimTypes.Email, addUserBindingModel.Email),
+                    new Claim(JwtClaimTypes.EmailVerified, "false", ClaimValueTypes.Boolean)
+                }).Result;
+
+                identityUser = await _userManager.FindByNameAsync(addUserBindingModel.Email);
+                token = await GetConfirmToken(identityUser);
+
+            }
+
+            return StatusCode(201, new { token = WebUtility.UrlEncode(token), password = randomPassword });
+        }
+
+        [Route("add_user"), HttpPost, Authorize(AuthenticationSchemes = "Bearer")]
 		public async Task<IActionResult> AddUser([FromBody]AddUserBindingModel addUserBindingModel)
 		{
 			if (!ModelState.IsValid)
@@ -107,14 +187,14 @@ namespace PrimeApps.Auth.Controllers
                     Email = addUserBindingModel.Email,
                     FirstName = addUserBindingModel.FirstName,
                     LastName = addUserBindingModel.LastName,
-                    Setting = new PlatformUserSetting()
+                    Setting = new PlatformUserSetting
+                    {
+                        Culture = tenant.Setting.Culture,
+                        Language = tenant.Setting.Language,
+                        Currency = tenant.Setting.Currency,
+                        TimeZone = tenant.Setting.TimeZone
+                    }
                 };
-
-                applicationUser.Setting.Culture = tenant.Setting.Culture;
-                applicationUser.Setting.Language = tenant.Setting.Language;
-                //tenant.Setting.TimeZone = 
-                applicationUser.Setting.Currency = tenant.Setting.Currency;
-
 
                 var createUserResult = await _platformUserRepository.CreateUser(applicationUser);
 
@@ -238,7 +318,7 @@ namespace PrimeApps.Auth.Controllers
 			var user = await _userManager.FindByEmailAsync(changePasswordViewModel.Email);
 			var result = await _userManager.ChangePasswordAsync(user, changePasswordViewModel.OldPassword, changePasswordViewModel.NewPassword);
 
-            var application = await _applicationRepository.GetByName(client);
+            var application = await _applicationRepository.GetByNameAsync(client);
             var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
 
             if (result.Succeeded && externalLogin != null)
@@ -262,7 +342,7 @@ namespace PrimeApps.Auth.Controllers
         [HttpPost("verify_user", Name="verify_user")]
         public async Task<bool> VerifyUser([FromBody] ExternalLoginBindingModel model)
         {
-            var application = await _applicationRepository.GetByName(model.client);
+            var application = await _applicationRepository.GetByNameAsync(model.client);
             var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
 
             if (externalLogin != null)
