@@ -15,7 +15,7 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         $scope.tenants = $rootScope.multiTenant;
         $scope.isTimetrackerExist = false;
         $scope.isExpenseExist = false;
-        $scope.componentModules = $filter('filter')($rootScope.modules, { system_type: 'component' }, true);
+        $scope.componentModules = $filter('filter')($rootScope.modules, {system_type: 'component'}, true);
 
         $rootScope.isMobile = function () {
             var check = false;
@@ -41,53 +41,6 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                 });
         };
 
-        $scope.isTenantActive = function (tenant) {
-            var host = window.location.hostname;
-
-            if (host.indexOf('localhost') < 0) {
-                if (host.indexOf('primeapps.io') > -1)
-                    return false;
-                else if ((host.indexOf('crm.ofisim.com') > -1 || host.indexOf('crm-test.ofisim.com') > -1 || host.indexOf('crm-dev.ofisim.com') > -1) && tenant.AppId === 1)
-                    return true;
-                else if ((host.indexOf('ik.ofisim.com') > -1 || host.indexOf('ik-test.ofisim.com') > -1 || host.indexOf('ik-dev.ofisim.com') > -1) && tenant.AppId === 4)
-                    return true;
-                else if ((host.indexOf('hr.ofisim.com') > -1 || host.indexOf('hr-test.ofisim.com') > -1 || host.indexOf('hr-dev.ofisim.com') > -1) && tenant.AppId === 8)
-                    return true;
-                else
-                    return false;
-            }
-            return false;
-        };
-
-        $scope.changeTenant = function (tenant) {
-            if ($scope.isTenantActive(tenant))
-                return;
-
-            $scope.confirming = false;
-            AppService.changeTenant($rootScope.user.id, tenant.TenantId, tenant.AppId, tenant.Email)
-                .then(function (response) {
-                    if (response.status === 200) {
-                        var domain = 'http://localhost:5554';
-                        if (host.indexOf('localhost') < 0) {
-                            if (host.indexOf('ik.ofisim.com') > -1)
-                                domain = 'https://crm.ofisim.com';
-                            else if (host.indexOf('ik-test.ofisim.com') > -1)
-                                domain = 'https://test.ofisim.com';
-                            else if (host.indexOf('ik-dev.ofisim.com') > -1)
-                                domain = 'https://dev.ofisim.com';
-                            else if (host.indexOf('crm.ofisim.com') > -1)
-                                domain = 'https://ik.ofisim.com';
-                            else if (host.indexOf('test.ofisim.com') > -1)
-                                domain = 'https://ik-test.ofisim.com';
-                            else if (host.indexOf('dev.ofisim.com') > -1)
-                                domain = 'https://ik-dev.ofisim.com';
-                            else
-                                domain = 'https://crm.ofisim.com';
-                        }
-                        $window.location.href = domain;
-                    }
-                });
-        };
 
         var host = window.location.hostname;
 
@@ -172,7 +125,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     $cache.remove('calendar_events');
 
                     $scope.sampleRemoving = false;
-                    ngToast.create({ content: $filter('translate')('Layout.SampleDataRemoveSuccess'), className: 'success' });
+                    ngToast.create({
+                        content: $filter('translate')('Layout.SampleDataRemoveSuccess'),
+                        className: 'success'
+                    });
                     $rootScope.$broadcast('sample-data-removed');
                     $window.location.href = '#/app/dashboard';
                 });
@@ -242,76 +198,13 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
         };
 
         $scope.changeApp = function (app) {
-            $rootScope.app = app;
 
-            switch (app) {
-                case 'crm':
-                    $state.go('app.dashboard');
-                    break;
-                case 'analytics':
-                    $state.go('app.analytics.report');
-                    break;
-                case 'sync':
-                    $state.go('app.sync.dashboard');
-                    break;
-            }
-
-            angular.element($scope.appLauncher).toggleClass('toggled');
         };
 
         $scope.showAppLauncher = function () {
             return $rootScope.user.has_analytics;
         };
 
-        $rootScope.showSipPhone = function () {
-            sipHelper.showSipPhone();
-        };
-
-        $rootScope.hideSipPhone = function () {
-            $rootScope.sipPhone[$rootScope.app].hide();
-        };
-
-        $scope.getHelpUrl = function () {
-            var hash = window.location.hash;
-
-            if (hash.indexOf('?') > -1)
-                hash = window.location.hash.split('?')[0];
-
-            var help = $filter('filter')(helps.maps, { route: hash, language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-
-            if (help) {
-                return help.help;
-            }
-            else {
-                if (hash.indexOf('#/app/modules/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/modules/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-                }
-
-                if (hash.indexOf('#/app/module/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/module/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-                }
-
-                if (hash.indexOf('#/app/moduleForm/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/moduleForm/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-                }
-
-                if (hash.indexOf('#/app/setup/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: 'default-setup', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-                }
-
-                if (hash.indexOf('#/app/import/') > -1) {
-                    help = $filter('filter')(helps.maps, { route: '#/app/import/', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-                }
-
-                if (help) {
-                    return help.help;
-                }
-                else {
-                    help = $filter('filter')(helps.maps, { route: 'default', language: $rootScope.language, appId: $rootScope.user.appId }, true)[0];
-                    return help.help;
-                }
-            }
-        };
 
         $scope.dropdownHide = function () {
             angular.element(document.getElementsByClassName('dropdown-menu'))[0].click();
@@ -330,17 +223,10 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     else
                         $rootScope.$broadcast('sample-data-removed');
 
-                    ngToast.create({ content: $filter('translate')('Layout.ReloadSuccess'), className: 'success' });
+                    ngToast.create({content: $filter('translate')('Layout.ReloadSuccess'), className: 'success'});
                 });
         };
 
-        //timetracker modülünü gösterme
-        if ($filter('filter')($rootScope.modules, { name: 'timetrackers' }, true).length > 0)
-            $scope.isTimetrackerExist = true;
-
-        //Yeni Masraf yapısını gösterme
-        if ($filter('filter')($rootScope.modules, { name: 'masraflar' }, true).length > 0)
-            $scope.isExpenseExist = true;
 
         $rootScope.openHelp = function (id) {
             HelpService.getById(id).then(function (response) {
@@ -379,58 +265,58 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
                     moduleName = hash.split('/')[3].split('?')[0];
                 }
 
-                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
 
 
                 if (moduleName) {
-                    var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                    var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
 
                     if (isModuleList) {
                         HelpService.getModuleType('sidemodal', 'modulelist', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                     else if (isModuleDetail) {
                         HelpService.getModuleType('sidemodal', 'moduledetail', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                     else {
                         HelpService.getModuleType('sidemodal', 'moduleform', module.id)
                             .then(function (response) {
-                                $scope.helpTemplatesSide = response.data;
-                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                    $scope.noneHelpTemplate = false;
-                                    $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.helpTemplatesSide = response.data;
+                                    if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                        $scope.noneHelpTemplate = false;
+                                        $scope.helpTemplateSideModal = $sce.trustAsHtml($scope.helpTemplatesSide.template);
 
+                                    }
+                                    else {
+                                        $scope.helpTemplateSideModal = null;
+                                        $scope.noneHelpTemplate = true;
+                                    }
                                 }
-                                else {
-                                    $scope.helpTemplateSideModal = null;
-                                    $scope.noneHelpTemplate = true;
-                                }
-                            }
                             );
                     }
                 }
@@ -530,29 +416,29 @@ angular.module('primeapps').controller('AppController', ['$rootScope', '$scope',
             }
 
             if (moduleName) {
-                var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
+                var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
 
                 if (isModuleList) {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                            $scope.helpTemplatesSide = response.data;
-                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                $scope.openHelpModal();
-                            }
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.openHelpModal();
+                                }
 
-                        }
+                            }
                         );
                 }
                 else {
                     HelpService.getModuleType('modal', 'modulelist', module.id)
                         .then(function (response) {
-                            $scope.helpTemplatesSide = response.data;
-                            if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
-                                $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
-                                $scope.openHelpModal();
+                                $scope.helpTemplatesSide = response.data;
+                                if ($scope.helpTemplatesSide && $scope.helpTemplatesSide.show_type === "publish") {
+                                    $rootScope.helpTemplate = $sce.trustAsHtml($scope.helpTemplatesSide.template);
+                                    $scope.openHelpModal();
+                                }
                             }
-                        }
                         );
                 }
             }

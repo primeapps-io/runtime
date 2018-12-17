@@ -61,7 +61,7 @@ angular.module('primeapps')
                         start: ['$rootScope', 'AppService',
                             function ($rootScope, AppService) {
                                 if (!$rootScope.user)
-                                    return AppService.getMyAccount();
+                                    return AppService.getOrg();
                             }]
                     }
                 });
