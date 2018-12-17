@@ -3591,7 +3591,10 @@ namespace PrimeApps.App.Helpers
 
                         foreach (JObject stockTransaction in stockTransactions)
                         {
-                            var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
+							if (stockTransaction["stock_transaction_type"].IsNullOrEmpty())
+								continue;
+
+							var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
                             if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
                             {
                                 balance += stockTransaction["quantity"].IsNullOrEmpty() ? 0 : (decimal)stockTransaction["quantity"];
