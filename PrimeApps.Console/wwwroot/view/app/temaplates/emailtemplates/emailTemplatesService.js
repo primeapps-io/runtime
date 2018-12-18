@@ -1,7 +1,7 @@
 angular.module('primeapps')
 
-    .factory('ViewService', ['$rootScope', '$http', 'config', '$q', '$filter', 'ModuleService',
-        function ($rootScope, $http, config, $q, $filter, ModuleService) {
+    .factory('EmailTemplatesService', ['$rootScope', '$http', 'config', '$q', '$filter',
+        function ($rootScope, $http, config, $q, $filter) {
             return {
 
                 create: function (view) {

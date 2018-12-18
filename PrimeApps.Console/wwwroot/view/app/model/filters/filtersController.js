@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ViewFormController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'ModuleService', 'ViewService', '$http', 'config',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, ModuleService, ViewService, $http, config) {
+    .controller('FiltersController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'FiltersService',  '$http', 'config',
+        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, FiltersService, $http, config) {
 
 			var clone = $location.search().clone;
 			var id = $location.search().id;

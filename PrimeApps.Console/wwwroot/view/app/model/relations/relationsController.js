@@ -2,18 +2,21 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleRelationController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ModuleSetupService', 'ModuleService', 'LayoutService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ModuleSetupService, ModuleService, LayoutService) {
-            var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
+    .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService',  'LayoutService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService) {
+            // var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
+            //
+            // if (!module) {
+            //     ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+            //     $state.go('app.dashboard');
+            //     return;
+            // }
 
-            if (!module) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
-                $state.go('app.dashboard');
-                return;
-            }
+            //$scope.module = angular.copy(module);
 
-            $scope.module = angular.copy(module);
-            $scope.relations = ModuleSetupService.processRelations($scope.module.relations);
+          //  $scope.relations = ModuleSetupService.processRelations($scope.module.relations);
+            console.log("RelationsController");
+
             $scope.relationsState = angular.copy($scope.relations);
 
             $scope.showFormModal = function (relation) {
@@ -116,10 +119,11 @@ angular.module('primeapps')
                 if ($scope.currentRelation.relation_type === 'many_to_many')
                     $scope.bindDragDrop();
             };
+
             $scope.relationTypeChanged = function () {
                 if ($scope.currentRelation.relation_type === 'many_to_many')
                     $scope.bindDragDrop();
-            }
+            };
 
             $scope.save = function (relationForm) {
                 if (!relationForm.$valid)
