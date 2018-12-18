@@ -1977,7 +1977,11 @@ namespace PrimeApps.App.Helpers
                                                     if ((currentModulePicklist.SystemCode == "confirmed_purchase_order_stage" || currentModulePicklist.SystemCode == "confirmed_order_stage") && operationType != OperationType.delete)
                                                     {
                                                         var modelStateTransaction = new ModelStateDictionary();
-                                                        var transactionTypeField = stockModule.Fields.Single(x => x.Name == "stock_transaction_type");
+                                                        var transactionTypeField = stockModule != null ? stockModule.Fields.Single(x => x.Name == "stock_transaction_type") : null;
+
+                                                        if (transactionTypeField == null)
+                                                            break;
+
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
                                                         var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
 
