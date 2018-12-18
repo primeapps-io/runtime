@@ -46,8 +46,10 @@
                         <div class="subpanel-body">
                             <div class="row form-group"
                                  ng-class="{'has-error': reportForm.$submitted && reportForm.name.$invalid}">
-                                <label class="col-sm-3 control-label"><span class="required-field">*</span>
-                                    {{'Report.ReportName' | translate}}:</label>
+                                <label class="col-sm-3 control-label">
+                                    <span class="required-field">*</span>
+                                    {{'Report.ReportName' | translate}}:
+                                </label>
                                 <div class="col-sm-5">
                                     <input name="name" class="form-control" maxlength="50" required
                                            ng-model="reportModel.name" />
@@ -57,8 +59,7 @@
                                  ng-class="{'has-error': reportForm.$submitted && reportForm.module_id.$invalid}">
                                 <label class="col-sm-3 control-label"><span class="required-field">*</span> {{'Report.Module' | translate}}:</label>
                                 <div class="col-sm-5">
-                                    <select
-                                            class="form-control"
+                                    <select class="form-control"
                                             name="module_id"
                                             required
                                             ng-model="reportModel.module_id"
@@ -71,12 +72,13 @@
                             </div>
                             <div class="row form-group"
                                  ng-class="{'has-error': reportForm.$submitted && reportForm.category_id.$invalid}">
-                                <label class="col-sm-3 control-label"><span class="required-field">*</span>
+                                <label class="col-sm-3 control-label">
+                                    <span class="required-field">*</span>
                                     <!--{{'Report.Module' | translate}}-->
-                                    {{'Report.ReportCategory' | translate}} :</label>
+                                    {{'Report.ReportCategory' | translate}} :
+                                </label>
                                 <div class="col-sm-5">
-                                    <select
-                                            class="form-control"
+                                    <select class="form-control"
                                             name="category_id"
                                             required
                                             ng-model="reportModel.category_id"
@@ -95,7 +97,8 @@
                                     <label class="radio-inline listviewReport">
                                         <input name="report_type" required type="radio" style="margin-left: -16px;"
                                                ng-model="reportModel.report_type"
-                                               value="tabular">
+                                               value="tabular"
+                                               ng-disabled="isEdit">
                                         {{'Report.ListviewReport' | translate}}
                                         <!--<span>Liste raporları verilerinizi daha basit şekilde listelemenizi sağlar.</span>-->
                                     </label>
@@ -103,7 +106,8 @@
                                         <input name="report_type" required type="radio"
                                                ng-model="reportModel.report_type"
                                                value="summary"
-                                               style="margin-left: -16px;">
+                                               style="margin-left: -16px;"
+                                               ng-disabled="isEdit">
                                         {{'Report.SummaryReport' | translate}}
                                         <!--<span>enizi sağlar.</span>-->
                                     </label>
@@ -111,7 +115,8 @@
                                         <input name="report_type" required type="radio"
                                                ng-model="reportModel.report_type"
                                                value="single"
-                                               style="margin-left: -16px;">
+                                               style="margin-left: -16px;"
+                                               ng-disabled="isEdit">
                                         {{'Report.Single' | translate}}
                                         <!--<span>Özet Raporlar, verilerinizi alt toplamlar, gruplandırmalar ve diğer özet bilgilerle birlikte görüntülemenizi sağlar.</span>-->
                                     </label>
@@ -161,17 +166,23 @@
                                 <div class="col-sm-offset-3 col-sm-9">
                                     <div class="callout callout-danger">
                                         <p ng-if="reportForm.reportName.$error.required || reportForm.module.$error.required">
-                                            {{'Module.RequiredError' | translate}}</p>
-                                        <p ng-if="reportForm.$error.operations">{{'Report.ReportTypeRequiredError' |
-                                            translate}}</p>
+                                            {{'Module.RequiredError' | translate}}
+                                        </p>
+                                        <p ng-if="reportForm.$error.operations">
+                                            {{
+'Report.ReportTypeRequiredError' |
+                                            translate
+                                            }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div class="wizard-buttons text-right">
                                 <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                                 <button type="button" class="btn btn-primary btn-w-sm"
-                                        ng-click="step1();">{{'Common.Next' | translate}} <i
-                                        class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+                                        ng-click="step1();">
+                                    {{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -180,7 +191,8 @@
                     <div class="subpanel">
                         <h5 class="subpanel-heading">2- {{'Setup.Workflow.FilterCriteria' | translate}}</h5>
                         <div class="subpanel-body">
-                            <div ng-if="loadingFilter" clas="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i>
+                            <div ng-if="loadingFilter" clas="page-loading">
+                                <i class="fa fa-sm fa-spinner fa-pulse"></i>
                             </div>
                             <div ng-show="!loadingFilter">
                                 <table class="filter-table">
@@ -217,8 +229,7 @@
                                                         ng-if="!filter.field.lookupModulePrimaryField  || filter.field.lookup_type ==='users'">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
-                                                <select
-                                                        class="form-control ng-animate-disabled"
+                                                <select class="form-control ng-animate-disabled"
                                                         ng-options="o as o.label[language] for o in filter.field.lookupModulePrimaryField.operators | orderBy:'order' track by o.order"
                                                         ng-change="operatorChanged(filter.field, $index)"
                                                         ng-model="filter.operator"
@@ -289,10 +300,10 @@
                                                         ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date') && (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
-                                                <span
-                                                        style="float: left;padding-top: 6px;"
-                                                        ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date')&& (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
-                                                    {{filter.valueX >0 ? ('View.After' | translate) : 'View.Before' | translate   }} </span>
+                                                <span style="float: left;padding-top: 6px;"
+                                                      ng-if="(!filter.field.lookupModulePrimaryField || filter.field.data_type === 'date_time' || filter.field.lookupModulePrimaryField.data_type === 'date')&& (filter.costumeDate==='costumeN' || filter.costumeDate==='costumeW' || filter.costumeDate==='costumeM' || filter.costumeDate==='costumeY')">
+                                                    {{filter.valueX >0 ? ('View.After' | translate) : 'View.Before' | translate   }}
+                                                </span>
 
                                                 <input type="text"
                                                        class="form-control ng-animate-disabled hide"
@@ -410,8 +421,7 @@
                                                        maxlength="100"
                                                        ng-if="!filter.field.lookupModulePrimaryField ? (filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users') : (filter.field.lookupModulePrimaryField.data_type === 'lookup' && filter.lookupModulePrimaryField.field.lookup_type != 'users')" />
 
-                                                <select
-                                                        class="form-control ng-animate-disabled"
+                                                <select class="form-control ng-animate-disabled"
                                                         ng-model="filter.value"
                                                         ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
                                                         ng-if="!filter.field.lookupModulePrimaryField ? filter.field.data_type === 'checkbox' : filter.field.lookupModulePrimaryField.data_type === 'checkbox'">
@@ -426,8 +436,9 @@
                                 <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
                                 <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
                                 <button type="button" class="btn btn-primary btn-w-sm"
-                                        ng-click="step2()">{{'Common.Next' | translate}} <i
-                                        class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+                                        ng-click="step2()">
+                                    {{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -454,7 +465,8 @@
                                                             <div id="availableFields" class="container-left">
                                                                 <div ng-repeat="field in fields.availableFields"
                                                                      ng-class="{'dragable':!field.seperator, 'seperator':field.seperator, 'seperator-main':field.name === 'seperator-main'}">
-                                                                    {{field.label}} <i class="fa fa-arrows" ng-if="!field.seperator"></i></div>
+                                                                    {{field.label}} <i class="fa fa-arrows" ng-if="!field.seperator"></i>
+                                                                </div>
                                                             </div>
                                                             <div class="container-middle">
                                                                 <i class="fa fa-exchange"></i>
@@ -484,27 +496,37 @@
                                                     <div class="col-sm-6">
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.group_field.$invalid}">
-                                                            <label><span class="required-field">*</span>{{'Report.GroupArea'
-                                                                | translate}}:</label>
+                                                            <label>
+                                                                <span class="required-field">*</span>{{
+'Report.GroupArea'
+                                                                | translate
+                                                                }}:
+                                                            </label>
                                                             <select class="form-control"
                                                                     name="group_field"
                                                                     ng-model="reportModel.group_field"
                                                                     ng-change="changeGroupField()"
                                                                     required
                                                                     ng-options="o.name as o.label for o in fields.availableFields">
-                                                                <option value="">{{'Common.Select' | translate}}
+                                                                <option value="">
+                                                                    {{'Common.Select' | translate}}
                                                                 </option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <div class="form-group">
-                                                            <label for="sel2">{{'Report.OrderArea' |
-                                                                translate}}:</label>
+                                                            <label for="sel2">
+                                                                {{
+'Report.OrderArea' |
+                                                                translate
+                                                                }}:
+                                                            </label>
                                                             <select class="form-control"
                                                                     ng-model="reportModel.sort_field" id="sel2"
                                                                     ng-options="o.name as o.label for o in fields.availableFields">
-                                                                <option value="">{{'Common.Select' | translate}}
+                                                                <option value="">
+                                                                    {{'Common.Select' | translate}}
                                                                 </option>
                                                             </select>
                                                         </div>
@@ -523,15 +545,21 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <div class="subpanel">
-                                            <h5 class="subpanel-heading">{{'Report.CalculationFields' |
-                                                translate}} </h5>
+                                            <h5 class="subpanel-heading">
+                                                {{
+'Report.CalculationFields' |
+                                                translate
+                                                }}
+                                            </h5>
                                             <div class="subpanel-body">
                                                 <div class="row row-custom">
                                                     <div class="col-sm-12">
-                                                        <label style="margin-bottom: 15px;" ng-show="">Not :Eğer
+                                                        <label style="margin-bottom: 15px;" ng-show="">
+                                                            Not :Eğer
                                                             herhangi bir seçim
                                                             alanı seçilmes kayıt saysını
-                                                            hesaplama alana olarak setlenir</label>
+                                                            hesaplama alana olarak setlenir
+                                                        </label>
                                                         <br>
 
                                                         <table class="table calculation-area-table">
@@ -551,7 +579,7 @@
                                                                         {{'Report.max' | translate }}
                                                                     </th>
                                                                     <th style="text-align: center;">
-                                                                         
+
                                                                     </th>
                                                                 </tr>
                                                             </thead>
@@ -587,7 +615,7 @@
                                                                                style="">
                                                                     </td>
                                                                     <td class="text-center" ng-click="removeSelectAggregation(field)">
-                                                                        <input type="button" class="btn btn-custom" ng-click="removeSelectAggregation(field)" value="{{'Report.RemoveSelection' | translate }}"/>
+                                                                        <input type="button" class="btn btn-custom" ng-click="removeSelectAggregation(field)" value="{{'Report.RemoveSelection' | translate }}" />
                                                                     </td>
 
                                                                 </tr>
@@ -629,13 +657,15 @@
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.chartTypes.$invalid}">
                                                             <label for="chartTypes">
-                                                                {{'Report.Chart.Type' | translate}} :</label>
+                                                                {{'Report.Chart.Type' | translate}} :
+                                                            </label>
                                                             <select class="form-control" id="chartTypes"
                                                                     ng-model="reportModel.chart.type"
                                                                     name="chartTypes"
                                                                     required
                                                                     ng-options="o.name as o.label for o in chartTypes">
-                                                                <option value="">{{'Common.Select' | translate}}
+                                                                <option value="">
+                                                                    {{'Common.Select' | translate}}
                                                                 </option>
                                                             </select>
                                                         </div>
@@ -643,8 +673,12 @@
                                                     <div class="col-sm-4">
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.xaxis_name.$invalid}">
-                                                            <label for="xaxis_name">{{'Report.Chart.XaxisName' |
-                                                                translate}}:</label>
+                                                            <label for="xaxis_name">
+                                                                {{
+'Report.Chart.XaxisName' |
+                                                                translate
+                                                                }}:
+                                                            </label>
                                                             <input class="form-control"
                                                                    id="xaxis_name"
                                                                    required
@@ -655,8 +689,12 @@
                                                     <div class="col-sm-4">
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                                            <label for="yaxis_name"> {{'Report.Chart.YaxisName' |
-                                                                translate}}:</label>
+                                                            <label for="yaxis_name">
+                                                                {{
+'Report.Chart.YaxisName' |
+                                                                translate
+                                                                }}:
+                                                            </label>
                                                             <input class="form-control"
                                                                    id="yaxis_name"
                                                                    required
@@ -688,8 +726,12 @@
                                                     <div class="col-sm-4">
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.yaxis_name.$invalid}">
-                                                            <label> {{'Report.Widget.Icon' |
-                                                                translate}}:</label>
+                                                            <label>
+                                                                {{
+'Report.Widget.Icon' |
+                                                                translate
+                                                                }}:
+                                                            </label>
 
                                                             <button type="button" data-container="form"
                                                                     class="form-control btn btn-default"
@@ -697,19 +739,24 @@
                                                                     ng-model="reportModel.widget.icon"
                                                                     data-html="1" data-toggle="true"
                                                                     bs-options="icon.value as icon.label for icon in icons"
-                                                                    bs-select><span class="caret"></span></button>
+                                                                    bs-select>
+                                                                <span class="caret"></span>
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <div class="form-group"
                                                              ng-class="{'has-error': reportForm.$submitted && reportForm.colorpicker.$invalid}">
-                                                            <label>{{'Report.Widget.Color' |
-                                                                translate}}:</label>
+                                                            <label>
+                                                                {{
+'Report.Widget.Color' |
+                                                                translate
+                                                                }}:
+                                                            </label>
                                                             <input name="colorpicker" type="color"
                                                                    class="form-control"
                                                                    required
-                                                                   ng-model="reportModel.widget.color"
-                                                            >
+                                                                   ng-model="reportModel.widget.color">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -725,15 +772,21 @@
 
                     </div>
                     <div class="wizard-buttons text-right">
-                        <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' |
-                            translate}}</a>
+                        <a href="#/app/reports" class="btn btn-custom">
+                            {{
+'Common.Cancel' |
+                            translate
+                            }}
+                        </a>
                         <button type="button" class="btn btn-primary btn-w-sm" ng-click="stepBack(1)">
                             {{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left"
-                                                                 style="margin-top: 3px;"></i></button>
+                                                                 style="margin-top: 3px;"></i>
+                        </button>
                         <button type="button" class="btn btn-primary btn-w-sm"
                                 ng-click="step3()">
                             {{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right"
-                                                             style="margin-top: 3px;"></i></button>
+                                                             style="margin-top: 3px;"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="step4" ng-show="wizardStep == 3">
@@ -744,14 +797,16 @@
                             <div class="sub-tab-body">
                                 <div class="row ">
                                     <label class="col-sm-3 control-label">
-                                        {{'Report.ReportName' | translate}}:</label>
+                                        {{'Report.ReportName' | translate}}:
+                                    </label>
                                     <div class="col-sm-5">
                                         <span> {{ reportModel.name }} </span>
                                     </div>
                                 </div>
                                 <div class="row ">
                                     <label class="col-sm-3 control-label">
-                                        {{'Report.Module' | translate}}:</label>
+                                        {{'Report.Module' | translate}}:
+                                    </label>
                                     <div class="col-sm-5">
                                         <span> {{ module['label_'+language+'_plural'] }} </span>
                                     </div>
@@ -759,7 +814,8 @@
 
                                 <div class="row ">
                                     <label class="col-sm-3 control-label">
-                                        {{'Report.ReportType' | translate}}:</label>
+                                        {{'Report.ReportType' | translate}}:
+                                    </label>
                                     <div class="col-sm-5">
                                         <span> {{ reportModel.report_type  === 'summary' ? ('Report.SummaryReport' | translate) :  reportModel.report_type  === 'single' ? ('Report.Single' | translate) :('Report.ListviewReport' | translate) }} </span>
                                     </div>
@@ -770,12 +826,14 @@
                     </div>
                     <div class="wizard-buttons text-right">
                         <a href="#/app/reports" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
-                        <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 2"><i
-                                class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous'
-                            | translate}}
+                        <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 2">
+                            <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{
+'Common.Previous'
+                            | translate
+                            }}
                         </button>
-                        <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving"><i
-                                class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
+                        <button type="submit" class="btn btn-primary btn-w-lg" ladda="saving">
+                            <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
                         </button>
                     </div>
                 </div>

@@ -87,6 +87,7 @@ angular.module('primeapps')
             };
 
             $scope.selectSheet = function (retry) {
+                $scope.rowsBase = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { header: 'A' });
                 $scope.rows = XLSX.utils.sheet_to_json($scope.workbook.Sheets[$scope.selectedSheet], { raw: true, header: 'A' });
                 $scope.headerRow = angular.copy($scope.rows[0]);
                 $scope.rows.shift();
@@ -669,20 +670,44 @@ angular.module('primeapps')
                             }
                             break;
                         case 'date':
+
+                            var tempValue = getJsDateFromExcel(recordValue);
+
+                            if (tempValue.toString() === "Invalid Date")
+                                recordValue = recordValue.split(' ')[0];
+                            else
+                                recordValue = tempValue;
+
                             var dateFormat = $scope.getDateFormat();
                             var standardDateFormat = 'DD/MM/YYYY';
-                            var recordValueParts = recordValue.split(' ');
-                            var mmtDate = moment(recordValueParts[0], dateFormat, true);
+
+                            var mmtDate = moment(recordValue, dateFormat, true);
 
                             if (!mmtDate.isValid()) {
-                                mmtDate = moment(recordValueParts[0], standardDateFormat, true);
+                                mmtDate = moment(recordValue, standardDateFormat, true);
 
                                 if (!mmtDate.isValid()) {
-                                    $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDate');
-                                    recordValue = null;
-                                }
-                                else {
-                                    recordValue = mmtDate.format();
+                                    var dateDelimeter = $scope.dateDelimiter;
+                                    var dateArray = recordValue.split(dateDelimiter);
+                                    var dateFormatArray = dateFormat.split(dateDelimiter);
+
+                                    if (dateArray.length > 1) {
+                                        var YY = dateArray[dateFormatArray.indexOf('YYYY')];
+                                        var MM = dateArray[dateFormatArray.indexOf('MM')];
+                                        var DD = dateArray[dateFormatArray.indexOf('DD')];
+
+                                        var parseValue = Date.parse(MM + dateDelimeter + DD + dateDelimiter + YY); //dont change sequence
+
+                                        mmtDate = moment(new Date(parseValue), dateFormat, true);
+
+                                        if (!mmtDate.isValid()) {
+                                            $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDate');
+                                            recordValue = null;
+                                        }
+                                        else {
+                                            recordValue = mmtDate.format();
+                                        }
+                                    }
                                 }
                             }
                             else {
@@ -690,6 +715,13 @@ angular.module('primeapps')
                             }
                             break;
                         case 'date_time':
+                            var tempValue = getJsDateFromExcel(recordValue);
+
+                            if (tempValue.toString() === "Invalid Date")
+                                recordValue = recordValue.split(' ')[0];
+                            else
+                                recordValue = tempValue;
+
                             var dateTimeFormat = $scope.getDateTimeFormat();
                             var standardDateTimeFormat = 'DD/MM/YYYY' + ' ' + $scope.timeFormat;
                             var mmtDateTime = moment(recordValue, dateTimeFormat, true);
@@ -710,7 +742,18 @@ angular.module('primeapps')
                             }
                             break;
                         case 'time':
-                            var mmtTime = moment(recordValue, $scope.timeFormat, true);
+                            var baseValue = getExcelBaseValue(field, rowNo - 1, cellName);
+                            var newValueArray = [];
+                            var mmtTime;
+
+                            if (baseValue) {
+                                newValueArray = baseValue.split(":");
+                                mmtTime = moment(new Date(null, null, null, newValueArray[0], newValueArray[1]), $scope.timeFormat, true);
+                            }
+                            else {
+                                recordValue = getJsDateFromExcel(recordValue);
+                                mmtTime = moment(recordValue.toUTCString(), $scope.timeFormat, true);
+                            }
 
                             if (!mmtTime.isValid()) {
                                 $scope.error.message = $filter('translate')('Data.Import.Error.InvalidTime');
@@ -1096,6 +1139,17 @@ angular.module('primeapps')
                     return false;
                 }
                 return true
+            }
+
+            function getJsDateFromExcel(excelDate) {
+                return new Date((excelDate - (25567 + 2)) * 86400 * 1000);
+            }
+
+            function getExcelBaseValue(field, rowNo, cellName) {
+                var row = $scope.rowsBase[rowNo];
+                var cellBaseValue = row[cellName];
+
+                return cellBaseValue;
             }
         }
     ]);
