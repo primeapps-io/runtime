@@ -148,6 +148,23 @@ angular.module('primeapps')
                         }]
                     }
                 })
+                .state('app.account', {
+                    url: 'account',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/account/account.html',
+                            controller: 'AccountController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/account/AccountService.js',
+                                cdnUrl + 'view/account/AccountController.js'
+                            ]);
+                        }]
+                    }
+                })
                 .state('app.dashboard', {
                     url: 'dashboard',
                     views: {
