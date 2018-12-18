@@ -94,8 +94,8 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/appform/AppFormService.js',
-                                cdnUrl + 'view/organization/appform/AppFormController.js'
+                                cdnUrl + 'view/organization/appform/appFormService.js',
+                                cdnUrl + 'view/organization/appform/appFormController.js'
                             ]);
                         }]
                     }
