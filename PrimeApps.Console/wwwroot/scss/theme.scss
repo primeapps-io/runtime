@@ -5,7 +5,20 @@ $primeapps-color: #635fb3;
   button:focus {
     border: none;
   }
-
+  .page-loading{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    align-self: center;
+    width: 100%;
+    color: #9e005d;
+    height: 50%;
+    i{
+      font-size: 50px;
+    }
+  }
   body {
     background-color: #f6f5f2 !important;
   }

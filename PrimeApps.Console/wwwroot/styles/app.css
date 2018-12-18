@@ -6426,6 +6426,18 @@ tags-input.ng-invalid .tags {
 
 .primeapps button:focus {
   border: none; }
+.primeapps .page-loading {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  align-self: center;
+  width: 100%;
+  color: #9e005d;
+  height: 50%; }
+  .primeapps .page-loading i {
+    font-size: 50px; }
 .primeapps body {
   background-color: #f6f5f2 !important; }
 .primeapps .sidebar-nav a.active i {
