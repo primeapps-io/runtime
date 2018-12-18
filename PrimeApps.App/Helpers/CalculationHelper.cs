@@ -1891,7 +1891,11 @@ namespace PrimeApps.App.Helpers
                                                     var stockModObj = await moduleRepository.GetByName("stock_transactions");
                                                     var salesOrderModulePicklist = await picklistRepository.FindItemByLabel(salesOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj, false);
+                                                    var currentStockRecordArr = new JArray();
+
+                                                    if (stockModObj != null)
+                                                        currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj, false);
+
                                                     if ((operationType == OperationType.delete && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice") || (salesOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && salesOrderModulePicklist.SystemCode != "confirmed_order_stage" && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice"))
                                                     {
                                                         if (currentStockRecordArr.Count > 0)
@@ -3591,10 +3595,10 @@ namespace PrimeApps.App.Helpers
 
                         foreach (JObject stockTransaction in stockTransactions)
                         {
-							if (stockTransaction["stock_transaction_type"].IsNullOrEmpty())
-								continue;
+                            if (stockTransaction["stock_transaction_type"].IsNullOrEmpty())
+                                continue;
 
-							var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
+                            var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
                             if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
                             {
                                 balance += stockTransaction["quantity"].IsNullOrEmpty() ? 0 : (decimal)stockTransaction["quantity"];
