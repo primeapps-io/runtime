@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-	.controller('ModuleSetupController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService', 'LicenseService',
-		function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, LayoutService, LicenseService) {
+	.controller('ModuleController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService',
+		function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
 			var getModules = function () {
 				$scope.modulesSetup = [];
 
@@ -14,8 +14,6 @@ angular.module('primeapps')
 
 				$scope.customModules = $filter('filter')($scope.modulesSetup, { system_type: 'custom' });
 			};
-
-			$scope.user = $rootScope.user;
 
 			getModules();
 
@@ -118,76 +116,6 @@ angular.module('primeapps')
 					$scope.deleteModal.show();
 				});
 			};
-
-			$scope.moduleLicenseCopyCountLimit = function (moduleItem) {
-				//$scope.moduleLicenseCount = 0;
-
-				//if ($rootScope.user.module_license_count && $rootScope.user.module_license_count > 0) {
-				//    $scope.moduleLicenseCount = $rootScope.user.module_license_count;
-				//}
-				//else {
-				//    switch ($rootScope.user.appId) {
-				//        case 1:
-				//        case 5:
-				//            $scope.moduleLicenseCount = 2;
-				//            break;
-				//        default:
-				//            $scope.moduleLicenseCount = 1;
-				//            break;
-				//    }
-				//}
-				/**
-				* Commentlenen kısımda User'ın module lisansı kontrol ediliyordu
-				* Olması gereken Tenant'ın module lisans kontrolü
-				*/
-
-				LicenseService.getModuleLicenseCount()
-					.then(function (response) {
-						var tenantModuleLicenseCount = response.data;
-						if ($scope.customModules.length >= tenantModuleLicenseCount) {
-							ngToast.create({ content: $filter('translate')('Setup.License.ModuleLicanse', { count: tenantModuleLicenseCount }), className: 'warning' });
-						}
-						else {
-							window.location = "#app/setup/module?clone=" + moduleItem
-						}
-					})
-			};
-
-
-			$scope.moduleLicenseCountLimit = function () {
-				//$scope.moduleLicenseCount = 0;
-
-				//if ($rootScope.user.module_license_count && $rootScope.user.module_license_count > 0) {
-				//    $scope.moduleLicenseCount = $rootScope.user.module_license_count;
-				//}
-				//else {
-				//    switch ($rootScope.user.appId) {
-				//        case 1:
-				//        case 5:
-				//            $scope.moduleLicenseCount = 2;
-				//            break;
-				//        default:
-				//            $scope.moduleLicenseCount = 1;
-				//            break;
-				//    }
-				//}
-
-				/**
-				* Commentlenen kısımda User'ın module lisansı kontrol ediliyordu
-				* Olması gereken Tenant'ın module lisans kontrolü
-				*/
-				LicenseService.getModuleLicenseCount()
-					.then(function (response) {
-						var tenantModuleLicenseCount = response.data;
-						if ($scope.customModules.length >= tenantModuleLicenseCount) {
-							ngToast.create({ content: $filter('translate')('Setup.License.ModuleLicanse', { count: tenantModuleLicenseCount }), className: 'warning' });
-						}
-						else {
-							$state.go('app.setup.module');
-						}
-					})
-			};
-
 
 			$scope.delete = function () {
 				$scope.deleting = true;

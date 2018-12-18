@@ -6424,6 +6424,8 @@ tags-input.ng-invalid .tags {
   .directory .active-profile:hover img {
     border-color: #666; }
 
+.primeapps button:focus {
+  border: none; }
 .primeapps body {
   background-color: #f6f5f2 !important; }
 .primeapps .sidebar-nav a.active i {

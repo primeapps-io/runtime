@@ -1,5 +1,11 @@
 $primeapps-color: #635fb3;
 .primeapps {
+  //Reset
+
+  button:focus {
+    border: none;
+  }
+
   body {
     background-color: #f6f5f2 !important;
   }
@@ -865,16 +871,16 @@ $primeapps-color: #635fb3;
     font-weight: bold;
   }
   .full-toggled {
-    .sidebar-li{
-      &:hover{
+    .sidebar-li {
+      &:hover {
         position: fixed;
       }
     }
   }
   #sidebar-wrapper {
-    .sidebar-brand{
-      a{
-        &:hover{
+    .sidebar-brand {
+      a {
+        &:hover {
           background: none;
         }
       }
@@ -890,8 +896,8 @@ $primeapps-color: #635fb3;
       li {
         ul {
           list-style: none;
-          .active{
-            color:#fff;
+          .active {
+            color: #fff;
           }
           li {
             line-height: 20px;
@@ -932,10 +938,10 @@ $primeapps-color: #635fb3;
 
       }
     }
-    .color-blue{
-      color:#0d6faa
+    .color-blue {
+      color: #0d6faa
     }
-    .background-white{
+    .background-white {
       background: #ffffff;
     }
     .footer {
@@ -949,13 +955,13 @@ $primeapps-color: #635fb3;
       }
     }
   }
-  .dropdown-menu{
-    border:none;
+  .dropdown-menu {
+    border: none;
     margin-top: 32px;
     box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.05);
     margin-top: 40px !important;
     border-radius: 5px;
-    &:before,&:after{
+    &:before, &:after {
       bottom: 100%;
       left: 86%;
       border: solid transparent;
@@ -965,25 +971,24 @@ $primeapps-color: #635fb3;
       position: absolute;
       pointer-events: none;
     }
-    &:after{
+    &:after {
       border-color: rgba(136, 183, 213, 0);
       border-bottom-color: #ffffff;
       border-width: 10px;
 
     }
-    &:before{
-
+    &:before {
 
     }
-    li{
+    li {
 
-      a{
+      a {
         line-height: 40px;
-        &:hover{
+        &:hover {
           background-color: rgba(17, 87, 163, 0.1);
-          color:#000
+          color: #000
         }
-        i{
+        i {
 
         }
       }

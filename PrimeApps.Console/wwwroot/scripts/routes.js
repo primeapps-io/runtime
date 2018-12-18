@@ -13,7 +13,7 @@ angular.module('primeapps')
             }
             //app
             $stateProvider
-                .state('app', {
+                .state('studio', {
                     url: '/',
                     abstract: true,
                     templateUrl: 'view/layout.html',
@@ -29,7 +29,7 @@ angular.module('primeapps')
                 });
 
             $stateProvider
-                .state('app.home', {
+                .state('studio.home', {
                     url: '/home',
                     views: {
                         'app': {
@@ -46,7 +46,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.allApps', {
+
+                .state('studio.allApps', {
                     url: 'allApps',
                     views: {
                         'app': {
@@ -63,7 +64,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.Apps', {
+
+                .state('studio.Apps', {
                     url: 'apps?:organizationId',
                     views: {
                         'app': {
@@ -80,24 +82,26 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.appsForm', {
-                    url: 'appsForm?:organizationId',
+
+                .state('studio.appsForm', {
+                    url: 'appForm?:organizationId',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/organization/appsform/appsForm.html',
-                            controller: 'AppsFormController'
+                            templateUrl: cdnUrl + 'view/organization/appform/appForm.html',
+                            controller: 'AppFormController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/apps/AppsFormService.js',
-                                cdnUrl + 'view/organization/apps/AppsFormController.js'
+                                cdnUrl + 'view/organization/appform/AppFormService.js',
+                                cdnUrl + 'view/organization/appform/AppFormController.js'
                             ]);
                         }]
                     }
                 })
-                .state('app.collaborators', {
+
+                .state('studio.collaborators', {
                     url: 'collaborators?:organizationId',
                     views: {
                         'app': {
@@ -114,7 +118,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.teams', {
+
+                .state('studio.teams', {
                     url: 'teams?:organizationId',
                     views: {
                         'app': {
@@ -131,7 +136,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.organizationForm', {
+
+                .state('studio.organizationForm', {
                     url: 'organization?:id',
                     views: {
                         'app': {
@@ -148,7 +154,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.account', {
+
+                .state('studio.account', {
                     url: 'account',
                     views: {
                         'app': {
@@ -165,7 +172,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.dashboard', {
+
+                .state('studio.dashboard', {
                     url: 'dashboard',
                     views: {
                         'app': {
@@ -184,7 +192,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.viewForm', {
+                .state('studio.viewForm', {
                     url: '/viewForm/:type?id',
                     views: {
                         'app': {
@@ -202,7 +210,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.reports', {
+                .state('studio.reports', {
                     url: '/reports?categoryId?id',
                     views: {
                         'app': {
@@ -221,7 +229,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.report', {
+                .state('studio.report', {
                     url: 'report',
                     views: {
                         'app': {
@@ -238,16 +246,15 @@ angular.module('primeapps')
                         }]
                     }
                 });
-
             //app.setup
             $stateProvider
-                .state('app.setup', {
+                .state('studio.app', {
                     url: 'app/:appId',
                     abstract: true,
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/setup.html',
-                            controller: 'SetupController'
+                            templateUrl: cdnUrl + 'view/app/app.html',
+                            controller: 'AppController'
                         }
                     },
                     resolve: {
@@ -276,7 +283,25 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.settings', {
+                .state('studio.app.modules', {
+                    url: '/modules',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/model/modules/modules.html',
+                            controller: 'ModuleController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/model/modules/moduleController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.settings', {
                     url: '/settings',
                     views: {
                         'app': {
@@ -294,7 +319,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.general', {
+                .state('studio.app.general', {
                     url: '/general',
                     views: {
                         'app': {
@@ -312,7 +337,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.organization', {
+                .state('studio.app.organization', {
                     url: '/organization',
                     views: {
                         'app': {
@@ -330,7 +355,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.notifications', {
+                .state('studio.app.notifications', {
                     url: '/notifications',
                     views: {
                         'app': {
@@ -348,7 +373,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.users', {
+                .state('studio.app.users', {
                     url: '/users',
                     views: {
                         'app': {
@@ -371,7 +396,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.profiles', {
+                .state('studio.app.profiles', {
                     url: '/profiles',
                     views: {
                         'app': {
@@ -389,7 +414,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.profile', {
+                .state('studio.app.profile', {
                     url: '/profile?id&clone',
                     views: {
                         'app': {
@@ -407,7 +432,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.roles', {
+                .state('studio.app.roles', {
                     url: '/roles',
                     views: {
                         'app': {
@@ -425,7 +450,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.role', {
+                .state('studio.app.role', {
                     url: '/role?id&reportsTo',
                     views: {
                         'app': {
@@ -443,26 +468,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.modules', {
-                    url: '/modules',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/modulesSetup.html',
-                            controller: 'ModuleSetupController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleSetupController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js',
-                                cdnUrl + 'view/setup/license/licenseService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('app.setup.module', {
+                .state('studio.app.module', {
                     url: '/module?id&clone&redirect',
                     views: {
                         'app': {
@@ -482,7 +488,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.modulerelations', {
+                .state('studio.app.modulerelations', {
                     url: '/module/relations/:module',
                     views: {
                         'app': {
@@ -500,7 +506,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.moduledependencies', {
+                .state('studio.app.moduledependencies', {
                     url: '/module/dependencies/:module',
                     views: {
                         'app': {
@@ -518,7 +524,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.actionButtons', {
+                .state('studio.app.actionButtons', {
                     url: '/module/actionButtons/:module',
                     views: {
                         'app': {
@@ -536,7 +542,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.moduleProfileSettings', {
+                .state('studio.app.moduleProfileSettings', {
                     url: '/module/moduleProfileSettings/:module',
                     views: {
                         'app': {
@@ -554,7 +560,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.leadconvertmap', {
+                .state('studio.app.leadconvertmap', {
                     url: '/leadconvertmap',
                     views: {
                         'app': {
@@ -572,7 +578,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.candidateconvertmap', {
+                .state('studio.app.candidateconvertmap', {
                     url: '/candidateconvertmap',
                     views: {
                         'app': {
@@ -589,7 +595,8 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('app.setup.quoteconvertmap', {
+
+                .state('studio.app.quoteconvertmap', {
                     url: '/quoteconvertmap',
                     views: {
                         'app': {
@@ -607,7 +614,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.import', {
+                .state('studio.app.import', {
                     url: '/importhistory',
                     views: {
                         'app': {
@@ -625,7 +632,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.messaging', {
+                .state('studio.app.messaging', {
                     url: '/messaging',
                     views: {
                         'app': {
@@ -643,7 +650,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.office', {
+                .state('studio.app.office', {
                     url: '/office',
                     views: {
                         'app': {
@@ -661,7 +668,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.phone', {
+                .state('studio.app.phone', {
                     url: '/phone',
                     views: {
                         'app': {
@@ -679,7 +686,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.auditlog', {
+                .state('studio.app.auditlog', {
                     url: '/auditlog',
                     views: {
                         'app': {
@@ -697,7 +704,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.templates', {
+                .state('studio.app.templates', {
                     url: '/templates',
                     views: {
                         'app': {
@@ -715,7 +722,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.template', {
+                .state('studio.app.template', {
                     url: '/template?id',
                     views: {
                         'app': {
@@ -733,7 +740,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.templateguide', {
+                .state('studio.app.templateguide', {
                     url: '/templateguide',
                     views: {
                         'app': {
@@ -750,7 +757,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.menu', {
+                .state('studio.app.menu', {
                     url: '/menu',
                     views: {
                         'app': {
@@ -768,7 +775,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.menu_list', {
+                .state('studio.app.menu_list', {
                     url: '/menu_list',
                     views: {
                         'app': {
@@ -786,7 +793,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.workflows', {
+                .state('studio.app.workflows', {
                     url: '/workflows',
                     views: {
                         'app': {
@@ -804,7 +811,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.workflow', {
+                .state('studio.app.workflow', {
                     url: '/workflow?id',
                     views: {
                         'app': {
@@ -822,7 +829,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.approvel_process', {
+                .state('studio.app.approvel_process', {
                     url: '/approvel_process',
                     views: {
                         'app': {
@@ -840,7 +847,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.help', {
+                .state('studio.app.help', {
                     url: '/help',
                     views: {
                         'app': {
@@ -858,7 +865,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.helpside', {
+                .state('studio.app.helpside', {
                     url: '/helpside',
                     views: {
                         'app': {
@@ -876,7 +883,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.helpsides', {
+                .state('studio.app.helpsides', {
                     url: '/helpsides',
                     views: {
                         'app': {
@@ -894,7 +901,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.approvel', {
+                .state('studio.app.approvel', {
                     url: '/approvel?id',
                     views: {
                         'app': {
@@ -912,7 +919,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.warehouse', {
+                .state('studio.app.warehouse', {
                     url: '/warehouse',
                     views: {
                         'app': {
@@ -930,7 +937,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.usergroups', {
+                .state('studio.app.usergroups', {
                     url: '/usergroups',
                     views: {
                         'app': {
@@ -948,7 +955,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.usercustomshares', {
+                .state('studio.app.usercustomshares', {
                     url: '/usercustomshares',
                     views: {
                         'app': {
@@ -966,7 +973,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.usercustomshare', {
+                .state('studio.app.usercustomshare', {
                     url: '/usercustomshare?id&clone',
                     views: {
                         'app': {
@@ -984,7 +991,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.outlook', {
+                .state('studio.app.outlook', {
                     url: '/outlook',
                     views: {
                         'app': {
@@ -1003,7 +1010,7 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('app.setup.usergroup', {
+                .state('studio.app.usergroup', {
                     url: '/usergroup?id&clone',
                     views: {
                         'app': {

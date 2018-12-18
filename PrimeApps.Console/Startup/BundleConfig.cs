@@ -21,7 +21,7 @@ namespace PrimeApps.Console
 					"view/layoutService.js",
                     "view/layoutController.js",
 					"view/setup/help/helpService.js",
-					"view/setup/setupController.js",
+					"view/app/appController.js",
 					"view/setup/workgroups/workgroupService.js",
 					"view/setup/messaging/messagingService.js");
 

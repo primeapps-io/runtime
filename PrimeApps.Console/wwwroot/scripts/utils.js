@@ -704,7 +704,7 @@ angular.module('primeapps')
                     return permission[operation];
                 },
                 hasAdminRights: function () {
-                    return $rootScope.user.profile.has_admin_rights;
+                    return  true;
                 },
                 getCulture: function () {
                     var language = $localStorage.read('NG_TRANSLATE_LANG_KEY') || 'tr';
