@@ -680,18 +680,34 @@ angular.module('primeapps')
 
                             var dateFormat = $scope.getDateFormat();
                             var standardDateFormat = 'DD/MM/YYYY';
-                          
+
                             var mmtDate = moment(recordValue, dateFormat, true);
 
                             if (!mmtDate.isValid()) {
-                                mmtDate = moment(recordValueParts[0], standardDateFormat, true);
+                                mmtDate = moment(recordValue, standardDateFormat, true);
 
                                 if (!mmtDate.isValid()) {
-                                    $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDate');
-                                    recordValue = null;
-                                }
-                                else {
-                                    recordValue = mmtDate.format();
+                                    var dateDelimeter = $scope.dateDelimiter;
+                                    var dateArray = recordValue.split(dateDelimiter);
+                                    var dateFormatArray = dateFormat.split(dateDelimiter);
+
+                                    if (dateArray.length > 1) {
+                                        var YY = dateArray[dateFormatArray.indexOf('YYYY')];
+                                        var MM = dateArray[dateFormatArray.indexOf('MM')];
+                                        var DD = dateArray[dateFormatArray.indexOf('DD')];
+
+                                        var parseValue = Date.parse(MM + dateDelimeter + DD + dateDelimiter + YY); //dont change sequence
+
+                                        mmtDate = moment(new Date(parseValue), dateFormat, true);
+
+                                        if (!mmtDate.isValid()) {
+                                            $scope.error.message = $filter('translate')('Data.Import.Error.InvalidDate');
+                                            recordValue = null;
+                                        }
+                                        else {
+                                            recordValue = mmtDate.format();
+                                        }
+                                    }
                                 }
                             }
                             else {
