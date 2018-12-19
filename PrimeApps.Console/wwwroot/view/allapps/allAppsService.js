@@ -2,7 +2,7 @@
 
 angular.module('primeapps')
 
-    .factory('DashboardService', ['$rootScope', '$http', 'config',
+    .factory('AllAppsService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
                 getDashlets: function (dashboardId) {

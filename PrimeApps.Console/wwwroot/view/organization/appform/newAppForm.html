@@ -1,47 +1,49 @@
-<div class="modal setup-modal dependency-modal" tabindex="-1" role="dialog">
-    <div class="modal-header">
-        <div class="col-sm-6"><h4 class="modal-title">Create your app from Scratch</h4></div>
-        <div class="col-sm-6 col-sm-rigth">
-            <button type="button" class="btn btn-radius btn-gray "
-                    ng-click="newFormModal.hide();">
-                <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
-            </button>
-            <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ng-click="MinMaxValue()"><i
-                    class="fas fa-save"></i>
-                {{'Common.Save' | translate}}
-            </button>
-        </div>
+<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <form name="newAppForm" class="form-horizontal form-custom" ng-submit="save(newAppForm);" autocomplete="off"
+          novalidate>
 
-    </div>
-    <div class="modal-dialog modal-800">
-        <div class="modal-content">
-            <form name="dependencyForm" class="form-horizontal form-custom" ng-submit="save(dependencyForm);"
-                  autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="col-sm-6"><h4 class="modal-title">Create your app from Scratch</h4></div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button type="button" class="btn btn-radius btn-gray "
+                        ng-click="newFormModal.hide();">
+                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                </button>
+                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px"
+                        ng-click="MinMaxValue()"><i
+                        class="fas fa-save"></i>
+                    {{'Common.Save' | translate}}
+                </button>
+            </div>
+
+        </div>
+        <div class="modal-dialog modal-800">
+            <div class="modal-content">
+
                 <div class="modal-body">
                     <div id="field-form-body" class="modal-body">
                         <div class="section" id="section1">
                             <div class="panel">
                                 <div class="form-group"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.appName.$invalid}">
                                     <label class="col-sm-4 required-field">*App Name: </label>
                                     <input type="text"
-                                           name="label"
+                                           name="appName"
                                            class="form-control ng-animate-disabled col-sm-8"
                                            required
                                            maxlength="50"
                                            focus="true"
-                                           ng-model="appName">
+                                           ng-model="appModel.Name">
                                 </div>
                                 <div class="form-group"
-                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
+                                     ng-class="{'has-error': newAppForm.$submitted && newAppForm.appDescripton.$invalid}">
                                     <label class="col-sm-4 required-field">*App Description: </label>
                                     <input type="text"
-                                           name="label"
+                                           name="appDescripton"
                                            class="form-control ng-animate-disabled col-sm-8"
                                            required
                                            maxlength="50"
-                                           focus="true"
-                                           ng-model="appDescription">
+                                           ng-model="appModel.Description">
                                 </div>
                                 <div class="form-group"
                                      ng-class="{'has-error': newAppForm.$submitted && newAppForm.label.$invalid}">
@@ -50,7 +52,7 @@
                                     <span class="col-sm-12" style="font-size: 12px; margin: 0px;padding: 0px;">Image must not exceed 512 px and 1 MB.</span>
                                     <div ng-show="uploader.isHTML5" class="col-sm-12 file-uploader">
                                         <div nv-file-drop="" nv-file-over="" uploader="uploader" options="{url: '/foo'}"
-                                             over-class="uploader-over" class="uploader-area drop-zone"
+                                             over-class="uploader-over" nv-file-select class="uploader-area drop-zone"
                                              style="float: right;">
                                             <div class="">
                                                 <i class="fas fa-cloud-download-alt"></i>
@@ -68,7 +70,8 @@
                     </div>
                 </div>
 
-            </form>
+
+            </div>
         </div>
-    </div>
+    </form>
 </div>

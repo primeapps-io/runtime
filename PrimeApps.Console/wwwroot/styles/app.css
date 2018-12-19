@@ -7179,3 +7179,5 @@ tags-input.ng-invalid .tags {
       color: rgba(0, 0, 0, 0.2); }
     .primeapps .file-uploader .drop-zone div span {
       color: rgba(0, 0, 0, 0.5); }
+.primeapps .has-error input {
+  background-color: rgba(206, 4, 4, 0.15) !important; }
