@@ -9,6 +9,14 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.navbar = angular.element(document.getElementById('navbar-wrapper'));
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
+        $scope.organizations = [];
+
+        LayoutService.myOrganizations()
+            .then(function (response) {
+                if (response.data) {
+                    $scope.organizations = response.data;
+                }
+            });
 
         $rootScope.isMobile = function () {
             var check = false;

@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in appListe |filter: {appName:appSearch,appStatus:appStatus}">
+        <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps">
             <div class="app-box">
                 <div class="oval">
                     <span data-trigger="hover" data-type="success" data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
