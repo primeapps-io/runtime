@@ -1,0 +1,245 @@
+﻿@model LoginViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+	ViewBag.Title = "Login";
+	Layout = "~/Views/Shared/_LayoutAuthPrimeApps.cshtml";
+
+	var app = "primeapps";
+	var customDomain = false;
+	string customLanguage = null;
+	bool multiLanguage = true;
+	var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
+	if (Model.ApplicationInfo != null)
+	{
+		app = Model.ApplicationInfo.Name;
+		multiLanguage = Model.ApplicationInfo.MultiLanguage;
+		ViewBag.Title = Model.ApplicationInfo.Title;
+		customDomain = Model.ApplicationInfo.CustomDomain;
+		//customLanguage = !string.IsNullOrWhiteSpace(ViewBag.AppInfo["language"].Value) ? ViewBag.AppInfo["language"].Value : string.Empty;
+	}
+	var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
+}
+<div class="col-md-4 login-sec">
+	<img class="logo-img" src="@Model.ApplicationInfo.Logo" />
+	@if (!customDomain)
+	{
+		<span class="free-info-header">
+			@Html.Raw(string.Format(Localizer["LoginRegisterInfo"].Value, "<a href=" + @Url.Action("Register", "Account", new { ReturnUrl = Model.ReturnUrl }) + ">" + Localizer["LoginRegisterInfoLink"].Value + "</a>"))
+		</span>
+	}
+
+	<form asp-route="Login" class="login-form" role="form" id="login-form">
+		<input type="hidden" asp-for="@Model.ReturnUrl" />
+		<div class="form-group">
+			<div class="input-group input-group-first">
+				<span class="input-group-addon">
+					<span class="flaticon-email26"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+				<input class="form-control" placeholder="bcware" asp-for="Username" id="Email" autofocus autocomplete="off">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">
+					<span class="flaticon-padlock50"></span>
+				</span>
+				<!--<label for="exampleInputEmail1" class="text-uppercase">E-Posta</label>-->
+				<input type="password" class="form-control" placeholder="@Localizer["Password"]" asp-for="Password" id="Password" autocomplete="off">
+			</div>
+		</div>
+		@if (!string.IsNullOrWhiteSpace(Model.Error))
+		{
+			if (Model.Error == "WrongInfo")
+			{
+				<div class="error">@Localizer[Model.Error]</div>
+            }
+            else if (Model.Error == "notFound")
+            {
+				<div class="error">@Localizer["NotFound"]</div>
+			}
+		}
+		<div class="error-all"></div>
+		<div class="error-email"></div>
+		<div class="error-pass"></div>
+		<div class="form-check">
+			<button type="submit" class="btn btn-login btn-block ladda-button" name="button" value="login" data-style="slide-right" tabindex="3">@Localizer["LoginButton"]</button>
+			@if (!customDomain)
+			{
+				if (Model.VisibleExternalProviders.Any())
+				{
+					foreach (var provider in Model.VisibleExternalProviders)
+					{
+						<hr />
+						<a class="btn btn-block add-button"
+						   asp-action="ExternalLogin"
+						   asp-route-provider="@provider.AuthenticationScheme"
+						   asp-route-returnUrl="@Model.ReturnUrl">
+							@Localizer[provider.DisplayName]
+						</a>
+					}
+				}
+			}
+
+			<div class="language">
+				@if (multiLanguage)
+				{
+					if (otherLang == "tr")
+					{
+						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "tr", ReturnUrl = path })">@Localizer["TR"]</a> <span>|</span>
+					}
+					else if (otherLang == "en")
+					{
+						<a href="@Url.Action("ChangeLanguage", "Account", new { language = "en", ReturnUrl = path })">@Localizer["EN"]</a> <span>|</span>
+					}
+				}
+				<a href="@Url.Action("ForgotPassword", "Account", new {ReturnUrl = Model.ReturnUrl, Email = Model != null ? Model.Username : ""})" class="">@Localizer["ForgotPassword"]</a>
+			</div>
+		</div>
+	</form>
+</div>
+
+@section scripts {
+	<script>
+		$(document).ready(function() {
+            var postTry = false;
+
+            if ("@Model.Success" === "accountActivated") {
+                swal({
+                    title: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.JoinSuccessTitle)",
+                    text: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.JoinSuccessMessage)",
+                    type: "success",
+                    button: "OfisimCRM.App.Resources.Auth.Resource.Ok",
+                });
+            } else if ("@Model.Success" === "PasswordChanged") {
+                swal({
+                    title: "@Localizer["PasswordSuccessTitle"]",
+                    text: "@Localizer["PasswordSuccessMessage"]",
+                    type: "success",
+                    button: "@Localizer["Ok"]",
+                });
+            } else if ("@Model.Success" === "notActive") {
+                swal({
+                    title: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.OfficeLoginNotActiveTitle)",
+                    text: "MvcHtmlString.Create(OfisimCRM.App.Resources.Auth.Resource.OfficeLoginNotActiveContent)",
+                    type: "error",
+                    button: "OfisimCRM.App.Resources.Auth.Resource.Ok",
+                });
+            } else if ("@Model.Success" === "NotValidApp") {
+                swal({
+                    title: "@Localizer["NotValidAppTitle"])",
+                    text: "@string.Format(Localizer["NotValidAppContent"].ToString(), Model.ApplicationInfo.Name.ToUpper())",
+
+                    type: "error",
+                    button: "@Localizer["Ok"]",
+                });
+            }
+
+            $("#Email, #Password").keyup(function() {
+                if (postTry) {
+                    if (fieldsHasValue()) {
+                        $(".error-all").removeClass("error");
+                        $(".error-all").text("");
+                        emailValidator();
+                        passwordValidator();
+                    } else {
+                        removeFieldErrors();
+                        $(".error-all").addClass("error");
+                        $(".error-all").text("@Localizer["LoginFieldsRequired"]");
+                    }
+                }
+            });
+
+            $(".btn-login").click(function(e) {
+                postTry = true;
+				removeFieldErrors();
+				var l = Ladda.create(this);
+				l.start();
+                if (fieldsHasValue()) {
+                    $(".error-all").removeClass("error");
+                    $(".error-all").text("");
+					if (!emailValidator() || !passwordValidator()) {
+						e.stopPropagation();
+						e.preventDefault();
+						l.stop();
+					} else {
+						$('#login-form').append('<input type="hidden" name="button" value="login" />');
+						$('#login-form').submit();
+					 }
+                } else {
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["LoginFieldsRequired"]");
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                    l.stop();
+                }
+            });
+
+            function fieldsHasValue() {
+                var emailValue = $("#Email").val();
+                var passwordValue = $("#Password").val();
+                if (emailValue === "" || passwordValue === "") {
+                    return false;
+                }
+                return true;
+            }
+
+            function emailValidator() {
+                var isValid = true;
+                var fieldValue = $("#Email").val().toLowerCase().replace(/\ /g, "");
+                var result = /^[a-z0-9._%+-]+@@[a-z0-9.-]+$/.test(fieldValue);
+                if (fieldValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["LoginFieldsRequired"]");
+                    isValid = false;
+                } else if (!result) {
+                    $(".error-email").addClass("error");
+                    $(".error-email").text("@Localizer["InvalidEmail"]");
+                    isValid = false;
+                } else {
+                    $(".error-email").removeClass("error");
+                    $(".error-email").text("");
+                }
+                return isValid;
+            }
+
+            function passwordValidator() {
+                var isValid = true;
+                var fieldValue = $("#Password").val();
+                if (fieldValue === "") {
+                    removeFieldErrors();
+                    $(".error-all").addClass("error");
+                    $(".error-all").text("@Localizer["LoginFieldsRequired"]");
+                    isValid = false;
+                } else if (fieldValue.length < 5) {
+                    $(".error-pass").addClass("error");
+                    $(".error-pass").text("@Localizer["PasswordMinimum"]");
+                    isValid = false;
+                } else {
+                    $(".error-pass").removeClass("error");
+                    $(".error-pass").text("");
+                }
+                return isValid;
+            }
+
+            function removeFieldErrors() {
+                $(".error-pass").removeClass("error");
+                $(".error-pass").text("");
+                $(".error-email").removeClass("error");
+                $(".error-email").text("");
+                $(".error").text("").removeClass("error");
+            }
+
+            $("input").focus(function(e) {
+                $(e.target).closest(".input-group").addClass("input-focus");
+            });
+
+            $("input").blur(function(e) {
+                $(e.target).closest(".input-group").removeClass("input-focus");
+            });
+        });
+	</script>
+}

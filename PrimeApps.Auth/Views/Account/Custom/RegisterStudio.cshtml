@@ -1,0 +1,319 @@
+﻿@model RegisterViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_LayoutAuthPrimeApps.cshtml";
+
+    string customLanguage = null;
+    var path = Context.Request.Path.Value + Context.Request.QueryString.Value;
+    bool multiLanguage = true;
+    if (Model.ApplicationInfo != null)
+    {
+        ViewBag.Title = Model.ApplicationInfo.Title;
+        customLanguage = !string.IsNullOrWhiteSpace(Model.ApplicationInfo.Language) ? Model.ApplicationInfo.Language : string.Empty;
+        multiLanguage = Model.ApplicationInfo.MultiLanguage;
+    }
+    var email = Model != null && Model.Email != null ? Model.Email : "";
+    var otherLang = Model.ApplicationInfo.Language == "tr" ? "en" : "tr";
+    var client = Model.ApplicationInfo.Name ?? "";
+    var error = Model.Error;
+    var officeSignIn = false;
+}
+
+<div class="col-md-5 login-sec">
+    <img class="logo-img" src="~/images/custom/studio-logo.svg" />
+
+
+    <form asp-route="Register" class="login-form" role="form" id="register-form">
+        <div class="form-group">
+            <div class="input-group">
+                <div style="width:50%;margin-right: 20px;">
+                    <label for="FirstName" class="">@Localizer["FirstName"]</label>
+                    <input class="form-control" asp-for="FirstName" id="FirstName" autofocus autocomplete="off" style="width:100%;">
+                </div>
+                <div style="width:50%;">
+                    <label for="LastName" class="">@Localizer["LastName"]</label>
+                    <input class="form-control" asp-for="LastName" id="LastName" autofocus autocomplete="off" style="width:100%;">
+                </div>
+
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label for="Email" class="">@Localizer["Email"]</label>
+            <input class="form-control" asp-for="Email" id="Email" autofocus autocomplete="off">
+
+        </div>
+        <div class="form-group">
+            <label for="Password" class="">@Localizer["Password"]</label>
+            <input class="form-control" asp-for="Password" id="Password" autofocus autocomplete="off">
+        </div>
+
+        @if (!string.IsNullOrEmpty(error) && error == "UserExist")
+		{
+        <div class="error">@Localizer[error]</div>
+		}
+
+        <div class="error-all"></div>
+        <div class="error-email"></div>
+        <div class="error-pass"></div>
+        <div class="error-fullname"></div>
+        <div class="form-group">
+            <p class="free-info">
+                @Html.Raw(string.Format(Localizer["CreateInfo"].Value, string.Format("<a href=\"http://www.ofisim.com/kullanicisozlesmesi\" target=\"_blank\">{0}</a>", Localizer["Terms"].Value), string.Format("<a href=\"http://www.ofisim.com/gizlilikpolitikasi\" target=\"_blank\">{0}</a>", @Localizer["Policy"].Value)))
+            </p>
+        </div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-login btn-block ladda-button" data-style="slide-right">@Localizer["CreateAccount"]</button>
+
+        </div>
+    </form>
+
+    <a href="@Url.Action("Login", "Account", new { ReturnUrl = Model.ReturnUrl })" class="bottom-button">@Localizer["LoginForm"]</a>
+</div>
+
+
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(document).on('click', '#auth-flow-forgot-password', function () {
+                var data = {
+                    email: $("#swal-input-email").val(),
+                    client: "@client"
+                }
+
+                return fetch('/Account/ExternalLoginForgotPassword', {
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    dataType: 'json',
+                    headers: {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        // "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrer: 'no-referrer', // no-referrer, *client
+                    body: JSON.stringify(data), // body data type must match "Content-Type" header)
+                })
+                    .then(response => {
+                        return response.text();
+                    })
+                    .then(res => {
+                        if (!JSON.parse(res.toLowerCase())) {
+                            return false;
+                        }
+                        $(".swal-forgot-password").toggleClass("swal-hide");
+                        return true;
+                    })
+                    .catch(error => {
+                        return false;
+                    })
+            });
+
+            if ("@error" === "AlreadyRegisteredExternalLogin") {
+                swal({
+                    title: "@Localizer["ExternalLoginVerifyTitle"]",
+                    html:
+                        "@Html.Raw(string.Format(Localizer["ExternalLoginVerifyContent"].Value, ViewBag.AuthFlowTitle == null ? "" : ViewBag.AuthFlowTitle))" +
+                        '<input type="text" readonly="" disabled="" value="@email" id="swal-input-email" class="swal2-input">' +
+                        '<input type="password" min- id="swal-input-password" placeholder="@Localizer["Password"]" class="swal2-input">' +
+                        '<a id="auth-flow-forgot-password" href="javascript:void(0);" class="col-md-12 swal-forgot-password" style="text-align: right;font-size: 13px;float: left;padding-right: 0px;padding-bottom: 10px;">Parolamı Unuttum</a>' +
+                        '<label style="text-align: center;font-size: 13px;padding-right: 0px;color: #28a745;" class="swal-hide swal-forgot-password">@Localizer["ForgotPasswordSuccess"]</label>',
+                    type: 'info',
+                    inputAttributes: {
+                        autocapitalize: 'off'
+                    },
+                    showCancelButton: true,
+                    cancelButtonText: "@Localizer["Cancel"]",
+                    confirmButtonText: "@Localizer["Login"]",
+                    showLoaderOnConfirm: true,
+                    preConfirm: (login) => {
+                        return fetch('/user/verify_user', {
+                            method: "POST", // *GET, POST, PUT, DELETE, etc.
+                            headers: {
+                                "Content-Type": "application/json; charset=utf-8",
+                                // "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            redirect: "follow", // manual, *follow, error
+                            referrer: "no-referrer", // no-referrer, *client
+                            body: JSON.stringify({ email: $("#swal-input-email").val(), password: $("#swal-input-password").val(), client:"@client"  }), // body data type must match "Content-Type" header)
+                        })
+                            .then(response => {
+                                return response.text();
+                            })
+                            .then(res => {
+                                if (!JSON.parse(res.toLowerCase())) {
+                                    swal.showValidationMessage("@Localizer["WrongInfo"]");
+                                    return false;
+                                }
+                                return true;
+                            })
+                            .catch(error => {
+                                swal.showValidationMessage(
+                                    "@Localizer["Error"]"
+                                );
+                                return false;
+                            })
+                    },
+                    allowOutsideClick: () => !swal.isLoading()
+                }).then((result) => {
+                    if (result.value) {
+                        $("#Password").val($("#swal-input-password").val());
+                        $("#register-form").submit();
+                        var l = Ladda.create($(".btn-login")[0]);
+                        l.start();
+                    }
+                })
+            }
+
+
+				var postTry = false;
+
+				$("#FirstName,#LastName, #Email, #Password").keyup(function() {
+					$(".server-error").text("");
+					$(".server-error").removeClass("error");
+					if (postTry) {
+						if (fieldsHasValue()) {
+							$(".error-all").removeClass("error");
+							$(".error-all").text("");
+							emailValidator();
+							passwordValidator();
+							fullNameValidator();
+						} else {
+							removeFieldErrors();
+							$(".error-all").addClass("error");
+							$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+						}
+					}
+				});
+
+				$(".btn-login").click(function(e) {
+					postTry = true;
+					var l = Ladda.create(this);
+					l.start();
+					if (fieldsHasValue()) {
+						$(".error-all").removeClass("error");
+						$(".error-all").text("");
+
+						var isEmailValid = emailValidator();
+						var isPasswordValid = passwordValidator();
+						var isFullNameValid = fullNameValidator();
+
+						if (!isEmailValid || !isPasswordValid || !isFullNameValid) {
+							e.stopPropagation();
+							e.preventDefault();
+							l.stop();
+						} else {
+							$("#register-form").submit();
+						}
+					} else {
+						$(".error-all").addClass("error");
+						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+
+						e.stopPropagation();
+						e.preventDefault();
+						l.stop();
+					}
+				});
+
+				function fieldsHasValue() {
+					var emailValue = $("#Email").val();
+					var passwordValue = $("#Password").val();
+					var firstNameValue = $("#FirstName").val();
+					var lastNameValue = $("#LastName").val();
+
+					if (emailValue === "" || passwordValue === "" || firstNameValue === "" || lastNameValue === "") {
+						return false;
+					}
+					return true;
+				}
+
+				function fullNameValidator () {
+					var isValid = true;
+					var firstNameValue = $("#FirstName").val();
+					var lastNameValue = $("#LastName").val();
+
+					if (firstNameValue === "" || lastNameValue === "") {
+						removeFieldErrors();
+						$(".error-all").addClass("error");
+						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+						isValid = false;
+					} else if (firstNameValue.length < 2 || lastNameValue.length < 2) {
+						$(".error-fullname").addClass("error");
+						$(".error-fullname").text("@Localizer["NameMinimum"]");
+						isValid = false;
+					} else {
+						$(".error-fullname").removeClass("error");
+						$(".error-fullname").text("");
+					}
+					return isValid;
+				}
+
+				function emailValidator() {
+					var isValid = true;
+					var fieldValue = $("#Email").val().toLowerCase().replace(/\ /g, "");
+					var result = /^[a-z0-9._%+-]+@@[a-z0-9.-]+$/.test(fieldValue);
+					if (fieldValue === "") {
+						removeFieldErrors();
+						$(".error-all").addClass("error");
+						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+						isValid = false;
+					} else if (!result) {
+						$(".error-email").addClass("error");
+						$(".error-email").text("@Localizer["InvalidEmail"]");
+						isValid = false;
+					} else {
+						$(".error-email").removeClass("error");
+						$(".error-email").text("");
+					}
+					return isValid;
+				}
+
+				function passwordValidator() {
+					var isValid = true;
+					var fieldValue = $("#Password").val();
+
+					if (fieldValue === undefined) {
+						return isValid;
+					}
+
+					if (fieldValue === "") {
+						removeFieldErrors();
+						$(".error-all").addClass("error");
+						$(".error-all").text("@Localizer["RegisterFieldsRequired"]");
+						isValid = false;
+					} else if (fieldValue.length < 6) {
+						$(".error-pass").addClass("error");
+						$(".error-pass").text("@Localizer["PasswordMinimum"]");
+						isValid = false;
+					} else {
+						$(".error-pass").removeClass("error");
+						$(".error-pass").text("");
+					}
+					return isValid;
+				}
+
+				function removeFieldErrors() {
+					$(".error-pass").removeClass("error");
+					$(".error-pass").text("");
+					$(".error-email").removeClass("error");
+					$(".error-email").text("");
+					$(".error-firstname").removeClass("error");
+					$(".error-firstname").text("");
+					$(".error-lastname").removeClass("error");
+					$(".error-lastname").text("");
+					$(".error-fullname").removeClass("error");
+					$(".error-fullname").text("");
+					$(".error").text("");
+				}
+
+				$("input").focus(function(e) {
+					$(e.target).closest(".input-group").addClass("input-focus");
+				});
+
+				$("input").blur(function(e) {
+					$(e.target).closest(".input-group").removeClass("input-focus");
+				});
+			});
+    </script>
+}
