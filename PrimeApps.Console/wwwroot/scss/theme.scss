@@ -1,7 +1,29 @@
 $primeapps-color: #635fb3;
 .primeapps {
   //Reset
-
+  //Global
+    .margin-0{
+      margin: 0px;
+    }
+    .margin-5{
+      margin: 5px;
+    }
+    .margin-10{
+      margin: 10px;
+    }
+    .margin-15{
+      margin:15px;
+    }
+    .padding-5{
+      padding: 5px;
+    }
+    .padding-10{
+      padding: 10px;
+    }
+   .padding-20{
+      padding: 20px;
+    }
+  //EndGlobal
   button:focus {
     border: none;
   }
@@ -1003,6 +1025,37 @@ $primeapps-color: #635fb3;
         }
         i {
 
+        }
+      }
+    }
+  }
+  .file-uploader{
+    margin: 0px;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .uploader-area{
+      width: 100%;
+      border: 2px dashed #c2c2c2;
+      padding: 20px;
+    }
+    .uploader-over{
+
+      border: 2px dashed #000 !important;
+    }
+    .drop-zone{
+      div{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        i{
+          font-size: 50px;
+          color: rgba(0, 0, 0, 0.2);
+        }
+        span{
+          color: rgba(0, 0, 0, 0.5);
         }
       }
     }

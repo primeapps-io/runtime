@@ -6424,6 +6424,20 @@ tags-input.ng-invalid .tags {
   .directory .active-profile:hover img {
     border-color: #666; }
 
+.primeapps .margin-0 {
+  margin: 0px; }
+.primeapps .margin-5 {
+  margin: 5px; }
+.primeapps .margin-10 {
+  margin: 10px; }
+.primeapps .margin-15 {
+  margin: 15px; }
+.primeapps .padding-5 {
+  padding: 5px; }
+.primeapps .padding-10 {
+  padding: 10px; }
+.primeapps .padding-20 {
+  padding: 20px; }
 .primeapps button:focus {
   border: none; }
 .primeapps .page-loading {
@@ -7143,3 +7157,25 @@ tags-input.ng-invalid .tags {
     .primeapps .dropdown-menu li a:hover {
       background-color: rgba(17, 87, 163, 0.1);
       color: #000; }
+.primeapps .file-uploader {
+  margin: 0px;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+  .primeapps .file-uploader .uploader-area {
+    width: 100%;
+    border: 2px dashed #c2c2c2;
+    padding: 20px; }
+  .primeapps .file-uploader .uploader-over {
+    border: 2px dashed #000 !important; }
+  .primeapps .file-uploader .drop-zone div {
+    display: flex;
+    flex-direction: column;
+    align-items: center; }
+    .primeapps .file-uploader .drop-zone div i {
+      font-size: 50px;
+      color: rgba(0, 0, 0, 0.2); }
+    .primeapps .file-uploader .drop-zone div span {
+      color: rgba(0, 0, 0, 0.5); }
