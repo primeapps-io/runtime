@@ -24,5 +24,20 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Update="Views\Account\Custom\ForgotPasswordStudio.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Account\Custom\LoginStudio.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Account\Custom\RegisterStudio.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Account\Custom\ResetPasswordStudio.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
 
 </Project>

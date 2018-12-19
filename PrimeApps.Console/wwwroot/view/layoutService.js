@@ -5,6 +5,9 @@ angular.module('primeapps')
     .factory('LayoutService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'sipHelper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce',
         function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, sipHelper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
             return {
+                myOrganizations: function () {
+                    return $http.get(config.apiUrl + 'user/organizations');
+                },
 
                 getOrg: function (refresh) {
                     helper.hideLoader();

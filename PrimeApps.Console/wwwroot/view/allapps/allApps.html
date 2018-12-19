@@ -47,36 +47,15 @@
         <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in appListe |filter: {appName:appSearch,appStatus:appStatus}">
             <div class="app-box">
                 <div class="oval">
-                    <span    ng-if="app.appStatus==='1'"
-                            class="oval-green"
-                            data-trigger="hover"
-                            data-type="success"
-                            data-title="Published"
-                            bs-tooltip>
-                    </span>
-                    <span ng-if="app.appStatus==='2'"
-                          class="oval-orange"
-                          data-trigger="hover"
-                          data-type="success"
-                          data-title="Draft"
-                          bs-tooltip>
-                    </span>
-                    <span ng-if="app.appStatus==='3'"
-                          class="oval-gray"
-                          data-trigger="hover"
-                          data-type="success"
-                          data-title="Unpublished"
-                          bs-tooltip>
-                    </span>
-
+                    <span data-trigger="hover" data-type="success" data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                 </div>
                 <div class="image">
-                    <img ng-src="{{app.appImage}}"/>
+                    <img ng-src="{{app.logo}}"/>
                 </div>
             </div>
             <div class="app-info">
-                <h3>{{app.appName}}</h3>
-                <h4>{{app.appDescripton}} </h4>
+                <h3>{{app.label}}</h3>
+                <h4>{{app.description}} </h4>
             </div>
         </div>
 

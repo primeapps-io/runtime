@@ -70,7 +70,7 @@ namespace PrimeApps.Console.Controllers
                 if (!request["search"].IsNullOrEmpty())
                     search = request["search"].ToString();
 
-                if (request["page"].IsNullOrEmpty())
+                if (!request["page"].IsNullOrEmpty())
                     page = (int)request["page"];
 
                 if (!request["status"].IsNullOrEmpty())

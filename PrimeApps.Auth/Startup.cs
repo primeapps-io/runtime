@@ -108,7 +108,7 @@ namespace PrimeApps.Auth
 
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture("tr"),
+                DefaultRequestCulture = new RequestCulture("en"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             });

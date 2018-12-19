@@ -13,7 +13,7 @@ namespace PrimeApps.Model.Enums
         [EnumMember(Value = "publish")]
         Publish = 2,
 
-        [EnumMember(Value = "Unpublish")]
+        [EnumMember(Value = "unpublish")]
         Unpublish = 3
     }
 }

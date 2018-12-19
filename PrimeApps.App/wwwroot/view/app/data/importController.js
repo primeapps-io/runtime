@@ -1,4 +1,4 @@
-﻿'use strict';
+﻿﻿'use strict';
 
 angular.module('primeapps')
     .controller('ImportController', ['$rootScope', '$scope', '$stateParams', '$state', 'config', '$q', '$localStorage', '$filter', '$popover', 'helper', 'FileUploader', 'ngToast', '$modal', '$timeout', '$cache', 'emailRegex', 'ModuleService', 'ImportService', '$cookies', 'components',

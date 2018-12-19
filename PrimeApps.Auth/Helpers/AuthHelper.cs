@@ -40,7 +40,7 @@ namespace PrimeApps.Auth.UI
             var app = await applicationRepository.GetByNameAsync(clientId);
 
             if (string.IsNullOrWhiteSpace(language))
-                language = app.Setting.Language ?? "tr";
+                language = app.Setting.Language ?? "en";
 
             var theme = JObject.Parse(app.Setting.AuthTheme);
 

@@ -336,8 +336,9 @@ namespace PrimeApps.Console.Controllers
 
                     var jsonResult = JObject.Parse(stringResult);
 
-                    var template = _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, "organization_invitation", AppUser.Culture.Substring(0, 2));
-                    if (template != null)
+                    var templates = await _platformRepository.GetAppTemplate(AppUser.AppId, AppTemplateType.Email, AppUser.Culture.Substring(0, 2), "organization_invitation");
+
+                    foreach (var template in templates)
                     {
                         template.Content = template.Content.Replace("{:FirstName}", model.FirstName);
                         template.Content = template.Content.Replace("{:LastName}", model.LastName);
@@ -351,9 +352,11 @@ namespace PrimeApps.Console.Controllers
                         else
                             template.Content = template.Content.Replace("{:ShowActivateEmail}", "none");
 
+                        var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+
                         var myMessage = new MailMessage()
                         {
-                            From = new MailAddress(template.MailSenderEmail, template.MailSenderName),
+                            From = new MailAddress((string)req["MailSenderEmail"], (string)req["MailSenderName"]),
                             Subject = template.Subject,
                             Body = template.Content,
                             IsBodyHtml = true
