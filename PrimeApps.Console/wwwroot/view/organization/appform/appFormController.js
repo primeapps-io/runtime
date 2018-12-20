@@ -5,6 +5,9 @@ angular.module('primeapps')
     .controller('AppFormController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AppFormService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', 'FileUploader',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AppFormService, $window, $state, $modal, dragularService, $timeout, $interval, FileUploader) {
             $scope.appModel = {};
+            $scope.nameValid = null;
+            $scope.nameBlur = false;
+
             var uploader = $scope.uploader = new FileUploader({
                 url: 'upload.php'
             });
@@ -74,6 +77,34 @@ angular.module('primeapps')
                 $scope.newFormModal.$promise.then(function () {
                     $scope.newFormModal.show();
                 });
+            };
+
+            $scope.checkNameBlur = function () {
+                $scope.nameBlur = true;
+                $scope.checkName($scope.appModel.name);
+            };
+
+            $scope.checkName = function (name) {
+                if (!$scope.nameBlur)
+                    return;
+
+                $scope.nameChecking = true;
+                $scope.nameValid = null;
+
+                AppFormService.isUniqueName(name)
+                    .then(function (response) {
+                        $scope.nameChecking = false;
+                        if (response.data) {
+                            $scope.nameValid = true;
+                        }
+                        else {
+                            $scope.nameValid = false;
+                        }
+                    })
+                    .catch(function () {
+                        $scope.nameValid = false;
+                        $scope.nameChecking = false;
+                    });
             };
 
             $scope.save = function (newAppForm) {

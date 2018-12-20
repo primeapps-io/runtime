@@ -17,6 +17,13 @@ namespace PrimeApps.Model.Repositories
         public AppDraftRepository(ConsoleDBContext dbContext, IConfiguration configuration)
            : base(dbContext, configuration) { }
 
+        public async Task<AppDraft> Get(string name)
+        {
+            return await DbContext.Apps
+                .Where(x => x.Name == name && !x.Deleted)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<AppDraft> Get(int id)
         {
             return await DbContext.Apps
