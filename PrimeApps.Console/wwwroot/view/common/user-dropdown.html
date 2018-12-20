@@ -9,8 +9,8 @@
                 <i class="fas fa-user"></i>
             </div>
             <div class="user-text">
-                <h2>Taner Özel</h2>
-                <h3>tanerozel47@gmail.com</h3>
+                <h2>{{me.full_name}}</h2>
+                <h3>{{me.email}}</h3>
             </div>
         </div>
         <ul>
@@ -35,7 +35,7 @@
 
 
         <div class="form-actions text-center">
-            <button class="btn btn-radius btn-red btn-logout"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            <button ng-click="logout()" class="btn btn-radius btn-red btn-logout"><i class="fas fa-sign-out-alt"></i> Log Out</button>
         </div>
 
     </div>

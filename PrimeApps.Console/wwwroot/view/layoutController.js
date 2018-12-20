@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'sipHelper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
-    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, sipHelper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
+angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
+    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;
@@ -10,6 +10,13 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.organizations = [];
+
+        LayoutService.me()
+            .then(function (response) {
+                if (response.data) {
+                    $scope.me = response.data;
+                }
+            });
 
         LayoutService.myOrganizations()
             .then(function (response) {
