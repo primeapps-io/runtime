@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -83,6 +84,17 @@ namespace PrimeApps.Console.Controllers
             }
 
             return Ok();
+        }
+
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var appInfo = await _applicationRepository.Get(Request.Host.Value);
+
+            Response.Cookies.Delete("tenant_id");
+            await HttpContext.SignOutAsync();
+
+            return StatusCode(200, new { redirectUrl = Request.Scheme + "://" + appInfo.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + appInfo.Setting.AppDomain });
         }
     }
 }
