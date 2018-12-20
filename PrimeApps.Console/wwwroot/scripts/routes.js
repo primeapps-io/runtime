@@ -341,31 +341,32 @@ angular.module('primeapps')
                     url: '/templatesEmail?:id',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/temaplates/emailtemplates/emailTemplatesList.html',
+                            templateUrl: cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesList.html',
                             controller: 'EmailTemplatesController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/temaplates/emailtemplates/emailTemplatesController.js',
-                                cdnUrl + 'view/app/temaplates/emailtemplates/emailTemplatesService.js'
+                                cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesController.js',
+                                cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesService.js'
                             ]);
                         }]
                     }
                 })
+
                 .state('studio.app.templatesEmailGuide', {
                     url: '/templatesEmailGuide',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/temaplates/emailtemplates/templatesEmailGuide.html',
+                            templateUrl: cdnUrl + 'view/app/templates/emailtemplates/templatesEmailGuide.html',
                             controller: 'TemplatesEmailGuideController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/app/temaplates/emailtemplates/templatesEmailGuideController.js'
+                                cdnUrl + 'view/app/templates/emailtemplates/templatesEmailGuideController.js'
                             ]);
                         }]
                     }
