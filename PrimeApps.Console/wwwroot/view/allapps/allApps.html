@@ -8,8 +8,7 @@
                 <div class="search-input-icon">
                     <i class="fas fa-search"></i>
                 </div>
-                <input ng-model="appSearch"
-                       class="form-control form-control-lg form-control-borderless app-search-input" type="search"
+                <input ng-model="appSearch" ng-change="appFilter(appSearch, appStatus)" class="form-control form-control-lg form-control-borderless app-search-input" type="search"
                        placeholder="Search for a project">
 
             </div>
@@ -17,10 +16,10 @@
         </div>
         <div class="col-sm-2 search-select">
             <i class="fas fa-angle-down"></i>
-            <select class="select-status" ng-model="appStatus">
+            <select ng-change="appFilter('', appStatus)" class="select-status" ng-model="appStatus">
                 <option value="">All Apps</option>
-                <option value="1">Publish</option>
-                <option value="2">Draft</option>
+                <option value="1">Draft</option>
+                <option value="2">Published</option>
                 <option value="3">Unpublished</option>
             </select>
         </div>
@@ -35,9 +34,7 @@
         <div class="col-sm-6 col-md-3 app-layout-box" ng-repeat="app in apps">
             <div class="app-box">
                 <div class="oval">
-                    <span data-trigger="hover" data-type="success"
-                          data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip
-                          class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
+                    <span data-trigger="hover" data-type="success" data-title="{{app.status.charAt(0).toUpperCase() + app.status.slice(1)}}" bs-tooltip class="oval-{{app.status === 'publish' ? 'green' : app.status === 'draft' ? 'orange' : 'gray' }}"></span>
                 </div>
                 <div class="image">
                     <img ng-src="{{app.logo}}"/>

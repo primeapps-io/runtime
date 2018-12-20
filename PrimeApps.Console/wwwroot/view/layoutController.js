@@ -25,6 +25,10 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }
             });
 
+        $scope.changeOrganization = function(organization){
+            $rootScope.currentOrganization = organization;
+        };
+
         $rootScope.isMobile = function () {
             var check = false;
             (function (a) {

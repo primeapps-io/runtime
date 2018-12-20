@@ -18,5 +18,20 @@ angular.module('primeapps')
                         $scope.apps = response.data;
                     }
                 });
+
+            $scope.appFilter = function(search, status){
+                $scope.appsFilter = {
+                    search : search || null,
+                    page: null,
+                    status: status || 0
+                };
+
+                AllAppsService.myApps($scope.appsFilter)
+                    .then(function (response) {
+                        if (response.data) {
+                            $scope.apps = response.data;
+                        }
+                    });
+            };
         }
     ]);

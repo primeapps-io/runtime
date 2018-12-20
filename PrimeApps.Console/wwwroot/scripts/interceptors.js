@@ -24,6 +24,9 @@ angular.module('primeapps')
                         }
                     }
 
+                    if ($rootScope.currentOrganization)
+                        config.headers['X-Organization-Id'] = $rootScope.currentOrganization.id;
+
                     config.headers['X-Tenant-Id'] = $cookies.get('tenant_id');
 
                     return config;

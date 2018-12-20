@@ -11,7 +11,7 @@ angular.module('primeapps')
 
             uploader.filters.push({
                 name: 'imageFilter',
-                fn: function(item /*{File|FileLikeObject}*/, options) {
+                fn: function (item /*{File|FileLikeObject}*/, options) {
                     var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
                     return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
                 }
@@ -65,21 +65,31 @@ angular.module('primeapps')
 
             $scope.openModal = function () {
                 $scope.newFormModal = $scope.newFormModal || $modal({
-                    scope: $scope,
-                    templateUrl: 'view/organization/appform/newAppForm.html',
-                    animation: 'am-fade-and-slide-right',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        templateUrl: 'view/organization/appform/newAppForm.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
                 $scope.newFormModal.$promise.then(function () {
                     $scope.newFormModal.show();
                 });
-            }
+            };
 
             $scope.save = function (newAppForm) {
-                console.log($scope)
                 if (!newAppForm.$valid)
                     return false;
-            }
+
+                newAppForm.name = newAppForm.name;
+                newAppForm.logo = uploader;
+                newAppForm.organization_id = 0;
+                newAppForm.template_id = null;
+                newAppForm.status = 1;
+
+                AppFormService.create(newAppForm)
+                    .then(function (response) {
+
+                    });
+            };
         }
     ]);
