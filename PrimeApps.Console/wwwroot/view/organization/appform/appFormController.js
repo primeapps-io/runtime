@@ -91,6 +91,12 @@ angular.module('primeapps')
                 $scope.nameChecking = true;
                 $scope.nameValid = null;
 
+                if (!name || name === '') {
+                    $scope.nameChecking = false;
+                    $scope.nameValid = false;
+                    return;
+                }
+
                 AppFormService.isUniqueName(name)
                     .then(function (response) {
                         $scope.nameChecking = false;
