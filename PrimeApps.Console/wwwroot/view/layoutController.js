@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal',
-    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, HelpService, $sce, $modal) {
+angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', 'HelpService', '$sce', '$modal','FileUploader',
+    function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, HelpService, $sce, $modal,FileUploader) {
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;
@@ -25,7 +25,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
                 }
             });
 
-        $scope.changeOrganization = function(organization){
+        $scope.changeOrganization = function (organization) {
             $rootScope.currentOrganization = organization;
         };
 
@@ -136,6 +136,43 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             $scope.reloading = true;
         };
 
+
+        /*/
+        *
+        *
+        * */
+        $scope.addNewOrganization = function () {
+            $scope.addNewOrganizatioModal = $scope.addNewOrganizatioModal || $modal({
+                scope: $scope,
+                templateUrl: 'view/organization/addNewOrganization.html',
+                animation: 'am-fade-and-slide-right',
+                backdrop: 'static',
+                show: false
+            });
+            $scope.addNewOrganizatioModal.$promise.then(function () {
+                $scope.addNewOrganizatioModal.show();
+
+            });
+
+        };
+
+        var uploader = $scope.uploader = new FileUploader({
+            url: 'upload.php'
+        });
+
+        uploader.filters.push({
+            name: 'imageFilter',
+            fn: function (item /*{File|FileLikeObject}*/, options) {
+                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+        });
+
+
+        $scope.organizationSave = function (newOrganizationForm) {
+            if (!newOrganizationForm.$valid)
+                return false;
+        }
     }
 
 ]);
