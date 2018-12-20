@@ -52,8 +52,8 @@ namespace PrimeApps.Console.Controllers
 
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
-            
-            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = AppUser.OrganizationId, Icon = model.Icon });
+
+            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = model.OrganizationId, Icon = model.Icon });
 
             return Ok(result);
         }
@@ -67,7 +67,7 @@ namespace PrimeApps.Console.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var team = await _teamRepository.Get(id);
+            var team = await _teamRepository.GetByTeamId(id);
             team.Name = model.Name;
             team.Icon = model.Icon;
 
@@ -85,10 +85,29 @@ namespace PrimeApps.Console.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var team = await _teamRepository.Get(id);
+            var team = await _teamRepository.GetByTeamId(id);
             var result = await _teamRepository.Delete(team);
 
             return Ok(result);
+        }
+
+        [Route("get/{id:int}"), HttpGet]
+        public async Task<IActionResult> Get(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var team = await _teamRepository.GetByTeamId(id);
+
+            return Ok(team);
+        }
+
+        [Route("get_all"), HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var teams = await _teamRepository.GetAll();
+
+            return Ok(teams);
         }
 
         [Route("get_by_user"), HttpGet]

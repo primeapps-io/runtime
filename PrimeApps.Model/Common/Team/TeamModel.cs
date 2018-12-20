@@ -21,7 +21,10 @@ namespace PrimeApps.Model.Common.Team
         [DataMember(Name = "team_users"), JsonProperty("team_users")]
         public List<TeamUserModel> TeamUsers { get; set; }
 
-        [DataMember(Name = "app_ids"), JsonProperty("app_ids")]
+        [DataMember(Name = "organization_id"), JsonProperty("organization_id")]
+        public int OrganizationId { get; set; }
+
+        [DataMember(Name = "app_id"), JsonProperty("app_id")]
         public List<int> AppIds { get; set; }
 
         [DataMember(Name = "deleted"), JsonProperty("deleted")]
