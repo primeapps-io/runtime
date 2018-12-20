@@ -1,30 +1,115 @@
 <div class="setup-layout">
     <div class="row">
 
-        <div class="menu col-sm-3" ng-class="{'menu-collapsed':collapsed}">
+        <div class="menu col-sm-3">
             <h2 class="setup-title">XBrand CRM</h2>
-            <ul class="nav nav-pills nav-stacked setup-nav" ng-show="!collapsed">
-                <li ng-class="menuItemClass(menuItem)" ng-repeat="menuItem in menuItems | filter:{active : true}">
-                     <a href="{{menuItem.link}}" ng-click="selectMenuItem(menuItem)">
-                         <i class="fas fa-user"></i>{{menuItem.label | translate}}
+            <ul class="nav nav-pills nav-stacked setup-nav">
+                <li>
+                    <a href="">
+                        <i class="fas fa-info-circle"></i>
+                        Overview
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-th-large"></i>
+                        Model
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-file-alt"></i>
+                        Templates
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-magic"></i>
+                        Automation
+                    </a>
+                </li>
 
-                     </a>
-                    <span class="costume-bage">42</span>
+                <li>
+                    <a href="">
+                        <i class="fas fa-chart-area"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-code"></i>
+                        Functions
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-shapes"></i>
+                        Components
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-random"></i>
+                        Authorization
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-bars"></i>
+                        Menus
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-medkit"></i>
+                        Help &amp; Guides
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-play"></i>
+                        Deployment
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-ribbon"></i>
+                        Identity
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-shield-alt"></i>
+                        Security
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-plug"></i>
+                        Extensions
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-diagnoses"></i>
+                        Diagnostics
+                    </a>
+                </li>
+                <li>
+                    <a href="">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
                 </li>
             </ul>
-            <a href ng-click="collapsed = !collapsed" style="padding-right: 10px;">
-                <i class="fa fa-lg fa-angle-double-right" ng-if="collapsed"></i>
-                <i class="fa fa-lg fa-angle-double-left" ng-if="!collapsed"></i>
-            </a>
         </div>
-        <div   class="col-sm-9" style="border: none ;" ng-class="{'page-collapsed':collapsed}">
-
+        <div class="col-sm-9" style="border: none ;">
             <div class="setup-liste-header row">
-                <div class="col-sm-6"> <h2 class="setup-title">Modules</h2></div>
-                <div class="col-sm-6 list-right-menu"> <button class="btn add-button"> <i class="fas fa-plus"></i> Add New Module</button></div>
-
+                <div class="col-sm-6"><h2 class="setup-title">Modules</h2></div>
+                <div class="col-sm-6 list-right-menu">
+                    <button class="btn add-button"><i class="fas fa-plus"></i> Add New Module</button>
+                </div>
             </div>
-
             <div ui-view="app"></div>
         </div>
     </div>
