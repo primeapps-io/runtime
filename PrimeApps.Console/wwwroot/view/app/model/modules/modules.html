@@ -1,54 +1,73 @@
-<div class="sub-menu">
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#/app/setup/modules">{{'Setup.Nav.Tabs.Modules' | translate}}</a></li>
-        <li><a href="#/app/setup/templates">{{'Setup.Nav.Tabs.Templates' | translate}}</a></li>
-    </ul>
-</div>
-<div class="panel panel-default setup-panel">
-    <div class="panel-body">
-        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-        <div class="modules-setup" ng-show="!loading">
-            <div class="subpanel">
-                <h5 class="subpanel-heading ">{{'Setup.Modules.Title' | translate}}</h5>
-                <div class="subpanel-body">
-                    <div class="text-right">
-                        <button class="btn btn-custom btn-sm btn-w-lg " ng-click="moduleLicenseCountLimit()"><i class="fa fa-plus pull-left"></i> {{'Setup.Modules.NewModule' | translate}}</button>
-                    </div>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>Icon</th>
-                            <th>{{'Setup.Modules.Name' | translate}}</th>
-                            <th>{{'Setup.Modules.Type' | translate}}</th>
-                            <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
-                            <th>{{'Setup.Modules.Sharing' | translate}}</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="moduleItem in modulesSetup | filter:{name:'!users'} | orderBy:['-system_type','order']">
-                            <td><i class="{{moduleItem.menu_icon}}"></i></td>
-                            <td>
-                            <a href="#app/setup/module?id={{moduleItem.name}}" ng-if="(user.isDemo && moduleItem.created_by_id==user.id) || !user.isDemo">
-                                {{moduleItem['label_' + language + '_plural']}}
-                            </a>
-                            <span ng-if="user.isDemo && moduleItem.created_by_id!=user.id">
-                                {{moduleItem['label_' + language + '_plural']}}
-                            </span>
-                            </td>
-                            <td>{{'Setup.Modules.Type-' + moduleItem.system_type | translate}}</td>
-                            <td>{{moduleItem.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
-                            <td>{{moduleItem.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) : ('Setup.Modules.SharingPublic' | translate)}}</td>
-                            <td class="text-right">
-                                <button id="actionButton-{{moduleItem.name}}" ng-disabled="user.isDemo && moduleItem.created_by_id!=user.id" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i class="fa fa-caret-down"></i></button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+<div class="col-sm-12" style="border: none ;">
+    <div class="setup-liste-header row">
+        <div class="col-sm-6"><h2 class="setup-title">Modules</h2></div>
+        <div class="col-sm-6 list-right-menu">
+            <button class="btn add-button"><i class="fas fa-plus"></i> Add New Team</button>
+        </div>
+    </div>
+    <div>
+
+        <div class="tab-content">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>{{'Setup.Workflow.Name' | translate}}</th>
+                    <th>{{'Setup.Workflow.Module' | translate}}</th>
+                    <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                    <th>{{'Common.Active' | translate}}</th>
+                    <th style="min-width: 110px;"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="workflow in workflows">
+                    <td>{{workflow.name}}</td>
+                    <td>{{workflow.moduleStr}}</td>
+                    <td>{{workflow.operationsStr}}</td>
+                    <td>{{workflow.statusStr}}</td>
+                    <td class="text-right">
+                        <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
+                            translate}}</a>
+                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                                action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                            {{'Common.Remove' | translate}}
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="row table-pagination">
+                <div class="col-sm-6">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li>
+                                <a href="#" aria-label="Previous">
+                                    <i class="fas fa-step-backward"></i>
+                                </a>
+                            </li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">4</a></li>
+                            <li><a href="#">5</a></li>
+                            <li>
+                                <a href="#" aria-label="Next">
+                                    <i class="fas fa-step-forward"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-            </div>
-            <div class="clearfix">
+                <div class="col-sm-4 "><span class="pagination-span">1-10 of 86 </span></div>
+                <div class="col-sm-2"><span class="pagination-span">Items per page  </span>
+                    <select class="items-per-page-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select></div>
             </div>
         </div>
+
     </div>
 </div>

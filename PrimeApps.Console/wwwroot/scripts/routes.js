@@ -1,5 +1,4 @@
 ﻿﻿'use strict';
-
 angular.module('primeapps')
 
     .config(['$stateProvider', '$urlRouterProvider',
@@ -283,6 +282,23 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.overview', {
+                    url: '/overview?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/overview/overview.html',
+                            controller: 'OverviewController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/overview/overviewController.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.modules', {
                     url: '/modules?:id',
                     views: {
@@ -336,6 +352,30 @@ angular.module('primeapps')
                         }]
                     }
                 })
+
+                .state('studio.app.dependencies', {
+                    url: '/dependencies',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/model/dependencies/dependencies.html',
+                            controller: 'DependenciesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/model/dependencies/dependenciesController.js',
+                                cdnUrl + 'view/app/model/dependencies/dependenciesService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+
+
+
+
+
 
                 .state('studio.app.templatesEmail', {
                     url: '/templatesEmail?:id',
@@ -564,14 +604,14 @@ angular.module('primeapps')
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/setup/modules/moduleDependencies.html',
-                            controller: 'ModuleDependencyController'
+                            controller: 'DependencyController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleDependencyController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
+                                cdnUrl + 'view/setup/modules/dependenciesController.js',
+                                cdnUrl + 'view/setup/modules/dependenciesService.js'
                             ]);
                         }]
                     }

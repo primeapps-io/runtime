@@ -4,7 +4,12 @@ angular.module('primeapps')
 
 	.controller('ModuleController', ['$rootScope', '$scope', '$filter', '$state', 'ngToast', '$dropdown', '$modal', 'helper', 'ModuleService', '$cache', 'LayoutService',
 		function ($rootScope, $scope, $filter, $state, ngToast, $dropdown, $modal, helper, ModuleService, $cache, LayoutService) {
-			var getModules = function () {
+
+            $scope.$parent.menuTopTitle ="Models";
+            $scope.$parent.activeMenu= 'model';
+            $scope.$parent.activeMenuItem = 'modules';
+
+            var getModules = function () {
 				$scope.modulesSetup = [];
 
 				angular.forEach($rootScope.modules, function (module) {
