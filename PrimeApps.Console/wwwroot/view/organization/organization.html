@@ -1,0 +1,10 @@
+<div class="setup-layout">
+    <div class="row">
+        <ng-include ng-show="activeMenu==='app'"   src="'view/app/common/appMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='model'" src="'view/app/common/modelMenu.html'"></ng-include>
+
+        <div class="col-sm-9" style="border: none ;">
+            <div ui-view="app"></div>
+        </div>
+    </div>
+</div>

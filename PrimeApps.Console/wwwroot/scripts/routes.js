@@ -100,42 +100,6 @@ angular.module('primeapps')
                     }
                 })
 
-                .state('studio.collaborators', {
-                    url: 'collaborators?:organizationId',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/organization/collaborators/collaborators.html',
-                            controller: 'CollaboratorsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/collaborators/CollaboratorsService.js',
-                                cdnUrl + 'view/organization/collaborators/CollaboratorsController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.teams', {
-                    url: 'teams?:organizationId',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/organization/teams/teams.html',
-                            controller: 'TeamsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/organization/teams/TeamsService.js',
-                                cdnUrl + 'view/organization/teams/TeamsController.js'
-                            ]);
-                        }]
-                    }
-                })
-
                 .state('studio.organizationForm', {
                     url: 'organization?:id',
                     views: {
@@ -245,7 +209,67 @@ angular.module('primeapps')
                         }]
                     }
                 });
-            //app.setup
+
+            //app.organization
+            $stateProvider
+                .state('studio.organization', {
+                    url: 'organization/:organizationId',
+                    abstract: true,
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/organization/organization.html',
+                            controller: 'OrganizationController'
+                        }
+                    },
+                    resolve: {
+                        start: ['$rootScope', '$q', '$state', 'LayoutService',
+                            function ($rootScope, $q, $state, LayoutService) {
+                                var deferred = $q.defer();
+
+                                if ($rootScope.preview) {
+                                    $state.go('app.allApps');
+                                    deferred.resolve();
+                                    return deferred.promise;
+                                }
+                            }]
+                    }
+                })
+                .state('studio.organization.teams', {
+                url: 'teams?:organizationId',
+                views: {
+                    'app': {
+                        templateUrl: cdnUrl + 'view/organization/teams/teams.html',
+                        controller: 'TeamsController'
+                    }
+                },
+                resolve: {
+                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        return $ocLazyLoad.load([
+                            cdnUrl + 'view/organization/teams/TeamsService.js',
+                            cdnUrl + 'view/organization/teams/TeamsController.js'
+                        ]);
+                    }]
+                }
+            })
+                .state('studio.organization.collaborators', {
+                url: 'collaborators?:organizationId',
+                views: {
+                    'app': {
+                        templateUrl: cdnUrl + 'view/organization/collaborators/collaborators.html',
+                        controller: 'CollaboratorsController'
+                    }
+                },
+                resolve: {
+                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                        return $ocLazyLoad.load([
+                            cdnUrl + 'view/organization/collaborators/CollaboratorsService.js',
+                            cdnUrl + 'view/organization/collaborators/CollaboratorsController.js'
+                        ]);
+                    }]
+                }
+            });
+
+            //studio.app
             $stateProvider
                 .state('studio.app', {
                     url: 'app/:appId',

@@ -80,7 +80,9 @@ namespace PrimeApps.Console
 					"scripts/vendor/ngclipboard.js",
 					"scripts/vendor/moment-business-days.js",
                     "scripts/vendor/angular-filter.js",
-                    "scripts/vendor/moment-weekdaysin.js");
+                    "scripts/vendor/moment-weekdaysin.js",
+                    "scripts/vendor/paging.min.js"
+                    );
 
 				pipeline.AddCssBundle("/styles/bundles-css/auth.css",
 					"styles/vendor/bootstrap.css",
