@@ -65,5 +65,23 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.SaveChangesAsync();
         }
+
+        public async Task<int> UserTeamAdd(TeamUser teamUser)
+        {
+            DbContext.TeamUsers.Add(teamUser);
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> UserTeamDelete(TeamUser teamUser)
+        {
+            DbContext.TeamUsers.Remove(teamUser);
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<TeamUser> GetTeamUser(int UserId, int teamId)
+        {
+            return await DbContext.TeamUsers
+                .Where(x => x.UserId == UserId && x.TeamId == teamId).FirstOrDefaultAsync();
+        }
     }
 }

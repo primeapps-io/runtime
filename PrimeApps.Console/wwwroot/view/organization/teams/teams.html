@@ -51,8 +51,8 @@
                                 <td>{{team.team_users ? team.team_users.length:0}}</td>
                                 <td>{{team.organization.name}}</td>
                                 <td class="text-right">
-                                    <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">{{'Common.Edit' | translate}}</a>
-                                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                                    <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-blue">{{'Common.Edit' | translate}}</a>
+                                    <button type="button" class="btn btn-xs btn-danger" confirm-click data-placement="left"
                                             action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
                                             confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
                                         {{'Common.Remove' | translate}}

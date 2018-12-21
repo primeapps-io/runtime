@@ -15,5 +15,11 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Create(Team team);
         Task<int> Delete(Team team);
         Task<int> Update(Team team);
+
+        //Team Users
+
+        Task<int> UserTeamAdd(TeamUser teamUser);
+        Task<int> UserTeamDelete(TeamUser teamUser);
+        Task<TeamUser> GetTeamUser(int UserId, int teamId);
     }
 }

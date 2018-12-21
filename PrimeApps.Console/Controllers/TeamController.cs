@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.Console.Controllers
 {
-    [Route("api/team"), Authorize]
+    [Route("api/team")]
     public class TeamController : ApiBaseController
     {
         private IConfiguration _configuration;
@@ -38,10 +38,14 @@ namespace PrimeApps.Console.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-                context.Result = new UnauthorizedResult();
+            SetContext(context);
 
-            SetContextUser();
+            SetCurrentUser(_organizationRepository);
+            SetCurrentUser(_appDraftRepository);
+            SetCurrentUser(_platformUserRepository);
+            SetCurrentUser(_organizationUserRepository);
+            SetCurrentUser(_teamRepository);
+
         }
 
         [Route("create"), HttpPost]
@@ -53,7 +57,7 @@ namespace PrimeApps.Console.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, AppUser.OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = model.OrganizationId, Icon = model.Icon });
+            var result = await _teamRepository.Create(new Team { Name = model.Name, OrganizationId = AppUser.OrganizationId, Icon = model.Icon });
 
             return Ok(result);
         }
@@ -118,5 +122,42 @@ namespace PrimeApps.Console.Controllers
             return Ok(teams);
         }
 
+        [Route("team_user_add/{id:int}"), HttpPost]
+        public async Task<IActionResult> TeamUserAdd(int userId, [FromBody] TeamModel teamModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var team = await _teamRepository.GetByTeamId(teamModel.Id);
+
+            if (team == null)
+                return NotFound();
+
+            var teamUser = new TeamUser
+            {
+                TeamId = team.Id,
+                UserId = userId
+            };
+
+            var result = await _teamRepository.UserTeamAdd(teamUser);
+
+            return Ok(result);
+        }
+
+        [Route("team_user_delete/{id:int}"), HttpDelete]
+        public async Task<IActionResult> TeamUserDelete(int userId, [FromBody] TeamModel teamModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var teamUser = await _teamRepository.GetTeamUser(userId, teamModel.Id);
+
+            if (teamUser == null)
+                return NotFound();
+
+            var result = await _teamRepository.UserTeamDelete(teamUser);
+
+            return Ok(result);
+        }
     }
 }

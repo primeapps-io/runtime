@@ -20,7 +20,7 @@ angular.module('primeapps')
                             $scope.teamArray = response.data;
                     })
                     .catch(function (error) {
-                        getToastMsg('Common.Error', 'error');
+                        getToastMsg('Common.Error', 'danger');
                     });
             }
 
@@ -34,8 +34,6 @@ angular.module('primeapps')
                 //New add team
                 if (!$scope.teamId) {
 
-                    $scope.teamModel.organization_id = 1; //TODO get Organization ID
-
                     $scope.getTeamsList();
 
                     var searchTeamName = $filter('filter')($scope.teamArray, { name: $scope.teamModel.name }, true)[0];
@@ -48,37 +46,54 @@ angular.module('primeapps')
                     TeamsService.create($scope.teamModel)
                         .then(function (response) {
                             if (response.data) {
-                                getToastMsg('Common.Success', 'success');
-                                return true;
+                                getToastMsg('Team created successfully', 'success');
+                                $scope.getTeamsList();
+                                clearModels();
                             }
                         })
                         .catch(function (error) {
-                            getToastMsg('Common.Error', 'error');
+                            getToastMsg('Common.Error', 'danger');
                             return false;
                         });;
                 }
                 else { //Edit team
-                    TeamsService.update($scope.teamModel.id, $scope.teamModel)
+                    TeamsService.update($scope.teamId, $scope.teamModel)
                         .then(function (response) {
                             if (response.data) {
                                 getToastMsg('Common.Success', 'success');
                                 $scope.getTeamsList();
-                                return true;
+                                clearModels();
                             }
                         })
                         .catch(function (error) {
-                            getToastMsg('Common.Error', 'error');
+                            getToastMsg('Common.Error', 'danger');
                         });
                 }
+            }
+
+            $scope.delete = function (id) {
+                if (!id)
+                    return false;
+
+                TeamsService.delete(id)
+                    .then(function (response) {
+                        if (response.data) {
+                            getToastMsg('Team deleted successfully', 'success');
+                            $scope.getTeamsList();
+                            clearModels();
+                        }
+                    })
+                    .catch(function (result) {
+                        getToastMsg('Common.Error', 'danger');
+                    });
             }
 
             $scope.addNewTeam = function (id) {
                 if (id) {
                     $scope.teamId = id;
-                    var findTeam = $filter('filter')($scope.teamArray, { name: $scope.teamModel.name }, true)[0];
+                    var findTeam = $filter('filter')($scope.teamArray, { id: id }, true)[0];
                     $scope.teamModel.name = findTeam.name;
                     $scope.teamModel.icon = findTeam.icon;
-                    $scope.teamModel.organization_id = findTeam.organization_id;
                 }
 
                 $scope.addNewTeamFormModal = $scope.addNewTeamFormModal || $modal({
@@ -103,6 +118,12 @@ angular.module('primeapps')
                 }
 
             };
+
+            var clearModels = function () {
+                $scope.teamModel = {};
+                $scope.teamId = 0;
+                $scope.addNewTeamFormModal.hide();
+            }
 
             var getToastMsg = function (msg, type = 'success') {
                 ngToast.create({

@@ -35,10 +35,13 @@ namespace PrimeApps.Console.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
-                context.Result = new UnauthorizedResult();
-
             SetContextUser();
+
+            SetCurrentUser(_platformUserRepository);
+            SetCurrentUser(_appDraftRepository);
+            SetCurrentUser(_organizationRepository);
+            SetCurrentUser(_teamRepository);
+
         }
 
         [Route("me"), HttpGet]
