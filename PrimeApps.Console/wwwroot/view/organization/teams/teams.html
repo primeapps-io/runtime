@@ -1,30 +1,32 @@
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">Teams</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="addNewTeam()"><i class="fas fa-plus"></i> Add New Team
-            </button>
-        </div>
+<div class="setup-liste-header row">
+    <div class="col-sm-6"><h2 class="setup-title">Teams</h2></div>
+    <div class="col-sm-6 list-right-menu">
+        <button class="btn add-button" ng-click="addNewTeam()">
+            <i class="fas fa-plus"></i> Add New Team
+        </button>
     </div>
-    <div>
+</div>
+<div>
 
-        <div class="tab-content">
-            <table class="table">
-                <thead>
+    <div class="tab-content">
+        <table class="table">
+            <thead>
                 <tr>
                     <th>Name</th>
                     <th>Team member</th>
                     <th>Organization</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
-                </thead>
-                <tbody>
+            </thead>
+            <tbody>
                 <tr ng-repeat="team in teamArray">
                     <td><i class="{{team.icon}}"></i> {{team.name}}</td>
                     <td>{{team.team_users ? team.team_users.length:0}}</td>
                     <td>{{team.organization.name}}</td>
                     <td class="text-right">
-                        <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">{{'Common.Edit'
-                            | translate}}</a>
+                        <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">
+                            {{ 'Common.Edit' | translate }}
+                        </a>
                         <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
                                 action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
                                 confirm-yes="{{'Common.Yes' | translate}}"
@@ -33,43 +35,41 @@
                         </button>
                     </td>
                 </tr>
-                </tbody>
-            </table>
-            <div class="row table-pagination">
-                <div class="col-sm-10">
-                    <nav aria-label="Page navigation">
-                        <div paging
-                             text-first="&laquo;"
-                             ul-class="pagination"
-                             active-class="active"
-                             page="1"
-                             page-size="2"
-                             total="1000"
-                             disabled="true"
-                             scroll-top="true"
-                             hide-if-empty="true"
-
-                             show-prev-next="true"
-                             show-first-last="true"
-                             text-next-class="fas fa-step-backward"
-                             text-prev-class="glyphicon glyphicon-chevron-left"
-                             text-first-class="fas fa-step-backward"
-                             text-last-class="glyphicon glyphicon-forward"
-
-                             paging-action="foo('bar', page)">
-                        </div>
-                    </nav>
-                </div>
-                <div class="col-sm-2">
-                    <span class="pagination-span">Items per page  </span>
-                    <select class="items-per-page-select">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
-                </div>
+            </tbody>
+        </table>
+        <div class="row table-pagination">
+            <div class="col-sm-10">
+                <nav aria-label="Page navigation">
+                    <div paging
+                         text-first="&laquo;"
+                         ul-class="pagination"
+                         active-class="active"
+                         page="1"
+                         page-size="2"
+                         total="1000"
+                         disabled="true"
+                         scroll-top="true"
+                         hide-if-empty="true"
+                         show-prev-next="true"
+                         show-first-last="true"
+                         text-next-class="fas fa-step-backward"
+                         text-prev-class="glyphicon glyphicon-chevron-left"
+                         text-first-class="fas fa-step-backward"
+                         text-last-class="glyphicon glyphicon-forward"
+                         paging-action="foo('bar', page)">
+                    </div>
+                </nav>
+            </div>
+            <div class="col-sm-2">
+                <span class="pagination-span">Items per page  </span>
+                <select class="items-per-page-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
             </div>
         </div>
-
     </div>
+
+</div>
