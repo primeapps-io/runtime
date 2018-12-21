@@ -6434,6 +6434,8 @@ tags-input.ng-invalid .tags {
   margin: 15px; }
 .primeapps .padding-5 {
   padding: 5px; }
+.primeapps .padding-0 {
+  padding: 0px !important; }
 .primeapps .padding-10 {
   padding: 10px; }
 .primeapps .padding-20 {
@@ -6766,7 +6768,8 @@ tags-input.ng-invalid .tags {
       padding-bottom: 10px;
       font-weight: bold; }
     .primeapps .setup-modal .modal-content .section .panel, .primeapps .module-modal .modal-content .section .panel {
-      box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       padding: 26px; }
   .primeapps .setup-modal .modal-header, .primeapps .module-modal .modal-header {
     margin-bottom: 25px;
@@ -6887,6 +6890,10 @@ tags-input.ng-invalid .tags {
     font-size: 16px;
     font-weight: 400; }
   .primeapps .scratch-page .scratch-box {
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
     padding: 50px 10px;
     border-radius: 5px;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
@@ -6895,6 +6902,9 @@ tags-input.ng-invalid .tags {
     font-size: 70px;
     line-height: 70px;
     color: rgba(0, 0, 0, 0.25); }
+    .primeapps .scratch-page .scratch-box:hover {
+      cursor: pointer;
+      box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
 .primeapps .btn i {
   padding-right: 10px; }
 .primeapps .btn-bold {
@@ -7167,3 +7177,15 @@ tags-input.ng-invalid .tags {
       color: rgba(0, 0, 0, 0.5); }
 .primeapps .has-error input {
   background-color: rgba(206, 4, 4, 0.15) !important; }
+.primeapps .pagination .active a {
+  border-radius: 50%;
+  color: #fff;
+  background-color: rgba(17, 87, 163, 0.75); }
+.primeapps .pagination .active .disabled a:hover {
+  background-color: #fff !important;
+  color: #eaeaea; }
+.primeapps .pagination li {
+  font-size: 14px; }
+  .primeapps .pagination li a {
+    margin: 5px;
+    border: none; }
