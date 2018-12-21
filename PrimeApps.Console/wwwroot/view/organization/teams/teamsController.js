@@ -8,12 +8,12 @@ angular.module('primeapps')
             $scope.teamModel = {};
             $scope.teamId;
 
-            $scope.$parent.menuTopTitle ="Organization";
-            $scope.$parent.activeMenu= 'organization';
+            $scope.$parent.menuTopTitle = "Organization";
+            $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
 
-            $scope.changePage=function () {
-              console.log("Merhaba");
+            $scope.changePage = function () {
+                console.log("Merhaba");
             };
 
             $scope.getTeamsList = function () {
@@ -29,6 +29,16 @@ angular.module('primeapps')
 
             $scope.getTeamsList();
 
+            $scope.selectTeam = function (id) {
+                if (id)
+                    $scope.teamId = id;
+
+                TeamsService.get(id)
+                    .then(function (response) {
+                        if (response.data)
+                            $scope.selectedTeam = response.data;
+                    });
+            }
 
             $scope.save = function (addNewTeamForm) {
                 if (!addNewTeamForm.$valid)
@@ -51,7 +61,7 @@ angular.module('primeapps')
                             if (response.data) {
                                 getToastMsg('Team created successfully', 'success');
                                 $scope.getTeamsList();
-                                clearModels();
+                                $scope.clearModels();
                             }
                         })
                         .catch(function (error) {
@@ -65,7 +75,7 @@ angular.module('primeapps')
                             if (response.data) {
                                 getToastMsg('Common.Success', 'success');
                                 $scope.getTeamsList();
-                                clearModels();
+                                $scope.clearModels();
                             }
                         })
                         .catch(function (error) {
@@ -83,7 +93,7 @@ angular.module('primeapps')
                         if (response.data) {
                             getToastMsg('Team deleted successfully', 'success');
                             $scope.getTeamsList();
-                            clearModels();
+                            $scope.clearModels();
                         }
                     })
                     .catch(function (result) {
@@ -122,7 +132,7 @@ angular.module('primeapps')
 
             };
 
-            var clearModels = function () {
+            $scope.clearModels = function () {
                 $scope.teamModel = {};
                 $scope.teamId = 0;
                 $scope.addNewTeamFormModal.hide();

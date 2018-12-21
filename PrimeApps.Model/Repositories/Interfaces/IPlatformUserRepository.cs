@@ -10,6 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<PlatformUser> Get(int platformUserId);
         Task<PlatformUser> GetSettings(int platformUserId);
+        Task<List<PlatformUser>> GetByIds(List<int> ids);
         Task<PlatformUser> Get(string email);
         Task<PlatformUser> GetWithTenants(string email);
         Task<PlatformUser> GetWithSettings(string email);

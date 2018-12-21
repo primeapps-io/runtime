@@ -37,7 +37,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Teams
                 .Include(x => x.TeamUsers)
-                .Where(x => !x.Deleted && (x.TeamUsers as TeamUser).UserId == userId)
+                .Where(x => !x.Deleted)
                 .ToListAsync();
         }
 
@@ -81,7 +81,8 @@ namespace PrimeApps.Model.Repositories
         public async Task<TeamUser> GetTeamUser(int UserId, int teamId)
         {
             return await DbContext.TeamUsers
-                .Where(x => x.UserId == UserId && x.TeamId == teamId).FirstOrDefaultAsync();
+                 .Where(x => x.UserId == UserId && x.TeamId == teamId).FirstOrDefaultAsync();
+
         }
     }
 }

@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Constants;
 using PrimeApps.Console.Helpers;
 using PrimeApps.Model.Common.Team;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Console.Controllers
@@ -102,8 +105,32 @@ namespace PrimeApps.Console.Controllers
                 return BadRequest(ModelState);
 
             var team = await _teamRepository.GetByTeamId(id);
+            var ids = new List<int>();
 
-            return Ok(team);
+            foreach (var user in team.TeamUsers)
+                ids.Add(user.UserId);
+
+            var JTeam = new JArray();//JObject.FromObject(team);
+
+
+            var platformUsers = await _platformUserRepository.GetByIds(ids);
+
+            foreach (var user in team.TeamUsers)
+            {
+                var result = platformUsers.Where(x => x.Id == user.UserId).FirstOrDefault();
+
+                var data = new JObject();
+                data["TeamId"] = user.TeamId;
+                data["UserId"] = user.UserId;
+
+                data["FirstName"] = result.FirstName;
+                data["LastName"] = result.LastName;
+                data["Email"] = result.Email;
+
+                JTeam.Add(data);
+            }
+
+            return Ok(JTeam);
         }
 
         [Route("get_all"), HttpGet]

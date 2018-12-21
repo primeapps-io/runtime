@@ -33,6 +33,11 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
         }
 
+        public async Task<List<PlatformUser>> GetByIds(List<int> ids)
+        {
+            return await DbContext.Users.Where(x => ids.Contains(x.Id)).ToListAsync();
+        }
+
         public async Task<PlatformUser> GetSettings(int platformUserId)
         {
             return await DbContext.Users
