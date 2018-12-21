@@ -2,18 +2,32 @@
 
 angular.module('primeapps')
 
-    .controller('TeamsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', 'ngToast', '$cache', 'activityTypes', 'TeamsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
-        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, ngToast, $cache, activityTypes, TeamsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
+    .controller('TeamsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', 'ngToast', '$cache', 'activityTypes', 'TeamsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$stateParams',
+        function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, ngToast, $cache, activityTypes, TeamsService, $window, $state, $modal, dragularService, $timeout, $interval, $stateParams) {
             $scope.teamArray = [];
             $scope.teamModel = {};
             $scope.teamId;
+            console.log($stateParams);
+            console.log($scope);
+            if (!$rootScope.currentOrganization) {
+                // $rootScope.currentOrganization = {
+                //     id: parseInt($stateParams.organizationId)
+                // }
+            }
 
-            $scope.$parent.menuTopTitle ="Organization";
-            $scope.$parent.activeMenu= 'organization';
+            $scope.$parent.menuTopTitle = "Organization";
+            $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
 
-            $scope.changePage=function () {
-              console.log("Merhaba");
+
+            $scope.tabelPagination = {
+                currentPage: 1,
+                total: 10,
+                pageSize: 10
+            };
+
+            $scope.changePage = function () {
+                console.log("Merhaba");
             };
 
             $scope.getTeamsList = function () {
@@ -39,7 +53,7 @@ angular.module('primeapps')
 
                     $scope.getTeamsList();
 
-                    var searchTeamName = $filter('filter')($scope.teamArray, { name: $scope.teamModel.name }, true)[0];
+                    var searchTeamName = $filter('filter')($scope.teamArray, {name: $scope.teamModel.name}, true)[0];
 
                     if (searchTeamName) {
                         getToastMsg('A team with the same name is available.', 'warning');
@@ -57,7 +71,8 @@ angular.module('primeapps')
                         .catch(function (error) {
                             getToastMsg('Common.Error', 'danger');
                             return false;
-                        });;
+                        });
+                    ;
                 }
                 else { //Edit team
                     TeamsService.update($scope.teamId, $scope.teamModel)
@@ -94,7 +109,7 @@ angular.module('primeapps')
             $scope.addNewTeam = function (id) {
                 if (id) {
                     $scope.teamId = id;
-                    var findTeam = $filter('filter')($scope.teamArray, { id: id }, true)[0];
+                    var findTeam = $filter('filter')($scope.teamArray, {id: id}, true)[0];
                     $scope.teamModel.name = findTeam.name;
                     $scope.teamModel.icon = findTeam.icon;
                 }

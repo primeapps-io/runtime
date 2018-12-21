@@ -3,33 +3,43 @@
 $primeapps-color: #635fb3;
 .primeapps {
 
+  //mix
+  @mixin hoverEffect(){
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+}
   //Global
-    .margin-0{
-      margin: 0px;
-    }
-    .margin-5{
-      margin: 5px;
-    }
-    .margin-10{
-      margin: 10px;
-    }
-    .margin-15{
-      margin:15px;
-    }
-    .padding-5{
-      padding: 5px;
-    }
-    .padding-10{
-      padding: 10px;
-    }
-   .padding-20{
-      padding: 20px;
-    }
+  .margin-0 {
+    margin: 0px;
+  }
+  .margin-5 {
+    margin: 5px;
+  }
+  .margin-10 {
+    margin: 10px;
+  }
+  .margin-15 {
+    margin: 15px;
+  }
+  .padding-5 {
+    padding: 5px;
+  }
+  .padding-0 {
+    padding: 0px !important;
+  }
+  .padding-10 {
+    padding: 10px;
+  }
+  .padding-20 {
+    padding: 20px;
+  }
   //EndGlobal
   button:focus {
     border: none;
   }
-  .page-loading{
+  .page-loading {
     position: absolute;
     display: flex;
     justify-content: center;
@@ -39,7 +49,7 @@ $primeapps-color: #635fb3;
     width: 100%;
     color: #9e005d;
     height: 50%;
-    i{
+    i {
       font-size: 50px;
     }
   }
@@ -491,7 +501,9 @@ $primeapps-color: #635fb3;
           font-weight: bold;
         }
         .panel {
-          box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
+          box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+
+          border: 1px solid rgba(0, 0, 0, 0.05);
           padding: 26px;
         }
       }
@@ -656,7 +668,9 @@ $primeapps-color: #635fb3;
         font-weight: 400;
       }
     }
+
     .scratch-box {
+      @include hoverEffect();
       padding: 50px 10px;
       border-radius: 5px;
       box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
@@ -665,6 +679,10 @@ $primeapps-color: #635fb3;
       font-size: 70px;
       line-height: 70px;
       color: rgba(0, 0, 0, 0.25);
+      &:hover{
+        cursor: pointer;
+        box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+      }
     }
   }
 
@@ -775,10 +793,7 @@ $primeapps-color: #635fb3;
         border-top-color: rgba(0, 0, 0, 0.75);
       }
       .app-box {
-        -webkit-transition: all 0.2s ease;
-        -moz-transition: all 0.2s ease;
-        -o-transition: all 0.2s ease;
-        -ms-transition: all 0.2s ease;
+        @include hoverEffect();
         height: 200px;
         border-radius: 5px;
         box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
@@ -1031,41 +1046,68 @@ $primeapps-color: #635fb3;
       }
     }
   }
-  .file-uploader{
+  .file-uploader {
     margin: 0px;
     background-color: rgba(0, 0, 0, 0.05);
     padding: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    .uploader-area{
+    .uploader-area {
       width: 100%;
       border: 2px dashed #c2c2c2;
       padding: 20px;
     }
-    .uploader-over{
+    .uploader-over {
 
       border: 2px dashed #000 !important;
     }
-    .drop-zone{
-      div{
+    .drop-zone {
+      div {
         display: flex;
         flex-direction: column;
         align-items: center;
-        i{
+        i {
           font-size: 50px;
           color: rgba(0, 0, 0, 0.2);
         }
-        span{
+        span {
           color: rgba(0, 0, 0, 0.5);
         }
       }
     }
   }
-  .has-error{
-   input{
-     background-color: rgba(206, 4, 4, 0.15) !important;
-   }
+  .has-error {
+    input {
+      background-color: rgba(206, 4, 4, 0.15) !important;
+    }
+  }
+  .pagination {
+    .active {
+      a {
+        border-radius: 50%;
+        color: #fff;
+        background-color: rgba(17, 87, 163, 0.75);
+      }
+      .disabled {
+        a {
+          &:hover {
+            background-color: #fff !important;
+            color: #eaeaea;
+          }
+        }
+      }
+    }
+    li {
+      font-size: 14px;
+      a {
+        margin: 5px;
+        border: none;
+        &:hover {
+          // color:#000;
+        }
+      }
+    }
   }
 }
 
