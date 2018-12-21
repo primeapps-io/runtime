@@ -6701,20 +6701,6 @@ tags-input.ng-invalid .tags {
     font-size: 14px;
     font-weight: bold;
     text-align-last: center; }
-  .primeapps .table-pagination nav .pagination > .active > a, .primeapps .table-pagination nav .pagination > .active > a:hover {
-    background-color: rgba(17, 87, 163, 0.75) !important;
-    border-radius: 50%;
-    color: #fff !important; }
-  .primeapps .table-pagination nav .pagination li {
-    margin: 5px; }
-    .primeapps .table-pagination nav .pagination li a {
-      border: none;
-      margin: 5px;
-      color: rgba(0, 0, 0, 0.5) !important; }
-      .primeapps .table-pagination nav .pagination li a:hover {
-        background-color: rgba(17, 87, 163, 0.75) !important;
-        border-radius: 50%;
-        color: #fff !important; }
 .primeapps .modal-header {
   background-color: #fff;
   color: #000; }

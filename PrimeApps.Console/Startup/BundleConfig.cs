@@ -22,7 +22,8 @@ namespace PrimeApps.Console
                     "view/layoutController.js",
 					"view/setup/help/helpService.js",
 					"view/app/appController.js",
-					"view/setup/workgroups/workgroupService.js",
+                    "view/organization/organizationController.js",
+                    "view/setup/workgroups/workgroupService.js",
 					"view/setup/messaging/messagingService.js");
 
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/vendor.js",
@@ -80,7 +81,9 @@ namespace PrimeApps.Console
 					"scripts/vendor/ngclipboard.js",
 					"scripts/vendor/moment-business-days.js",
                     "scripts/vendor/angular-filter.js",
-                    "scripts/vendor/moment-weekdaysin.js");
+                    "scripts/vendor/moment-weekdaysin.js",
+                    "scripts/vendor/paging.min.js"
+                    );
 
 				pipeline.AddCssBundle("/styles/bundles-css/auth.css",
 					"styles/vendor/bootstrap.css",

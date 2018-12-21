@@ -1,197 +1,75 @@
-<div class="dashboard apps clearfix">
-    <div class="row">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 new-app-content">
-            <img src="images/primeapps/create-app-sceen-image.png"
-                 srcset="images/primeapps/create-app-sceen-image.png@2x.png 2x,
-images/primeapps/create-app-sceen-image.png@3x.png 3x"
-            >
-            <div class="">
-                <h2 class="apps-first-screen-h1">
-                    Welcome Yusuf Çiftçi
-                </h2>
-                <span class="apps-first-screen-span">
-Rapidly create and execute cloud based business apps.
-Turn them into powerful multi-tenant SaaS businesses.
-No code, no deployment, no hassle.
-</span>
-            </div>
-            <button class="create-app-btn">
-                Create your Application
-            </button>
-
-            <div class="need-help-text">Need Help? Please read through the <a href="">tutorials </a></div>
-        </div>
-        <div class="col-sm-4"></div>
+<div class="setup-liste-header row">
+    <div class="col-sm-6"><h2 class="setup-title">Collaborators</h2></div>
+    <div class="col-sm-6 list-right-menu">
+        <button class="btn add-button" ng-click="addNewTeam()"><i class="fas fa-plus"></i> Add New Collaborator
+        </button>
     </div>
 </div>
+<div>
 
+    <div class="tab-content">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Team member</th>
+                <th>Organization</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="team in teamArray">
+                <td><i class="{{team.icon}}"></i> {{team.name}}</td>
+                <td>{{team.team_users ? team.team_users.length:0}}</td>
+                <td>{{team.organization.name}}</td>
+                <td class="text-right">
+                    <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">{{'Common.Edit'
+                        | translate}}</a>
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}"
+                            confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="row table-pagination">
+            <div class="col-sm-10">
+                <nav aria-label="Page navigation">
+                    <div paging
+                         text-first="&laquo;"
+                         ul-class="pagination"
+                         active-class="active"
+                         page="1"
+                         page-size="2"
+                         total="1000"
+                         disabled="true"
+                         scroll-top="true"
+                         hide-if-empty="true"
 
-<div class="page-container padding0">
-    App Page
-    <div class="row">
-        <div class="col-sm-10">
-            <div class="search-input">
-                <div class="search-input-icon">
-                    <i class="fas fa-search"></i>
-                </div>
-                <input class="form-control form-control-lg form-control-borderless app-search-input" type="search"
-                       placeholder="Search for a project">
+                         show-prev-next="true"
+                         show-first-last="true"
+                         text-next-class="fas fa-step-backward"
+                         text-prev-class="glyphicon glyphicon-chevron-left"
+                         text-first-class="fas fa-step-backward"
+                         text-last-class="glyphicon glyphicon-forward"
 
-            </div>
-
-        </div>
-        <div class="col-sm-2 search-select">
-            <i class="fas fa-angle-down"></i>
-            <select class="select-status">
-                <option value="All Apps">All Apps</option>
-                <option value="Draft">Draft</option>
-                <option value="Unpublished">Unpublished</option>
-            </select>
-        </div>
-
-    </div>
-    <div class="row" style="margin-top: 50px">
-        <div class="col-sm-12">
-            <h4 class="h4-title blue-color font-bold">All Apps</h4>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-
-                </div>
-                <div class="icon-image">
-                    <i class="fas fa-layer-group"></i>
-                </div>
-            </div>
-            <div class="app-info">
-                <button class="btn btn-blue btn-radius btn-bold">
-                    <i class="fas fa-plus"></i> Create New App
-                </button>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-    <span data-trigger="hover" data-type="success" data-title="Published" bs-tooltip
-          class="oval-green"></span>
-                </div>
-                <div class="image">
-                    <img src="https://ofisimcomprod.blob.core.windows.net/app-logo/08409435-9bff-4e49-a9ee-a82900c3f2ee_21afb109-0627-4f70-9e5a-e27eccd5f103.PNG"/>
-                </div>
-            </div>
-            <div class="app-info">
-                <h3>Ofisim İK</h3>
-                <h4>Ofisim Apps </h4>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-    <span class="oval-gray" data-trigger="click" data-type="success" data-title="Published"
-          bs-tooltip></span>
-                </div>
-                <div class="image">
-                    <img src="https://ofisimcomprod.blob.core.windows.net/app-logo/08409435-9bff-4e49-a9ee-a82900c3f2ee_21afb109-0627-4f70-9e5a-e27eccd5f103.PNG"/>
-                </div>
-            </div>
-            <div class="app-info">
-                <h3>Ofisim İK</h3>
-                <h4>Ofisim Apps </h4>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-                    <span class="oval-green"></span>
-                </div>
-                <div class="image">
-                    <img src="https://ofisimcomprod.blob.core.windows.net/app-logo/08409435-9bff-4e49-a9ee-a82900c3f2ee_21afb109-0627-4f70-9e5a-e27eccd5f103.PNG"/>
-                </div>
-            </div>
-            <div class="app-info">
-                <h3>Ofisim İK</h3>
-                <h4>Ofisim Apps </h4>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-                    <span class="oval-green"></span>
-                </div>
-                <div class="image">
-                    <img src="https://ofisimcomprod.blob.core.windows.net/app-logo/08409435-9bff-4e49-a9ee-a82900c3f2ee_21afb109-0627-4f70-9e5a-e27eccd5f103.PNG"/>
-                </div>
-            </div>
-            <div class="app-info">
-                <h3>Ofisim İK</h3>
-                <h4>Ofisim Apps </h4>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-                    <span class="oval-orange"></span>
-                </div>
-                <div class="image">
-                    <img src="https://ofisimcomprod.blob.core.windows.net/app-logo/08409435-9bff-4e49-a9ee-a82900c3f2ee_21afb109-0627-4f70-9e5a-e27eccd5f103.PNG"/>
-                </div>
-            </div>
-            <div class="app-info">
-                <h3>Ofisim İK</h3>
-                <h4>Ofisim Apps </h4>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-3 app-layout-box">
-            <div class="app-box">
-                <div class="oval">
-                    <span class="oval-green"></span>
-                </div>
-                <div class="image">
-                    <img src="https://ofisimcomprod.blob.core.windows.net/app-logo/08409435-9bff-4e49-a9ee-a82900c3f2ee_21afb109-0627-4f70-9e5a-e27eccd5f103.PNG"/>
-                </div>
-            </div>
-            <div class="app-info">
-                <h3>Ofisim İK</h3>
-                <h4>Ofisim Apps </h4>
-            </div>
-        </div>
-
-    </div>
-    App Page End
-
-    <div class="row scratch-page">
-        <div class="col-md-8 col-lg-6 text-center">
-            <div class="scratch-page-text">
-                <h1>How would you like to create your form?</h1>
-                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</span>
-            </div>
-            <div class="row">
-                <div class="col-lg-offset-1 col-lg-10">
-                    <div class="row scratch-page-box">
-                        <div class="col-sm-6 scratch-box-content">
-                            <div class="scratch-box">
-                                <i class="fas fa-file"></i>
-                            </div>
-                            <button class="btn btn-radius btn-blue">
-                                <i class="fas fa-plus"></i> Create from Scratch
-                            </button>
-                        </div>
-                        <div class="col-sm-6 scratch-box-content">
-                            <div class="scratch-box">
-                                <i class="fas fa-copy"></i>
-                            </div>
-                            <button class="btn btn-radius btn-blue">
-                                <i class="fas fa-plus"></i> Create from Scratch
-                            </button>
-                        </div>
+                         paging-action="foo('bar', page)">
                     </div>
-                </div>
+                </nav>
             </div>
-
-
+            <div class="col-sm-2">
+                <span class="pagination-span">Items per page  </span>
+                <select class="items-per-page-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
         </div>
-
     </div>
 
 </div>

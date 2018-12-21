@@ -376,28 +376,28 @@ $primeapps-color: #635fb3;
       text-align-last: center;
     }
     nav {
-      .pagination > .active > a, .pagination > .active > a:hover {
-        background-color: rgba(17, 87, 163, 0.75) !important;
-        border-radius: 50%;
-        color: #fff !important;
-      }
-      .pagination {
-
-        li {
-          margin: 5px;
-          a {
-            border: none;
-            margin: 5px;
-            color: rgba(0, 0, 0, 0.5) !important;
-            &:hover {
-              background-color: rgba(17, 87, 163, 0.75) !important;
-              border-radius: 50%;
-              color: #fff !important;
-            }
-          }
-
-        }
-      }
+      //.pagination > .active > a, .pagination > .active > a:hover {
+      //  background-color: rgba(17, 87, 163, 0.75) !important;
+      //  border-radius: 50%;
+      //  color: #fff !important;
+      //}
+      //.pagination {
+      //
+      //  li {
+      //    margin: 5px;
+      //    a {
+      //      border: none;
+      //      margin: 5px;
+      //      color: rgba(0, 0, 0, 0.5) !important;
+      //      &:hover {
+      //        background-color: rgba(17, 87, 163, 0.75) !important;
+      //        border-radius: 50%;
+      //        color: #fff !important;
+      //      }
+      //    }
+      //
+      //  }
+      //}
     }
   }
   .modal-header {

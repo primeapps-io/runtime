@@ -1,0 +1,26 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">{{ menuTopTitle }}</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+
+        <li ng-class="activeMenuItem ==='collaborators' ? 'active' :''">
+            <a href="/#/organization/0/collaborators">
+                <i class="fas fa-info-circle"></i>
+                Collaborators
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='teams' ? 'active' :''">
+            <a href="/#/organization/0/teams">
+                <i class="fas fa-th-large"></i>
+                Teams
+            </a>
+            <span class="costume-bage">42</span>
+        </li>
+        <li ng-class="activeMenuItem ==='distribution-groups' ? 'active' :''">
+            <a href="">
+                <i class="fas fa-file-alt"></i>
+                Distribution groups
+            </a>
+        </li>
+
+    </ul>
+</div>
