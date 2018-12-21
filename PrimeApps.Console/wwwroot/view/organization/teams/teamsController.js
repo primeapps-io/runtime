@@ -12,6 +12,10 @@ angular.module('primeapps')
             $scope.$parent.activeMenu= 'organization';
             $scope.$parent.activeMenuItem = 'teams';
 
+            $scope.changePage=function () {
+              console.log("Merhaba");
+            };
+
             $scope.getTeamsList = function () {
                 TeamsService.getAll()
                     .then(function (response) {
