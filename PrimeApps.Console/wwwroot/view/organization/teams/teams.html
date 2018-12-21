@@ -43,20 +43,17 @@
                              ul-class="pagination"
                              active-class="active"
                              page="1"
-                             page-size="2"
-                             total="1000"
-                             disabled="true"
+                             page-size="10"
+                             total="20"
                              scroll-top="true"
                              hide-if-empty="true"
-
                              show-prev-next="true"
                              show-first-last="true"
-                             text-next-class="fas fa-step-backward"
-                             text-prev-class="glyphicon glyphicon-chevron-left"
+                             text-next-class="fas fa-chevron-right"
+                             text-prev-class="fas fa-chevron-left"
                              text-first-class="fas fa-step-backward"
-                             text-last-class="glyphicon glyphicon-forward"
-
-                             paging-action="foo('bar', page)">
+                             text-last-class="fas fa-step-forward"
+                             paging-action="changePage('bar', page)">
                         </div>
                     </nav>
                 </div>
