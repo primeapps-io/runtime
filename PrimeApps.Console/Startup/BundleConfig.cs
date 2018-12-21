@@ -22,7 +22,8 @@ namespace PrimeApps.Console
                     "view/layoutController.js",
 					"view/setup/help/helpService.js",
 					"view/app/appController.js",
-					"view/setup/workgroups/workgroupService.js",
+                    "view/organization/organizationController.js",
+                    "view/setup/workgroups/workgroupService.js",
 					"view/setup/messaging/messagingService.js");
 
 				pipeline.AddJavaScriptBundle("/scripts/bundles-js/vendor.js",

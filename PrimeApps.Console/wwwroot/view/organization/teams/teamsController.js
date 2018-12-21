@@ -7,11 +7,10 @@ angular.module('primeapps')
             $scope.teamArray = [];
             $scope.teamModel = {};
             $scope.teamId;
-            $scope.menuItems = [
-                { link: '#/app/setup/users', label: 'Collaborators', order: 1, app: 'crm', active: true },
-                { link: '#/teams', label: 'Teams', order: 2, app: 'crm', active: true },
-                { link: '#/app/setup/users', label: 'Distribution groups', order: 3, app: 'crm', active: true }
-            ];
+
+            $scope.$parent.menuTopTitle ="Organization";
+            $scope.$parent.activeMenu= 'organization';
+            $scope.$parent.activeMenuItem = 'teams';
 
             $scope.getTeamsList = function () {
                 TeamsService.getAll()

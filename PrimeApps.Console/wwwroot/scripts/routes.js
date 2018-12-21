@@ -235,39 +235,39 @@ angular.module('primeapps')
                     }
                 })
                 .state('studio.organization.teams', {
-                url: 'teams?:organizationId',
-                views: {
-                    'app': {
-                        templateUrl: cdnUrl + 'view/organization/teams/teams.html',
-                        controller: 'TeamsController'
+                    url: '/teams',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/organization/teams/teams.html',
+                            controller: 'TeamsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/organization/teams/teamsService.js',
+                                cdnUrl + 'view/organization/teams/teamsController.js'
+                            ]);
+                        }]
                     }
-                },
-                resolve: {
-                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                        return $ocLazyLoad.load([
-                            cdnUrl + 'view/organization/teams/TeamsService.js',
-                            cdnUrl + 'view/organization/teams/TeamsController.js'
-                        ]);
-                    }]
-                }
-            })
+                })
                 .state('studio.organization.collaborators', {
-                url: 'collaborators?:organizationId',
-                views: {
-                    'app': {
-                        templateUrl: cdnUrl + 'view/organization/collaborators/collaborators.html',
-                        controller: 'CollaboratorsController'
+                    url: '/collaborators',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/organization/collaborators/collaborators.html',
+                            controller: 'CollaboratorsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/organization/collaborators/CollaboratorsService.js',
+                                cdnUrl + 'view/organization/collaborators/CollaboratorsController.js'
+                            ]);
+                        }]
                     }
-                },
-                resolve: {
-                    plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                        return $ocLazyLoad.load([
-                            cdnUrl + 'view/organization/collaborators/CollaboratorsService.js',
-                            cdnUrl + 'view/organization/collaborators/CollaboratorsController.js'
-                        ]);
-                    }]
-                }
-            });
+                });
 
             //studio.app
             $stateProvider
@@ -394,11 +394,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
-
-
-
-
 
 
                 .state('studio.app.templatesEmail', {

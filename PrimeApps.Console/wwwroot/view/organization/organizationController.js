@@ -6,9 +6,9 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $location, helper) {
 
             $scope.menuTopTitle ="XBrand CRM";
-            $scope.activeMenu= 'app';
-            $scope.activeMenuItem = 'overview';
-            $scope.tabTitle='Overview';
+            $scope.activeMenu= 'organization';
+            $scope.activeMenuItem = 'organization';
+            $scope.tabTitle='organization';
 
 
         }
