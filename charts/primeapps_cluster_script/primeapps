@@ -1,23 +1,46 @@
 #!/bin/bash
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
+
 for arg in "$@"
 do
     if [ "$arg" == "--install" ] || [ "$arg" == "-i" ]
     then
-        helm install --name nats --namespace functions -f ./kubeless/values.yaml kubeless --wait
-        helm install --name stream --namespace stream -f ./nats/values.yaml nats --wait
-        helm install --name mq --namespace mq -f ./rabbitmq/values.yaml rabbitmq --wait
-        helm install --name cache --namespace cache -f ./redis/values.yaml redis --wait
-        helm install --name nats --namespace functions -f ./kubeless/values.yaml kubeless --wait
-        helm install --name storage --namespace storage -f ./minio/values.yaml minio --wait
-        helm install --name logging --namespace logging -f ./sentry/values.yaml sentry --wait
+        echo "${GREEN}Installing charts...${NC}"
+        echo -e "${GREEN}Streaming:${NC}"
+        helm install --name stream --namespace stream -f nats-values.yaml stable/nats
+        echo -e "${GREEN}Functions:${NC}"
+        helm install --name functions --namespace functions  -f kubeless-values.yaml incubator/kubeless
+        kubectl apply -f nats-trigger.yaml
+        echo -e "${GREEN}Message Queue:${NC}"
+        helm install --name mq --namespace mq -f rabbitmq-values.yaml stable/rabbitmq
+        echo -e "${GREEN}Cache:${NC}"
+        helm install --name cache --namespace cache -f redis-values.yaml stable/redis
+        echo -e "${GREEN}Storage:${NC}"
+        helm install --name storage --namespace storage -f minio-values.yaml stable/minio
+        echo -e "${GREEN}Logging:${NC}"
+        helm install --name logging --namespace logging -f ./sentry/values.yaml -f sentry-values.yaml ./sentry
+        echo -e "${GREEN}Primeapps:${NC}"
+        helm install --name primeapps --namespace=primeapps \
+        --set app.image=eu.gcr.io/primeapps-gke/primeapps-app \
+        --set auth.image=eu.gcr.io/primeapps-gke/primeapps-auth \
+        --set app.imageTag=3757 --set auth.imageTag=3757 \
+        --set app.pullsecret=container-registry-secret \
+        --set ingress.app.hostname=test.primeapps.io \
+        --set ingress.auth.hostname=auth-test.primeapps.io \
+        --set auth.pullsecret=container-registry-secret -f primeapps-values.yaml ../primeapps
+        echo -e "${GREEN}Completed installing charts!${NC}"
     elif [ "$arg" == "--delete" ] || [ "$arg" == "-d" ] 
     then
-        helm del nats --purge --wait
-        helm del stream  --purge --wait
-        helm del mq --purge --wait
-        helm del cache --purge --wait
-        helm del nats --purge --wait
-        helm del storage --purge --wait
-        helm del logging --purge --wait
+        echo -e "${GREEN}Removing charts...${NC}"
+        helm del primeapps --purge
+        helm del stream  --purge
+        helm del functions  --purge
+        kubectl delete -f nats-trigger.yaml
+        helm del mq --purge
+        helm del cache --purge
+        helm del storage --purge
+        helm del logging --purge
+        echo -e "${GREEN}Completed removing charts${NC}"
     fi
 done
