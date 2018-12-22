@@ -1,0 +1,23 @@
+#!/bin/bash
+for arg in "$@"
+do
+    if [ "$arg" == "--install" ] || [ "$arg" == "-i" ]
+    then
+        helm install --name nats --namespace functions -f ./kubeless/values.yaml kubeless --wait
+        helm install --name stream --namespace stream -f ./nats/values.yaml nats --wait
+        helm install --name mq --namespace mq -f ./rabbitmq/values.yaml rabbitmq --wait
+        helm install --name cache --namespace cache -f ./redis/values.yaml redis --wait
+        helm install --name nats --namespace functions -f ./kubeless/values.yaml kubeless --wait
+        helm install --name storage --namespace storage -f ./minio/values.yaml minio --wait
+        helm install --name logging --namespace logging -f ./sentry/values.yaml sentry --wait
+    elif [ "$arg" == "--delete" ] || [ "$arg" == "-d" ] 
+    then
+        helm del nats --purge --wait
+        helm del stream  --purge --wait
+        helm del mq --purge --wait
+        helm del cache --purge --wait
+        helm del nats --purge --wait
+        helm del storage --purge --wait
+        helm del logging --purge --wait
+    fi
+done
