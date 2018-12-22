@@ -1,0 +1,36 @@
+dependencies:
+  - name: kubeless
+    repository: https://kubernetes-charts-incubator.storage.googleapis.com/
+    version: 2.0.0
+    condition: kubeless.enabled
+    tags:
+      - functions
+      - kubeless
+  - name: nats
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 2.0.1
+    condition: nats.enabled
+    tags:
+      - stream
+      - nats
+  - name: redis 
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 5.1.0
+    condition: redis.enabled
+    tags:
+      - cache
+      - redis
+  - name: minio
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 2.2.0
+    condition: minio.enabled
+    tags:
+      - storage
+      - minio
+  - name: rabbitmq
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 4.0.1
+    condition: rabbitmq.enabled
+    tags:
+      - messagequeue
+      - rabbitmq

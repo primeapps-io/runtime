@@ -1,0 +1,18 @@
+dependencies:
+- name: kubeless
+  repository: https://kubernetes-charts-incubator.storage.googleapis.com/
+  version: 2.0.0
+- name: nats
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 2.0.1
+- name: redis
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 5.1.0
+- name: minio
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 2.2.0
+- name: rabbitmq
+  repository: https://kubernetes-charts.storage.googleapis.com/
+  version: 4.0.1
+digest: sha256:940f077072358afb8575f6c9977bd124132ff2b772e0a9cf05950921f77edb89
+generated: 2018-12-17T17:35:37.327903029+01:00
