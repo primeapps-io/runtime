@@ -6,7 +6,7 @@ for arg in "$@"
 do
     if [ "$arg" == "--install" ] || [ "$arg" == "-i" ]
     then
-        echo "${GREEN}Installing charts...${NC}"
+        echo -e "${GREEN}Installing charts...${NC}"
         echo -e "${GREEN}Streaming:${NC}"
         helm install --name stream --namespace stream -f nats-values.yaml stable/nats
         echo -e "${GREEN}Functions:${NC}"
