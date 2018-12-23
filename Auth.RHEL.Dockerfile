@@ -6,7 +6,7 @@ ENV ASPNETCORE_ENVIRONMENT Docker
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 
-FROM registry.access.redhat.com/dotnet/dotnet-22-rhel7 AS build
+FROM microsoft/dotnet:2.2-sdk-stretch AS build
 WORKDIR /src
 COPY ["PrimeApps.Auth/PrimeApps.Auth.csproj", "PrimeApps.Auth/"]
 COPY ["PrimeApps.Model/PrimeApps.Model.csproj", "PrimeApps.Model/"]
