@@ -3,9 +3,10 @@
         <nav class="navbar navbar-upper">
             <div class="navbar-header top-header">
                 <ul class="breadcrumb">
-                    <li><a href="#">Ofisim</a></li>
-                    <li><a href="#">People</a></li>
-                    <li>Collaborators 15</li>
+                    <li ng-repeat="breadcrumb in breadcrumbListe">
+                        <span ng-if="!breadcrumb.link">{{breadcrumb.title}}</span>
+                        <a href="#" ng-if="breadcrumb.link">{{breadcrumb.title}}</a></li>
+                    <li>
                 </ul>
                 <button type="button" class="navbar-toggle ng-scope" ng-click="toggleFullLeftMenu()">
                     <span class="fa fa-bars fa-2x"></span>
