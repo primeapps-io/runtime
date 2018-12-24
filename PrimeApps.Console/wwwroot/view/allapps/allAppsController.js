@@ -5,9 +5,16 @@ angular.module('primeapps')
     .controller('AllAppsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', '$cache', 'activityTypes', 'AllAppsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$aside',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, $cache, activityTypes, AllAppsService, $window, $state, $modal, dragularService, $timeout, $interval, $aside) {
 
+            $rootScope.breadcrumbListe = [
+                {
+                    title: 'All Apps',
+                    link: '#/allApps'
+                }
+            ];
+
             $scope.apps = [];
             $scope.appsFilter = {
-                search : null,
+                search: null,
                 page: null,
                 status: 0
             };
@@ -19,9 +26,9 @@ angular.module('primeapps')
                     }
                 });
 
-            $scope.appFilter = function(search, status){
+            $scope.appFilter = function (search, status) {
                 $scope.appsFilter = {
-                    search : search || null,
+                    search: search || null,
                     page: null,
                     status: status || 0
                 };
