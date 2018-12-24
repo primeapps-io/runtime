@@ -278,16 +278,16 @@ angular.module('primeapps')
                 $scope.currentDependency.hasRelationField = true;
                 $scope.currentDependencyState = angular.copy($scope.currentDependency);
 
-                $scope.formModal = $scope.formModal || $modal({
+                $scope.addNewDependencyModal = $scope.addNewDependencyModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/setup/modules/dependencyForm.html',
-                    animation: '',
+                    animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
                 });
 
-                $scope.formModal.$promise.then(function () {
-                    $scope.formModal.show();
+                $scope.addNewDependencyModal.$promise.then(function () {
+                    $scope.addNewDependencyModal.show();
                 });
             };
             //
@@ -376,15 +376,15 @@ angular.module('primeapps')
 
                             ngToast.create({ content: $filter('translate')('Setup.Modules.DependencySaveSuccess'), className: 'success' });
                             $scope.saving = false;
-                            $scope.formModal.hide();
+                            $scope.addNewDependencyModal.hide();
                         });
                 };
 
                 var error = function () {
                     $scope.dependencies = $scope.dependenciesState;
 
-                    if ($scope.formModal) {
-                        $scope.formModal.hide();
+                    if ($scope.addNewDependencyModal) {
+                        $scope.addNewDependencyModal.hide();
                         $scope.saving = false;
                     }
                 };
@@ -431,8 +431,8 @@ angular.module('primeapps')
                         .catch(function () {
                             $scope.dependencies = $scope.dependenciesState;
 
-                            if ($scope.formModal) {
-                                $scope.formModal.hide();
+                            if ($scope.addNewDependencyModal) {
+                                $scope.addNewDependencyModal.hide();
                                 $scope.saving = false;
                             }
                         });
@@ -443,7 +443,7 @@ angular.module('primeapps')
                     $scope.currentDependency[key] = $scope.currentDependencyState[key];
                 });
 
-                $scope.formModal.hide();
+                $scope.addNewDependencyModal.hide();
             }
         }
     ]);

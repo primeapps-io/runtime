@@ -5,7 +5,7 @@
                 <h4 class="modal-title">{{currentDependency.isNew ? ('Setup.Modules.NewDependency' | translate) : ('Setup.Modules.EditDependency' | translate)}}</h4>
             </div>
             <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="cancel()">
+                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewDependencyModal.hide();">
                     <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
                 </button>
                 <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group" ng-show="currentDependency.dependencyType == 'display'">
-                                    <label class="col-sm-4 required-field">
+                                    <label class="col-sm-6 required-field">
                                         * {{'Setup.Modules.AffectedAreaType' | translate }}:
                                     </label>
 

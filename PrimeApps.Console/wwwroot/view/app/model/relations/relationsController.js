@@ -43,19 +43,19 @@ angular.module('primeapps')
 				//filter['label_' + $rootScope.language + '_plural'] = '!' + $scope.module['label_' + $rootScope.language + '_plural'];
 				//$scope.moduleLists = $filter('filter')($rootScope.modules, filter, true);
 
-				$scope.formModal = $scope.formModal || $modal({
+                $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
 					scope: $scope,
 					templateUrl: 'view/setup/modules/relationForm.html',
-					animation: '',
+					animation: 'am-fade-and-slide-right',
 					backdrop: 'static',
 					show: false
 				});
 
-				$scope.formModal.$promise.then(function () {
+				$scope.addNewRelationsFormModal.$promise.then(function () {
 					if (!relation.isNew)
 						$scope.bindDragDrop();
 
-					$scope.formModal.show();
+                    $scope.addNewRelationsFormModal.show();
 				});
 			};
 
@@ -204,15 +204,15 @@ angular.module('primeapps')
 									className: 'success'
 								});
 								$scope.saving = false;
-								$scope.formModal.hide();
+								$scope.addNewRelationsFormModal.hide();
 							});
 				};
 
 				var error = function () {
 					$scope.relations = $scope.relationsState;
 
-					if ($scope.formModal) {
-						$scope.formModal.hide();
+					if ($scope.addNewRelationsFormModal) {
+						$scope.addNewRelationsFormModal.hide();
 						$scope.saving = false;
 					}
 				};
@@ -252,8 +252,8 @@ angular.module('primeapps')
 					.catch(function () {
 						$scope.relations = $scope.relationsState;
 
-						if ($scope.formModal) {
-							$scope.formModal.hide();
+						if ($scope.addNewRelationsFormModal) {
+							$scope.addNewRelationsFormModal.hide();
 							$scope.saving = false;
 						}
 					});
@@ -264,7 +264,7 @@ angular.module('primeapps')
 					$scope.currentRelation[key] = $scope.currentRelationState[key];
 				});
 
-				$scope.formModal.hide();
+				$scope.addNewRelationsFormModal.hide();
 			}
 		}
 	]);
