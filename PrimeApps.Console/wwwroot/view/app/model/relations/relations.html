@@ -2,7 +2,7 @@
     <div class="setup-liste-header row">
         <div class="col-sm-6"><h2 class="setup-title">Relations</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button"><i class="fas fa-plus"></i> Add New Relations</button>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Relations</button>
         </div>
     </div>
     <div>
@@ -11,10 +11,10 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>{{'Setup.Workflow.Name' | translate}}</th>
-                    <th>{{'Setup.Workflow.Module' | translate}}</th>
-                    <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-                    <th>{{'Common.Active' | translate}}</th>
+                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
+                    <th>{{'Setup.Modules.Name' | translate}}</th>
+                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
+                    <th>{{'Setup.Modules.RelationType' | translate}}</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
                 </thead>
