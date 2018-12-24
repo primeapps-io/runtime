@@ -2,6 +2,14 @@
     <div class="row">
         <ng-include ng-show="activeMenu==='app'"   src="'view/app/common/appMenu.html'"></ng-include>
         <ng-include ng-show="activeMenu==='model'" src="'view/app/common/modelMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='automation'" src="'view/app/common/automationMenu.html'"></ng-include>
+
+        <ng-include ng-show="activeMenu==='templates'" src="'view/app/common/templatesMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='analytics'" src="'view/app/common/analyticsMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='authorization'" src="'view/app/common/authorizationMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='security'" src="'view/app/common/securityMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='identity'" src="'view/app/common/identityMenu.html'"></ng-include>
+        <ng-include ng-show="activeMenu==='settings'" src="'view/app/common/settingsMenu.html'"></ng-include>
 
         <div class="col-sm-9" style="border: none ;">
             <div ui-view="app"></div>
