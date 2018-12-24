@@ -4,6 +4,9 @@ angular.module('primeapps')
 
     .controller('TeamsController', ['$rootScope', '$scope', 'guidEmpty', 'entityTypes', 'helper', 'config', '$http', '$localStorage', 'operations', '$filter', 'ngToast', '$cache', 'activityTypes', 'TeamsService', '$window', '$state', '$modal', 'dragularService', '$timeout', '$interval', '$stateParams',
         function ($rootScope, $scope, guidEmpty, entityTypes, helper, config, $http, $localStorage, operations, $filter, ngToast, $cache, activityTypes, TeamsService, $window, $state, $modal, dragularService, $timeout, $interval, $stateParams) {
+
+            $scope.loading = true;
+
             $scope.teamArray = [];
             $scope.teamModel = {};
             $scope.teamId;
@@ -22,12 +25,12 @@ angular.module('primeapps')
 
             $scope.tabelPagination = {
                 currentPage: 1,
-                total: 10,
+                total: 100,
                 pageSize: 10
             };
 
-            $scope.changePage = function () {
-                console.log("Merhaba");
+            $scope.changePage = function (page) {
+                console.log(page);
             };
 
             $scope.getTeamsList = function () {

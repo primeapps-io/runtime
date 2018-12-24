@@ -251,6 +251,23 @@ angular.module('primeapps')
                         }]
                     }
                 })
+                .state('studio.organization.team-detail', {
+                    url: '/team/:teamId',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/organization/teams/teams.html',
+                            controller: 'TeamsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/organization/teams/teamsService.js',
+                                cdnUrl + 'view/organization/teams/teamsController.js'
+                            ]);
+                        }]
+                    }
+                })
                 .state('studio.organization.collaborators', {
                     url: '/collaborators',
                     views: {
