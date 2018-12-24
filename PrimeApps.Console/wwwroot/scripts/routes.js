@@ -251,12 +251,12 @@ angular.module('primeapps')
                         }]
                     }
                 })
-                .state('studio.organization.team-detail', {
+                .state('studio.organization.teamDetail', {
                     url: '/team/:teamId',
                     views: {
                         'app': {
                             templateUrl: cdnUrl + 'view/organization/teams/teams.html',
-                            controller: 'TeamsController'
+                            controller: 'TeamController'
                         }
                     },
                     resolve: {

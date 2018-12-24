@@ -38,6 +38,7 @@ angular.module('primeapps')
                     .then(function (response) {
                         if (response.data)
                             $scope.teamArray = response.data;
+                        $scope.loading = false;
                     })
                     .catch(function (error) {
                         getToastMsg('Common.Error', 'danger');
@@ -70,7 +71,7 @@ angular.module('primeapps')
 
                     $scope.getTeamsList();
 
-                    var searchTeamName = $filter('filter')($scope.teamArray, { name: $scope.teamModel.name }, true)[0];
+                    var searchTeamName = $filter('filter')($scope.teamArray, {name: $scope.teamModel.name}, true)[0];
 
                     if (searchTeamName) {
                         getToastMsg('A team with the same name is available.', 'warning');
@@ -126,7 +127,7 @@ angular.module('primeapps')
             $scope.addNewTeam = function (id) {
                 if (id) {
                     $scope.teamId = id;
-                    var findTeam = $filter('filter')($scope.teamArray, { id: id }, true)[0];
+                    var findTeam = $filter('filter')($scope.teamArray, {id: id}, true)[0];
                     $scope.teamModel.name = findTeam.name;
                     $scope.teamModel.icon = findTeam.icon;
                 }
@@ -158,7 +159,7 @@ angular.module('primeapps')
                 $scope.teamModel = {};
                 $scope.teamId = 0;
                 $scope.addNewTeamFormModal.hide();
-            }
+            };
 
             var getToastMsg = function (msg, type = 'success') {
                 ngToast.create({
