@@ -429,6 +429,40 @@ angular.module('primeapps')
                         }]
                     }
                 })
+                .state('studio.app.templatesExcel', {
+                    url: '/templatesExcel',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/templates/exceltemplates/excelTemplates.html',
+                            controller: 'ExcelTemplatesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/templates/exceltemplates/excelTemplatesController.js',
+                                cdnUrl + 'view/app/templates/exceltemplates/excelTemplatesService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.templatesWord', {
+                    url: '/templatesWord',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/templates/wordtemplates/wordTemplates.html',
+                            controller: 'WordTemplatesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/templates/wordtemplates/wordTemplatesController.js',
+                                cdnUrl + 'view/app/templates/wordtemplates/wordTemplatesService.js'
+                            ]);
+                        }]
+                    }
+                })
 
                 .state('studio.app.templatesEmailGuide', {
                     url: '/templatesEmailGuide',
