@@ -1,4 +1,9 @@
 //Reset
+button,select{
+  &:focus{
+    outline: none !important;
+  }
+}
 
 $primeapps-color: #635fb3;
 .primeapps {
