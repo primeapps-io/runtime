@@ -50,7 +50,11 @@ angular.module('primeapps')
                 TeamsService.get(id)
                     .then(function (response) {
                         if (response.data)
-                            $scope.selectedTeam = response.data;
+                            $scope.selectedTeam = response.data[0];
+
+                        $scope.$parent.menuTopTitle = "asdasda";
+                        $scope.$parent.activeMenu = "teams";
+                        $scope.$parent.activeMenuItem = 'team';
                     });
             }
 
@@ -63,7 +67,7 @@ angular.module('primeapps')
 
                     $scope.getTeamsList();
 
-                    var searchTeamName = $filter('filter')($scope.teamArray, {name: $scope.teamModel.name}, true)[0];
+                    var searchTeamName = $filter('filter')($scope.teamArray, { name: $scope.teamModel.name }, true)[0];
 
                     if (searchTeamName) {
                         getToastMsg('A team with the same name is available.', 'warning');
@@ -119,7 +123,7 @@ angular.module('primeapps')
             $scope.addNewTeam = function (id) {
                 if (id) {
                     $scope.teamId = id;
-                    var findTeam = $filter('filter')($scope.teamArray, {id: id}, true)[0];
+                    var findTeam = $filter('filter')($scope.teamArray, { id: id }, true)[0];
                     $scope.teamModel.name = findTeam.name;
                     $scope.teamModel.icon = findTeam.icon;
                 }

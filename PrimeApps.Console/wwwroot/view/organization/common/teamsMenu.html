@@ -1,10 +1,10 @@
 <div class="menu col-sm-3">
     <h2 class="setup-title">{{ menuTopTitle }}</h2>
     <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='modules' ? 'active' :''">
-            <a href="/#/app/5/modules">
+        <li ng-repeat="team in $parent.teamArray" ng-class="team.id === $parent.teamId ? 'active' :''">
+            <a href="/#/organization/0/team/{{team.id}}">
                 <i class="fas fa-th-large"></i>
-                Modules
+                {{team.name}}
             </a>
         </li>
 
