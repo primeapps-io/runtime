@@ -16,9 +16,9 @@ namespace PrimeApps.Model.Helpers
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public static string GetConnectionString(string connectionString, int tenantId, string externalConnectionString = null)
+        public static string GetConnectionString(string connectionString, int tenantId, string databasePrefix, string externalConnectionString = null)
         {
-            var database = $"tenant{tenantId}";
+            var database = databasePrefix + tenantId;
             var builder = new DbConnectionStringBuilder(false);
             builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? connectionString : externalConnectionString;
 
@@ -73,7 +73,7 @@ namespace PrimeApps.Model.Helpers
 
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1)))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, "tenant")))
                 {
                     connection.Open();
 
@@ -111,7 +111,7 @@ namespace PrimeApps.Model.Helpers
             bool result = false;
             try
             {
-                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1)))
+                using (var connection = new NpgsqlConnection(GetConnectionString(connectionString, -1, "tenant")))
                 {
                     connection.Open();
 

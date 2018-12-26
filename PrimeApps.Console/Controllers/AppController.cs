@@ -35,7 +35,10 @@ namespace PrimeApps.Console.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            //SetCurrentUser(_platformUserRepository);
+            SetCurrentUser(_platformUserRepository);
+            SetCurrentUser(_appDraftRepository);
+            SetCurrentUser(_organizationRepository);
+
             base.OnActionExecuting(context);
         }
 

@@ -9,6 +9,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
 {
     public interface IAppDraftRepository : IRepositoryBaseConsole
     {
+        List<int> GetAppIdsByOrganizationId(int organizationId);
         Task<AppDraft> Get(string name);
         Task<AppDraft> Get(int id);
         Task<int> Create(AppDraft app);

@@ -18,18 +18,18 @@ using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.Console.Controllers
 {
-	[Route("api/module"), Authorize]
-	public class ModuleController : ApiBaseController
-	{
-		private IModuleRepository _moduleRepository;
-		private IViewRepository _viewRepository;
-		private IProfileRepository _profileRepository;
-		private ISettingRepository _settingRepository;
-		private IMenuRepository _menuRepository;
-		private IConfiguration _configuration;
-		private Warehouse _warehouse;
+    [Route("api/module")]
+    public class ModuleController : DraftBaseController
+    {
+        private IModuleRepository _moduleRepository;
+        private IViewRepository _viewRepository;
+        private IProfileRepository _profileRepository;
+        private ISettingRepository _settingRepository;
+        private IMenuRepository _menuRepository;
+        private IConfiguration _configuration;
+        private Warehouse _warehouse;
 
-		private IModuleHelper _moduleHelper;
+        private IModuleHelper _moduleHelper;
 
 		public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
 		{
@@ -41,17 +41,17 @@ namespace PrimeApps.Console.Controllers
 			_configuration = configuration;
 			_menuRepository = menuRepository;
 
-			_moduleHelper = moduleHelper;
-		}
+            _moduleHelper = moduleHelper;
+        }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_moduleRepository);
-			SetCurrentUser(_viewRepository);
-			SetCurrentUser(_menuRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_settingRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_moduleRepository, DBMode, AppId, TenantId);
+            SetCurrentUser(_viewRepository, DBMode, AppId, TenantId);
+            SetCurrentUser(_menuRepository, DBMode, AppId, TenantId);
+            SetCurrentUser(_profileRepository, DBMode, AppId, TenantId);
+            SetCurrentUser(_settingRepository, DBMode, AppId, TenantId);
 
 			base.OnActionExecuting(context);
 		}
@@ -242,14 +242,14 @@ namespace PrimeApps.Console.Controllers
 				}
 			}
 
-			//var viewStates = await _viewRepository.GetAllViewStates(id);
-			//if (viewStates.Count > 0)
-			//{
-			//    foreach (var viewState in viewStates)
-			//    {
-			//        await _viewRepository.DeleteHardViewState(viewState);
-			//    }
-			//}
+            //var viewStates = await _viewRepository.GetAllViewStates(id);
+            //if (viewStates.Count > 0)
+            //{
+            //    foreach (var viewState in viewStates)
+            //    {
+            //        await _viewRepository.DeleteHardViewState(viewState);
+            //    }
+            //}
 
 			_moduleHelper.AfterUpdate(AppUser, moduleEntity);
 

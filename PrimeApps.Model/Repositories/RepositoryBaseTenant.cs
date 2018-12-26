@@ -41,11 +41,11 @@ namespace PrimeApps.Model.Repositories
                 {
                     if (TenantId.HasValue)
                     {
-                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value);
+                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, TenantId.Value, CurrentUser.DBMode);
                     }
                     else if (CurrentUser.TenantId != -1)
                     {
-                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, CurrentUser.TenantId);
+                        dbConnection.ConnectionString = Postgres.GetConnectionString(connectionString, CurrentUser.TenantId, CurrentUser.DBMode);
                     }
                     else
                     {

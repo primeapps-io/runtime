@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Context
         public TenantDBContext(int tenantId, IConfiguration configuration)
         {
             TenantId = tenantId;
-            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId);
+            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId, "tenant");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

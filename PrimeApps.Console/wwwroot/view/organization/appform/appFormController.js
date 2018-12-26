@@ -117,13 +117,12 @@ angular.module('primeapps')
                 if (!newAppForm.$valid)
                     return false;
 
-                newAppForm.name = newAppForm.name;
-                newAppForm.logo = uploader;
-                newAppForm.organization_id = 0;
-                newAppForm.template_id = null;
-                newAppForm.status = 1;
+                //$scope.appModel.logo = uploader;
+                $scope.appModel.organization_id = 0;
+                $scope.appModel.template_id = 0;
+                $scope.appModel.status = 1;
 
-                AppFormService.create(newAppForm)
+                AppFormService.create($scope.appModel)
                     .then(function (response) {
 
                     });

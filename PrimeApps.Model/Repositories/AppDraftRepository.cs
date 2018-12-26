@@ -17,6 +17,14 @@ namespace PrimeApps.Model.Repositories
         public AppDraftRepository(ConsoleDBContext dbContext, IConfiguration configuration)
            : base(dbContext, configuration) { }
 
+        public List<int> GetAppIdsByOrganizationId(int organizationId)
+        {
+            return DbContext.Apps
+                .Where(x => x.OrganizationId == organizationId && !x.Deleted)
+                .Select(x => x.Id)
+                .ToList();
+        }
+
         public async Task<AppDraft> Get(string name)
         {
             return await DbContext.Apps

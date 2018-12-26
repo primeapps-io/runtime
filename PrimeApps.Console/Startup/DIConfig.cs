@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using PrimeApps.Console.Services;
 using PrimeApps.Console.Helpers;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Console
 {
@@ -46,11 +47,11 @@ namespace PrimeApps.Console
                     }
                 }
             }
-
+            services.AddScoped<Warehouse, Warehouse>();
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-            services.AddScoped<IModuleHelper, ModuleHelper>();
+            services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();
 
             services.AddScoped<Email, Email>();
