@@ -242,6 +242,41 @@ namespace PrimeApps.Console.Controllers
             return Ok(organizationDTO);
         }
 
+        [Route("get_users/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetUsers(int id)
+        {
+            var organization = await _organizationRepository.GetUsersByOrganizationId(id);
+
+            var ids = new List<int>();
+
+            foreach (var item in organization)
+                ids.Add(item.UserId);
+
+            var orgJOject = new JObject();
+            var array = new JArray();
+            var platformUsers = await _platformUserRepository.GetByIds(ids);
+
+            orgJOject["organization_id"] = id;
+
+            foreach (var user in platformUsers)
+            {
+                var data = new JObject();
+
+                data["user_id"] = user.Id;
+
+                data["first_name"] = user.FirstName;
+                data["last_name"] = user.LastName;
+                data["full_name"] = user.GetFullName();
+                data["email"] = user.Email;
+
+                array.Add(data);
+            }
+
+            orgJOject["users"] = array;
+
+            return Ok(orgJOject);
+        }
+
         [Route("create"), HttpPost]
         public async Task<IActionResult> Create([FromBody] OrganizationModel model)
         {

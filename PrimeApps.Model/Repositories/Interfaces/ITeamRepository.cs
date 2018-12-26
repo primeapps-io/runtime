@@ -11,6 +11,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<List<Team>> GetAll();
         Task<Team> GetByTeamId(int id);
         Task<List<Team>> GetByUserId(int userId);
+        Task<Team> GetByName(string name);
         Task<List<Team>> GetByOrganizationId(int organizationId);
         Task<int> Create(Team team);
         Task<int> Delete(Team team);

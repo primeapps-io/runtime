@@ -115,22 +115,31 @@ namespace PrimeApps.Console.Controllers
 
             var platformUsers = await _platformUserRepository.GetByIds(ids);
 
-            foreach (var user in team.TeamUsers)
+            var teamJobject = new JObject();
+
+            teamJobject["id"] = team.Id;
+            teamJobject["name"] = team.Name;
+            teamJobject["icon"] = team.Icon;
+            teamJobject["organization_id"] = team.OrganizationId;
+
+            foreach (var user in platformUsers)
             {
-                var result = platformUsers.Where(x => x.Id == user.UserId).FirstOrDefault();
-
                 var data = new JObject();
-                data["TeamId"] = user.TeamId;
-                data["UserId"] = user.UserId;
 
-                data["FirstName"] = result.FirstName;
-                data["LastName"] = result.LastName;
-                data["Email"] = result.Email;
+                data["team_id"] = team.Id;
+                data["user_id"] = user.Id;
+
+                data["first_name"] = user.FirstName;
+                data["last_name"] = user.LastName;
+                data["full_name"] = user.GetFullName();
+                data["email"] = user.Email;
 
                 JTeam.Add(data);
             }
 
-            return Ok(JTeam);
+            teamJobject["team_users"] = JTeam;
+
+            return Ok(teamJobject);
         }
 
         [Route("get_all"), HttpGet]
@@ -149,8 +158,19 @@ namespace PrimeApps.Console.Controllers
             return Ok(teams);
         }
 
+        [Route("is_unique_name"), HttpGet]
+        public async Task<IActionResult> IsUniqueName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return BadRequest(ModelState);
+
+            var team = await _teamRepository.GetByName(name);
+
+            return team == null ? Ok(true) : Ok(false);
+        }
+
         [Route("team_user_add/{id:int}"), HttpPost]
-        public async Task<IActionResult> TeamUserAdd(int userId, [FromBody] TeamModel teamModel)
+        public async Task<IActionResult> TeamUserAdd(int id, [FromBody] TeamModel teamModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -163,7 +183,7 @@ namespace PrimeApps.Console.Controllers
             var teamUser = new TeamUser
             {
                 TeamId = team.Id,
-                UserId = userId
+                UserId = id
             };
 
             var result = await _teamRepository.UserTeamAdd(teamUser);
@@ -171,13 +191,13 @@ namespace PrimeApps.Console.Controllers
             return Ok(result);
         }
 
-        [Route("team_user_delete/{id:int}"), HttpDelete]
-        public async Task<IActionResult> TeamUserDelete(int userId, [FromBody] TeamModel teamModel)
+        [Route("team_user_delete/{id:int}"), HttpPost]
+        public async Task<IActionResult> TeamUserDelete(int id, [FromBody] TeamModel teamModel)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var teamUser = await _teamRepository.GetTeamUser(userId, teamModel.Id);
+            var teamUser = await _teamRepository.GetTeamUser(id, teamModel.Id);
 
             if (teamUser == null)
                 return NotFound();

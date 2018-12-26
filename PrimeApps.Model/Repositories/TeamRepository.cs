@@ -41,6 +41,11 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Team> GetByName(string name)
+        {
+            return await DbContext.Teams.Where(x => x.Name == name && !x.Deleted).FirstOrDefaultAsync();
+        }
+
         public async Task<List<Team>> GetByOrganizationId(int organizationId)
         {
             return await DbContext.Teams

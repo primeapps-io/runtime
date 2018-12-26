@@ -23,6 +23,23 @@ angular.module('primeapps')
 
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'team/delete/' + id);
+                },
+
+                deleteUser: function (id, team) {
+                    return $http.post(config.apiUrl + 'team/team_user_delete/' + id, team);
+                },
+
+                userAddForTeam: function (userId, teamUser) {
+                    return $http.post(config.apiUrl + 'team/team_user_add/' + userId, teamUser);
+                },
+
+                isUniqueName: function (name) {
+                    return $http.get(config.apiUrl + 'team/is_unique_name?name=' + name);
+                },
+
+                //TODO 
+                getOrganizationUsers: function (id) {
+                    return $http.get(config.apiUrl + 'organization/get_users/' + id);
                 }
             };
         }]);

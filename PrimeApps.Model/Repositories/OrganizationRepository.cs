@@ -35,6 +35,13 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<OrganizationUser>> GetUsersByOrganizationId(int organizationId)
+        {
+            return await DbContext.OrganizationUsers
+                .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .ToListAsync();
+        }
+
         public async Task<List<Organization>> GetByUserId(int userId)
         {
             return await DbContext.OrganizationUsers

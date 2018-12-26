@@ -1,14 +1,22 @@
 <div class="setup-liste-header row">
-    <div class="col-sm-6"><h2 class="setup-title">Teams</h2></div>
-    <div class="col-sm-6 list-right-menu">
+    <div class="col-sm-6"><h2 class="setup-title">{{selectedTeam ? selectedTeam.name:'Teams'}}</h2></div>
+    <div class="col-sm-6 list-right-menu" ng-show="!selectedTeam">
         <button class="btn add-button" ng-click="addNewTeam()">
             <i class="fas fa-plus"></i> Add New Team
+        </button>
+    </div>
+    <div class="col-sm-6 list-right-menu" ng-show="selectedTeam">
+        <button class="btn btn-danger btn-radius" ng-click="delete(teamId)">
+            <i class="fas fa-plus"></i> Delete
+        </button>
+        <button class="btn add-button" ng-click="addNewTeam(teamId)">
+            <i class="fas fa-plus"></i> Edit
         </button>
     </div>
 </div>
 <div>
     <div class="tab-content">
-        <table class="table">
+        <table class="table table-hover" ng-show="!selectedTeam">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -19,7 +27,7 @@
             </thead>
             <tbody>
                 <tr ng-repeat="team in teamArray">
-                    <td><i class="{{team.icon}}"></i> {{team.name}}</td>
+                    <td ng-click="selectTeam(team.id)" style="cursor:pointer;"><i class="{{team.icon}}"></i> {{team.name}}</td>
                     <td>{{team.team_users ? team.team_users.length:0}}</td>
                     <td>{{team.organization.name}}</td>
                     <td class="text-right">
@@ -34,40 +42,79 @@
                         </button>
                     </td>
                 </tr>
-                </tbody>
-            </table>
-            <div class="row table-pagination">
-                <div class="col-sm-10">
-                    <nav aria-label="Page navigation">
-                        <div paging
-                             text-first="&laquo;"
-                             ul-class="pagination"
-                             active-class="active"
-                             page="tabelPagination.currentPage"
-                             page-size="tabelPagination.pageSize"
-                             total="tabelPagination.total"
-                             scroll-top="true"
-                             hide-if-empty="true"
-                             show-prev-next="true"
-                             show-first-last="true"
-                             text-next-class="fas fa-chevron-right"
-                             text-prev-class="fas fa-chevron-left"
-                             text-first-class="fas fa-step-backward"
-                             text-last-class="fas fa-step-forward"
-                             paging-action="changePage(page)">
-                        </div>
-                    </nav>
-                </div>
-                <div class="col-sm-2">
-                    <span class="pagination-span">Items per page  </span>
-                    <select class="items-per-page-select">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
-                </div>
+            </tbody>
+        </table>
+
+        <ui-select ng-show="selectedTeam" ng-model="selectedUser" on-select="selectUserForTeam($select.selected.user_id)">
+            <ui-select-match allow-clear="true" placeholder="Add collaborators from PrimeApps">{{$select.selected.full_name}}</ui-select-match>
+            <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
+                <span ng-bind-html="item.full_name | highlight: $select.search"></span>
+            </ui-select-choices>
+        </ui-select>
+
+        <!--<select id="users"
+                name="users"
+                ng-show="selectedTeam"
+                class="form-control ng-animate-disabled"
+                ng-options="o as o.full_name for o in orgranizationUserArray |  orderBy:'name' track by o.user_id"
+                ng-model="selectedUser.id">
+            <option value="">{{'Common.Select' | translate}}</option>
+        </select>-->
+        <table class="table table-hover" ng-show="selectedTeam">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th style="min-width: 110px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in selectedTeam.team_users">
+                    <td> {{user.full_name}}</td>
+                    <td>{{user.email}}</td>
+                    <td class="text-right">
+                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                                action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                confirm-yes="{{'Common.Yes' | translate}}"
+                                confirm-no="{{'Common.No' | translate}}">
+                            {{'Common.Remove' | translate}}
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row table-pagination">
+            <div class="col-sm-10">
+                <nav aria-label="Page navigation">
+                    <div paging
+                         text-first="&laquo;"
+                         ul-class="pagination"
+                         active-class="active"
+                         page="tabelPagination.currentPage"
+                         page-size="tabelPagination.pageSize"
+                         total="tabelPagination.total"
+                         scroll-top="true"
+                         hide-if-empty="true"
+                         show-prev-next="true"
+                         show-first-last="true"
+                         text-next-class="fas fa-chevron-right"
+                         text-prev-class="fas fa-chevron-left"
+                         text-first-class="fas fa-step-backward"
+                         text-last-class="fas fa-step-forward"
+                         paging-action="changePage(page)">
+                    </div>
+                </nav>
+            </div>
+            <div class="col-sm-2">
+                <span class="pagination-span">Items per page  </span>
+                <select class="items-per-page-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
             </div>
         </div>
+    </div>
 
 </div>
