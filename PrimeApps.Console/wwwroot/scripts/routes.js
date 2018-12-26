@@ -250,7 +250,7 @@ angular.module('primeapps')
                             ]);
                         }]
                     }
-                }) 
+                })
                 .state('studio.organization.collaborators', {
                     url: '/collaborators',
                     views: {
@@ -515,98 +515,104 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
-                //conti
-                .state('studio.app.settings', {
-                    url: '/settings',
+                .state('studio.app.reports', {
+                    url: '/reports',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/settings/settings.html',
-                            controller: 'SettingController'
+                            templateUrl: cdnUrl + 'view/app/analytics/reports/reports.html',
+                            controller: 'ReportsController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/settings/settingController.js',
-                                cdnUrl + 'view/setup/settings/settingService.js'
+                                cdnUrl + 'view/app/analytics/reports/reportsController.js',
+                                cdnUrl + 'view/app/analytics/reports/reportsService.js'
                             ]);
                         }]
                     }
                 })
-
-                .state('studio.app.general', {
-                    url: '/general',
+                .state('studio.app.dashboards', {
+                    url: '/dashboards',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/general/generalSettings.html',
-                            controller: 'GeneralSettingsController'
+                            templateUrl: cdnUrl + 'view/app/analytics/dashboards/dashboards.html',
+                            controller: 'DashboardsController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/general/generalSettingsController.js',
-                                cdnUrl + 'view/setup/general/generalSettingsService.js'
+                                cdnUrl + 'view/app/analytics/dashboards/dashboardsController.js',
+                                cdnUrl + 'view/app/analytics/dashboards/dashboardsService.js'
                             ]);
                         }]
                     }
                 })
-
-                .state('studio.app.organization', {
-                    url: '/organization',
+                .state('studio.app.warehouse', {
+                    url: '/warehouse',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/organization/organization.html',
-                            controller: 'OrganizationController'
+                            templateUrl: cdnUrl + 'view/app/analytics/warehouse/warehouse.html',
+                            controller: 'WarehouseController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/organization/organizationController.js',
-                                cdnUrl + 'view/setup/organization/organizationService.js'
+                                cdnUrl + 'view/app/analytics/warehouse/warehouseController.js',
+                                cdnUrl + 'view/app/analytics/warehouse/warehouseService.js'
                             ]);
                         }]
                     }
                 })
-
-                .state('studio.app.notifications', {
-                    url: '/notifications',
+                .state('studio.app.bi', {
+                    url: '/bi',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/notifications/notifications.html',
-                            controller: 'NotificationController'
+                            templateUrl: cdnUrl + 'view/app/analytics/bi/bi.html',
+                            controller: 'BiController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/notifications/notificationController.js',
-                                cdnUrl + 'view/setup/notifications/notificationService.js'
+                                cdnUrl + 'view/app/analytics/bi/biController.js',
+                                cdnUrl + 'view/app/analytics/bi/biService.js'
                             ]);
                         }]
                     }
                 })
-
-                .state('studio.app.users', {
-                    url: '/users',
+                .state('studio.app.functions', {
+                    url: '/functions',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/users/users.html',
-                            controller: 'UserController'
+                            templateUrl: cdnUrl + 'view/app/functions/functions.html',
+                            controller: 'FunctionsController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/users/userController.js',
-                                cdnUrl + 'view/setup/users/userService.js',
-                                cdnUrl + 'view/setup/workgroups/workgroupService.js',
-                                cdnUrl + 'view/setup/profiles/profileService.js',
-                                cdnUrl + 'view/setup/roles/roleService.js',
-                                cdnUrl + 'view/setup/usercustomshares/userCustomShareService.js',
-                                cdnUrl + 'view/setup/license/licenseService.js'
+                                cdnUrl + 'view/app/functions/functionsController.js',
+                                cdnUrl + 'view/app/functions/functionsService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.components', {
+                    url: '/components',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/components/components.html',
+                            controller: 'ComponentsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/components/componentsController.js',
+                                cdnUrl + 'view/app/components/componentsService.js'
                             ]);
                         }]
                     }
@@ -616,579 +622,38 @@ angular.module('primeapps')
                     url: '/profiles',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/profiles/profiles.html',
-                            controller: 'ProfileController'
+                            templateUrl: cdnUrl + 'view/app/authorization/profiles/profiles.html',
+                            controller: 'ProfilesController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/profiles/profileController.js',
-                                cdnUrl + 'view/setup/profiles/profileService.js'
+                                cdnUrl + 'view/app/authorization/profiles/profilesController.js',
+                                cdnUrl + 'view/app/authorization/profiles/profilesService.js'
                             ]);
                         }]
                     }
                 })
-
-                .state('studio.app.profile', {
-                    url: '/profile?id&clone',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/profiles/profileForm.html',
-                            controller: 'ProfileFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/profiles/profileFormController.js',
-                                cdnUrl + 'view/setup/profiles/profileService.js'
-                            ]);
-                        }]
-                    }
-                })
-
                 .state('studio.app.roles', {
                     url: '/roles',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/setup/roles/roles.html',
-                            controller: 'RoleController'
+                            templateUrl: cdnUrl + 'view/app/authorization/roles/roles.html',
+                            controller: 'RolesController'
                         }
                     },
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/roles/roleController.js',
-                                cdnUrl + 'view/setup/roles/roleService.js'
+                                cdnUrl + 'view/app/authorization/roles/rolesController.js',
+                                cdnUrl + 'view/app/authorization/roles/rolesService.js'
                             ]);
                         }]
                     }
                 })
-
-                .state('studio.app.role', {
-                    url: '/role?id&reportsTo',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/roles/roleForm.html',
-                            controller: 'RoleFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/roles/roleFormController.js',
-                                cdnUrl + 'view/setup/roles/roleService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.module', {
-                    url: '/module?id&clone&redirect',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleSetupForm.html',
-                            controller: 'ModuleFormSetupController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleSetupFormController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupLayoutController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js',
-                                cdnUrl + 'view/location/locationFormModalController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.moduledependencies', {
-                    url: '/module/dependencies/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleDependencies.html',
-                            controller: 'DependencyController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/dependenciesController.js',
-                                cdnUrl + 'view/setup/modules/dependenciesService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.actionButtons', {
-                    url: '/module/actionButtons/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/actionButtons.html',
-                            controller: 'ActionButtonsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/actionButtonsController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.moduleProfileSettings', {
-                    url: '/module/moduleProfileSettings/:module',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/modules/moduleProfileSettings.html',
-                            controller: 'ModuleProfileSettingController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/modules/moduleProfileSettingsController.js',
-                                cdnUrl + 'view/setup/modules/moduleSetupService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.leadconvertmap', {
-                    url: '/leadconvertmap',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/convert/leadConvertMap.html',
-                            controller: 'LeadConvertMapController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/convert/leadConvertMapController.js',
-                                cdnUrl + 'view/setup/convert/convertMapService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.candidateconvertmap', {
-                    url: '/candidateconvertmap',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/convert/candidateConvertMap.html',
-                            controller: 'CandidateConvertMapController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/convert/candidateConvertMapController.js',
-                                cdnUrl + 'view/setup/convert/convertMapService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.quoteconvertmap', {
-                    url: '/quoteconvertmap',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/convert/quoteConvertMap.html',
-                            controller: 'quoteConvertMapController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/convert/quoteConvertMapController.js',
-                                cdnUrl + 'view/setup/convert/convertMapService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.import', {
-                    url: '/importhistory',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/importhistory/importHistory.html',
-                            controller: 'ImportHistoryController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/importhistory/importHistoryController.js',
-                                cdnUrl + 'view/setup/importhistory/importHistoryService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.messaging', {
-                    url: '/messaging',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/messaging/messaging.html',
-                            controller: 'MessagingController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/messaging/messagingController.js',
-                                cdnUrl + 'view/setup/messaging/messagingService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.office', {
-                    url: '/office',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/office/office.html',
-                            controller: 'OfficeController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/office/officeController.js',
-                                cdnUrl + 'view/setup/office/officeService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.phone', {
-                    url: '/phone',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/phone/phone.html',
-                            controller: 'PhoneSettingsController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/phone/phoneSettingsController.js',
-                                cdnUrl + 'view/setup/phone/phoneSettingsService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.auditlog', {
-                    url: '/auditlog',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/auditlog/auditlogs.html',
-                            controller: 'AuditLogController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/auditlog/auditLogController.js',
-                                cdnUrl + 'view/setup/auditlog/auditLogService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.templates', {
-                    url: '/templates',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/templates/templates.html',
-                            controller: 'TemplateController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/templates/templateService.js',
-                                cdnUrl + 'view/setup/templates/templateController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.template', {
-                    url: '/template?id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/templates/templateForm.html',
-                            controller: 'TemplateFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/templates/templateService.js',
-                                cdnUrl + 'view/setup/templates/templateFormController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.templateguide', {
-                    url: '/templateguide',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/templates/templateGuide.html',
-                            controller: 'TemplateGuideController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/templates/templateGuideController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.menu', {
-                    url: '/menu',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/menu/menu.html',
-                            controller: 'MenuController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/menu/menuController.js',
-                                cdnUrl + 'view/setup/menu/menuService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.menu_list', {
-                    url: '/menu_list',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/menu/menuList.html',
-                            controller: 'MenuListController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/menu/menuListController.js',
-                                cdnUrl + 'view/setup/menu/menuService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.approvel_process', {
-                    url: '/approvel_process',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/approvel_process/approvelProcesses.html',
-                            controller: 'ApprovelProcessController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/approvel_process/approvelProcessController.js',
-                                cdnUrl + 'view/setup/approvel_process/approvelProcessService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.help', {
-                    url: '/help',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/help/helpPage.html',
-                            controller: 'HelpController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/help/helpController.js',
-
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.helpside', {
-                    url: '/helpside',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/help/helpPageSide.html',
-                            controller: 'HelpController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/help/helpController.js',
-
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.helpsides', {
-                    url: '/helpsides',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/help/helpPageSides.html',
-                            controller: 'HelpController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/help/helpController.js',
-
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.approvel', {
-                    url: '/approvel?id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/approvel_process/approvelProcessForm.html',
-                            controller: 'ApprovelProcessFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/approvel_process/approvelProcessFormController.js',
-                                cdnUrl + 'view/setup/approvel_process/approvelProcessService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.warehouse', {
-                    url: '/warehouse',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/warehouse/warehouse.html',
-                            controller: 'WarehouseController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/analytics/analyticsService.js',
-                                cdnUrl + 'view/setup/warehouse/warehouseController.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.usergroups', {
-                    url: '/usergroups',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/usergroups/userGroups.html',
-                            controller: 'UserGroupController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/usergroups/userGroupController.js',
-                                cdnUrl + 'view/setup/usergroups/userGroupService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.usercustomshares', {
-                    url: '/usercustomshares',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/usercustomshares/userCustomShares.html',
-                            controller: 'UserCustomShareController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/usercustomshares/userCustomShareController.js',
-                                cdnUrl + 'view/setup/usercustomshares/userCustomShareService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.usercustomshare', {
-                    url: '/usercustomshare?id&clone',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/usercustomshares/userCustomShareForm.html',
-                            controller: 'UserCustomShareFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/usercustomshares/userCustomShareFormController.js',
-                                cdnUrl + 'view/setup/usercustomshares/userCustomShareService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.outlook', {
-                    url: '/outlook',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/outlook/outlook.html',
-                            controller: 'OutlookController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/outlook/outlookController.js',
-                                cdnUrl + 'view/setup/outlook/outlookService.js'
-
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.usergroup', {
-                    url: '/usergroup?id&clone',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/usergroups/userGroupForm.html',
-                            controller: 'UserGroupFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/usergroups/userGroupFormController.js',
-                                cdnUrl + 'view/setup/usergroups/userGroupService.js'
-                            ]);
-                        }]
-                    }
-                });
+;
+                //conti
 
 
             $urlRouterProvider.otherwise('/allApps');

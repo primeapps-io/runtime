@@ -2,7 +2,7 @@
     <h2 class="setup-title">{{ menuTopTitle }}</h2>
     <ul class="nav nav-pills nav-stacked setup-nav">
         <li ng-class="activeMenuItem ==='overview' ? 'active' :''">
-            <a href="" >
+            <a href="/#/app/5/overview">
                 <i class="fas fa-info-circle"></i>
                 Overview
             </a>
@@ -27,30 +27,30 @@
         </li>
 
         <li>
-            <a href="">
+            <a href="/#/app/5/reports">
                 <i class="fas fa-chart-area"></i>
                 Analytics
             </a>
         </li>
-        <li>
-            <a href="">
+        <li ng-class="activeMenuItem ==='functions' ? 'active' :''">
+            <a href="/#/app/5/functions">
                 <i class="fas fa-code"></i>
                 Functions
             </a>
         </li>
-        <li>
-            <a href="">
+        <li ng-class="activeMenuItem ==='components' ? 'active' :''">
+            <a href="/#/app/5/components">
                 <i class="fas fa-shapes"></i>
                 Components
             </a>
         </li>
         <li>
-            <a href="">
+            <a href="/#/app/5/profiles">
                 <i class="fas fa-random"></i>
                 Authorization
             </a>
         </li>
-        <li>
+        <li ng-class="activeMenuItem ==='menus' ? 'active' :''">
             <a href="">
                 <i class="fas fa-bars"></i>
                 Menus
