@@ -1,8 +1,8 @@
 <div class="col-sm-12" style="border: none ;">
     <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">Relations</h2></div>
+        <div class="col-sm-6"><h2 class="setup-title">Business Rules</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Relations</button>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Business Rules</button>
         </div>
     </div>
 
@@ -18,14 +18,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="relation in relations | filter:{deleted:'!true'} | orderBy:'order'">
-                    <td>{{relation['label_' + language + '_plural']}}</td>
-                    <td>{{relation.parent_module['label_' + language + '_plural']}}</td>
-                    <td>{{relation.relatedModule['label_' + language + '_plural']}}</td>
-                    <td>{{relation.relation_type === 'one_to_many' ? ('Setup.Modules.OneToMany' | translate) : ('Setup.Modules.ManyToMany' | translate)}}</td>
+                <tr ng-repeat="workflow in workflows">
+                    <td>{{workflow.name}}</td>
+                    <td>{{workflow.moduleStr}}</td>
+                    <td>{{workflow.operationsStr}}</td>
+                    <td>{{workflow.statusStr}}</td>
                     <td class="text-right">
-                        <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(relation)">{{'Common.Edit' | translate}}</button>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(relation)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
+                        <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
+                            translate}}</a>
+                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                                action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                            {{'Common.Remove' | translate}}
+                        </button>
                     </td>
                 </tr>
             </tbody>

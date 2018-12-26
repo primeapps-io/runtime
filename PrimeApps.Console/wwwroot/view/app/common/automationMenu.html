@@ -1,0 +1,24 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">{{ menuTopTitle }}</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+        <li ng-class="activeMenuItem ==='workflows' ? 'active' :''">
+            <a href="/#/app/5/workflows">
+                <i class="fas fa-th-large"></i>
+               	Workflows
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='rules' ? 'active' :''">
+            <a href="/#/app/5/rules">
+                <i class="fas fa-code-branch"></i>
+               	Business Rules
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='processes' ? 'active' :''">
+            <a href="/#/app/5/processes">
+                <i class="fas fa-network-wired"></i>
+             	Approval Processes
+            </a>
+        </li>
+
+    </ul>
+</div>

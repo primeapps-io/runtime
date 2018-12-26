@@ -2,14 +2,14 @@
 
 angular.module('primeapps')
 
-	.controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config',
-		function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config) {
+	.controller('WorkflowsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'WorkflowsService', 'LayoutService', '$http', 'config',
+		function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, WorkflowsService, LayoutService, $http, config) {
 
 			//$rootScope.modules = $http.get(config.apiUrl + 'module/get_all');
 
-			$scope.$parent.menuTopTitle = "Models";
-			$scope.$parent.activeMenu = 'model';
-			$scope.$parent.activeMenuItem = 'relations';
+			$scope.$parent.menuTopTitle = "Automation";
+			$scope.$parent.activeMenu = 'automation';
+			$scope.$parent.activeMenuItem = 'workflows';
 
 			console.log("RelationsController");
 
@@ -43,19 +43,19 @@ angular.module('primeapps')
 				//filter['label_' + $rootScope.language + '_plural'] = '!' + $scope.module['label_' + $rootScope.language + '_plural'];
 				//$scope.moduleLists = $filter('filter')($rootScope.modules, filter, true);
 
-                $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
+				$scope.formModal = $scope.formModal || $modal({
 					scope: $scope,
 					templateUrl: 'view/setup/modules/relationForm.html',
-					animation: 'am-fade-and-slide-right',
+					animation: '',
 					backdrop: 'static',
 					show: false
 				});
 
-				$scope.addNewRelationsFormModal.$promise.then(function () {
+				$scope.formModal.$promise.then(function () {
 					if (!relation.isNew)
 						$scope.bindDragDrop();
 
-                    $scope.addNewRelationsFormModal.show();
+					$scope.formModal.show();
 				});
 			};
 
@@ -204,15 +204,15 @@ angular.module('primeapps')
 									className: 'success'
 								});
 								$scope.saving = false;
-								$scope.addNewRelationsFormModal.hide();
+								$scope.formModal.hide();
 							});
 				};
 
 				var error = function () {
 					$scope.relations = $scope.relationsState;
 
-					if ($scope.addNewRelationsFormModal) {
-						$scope.addNewRelationsFormModal.hide();
+					if ($scope.formModal) {
+						$scope.formModal.hide();
 						$scope.saving = false;
 					}
 				};
@@ -252,8 +252,8 @@ angular.module('primeapps')
 					.catch(function () {
 						$scope.relations = $scope.relationsState;
 
-						if ($scope.addNewRelationsFormModal) {
-							$scope.addNewRelationsFormModal.hide();
+						if ($scope.formModal) {
+							$scope.formModal.hide();
 							$scope.saving = false;
 						}
 					});
@@ -264,7 +264,7 @@ angular.module('primeapps')
 					$scope.currentRelation[key] = $scope.currentRelationState[key];
 				});
 
-				$scope.addNewRelationsFormModal.hide();
+				$scope.formModal.hide();
 			}
 		}
 	]);

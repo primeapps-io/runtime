@@ -395,12 +395,11 @@ angular.module('primeapps')
                     }
                 })
 
-
                 .state('studio.app.templatesEmail', {
-                    url: '/templatesEmail?:id',
+                    url: '/templatesEmail',
                     views: {
                         'app': {
-                            templateUrl: cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesList.html',
+                            templateUrl: cdnUrl + 'view/app/templates/emailtemplates/emailTemplates.html',
                             controller: 'EmailTemplatesController'
                         }
                     },
@@ -409,6 +408,40 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesController.js',
                                 cdnUrl + 'view/app/templates/emailtemplates/emailTemplatesService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.templatesExcel', {
+                    url: '/templatesExcel',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/templates/exceltemplates/excelTemplates.html',
+                            controller: 'ExcelTemplatesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/templates/exceltemplates/excelTemplatesController.js',
+                                cdnUrl + 'view/app/templates/exceltemplates/excelTemplatesService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.templatesWord', {
+                    url: '/templatesWord',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/templates/wordtemplates/wordTemplates.html',
+                            controller: 'WordTemplatesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/templates/wordtemplates/wordTemplatesController.js',
+                                cdnUrl + 'view/app/templates/wordtemplates/wordTemplatesService.js'
                             ]);
                         }]
                     }
@@ -431,6 +464,59 @@ angular.module('primeapps')
                     }
                 })
 
+                .state('studio.app.workflows', {
+                    url: '/workflows',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/automation/workflows/workflows.html',
+                            controller: 'WorkflowsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/automation/workflows/workflowsController.js',
+                                cdnUrl + 'view/app/automation/workflows/workflowsService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.rules', {
+                    url: '/rules',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/automation/rules/rules.html',
+                            controller: 'RulesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/automation/rules/rulesController.js',
+                                cdnUrl + 'view/app/automation/rules/rulesService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.processes', {
+                    url: '/processes',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/automation/processes/processes.html',
+                            controller: 'ProcessesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/automation/processes/processesController.js',
+                                cdnUrl + 'view/app/automation/processes/processesService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                //conti
                 .state('studio.app.settings', {
                     url: '/settings',
                     views: {
@@ -900,42 +986,6 @@ angular.module('primeapps')
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/setup/menu/menuListController.js',
                                 cdnUrl + 'view/setup/menu/menuService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.workflows', {
-                    url: '/workflows',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/workflow/workflows.html',
-                            controller: 'WorkflowController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/workflow/workflowController.js',
-                                cdnUrl + 'view/setup/workflow/workflowService.js'
-                            ]);
-                        }]
-                    }
-                })
-
-                .state('studio.app.workflow', {
-                    url: '/workflow?id',
-                    views: {
-                        'app': {
-                            templateUrl: cdnUrl + 'view/setup/workflow/workflowForm.html',
-                            controller: 'WorkflowFormController'
-                        }
-                    },
-                    resolve: {
-                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
-                            return $ocLazyLoad.load([
-                                cdnUrl + 'view/setup/workflow/workflowFormController.js',
-                                cdnUrl + 'view/setup/workflow/workflowService.js'
                             ]);
                         }]
                     }

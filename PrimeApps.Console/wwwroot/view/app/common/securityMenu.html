@@ -1,0 +1,29 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">{{ menuTopTitle }}</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+        <li ng-class="activeMenuItem ==='modules' ? 'active' :''">
+            <a href="/#/app/5/modules">
+                <i class="fas fa-th-large"></i>
+                Modules
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='relations' ? 'active' :''">
+            <a href="/#/app/5/relations">
+                <i class="fas fa-code-branch"></i>
+                Relations
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='dependencies' ? 'active' :''">
+            <a href="/#/app/5/dependencies">
+                <i class="fas fa-network-wired"></i>
+                Dependencies
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='filters' ? 'active' :''">
+            <a href="/#/app/5/filters">
+                <i class="fas fa-sliders-h"></i>
+                Filters
+            </a>
+        </li>
+    </ul>
+</div>

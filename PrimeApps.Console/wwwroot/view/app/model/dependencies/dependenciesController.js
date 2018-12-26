@@ -2,15 +2,15 @@
 
 angular.module('primeapps')
 
-    .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields',  'DependenciesService', 'LayoutService',
+    .controller('DependenciesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', 'helper', '$cache', 'systemRequiredFields', 'systemReadonlyFields', 'DependenciesService', 'LayoutService',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService) {
 
-            $scope.$parent.menuTopTitle ="Models";
-            $scope.$parent.activeMenu= 'model';
+            $scope.$parent.menuTopTitle = "Models";
+            $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'dependencies';
 
 
-             //var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
+            //var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
 
             // if (!module) {
             //     ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
@@ -95,100 +95,99 @@ angular.module('primeapps')
             //         return false;
             //     }
             // };
-            //
-            // var getDependencyTypes = function () {
-            //     var dependencyTypeDisplay = {};
-            //     dependencyTypeDisplay.value = 'display';
-            //     dependencyTypeDisplay.label = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
-            //
-            //     var dependencyTypeValueChange = {};
-            //     dependencyTypeValueChange.value = 'value';
-            //     dependencyTypeValueChange.label = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
-            //
-            //     var dependencyTypeFreeze = {};
-            //     dependencyTypeFreeze.value = 'freeze';
-            //     dependencyTypeFreeze.label = 'Kayıt Dondurma';
-            //
-            //     $scope.dependencyTypes = [];
-            //     $scope.dependencyTypes.push(dependencyTypeDisplay);
-            //     $scope.dependencyTypes.push(dependencyTypeValueChange);
-            //     $scope.dependencyTypes.push(dependencyTypeFreeze);
-            // };
-            //
-            // var getValueChangeTypes = function () {
-            //     var valueChangeTypeStandard = {};
-            //     valueChangeTypeStandard.value = 'list_text';
-            //     valueChangeTypeStandard.label = $filter('translate')('Setup.Modules.ValueChangeTypeStandard');
-            //
-            //     var valueChangeTypeValueMapping = {};
-            //     valueChangeTypeValueMapping.value = 'list_value';
-            //     valueChangeTypeValueMapping.label = $filter('translate')('Setup.Modules.ValueChangeTypeValueMapping');
-            //
-            //     var valueChangeTypeFieldMapping = {};
-            //     valueChangeTypeFieldMapping.value = 'list_field';
-            //     valueChangeTypeFieldMapping.label = $filter('translate')('Setup.Modules.ValueChangeTypeFieldMapping');
-            //
-            //     $scope.valueChangeTypes = [];
-            //     $scope.valueChangeTypes.push(valueChangeTypeStandard);
-            //     $scope.valueChangeTypes.push(valueChangeTypeValueMapping);
-            //     $scope.valueChangeTypes.push(valueChangeTypeFieldMapping);
-            // };
-            // getFields();
-            // getDependencyTypes();
-            // getValueChangeTypes();
-            //
-            // $scope.dependencyTypeChanged = function () {
-            //     if ($scope.currentDependency.dependencyType === 'value') {
-            //         $scope.currentDependency.type = 'list_text';
-            //     }
-            //
-            //     $scope.currentDependency.parent_field = null;
-            //     $scope.currentDependency.child_field = null;
-            //     $scope.currentDependency.child_section = null;
-            // };
-            //
-            // $scope.valueChangeTypeChanged = function () {
-            //     switch ($scope.currentDependency.type) {
-            //         case 'list_value':
-            //             $scope.currentDependency.value_maps = {};
-            //             $scope.currentDependency.values = [];
-            //             break;
-            //         case 'list_field':
-            //             $scope.currentDependency.field_map = {};
-            //             break;
-            //     }
-            // };
-            //
-            // $scope.affectedAreaTypeChanged = function () {
-            //     $scope.currentDependency.child_field = null;
-            //     $scope.currentDependency.child_section = null;
-            // };
-            //
-            // $scope.parentValueChanged = function () {
-            //     $scope.currentDependency.child_field = null;
-            //     $scope.currentDependency.child_section = null;
-            //     $scope.currentDependency.value_maps = {};
-            //     $scope.currentDependency.values = [];
-            //     $scope.currentDependency.field_map = {};
-            // };
-            //
-            // $scope.getParentFields = function () {
-            //     switch ($scope.currentDependency.dependencyType) {
-            //         case 'display':
-            //             return $scope.parentDisplayFields;
-            //             break;
-            //         case 'freeze':
-            //             return $scope.parentDisplayFields;
-            //             break;
-            //         case 'value':
-            //             if ($scope.currentDependency.type === 'list_value')
-            //                 return $scope.picklistFields;
-            //             else
-            //                 return $scope.parentValueFields;
-            //             break;
-            //     }
-            // };
-            //
+
+            var getDependencyTypes = function () {
+                var dependencyTypeDisplay = {};
+                dependencyTypeDisplay.value = 'display';
+                dependencyTypeDisplay.label = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
+
+                var dependencyTypeValueChange = {};
+                dependencyTypeValueChange.value = 'value';
+                dependencyTypeValueChange.label = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
+
+                var dependencyTypeFreeze = {};
+                dependencyTypeFreeze.value = 'freeze';
+                dependencyTypeFreeze.label = 'Kayıt Dondurma';
+
+                $scope.dependencyTypes = [];
+                $scope.dependencyTypes.push(dependencyTypeDisplay);
+                $scope.dependencyTypes.push(dependencyTypeValueChange);
+                $scope.dependencyTypes.push(dependencyTypeFreeze);
+            };
+
+            var getValueChangeTypes = function () {
+                var valueChangeTypeStandard = {};
+                valueChangeTypeStandard.value = 'list_text';
+                valueChangeTypeStandard.label = $filter('translate')('Setup.Modules.ValueChangeTypeStandard');
+
+                var valueChangeTypeValueMapping = {};
+                valueChangeTypeValueMapping.value = 'list_value';
+                valueChangeTypeValueMapping.label = $filter('translate')('Setup.Modules.ValueChangeTypeValueMapping');
+
+                var valueChangeTypeFieldMapping = {};
+                valueChangeTypeFieldMapping.value = 'list_field';
+                valueChangeTypeFieldMapping.label = $filter('translate')('Setup.Modules.ValueChangeTypeFieldMapping');
+
+                $scope.valueChangeTypes = [];
+                $scope.valueChangeTypes.push(valueChangeTypeStandard);
+                $scope.valueChangeTypes.push(valueChangeTypeValueMapping);
+                $scope.valueChangeTypes.push(valueChangeTypeFieldMapping);
+            };
+            //getFields();
+            getDependencyTypes();
+            getValueChangeTypes();
+            $scope.dependencyTypeChanged = function () {
+                if ($scope.currentDependency.dependencyType === 'value') {
+                    $scope.currentDependency.type = 'list_text';
+                }
+
+                $scope.currentDependency.parent_field = null;
+                $scope.currentDependency.child_field = null;
+                $scope.currentDependency.child_section = null;
+            };
+
+            $scope.valueChangeTypeChanged = function () {
+                switch ($scope.currentDependency.type) {
+                    case 'list_value':
+                        $scope.currentDependency.value_maps = {};
+                        $scope.currentDependency.values = [];
+                        break;
+                    case 'list_field':
+                        $scope.currentDependency.field_map = {};
+                        break;
+                }
+            };
+
+            $scope.affectedAreaTypeChanged = function () {
+                $scope.currentDependency.child_field = null;
+                $scope.currentDependency.child_section = null;
+            };
+
+            $scope.parentValueChanged = function () {
+                $scope.currentDependency.child_field = null;
+                $scope.currentDependency.child_section = null;
+                $scope.currentDependency.value_maps = {};
+                $scope.currentDependency.values = [];
+                $scope.currentDependency.field_map = {};
+            };
+
+            $scope.getParentFields = function () {
+                switch ($scope.currentDependency.dependencyType) {
+                    case 'display':
+                        return $scope.parentDisplayFields;
+                        break;
+                    case 'freeze':
+                        return $scope.parentDisplayFields;
+                        break;
+                    case 'value':
+                        if ($scope.currentDependency.type === 'list_value')
+                            return $scope.picklistFields;
+                        else
+                            return $scope.parentValueFields;
+                        break;
+                }
+            };
+
             // $scope.getChildFields = function () {
             //     switch ($scope.currentDependency.dependencyType) {
             //         case 'display':
@@ -251,46 +250,46 @@ angular.module('primeapps')
             //     return parentPicklist;
             // };
             //
-            // $scope.showFormModal = function (dependency) {
-            //     if (!dependency) {
-            //         dependency = {};
-            //         dependency.dependencyType = 'display';
-            //         dependency.isNew = true;
-            //     }
-            //     else {
-            //         var childField = $filter('filter')($scope.module.fields, { name: dependency.childField.name }, true)[0];
-            //         var sectionField = $filter('filter')($scope.module.sections, { name: dependency.sectionField.name }, true)[0];
-            //         $scope.affectedAreaType = dependency.child_section ? 'section' : 'field';
-            //
-            //         var childValueListFieldsExist = $filter('filter')($scope.childValueListFields, { name: childField.name }, true)[0];
-            //         if (!childValueListFieldsExist)
-            //             $scope.childValueListFields.push(childField);
-            //
-            //         var childValueTextFieldsExist = $filter('filter')($scope.childValueTextFields, { name: childField.name }, true)[0];
-            //         if (!childValueTextFieldsExist)
-            //             $scope.childValueTextFields.push(childField);
-            //
-            //         var childDisplayFieldExist = $filter('filter')($scope.childDisplayFields, { name: childField.name }, true)[0];
-            //         if (!childDisplayFieldExist)
-            //             $scope.childDisplayFields.push(childField);
-            //     }
-            //
-            //     $scope.currentDependency = dependency;
-            //     $scope.currentDependency.hasRelationField = true;
-            //     $scope.currentDependencyState = angular.copy($scope.currentDependency);
-            //
-            //     $scope.formModal = $scope.formModal || $modal({
-            //         scope: $scope,
-            //         templateUrl: 'view/setup/modules/dependencyForm.html',
-            //         animation: '',
-            //         backdrop: 'static',
-            //         show: false
-            //     });
-            //
-            //     $scope.formModal.$promise.then(function () {
-            //         $scope.formModal.show();
-            //     });
-            // };
+            $scope.showFormModal = function (dependency) {
+                if (!dependency) {
+                    dependency = {};
+                    dependency.dependencyType = 'display';
+                    dependency.isNew = true;
+                }
+                else {
+                    var childField = $filter('filter')($scope.module.fields, { name: dependency.childField.name }, true)[0];
+                    var sectionField = $filter('filter')($scope.module.sections, { name: dependency.sectionField.name }, true)[0];
+                    $scope.affectedAreaType = dependency.child_section ? 'section' : 'field';
+
+                    var childValueListFieldsExist = $filter('filter')($scope.childValueListFields, { name: childField.name }, true)[0];
+                    if (!childValueListFieldsExist)
+                        $scope.childValueListFields.push(childField);
+
+                    var childValueTextFieldsExist = $filter('filter')($scope.childValueTextFields, { name: childField.name }, true)[0];
+                    if (!childValueTextFieldsExist)
+                        $scope.childValueTextFields.push(childField);
+
+                    var childDisplayFieldExist = $filter('filter')($scope.childDisplayFields, { name: childField.name }, true)[0];
+                    if (!childDisplayFieldExist)
+                        $scope.childDisplayFields.push(childField);
+                }
+
+                $scope.currentDependency = dependency;
+                $scope.currentDependency.hasRelationField = true;
+                $scope.currentDependencyState = angular.copy($scope.currentDependency);
+
+                $scope.addNewDependencyModal = $scope.addNewDependencyModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/setup/modules/dependencyForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+
+                $scope.addNewDependencyModal.$promise.then(function () {
+                    $scope.addNewDependencyModal.show();
+                });
+            };
             //
             // //TODO
             // $scope.saveSingularControlDependencyForm = function () {
@@ -339,113 +338,112 @@ angular.module('primeapps')
             // };
             //
             //
-            // $scope.save = function (dependencyForm) {
-            //     if (!dependencyForm.$valid)
-            //         return;
-            //
-            //     var singularResult = $scope.saveSingularControlDependencyForm();
-            //
-            //     if (!singularResult) {
-            //         ngToast.create({ content: $filter('translate')('Setup.Modules.DependencySameData'), className: 'warning' });
-            //         return;
-            //     }
-            //
-            //     $scope.saving = true;
-            //     var dependency = angular.copy($scope.currentDependency);
-            //     if (dependency.isNew) {
-            //         delete dependency.isNew;
-            //
-            //         if (!$scope.dependencies)
-            //             $scope.dependencies = [];
-            //
-            //         $scope.dependencies.push(dependency);
-            //     }
-            //     var field = $filter('filter')($scope.module.fields, { name: $scope.currentDependency.parent_field }, true)[0];
-            //     ModuleSetupService.updateField(field.id, { inline_edit: false });
-            //
-            //     var relationModel = ModuleSetupService.prepareDependency(angular.copy(dependency), $scope.module);
-            //
-            //     var success = function () {
-            //         LayoutService.getMyAccount(true)
-            //             .then(function () {
-            //                 $scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
-            //                 $scope.dependencies = $filter('filter')(ModuleSetupService.processDependencies($scope.module), { deleted: false }, true);
-            //                 angular.forEach($scope.dependencies, function (dependency) {
-            //                     if (dependency.type && (dependency.type === 'list_field' || dependency.type === 'list_value'))
-            //                         $cache.remove('picklist_' + dependency.childField.picklist_id);
-            //                 });
-            //
-            //                 ngToast.create({ content: $filter('translate')('Setup.Modules.DependencySaveSuccess'), className: 'success' });
-            //                 $scope.saving = false;
-            //                 $scope.formModal.hide();
-            //             });
-            //     };
-            //
-            //     var error = function () {
-            //         $scope.dependencies = $scope.dependenciesState;
-            //
-            //         if ($scope.formModal) {
-            //             $scope.formModal.hide();
-            //             $scope.saving = false;
-            //         }
-            //     };
-            //
-            //     if (!relationModel.id) {
-            //         ModuleService.createModuleDependency(relationModel, $scope.module.id)
-            //             .then(function () {
-            //                 success();
-            //             })
-            //             .catch(function () {
-            //                 error();
-            //             });
-            //     }
-            //     else {
-            //         ModuleService.updateModuleDependency(relationModel, $scope.module.id)
-            //             .then(function () {
-            //                 success();
-            //             })
-            //             .catch(function () {
-            //                 error();
-            //             });
-            //     }
-            // };
-            //
-            // $scope.delete = function (dependency) {
-            //     delete dependency.$$hashKey;
-            //     var deleteModel = angular.copy($scope.dependencies);
-            //     var dependencyIndex = helper.arrayObjectIndexOf(deleteModel, dependency);
-            //     deleteModel.splice(dependencyIndex, 1);
-            //
-            //     ModuleService.deleteModuleDependency(dependency.id)
-            //         .then(function () {
-            //             LayoutService.getMyAccount(true)
-            //                 .then(function () {
-            //                     var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
-            //                     $scope.dependencies.splice(dependencyIndex, 1);
-            //
-            //                     if (dependency.type && (dependency.type === 'list_field' || dependency.type === 'list_value'))
-            //                         $cache.remove('picklist_' + dependency.childField.picklist_id);
-            //
-            //                     ngToast.create({ content: $filter('translate')('Setup.Modules.DependencyDeleteSuccess'), className: 'success' });
-            //                 });
-            //         })
-            //         .catch(function () {
-            //             $scope.dependencies = $scope.dependenciesState;
-            //
-            //             if ($scope.formModal) {
-            //                 $scope.formModal.hide();
-            //                 $scope.saving = false;
-            //             }
-            //         });
-            // };
-            //
-            // $scope.cancel = function () {
-            //     angular.forEach($scope.currentDependency, function (value, key) {
-            //         $scope.currentDependency[key] = $scope.currentDependencyState[key];
-            //     });
-            //
-            //     $scope.formModal.hide();
-            // }
-            //
+            $scope.save = function (dependencyForm) {
+                if (!dependencyForm.$valid)
+                    return;
+
+                var singularResult = $scope.saveSingularControlDependencyForm();
+
+                if (!singularResult) {
+                    ngToast.create({ content: $filter('translate')('Setup.Modules.DependencySameData'), className: 'warning' });
+                    return;
+                }
+
+                $scope.saving = true;
+                var dependency = angular.copy($scope.currentDependency);
+                if (dependency.isNew) {
+                    delete dependency.isNew;
+
+                    if (!$scope.dependencies)
+                        $scope.dependencies = [];
+
+                    $scope.dependencies.push(dependency);
+                }
+                var field = $filter('filter')($scope.module.fields, { name: $scope.currentDependency.parent_field }, true)[0];
+                ModuleSetupService.updateField(field.id, { inline_edit: false });
+
+                var relationModel = ModuleSetupService.prepareDependency(angular.copy(dependency), $scope.module);
+
+                var success = function () {
+                    LayoutService.getMyAccount(true)
+                        .then(function () {
+                            $scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
+                            $scope.dependencies = $filter('filter')(ModuleSetupService.processDependencies($scope.module), { deleted: false }, true);
+                            angular.forEach($scope.dependencies, function (dependency) {
+                                if (dependency.type && (dependency.type === 'list_field' || dependency.type === 'list_value'))
+                                    $cache.remove('picklist_' + dependency.childField.picklist_id);
+                            });
+
+                            ngToast.create({ content: $filter('translate')('Setup.Modules.DependencySaveSuccess'), className: 'success' });
+                            $scope.saving = false;
+                            $scope.addNewDependencyModal.hide();
+                        });
+                };
+
+                var error = function () {
+                    $scope.dependencies = $scope.dependenciesState;
+
+                    if ($scope.addNewDependencyModal) {
+                        $scope.addNewDependencyModal.hide();
+                        $scope.saving = false;
+                    }
+                };
+
+                    if (!relationModel.id) {
+                        ModuleService.createModuleDependency(relationModel, $scope.module.id)
+                            .then(function () {
+                                success();
+                            })
+                            .catch(function () {
+                                error();
+                            });
+                    }
+                    else {
+                        ModuleService.updateModuleDependency(relationModel, $scope.module.id)
+                            .then(function () {
+                                success();
+                            })
+                            .catch(function () {
+                                error();
+                            });
+                    }
+                };
+
+                $scope.delete = function (dependency) {
+                    delete dependency.$$hashKey;
+                    var deleteModel = angular.copy($scope.dependencies);
+                    var dependencyIndex = helper.arrayObjectIndexOf(deleteModel, dependency);
+                    deleteModel.splice(dependencyIndex, 1);
+
+                    ModuleService.deleteModuleDependency(dependency.id)
+                        .then(function () {
+                            LayoutService.getMyAccount(true)
+                                .then(function () {
+                                    var dependencyIndex = helper.arrayObjectIndexOf($scope.dependencies, dependency);
+                                    $scope.dependencies.splice(dependencyIndex, 1);
+
+                                    if (dependency.type && (dependency.type === 'list_field' || dependency.type === 'list_value'))
+                                        $cache.remove('picklist_' + dependency.childField.picklist_id);
+
+                                    ngToast.create({ content: $filter('translate')('Setup.Modules.DependencyDeleteSuccess'), className: 'success' });
+                                });
+                        })
+                        .catch(function () {
+                            $scope.dependencies = $scope.dependenciesState;
+
+                            if ($scope.addNewDependencyModal) {
+                                $scope.addNewDependencyModal.hide();
+                                $scope.saving = false;
+                            }
+                        });
+            };
+
+            $scope.cancel = function () {
+                angular.forEach($scope.currentDependency, function (value, key) {
+                    $scope.currentDependency[key] = $scope.currentDependencyState[key];
+                });
+
+                $scope.addNewDependencyModal.hide();
+            }
         }
     ]);
