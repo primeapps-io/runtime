@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Repositories
         public async Task<OrganizationUser> Get(int userId, int organizationId)
         {
             return await DbContext.OrganizationUsers
-                .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .Where(x => x.OrganizationId == organizationId && x.UserId == userId && !x.Organization.Deleted)
                 .FirstOrDefaultAsync();
         }
 
