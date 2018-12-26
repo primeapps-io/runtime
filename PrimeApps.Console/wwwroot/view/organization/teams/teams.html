@@ -45,7 +45,7 @@
             </tbody>
         </table>
 
-        <ui-select ng-show="selectedTeam" ng-model="selectedUser" on-select="selectUserForTeam($select.selected.user_id)">
+        <ui-select ng-show="selectedTeam" ng-model="selectedUser" on-select="selectUserForTeam($select.selected.user_id)" style="margin-bottom: 30px;">
             <ui-select-match allow-clear="true" placeholder="Add collaborators from PrimeApps">{{$select.selected.full_name}}</ui-select-match>
             <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
                 <span ng-bind-html="item.full_name | highlight: $select.search"></span>

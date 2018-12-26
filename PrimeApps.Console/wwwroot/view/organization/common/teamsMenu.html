@@ -3,8 +3,9 @@
     <ul class="nav nav-pills nav-stacked setup-nav">
         <li ng-repeat="team in teamArray" ng-class="team.id === teamId ? 'active' :''">
             <a href ng-click="selectTeam(team.id)">
-                {{team.name}}
+                <i class="{{team.icon}}"> {{team.name}}</i>
                 <p class="small">Member :{{team.team_users.length}}</p>
+
             </a>
         </li>
 
