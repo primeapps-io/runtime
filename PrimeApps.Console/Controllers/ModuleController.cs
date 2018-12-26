@@ -29,7 +29,7 @@ namespace PrimeApps.Console.Controllers
         private IConfiguration _configuration;
         private Warehouse _warehouse;
 
-        private IModuleHelper _moduleHelper;
+		private IModuleHelper _moduleHelper;
 
 		public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
 		{
@@ -41,8 +41,8 @@ namespace PrimeApps.Console.Controllers
 			_configuration = configuration;
 			_menuRepository = menuRepository;
 
-            _moduleHelper = moduleHelper;
-        }
+			_moduleHelper = moduleHelper;
+		}
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
