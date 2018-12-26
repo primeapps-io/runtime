@@ -1423,7 +1423,7 @@
 			},
 		"Workflow": {
 			"Title": "İş Kuralları",
-			"NewRule": "Yeni İş Kuralı",
+			"NewRule": "Yeni İş Kuralı Ekle",
 			"RuleInformation": "İş Kuralı Bilgisi",
 			"FilterCriteria": "Filtre Kriterleri",
 			"Pending": "Onay Bekleyen",

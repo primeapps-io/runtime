@@ -1,8 +1,8 @@
 <div class="col-sm-12" style="border: none ;">
     <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">Business Rules</h2></div>
+        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Workflow.Title' | translate}}</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Business Rules</button>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Workflow.NewRule' | translate}}</button>
         </div>
     </div>
 
@@ -10,10 +10,10 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                    <th>{{'Setup.Modules.Name' | translate}}</th>
-                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                    <th>{{'Setup.Modules.RelationType' | translate}}</th>
+                    <th>{{'Setup.Workflow.Name' | translate}}</th>
+                    <th>{{'Setup.Workflow.Module' | translate}}</th>
+                    <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
+                    <th>{{'Common.Active' | translate}}</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
             </thead>
