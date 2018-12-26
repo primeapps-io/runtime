@@ -1,0 +1,13 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">Collaborators</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+        <li ng-repeat="item in collaboratorArray" ng-class="item.id === collaboratorId ? 'active' :''">
+            <a href ng-click="selectCollaborators(item.id)">
+                <i class="fas fa-user-circle"> {{item.full_name}}</i>
+                <p class="small">{{item.email}}</p>
+
+            </a>
+        </li>
+
+    </ul>
+</div>

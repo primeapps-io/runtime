@@ -104,7 +104,7 @@ namespace PrimeApps.Console.Controllers
                         FirstName = platformUser.FirstName,
                         LastName = platformUser.LastName,
                         FullName = platformUser.FirstName + " " + platformUser.LastName,
-                        CreatedAt = platformUser.CreatedAt
+                        CreatedAt = platformUser.CreatedAt,
                     });
                 }
             }
@@ -350,6 +350,8 @@ namespace PrimeApps.Console.Controllers
 
             var appInfo = await _applicationRepository.GetByNameAsync(_configuration.GetSection("AppSettings")["ClientId"]);
 
+            var result = 0;
+
             using (var httpClient = new HttpClient())
             {
                 var token = await HttpContext.GetTokenAsync("access_token");
@@ -420,14 +422,14 @@ namespace PrimeApps.Console.Controllers
                         CreatedAt = DateTime.Now
                     });
 
-                    await _consoleUserRepository.Create(consoleUser);
+                    result = await _consoleUserRepository.Create(consoleUser);
                 }
             }
 
-            return Ok();
+            return Ok(result);
         }
 
-        [Route("delete_user"), HttpDelete]
+        [Route("delete_user"), HttpPost]
         public async Task<IActionResult> DeleteUser([FromBody]OrganizationUser model)
         {
             if (!ModelState.IsValid)
@@ -441,15 +443,15 @@ namespace PrimeApps.Console.Controllers
             if (!await _permissionHelper.CheckUserRole(AppUser.Id, model.OrganizationId, OrganizationRole.Administrator))
                 return Forbid(ApiResponseMessages.PERMISSION);
 
-            if (AppUser.Id == organization.OwnerId)
+            if (model.Id == organization.OwnerId)
                 return BadRequest(ApiResponseMessages.OWN_ORGANIZATION);
 
-            await _organizationUserRepository.Delete(model);
+            var result = await _organizationUserRepository.Delete(model);
 
-            return Ok();
+            return Ok(result);
         }
 
-        [Route("update_user"), HttpDelete]
+        [Route("update_user"), HttpPut]
         public async Task<IActionResult> UpdateUser([FromBody]OrganizationUserModel model)
         {
             if (!ModelState.IsValid)
@@ -466,9 +468,9 @@ namespace PrimeApps.Console.Controllers
             var user = await _organizationUserRepository.Get(model.Id, model.OrganizationId);
             user.Role = model.Role;
 
-            await _organizationUserRepository.Update(user);
+            var result = await _organizationUserRepository.Update(user);
 
-            return Ok();
+            return Ok(result);
         }
     }
 }
