@@ -64,14 +64,17 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Email</th>
+                    <th>Role</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="user in selectedTeam.team_users">
-                    <td> {{user.full_name}}</td>
-                    <td>{{user.email}}</td>
+                    <td>
+                        {{user.full_name}}
+                        <p class="small">{{user.email}}</p>
+                    </td>
+                    <td>{{user.role ? user.role:'-'}}</td>
                     <td class="text-right">
                         <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
                                 action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
