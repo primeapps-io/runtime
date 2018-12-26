@@ -1420,7 +1420,7 @@
 		},
 		"Workflow": {
 			"Title": "Rules",
-			"NewRule": "New Rule",
+			"NewRule": "Add New Rule",
 			"RuleInformation": "Rule Information",
 			"FilterCriteria": "Filter Criteria",
 			"Pending": "Pending",
