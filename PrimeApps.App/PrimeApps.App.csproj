@@ -16,7 +16,8 @@
     <PackageReference Include="Hangfire.PostgreSql.NetCore" Version="1.4.3" />
     <PackageReference Include="Humanizer.Core" Version="2.5.16" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
-    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.215" />
+    <PackageReference Include="NUglify" Version="1.5.12" />
+    <!-- <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.215" /> -->
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
@@ -32,6 +33,13 @@
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
     <PackageReference Include="WorkflowCore.Persistence.PostgreSQL.Custom" Version="1.7.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="LigerShark.WebOptimizer.Core">
+      <HintPath>..\\references\\WebOptimizer.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
@@ -39,5 +47,9 @@
     <Folder Include="wwwroot\view\app\expensesheet\" />
     <Folder Include="wwwroot\view\setup\menu\" />
   </ItemGroup>
-  <ProjectExtensions><VisualStudio><UserProperties wwwroot_4locales_4tr_1json__JSONSchema="en" /></VisualStudio></ProjectExtensions>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties wwwroot_4locales_4tr_1json__JSONSchema="en" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

@@ -7,12 +7,13 @@
     <Version>1.1.0</Version>
     <DockerTargetOS>Linux</DockerTargetOS>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="IdentityServer4" Version="2.2.0" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.1.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.1.1" />
-    <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.215" />
+    <PackageReference Include="NUglify" Version="1.5.12" />
+    <!-- <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.215" /> -->
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.2.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.8" />
@@ -21,11 +22,17 @@
     <PackageReference Include="Sentry" Version="1.1.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="1.1.0" />
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <Reference Include="LigerShark.WebOptimizer.Core">
+      <HintPath>..\\references\\WebOptimizer.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Update="Views\Account\Custom\ForgotPasswordStudio.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
@@ -40,7 +47,7 @@
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="primeapps_id4.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
