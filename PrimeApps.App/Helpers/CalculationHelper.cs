@@ -1440,7 +1440,7 @@ namespace PrimeApps.App.Helpers
                                                 case "petty_cash_requisition":
                                                 case "expenditure":
                                                     var pettyCashModule = await moduleRepository.GetByName("petty_cash");
-                                                    var pettyCashRecord = recordRepository.GetById(pettyCashModule, (int)record["related_petty_cash_2"], false, null, true);
+                                                    var pettyCashRecord = recordRepository.GetById(pettyCashModule, record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"], false, null, true);
                                                     var pettyCashUpdateRecord = new JObject();
                                                     if (module.Name == "petty_cash_requisition")
                                                     {
@@ -1479,7 +1479,7 @@ namespace PrimeApps.App.Helpers
 
                                                         if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
                                                         {
-                                                            var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
+                                                            var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                             var pettyCashRequisitionRecords = recordRepository.Find(module.Name, findRequestPettyCashRequisition);
                                                             var currencyFieldRequisition = pettyCashRequisitionModule.Fields.Single(x => x.Name == "currency");
                                                             var currencyPicklistRequisition = await picklistRepository.GetById(currencyFieldRequisition.PicklistId.Value);
@@ -1511,7 +1511,7 @@ namespace PrimeApps.App.Helpers
                                                                 }
                                                             }
 
-                                                            pettyCashUpdateRecord["id"] = (int)record["related_petty_cash_2"];
+                                                            pettyCashUpdateRecord["id"] = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"];
                                                             pettyCashUpdateRecord["try_income"] = totalIncomeTry;
                                                             pettyCashUpdateRecord["eur_income"] = totalIncomeEur;
                                                             pettyCashUpdateRecord["usd_income"] = totalIncomeUsd;
@@ -1529,7 +1529,7 @@ namespace PrimeApps.App.Helpers
 
                                                         if (!record["amount"].IsNullOrEmpty())
                                                         {
-                                                            var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
+                                                            var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = record["related_petty_cash_2"].IsNullOrEmpty() ? 0:(int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                             var expenditureRecords = recordRepository.Find(module.Name, findRequestExpenditure);
                                                             var currencyFieldExpenditure = expenditureModule.Fields.Single(x => x.Name == "currency_c");
                                                             var currencyPicklistExpenditure = await picklistRepository.GetById(currencyFieldExpenditure.PicklistId.Value);
@@ -1562,7 +1562,7 @@ namespace PrimeApps.App.Helpers
                                                             }
 
 
-                                                            pettyCashUpdateRecord["id"] = (int)record["related_petty_cash_2"];
+                                                            pettyCashUpdateRecord["id"] = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"];
                                                             pettyCashUpdateRecord["try_expenditure"] = totalExpenditureTry;
                                                             pettyCashUpdateRecord["eur_expenditure"] = totalExpenditureEur;
                                                             pettyCashUpdateRecord["usd_expenditure"] = totalExpenditureUsd;
