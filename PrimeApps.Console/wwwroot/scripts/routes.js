@@ -652,8 +652,93 @@ angular.module('primeapps')
                         }]
                     }
                 })
-;
-                //conti
+                .state('studio.app.menus', {
+                    url: '/menus',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/menus/menus.html',
+                            controller: 'MenusController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/menus/menusController.js',
+                                cdnUrl + 'view/app/menus/menusService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.help', {
+                    url: '/help',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/help/help.html',
+                            controller: 'HelpController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/help/helpController.js',
+                                cdnUrl + 'view/app/help/helpService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.deployment', {
+                    url: '/deployment',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/deployment/deployment.html',
+                            controller: 'DeploymentController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/deployment/deploymentController.js',
+                                cdnUrl + 'view/app/deployment/deploymentService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.diagnostics', {
+                    url: '/diagnostics',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/diagnostics/diagnostics.html',
+                            controller: 'DiagnosticsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/diagnostics/diagnosticsController.js',
+                                cdnUrl + 'view/app/diagnostics/diagnosticsService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.extensions', {
+                    url: '/extensions',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/extensions/extensions.html',
+                            controller: 'ExtensionsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/extensions/extensionsController.js',
+                                cdnUrl + 'view/app/extensions/extensionsService.js'
+                            ]);
+                        }]
+                    }
+                })
+            ;
+            //conti
 
 
             $urlRouterProvider.otherwise('/allApps');
