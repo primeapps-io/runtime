@@ -2618,7 +2618,7 @@ namespace PrimeApps.App.Helpers
                                                         }
                                                     }
 
-                                                    var calismaDurumuField = calisanModule.Fields.Single(x => x.Name == "calisma_durumu");
+                                                    var calismaDurumuField = calisanModule.Fields.First(x => x.Name == "calisma_durumu");
                                                     var calismaDurumuPicklist = await picklistRepository.GetById(calismaDurumuField.PicklistId.Value);
                                                     var calismaDurumuPicklistItem = calismaDurumuPicklist.Items.SingleOrDefault(x => x.Value == "active");
                                                     var calismaDurumu = (string)record["calisma_durumu"];
