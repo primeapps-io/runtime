@@ -20,7 +20,6 @@
 						<div id="field-form-body" class="modal-body">
 							<div class="section" id="section1">
 								<div class="panel">
-
 									<div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.relatedModule.$invalid}">
 										<label class="col-sm-4 required-field">* {{('Setup.Modules.Name' | translate)}}</label>
 										<select name="module"
@@ -32,7 +31,6 @@
 											<option value="">{{'Common.Select' | translate}}</option>
 										</select>
 									</div>
-
 									<div class="form-group" ng-class="{'has-error': relationForm.$submitted && relationForm.labelPlural.$invalid}">
 										<label class="col-sm-4 required-field">* {{'Setup.Modules.PluralName' | translate}}</label>
 										<input type="text"
@@ -89,6 +87,18 @@
 										</select>
 										<span ng-show="!currentRelation.hasRelationField">{{'Setup.Modules.NoRelationFields' | translate}}</span>
 									</div>
+									<div class="form-group" ng-if="currentRelation.relatedModule && (currentRelation.relatedModule.name === 'activities' || currentRelation.relatedModule.name === 'mails' ) && (module.name != 'activities' || module.name != 'mails') && currentRelation.relation_type === 'one_to_many'" ng-init="currentRelation.relationField = (currentRelation.relatedModule.fields | filter:{name:'related_to'})[0]; currentRelation.hasRelationField = true;">
+										<label class="col-sm-4 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
+										<select name="relationField"
+												class="form-control ng-animate-disabled col-sm-8"
+												required
+												ng-model="currentRelation.relationField"
+												ng-disabled="true"
+												ng-init="bindDragDrop()"
+												ng-options="o as o['label_' + language] for o in currentRelation.relatedModule.fields track by o.name">
+											<option value="">{{'Common.Select' | translate}}</option>
+										</select>
+									</div>
 									<div class="form-group">
 										<label class="col-sm-6 ng-binding">Detay Sayfası Görünümü: </label>
 										<div class="form-control ng-animate-disabled col-sm-8" style="padding-left: 0; background-color:white;">
@@ -102,18 +112,6 @@
 													   class="ng-pristine ng-untouched ng-valid ng-not-empty" name="1561"> Sekmesiz
 											</label>
 										</div>
-									</div>
-									<div class="form-group" ng-if="currentRelation.relatedModule && (currentRelation.relatedModule.name === 'activities' || currentRelation.relatedModule.name === 'mails' ) && (module.name != 'activities' || module.name != 'mails') && currentRelation.relation_type === 'one_to_many'" ng-init="currentRelation.relationField = (currentRelation.relatedModule.fields | filter:{name:'related_to'})[0]; currentRelation.hasRelationField = true;">
-										<label class="col-sm-4 required-field">* {{'Setup.Modules.RelationField' | translate}}: </label>
-										<select name="relationField"
-												class="form-control ng-animate-disabled col-sm-8"
-												required
-												ng-model="currentRelation.relationField"
-												ng-disabled="true"
-												ng-init="bindDragDrop()"
-												ng-options="o as o['label_' + language] for o in currentRelation.relatedModule.fields track by o.name">
-											<option value="">{{'Common.Select' | translate}}</option>
-										</select>
 									</div>
 									<div class="form-group" ng-if="currentRelation.relationField || (currentRelation.relatedModule && currentRelation.relation_type === 'many_to_many')">
 										<label class="col-sm-4 required-field">* {{'Setup.Modules.ViewFields' | translate}}: </label>
