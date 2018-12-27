@@ -3,14 +3,12 @@
 angular.module('primeapps')
 
     .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config) {  //var module = $filter('filter')($rootScope.modules, { name: "leads" }, true)[0];
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config) {
 
-            //var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
-
-            /*ModuleSetupService.getViews().then(function (response) {
-                $scope.customView = response.data;
-            });*/
-
+            $scope.$parent.menuTopTitle ="Models";
+            $scope.$parent.activeMenu= 'model';
+            $scope.$parent.activeMenuItem = 'relations';
+            
             $rootScope.modules = [
                 {
                     "calculations": [],
@@ -28748,24 +28746,24 @@ angular.module('primeapps')
                     "updated_by_id": 4405
                 }
             ]
-            $rootScope.language='tr';
+            $rootScope.language = 'tr';
 
             $rootScope.loading = true;
             $scope.setRelations = function () {
                 $scope.relations = [];
                 for (var i = 0; i < $rootScope.modules.length; i++) {
                     var module = angular.copy($rootScope.modules[i]);
-                    if(module.relations){
+                    if (module.relations) {
                         for (var j = 0; j < module.relations.length; j++) {
                             module.relations[j].parent_module = module;
                         }
                         $scope.relations = $scope.relations.concat(module.relations);
                     }
                 }
-               // $scope.relations = ModuleSetupService.processRelations($scope.relations);
-                //$scope.relationsState = angular.copy($scope.relations);
+                $scope.relations = RelationsService.processRelations($scope.relations);
+                $scope.relationsState = angular.copy($scope.relations);
                 $rootScope.loading = false;
-            }
+            };
 
             $scope.setRelations();
 
@@ -28789,7 +28787,7 @@ angular.module('primeapps')
                 $scope.currentRelation.hasRelationField = true;
                 $scope.currentRelation.module = relation.parent_module;
                 $scope.currentRelationState = angular.copy($scope.currentRelation);
-               // $scope.fields = ModuleSetupService.getFields($scope.currentRelation);
+                $scope.fields = RelationsService.getFields($scope.currentRelation);
 
                 //Module relations list remove itself
                 var filter = {};
@@ -28872,21 +28870,26 @@ angular.module('primeapps')
             };
 
             $scope.relatedModuleChanged = function () {
-                $scope.currentRelation.relationField = null;
 
-                if ($scope.currentRelation.relatedModule)
-                    $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.relatedModule.fields, { data_type: 'lookup', lookup_type: $scope.currentRelation.module.name, deleted: false }, true).length > 0;
+                if ($scope.currentRelation.module) {
 
-                $scope.currentRelation.display_fields = null;
-                $scope.fields = ModuleSetupService.getFields($scope.currentRelation);
+                    $scope.currentRelation.relationField = null;
 
-                if ($scope.currentRelation.relation_type === 'many_to_many')
-                    $scope.bindDragDrop();
+                    if ($scope.currentRelation.relatedModule)
+                        $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.relatedModule.fields, { data_type: 'lookup', lookup_type: $scope.currentRelation.module.name, deleted: false }, true).length > 0;
+
+                    $scope.currentRelation.display_fields = null;
+                    $scope.fields = RelationsService.getFields($scope.currentRelation);
+
+                    if ($scope.currentRelation.relation_type === 'many_to_many')
+                        $scope.bindDragDrop();
+                    ;
+                    $scope.relationTypeChanged = function () {
+                        if ($scope.currentRelation.relation_type === 'many_to_many')
+                            $scope.bindDragDrop();
+                    }
+                }
             };
-            $scope.relationTypeChanged = function () {
-                if ($scope.currentRelation.relation_type === 'many_to_many')
-                    $scope.bindDragDrop();
-            }
 
             $scope.save = function (relationForm) {
                 if (!relationForm.$valid)
@@ -28928,7 +28931,7 @@ angular.module('primeapps')
                     }
                 }
 
-                ModuleSetupService.prepareRelation(relation);
+                RelationsService.prepareRelation(relation);
 
                 //Create dynamic relation for related module in manytomany relation.
                 var createRelationManyToManyModule = function () {
@@ -28955,7 +28958,7 @@ angular.module('primeapps')
                     }
                     $scope.fields.selectedFields = [];
                     $scope.save(relatedModul);
-                }
+                };
 
                 var success = function () {
                     if (!relation.two_way && relation.relation_type === 'many_to_many')
@@ -29024,12 +29027,12 @@ angular.module('primeapps')
                     });
             };
 
-            $scope.cancel = function () {
-                angular.forEach($scope.currentRelation, function (value, key) {
-                    $scope.currentRelation[key] = $scope.currentRelationState[key];
-                });
+            //$scope.cancel = function () {
+            //	angular.forEach($scope.currentRelation, function (value, key) {
+            //		$scope.currentRelation[key] = $scope.currentRelationState[key];
+            //	});
 
-                $scope.addNewRelationsFormModal.hide();
-            }
+            //	$scope.addNewRelationsFormModal.hide();
+            //};
         }
     ]);

@@ -305,7 +305,6 @@ angular.module('primeapps')
                             }]
                     }
                 })
-
                 .state('studio.app.overview', {
                     url: '/overview?:id',
                     views: {
@@ -322,7 +321,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.modules', {
                     url: '/modules?:id',
                     views: {
@@ -340,7 +338,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.relations', {
                     url: '/relations',
                     views: {
@@ -358,7 +355,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.filters', {
                     url: '/filters',
                     views: {
@@ -376,7 +372,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.dependencies', {
                     url: '/dependencies',
                     views: {
@@ -394,7 +389,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.templatesEmail', {
                     url: '/templatesEmail',
                     views: {
@@ -446,7 +440,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.templatesEmailGuide', {
                     url: '/templatesEmailGuide',
                     views: {
@@ -463,7 +456,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.workflows', {
                     url: '/workflows',
                     views: {
@@ -617,7 +609,6 @@ angular.module('primeapps')
                         }]
                     }
                 })
-
                 .state('studio.app.profiles', {
                     url: '/profiles',
                     views: {
@@ -737,6 +728,199 @@ angular.module('primeapps')
                         }]
                     }
                 })
+                .state('studio.app.certificates', {
+                    url: '/certificates',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/certificates/certificates.html',
+                            controller: 'CertificatesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/certificates/certificatesController.js',
+                                cdnUrl + 'view/app/security/certificates/certificatesService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.passwordpolicies', {
+                    url: '/passwordPolicies',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/passwordpolicies/passwordpolicies.html',
+                            controller: 'PasswordPoliciesController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesController.js',
+                                cdnUrl + 'view/app/security/passwordpolicies/passwordpoliciesService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.audittrail', {
+                    url: '/auditTrail',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/audittrail/audittrail.html',
+                            controller: 'AuditTrailController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/audittrail/auditTrailController.js',
+                                cdnUrl + 'view/app/security/audittrail/auditTrailService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.cors', {
+                    url: '/cors',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/cors/cors.html',
+                            controller: 'CorsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/cors/corsController.js',
+                                cdnUrl + 'view/app/security/cors/corsService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.networkaccess', {
+                    url: '/networkAccess',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/security/networkaccess/networkaccess.html',
+                            controller: 'NetworkAccessController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/security/networkaccess/networkaccessController.js',
+                                cdnUrl + 'view/app/security/networkaccess/networkaccessService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.authentication', {
+                    url: '/authentication',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/identity/authentication/authentication.html',
+                            controller: 'AuthenticationController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/identity/authentication/authenticationController.js',
+                                cdnUrl + 'view/app/identity/authentication/authenticationService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.identy', {
+                    url: '/identity',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/identity/identityprovider/identity.html',
+                            controller: 'IdentityController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/identity/identityprovider/identityController.js',
+                                cdnUrl + 'view/app/identity/identityprovider/identityService.js'
+                            ]);
+                        }]
+                    }
+                })
+                .state('studio.app.singlesignon', {
+                    url: '/singleSingOn',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/identity/singlesingon/singleSignOn.html',
+                            controller: 'SingleSingOnController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/identity/singlesingon/singleSignOnController.js',
+                                cdnUrl + 'view/app/identity/singlesingon/singleSignOnService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.appdetails', {
+                    url: '/appDetails',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/settings/appdetails/appDetails.html',
+                            controller: 'AppDetailsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/settings/appdetails/appDetailsController.js',
+                                cdnUrl + 'view/app/settings/appdetails/appDetailsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.appcollaborators', {
+                    url: '/appCollaborators',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/settings/collaborators/appCollaborators.html',
+                            controller: 'AppCollaboratorsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/settings/collaborators/appCollaboratorsController.js',
+                                cdnUrl + 'view/app/settings/collaborators/appCollaboratorsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+                .state('studio.app.notifications', {
+                    url: '/notifications',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/settings/notifications/notifications.html',
+                            controller: 'NotificationsController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/settings/notifications/notificationsController.js',
+                                cdnUrl + 'view/app/settings/notifications/notificationsService.js'
+                            ]);
+                        }]
+                    }
+                })
+
+
             ;
             //conti
 

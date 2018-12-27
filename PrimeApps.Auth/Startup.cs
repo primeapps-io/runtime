@@ -47,22 +47,6 @@ namespace PrimeApps.Auth
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-
-            services.AddWebOptimizer(pipeline =>
-            {
-                pipeline.AddJavaScriptBundle("/scripts/bundles-js/auth.js",
-                    "scripts/vendor/jquery.js",
-                    "scripts/vendor/jquery-maskedinput.js",
-                    "scripts/vendor/sweetalert.js",
-                    "scripts/vendor/spin.js",
-                    "scripts/vendor/ladda.js");
-
-                pipeline.AddCssBundle("/styles/bundles-css/auth.css",
-                    "styles/vendor/bootstrap.css",
-                    "styles/vendor/flaticon.css",
-                    "styles/vendor/ladda-themeless.css",
-                    "styles/vendor/font-awesome.css");
-            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -100,8 +100,6 @@ namespace PrimeApps.App
                     })
                 .AddDataAnnotationsLocalization();
 
-            RegisterBundle(services);
-
             var awsOptions = Configuration.GetAWSOptions();
             awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
             awsOptions.Credentials = new BasicAWSCredentials(
@@ -143,7 +141,6 @@ namespace PrimeApps.App
             }
 
             app.UseHangfireDashboard();
-            app.UseWebOptimizer();
             app.UseStaticFiles();
             app.UseAuthentication();
 
