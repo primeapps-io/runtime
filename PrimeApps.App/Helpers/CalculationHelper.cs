@@ -1529,7 +1529,7 @@ namespace PrimeApps.App.Helpers
 
                                                         if (!record["amount"].IsNullOrEmpty())
                                                         {
-                                                            var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = record["related_petty_cash_2"].IsNullOrEmpty() ? 0:(int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
+                                                            var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                             var expenditureRecords = recordRepository.Find(module.Name, findRequestExpenditure);
                                                             var currencyFieldExpenditure = expenditureModule.Fields.Single(x => x.Name == "currency_c");
                                                             var currencyPicklistExpenditure = await picklistRepository.GetById(currencyFieldExpenditure.PicklistId.Value);
@@ -1919,7 +1919,14 @@ namespace PrimeApps.App.Helpers
                                                     var stockModObj2 = await moduleRepository.GetByName("stock_transactions");
                                                     var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj2 = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2, false);
+                                                    var currentStockRecordArr2 = new JArray();
+
+                                                    if (stockModObj2 != null)
+                                                        currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2, false);
+
+                                                    if (purchaseOrderModulePicklist == null)
+                                                        break;
+
                                                     if (operationType == OperationType.delete || (purchaseOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && purchaseOrderModulePicklist.SystemCode != "confirmed_order_stage"))
                                                     {
                                                         if (currentStockRecordArr2.Count > 0)
