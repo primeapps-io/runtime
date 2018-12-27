@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Npgsql;
 using PrimeApps.App.Helpers;
 using PrimeApps.App.Models;
 using PrimeApps.App.Services;
@@ -14,6 +15,7 @@ using PrimeApps.Model.Common.UserApps;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Helpers.QueryTranslation;
 using PrimeApps.Model.Repositories.Interfaces;
 using Sentry;
 using System;
@@ -211,18 +213,33 @@ namespace PrimeApps.App.Controllers
         [Route("get_users"), HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            var user = await _userRepository.GetUserInfoAsync(AppUser.Id);
-
-            if (user != null)
+            try
             {
-                var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
+                var user = await _userRepository.GetUserInfoAsync(AppUser.Id);
 
-                if (tenant != null)
-                    return Ok(tenant[0].users);
-                else
-                    return BadRequest();
+                if (user != null)
+                {
+                    var tenant = await _tenantRepository.GetTenantInfo(AppUser.TenantId);
+
+                    if (tenant != null)
+                        return Ok(tenant[0].users);
+                    else
+                        return BadRequest();
+                }
+                return Unauthorized();
             }
-            return Unauthorized();
+            catch (Exception ex)
+            {
+                if (ex.InnerException is PostgresException)
+                {
+                    var innerEx = (PostgresException)ex.InnerException;
+
+                    if (innerEx.SqlState == PostgreSqlStateCodes.DatabaseDoesNotExist)
+                        return BadRequest("Account is deactivated and database is deleted.");
+                }
+
+                throw;
+            }
         }
 
         /// <summary>
