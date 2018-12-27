@@ -26,8 +26,19 @@ angular.module('primeapps')
 
                     // if ($rootScope.currentOrganization)
                     //     config.headers['X-Organization-Id'] = $rootScope.currentOrganization.id;
-                    config.headers['X-Organization-Id'] = 1;
-                    config.headers['X-Tenant-Id'] = $cookies.get('tenant_id');
+
+                    var organizationId = $cookies.get('organization_id');
+                    var appId = $cookies.get('app_id');
+                    var tenantId = $cookies.get('tenant_id');
+
+                    if (organizationId)
+                        config.headers['X-Organization-Id'] = organizationId;
+
+                    if (appId)
+                        config.headers['X-App-Id'] = appId;
+
+                    if (tenantId)
+                        config.headers['X-Tenant-Id'] = tenantId;
 
                     return config;
                 },
@@ -39,7 +50,7 @@ angular.module('primeapps')
                         if (rejection.statusText === 'Unauthorized') {
                             $localStorage.remove('access_token');
                             $localStorage.remove('refresh_token');
-                           // $window.location.href = '/auth/SignOut';
+                            // $window.location.href = '/auth/SignOut';
                         } else {
                             $window.location.href = '/';
                         }
@@ -64,7 +75,7 @@ angular.module('primeapps')
 
                     if (rejection.status === 403) {
                         $window.location.href = '#/app/dashboard';
-                        ngToast.create({content: $filter('translate')('Common.Forbidden'), className: 'danger'});
+                        ngToast.create({ content: $filter('translate')('Common.Forbidden'), className: 'danger' });
                         return $q.reject(rejection);
                     }
 
@@ -81,7 +92,7 @@ angular.module('primeapps')
                     }
 
                     if (!navigator.onLine || rejection.status === 421 || rejection.status === 429) {
-                        ngToast.create({content: $filter('translate')('Common.NetworkError'), className: 'warning'});
+                        ngToast.create({ content: $filter('translate')('Common.NetworkError'), className: 'warning' });
                         return $q.reject(rejection);
                     }
 
@@ -89,7 +100,7 @@ angular.module('primeapps')
                         return $q.reject(rejection);
                     }
 
-                    ngToast.create({content: $filter('translate')('Common.Error'), className: 'danger'});
+                    ngToast.create({ content: $filter('translate')('Common.Error'), className: 'danger' });
 
                     return $q.reject(rejection);
                 }
