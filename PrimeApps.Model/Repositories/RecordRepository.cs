@@ -39,9 +39,9 @@ namespace PrimeApps.Model.Repositories
                 GetRoleBasedInfo(module.Name, out owners, out userGroups);
 
             var sql = RecordHelper.GenerateGetSql(module, lookupModules, recordId, owners, CurrentUser.UserId, userGroups, deleted);
-			var data = DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
+            var data = DbContext.Database.SqlQueryDynamic(sql).FirstOrDefault();
 
-			var record = data == null ? new JObject() : (JObject)data;
+            var record = data == null ? new JObject() : (JObject)data;
 
             if (!record.IsNullOrEmpty())
             {
@@ -188,8 +188,8 @@ namespace PrimeApps.Model.Repositories
             return result;
         }
 
-		public async Task<int> Update(JObject record, Module module, bool delete = false, bool isUtc = true)
-		{
+        public async Task<int> Update(JObject record, Module module, bool delete = false, bool isUtc = true)
+        {
             int result;
 
             using (var command = (NpgsqlCommand)DbContext.Database.GetDbConnection().CreateCommand())
@@ -197,11 +197,11 @@ namespace PrimeApps.Model.Repositories
                 var sets = new List<string>();
                 var currentUserId = DbContext.GetCurrentUserId();
                 var now = DateTime.UtcNow;
-                var recordId = (int)record["id"];
+                var recordId = record["id"].IsNullOrEmpty() ? 0 : (int)record["id"];
 
-				RecordHelper.AddCommandParameters(command, record, module, isUtc);
+                RecordHelper.AddCommandParameters(command, record, module, isUtc);
 
-				foreach (NpgsqlParameter parameter in command.Parameters)
+                foreach (NpgsqlParameter parameter in command.Parameters)
                 {
                     sets.Add("\"" + parameter.ParameterName + "\" = @" + parameter.ParameterName);
                 }
@@ -259,8 +259,8 @@ namespace PrimeApps.Model.Repositories
                 for (int i = 0; i < records.Count; i++)
                 {
                     var record = records[i];
-                    command.Parameters.Add(new NpgsqlParameter{ ParameterName = columnName1 + i, NpgsqlValue = Convert.ToInt32(record[columnName1]),NpgsqlDbType = NpgsqlDbType.Integer});
-                    command.Parameters.Add(new NpgsqlParameter{ ParameterName = columnName2 + i, NpgsqlValue = Convert.ToInt32(record[columnName2]),NpgsqlDbType = NpgsqlDbType.Integer});
+                    command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName1 + i, NpgsqlValue = Convert.ToInt32(record[columnName1]), NpgsqlDbType = NpgsqlDbType.Integer });
+                    command.Parameters.Add(new NpgsqlParameter { ParameterName = columnName2 + i, NpgsqlValue = Convert.ToInt32(record[columnName2]), NpgsqlDbType = NpgsqlDbType.Integer });
 
                     values.Add($"(@{columnName1 + i}, @{columnName2 + i})");
                 }
