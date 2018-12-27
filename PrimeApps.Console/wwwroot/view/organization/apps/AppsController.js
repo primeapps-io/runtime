@@ -21,8 +21,10 @@ angular.module('primeapps')
                     link: '#/allApps'
                 }
             ];
-            AppsService.getOrganizationApps($state.params.organizationId).then(function (result) {
-                $scope.apps = result.data;
-            });
+
+            AppsService.getOrganizationApps($state.params.organizationId)
+                .then(function (result) {
+                    $scope.apps = result.data;
+                });
         }
     ]);
