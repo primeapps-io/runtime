@@ -16,8 +16,6 @@
     <PackageReference Include="Hangfire.PostgreSql.NetCore" Version="1.4.3" />
     <PackageReference Include="Humanizer.Core" Version="2.5.16" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.7.0" />
-    <PackageReference Include="NUglify" Version="1.5.12" />
-    <!-- <PackageReference Include="LigerShark.WebOptimizer.Core" Version="1.0.215" /> -->
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.WebApiCompatShim" Version="2.2.0" />
@@ -42,13 +40,4 @@
   <ItemGroup>
     <ProjectReference Include="..\PrimeApps.Model\PrimeApps.Model.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\view\app\expensesheet\" />
-    <Folder Include="wwwroot\view\setup\menu\" />
-  </ItemGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties wwwroot_4locales_4tr_1json__JSONSchema="en" />
-    </VisualStudio>
-  </ProjectExtensions>
 </Project>
