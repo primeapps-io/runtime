@@ -8,23 +8,29 @@ using PrimeApps.Model.Entities.Platform;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
-	public class PlatformRepository : RepositoryBasePlatform, IPlatformRepository
-	{
-		public PlatformRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+    public class PlatformRepository : RepositoryBasePlatform, IPlatformRepository
+    {
+        private ICacheHelper _cacheHelper;
 
-		public Tenant GetTenant(int tenantId)
-		{
-			var tenant = DbContext.Tenants
-				.Include(x => x.License)
-				.Include(x => x.Setting)
-				.Include(x => x.TenantUsers)
-				.SingleOrDefault(x => x.Id == tenantId);
+        public PlatformRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper)
+        {
+            _cacheHelper = cacheHelper;
+        }
 
-			return tenant;
-		}
+        public Tenant GetTenant(int tenantId)
+        {
+            var tenant = DbContext.Tenants
+                .Include(x => x.License)
+                .Include(x => x.Setting)
+                .Include(x => x.TenantUsers)
+                .SingleOrDefault(x => x.Id == tenantId);
+
+            return tenant;
+        }
 
 		public async Task<List<AppTemplate>> GetAppTemplate(int appId, AppTemplateType type, string language, string systemCode = null)
 		{

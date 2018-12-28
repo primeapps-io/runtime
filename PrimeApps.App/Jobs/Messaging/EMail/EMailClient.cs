@@ -73,10 +73,12 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 				{
 					var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 					var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-					databaseContext.TenantId = emailQueueItem.TenantId;
+                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
-					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+                    databaseContext.TenantId = emailQueueItem.TenantId;
+
+					using (var platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
+					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
 					{
 						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };

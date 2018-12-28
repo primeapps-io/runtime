@@ -4,6 +4,7 @@ using PrimeApps.Model.Common.Instance;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
 	public class TenantRepository : RepositoryBasePlatform, ITenantRepository
 	{
-		public TenantRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration)
+		public TenantRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper)
 		{
 
 		}

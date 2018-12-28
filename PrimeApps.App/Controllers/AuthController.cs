@@ -19,24 +19,27 @@ using PrimeApps.App.Models;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
+using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Controllers
 {
-	public class AuthController : Controller
-	{
-		//private ApplicationSignInManager _signInManager;
-		private readonly IStringLocalizer<AuthController> _localizer;
-		private IPlatformRepository _platformRepository;
-		private IConfiguration _configuration;
+    public class AuthController : Controller
+    {
+        //private ApplicationSignInManager _signInManager;
+        private readonly IStringLocalizer<AuthController> _localizer;
+        private IPlatformRepository _platformRepository;
+        private IConfiguration _configuration;
+        private ICacheHelper _cacheHelper;
 
-		public AuthController(IStringLocalizer<AuthController> localizer, IPlatformRepository platformRepository, IConfiguration configuration)
-		{
-			_localizer = localizer;
-			_platformRepository = platformRepository;
-			_configuration = configuration;
-		}
+        public AuthController(IStringLocalizer<AuthController> localizer, IPlatformRepository platformRepository, IConfiguration configuration, ICacheHelper cacheHelper)
+        {
+            _localizer = localizer;
+            _platformRepository = platformRepository;
+            _configuration = configuration;
+            _cacheHelper = cacheHelper;
+        }
 
 		/*public async Task<ActionResult> Authorize()
         {
@@ -84,16 +87,16 @@ namespace PrimeApps.App.Controllers
 			//TODO: Remove this when remember me feature developed
 			model.RememberMe = true;
 
-			PlatformUser user;
-			int appId;
-			//SignInStatus result;
-			var result = false;
-			using (var platformDBContext = new PlatformDBContext(_configuration))
-			using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
-			{
-				user = await platformUserRepository.Get(model.Email);
-				appId = GetAppId(url);
-				//result = SignInStatus.Failure;
+            PlatformUser user;
+            int appId;
+            //SignInStatus result;
+            var result = false;
+            using (var platformDBContext = new PlatformDBContext(_configuration))
+            using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration, _cacheHelper))
+            {
+                user = await platformUserRepository.Get(model.Email);
+                appId = GetAppId(url);
+                //result = SignInStatus.Failure;
 
 				if (user != null)
 				{
@@ -234,19 +237,19 @@ namespace PrimeApps.App.Controllers
 					var token = (string)automaticAccountActivationModel["Token"];
 					var guid = (Guid)automaticAccountActivationModel["GuId"];
 
-					return RedirectToAction("Activation", "Auth",
-						new { Token = token, Uid = guid, OfficeSignIn = true });
-				}
-				if (response.StatusCode == HttpStatusCode.BadRequest)
-				{
-					using (var platformDBContext = new PlatformDBContext(_configuration))
-					using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration))
-					{
-						var user = await platformUserRepository.Get(registerBindingModel.Email);
-						if (user != null)
-						{
-							//TODO Removed
-							/*if (user.AppId == 1)
+                    return RedirectToAction("Activation", "Auth",
+                        new { Token = token, Uid = guid, OfficeSignIn = true });
+                }
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    using (var platformDBContext = new PlatformDBContext(_configuration))
+                    using (var platformUserRepository = new PlatformUserRepository(platformDBContext, _configuration, _cacheHelper))
+                    {
+                        var user = await platformUserRepository.Get(registerBindingModel.Email);
+                        if (user != null)
+                        {
+                            //TODO Removed
+                            /*if (user.AppId == 1)
 								ViewData["appName"] = "CRM";
 							else*/
 							ViewData["appName"] = "İK";

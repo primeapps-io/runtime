@@ -204,8 +204,10 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration))
+
+                using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration, cacheHelper))
 				{
 					subscriber = await platformUserRepository.GetWithSettingsAsync(messageDto.TenantId);
 				}
@@ -385,8 +387,10 @@ namespace PrimeApps.App.Jobs.Messaging.SMS
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
 				var platformDBContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration))
+
+                using (var platformUserRepository = new TenantRepository(platformDBContext, _configuration, cacheHelper))
 				{
 					subscriber = await platformUserRepository.GetWithSettingsAsync(appUser.TenantId);
 				}

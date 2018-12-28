@@ -41,6 +41,8 @@ namespace PrimeApps.App.Jobs.Reminder
                 {
                     var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                     var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
                     databaseContext.TenantId = reminderMessage.TenantId;
 
                     using (var reminderRepository = new ReminderRepository(databaseContext, _configuration))
@@ -57,7 +59,7 @@ namespace PrimeApps.App.Jobs.Reminder
 
                         string reminderType = reminder.ReminderType;
 
-                        using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+                        using (PlatformUserRepository platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
                         {
                             platformUserRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
 

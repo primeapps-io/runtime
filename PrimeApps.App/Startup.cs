@@ -108,6 +108,11 @@ namespace PrimeApps.App
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<IAmazonS3>();
             services.AddTransient<IUnifiedStorage, UnifiedStorage>();
+
+            services.AddDistributedRedisCache(option =>
+            {
+                option.Configuration = Configuration.GetConnectionString("RedisConnection");
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -10,12 +10,36 @@ using PrimeApps.Model.Enums;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 
 namespace PrimeApps.App.Helpers
 {
-    public class AnalyticsHelper
+    public interface IAnalyticsHelper
     {
-        public static async Task<Analytic> CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository)
+        Task<Analytic> CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository);
+        Task<Analytic> UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository);
+        Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration);
+    }
+
+    public class AnalyticsHelper : IAnalyticsHelper
+    {
+        private CurrentUser _currentUser;
+        private IHttpContextAccessor _context;
+        private IServiceScopeFactory _serviceScopeFactory;
+        private IConfiguration _configuration;
+
+        public AnalyticsHelper(IHttpContextAccessor context, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
+        {
+            _context = context;
+            _currentUser = UserHelper.GetCurrentUser(_context);
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+
+        }
+
+        public async Task<Analytic> CreateEntity(AnalyticBindingModel analyticModel, IUserRepository userRepository)
         {
             var analytic = new Analytic
             {
@@ -30,7 +54,7 @@ namespace PrimeApps.App.Helpers
             return analytic;
         }
 
-        public static async Task<Analytic> UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
+        public async Task<Analytic> UpdateEntity(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
         {
             analytic.Label = analyticModel.Label;
             analytic.PbixUrl = analyticModel.PbixUrl;
@@ -42,35 +66,40 @@ namespace PrimeApps.App.Helpers
             return analytic;
         }
 
-        public static async Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration)
+        public async Task<WarehouseInfo> GetWarehouse(int tenantId, IConfiguration configuration)
         {
-            PlatformWarehouse warehouse = null;
-
-            using (PlatformDBContext platformDBContext = new PlatformDBContext(configuration))
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
-                using (PlatformWarehouseRepository platformWarehouseRepository = new PlatformWarehouseRepository(platformDBContext, configuration))
+                var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
+                var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
+                PlatformWarehouse warehouse = null;
+
+                using (PlatformWarehouseRepository platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
                     warehouse = await platformWarehouseRepository.GetByTenantId(tenantId);
-                    
+
                     if (warehouse == null)
                         return null;
                 }
+
+
+                if (!warehouse.Completed)
+                    return null;
+
+                var warehouseInfo = new WarehouseInfo
+                {
+                    Server = configuration.GetSection("AppSettings")["WarehouseServer"],
+                    Database = warehouse.DatabaseName,
+                    Username = warehouse.DatabaseUser
+                };
+
+                return warehouseInfo;
             }
-
-            if (!warehouse.Completed)
-                return null;
-
-            var warehouseInfo = new WarehouseInfo
-            {
-                Server = configuration.GetSection("AppSettings")["WarehouseServer"],
-                Database = warehouse.DatabaseName,
-                Username = warehouse.DatabaseUser
-            };
-
-            return warehouseInfo;
         }
 
-        private static async Task CreateAnalyticShares(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
+        private async Task CreateAnalyticShares(AnalyticBindingModel analyticModel, Analytic analytic, IUserRepository userRepository)
         {
             if (analyticModel.Shares != null && analyticModel.Shares.Count > 0)
             {
