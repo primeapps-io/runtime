@@ -28743,8 +28743,8 @@ angular.module('primeapps')
                 }
             ]
             $rootScope.language = 'tr';
-
             $rootScope.loading = true;
+            
             $scope.setRelations = function () {
                 $scope.relations = [];
                 for (var i = 0; i < $rootScope.modules.length; i++) {
