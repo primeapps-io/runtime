@@ -164,11 +164,13 @@ namespace PrimeApps.App.Helpers
 
                 }
 
-                var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+				var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration))
-                {
-                    var instance = tRepo.Get(appUser.TenantId);
+
+                using (TenantRepository tRepo = new TenantRepository(pdbCtx, configuration, cacheHelper))
+				{
+					var instance = tRepo.Get(appUser.TenantId);
 
                     if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
                     {
@@ -315,23 +317,25 @@ namespace PrimeApps.App.Helpers
                 fromName = "Ofisim.com";
             }
 
-            if (appUser != null)
-            {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+			if (appUser != null)
+			{
+				using (var scope = _serviceScopeFactory.CreateScope())
+				{
+					var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
-                    {
-                        var tenant = tRepo.Get(appUser.TenantId);
-                        if (!string.IsNullOrEmpty(tenant.Setting?.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting?.MailSenderEmail))
-                        {
-                            from = !string.IsNullOrEmpty(fromEmail) ? fromEmail : tenant.Setting.MailSenderEmail;
-                            fromName = !string.IsNullOrEmpty(Name) ? Name : tenant.Setting.MailSenderName;
-                        }
-                    }
-                }
-            }
+
+                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration, cacheHelper))
+					{
+						var tenant = tRepo.Get(appUser.TenantId);
+						if (!string.IsNullOrEmpty(tenant.Setting?.MailSenderName) && !string.IsNullOrEmpty(tenant.Setting?.MailSenderEmail))
+						{
+							from = tenant.Setting.MailSenderEmail;
+							fromName = tenant.Setting.MailSenderName;
+						}
+					}
+				}
+			}
 
             var queue = new EmailEntry()
             {
@@ -379,22 +383,24 @@ namespace PrimeApps.App.Helpers
             from = "destek@ofisim.com";
             fromName = "Ofisim.com";
 
-            if (appUser != null)
-            {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration))
-                    {
-                        var instance = tRepo.Get(appUser.TenantId);
-                        if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
-                        {
-                            from = instance.Setting.MailSenderEmail;
-                            fromName = instance.Setting.MailSenderName;
-                        }
-                    }
-                }
-            }
+			if (appUser != null)
+			{
+				using (var scope = _serviceScopeFactory.CreateScope())
+				{
+					var pdbCtx = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                    var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
+                    using (TenantRepository tRepo = new TenantRepository(pdbCtx, _configuration, cacheHelper))
+					{
+						var instance = tRepo.Get(appUser.TenantId);
+						if (!string.IsNullOrEmpty(instance.Setting?.MailSenderName) && !string.IsNullOrEmpty(instance.Setting?.MailSenderEmail))
+						{
+							from = instance.Setting.MailSenderEmail;
+							fromName = instance.Setting.MailSenderName;
+						}
+					}
+				}
+			}
 
             var queue = new EmailEntry()
             {

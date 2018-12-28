@@ -8,12 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories
 {
     public class PlatformWarehouseRepository : RepositoryBasePlatform, IPlatformWarehouseRepository
     {
-        public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public PlatformWarehouseRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
 
         public Task<PlatformWarehouse> GetByTenantId(int tenantId)
         {

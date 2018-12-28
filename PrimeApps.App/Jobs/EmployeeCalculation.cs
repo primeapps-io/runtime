@@ -34,8 +34,9 @@ namespace PrimeApps.App.Jobs
 			{
 				var databaseContext = scope.ServiceProvider.GetRequiredService<TenantDBContext>();
 				var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
+                var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-				using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration))
+                using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 				{
 					var tenants = await tenantRepository.GetAllActive();
 
@@ -46,7 +47,7 @@ namespace PrimeApps.App.Jobs
 
 						try
 						{
-							using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration))
+							using (var platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
 							using (var analyticRepository = new AnalyticRepository(databaseContext, _configuration))
 							{
 								platformWarehouseRepository.CurrentUser = analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };

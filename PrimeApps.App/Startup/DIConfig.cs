@@ -17,6 +17,7 @@ namespace PrimeApps.App
     {
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddScoped(p => new PlatformDBContext(p.GetService<DbContextOptions<PlatformDBContext>>()));
@@ -62,6 +63,7 @@ namespace PrimeApps.App
             services.AddScoped<Helpers.IPowerBiHelper, Helpers.PowerBiHelper>();
             services.AddScoped<Helpers.IRoleHelper, Helpers.RoleHelper>();
             services.AddScoped<Helpers.IBpmHelper, Helpers.BpmHelper>();
+            services.AddScoped<Helpers.IAnalyticsHelper, Helpers.AnalyticsHelper>();
             services.AddScoped<Notifications.INotificationHelper, Notifications.NotificationHelper>();
             services.AddScoped<Notifications.IActivityHelper, Notifications.ActivityHelper>();
             services.AddScoped<Helpers.IFunctionHelper, Helpers.FunctionHelper>();

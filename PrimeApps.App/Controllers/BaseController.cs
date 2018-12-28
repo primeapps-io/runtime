@@ -86,13 +86,9 @@ namespace PrimeApps.App.Controllers
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 
-            var cacheService = (IDistributedCache)HttpContext.RequestServices.GetService(typeof(IDistributedCache));
+            var cacheHelper = (ICacheHelper)HttpContext.RequestServices.GetService(typeof(ICacheHelper));
             var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
-            var tenantUserCache = cacheService.GetString(cacheKeyTenantUser);
-            TenantUser tenantUser = null;
-
-            if (!string.IsNullOrEmpty(tenantUserCache))
-                tenantUser = JsonConvert.DeserializeObject<TenantUser>(tenantUserCache);
+            var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
 
             if (tenantUser == null)
             {
@@ -101,7 +97,7 @@ namespace PrimeApps.App.Controllers
 
                 tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-                cacheService.SetString(cacheKeyTenantUser, JsonConvert.SerializeObject(tenantUser, Formatting.Indented, CacheSerializerSettings));
+                var result = cacheHelper.Set(cacheKeyTenantUser, tenantUser);
             }
 
             appUser.RoleId = tenantUser.RoleId ?? 0;
@@ -111,18 +107,14 @@ namespace PrimeApps.App.Controllers
             if (tenant.License?.AnalyticsLicenseCount > 0)
             {
                 var cacheKeyWarehouse = "platform_warehouse_" + appUser.Id;
-                var platformWarehouseCache = cacheService.GetString(cacheKeyWarehouse);
-                PlatformWarehouse platformWarehouse = null;
-
-                if (!string.IsNullOrEmpty(tenantUserCache))
-                    platformWarehouse = JsonConvert.DeserializeObject<PlatformWarehouse>(platformWarehouseCache);
+                var platformWarehouse = cacheHelper.Get<PlatformWarehouse>(cacheKeyWarehouse);
 
                 if (platformWarehouse == null)
                 {
                     var warehouseRepository = (IPlatformWarehouseRepository)HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
                     platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
-                    cacheService.SetString(cacheKeyWarehouse, JsonConvert.SerializeObject(platformWarehouse, Formatting.Indented, CacheSerializerSettings));
+                    var result = cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
                 }
 
                 appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;

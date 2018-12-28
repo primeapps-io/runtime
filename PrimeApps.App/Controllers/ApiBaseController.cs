@@ -29,14 +29,10 @@ namespace PrimeApps.App.Controllers
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            var cacheService = (IDistributedCache)context.HttpContext.RequestServices.GetService(typeof(IDistributedCache));
+            var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
             var email = context.HttpContext.User.FindFirst("email").Value;
             var cacheKeyPlatformUser = "platform_user_" + email + "_" + tenantId;
-            var platformUserCache = cacheService.GetString(cacheKeyPlatformUser);
-            PlatformUser platformUser = null;
-
-            if (!string.IsNullOrEmpty(platformUserCache))
-                platformUser = JsonConvert.DeserializeObject<PlatformUser>(platformUserCache);
+            var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
 
             if (platformUser == null)
             {
@@ -45,7 +41,7 @@ namespace PrimeApps.App.Controllers
 
                 platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-                cacheService.SetString(cacheKeyPlatformUser, JsonConvert.SerializeObject(platformUser, Formatting.Indented, CacheSerializerSettings));
+                var reuslt = cacheHelper.Set(cacheKeyPlatformUser, platformUser);
             }
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
