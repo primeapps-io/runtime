@@ -22,8 +22,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
-    <link rel="stylesheet" href="/styles/bundles-css/vendor.css" />
-    <link rel="stylesheet" href="/styles/bundles-css/app.css" />
+    <environment include="Development">
+        <link rel="stylesheet" href="/styles/vendor/angular-block-ui.css" />
+        <link rel="stylesheet" href="/styles/vendor/angular-bootstrap-calendar.css" />
+        <link rel="stylesheet" href="/styles/vendor/angular-motion.css" />
+        <link rel="stylesheet" href="/styles/vendor/angular-resizable.css" />
+        <link rel="stylesheet" href="/styles/vendor/angular-ui-tree.css" />
+        <link rel="stylesheet" href="/styles/vendor/bootstrap-additions.css" />
+        <link rel="stylesheet" href="/styles/vendor/dragular.css" />
+        <link rel="stylesheet" href="/styles/vendor/flaticon.css" />
+        <link rel="stylesheet" href="/styles/vendor/font-awesome.css" />
+        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css" />
+        <link rel="stylesheet" href="/styles/vendor/ng-table.css" />
+        <link rel="stylesheet" href="/styles/vendor/ng-tags-input.bootstrap.css" />
+        <link rel="stylesheet" href="/styles/vendor/ng-tags-input.css" />
+        <link rel="stylesheet" href="/styles/vendor/ngToast.css" />
+        <link rel="stylesheet" href="/styles/vendor/select.css" />
+        <link rel="stylesheet" href="/styles/vendor/xeditable.css" />
+        <link rel="stylesheet" href="/styles/ui.css" />
+        <link rel="stylesheet" href="/styles/app.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="/styles/bundles-css/vendor.css" />
+        <link rel="stylesheet" href="/styles/bundles-css/app.css" />
+    </environment>
 </head>
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
     @RenderBody()
@@ -43,9 +65,90 @@
 		var loaderDiv = document.getElementById('loader');
 		loaderDiv.style.display = 'block';
     </script>
-    <script src="/scripts/bundles-js/vendor.js"></script>
-    <script src="/scripts/bundles-js/app.js"></script>
+    <environment include="Development">
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
+        <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+        <script src="/scripts/vendor/sip.min.js"></script>
+        <script src="/scripts/vendor/xlsx.core.min.js"></script>
+        <script src="/scripts/vendor/angular.js"></script>
+        <script src="/scripts/vendor/angular-filter.js"></script>
+        <script src="/scripts/vendor/angular-ui-router.js"></script>
+        <script src="/scripts/vendor/ocLazyLoad.js"></script>
+        <script src="/scripts/vendor/angular-cookies.js"></script>
+        <script src="/scripts/vendor/angular-translate.js"></script>
+        <script src="/scripts/vendor/angular-animate.js"></script>
+        <script src="/scripts/vendor/angular-sanitize.js"></script>
+        <script src="/scripts/vendor/angular-strap.js"></script>
+        <script src="/scripts/vendor/angular-strap.tpl.js"></script>
+        <script src="/scripts/vendor/angular-ui-bootstrap-custom.js"></script>
+        <script src="/scripts/vendor/angular-ui-bootstrap-custom-tpls.js"></script>
+        <script src="/scripts/vendor/angular-xeditable.js"></script>
+        <script src="/scripts/vendor/angular-ladda.js"></script>
+        <script src="/scripts/vendor/angular-ui-utils.js"></script>
+        <script src="/scripts/vendor/angular-ui-tinymce.js"></script>
+        <script src="/scripts/vendor/mentio/mentio.js"></script>
+        <script src="/scripts/vendor/ng-table.js"></script>
+        <script src="/scripts/vendor/spin.js"></script>
+        <script src="/scripts/vendor/ladda.js"></script>
+        <script src="/scripts/vendor/moment.js"></script>
+        <script src="/scripts/vendor/es5-shim.js"></script>
+        <script src="/scripts/vendor/es5-sham.js"></script>
+        <script src="/scripts/vendor/angular-file-upload.js"></script>
+        <script src="/scripts/vendor/angular-bootstrap-show-errors.js"></script>
+        <script src="/scripts/vendor/ngToast.js"></script>
+        <script src="/scripts/vendor/angular-block-ui.js"></script>
+        <script src="/scripts/vendor/angular-touch.js"></script>
+        <script src="/scripts/vendor/ng-sortable.js"></script>
+        <script src="/scripts/vendor/file-saver.js"></script>
+        <script src="/scripts/vendor/ng-img-crop.js"></script>
+        <script src="/scripts/vendor/angular-images-resizer.js"></script>
+        <script src="/scripts/vendor/angular-ui-tree.js"></script>
+        <script src="/scripts/vendor/plupload.full.js"></script>
+        <script src="/scripts/vendor/angular-plupload.js"></script>
+        <script src="/scripts/vendor/ng-tags-input.js"></script>
+        <script src="/scripts/vendor/angular-ui-mask.js"></script>
+        <script src="/scripts/vendor/powerbi.js"></script>
+        <script src="/scripts/vendor/ace/ace.js"></script>
+        <script src="/scripts/vendor/angular-ui-ace.js"></script>
+        <script src="/scripts/vendor/ace/ext-language_tools.js"></script>
+        <script src="/scripts/vendor/angular-ui-select.js"></script>
+        <script src="/scripts/vendor/angular-resizable.js"></script>
+        <script src="/scripts/vendor/clipboard.js"></script>
+        <script src="/scripts/vendor/angular-translate-extentions.js"></script>
+        <script src="/scripts/vendor/angular-dynamic-locale.js"></script>
+        <script src="/scripts/vendor/locales/moment-locales.js"></script>
+        <script src="/scripts/vendor/angular-slider.js"></script>
+        <script src="/scripts/vendor/angular-bootstrap-calendar-tpls.js"></script>
+        <script src="/scripts/vendor/dragular.js"></script>
+        <script src="/scripts/vendor/angucomplete-alt-custom.js"></script>
+        <script src="/scripts/vendor/ngclipboard.js"></script>
+        <script src="/scripts/vendor/moment-business-days.js"></script>
+        <script src="/scripts/vendor/angular-filter.js"></script>
+        <script src="/scripts/vendor/moment-weekdaysin.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.charts.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.widgets.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.fint.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.carbon.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.ocean.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/themes/fusioncharts.theme.zune.min.js"></script>
+        <script src="/scripts/vendor/tinymce/tinymce.min.js"></script>
+        <script src="/scripts/vendor/fusion-charts/fusioncharts.min.js"></script>
+        <script src="/scripts/vendor/sip.min.js"></script>
+        <script src="/scripts/vendor/xlsx.core.min.js"></script>
 
+        <script src="/scripts/bundles-js/vendor.js"></script>
+        <script src="/scripts/bundles-js/app.js"></script>
+    </environment>
     @RenderSection("scripts", required: false)
 </body>
 </html>
