@@ -103,8 +103,7 @@ namespace PrimeApps.Auth
                 ctx.Response.Headers.Add("Content-Security-Policy", "default-src 'self' * 'unsafe-inline' 'unsafe-eval' data:");
                 await next();
             });
-            app.UseStaticFiles();
-            app.UseWebOptimizer();
+            app.UseStaticFiles(); 
             app.UseIdentityServer();
             app.UseMvcWithDefaultRoute();
         }

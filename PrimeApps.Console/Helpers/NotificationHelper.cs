@@ -167,19 +167,21 @@ namespace PrimeApps.Console.Notifications
 
         public async Task OwnerChangedTask(UserItem appUser, JObject record, JObject oldRecord, Module module)
         {
-			//TODO DateTime dueDate = UnixDate.GetDate((long)record["task_due_date"]);
+            //TODO DateTime dueDate = UnixDate.GetDate((long)record["task_due_date"]);
 
-			string newOwnerId = record["owner"]?.ToString(),
-				oldOwnerId = oldRecord["owner"]?.ToString(),
-				oldOwnerName = string.Empty,
-				newOwnerName = string.Empty;////TODO,
-			  //TODO  formattedDueDate = dueDate.ToString("dd.MM.yyyy", new CultureInfo(appUser.Culture));
+            string newOwnerId = record["owner"]?.ToString(),
+                oldOwnerId = oldRecord["owner"]?.ToString(),
+                oldOwnerName = string.Empty,
+                newOwnerName = string.Empty;////TODO,
+                                            //TODO  formattedDueDate = dueDate.ToString("dd.MM.yyyy", new CultureInfo(appUser.Culture));
 
-			using (var _scope = _serviceScopeFactory.CreateScope())
+            using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration))
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+                using (var _platformUserRepository = new PlatformUserRepository(databaseContext, _configuration, cacheHelper))
                 {
+
                     PlatformUser newOwner = await _platformUserRepository.Get(Convert.ToInt32(newOwnerId)),
                     oldOwner = await _platformUserRepository.Get(Convert.ToInt32(oldOwnerId));
 
@@ -189,14 +191,14 @@ namespace PrimeApps.Console.Notifications
                     Dictionary<string, string> emailData = new Dictionary<string, string>();
                     emailData.Add("Owner", newOwnerName);
                     emailData.Add("OldOwner", oldOwnerName);
-					//TODO emailData.Add("DueDate", formattedDueDate);
+                    //TODO emailData.Add("DueDate", formattedDueDate);
 
-					//TODO
-					//Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-					//email.AddRecipient(newOwner.Email);
-					//email.AddToQueue(appUser: appUser);
-				}
-			}
+                    //TODO
+                    //Email email = new Email(EmailResource.TaskOwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                    //email.AddRecipient(newOwner.Email);
+                    //email.AddToQueue(appUser: appUser);
+                }
+            }
         }
 
         public async Task OwnerChangedDefault(UserItem appUser, JObject record, JObject oldRecord, Module module)
@@ -211,7 +213,9 @@ namespace PrimeApps.Console.Notifications
             {
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 var platformDatabaseContext = _scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
-                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration))
+                var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
+
+                using (var _platformUserRepository = new PlatformUserRepository(platformDatabaseContext, _configuration, cacheHelper))
                 using (var _recordRepository = new RecordRepository(databaseContext, _configuration))
                 {
                     _recordRepository.CurrentUser = _currentUser;
@@ -241,10 +245,10 @@ namespace PrimeApps.Console.Notifications
 
 
                     emailData.Add("PrimaryValue", moduleRecordPrimary[modulePkey]?.ToString()); //?wtf to change
-					//TODO
-                    //Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-                    //email.AddRecipient(newOwner.Email);
-                    //email.AddToQueue(appUser: appUser);
+                                                                                                //TODO
+                                                                                                //Email email = new Email(EmailResource.OwnerChangedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                                                                                                //email.AddRecipient(newOwner.Email);
+                                                                                                //email.AddToQueue(appUser: appUser);
                 }
             }
 
@@ -308,18 +312,18 @@ namespace PrimeApps.Console.Notifications
                         emailData.Add("UserName", (string)fullRecord["owner.email"]);
                         emailData.Add("DueDate", ((DateTime)fullRecord["task_due_date"]).ToString(appUser.TenantLanguage == "tr" ? "dd.MM.yyyy" : "MM/dd/yyyy"));
                         emailData.Add("Subject", (string)fullRecord["subject"]);
-						//TODO
-						//var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-						//email.AddRecipient((string)fullRecord["owner.email"]);
-						//email.AddToQueue(appUser: appUser);
-					}
+                        //TODO
+                        //var email = new Email(EmailResource.TaskAssignedNotification, appUser.Culture, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                        //email.AddRecipient((string)fullRecord["owner.email"]);
+                        //email.AddToQueue(appUser: appUser);
+                    }
 
-					// Send task notification_sms if it is true
-					if (!fullRecord["task_notification_sms"].IsNullOrEmpty() && (bool)fullRecord["task_notification_sms"])
+                    // Send task notification_sms if it is true
+                    if (!fullRecord["task_notification_sms"].IsNullOrEmpty() && (bool)fullRecord["task_notification_sms"])
                     {
-						//TODO Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.SendSingleSms((string)fullRecord["subject"], (string)fullRecord["owner.phone"], appUser.TenantLanguage, appUser));
-					}
-				}
+                        //TODO Hangfire.BackgroundJob.Enqueue<SMSClient>(sms => sms.SendSingleSms((string)fullRecord["subject"], (string)fullRecord["owner.phone"], appUser.TenantLanguage, appUser));
+                    }
+                }
             }
         }
     }
