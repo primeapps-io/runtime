@@ -55,10 +55,10 @@ namespace PrimeApps.App.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_auditLogRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_importRepository);
+            SetCurrentUser(_auditLogRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_importRepository, DBMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }
