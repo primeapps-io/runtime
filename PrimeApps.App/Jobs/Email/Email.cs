@@ -18,9 +18,7 @@ using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Enums;
 using System;
 using System.ComponentModel.DataAnnotations;
-using NUglify.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Http;
 using PrimeApps.Model.Common.Cache;
 
 namespace PrimeApps.App.Jobs.Email
