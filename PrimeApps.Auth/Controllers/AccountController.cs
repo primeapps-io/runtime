@@ -35,6 +35,7 @@ using PrimeApps.Auth.Services;
 using Newtonsoft.Json.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
+using System.Net;
 
 namespace PrimeApps.Auth.UI
 {
@@ -161,6 +162,9 @@ namespace PrimeApps.Auth.UI
                 return await ExternalLogin(vm.ExternalLoginScheme, vm.ReturnUrl);
             }
 
+            if(!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
             return View(vm);
         }
 
@@ -215,6 +219,10 @@ namespace PrimeApps.Auth.UI
                             {
                                 await _signInManager.SignOutAsync();
                                 vm.Error = "NotValidApp";
+
+                                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                                    return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
                                 return View(vm);
                             }
                         }
@@ -222,6 +230,10 @@ namespace PrimeApps.Auth.UI
                         {
                             await _signInManager.SignOutAsync();
                             vm.Error = "NotValidApp";
+
+                            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                                return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
                             return View(vm);
                         }
                     }
@@ -246,6 +258,10 @@ namespace PrimeApps.Auth.UI
 
             // something went wrong, show form with error
             vm.Error = "WrongInfo";
+
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
+
             return View(vm);
         }
 
@@ -275,6 +291,9 @@ namespace PrimeApps.Auth.UI
             */
             vm.ReadOnly = false;
 
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/Register" + vm.ApplicationInfo.Theme["custom"], vm);
+
             return View(vm);
         }
 
@@ -293,6 +312,10 @@ namespace PrimeApps.Auth.UI
             if (!ModelState.IsValid)
             {
                 vm.Error = "ModelStateNotValid";
+
+                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                    return View("Custom/Register" + vm.ApplicationInfo.Theme["custom"], vm);
+
                 return View(vm);
             }
 
@@ -323,6 +346,9 @@ namespace PrimeApps.Auth.UI
                     {
                         vm.Error = "AlreadyRegisteredExternalLogin";
                         ViewBag.AuthFlowTitle = action["title"].ToString();
+                        if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                            return View("Custom/Register" + vm.ApplicationInfo.Theme["custom"], vm);
+
                         return View(vm);
                     }
                 }
@@ -334,6 +360,9 @@ namespace PrimeApps.Auth.UI
             if (!string.IsNullOrEmpty(createUserRespone["Error"].ToString()))
             {
                 vm.Error = createUserRespone["Error"].ToString();
+                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                    return View("Custom/Register" + vm.ApplicationInfo.Theme["custom"], vm);
+
                 return View(vm);
             }
 
@@ -379,7 +408,7 @@ namespace PrimeApps.Auth.UI
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var app = await _applicationRepository.GetByName(model.AppName);
+            var app = await _applicationRepository.GetByNameAsync(model.AppName);
 
             var application = new Application()
             {
@@ -408,7 +437,9 @@ namespace PrimeApps.Auth.UI
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail([FromQuery(Name = "email")]string email, [FromQuery(Name = "code")]string code)
         {
-            var vm = await BuildConfirmEmailViewModelAsync("");
+            code = WebUtility.UrlDecode(code);
+
+            var vm = BuildConfirmEmailViewModelAsync("");
             var user = await _userManager.FindByEmailAsync(email);
 
             if (email == null || code == null)
@@ -448,6 +479,9 @@ namespace PrimeApps.Auth.UI
                 return RedirectToAction(nameof(AccountController.ChangeLanguage), "Account", new { language = ViewBag.Language, returnUrl = Request.Path.Value + Request.QueryString.Value });
 
             //vm.ReadOnly = false;
+
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/ForgotPassword" + vm.ApplicationInfo.Theme["custom"], vm);
 
             return View(vm);
         }
@@ -490,11 +524,17 @@ namespace PrimeApps.Auth.UI
                 if (!response.IsSuccessStatusCode)
                 {
                     vm.Error = "NotSendEmail";
+                    if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                        return View("Custom/ForgotPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
                     return View(vm);
                 }
             }
 
             vm.Success = "Success";
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/ForgotPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
             return View(vm);
         }
 
@@ -502,6 +542,10 @@ namespace PrimeApps.Auth.UI
         public async Task<IActionResult> ResetPassword([FromQuery]string returnUrl, [FromQuery]string code, [FromQuery]Guid guid, string error)
         {
             var vm = await BuildResetPasswordViewModelAsync(returnUrl, HttpUtility.UrlDecode(code), guid, error: error);
+
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/ResetPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
             return View(vm);
         }
 
@@ -514,6 +558,9 @@ namespace PrimeApps.Auth.UI
             if (string.IsNullOrEmpty(vm.Code))
             {
                 vm.Error = "InvalidToken";
+                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                    return View("Custom/ResetPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
                 return View(vm);
             }
 
@@ -522,6 +569,9 @@ namespace PrimeApps.Auth.UI
             if (user == null)
             {
                 vm.Error = "NotFound";
+                if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                    return View("Custom/ResetPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
                 return View(vm);
             }
 
@@ -529,7 +579,7 @@ namespace PrimeApps.Auth.UI
 
             if (result.Succeeded)
             {
-                var application = await _applicationRepository.GetByName(client);
+                var application = await _applicationRepository.GetByNameAsync(client);
                 var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
 
                 if (externalLogin != null)
@@ -563,6 +613,9 @@ namespace PrimeApps.Auth.UI
                         else
                         {
                             vm.Error = "InvalidToken";
+                            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                                return View("Custom/ResetPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
                             return View(vm);
                         }
                     }
@@ -572,13 +625,16 @@ namespace PrimeApps.Auth.UI
             }
 
             vm.Error = "InvalidToken";
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+                return View("Custom/ResetPassword" + vm.ApplicationInfo.Theme["custom"], vm);
+
             return View(vm);
         }
 
         [HttpPost, AllowAnonymous]
         public async Task<bool> ExternalLoginForgotPassword([FromBody] ExternalLoginBindingModel model)
         {
-            var application = await _applicationRepository.GetByName(model.client);
+            var application = await _applicationRepository.GetByNameAsync(model.client);
             var externalLogin = application.Setting.ExternalAuth != null ? JObject.Parse(application.Setting.ExternalAuth) : null;
 
             if (externalLogin != null)
@@ -664,7 +720,7 @@ namespace PrimeApps.Auth.UI
                 if (!string.IsNullOrEmpty(clientId))
                 {
                     var platformUser = await _platformUserRepository.GetWithTenants(user.UserName);
-                    var appInfo = await _applicationRepository.GetByName(clientId);
+                    var appInfo = await _applicationRepository.GetByNameAsync(clientId);
                     var userApp = platformUser?.TenantsAsUser.Where(x => x.Tenant.AppId == appInfo.Id);
 
                     var theme = JObject.Parse(appInfo.Setting.AuthTheme);
@@ -849,15 +905,15 @@ namespace PrimeApps.Auth.UI
                 Error = error
             };
         }
-        private async Task<ConfirmEmailViewModel> BuildConfirmEmailViewModelAsync(string returnUrl, string success = "", string error = "")
+        private ConfirmEmailViewModel BuildConfirmEmailViewModelAsync(string returnUrl, string success = "", string error = "")
         {
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            //var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
 
             return new ConfirmEmailViewModel
             {
                 ReturnUrl = returnUrl,
-                ApplicationInfo = applicationInfo,
-                Language = applicationInfo?.Language,
+                //ApplicationInfo = applicationInfo,
+                Language = CultureInfo.CurrentCulture.Name,
                 Success = success,
                 Error = error
             };

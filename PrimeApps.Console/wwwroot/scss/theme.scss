@@ -1,972 +1,1118 @@
-$ofisim-crm-color: #1353ca;
-$ofisim-crm-background: lighten($ofisim-crm-color, 10%);
+//Reset
+button,select{
+  &:focus{
+    outline: none !important;
+  }
+}
 
-$green-theme-color: #b8c110;
-$green-dark-theme-color: #61b033;
-$blue-theme-color: #01a0e4;
-$orange-theme-color: #ee6d1a;
-$pink-theme-color: #e21550;
-$purple-theme-color: #b62f7c;
-
-$ofisim-asistan-color: #e65946;
-$ofisim-asistan-background: lighten($ofisim-asistan-color, 4%);
-
-$ofisim-ik-color: #3d3781;
-$ofisim-ik-background: lighten($ofisim-ik-color, 8%);
-
-$ofisim-cagri-color: #517ee4;
-$ofisim-cagri-background: lighten($ofisim-cagri-color, 7%);
-
-$theme-1-color: #ce0404;
 $primeapps-color: #635fb3;
-$theme-3-color: #016d45;
-
-$ofisim-kobi-color: #49a43b;
-$ofisim-kobi-background: lighten($ofisim-kobi-color, 10%);
-
-$theme-5-color: #F4511E;
-$theme-6-color: #607D8B;
-$theme-7-color: #3F5195;
-$theme-8-color: #2196F3;
-
-.ofisim-crm {
-    #sidebar-wrapper {
-        background: $ofisim-crm-background;
-        .sidebar-nav a.active i {
-            color: #8ce097;
-        }
-        .sidebar-nav a.active {
-            background: $ofisim-crm-color !important;
-        }
-
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-crm-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-crm-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-crm-color, 15%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-crm-color, 20%) !important;
-        }
-    }
-
-    .ring {
-        div {
-            border-color: $ofisim-crm-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-crm-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-crm-color !important;
-        border-bottom-color: $ofisim-crm-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-crm-color;
-
-        .input-group-addon {
-            color: $ofisim-crm-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-crm-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-crm-color;
-        color: white;
-    }
-}
-
-.green-theme {
-    .sidebar-nav a.active i {
-        color: $green-theme-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $green-theme-color;
-    }
-
-    .ring {
-        div {
-            border-color: $green-theme-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $green-theme-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $green-theme-color !important;
-        border-bottom-color: $green-theme-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $green-theme-color;
-
-        .input-group-addon {
-            color: $green-theme-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $green-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $green-theme-color;
-        color: white;
-    }
-}
-
-.green-dark-theme {
-    .sidebar-nav a.active i {
-        color: $green-dark-theme-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $green-dark-theme-color;
-    }
-
-    .ring {
-        div {
-            border-color: $green-dark-theme-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $green-dark-theme-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $green-dark-theme-color !important;
-        border-bottom-color: $green-dark-theme-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $green-dark-theme-color;
-
-        .input-group-addon {
-            color: $green-dark-theme-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $green-dark-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $green-dark-theme-color;
-        color: white;
-    }
-    }
-
-.blue-theme {
-    .sidebar-nav a.active i {
-        color: $blue-theme-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $blue-theme-color;
-    }
-
-    .ring {
-        div {
-            border-color: $blue-theme-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $blue-theme-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $blue-theme-color !important;
-        border-bottom-color: $blue-theme-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $blue-theme-color;
-
-        .input-group-addon {
-            color: $blue-theme-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $blue-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $blue-theme-color;
-        color: white;
-    }
-}
-
-.orange-theme {
-    .sidebar-nav a.active i {
-        color: $orange-theme-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $orange-theme-color;
-    }
-
-    .ring {
-        div {
-            border-color: $orange-theme-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $orange-theme-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $orange-theme-color !important;
-        border-bottom-color: $orange-theme-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $orange-theme-color;
-
-        .input-group-addon {
-            color: $orange-theme-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $orange-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $orange-theme-color;
-        color: white;
-    }
-}
-
-.pink-theme {
-    .sidebar-nav a.active i {
-        color: $pink-theme-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $pink-theme-color;
-    }
-
-    .ring {
-        div {
-            border-color: $pink-theme-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $pink-theme-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $pink-theme-color !important;
-        border-bottom-color: $orange-theme-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $pink-theme-color;
-
-        .input-group-addon {
-            color: $pink-theme-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $pink-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $pink-theme-color;
-        color: white;
-    }
-}
-
-.purple-theme {
-    .sidebar-nav a.active i {
-        color: $purple-theme-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $purple-theme-color;
-    }
-
-    .ring {
-        div {
-            border-color: $purple-theme-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $purple-theme-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $purple-theme-color !important;
-        border-bottom-color: $purple-theme-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $purple-theme-color;
-
-        .input-group-addon {
-            color: $purple-theme-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $purple-theme-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $purple-theme-color;
-        color: white;
-    }
-}
-
-.theme-1 {
-    .sidebar-nav a.active i {
-        color: $theme-1-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-1-color;
-    }
-
-    .ring {
-        div {
-            border-color: $theme-1-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-1-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $theme-1-color !important;
-        border-bottom-color: $theme-1-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-1-color;
-
-        .input-group-addon {
-            color: $theme-1-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $theme-1-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-1-color;
-        color: white;
-    }
-}
-
 .primeapps {
-    .sidebar-nav a.active i {
-        color: $primeapps-color;
+
+  //mix
+  @mixin hoverEffect(){
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+}
+  //Global
+  .margin-0 {
+    margin: 0px;
+  }
+  .margin-5 {
+    margin: 5px;
+  }
+  .margin-10 {
+    margin: 10px;
+  }
+  .margin-15 {
+    margin: 15px;
+  }
+  .padding-5 {
+    padding: 5px;
+  }
+  .padding-0 {
+    padding: 0px !important;
+  }
+  .padding-10 {
+    padding: 10px;
+  }
+  .padding-20 {
+    padding: 20px;
+  }
+  //EndGlobal
+  button:focus {
+    border: none;
+  }
+  .page-loading {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    align-self: center;
+    width: 100%;
+    color: #9e005d;
+    height: 50%;
+    i {
+      font-size: 50px;
+    }
+  }
+  body {
+    background-color: #f6f5f2 !important;
+  }
+  .sidebar-nav a.active i {
+    color: $primeapps-color;
+  }
+
+  .sidebar-nav a:hover:not(.sidebar-brand-logo) {
+    background-color: #121212;
+    border-radius: 0;
+  }
+
+  .ring {
+    div {
+      border-color: $primeapps-color transparent;
+    }
+  }
+
+  .help-link, .launcher-link {
+    &:hover,
+    &:focus {
+      color: $primeapps-color !important;
+    }
+  }
+
+  .btn-auth {
+    background-color: $primeapps-color !important;
+    border-bottom-color: $primeapps-color !important;
+  }
+
+  .input-group-focus {
+    border-bottom-color: $primeapps-color;
+
+    .input-group-addon {
+      color: $primeapps-color;
+    }
+  }
+
+  .inner-addon {
+    i {
+      color: $primeapps-color;
+    }
+  }
+
+  .modal-header {
+    background-color: $primeapps-color;
+    color: white;
+  }
+  .sidebar-nav {
+    margin-left: 0;
+    width: 100%;
+  }
+  #sidebar-wrapper {
+    background: url("../images/primeapps/menu_background.png") !important;
+    background-repeat: repeat !important;
+    .sidebar-nav {
+      .sidebar-brand {
+        padding-left: 15px !important;
+      }
+    }
+    .panel-body {
+      a {
+        background: none;
+        font-weight: 400;
+        font-size: 10px !important;
+        height: 36px;
+      }
+      .fa-sidebar-icon-background {
+        background: none !important;
+      }
+    }
+  }
+;
+  .sidebar-nav a.active {
+    background-color: #121212 !important;
+    border-radius: inherit;
+  }
+  .collapse-menu {
+    .collapse.am-collapse {
+      background-color: #121212;
+    }
+    a {
+      line-height: 55px !important;
+      font-family: Nunito;
+      font-size: 15px;
+      font-weight: bold;
+      font-style: normal;
+      font-stretch: normal;
+      .fa-sidebar-icon {
+        color: #fff;
+        font-size: 16px;
+        position: absolute;
+      }
     }
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $primeapps-color;
-    }
+  }
+  .fa-sidebar-icon-background {
+    height: 30px;
+    width: 30px;
+    float: left;
+    position: absolute;
+    background: #64c70f;
+    border-radius: 50%;
+    margin-top: 15px;
+    padding-top: 6px;
+    padding-left: 5px;
+  }
 
-    .ring {
-        div {
-            border-color: $primeapps-color transparent;
+  .rigth-oval-toolbar-item {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-left: 10px;
+    cursor: pointer;
+
+    i {
+      font-size: 12px;
+      color: #fff;
+    }
+    &:hover {
+      background-color: #0d6faa;
+    }
+  }
+  .navbar-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-right: 50px;
+    height: 80px;
+  }
+  .navbar {
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.05) !important;
+    background-color: #ffffff !important;
+    height: 80px !important;
+  }
+  .apps-first-screen-h1 {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .dashboard {
+    padding-top: 150px;
+  }
+  .apps-first-screen-span {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.56;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .create-app-btn {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.88;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+    width: 260px;
+    height: 40px;
+    border-radius: 30px;
+    background-color: rgba(13, 111, 170, 0.75);
+    border: none;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+  .new-app-content {
+    display: flex;
+    flex-direction: row;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .need-help-text {
+    color: rgba(0, 0, 0, 0.5);
+    font-family: Nunito;
+    font-size: 15px;
+  }
+  .setup-layout {
+    padding-top: 109px;
+    margin-bottom: 50px;
+    .setup-title {
+      font-family: Nunito;
+      font-size: 20px;
+      font-weight: bold;
+      color: #0d6faa;
+      margin-bottom: 16px;
+    }
+    .setup-nav {
+      background: #fff;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      padding-left: 30px;
+      padding-right: 30px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      border-radius: 5px;
+      .active {
+        &:before {
+          left: 104%;
+          top: 50%;
+          border: solid transparent;
+          content: " ";
+          height: 0;
+          width: 0;
+          position: absolute;
+          pointer-events: none;
+
+          border-color: rgba(136, 183, 213, 0);
+          border-left-color: #fff;
+          border-width: 30px;
+          margin-top: -30px;
         }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $primeapps-color !important;
+        &:after {
+          border-color: rgba(194, 225, 245, 0);
+          border-left-color: #c2e1f5;
+          border-width: 36px;
+          margin-top: -36px;
         }
-    }
+      }
+      li {
+        border-bottom: solid 1px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        height: 50px;
 
-    .btn-auth {
-        background-color: $primeapps-color !important;
-        border-bottom-color: $primeapps-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $primeapps-color;
-
-        .input-group-addon {
-            color: $primeapps-color;
+        a {
+          font-family: Nunito;
+          font-size: 16px !important;
+          font-weight: bold;
+          width: 90%;
+          color: rgba(0, 0, 0, 0.5) !important;
+          i {
+            font-size: 18px;
+            margin-right: 20px;
+          }
         }
+        .costume-bage {
+          height: 20px;
+          width: 20px;
+          background: rgba(0, 0, 0, 0.25);
+          color: #fff;
+          border-radius: 50%;
+          font-size: 11px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+    .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+      background: initial !important;
+      color: #0d6faa !important;
+    }
+    .nav > li > a:hover, .nav > li > a:focus {
+      background: initial !important;
+      color: #0d6faa !important;
+    }
+    .add-button {
+      border-radius: 30px;
+      background-color: rgba(13, 111, 170, 0.75);
+      font-weight: bold;
+      color: #fff !important;
+    }
+    .list-right-menu {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+  }
+  .table {
+    border: none;
+    thead:first-child > tr:first-child > th {
+      line-height: 38px !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+      font-family: Nunito !important;
+      font-weight: 400 !important;
+      color: rgba(0, 0, 0, 0.5) !important;
+      padding-left: 20px !important;
+    }
+    tr {
+      td {
+        line-height: 47px;
+        color: rgba(0, 0, 0, 0.75) !important;
+        font-family: Nunito;
+        font-weight: 400 !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+
+      }
     }
 
-    .inner-addon {
+  }
+  .table-pagination {
+    height: 66px;
+    background: #fff;
+    margin: 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .pagination-span {
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 12px;
+    }
+    .items-per-page-select {
+      width: 55px;
+      background-color: rgba(0, 0, 0, 0.05);
+      border: none;
+      text-align: center;
+      border-radius: 5px;
+      height: 30px;
+      font-size: 14px;
+      font-weight: bold;
+      text-align-last: center;
+    }
+    nav {
+      //.pagination > .active > a, .pagination > .active > a:hover {
+      //  background-color: rgba(17, 87, 163, 0.75) !important;
+      //  border-radius: 50%;
+      //  color: #fff !important;
+      //}
+      //.pagination {
+      //
+      //  li {
+      //    margin: 5px;
+      //    a {
+      //      border: none;
+      //      margin: 5px;
+      //      color: rgba(0, 0, 0, 0.5) !important;
+      //      &:hover {
+      //        background-color: rgba(17, 87, 163, 0.75) !important;
+      //        border-radius: 50%;
+      //        color: #fff !important;
+      //      }
+      //    }
+      //
+      //  }
+      //}
+    }
+  }
+  .modal-header {
+    background-color: #fff;
+    color: #000;
+  }
+  .modal {
+    left: auto;
+  }
+
+  .setup-modal, .module-modal {
+    background-color: #fff !important;
+    margin-top: 20px;
+    margin-right: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 30px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    .modal-dialog {
+      height: 100%;
+      overflow-x: auto;
+      margin: 0;
+      line-height: 33px !important;
+
+      input[type="radio"]:checked + span:after {
+        width: 10px;
+        height: 10px;
+        top: 12px;
+        left: -16px;
+      }
+      .form-group {
+        label {
+          text-align: left !important;
+        }
+      }
+
+      .fa.pull-left {
+        margin-top: .15em;
+        margin-right: 5px;
+      }
+    }
+    .modal-body {
+      max-height: 100% !important;
+      margin: 0 auto !important;
+      overflow-y: unset !important;
+      padding-top: 5px;
+
+    }
+    .modal-content {
+      padding-left: 40px;
+      padding-right: 40px;
+      border: none;
+      .form-custom {
+        margin-bottom: 100px;
+        .field-form-body {
+          padding-top: 7px;
+        }
+      }
+      .modal-left-menu {
+
+        padding: 0px;
+        margin: 0px;
+        ul {
+          border-right: 2px solid rgba(0, 0, 0, 0.05);
+          width: 150px;
+          position: fixed;
+          li {
+            a {
+              font-size: 14px;
+              color: rgba(0, 0, 0, 0.75);
+              font-weight: 400;
+              &:hover {
+                background: none;
+                color: #0d6faa !important;
+                font-weight: bold !important;
+              }
+
+            }
+            .active {
+              background: none;
+              color: #0d6faa !important;
+              font-weight: bold !important;
+            }
+          }
+        }
+      }
+      .section {
+        h4 {
+          color: #0d6faa;
+          padding-bottom: 10px;
+          font-weight: bold;
+        }
+        .panel {
+          box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+
+          border: 1px solid rgba(0, 0, 0, 0.05);
+          padding: 26px;
+        }
+      }
+
+    }
+    .modal-header {
+      margin-bottom: 25px;
+      padding-left: 0;
+      margin-right: 40px;
+      margin-left: 40px;
+      display: flex;
+      padding-right: 0px;
+      border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+      .col-sm-6 {
+        display: flex;
+      }
+      .col-sm-rigth {
+        justify-content: flex-end;
+        padding: 0px;
+      }
+      h4 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #0d6faa;
+      }
+    }
+    .modal-400 {
+      width: 400px !important;
+    }
+    .modal-500 {
+      width: 500px !important;
+    }
+    .modal-600 {
+      width: 600px !important;
+    }
+    .modal-700 {
+      width: 700px !important;
+    }
+    .modal-800 {
+      width: 800px !important;
+    }
+    .modal-900 {
+      width: 900px !important;
+    }
+  }
+  .user-dropdown {
+    .user-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      .user-text {
+        h2 {
+          font-size: 20px;
+          color: #0d6faa;
+          font-weight: bold;
+          line-height: 18px;
+          margin: 0;
+          padding-bottom: 7px;
+        }
+        h3 {
+          font-size: 14px;
+          font-weight: bold;
+          color: rgba(0, 0, 0, 0.5);
+          margin: 0;
+        }
+      }
+      .user-image {
+        background-color: rgba(0, 0, 0, 0.25);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 23px;
+        margin-right: 10px;
+
+      }
+    }
+
+    ul {
+      padding: 0;
+      padding-left: 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding-bottom: 10px;
+      padding-top: 10px;
+      li {
+        list-style: none;
+        line-height: 40px;
+        font-size: 16px;
+        font-weight: bold;
+        a {
+          color: rgba(0, 0, 0, 0.5);
+          i {
+            width: 20px;
+            padding-right: 20px;
+          }
+
+          &:hover {
+            text-decoration: none;
+            color: #0d6faa;
+
+          }
+        }
+      }
+    }
+    .btn-logout {
+      width: 250px;
+      height: 30px;
+      margin-top: 26px;
+      margin-bottom: 26px;
+    }
+  }
+  .top-header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    height: 100%;
+  }
+
+  .breadcrumb {
+    padding: 0;
+    margin-bottom: 0;
+    border-radius: inherit;
+    background-color: inherit;
+    padding-left: 30px;
+    color: rgba(0, 0, 0, 0.5);
+    li {
+      font-size: 16px !important;
+      color: rgba(0, 0, 0, 0.5) !important;
+      font-weight: bold !important;
+      a {
+        color: rgba(0, 0, 0, 0.5) !important;
+        font-size: 14px !important;
+        font-weight: 400 !important;
+        &:hover {
+          color: #0d6faa;
+        }
+      }
+    }
+
+  }
+  //Pages
+  .scratch-page {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+    .scratch-page-text {
+      h1 {
+        color: rgba(0, 0, 0, 0.75);
+        font-size: 30px;
+        font-weight: 400;
+      }
+      span {
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
+
+    .scratch-box {
+      @include hoverEffect();
+      padding: 50px 10px;
+      border-radius: 5px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      background-color: #ffffff;
+      margin: 20px;
+      font-size: 70px;
+      line-height: 70px;
+      color: rgba(0, 0, 0, 0.25);
+      &:hover{
+        cursor: pointer;
+        box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+      }
+    }
+  }
+
+  //Button
+  .btn {
+    i {
+      padding-right: 10px;
+    }
+  }
+  .btn-bold {
+    font-weight: bold;
+  }
+  .btn-radius {
+    border-radius: 30px;
+  }
+  .btn-red {
+    background-color: rgba(206, 4, 4, 0.5);
+    color: #fff
+  }
+  .btn-blue {
+    background-color: rgba(13, 111, 170, 0.75);
+    color: #fff
+  }
+  .btn-gray {
+    background-color: rgba(0, 0, 0, 0.25);
+    color: #fff
+  }
+  //Input
+  .form-group {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 20px !important;
+    label {
+      padding: 0;
+      color: rgba(0, 0, 0, 0.75);
+      font-size: 14px;
+      font-weight: bold !important;
+    }
+    .form-control {
+      border-radius: 2px;
+      background-color: rgba(0, 0, 0, 0.05);
+      border: none;
+      padding-left: 10px;
+      font-size: 16px;
+      font-weight: 400;
+      height: 40px !important;
+      max-width: none !important;
+      &[disabled] {
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+
+  }
+  .checkbox-inline input[type="checkbox"] {
+    position: relative !important;
+    margin-left: 0px !important;
+  }
+  .radio-inline input[type="radio"] {
+    position: relative !important;
+    margin-left: 0px !important;
+  }
+  //End Input
+  .callout {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .page-container {
+    margin-top: 160px !important;
+    margin-left: 20px !important;
+    margin-right: 20px;
+    .search-select {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      i {
+        position: absolute;
+        display: flex;
+        font-size: 23px;
+        justify-content: flex-start;
+        padding-right: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 14px;
+      }
+      .select-status {
+        box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+        border-radius: 5px;
+        height: 60px;
+        width: 100%;
+        border: none !important;
+        padding-left: 20px;
+        color: rgba(0, 0, 0, 0.5);
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -o-appearance: none;
+      }
+
+    }
+    .app-layout-box {
+      cursor: pointer;
+      margin-top: 5px;
+      margin-bottom: 30px;
+      .tooltip.tooltip-success .tooltip-inner {
+        background-color: rgba(0, 0, 0, 0.75);
+        border-color: rgba(0, 0, 0, 0.75);
+        color: #fff;
+      }
+      .tooltip.tooltip-success.top .tooltip-arrow {
+        border-top-color: rgba(0, 0, 0, 0.75);
+      }
+      .app-box {
+        @include hoverEffect();
+        height: 200px;
+        border-radius: 5px;
+        box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        .image {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img {
+            width: 200px;
+            max-width: 100%;
+          }
+        }
+        .oval {
+          display: flex;
+          justify-content: flex-end;
+          span {
+            width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+            margin: 15px;
+
+          }
+          .oval-green {
+            background-color: #92c549;
+          }
+          .oval-orange {
+            background-color: #e08340;
+          }
+          .oval-gray {
+            background-color: #bfbfbf;
+          }
+        }
+        .icon-image {
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          i {
+            font-size: 67px;
+            color: rgba(0, 0, 0, 0.25);
+          }
+        }
+      }
+      .app-info {
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 23px;
+        h3 {
+          line-height: 20px;
+          font-size: 20px;
+          color: rgba(0, 0, 0, 0.5);
+          font-weight: bold;
+          margin: 0px;
+          padding: 0px;
+        }
+        h4 {
+          margin: 0px;
+          padding: 0px;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 25px;
+          color: rgba(0, 0, 0, 0.5);
+        }
+      }
+      &:hover {
+        .app-box {
+          box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
+        }
+        .app-info {
+          h4, h3 {
+            color: #0d6faa;
+          }
+        }
+      }
+    }
+
+  }
+  .page-container.padding0 {
+    margin-top: 0px !important;
+  }
+  .search-input {
+    display: flex;
+    align-items: center;
+    .search-input-icon {
+      position: absolute;
+      padding-left: 20px;
+      font-size: 20px;
+      color: rgba(0, 0, 0, 0.1);
+    }
+    input {
+      padding-left: 50px !important;
+      color: rgba(0, 0, 0, 0.75);
+      ::placeholder {
+        color: rgba(0, 0, 0, 0.25);
+      }
+
+      :-ms-input-placeholder, ::-ms-input-placeholder {
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+    .app-search-input {
+      height: 60px;
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+  }
+  .scrollspy {
+
+  }
+
+  //titles
+  .h4-title {
+    font-size: 20px;
+  }
+  .blue-color {
+    color: #0d6faa;
+  }
+  .font-bold {
+    font-weight: bold;
+  }
+  .full-toggled {
+    .sidebar-li {
+      &:hover {
+        position: fixed;
+      }
+    }
+  }
+  #sidebar-wrapper {
+    .sidebar-brand {
+      a {
+        &:hover {
+          background: none;
+        }
+      }
+
+    }
+
+    ul {
+      width: 250px;
+      .open {
+        background-color: #121212;
+      }
+
+      li {
+        ul {
+          list-style: none;
+          .active {
+            color: #fff;
+          }
+          li {
+            line-height: 20px;
+            a {
+              color: rgba(255, 255, 255, 0.5);
+              font-size: 14px;
+              i {
+                font-size: 14px;
+                background: none;
+              }
+              &:hover {
+                background: none;
+                color: #fff;
+              }
+            }
+          }
+        }
+        a {
+          font-weight: bold;
+          font-size: 15px;
+          padding-top: 5px;
+          padding-bottom: 5px;
+          display: flex;
+          align-items: center;
+          i {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            font-size: 14px;
+            padding: 10px;
+            background: #9e005d;
+            border-radius: 50%;
+            margin-right: 13px;
+          }
+        }
+
+      }
+    }
+    .color-blue {
+      color: #0d6faa
+    }
+    .background-white {
+      background: #ffffff;
+    }
+    .footer {
+      .menu-togle {
         i {
-            color: $primeapps-color;
+          font-size: 20px;
+          color: rgba(255, 255, 255, 0.5);
+          cursor: pointer;
+          margin-left: 15px;
         }
+      }
     }
-
-    .modal-header {
-        background-color: $primeapps-color;
-        color: white;
+  }
+  .dropdown-menu {
+    border: none;
+    margin-top: 32px;
+    box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.05);
+    margin-top: 40px !important;
+    border-radius: 5px;
+    &:before, &:after {
+      bottom: 100%;
+      left: 86%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
     }
-}
+    &:after {
+      border-color: rgba(136, 183, 213, 0);
+      border-bottom-color: #ffffff;
+      border-width: 10px;
 
-.theme-3 {
-    .sidebar-nav a.active i {
-        color: $theme-3-color;
     }
+    &:before {
 
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-3-color;
     }
+    li {
 
-    .ring {
-        div {
-            border-color: $theme-3-color transparent;
+      a {
+        line-height: 40px;
+        &:hover {
+          background-color: rgba(17, 87, 163, 0.1);
+          color: #000
         }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-3-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $theme-3-color !important;
-        border-bottom-color: $theme-3-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-3-color;
-
-        .input-group-addon {
-            color: $theme-3-color;
-        }
-    }
-
-    .inner-addon {
         i {
-            color: $theme-3-color;
+
         }
+      }
     }
-
-    .modal-header {
-        background-color: $theme-3-color;
-        color: white;
+  }
+  .file-uploader {
+    margin: 0px;
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .uploader-area {
+      width: 100%;
+      border: 2px dashed #c2c2c2;
+      padding: 20px;
     }
-}
+    .uploader-over {
 
-.ofisim-kobi {
-    #sidebar-wrapper {
-        background: $ofisim-kobi-background;
-        .sidebar-nav a.active i {
-            color: #e4ff00;
-        }
-        .sidebar-nav a.active {
-            background: $ofisim-kobi-color !important;
-        }
-
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-kobi-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-kobi-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-kobi-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-kobi-color, 20%) !important;
-        }
+      border: 2px dashed #000 !important;
     }
-    .ring {
-        div {
-            border-color: $ofisim-kobi-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-kobi-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-kobi-color !important;
-        border-bottom-color: $ofisim-kobi-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-kobi-color;
-
-        .input-group-addon {
-            color: $ofisim-kobi-color;
-        }
-    }
-
-    .inner-addon {
+    .drop-zone {
+      div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         i {
-            color: $ofisim-kobi-color;
+          font-size: 50px;
+          color: rgba(0, 0, 0, 0.2);
         }
+        span {
+          color: rgba(0, 0, 0, 0.5);
+        }
+      }
     }
-
-    .modal-header {
-        background-color: $ofisim-kobi-color;
-        color: white;
+  }
+  .has-error {
+    input {
+      background-color: rgba(206, 4, 4, 0.15) !important;
     }
+  }
+  .pagination {
+    .active {
+      a {
+        border-radius: 50%;
+        color: #fff;
+        background-color: rgba(17, 87, 163, 0.75);
+      }
+      .disabled {
+        a {
+          &:hover {
+            background-color: #fff !important;
+            color: #eaeaea;
+          }
+        }
+      }
+    }
+    li {
+      font-size: 14px;
+      a {
+        margin: 5px;
+        border: none;
+        &:hover {
+          // color:#000;
+        }
+      }
+    }
+  }
 }
 
-.theme-5 {
-    .sidebar-nav a.active i {
-        color: $theme-5-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-5-color;
-    }
-
-    .ring {
-        div {
-            border-color: $theme-5-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-5-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $theme-5-color !important;
-        border-bottom-color: $theme-5-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-5-color;
-
-        .input-group-addon {
-            color: $theme-5-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $theme-5-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-5-color;
-        color: white;
-    }
-}
-
-.theme-6 {
-    .sidebar-nav a.active i {
-        color: $theme-6-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-6-color;
-    }
-
-    .ring {
-        div {
-            border-color: $theme-6-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-6-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $theme-6-color !important;
-        border-bottom-color: $theme-5-color !important;
-    }
-    .btn-auth {
-        background-color: $theme-6-color !important;
-        border-bottom-color: $theme-6-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-6-color;
-
-        .input-group-addon {
-            color: $theme-6-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $theme-6-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-6-color;
-        color: white;
-    }
-}
-
-.theme-7 {
-    .sidebar-nav a.active i {
-        color: $theme-7-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-7-color;
-    }
-
-    .ring {
-        div {
-            border-color: $theme-7-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-7-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $theme-7-color !important;
-        border-bottom-color: $theme-7-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-7-color;
-
-        .input-group-addon {
-            color: $theme-7-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $theme-7-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-7-color;
-        color: white;
-    }
-}
-
-.theme-8 {
-    .sidebar-nav a.active i {
-        color: $theme-8-color;
-    }
-
-    .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: $theme-8-color;
-    }
-
-    .ring {
-        div {
-            border-color: $theme-8-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $theme-8-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $theme-8-color !important;
-        border-bottom-color: $theme-8-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $theme-8-color;
-
-        .input-group-addon {
-            color: $theme-8-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $theme-8-color;
-        color: white;
-    }
-}
-
-.ofisim-asistan {
-    #sidebar-wrapper {
-        background: $ofisim-asistan-background;
-        .sidebar-nav a.active i {
-            color: #c7ef4e;
-        }
-        .sidebar-nav a.active {
-            background-color: $ofisim-asistan-color !important;
-        }
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-asistan-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-asistan-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-asistan-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-asistan-color, 20%) !important;
-        }
-    }
-
-    .ring {
-        div {
-            border-color: $ofisim-asistan-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-asistan-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-asistan-color !important;
-        border-bottom-color: $ofisim-asistan-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-asistan-color;
-
-        .input-group-addon {
-            color: $ofisim-asistan-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-asistan-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-asistan-color;
-        color: white;
-    }
-}
-
-.ofisim-ik {
-    #sidebar-wrapper {
-        background: $ofisim-ik-background;
-        .sidebar-nav a.active i {
-            color: #ec558a;
-        }
-        .sidebar-nav a.active {
-            background-color: $ofisim-ik-color !important;
-        }
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-ik-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-ik-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-ik-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-ik-color, 20%) !important;
-        }
-    }
-
-    .ring {
-        div {
-            border-color: $ofisim-ik-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-ik-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-ik-color !important;
-        border-bottom-color: $ofisim-ik-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-ik-color;
-
-        .input-group-addon {
-            color: $ofisim-ik-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-ik-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-ik-color;
-        color: white;
-    }
-}
-
-.ofisim-cagri {
-    #sidebar-wrapper {
-        background: $ofisim-cagri-background;
-        .sidebar-nav a.active i {
-            color: #f2614f;
-        }
-        .sidebar-nav a.active {
-            background-color: $ofisim-cagri-color !important;
-        }
-        .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-            background-color: $ofisim-cagri-color;
-        }
-        &::-webkit-scrollbar-track {
-            -webkit-box-shadow: darken($ofisim-cagri-color, 5%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background: darken($ofisim-cagri-color, 10%) !important;
-        }
-
-        &::-webkit-scrollbar-thumb:window-inactive {
-            background: darken($ofisim-cagri-color, 20%) !important;
-        }
-    }
-
-    .ring {
-        div {
-            border-color: $ofisim-cagri-color transparent;
-        }
-    }
-
-    .help-link, .launcher-link {
-        &:hover,
-        &:focus {
-            color: $ofisim-cagri-color !important;
-        }
-    }
-
-    .btn-auth {
-        background-color: $ofisim-cagri-color !important;
-        border-bottom-color: $ofisim-cagri-color !important;
-    }
-
-    .input-group-focus {
-        border-bottom-color: $ofisim-cagri-color;
-
-        .input-group-addon {
-            color: $ofisim-cagri-color;
-        }
-    }
-
-    .inner-addon {
-        i {
-            color: $ofisim-cagri-color;
-        }
-    }
-
-    .modal-header {
-        background-color: $ofisim-cagri-color;
-        color: white;
-    }
-}
-
-    //Override for Analytics menu
-    .analytics .sidebar-nav a.focus {
-        background-color: #fff !important;
-    }
-
-    .analytics .sidebar-nav a.active {
-        background-color: #1f774d !important;
-    }
-
-    .analytics .sidebar-nav a.active i {
-        color: #fff !important;
-    }
-
-    .analytics .sidebar-nav a:hover:not(.sidebar-brand-logo) {
-        background-color: #53af84 !important;
-    }

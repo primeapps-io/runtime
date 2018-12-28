@@ -36,7 +36,8 @@ angular.module('primeapps',
         'ngclipboard',
         'mentio',
         'mwl.calendar',
-        'angular.filter'
+        'angular.filter',
+        'bw.paging'
     ])
 
     .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'ngToastProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',
@@ -123,8 +124,8 @@ angular.module('primeapps',
             uiSelectConfig.resetSearchInput = true;
         }])
 
-    .run(['$rootScope', '$location', '$state', '$q', '$window', 'AuthService', 'AppService', 'editableOptions', '$localStorage', '$translate', '$cache', 'helper',
-        function ($rootScope, $location, $state, $q, $window, AuthService, AppService, editableOptions, $localStorage, $translate, $cache, helper) {
+    .run(['$rootScope', '$location', '$state', '$q', '$window', 'AuthService', 'LayoutService', 'editableOptions', '$localStorage', '$translate', '$cache', 'helper',
+        function ($rootScope, $location, $state, $q, $window, AuthService, LayoutService, editableOptions, $localStorage, $translate, $cache, helper) {
             var pending = false;
             editableOptions.theme = 'bs3';
             $rootScope.theme = $localStorage.read('theme');

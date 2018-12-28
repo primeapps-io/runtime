@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('OutlookController', ['$rootScope', '$scope', '$filter', 'ngToast', 'OutlookService', 'AppService',
-        function ($rootScope, $scope, $filter, ngToast, OutlookService, AppService) {
+    .controller('OutlookController', ['$rootScope', '$scope', '$filter', 'ngToast', 'OutlookService', 'LayoutService',
+        function ($rootScope, $scope, $filter, ngToast, OutlookService, LayoutService) {
             $scope.modulesHasEmail = [];
             $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.profile.id }, true)[0].has_admin_rights;
             for (var i = 0; i < $rootScope.modules.length; i++) {
@@ -48,7 +48,7 @@ angular.module('primeapps')
 
                     OutlookService.saveSettings(settings)
                         .then(function () {
-                            AppService.getMyAccount(true);
+                            LayoutService.getMyAccount(true);
                             ngToast.create({ content: $filter('translate')('Setup.Settings.UpdateSuccessGeneralSettings'), className: 'success' });
                             $scope.saving = false;
                         });

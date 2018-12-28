@@ -1594,6 +1594,60 @@ namespace PrimeApps.Model.Migrations.TenantDB
                     b.ToTable("imports");
                 });
 
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ImportMap", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnName("deleted");
+
+                    b.Property<string>("Mapping")
+                        .IsRequired()
+                        .HasColumnName("mapping");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnName("module_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnName("name");
+
+                    b.Property<bool>("Skip")
+                        .HasColumnName("skip");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Deleted");
+
+                    b.HasIndex("ModuleId");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("import_maps");
+                });
+
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Menu", b =>
                 {
                     b.Property<int>("Id")
@@ -4715,6 +4769,23 @@ namespace PrimeApps.Model.Migrations.TenantDB
                 });
 
             modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.Import", b =>
+                {
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.Module", "Module")
+                        .WithMany()
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+                });
+
+            modelBuilder.Entity("PrimeApps.Model.Entities.Tenant.ImportMap", b =>
                 {
                     b.HasOne("PrimeApps.Model.Entities.Tenant.TenantUser", "CreatedBy")
                         .WithMany()

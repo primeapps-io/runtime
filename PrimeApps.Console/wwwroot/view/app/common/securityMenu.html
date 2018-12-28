@@ -1,0 +1,40 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">{{ menuTopTitle }}</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+        <li ng-class="activeMenuItem ==='certificates' ? 'active' :''">
+            <a href="/#/app/5/certificates">
+                <i class="fas fa-th-large"></i>
+                Certificates
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='passwordPolicies' ? 'active' :''">
+            <a href="/#/app/5/passwordPolicies">
+                <i class="fas fa-code-branch"></i>
+                Password Policies
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='networkAccess' ? 'active' :''">
+            <a href="/#/app/5/networkAccess">
+                <i class="fas fa-network-wired"></i>
+                Network Access
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='cors' ? 'active' :''">
+            <a href="/#/app/5/cors">
+                <i class="fas fa-sliders-h"></i>
+                Cors
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='auditTrail' ? 'active' :''">
+            <a href="/#/app/5/auditTrail">
+                <i class="fas fa-sliders-h"></i>
+                Audit Trail
+            </a>
+        </li>
+
+    </ul>
+</div>

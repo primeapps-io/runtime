@@ -81,6 +81,11 @@ namespace PrimeApps.App.Jobs
 										Limit = 9999,
 										Offset = 0
 									};
+
+									//if calisanlar_d table exists  ise_baslama_tarihi_2 column we just added findRequest
+									if (module.Fields.Any(x => x.Name == "ise_baslama_tarihi_2"))
+										findRequest.Fields.Add("ise_baslama_tarihi_2");
+
 									var calisanlar = recordRepository.Find("calisanlar", findRequest, false);
 
 									foreach (JObject calisan in calisanlar)
@@ -107,18 +112,30 @@ namespace PrimeApps.App.Jobs
 											}
 										}
 
-										if (!calisan["ise_baslama_tarihi"].IsNullOrEmpty())
+										if (!calisan["ise_baslama_tarihi_2"].IsNullOrEmpty())
 										{
-											var timespan = DateTime.UtcNow.Subtract((DateTime)calisan["ise_baslama_tarihi"]);
-											calisan["deneyim_yil"] = Math.Floor(timespan.TotalDays / 365);
+											var timespan = DateTime.UtcNow.Subtract((DateTime)calisan["ise_baslama_tarihi_2"]);
+											var calisanDeneyimYil = (int)Math.Floor(timespan.TotalDays / 365);
+
+											if (calisanDeneyimYil < 0)
+												calisanDeneyimYil = 0;
+
+											calisan["deneyim_yil"] = calisanDeneyimYil;
 
 											if ((int)calisan["deneyim_yil"] > 0)
 											{
-												calisan["deneyim_ay"] = Math.Floor(timespan.TotalDays / 30) - ((int)calisan["deneyim_yil"] * 12);
+												var calisanDeneyimAy = (int)Math.Floor(timespan.TotalDays / 30) - ((int)calisan["deneyim_yil"] * 12);
+												if (calisanDeneyimAy < 0)
+													calisanDeneyimAy = 0;
+
+												calisan["deneyim_ay"] = calisanDeneyimAy;
 											}
 											else
 											{
-												calisan["deneyim_ay"] = Math.Floor(timespan.TotalDays / 30);
+												var calisanDeneyimAy = (int)Math.Floor(timespan.TotalDays / 30);
+												if (calisanDeneyimAy < 0)
+													calisanDeneyimAy = 0;
+												calisan["deneyim_ay"] = calisanDeneyimAy;
 											}
 
 											var deneyimAyStr = (string)calisan["deneyim_ay"];
@@ -151,7 +168,7 @@ namespace PrimeApps.App.Jobs
 											catch (Exception ex)
 											{
 												ErrorHandler.LogError(ex, "tenant_id:" + tenant.Id + "module_name:" + module.Name);
-												//continue;
+												continue;
 											}
 										}
 									}

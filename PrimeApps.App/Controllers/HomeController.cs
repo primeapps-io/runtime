@@ -64,7 +64,7 @@ namespace PrimeApps.App.Controllers
             return View("Index");
         }
 
-       
+
         private async Task SetValues(int userId, int tenantId)
         {
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");

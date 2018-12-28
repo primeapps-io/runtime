@@ -442,7 +442,7 @@ angular.module('primeapps')
     })
 
     .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService',
-        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations, ModuleService) {
+        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -1107,8 +1107,8 @@ angular.module('primeapps')
             });
         }])
 
-    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config', '$filter',
-        function ($timeout, ngToast, ModuleService, $modal, $http, config, $filter) {
+    .directive('customScripting', ['$timeout', 'ngToast', 'ModuleService', '$modal', '$http', 'config', '$filter', 'blockUI',
+        function ($timeout, ngToast, ModuleService, $modal, $http, config, $filter, blockUI) {
             return {
                 restrict: 'A',
                 link: function (scope, element, attrs) {

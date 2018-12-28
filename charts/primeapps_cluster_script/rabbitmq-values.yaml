@@ -1,0 +1,22 @@
+enabled: true
+rbacEnabled: true
+rabbitmq:
+  username: primeapps
+  password: 'pr!meApps!0'
+  diskFreeLimit: '"6GiB"'
+service:
+  type: ClusterIP
+persistence:
+  enabled: true
+  storageClass: "gp2"
+  accessMode: ReadWriteOnce
+  # If you change this value, you might have to adjust `rabbitmq.diskFreeLimit` as well.
+  size: 8Gi
+ingress:
+  enabled: true
+  hostName: rabbitmq-test.primeapps.io
+  tls: true
+  tlsSecret: rabbitmq-test-tls
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: true

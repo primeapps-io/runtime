@@ -1,0 +1,68 @@
+<div class="col-sm-12" style="border: none ;">
+    <div class="setup-liste-header row">
+        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Modules.TitleDependency' | translate}}</h2></div>
+        <div class="col-sm-6 list-right-menu">
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewDependency' | translate}}</button>
+        </div>
+    </div>
+
+    <div class="tab-content">
+        <table class="table" >
+            <thead>
+                <tr>
+                    <th>{{'Setup.Templates.Module' | translate}}</th>
+                    <th>{{'Setup.Modules.DependencyType' | translate}}</th>
+                    <th>{{'Setup.Modules.DependencyParentField' | translate}}</th>
+                    <th>{{'Setup.Modules.DependencyChildField' | translate}}</th>
+                    <th>{{'Setup.Modules.DependencyChildSection' | translate}}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="dependency in dependencies | filter:{hidden:'!true'} | orderBy:'created_at'">
+                    <td>{{dependency.parent_module['label_'+language+'_plural']}}</td>
+                    <td>{{dependency.dependencyType === 'display' ? ('Setup.Modules.DependencyTypeDisplay' | translate) : ('Setup.Modules.DependencyTypeValueChange' | translate)}}</td>
+                    <td>{{dependency.parentField['label_'+language]}}</td>
+                    <td>{{ dependency.child_field ? dependency.childField['label_'+language] : '-'}}</td>
+                    <td>{{ dependency.child_section ? dependency.sectionField['label_'+language] : '-' }}</td>
+                    <td class="text-right">
+                        <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(dependency)">{{'Common.Edit' | translate}}</button>
+                        <button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(dependency)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row table-pagination">
+            <div class="col-sm-6">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li>
+                            <a href="#" aria-label="Previous">
+                                <i class="fas fa-step-backward"></i>
+                            </a>
+                        </li>
+                        <li class="active"><a href="#">1</a></li>
+                        <li><a href="#">2</a></li>
+                        <li><a href="#">3</a></li>
+                        <li><a href="#">4</a></li>
+                        <li><a href="#">5</a></li>
+                        <li>
+                            <a href="#" aria-label="Next">
+                                <i class="fas fa-step-forward"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-sm-4 "><span class="pagination-span">1-10 of 86 </span></div>
+            <div class="col-sm-2"><span class="pagination-span">Items per page  </span>
+                <select class="items-per-page-select">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select></div>
+        </div>
+    </div>
+</div>
+

@@ -163,15 +163,13 @@ namespace PrimeApps.Model.Migrations.PlatformDB
                     b.Property<string>("Language")
                         .HasColumnName("language");
 
-                    b.Property<string>("MailSenderEmail")
-                        .HasColumnName("mail_sender_email");
-
-                    b.Property<string>("MailSenderName")
-                        .HasColumnName("mail_sender_name");
-
                     b.Property<string>("Name")
                         .HasColumnName("name")
                         .HasMaxLength(200);
+
+                    b.Property<string>("Settings")
+                        .HasColumnName("settings")
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Subject")
                         .HasColumnName("subject")

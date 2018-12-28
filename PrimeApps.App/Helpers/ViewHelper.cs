@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using PrimeApps.App.Models;
-using PrimeApps.App.Models.ViewModel.Crm;
 using PrimeApps.App.Models.ViewModel.Crm.View;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Entities.Tenant;

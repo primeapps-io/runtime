@@ -205,5 +205,91 @@ namespace PrimeApps.App.Controllers
 
             return Ok("Updated all");
         }
+
+        [Route("import_get_mapping"), HttpPost]
+        public async Task<ImportMap> ImportGetMapping([FromBody]ImportMappingRequest request)
+        {
+            if (request == null)
+                return null;
+
+            var result = await _importRepository.GetImportMappingByName(request.Name, request.ModuleId);
+
+            return result;
+        }
+
+        [Route("import_get_all_mappings/{id:int}"), HttpGet]
+        public async Task<ICollection<ImportMap>> ImportGetAllMappings(int id)
+        {
+            if (id <= 0)
+                return null;
+
+            var result = await _importRepository.GetImportMappingByModuleId(id);
+
+            return result;
+        }
+
+        [Route("import_mapping_save"), HttpPost]
+        public async Task<IActionResult> ImportMappingSave([FromBody]ImportMappingRequest request)
+        {
+            var control = await _importRepository.GetImportMappingByName(request.Name, request.ModuleId);
+
+            if (control != null)
+                return BadRequest();
+
+            var newImportTemplate = new ImportMap()
+            {
+                ModuleId = request.ModuleId,
+                Skip = request.Skip,
+                Name = request.Name,
+                Mapping = request.Mapping
+            };
+
+
+            var result = await _importRepository.ImportMappingSave(newImportTemplate);
+
+            if (result > 0)
+                return Ok(newImportTemplate);
+            else
+                return null;
+        }
+
+        [Route("import_mapping_update/{id:int}"), HttpPost]
+        public async Task<IActionResult> ImportMappingUpdate(int id, [FromBody]ImportMappingRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (id <= 0)
+                return BadRequest("Record id not found");
+
+            var mapping = await _importRepository.GetImportMappingById(id);
+
+            if (mapping == null)
+                return NotFound();
+
+            mapping.Name = request.Name;
+            mapping.Mapping = request.Mapping;
+            mapping.Skip = request.Skip;
+
+            var result = await _importRepository.ImportMappingUpdate(mapping);
+
+            return Ok(result);
+        }
+
+        [Route("import_mapping_delete"), HttpPost]
+        public async Task<IActionResult> ImportDeleteMapping([FromBody]ImportMappingRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mapping = await _importRepository.GetImportMappingById(request.Id);
+
+            if (mapping == null)
+                return NotFound();
+
+            var result = await _importRepository.ImportMappingSoftDelete(mapping);
+
+            return Ok(result);
+        }
     }
 }

@@ -3,434 +3,224 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PrimeApps.App.Storage;
 using PrimeApps.Model.Common.Document;
+using PrimeApps.Model.Enums;
+using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.App.Helpers
 {
-    public interface IDocumentHelper
-    {
-        bool Upload(Stream stream, out DocumentUploadResult result);
-        bool UploadExcel(Stream stream, out DocumentUploadResult result);
-        Task<string> Save(DocumentUploadResult result, string containerName);
-        Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language);
-        string GetMimeType(string name);
-    }
-    public class DocumentHelper : IDocumentHelper
-    {
-        private IConfiguration _configuration;
+	public interface IDocumentHelper
+	{
+		bool Upload(Stream stream, out DocumentUploadResult result);
+		bool UploadExcel(Stream stream, out DocumentUploadResult result);
+		Task<string> Save(DocumentUploadResult result, string containerName);
+		Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language, IPlatformRepository _platformRepository);
+		string GetMimeType(string name);
 
-        public DocumentHelper(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-        public bool Upload(Stream stream, out DocumentUploadResult result)
-        {
-            var parser = new HttpMultipartParser(stream, "file");
-            result = null;
+	}
+	public class DocumentHelper : IDocumentHelper
+	{
+		private IConfiguration _configuration;
+		public DocumentHelper(IConfiguration configuration)
+		{
+			_configuration = configuration;
+		}
+		public bool Upload(Stream stream, out DocumentUploadResult result)
+		{
+			var parser = new HttpMultipartParser(stream, "file");
+			result = null;
 
-            //if it is not successfully parsed return.
-            if (!parser.Success)
-                return false;
+			//if it is not successfully parsed return.
+			if (!parser.Success)
+				return false;
 
-            //check the file size if it is 0 bytes then return.
-            if (parser.FileContents.Length <= 0)
-            {
-                result = new DocumentUploadResult();
-                return false;
-            }
+			//check the file size if it is 0 bytes then return.
+			if (parser.FileContents.Length <= 0)
+			{
+				result = new DocumentUploadResult();
+				return false;
+			}
 
-            //declare chunk variables
-            var chunk = 0;//current chunk
-            var chunks = 1;//total chunk count
+			//declare chunk variables
+			var chunk = 0;//current chunk
+			var chunks = 1;//total chunk count
 
-            var uniqueName = string.Empty;
+			var uniqueName = string.Empty;
 
-            //if parser has more then 1 parameters, it means that request is chunked.
-            if (parser.Parameters.Count > 1)
-            {
-                //calculate chunk variables.
-                chunk = int.Parse(parser.Parameters["chunk"]);
-                chunks = int.Parse(parser.Parameters["chunks"]);
+			//if parser has more then 1 parameters, it means that request is chunked.
+			if (parser.Parameters.Count > 1)
+			{
+				//calculate chunk variables.
+				chunk = int.Parse(parser.Parameters["chunk"]);
+				chunks = int.Parse(parser.Parameters["chunks"]);
 
-                //get the file name from parser
-                if (parser.Parameters.ContainsKey("name"))
-                    uniqueName = parser.Parameters["name"];
-            }
+				//get the file name from parser
+				if (parser.Parameters.ContainsKey("name"))
+					uniqueName = parser.Parameters["name"];
+			}
 
-            if (string.IsNullOrEmpty(uniqueName))
-                uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
-
-			//send stream and parameters to storage upload helper method for temporary upload.
-			 AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
-
-            result = new DocumentUploadResult
-            {
-                UniqueName = uniqueName,
-                FileName = parser.Filename,
-                ContentType = parser.ContentType,
-                Chunks = chunks
-            };
-
-            return true;
-        }
-
-        public bool UploadExcel(Stream stream, out DocumentUploadResult result)
-        {
-            var parser = new HttpMultipartParser(stream, "file");
-            result = null;
-
-            //if it is not successfully parsed return.
-            if (!parser.Success)
-                return false;
-
-            //check the file size if it is 0 bytes then return.
-            if (parser.FileContents.Length <= 0)
-            {
-                result = new DocumentUploadResult();
-                return false;
-            }
-
-            //declare chunk variables
-            var chunk = 0;//current chunk
-            var chunks = 1;//total chunk count
-
-            var uniqueName = string.Empty;
-
-            //if parser has more then 1 parameters, it means that request is chunked.
-            if (parser.Parameters.Count > 1)
-            {
-                //calculate chunk variables.
-                chunk = int.Parse(parser.Parameters["chunk"]);
-                chunks = int.Parse(parser.Parameters["chunks"]);
-
-                //get the file name from parser
-                if (parser.Parameters.ContainsKey("name"))
-                    uniqueName = parser.Parameters["name"];
-            }
-
-            if (string.IsNullOrEmpty(uniqueName))
-                uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
+			if (string.IsNullOrEmpty(uniqueName))
+				uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
 			//send stream and parameters to storage upload helper method for temporary upload.
-			 AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
+			AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
-            result = new DocumentUploadResult
-            {
-                UniqueName = uniqueName,
-                FileName = parser.Filename,
-                ContentType = parser.ContentType,
-                Chunks = chunks
-            };
+			result = new DocumentUploadResult
+			{
+				UniqueName = uniqueName,
+				FileName = parser.Filename,
+				ContentType = parser.ContentType,
+				Chunks = chunks
+			};
 
-            return true;
-        }
+			return true;
+		}
 
-        public async Task<string> Save(DocumentUploadResult result, string containerName)
-        {
-            var blob = await AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks, _configuration);
-            var fileUrl = $"{_configuration.GetSection("AppSettings")["BlobUrl"]}{blob.Uri.AbsolutePath}";
+		public bool UploadExcel(Stream stream, out DocumentUploadResult result)
+		{
+			var parser = new HttpMultipartParser(stream, "file");
+			result = null;
 
-            return fileUrl;
-        }
+			//if it is not successfully parsed return.
+			if (!parser.Success)
+				return false;
 
-        public async Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language)
-        {
-            if (appId == 1 || appId == 2 || appId == 5)
-            {
-                // Upload quote template
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri($"http://file.ofisim.com/static/quote-template-{language}.docx"));
+			//check the file size if it is 0 bytes then return.
+			if (parser.FileContents.Length <= 0)
+			{
+				result = new DocumentUploadResult();
+				return false;
+			}
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", $"quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile($"quote-template-{language}.docx", $"templates/quote-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
+			//declare chunk variables
+			var chunk = 0;//current chunk
+			var chunks = 1;//total chunk count
 
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri($"http://file.ofisim.com/static/sales-invoice-template-{language}.docx"));
+			var uniqueName = string.Empty;
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", $"sales-invoice-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile($"sales-invoice-template-{language}.docx", $"templates/sales-invoice-template-{language}.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-            }
+			//if parser has more then 1 parameters, it means that request is chunked.
+			if (parser.Parameters.Count > 1)
+			{
+				//calculate chunk variables.
+				chunk = int.Parse(parser.Parameters["chunk"]);
+				chunks = int.Parse(parser.Parameters["chunks"]);
 
-            if (appId == 3 || appId == 4)
-            {
-                // Upload female picture
+				//get the file name from parser
+				if (parser.Parameters.ContainsKey("name"))
+					uniqueName = parser.Parameters["name"];
+			}
 
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/female.jpg"));
+			if (string.IsNullOrEmpty(uniqueName))
+				uniqueName = Guid.NewGuid().ToString().Replace("-", "") + "--" + parser.Filename;
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "female.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("female.jpg", "female.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
+			//send stream and parameters to storage upload helper method for temporary upload.
+			AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration).Wait();
 
-                // Upload male picture
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/male.jpg"));
+			result = new DocumentUploadResult
+			{
+				UniqueName = uniqueName,
+				FileName = parser.Filename,
+				ContentType = parser.ContentType,
+				Chunks = chunks
+			};
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "male.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("male.jpg", "male.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
+			return true;
+		}
 
-                // Upload empty profile picture
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/empty-profile.png"));
+		public async Task<string> Save(DocumentUploadResult result, string containerName)
+		{
+			var blob = await AzureStorage.CommitFile(result.UniqueName, result.UniqueName, result.ContentType, containerName, result.Chunks, _configuration);
+			var fileUrl = $"{_configuration.GetSection("AppSettings")["BlobUrl"]}{blob.Uri.AbsolutePath}";
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "empty-profile.png", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("empty-profile.png", "empty-profile.png", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-            }
+			return fileUrl;
+		}
 
-            if (appId == 4)
-            {
-                //1 Upload calisma-belgesi.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/calisma-belgesi.docx"));
+		public async Task<int> UploadSampleDocuments(Guid instanceId, int appId, string language, IPlatformRepository _platformRepository)
+		{
+			var templates = await _platformRepository.GetAppTemplate(appId, AppTemplateType.Document, language, null);
+			foreach (var template in templates)
+			{
+				var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
+				//Upload quote template
+				using (var httpClient = new HttpClient())
+				{
+					var fileContent = await httpClient.GetByteArrayAsync(new Uri(template.Content));
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("calisma-belgesi.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
+					await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", (string)req["FileName"], (string)req["MimeType"], _configuration);
+					await AzureStorage.CommitFile((string)req["FileName"], (string)req["FolderName"], (string)req["MimeType"], $"inst-{instanceId}", 1, _configuration);
+				}
+			}
 
-                //2 Upload izin-formu.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/izin-formu.docx"));
+			return 0;
+		}
 
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "izin-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("izin-formu.docx", "templates/izin-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //3 Upload arac-zimmet-formu.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/arac-zimmet-formu.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "arac-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("arac-zimmet-formu.docx", "templates/arac-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //4 Upload calisan-ozgecmisi.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/calisan-ozgecmisi.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "calisan-ozgecmisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("calisan-ozgecmisi.docx", "templates/calisan-ozgecmisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //5 Upload cihaz-zimmet-formu.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/cihaz-zimmet-formu.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "cihaz-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("cihaz-zimmet-formu.docx", "templates/cihaz-zimmet-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-            }
-            if (appId == 6)
-            {
-                //1 Upload bireysel-siparis-teslim-formu.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/bireysel-siparis-teslim-formu.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "bireysel-siparis-teslim-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("bireysel-siparis-teslim-formu.docx", "templates/calisma-belgesi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //2 Upload firmaya-ozel-teklif-kdv-dahil.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/firmaya-ozel-teklif-kdv-dahil.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("firmaya-ozel-teklif-kdv-dahil.docx", "templates/firmaya-ozel-teklif-kdv-dahil.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //3 Upload firmaya-ozel-teklif-kdvsiz.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/firmaya-ozel-teklif-kdvsiz.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("firmaya-ozel-teklif-kdvsiz.docx", "templates/firmaya-ozel-teklif-kdvsiz.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //4 Upload gorev-ciktisi.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/gorev-ciktisi.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("gorev-ciktisi.docx", "templates/gorev-ciktisi.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //5 Upload ozel-pasta-formu.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta-formu.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                //6 Upload ozel-pasta-formu.docx
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta-formu.docx"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", _configuration);
-                    await AzureStorage.CommitFile("ozel-pasta-formu.docx", "templates/ozel-pasta-formu.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", $"inst-{instanceId}", 1, _configuration);
-                }
-
-                // Upload kiralama-alani1.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani1.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani1.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("kiralama-alani1.jpg", "kiralama-alani1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload kiralama-alani2.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani2.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani2.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("kiralama-alani2.jpg", "kiralama-alani2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload kiralama-alani3.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani3.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani3.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("kiralama-alani3.jpg", "kiralama-alani3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload kiralama-alani4.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/kiralama-alani4.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "kiralama-alani4.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("kiralama-alani4.jpg", "kiralama-alani4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload ozel-pasta1.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta1.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta1.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("ozel-pasta1.jpg", "ozel-pasta1.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload ozel-pasta2.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta2.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta2.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("ozel-pasta2.jpg", "ozel-pasta2.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload ozel-pasta3.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta3.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta3.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("ozel-pasta3.jpg", "ozel-pasta3.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-
-                // Upload ozel-pasta4.jpg
-                using (var httpClient = new HttpClient())
-                {
-                    var fileContent = await httpClient.GetByteArrayAsync(new Uri("http://file.ofisim.com/static/livasmart/ozel-pasta4.jpg"));
-
-                    await AzureStorage.UploadFile(0, new MemoryStream(fileContent), "temp", "ozel-pasta4.jpg", "image/jpeg", _configuration);
-                    await AzureStorage.CommitFile("ozel-pasta4.jpg", "ozel-pasta4.jpg", "image/jpeg", $"record-detail-{instanceId}", 1, _configuration);
-                }
-            }
-
-            return 0;
-        }
-
-        public string GetMimeType(string name)
-        {
-            var type = name.Split('.')[1];
-            switch (type)
-            {
-                case "gif":
-                    return "image/bmp";
-                case "bmp":
-                    return "image/bmp";
-                case "jpeg":
-                case "jpg":
-                    return "image/jpeg";
-                case "png":
-                    return "image/png";
-                case "tif":
-                case "tiff":
-                    return "image/tiff";
-                case "doc":
-                    return "application/msword";
-                case "docx":
-                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                case "pdf":
-                    return "application/pdf";
-                case "ppt":
-                    return "application/vnd.ms-powerpoint";
-                case "pptx":
-                    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                case "xlsx":
-                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                case "xls":
-                    return "application/vnd.ms-excel";
-                case "csv":
-                    return "text/csv";
-                case "xml":
-                    return "text/xml";
-                case "txt":
-                    return "text/plain";
-                case "zip":
-                    return "application/zip";
-                case "ogg":
-                    return "application/ogg";
-                case "mp3":
-                    return "audio/mpeg";
-                case "wma":
-                    return "audio/x-ms-wma";
-                case "wav":
-                    return "audio/x-wav";
-                case "wmv":
-                    return "audio/x-ms-wmv";
-                case "swf":
-                    return "application/x-shockwave-flash";
-                case "avi":
-                    return "video/avi";
-                case "mp4":
-                    return "video/mp4";
-                case "mpeg":
-                    return "video/mpeg";
-                case "mpg":
-                    return "video/mpeg";
-                case "qt":
-                    return "video/quicktime";
-                default:
-                    return "image/jpeg";
-            }
-        }
-    }
+		public string GetMimeType(string name)
+		{
+			var type = name.Split('.')[1];
+			switch (type)
+			{
+				case "gif":
+					return "image/bmp";
+				case "bmp":
+					return "image/bmp";
+				case "jpeg":
+				case "jpg":
+					return "image/jpeg";
+				case "png":
+					return "image/png";
+				case "tif":
+				case "tiff":
+					return "image/tiff";
+				case "doc":
+					return "application/msword";
+				case "docx":
+					return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+				case "pdf":
+					return "application/pdf";
+				case "ppt":
+					return "application/vnd.ms-powerpoint";
+				case "pptx":
+					return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+				case "xlsx":
+					return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+				case "xls":
+					return "application/vnd.ms-excel";
+				case "csv":
+					return "text/csv";
+				case "xml":
+					return "text/xml";
+				case "txt":
+					return "text/plain";
+				case "zip":
+					return "application/zip";
+				case "ogg":
+					return "application/ogg";
+				case "mp3":
+					return "audio/mpeg";
+				case "wma":
+					return "audio/x-ms-wma";
+				case "wav":
+					return "audio/x-wav";
+				case "wmv":
+					return "audio/x-ms-wmv";
+				case "swf":
+					return "application/x-shockwave-flash";
+				case "avi":
+					return "video/avi";
+				case "mp4":
+					return "video/mp4";
+				case "mpeg":
+					return "video/mpeg";
+				case "mpg":
+					return "video/mpeg";
+				case "qt":
+					return "video/quicktime";
+				default:
+					return "image/jpeg";
+			}
+		}
+	}
 }

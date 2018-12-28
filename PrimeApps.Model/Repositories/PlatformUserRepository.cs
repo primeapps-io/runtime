@@ -33,6 +33,11 @@ namespace PrimeApps.Model.Repositories
             return await DbContext.Users.Where(x => x.Email == email).SingleOrDefaultAsync();
         }
 
+        public async Task<List<PlatformUser>> GetByIds(List<int> ids)
+        {
+            return await DbContext.Users.Where(x => ids.Contains(x.Id)).ToListAsync();
+        }
+
         public async Task<PlatformUser> GetSettings(int platformUserId)
         {
             return await DbContext.Users
@@ -219,7 +224,7 @@ namespace PrimeApps.Model.Repositories
 
         public PlatformUser GetByEmail(string email)
         {
-            return DbContext.Users.SingleOrDefault(x => x.Email == email);
+            return DbContext.Users.Include(x => x.Setting).SingleOrDefault(x => x.Email == email);
         }
     }
 }

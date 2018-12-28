@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using PrimeApps.Model.Entities;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PrimeApps.Model.Entities.Console
 {
@@ -14,5 +16,7 @@ namespace PrimeApps.Model.Entities.Console
         public virtual ConsoleUser ConsoleUser { get; set; }
 
         public virtual Team Team { get; set; }
+        
+        //public virtual Platform.PlatformUser UserInfo { get; set; }
     }
 }

@@ -1677,13 +1677,24 @@ namespace PrimeApps.Model.Helpers
 
             for (int i = 0; i < lookupValues.Count; i++)
             {
-                sql += $"{tableName}.\"{field}\" = ${i + 1} OR\n";
                 string str = (string)lookupValues[i];
+                int outValue;
+                var result = int.TryParse(str, out outValue);
 
-                if (str.Contains("'"))
-                    lookupValues[i] = str.Replace("'", "''");
+                if (result)
+                {
+                    sql += $"{tableName}.\"id\" = ${i + 1} OR\n";
+                    values.Add(outValue.ToString());
+                }
+                else
+                {
+                    sql += $"{tableName}.\"{field}\" = ${i + 1} OR\n";
+                   
+                    if (str.Contains("'"))
+                        lookupValues[i] = str.Replace("'", "''");
 
-                values.Add("'" + (string)lookupValues[i] + "'");
+                    values.Add("'" + (string)lookupValues[i] + "'");
+                }
             }
 
             sql = sql.Trim().Remove(sql.Length - 3);
@@ -1717,7 +1728,7 @@ namespace PrimeApps.Model.Helpers
                 foreach (var field in fields)
                 {
                     if (!record[field.Value].IsNullOrEmpty())
-                        recordValues.Add("'" + record[field.Value].ToString().Trim().Replace("'", "''") + "'");
+                        recordValues.Add("'" + ((string)record[field.Value]).Trim().Replace("'", "''") + "'");
                     else
                     {
                         if (field.Value == "created_by" || field.Value == "updated_by")

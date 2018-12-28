@@ -1,0 +1,24 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">{{ menuTopTitle }}</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+        <li ng-class="activeMenuItem ==='appDetails' ? 'active' :''">
+            <a href="/#/app/5/appDetails">
+                <i class="fas fa-th-large"></i>
+                App Details
+            </a>
+        </li>
+        <li ng-class="activeMenuItem ==='appCollaborators' ? 'active' :''">
+            <a href="/#/app/5/appCollaborators">
+                <i class="fas fa-code-branch"></i>
+                Collaborators
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='notifications' ? 'active' :''">
+            <a href="/#/app/5/notifications">
+                <i class="fas fa-sliders-h"></i>
+                Notifications
+            </a>
+        </li>
+    </ul>
+</div>

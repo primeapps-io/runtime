@@ -1,0 +1,567 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Reflection;
+@using Newtonsoft.Json;
+
+@inject IViewLocalizer Localizer
+@{
+    var app = "";
+    var color = "";
+    if (Model.ApplicationInfo != null)
+    {
+        app = Model.ApplicationInfo.Name;
+        color = Model.ApplicationInfo.Theme["color"].ToString();
+    }
+    var googleCode = Model.ApplicationInfo?.Settings?.GoogleAnalytics;
+    var cdnUrlStatic = Model.ApplicationInfo?.CdnUrl;
+    var customDomain = Model.ApplicationInfo?.CustomDomain;
+    var favicon = Model.ApplicationInfo?.Theme["favicon"].ToString();
+    var banner = Model.ApplicationInfo?.Theme["banner"];
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="@Url.Content(favicon)" type="image/x-icon" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" />
+    <environment include="Development">
+        <link rel="stylesheet" href="/styles/vendor/bootstrap.css" />
+        <link rel="stylesheet" href="/styles/vendor/flaticon.css" />
+        <link rel="stylesheet" href="/styles/vendor/ladda-themeless.css" />
+        <link rel="stylesheet" href="/styles/vendor/font-awesome.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="/styles/bundles-css/auth.css" />
+    </environment>
+    @*Styles.Render("~/bundles-css/auth")*@
+    <style>
+        .forgot-password-button {
+            color:#ffffff;
+            width: 212px;
+            height: 19px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.43;
+            letter-spacing: normal;
+        }
+        .forgot-password-button:hover {
+            text-decoration: underline;
+            text-underline-position: under;
+            color:#ffffff;
+        }
+        .studio-banner {
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+		.login-block {
+			float: left;
+			width: 100%;
+		}
+
+        .form-group .form-control {
+            border-radius: 0.35em !important;
+        }
+
+		.swal-text, .swal-title {
+			text-align: center;
+		}
+
+        .swal2-popup .swal2-styled.swal2-confirm {
+            background-color: @color;
+        }
+
+		.error {
+			text-align: center;
+			color: red;
+			font-weight: 500;
+			font-size: 12px;
+			padding-top: 6px;
+		}
+
+		.fa-4x {
+			padding-bottom: 10px;
+		}
+
+		.fa-pulse {
+			-webkit-animation: fa-spin 1s infinite steps(8);
+			animation: fa-spin 1s infinite steps(8);
+		}
+        .swal-hide {
+            display:none;
+        }
+		.login-form {
+			max-width: 26em;
+			width: 26em;
+		}
+
+		.row {
+			height: 100vh;
+		}
+
+        .form-group label{
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            font-family: 'Nunito', sans-serif;
+            letter-spacing: normal;
+            text-align: left;
+            color: #ffffff;
+        }
+
+		.free-info {
+            height: 39px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            text-align: center;
+            font-stretch: normal;
+            line-height: 1.43;
+            letter-spacing: normal;
+            text-align: center;
+            color: #ffffff;
+		}
+
+        .free-info a {
+            color: white;
+            text-decoration: underline;
+            text-underline-position: under;
+        }
+
+		.free-info-header {
+			text-align: center;
+			max-width: 400px;
+			width: 350px;
+			font-size: 14px;
+			padding-bottom: 20px;
+		}
+
+		.container {
+			background: #fff;
+			box-shadow: 15px 20px 0px rgba(0,0,0,0.1);
+			width: 100% !important;
+			height: 100vh;
+            background-image: url("../images/custom/studio-background.png");
+		}
+
+		.carousel-inner {
+			border-radius: 0 10px 10px 0;
+			height: 100vh;
+		}
+
+		.carousel-item {
+			height: 100vh;
+		}
+
+		.carousel-caption {
+			text-align: left;
+			left: 5%;
+		}
+
+		.login-sec {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+		}
+
+		.form-check {
+			margin-top: 2em;
+		}
+
+		.logo-img {
+			margin-bottom: 20px;
+		    max-width: 35%;
+		}
+
+		.language {
+			float: left;
+			margin-bottom: 15px;
+			margin-top: 15px;
+			font-size: 13px;
+		}
+
+		.login-sec h2 {
+			margin-bottom: 30px;
+			font-weight: 800;
+			font-size: 30px;
+		}
+
+		.lang-text {
+			text-transform: uppercase;
+		}
+
+		.login-sec h2:after {
+			content: " ";
+			width: 100px;
+			height: 5px;
+			display: block;
+			margin-top: 20px;
+			border-radius: 3px;
+			margin-left: auto;
+			margin-right: auto
+		}
+
+		.col-md-8 {
+			padding-left: 0px !important;
+			padding-right: 0px !important;
+		}
+
+		hr {
+			border-top: 1px solid #e6e6e6 !important;
+		}
+
+		.add-button {
+			position: relative;
+			background-color: #f4f4f4;
+			border: 1px solid #e6e6e6 !important;
+			cursor: pointer;
+		    color: black;
+		}
+
+		.add-button:before {
+			content: '';
+			position: absolute;
+			top: -1px;
+			background: url(@Url.Content(cdnUrlStatic + "/images/login/office-login-logo.png")) center center no-repeat;
+			background-size: contain;
+			width: 23px;
+			height: 100%;
+			left: 10px;
+		}
+
+        .bottom-button {
+            position:absolute;
+            bottom: 5em;
+            width: 212px;
+            height: 19px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            font-style: normal;
+            font-stretch: normal;
+            line-height: 1.43;
+            letter-spacing: normal;
+            text-align: center;
+            color: #ffffff;
+        }
+
+
+        .bottom-button:hover{
+            color: #ffffff;
+            text-decoration: underline;
+            text-underline-position: under;
+        }
+
+		.swal-button {
+			background-color: @color;
+		}
+
+		.btn-login {
+			color: #fff;
+			cursor: pointer;
+            border: none !important;
+            width: 260px;
+            font-size: 16px;
+            height: 40px;
+            border-radius: 30px;
+            font-family: 'Nunito', sans-serif;
+            background-image: linear-gradient(101deg, #0d6faa, #009fff);
+            margin: 0 auto;
+		}
+        .banner-sec {
+            padding: 0;
+        }
+
+		.banner-text {
+			position: absolute;
+			bottom: 40px;
+			padding-left: 20px;
+			font-size: 30px;
+			font-weight: 700;
+			font-style: italic;
+			text-align: center;
+		}
+
+
+		.banner-text h2 {
+			color: #fff;
+			font-weight: 600;
+		}
+
+			.banner-text h2:after {
+				content: " ";
+				width: 100px;
+				height: 5px;
+				background: #FFF;
+				display: block;
+				margin-top: 20px;
+				border-radius: 3px;
+			}
+
+		.banner-text p {
+			color: #fff;
+		}
+
+		.form-check-label {
+			margin-bottom: 15px !important;
+		}
+
+		@@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+			.office-button:before {
+				margin-left: 0 !important;
+			}
+
+			.logo-img {
+				max-width: 100%;
+				margin-bottom: 0 !important;
+				transform: scale(0.5, 0.5);
+			}
+		}
+
+		@@media screen and (max-width: 500px) {
+			.banner-sec {
+				display: none;
+			}
+		}
+
+		@@media (max-height: 551px) and (max-width: 601px) {
+			.banner-sec {
+				display: none;
+			}
+		}
+        @@media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3)
+        {
+            .login-form {
+                width: 20em;
+            }
+            .logo-img {
+                margin-bottom: 20px;
+                max-width: 70%;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .bottom-button{
+                bottom:2em;
+            }
+        }
+        @@media only screen and (device-width: 411px) and (device-height: 731px)
+        {
+            .login-form {
+                width: 20em;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .logo-img {
+                max-width: 60%;
+            }
+        }
+
+        @@media only screen and (device-width: 411px) and (device-height: 823px)
+        {
+            .login-form {
+                width: 20em;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .logo-img {
+                max-width: 60%;
+            }
+        }
+
+        @@media only screen and (device-width: 320px) and (device-height: 568px)
+        {
+            .login-form {
+                width: 16em;
+            }
+            .free-info{
+                margin-bottom: 4em;
+            }
+            .bottom-button {
+                bottom: 2em;
+            }
+            .logo-img {
+                max-width: 60%;
+            }
+        }
+
+        @@media only screen and (device-width: 375px) and (device-height: 667px)
+        {
+            .login-form {
+                width: 20em;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .bottom-button {
+                bottom: 2em;
+            }
+            .logo-img {
+                max-width: 65%;
+            }
+        }
+
+
+        @@media only screen and (device-width: 414px) and (device-height: 736px),
+         only screen and (device-width: 375px) and (device-height: 812px)
+        {
+            .login-sec {
+                padding-left: 15px !important;
+            }
+            .login-form {
+                width: 20em;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .bottom-button {
+                bottom: 2em;
+            }
+            .logo-img {
+                max-width: 65%;
+            }
+        }
+
+        @@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+            .login-sec {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .login-form {
+                max-width: 35em;
+                width: 35em !important;
+            }
+            .logo-img {
+                max-width: 43% !important;
+            }
+            .banner-sec {
+				display: none;
+			}
+        }
+
+        @@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+            .login-form {
+                width: 20em;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .bottom-button {
+                bottom: 2em;
+            }
+            .logo-img {
+                max-width: 65%;
+            }
+        }
+
+        @@media only screen and (min-width: 995px) and (max-width: 1250px) {
+            .login-form {
+                width: 23em;
+            }
+            .bottom-button {
+                bottom: 3em;
+            }
+            .logo-img {
+                max-width: 53%;
+            }
+        }
+
+        @@media only screen and (min-width: 493px) and (max-width: 995px) {
+
+            .login-sec {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .logo-img {
+                max-width: 35%;
+                width: 35%;
+            }
+            .banner-sec {
+				display: none;
+			}
+         .bottom-button{
+                bottom:1em;
+            }
+        }
+
+        @@media only screen and (min-width: 493px) and (max-width: 995px) {
+
+            .login-sec {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+            .logo-img {
+                max-width:35%;
+                width: 35%;
+            }
+            .banner-sec {
+				display: none;
+			}
+        }
+
+        @@media only screen and (min-width: 493px) and (max-width: 800px) {
+            .logo-img {
+                max-width:45%;
+                width: 45%;
+            }
+        }
+
+        @@media only screen and (min-width: 418px) and (max-width: 540px) {
+            .logo-img {
+                max-width:65%;
+                width: 65%;
+            }
+            .free-info{
+                margin-bottom: 5em;
+            }
+            .login-form {
+                width: 22em;
+            }
+        }
+
+
+
+
+    </style>
+</head>
+<body>
+    <section class="login-block">
+        <div class="container">
+            <div class="row">
+                @RenderBody()
+                <div class="col-md-7 banner-sec">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <img src="~/images/custom/studio-banner.svg"
+                             class="studio-banner">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <environment include="Development">
+        <script src="/scripts/vendor/jquery.js"></script>
+        <script src="/scripts/vendor/jquery-maskedinput.js"></script>
+        <script src="/scripts/vendor/sweetalert.js"></script>
+        <script src="/scripts/vendor/spin.js"></script>
+        <script src="/scripts/vendor/ladda.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="/scripts/bundles-js/auth.js"></script>
+    </environment>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

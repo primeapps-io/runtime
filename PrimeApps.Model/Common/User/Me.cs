@@ -1,9 +1,6 @@
 ﻿using PrimeApps.Model.Common.Organization;
-using PrimeApps.Model.Entities.Console;
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace PrimeApps.Model.Common.User
 {
@@ -13,6 +10,6 @@ namespace PrimeApps.Model.Common.User
         public ConsoleUser user { get; set; }
         
         [DataMember]
-        public  List<Organization.Organization> organizations { get; set; }
+        public  List<OrganizationModel> organizations { get; set; }
     }
 }

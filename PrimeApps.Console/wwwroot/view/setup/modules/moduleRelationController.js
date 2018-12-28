@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('ModuleRelationController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ModuleSetupService', 'ModuleService', 'AppService',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ModuleSetupService, ModuleService, AppService) {
+    .controller('ModuleRelationController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ModuleSetupService', 'ModuleService', 'LayoutService',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ModuleSetupService, ModuleService, LayoutService) {
             var module = $filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0];
 
             if (!module) {
@@ -194,7 +194,7 @@ angular.module('primeapps')
                     if (!relation.two_way && relation.relation_type === 'many_to_many' && $scope.currentRelation.isNew)
                         createRelationManyToManyModule();
                     else
-                        AppService.getMyAccount(true)
+                        LayoutService.getMyAccount(true)
                             .then(function () {
                                 $scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
                                 $scope.relations = ModuleSetupService.processRelations($scope.module.relations);
@@ -241,7 +241,7 @@ angular.module('primeapps')
             $scope.delete = function (relation) {
                 ModuleService.deleteModuleRelation(relation.id)
                     .then(function () {
-                        AppService.getMyAccount(true)
+                        LayoutService.getMyAccount(true)
                             .then(function () {
                                 var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
                                 $scope.relations.splice(relationToDeleteIndex, 1);

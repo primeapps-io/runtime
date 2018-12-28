@@ -8,6 +8,7 @@ angular.module('primeapps')
             $scope.reportModel = {};
             $scope.reportModel.category_id = parseInt($location.search().categoryId);
             $scope.ReportId = parseInt($location.search().Id);
+            $scope.isEdit = $scope.ReportId > 0;
             $scope.clone = $location.search().clone;
             $scope.icons = ModuleService.getIcons();
             $scope.reportModel.chart = {};
@@ -406,6 +407,7 @@ angular.module('primeapps')
                     var getNumberRegex = /[^\d.-]/g;
                     if (filter.value.indexOf('now(') > -1) {
                         filter.costumeDate = "now()";
+                        return true;
                     }
                     if (filter.value.indexOf('today(') > -1) {
                         if (/\d+/.test(filter.value)) {

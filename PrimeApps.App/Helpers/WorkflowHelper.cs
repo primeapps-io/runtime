@@ -793,7 +793,7 @@ namespace PrimeApps.App.Helpers
                             }
                             catch (Exception ex)
                             {
-                                ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString());
+                                ErrorHandler.LogError(ex, "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "module_name:" + module.Name + "operation_type:" + operationType + "record_id:" + record["id"].ToString() + "CallBackUrl:" + workflow.WebHook.CallbackUrl);
                             }
                         }
 

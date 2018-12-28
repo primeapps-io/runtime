@@ -24,7 +24,21 @@ angular.module('primeapps')
                         }
                     }
 
-                    config.headers['X-Tenant-Id'] = $cookies.get('tenant_id');
+                    // if ($rootScope.currentOrganization)
+                    //     config.headers['X-Organization-Id'] = $rootScope.currentOrganization.id;
+
+                    var organizationId = $cookies.get('organization_id');
+                    var appId = $cookies.get('app_id');
+                    var tenantId = $cookies.get('tenant_id');
+
+                    if (organizationId)
+                        config.headers['X-Organization-Id'] = organizationId;
+
+                    if (appId)
+                        config.headers['X-App-Id'] = appId;
+
+                    if (tenantId)
+                        config.headers['X-Tenant-Id'] = tenantId;
 
                     return config;
                 },
@@ -36,7 +50,7 @@ angular.module('primeapps')
                         if (rejection.statusText === 'Unauthorized') {
                             $localStorage.remove('access_token');
                             $localStorage.remove('refresh_token');
-                            $window.location.href = '/auth/SignOut';
+                            // $window.location.href = '/auth/SignOut';
                         } else {
                             $window.location.href = '/';
                         }
@@ -68,7 +82,10 @@ angular.module('primeapps')
                     if (rejection.status === 404) {
                         if (!rejection.config.ignoreNotFound) {
                             $window.location.href = '#/app/dashboard';
-                            ngToast.create({ content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'), className: 'warning' });
+                            ngToast.create({
+                                content: $filter('translate')(rejection.config.url.indexOf('/module') > -1 ? 'Common.NotFoundRecord' : 'Common.NotFound'),
+                                className: 'warning'
+                            });
                         }
 
                         return $q.reject(rejection);

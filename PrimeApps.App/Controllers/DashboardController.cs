@@ -51,9 +51,6 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_picklistRepository);
             SetCurrentUser(_viewRepository);
             base.OnActionExecuting(context);
-
-
-
         }
 
         [Route("get_dashlets"), HttpGet]

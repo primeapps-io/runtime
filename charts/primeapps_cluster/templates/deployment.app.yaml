@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "primeapps.name" $ }}-app
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    component: "{{.Release.Name}}-{{.Values.app.component}}"
+spec:
+  replicas: {{ default 1 .Values.app.replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{.Release.Name}}-{{.Values.app.component}}"
+  template:
+    metadata:
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+        component: "{{.Release.Name}}-{{.Values.app.component}}"
+    spec:
+      imagePullSecrets:
+        - name: {{ .Values.app.pullsecret }}
+      containers:
+        - name: {{ template "primeapps.name" . }}-app
+          image: "{{.Values.app.image}}:{{.Values.app.imageTag}}"
+          imagePullPolicy: "{{.Values.app.imagePullPolicy}}"
+          ports:
+          - name: http
+            containerPort: {{.Values.app.containerPort}}
+          {{- if .Values.app.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          env:
+            {{- $root := . }}
+            {{- range $ref, $values := .Values.app.secrets }}
+            {{- range $key, $value := $values }}
+            - name: {{ $ref }}__{{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "primeapps.name" $ }}-app-{{ $ref | lower }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- end }}
+          resources:
+            requests:
+              cpu: "{{.Values.app.cpu}}"
+              memory: "{{.Values.app.memory}}"

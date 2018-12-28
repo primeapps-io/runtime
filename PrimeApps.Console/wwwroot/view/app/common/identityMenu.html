@@ -1,0 +1,25 @@
+<div class="menu col-sm-3">
+    <h2 class="setup-title">{{ menuTopTitle }}</h2>
+    <ul class="nav nav-pills nav-stacked setup-nav">
+        <li ng-class="activeMenuItem ==='authentication' ? 'active' :''">
+            <a href="/#/app/5/authentication">
+                <i class="fas fa-th-large"></i>
+                Authentication
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='identity' ? 'active' :''">
+            <a href="/#/app/5/identity">
+                <i class="fas fa-network-wired"></i>
+                Identity Provider
+            </a>
+        </li>
+
+        <li ng-class="activeMenuItem ==='singleSingOn' ? 'active' :''">
+            <a href="/#/app/5/singleSingOn">
+                <i class="fas fa-sliders-h"></i>
+                Single Sign-On
+            </a>
+        </li>
+    </ul>
+</div>

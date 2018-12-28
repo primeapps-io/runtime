@@ -23,6 +23,7 @@ namespace PrimeApps.Model.Entities.Console
         public virtual ConsoleUser ConsoleUser { get; set; }
 
         public virtual Team Team { get; set; }
+
         public virtual AppProfile Profile { get; set; }
 
     }

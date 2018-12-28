@@ -117,6 +117,55 @@ namespace PrimeApps.Model.Repositories
 
             return imports;
         }
+
+
+        //Start of Excell import Template
+
+        public async Task<ImportMap> GetImportMappingByName(string name, int moduleId)
+        {
+            var result = await DbContext.ImportMaps.Where(x => x.Name == name && x.ModuleId == moduleId && !x.Deleted).FirstOrDefaultAsync();
+
+            return result;
+        }
+
+        public async Task<ImportMap> GetImportMappingById(int id)
+        {
+            var result = await DbContext.ImportMaps.Where(x => x.Id == id && !x.Deleted).FirstOrDefaultAsync();
+
+            return result;
+        }
+
+        public async Task<ICollection<ImportMap>> GetImportMappingByModuleId(int moduleId)
+        {
+            var result = await DbContext.ImportMaps.Where(x => x.ModuleId == moduleId && !x.Deleted).ToListAsync();
+
+            return result;
+        }
+
+        public async Task<int> ImportMappingSave(ImportMap import)
+        {
+            DbContext.ImportMaps.Add(import);
+
+            var result = await DbContext.SaveChangesAsync();
+
+            return result;
+        }
+
+        public async Task<int> ImportMappingUpdate(ImportMap import)
+        {
+            var result = await DbContext.SaveChangesAsync();
+
+            return result;
+        }
+
+        public async Task<int> ImportMappingSoftDelete(ImportMap import)
+        {
+            import.Deleted = true;
+
+            var result = await DbContext.SaveChangesAsync();
+
+            return result;
+        }
     }
 }
 

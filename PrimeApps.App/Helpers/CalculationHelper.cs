@@ -104,8 +104,8 @@ namespace PrimeApps.App.Helpers
                                                         var parentField = module.Fields.Where(x => x.Name == dependency.ParentField).FirstOrDefault();
 
 
-                                                        /*var parentModule = await moduleRepository.GetByName(parentField.LookupType);
-                                                        var childModule = await moduleRepository.GetByName(childField.LookupType);*/
+                                                        /*var parentModule = await moduleRepository.GetByNameAsync(parentField.LookupType);
+                                                        var childModule = await moduleRepository.GetByNameAsync(childField.LookupType);*/
 
 
                                                         string parentRecordData;
@@ -1440,7 +1440,7 @@ namespace PrimeApps.App.Helpers
                                                 case "petty_cash_requisition":
                                                 case "expenditure":
                                                     var pettyCashModule = await moduleRepository.GetByName("petty_cash");
-                                                    var pettyCashRecord = recordRepository.GetById(pettyCashModule, (int)record["related_petty_cash_2"], false, null, true);
+                                                    var pettyCashRecord = recordRepository.GetById(pettyCashModule, record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"], false, null, true);
                                                     var pettyCashUpdateRecord = new JObject();
                                                     if (module.Name == "petty_cash_requisition")
                                                     {
@@ -1479,7 +1479,7 @@ namespace PrimeApps.App.Helpers
 
                                                         if (pettyCashRequisitionPicklistItem.Value == "paid" && !record["paid_amount"].IsNullOrEmpty() && !record["paid_by"].IsNullOrEmpty())
                                                         {
-                                                            var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
+                                                            var findRequestPettyCashRequisition = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                             var pettyCashRequisitionRecords = recordRepository.Find(module.Name, findRequestPettyCashRequisition);
                                                             var currencyFieldRequisition = pettyCashRequisitionModule.Fields.Single(x => x.Name == "currency");
                                                             var currencyPicklistRequisition = await picklistRepository.GetById(currencyFieldRequisition.PicklistId.Value);
@@ -1511,7 +1511,7 @@ namespace PrimeApps.App.Helpers
                                                                 }
                                                             }
 
-                                                            pettyCashUpdateRecord["id"] = (int)record["related_petty_cash_2"];
+                                                            pettyCashUpdateRecord["id"] = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"];
                                                             pettyCashUpdateRecord["try_income"] = totalIncomeTry;
                                                             pettyCashUpdateRecord["eur_income"] = totalIncomeEur;
                                                             pettyCashUpdateRecord["usd_income"] = totalIncomeUsd;
@@ -1529,7 +1529,7 @@ namespace PrimeApps.App.Helpers
 
                                                         if (!record["amount"].IsNullOrEmpty())
                                                         {
-                                                            var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
+                                                            var findRequestExpenditure = new FindRequest { Filters = new List<Filter> { new Filter { Field = "related_petty_cash_2", Operator = Operator.Equals, Value = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"], No = 1 } }, Limit = 9999 };
                                                             var expenditureRecords = recordRepository.Find(module.Name, findRequestExpenditure);
                                                             var currencyFieldExpenditure = expenditureModule.Fields.Single(x => x.Name == "currency_c");
                                                             var currencyPicklistExpenditure = await picklistRepository.GetById(currencyFieldExpenditure.PicklistId.Value);
@@ -1562,7 +1562,7 @@ namespace PrimeApps.App.Helpers
                                                             }
 
 
-                                                            pettyCashUpdateRecord["id"] = (int)record["related_petty_cash_2"];
+                                                            pettyCashUpdateRecord["id"] = record["related_petty_cash_2"].IsNullOrEmpty() ? 0 : (int)record["related_petty_cash_2"];
                                                             pettyCashUpdateRecord["try_expenditure"] = totalExpenditureTry;
                                                             pettyCashUpdateRecord["eur_expenditure"] = totalExpenditureEur;
                                                             pettyCashUpdateRecord["usd_expenditure"] = totalExpenditureUsd;
@@ -1891,7 +1891,11 @@ namespace PrimeApps.App.Helpers
                                                     var stockModObj = await moduleRepository.GetByName("stock_transactions");
                                                     var salesOrderModulePicklist = await picklistRepository.FindItemByLabel(salesOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj = new FindRequest { Filters = new List<Filter> { new Filter { Field = "sales_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj);
+                                                    var currentStockRecordArr = new JArray();
+
+                                                    if (stockModObj != null)
+                                                        currentStockRecordArr = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj, false);
+
                                                     if ((operationType == OperationType.delete && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice") || (salesOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && salesOrderModulePicklist.SystemCode != "confirmed_order_stage" && salesOrderModulePicklist.SystemCode != "converted_to_sales_invoice"))
                                                     {
                                                         if (currentStockRecordArr.Count > 0)
@@ -1915,7 +1919,14 @@ namespace PrimeApps.App.Helpers
                                                     var stockModObj2 = await moduleRepository.GetByName("stock_transactions");
                                                     var purchaseOrderModulePicklist = await picklistRepository.FindItemByLabel(purchaseOrderPicklist.PicklistId.Value, (string)record["order_stage"], appUser.TenantLanguage);
                                                     var findRequestCurrentStockRecordObj2 = new FindRequest { Filters = new List<Filter> { new Filter { Field = "purchase_order", Operator = Operator.Equals, Value = (int)record["id"], No = 1 } }, Limit = 9999 };
-                                                    var currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2);
+                                                    var currentStockRecordArr2 = new JArray();
+
+                                                    if (stockModObj2 != null)
+                                                        currentStockRecordArr2 = recordRepository.Find("stock_transactions", findRequestCurrentStockRecordObj2, false);
+
+                                                    if (purchaseOrderModulePicklist == null)
+                                                        break;
+
                                                     if (operationType == OperationType.delete || (purchaseOrderModulePicklist.SystemCode != "confirmed_purchase_order_stage" && purchaseOrderModulePicklist.SystemCode != "confirmed_order_stage"))
                                                     {
                                                         if (currentStockRecordArr2.Count > 0)
@@ -1964,21 +1975,29 @@ namespace PrimeApps.App.Helpers
 
                                                     }
 
-                                                    var currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord);
+                                                    var currentStockRecord = new JArray();
                                                     var stockModule = await moduleRepository.GetByName("stock_transactions");
+
+                                                    if (stockModule != null)
+                                                        currentStockRecord = recordRepository.Find("stock_transactions", findRequestCurrentStockRecord, false);
 
                                                     if ((currentModulePicklist.SystemCode == "confirmed_purchase_order_stage" || currentModulePicklist.SystemCode == "confirmed_order_stage") && operationType != OperationType.delete)
                                                     {
                                                         var modelStateTransaction = new ModelStateDictionary();
-                                                        var transactionTypeField = stockModule.Fields.Single(x => x.Name == "stock_transaction_type");
+                                                        var transactionTypeField = stockModule != null ? stockModule.Fields.Single(x => x.Name == "stock_transaction_type") : null;
+
+                                                        if (transactionTypeField == null)
+                                                            break;
+
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
+                                                        var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
 
                                                         var stock = new JObject();
                                                         stock["owner"] = appUser.Id;
                                                         stock["product"] = record["product"];
                                                         stock["transaction_date"] = DateTime.UtcNow.Date;
 
-                                                        if (module.Name == "order_products")
+                                                        if (module.Name == "order_products" && IsCikanMiktarField)
                                                         {
                                                             stock["cikan_miktar"] = record["quantity"];
                                                             stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_output").Id;
@@ -2048,7 +2067,7 @@ namespace PrimeApps.App.Helpers
                                                 //            case "collection":
                                                 //                var customerId = (int)record["customer"];
                                                 //                balance = recordRepository.CalculateBalance(currentTransactionType, customerId);
-                                                //                moduleUpdate = await moduleRepository.GetByName("accounts");
+                                                //                moduleUpdate = await moduleRepository.GetByNameAsync("accounts");
                                                 //                recordUpdate["id"] = customerId;
                                                 //                recordUpdate["balance"] = balance;
                                                 //                break;
@@ -2056,7 +2075,7 @@ namespace PrimeApps.App.Helpers
                                                 //            case "payment":
                                                 //                var supplierId = (int)record["supplier"];
                                                 //                balance = recordRepository.CalculateBalance(currentTransactionType, supplierId);
-                                                //                moduleUpdate = await moduleRepository.GetByName("suppliers");
+                                                //                moduleUpdate = await moduleRepository.GetByNameAsync("suppliers");
                                                 //                recordUpdate["id"] = supplierId;
                                                 //                recordUpdate["balance"] = balance;
                                                 //                break;
@@ -2296,7 +2315,7 @@ namespace PrimeApps.App.Helpers
                                                     {
                                                         if (!record["sector"].IsNullOrEmpty())
                                                         {
-                                                            var projectsModule = await moduleRepository.GetByName("projects");
+                                                            var projectsModule = await moduleRepository.GetByNameAsync("projects");
                                                             var valueArray = new JArray();
                                                             valueArray.Add((string)record["sector"]);
                                                             var findRequestEoiCoordinator = new FindRequest { Filters = new List<Filter> { new Filter { Field = "eoi_coordinator_and_rationale_writer_sectors", Operator = Operator.Contains, Value = valueArray, No = 1 } }, Limit = 1 };
@@ -2606,7 +2625,7 @@ namespace PrimeApps.App.Helpers
                                                         }
                                                     }
 
-                                                    var calismaDurumuField = calisanModule.Fields.Single(x => x.Name == "calisma_durumu");
+                                                    var calismaDurumuField = calisanModule.Fields.First(x => x.Name == "calisma_durumu");
                                                     var calismaDurumuPicklist = await picklistRepository.GetById(calismaDurumuField.PicklistId.Value);
                                                     var calismaDurumuPicklistItem = calismaDurumuPicklist.Items.SingleOrDefault(x => x.Value == "active");
                                                     var calismaDurumu = (string)record["calisma_durumu"];
@@ -3114,7 +3133,7 @@ namespace PrimeApps.App.Helpers
 
                     #endregion
 
-                    //var calisanlarModule = await moduleRepository.GetByName("calisanlar");
+                    //var calisanlarModule = await moduleRepository.GetByNameAsync("calisanlar");
                     try
                     {
                         var accountRecordUpdate = new JObject();
@@ -3373,9 +3392,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
                                 {
                                     if ((string)accountCurrentAccountTry["transaction_type_system"] == "sales_invoice")
-                                        balance += (decimal)accountCurrentAccountTry["borc_tl"];
+                                        balance += accountCurrentAccountTry["borc_tl"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountTry["borc_tl"];
                                     else
-                                        balance -= (decimal)accountCurrentAccountTry["alacak"];
+                                        balance -= accountCurrentAccountTry["alacak"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountTry["alacak"];
 
                                     accountCurrentAccountTry["bakiye_tl"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule, isUtc: false);
@@ -3392,9 +3411,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
                                 {
                                     if ((string)accountCurrentAccountEuro["transaction_type_system"] == "sales_invoice")
-                                        balance += (decimal)accountCurrentAccountEuro["borc_euro"];
+                                        balance += accountCurrentAccountEuro["borc_euro"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountEuro["borc_euro"];
                                     else
-                                        balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
+                                        balance -= accountCurrentAccountEuro["alacak_euro"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountEuro["alacak_euro"];
 
                                     accountCurrentAccountEuro["bakiye_euro"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule, isUtc: false);
@@ -3410,9 +3429,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
                                 {
                                     if ((string)accountCurrentAccountUsd["transaction_type_system"] == "sales_invoice")
-                                        balance += (decimal)accountCurrentAccountUsd["borc_usd"];
+                                        balance += accountCurrentAccountUsd["borc_usd"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountUsd["borc_usd"];
                                     else
-                                        balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
+                                        balance -= accountCurrentAccountUsd["alacak_usd"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountUsd["alacak_usd"];
 
                                     accountCurrentAccountUsd["bakiye_usd"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule, isUtc: false);
@@ -3447,9 +3466,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountTry in accountCurrentAccountsTry)
                                 {
                                     if ((string)accountCurrentAccountTry["transaction_type_system"] == "purchase_invoice")
-                                        balance -= (decimal)accountCurrentAccountTry["alacak"];
+                                        balance -= accountCurrentAccountTry["alacak"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountTry["alacak"];
                                     else
-                                        balance += (decimal)accountCurrentAccountTry["borc_tl"];
+                                        balance += accountCurrentAccountTry["borc_tl"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountTry["borc_tl"];
 
                                     accountCurrentAccountTry["bakiye_tl"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountTry, currentAccountModule, isUtc: false);
@@ -3466,9 +3485,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountEuro in accountCurrentAccountsEuro)
                                 {
                                     if ((string)accountCurrentAccountEuro["transaction_type_system"] == "purchase_invoice")
-                                        balance -= (decimal)accountCurrentAccountEuro["alacak_euro"];
+                                        balance -= accountCurrentAccountEuro["alacak_euro"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountEuro["alacak_euro"];
                                     else
-                                        balance += (decimal)accountCurrentAccountEuro["borc_euro"];
+                                        balance += accountCurrentAccountEuro["borc_euro"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountEuro["borc_euro"];
 
                                     accountCurrentAccountEuro["bakiye_euro"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountEuro, currentAccountModule, isUtc: false);
@@ -3484,9 +3503,9 @@ namespace PrimeApps.App.Helpers
                                 foreach (JObject accountCurrentAccountUsd in accountCurrentAccountsUsd)
                                 {
                                     if ((string)accountCurrentAccountUsd["transaction_type_system"] == "purchase_invoice")
-                                        balance -= (decimal)accountCurrentAccountUsd["alacak_usd"];
+                                        balance -= accountCurrentAccountUsd["alacak_usd"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountUsd["alacak_usd"];
                                     else
-                                        balance += (decimal)accountCurrentAccountUsd["borc_usd"];
+                                        balance += accountCurrentAccountUsd["borc_usd"].IsNullOrEmpty() ? 0 : (decimal)accountCurrentAccountUsd["borc_usd"];
 
                                     accountCurrentAccountUsd["bakiye_usd"] = balance;
                                     await _recordRepository.Update(accountCurrentAccountUsd, currentAccountModule, isUtc: false);
@@ -3553,9 +3572,9 @@ namespace PrimeApps.App.Helpers
                             var hareketTipi = hareketTipleri.Items.Single(x => appUser.TenantLanguage == "tr" ? x.LabelTr == (string)bankaHareketi["hareket_tipi"] : x.LabelEn == (string)bankaHareketi["hareket_tipi"]).SystemCode;
 
                             if (hareketTipi == "para_cikisi")
-                                balance -= (decimal)bankaHareketi["alacak"];
+                                balance -= bankaHareketi["alacak"].IsNullOrEmpty() ? 0 : (decimal)bankaHareketi["alacak"];
                             else
-                                balance += (decimal)bankaHareketi["borc"];
+                                balance += bankaHareketi["borc"].IsNullOrEmpty() ? 0 : (decimal)bankaHareketi["borc"];
 
                             bankaHareketi["bakiye"] = balance;
                             await _recordRepository.Update(bankaHareketi, bankaHareketiModule, isUtc: false);
@@ -3587,14 +3606,17 @@ namespace PrimeApps.App.Helpers
 
                         foreach (JObject stockTransaction in stockTransactions)
                         {
+                            if (stockTransaction["stock_transaction_type"].IsNullOrEmpty())
+                                continue;
+
                             var transactionTypePicklistItem = await _picklistRepository.FindItemByLabel(transactionTypePicklist.PicklistId.Value, (string)stockTransaction["stock_transaction_type"], appUser.TenantLanguage);
                             if (transactionTypePicklistItem.Value2 == "customer_return" || transactionTypePicklistItem.Value2 == "stock_input")
                             {
-                                balance += (decimal)stockTransaction["quantity"];
+                                balance += stockTransaction["quantity"].IsNullOrEmpty() ? 0 : (decimal)stockTransaction["quantity"];
                             }
                             else if (transactionTypePicklistItem.Value2 == "supplier_return" || transactionTypePicklistItem.Value2 == "stock_output")
                             {
-                                balance -= (decimal)stockTransaction["cikan_miktar"];
+                                balance -= stockTransaction["cikan_miktar"].IsNullOrEmpty() ? 0 : (decimal)stockTransaction["cikan_miktar"];
                             }
 
                             stockTransaction["bakiye"] = balance;

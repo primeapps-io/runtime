@@ -182,9 +182,9 @@ namespace PrimeApps.Model.Repositories
                 if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
                     throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
-                if ( _warehouse.DatabaseName != "0")
+                if (_warehouse.DatabaseName != "0")
                 {
-                    BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
+                    BackgroundJob.Enqueue(() => _warehouse.UpdateProfile(profileToUpdate.Id, _warehouse.DatabaseName, CurrentUser.TenantId, tenantLanguage));
                 }
             }
         }

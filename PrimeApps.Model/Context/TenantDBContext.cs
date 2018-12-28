@@ -20,7 +20,7 @@ namespace PrimeApps.Model.Context
         public TenantDBContext(int tenantId, IConfiguration configuration)
         {
             TenantId = tenantId;
-            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId);
+            Database.GetDbConnection().ConnectionString = Postgres.GetConnectionString(configuration.GetConnectionString("TenantDBConnection"), tenantId, "tenant");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -526,6 +526,13 @@ namespace PrimeApps.Model.Context
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.UpdatedAt);
             modelBuilder.Entity<BpmWorkflowLog>().HasIndex(x => x.Deleted);
 
+            //ImportMap
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.Name);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.ModuleId);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.CreatedAt);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.UpdatedAt);
+            modelBuilder.Entity<ImportMap>().HasIndex(x => x.Deleted);
+
         }
 
         public DbSet<TenantUser> Users { get; set; }
@@ -569,6 +576,7 @@ namespace PrimeApps.Model.Context
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<Analytic> Analytics { get; set; }
         public DbSet<Import> Imports { get; set; }
+        public DbSet<ImportMap> ImportMaps { get; set; }
         public DbSet<Dashlet> Dashlets { get; set; }
         public DbSet<Chart> Charts { get; set; }
         public DbSet<Widget> Widgets { get; set; }

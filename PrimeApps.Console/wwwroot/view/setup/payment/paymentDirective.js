@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .directive('paymentForm', ['$filter', 'ngToast', 'PaymentService', 'AppService',
-        function ($filter, ngToast, PaymentService, AppService) {
+    .directive('paymentForm', ['$filter', 'ngToast', 'PaymentService', 'LayoutService',
+        function ($filter, ngToast, PaymentService, LayoutService) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -94,7 +94,7 @@ angular.module('primeapps')
                                         if ($scope.$root.licenseStatus)
                                             $scope.$root.licenseStatus.LicenseUsage.IsInNotificationPeriod = false;
 
-                                        AppService.getMyAccount(true);
+                                        LayoutService.getMyAccount(true);
 
                                         ngToast.create({content: $filter('translate')('Setup.Settings.UpdateSuccess'), className: 'success'});
                                     })

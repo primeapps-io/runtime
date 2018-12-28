@@ -9,10 +9,6 @@ angular.module('primeapps')
             $scope.users = $rootScope.users;
             $scope.hasAdminRight = $filter('filter')($rootScope.profiles, { id: $rootScope.user.role.role_id }, true)[0].has_admin_rights;
 
-            if ($scope.hasAdminRight.length > 0) {
-                $scope.hasAdminRight = $scope.hasAdminRight[0].has_admin_rights;
-            }
-
             if ($scope.sipSettings) {
                 renewSipUsers(false);
             }

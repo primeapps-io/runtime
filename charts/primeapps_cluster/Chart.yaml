@@ -1,0 +1,4 @@
+apiVersion: v1
+description: PrimeApps Helm Chart
+name: primeapps
+version: 0.2.0

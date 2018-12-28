@@ -33,7 +33,21 @@
                 <div class="subpanel">
                     <h5 class="subpanel-heading">{{'Data.Import.Step1' | translate}}</h5>
                     <div class="subpanel-body">
-                        <div>
+                        <div class="sheets" style="width:30%;">
+                            <div ng-show="mappingArray.length > 0">
+                                <span class="select-sheet bold">{{'Data.Import.SelectMapping' | translate}}:</span>
+                                <select class="form-control ng-animate-disabled" ng-show="mappingArray.length"
+                                        name="selectedMapping"
+                                        ng-model="selectedMapping"
+                                        ng-options="o as o.name for o in mappingArray track by o.id"
+                                        ng-change="mappingSelectedChange()"
+                                        style="margin-left: 4px;">
+                                    <option value="">{{'Common.Select' | translate}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="sheets">
+                            <span class="select-sheet">{{'Import.File' | translate}}:</span>
                             <form>
                                 <span class="file-input btn btn-custom btn-sm btn-file" ng-disabled="uploader.queue.length">
                                     {{'Data.Import.ChooseFiles' | translate}} <input type="file" id="excelFile" name="excelFile" nv-file-select uploader="uploader">
@@ -95,26 +109,26 @@
                 </div>
                 <div class="wizard-buttons text-right">
                     <a href="#/app/modules/{{type}}" class="btn btn-custom">{{'Common.Cancel' | translate}}</a>
-                    <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 1" ng-disabled="!sheets || !rows || rows.length > 3000">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+                    <button type="button" class="btn btn-primary btn-w-sm" ng-click="checkWizard()" ng-disabled="!sheets || !rows || rows.length > 3000">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
                 </div>
                 <div class="callout callout-info">
                     <p><span class="bold">{{'Data.Import.Info.Title1' | translate}}</span></p>
                     <p>
-                    <ul>
-                        <li>{{'Data.Import.Info.Info1' | translate}}</li>
-                        <li>{{'Data.Import.Info.Info2' | translate}}</li>
-                        <li>{{'Data.Import.Info.Info3' | translate}}</li>
-                    </ul>
+                        <ul>
+                            <li>{{'Data.Import.Info.Info1' | translate}}</li>
+                            <li>{{'Data.Import.Info.Info2' | translate}}</li>
+                            <li>{{'Data.Import.Info.Info3' | translate}}</li>
+                        </ul>
                     </p>
                     <p><span class="bold">{{'Data.Import.Info.Title2' | translate}}</span></p>
                     <p>
-                    <ul>
-                        <li>{{'Data.Import.Info.Info4' | translate}}</li>
-                        <li>{{'Data.Import.Info.Info5' | translate}}</li>
-                        <li>{{'Data.Import.Info.Info6' | translate}}</li>
-                        <li>{{'Data.Import.Info.Info7' | translate}}</li>
-                        <li>{{'Data.Import.Info.Info8' | translate}}</li>
-                    </ul>
+                        <ul>
+                            <li>{{'Data.Import.Info.Info4' | translate}}</li>
+                            <li>{{'Data.Import.Info.Info5' | translate}}</li>
+                            <li>{{'Data.Import.Info.Info6' | translate}}</li>
+                            <li>{{'Data.Import.Info.Info7' | translate}}</li>
+                            <li>{{'Data.Import.Info.Info8' | translate}}</li>
+                        </ul>
                     </p>
                 </div>
             </div>
@@ -155,9 +169,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="wizard-buttons text-right">
-                        <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
-                        <button type="submit" class="btn btn-primary btn-w-sm">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+                    <div>
+                        <div class="wizard-buttons text-right col-6">
+                            <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">{{'Common.Previous' | translate}} <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i></button>
+                            <button type="submit" class="btn btn-primary btn-w-sm">{{'Common.Next' | translate}} <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i></button>
+                            <button type="submit" class="btn btn-primary btn-w-sm text-left" style="float:left;" ng-show="user.profile.has_admin_rights" ng-click="openMappingModal()">{{selectedMapping.id ? 'Data.Import.UpdateMapping':'Data.Import.SaveMapping' | translate}} <i class="fa fa-table pull-left" style="margin-top: 5px;margin-right:5px;"></i></button>
+                            <a href class="btn btn-danger btn-w-sm text-left" style="float:left;margin-left:5px;" ng-show="user.profile.has_admin_rights && selectedMapping.id>0"
+                               confirm-click action="deleteMapping()" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                {{ 'Data.Import.DeleteMapping' | translate}} <i class="fa fa-minus-circle pull-left" style="margin-top: 5px;margin-right:5px;"></i>
+                            </a>
+                        </div>
                     </div>
                 </form>
             </div>

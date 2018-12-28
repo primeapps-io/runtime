@@ -17,16 +17,39 @@ namespace PrimeApps.Model.Repositories
         public TeamRepository(ConsoleDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
-        public async Task<Team> Get(int id)
+        public async Task<List<Team>> GetAll()
         {
-            return await DbContext.Teams
+            return await DbContext.Teams.Include(x => x.Organization)
+                .Include(x => x.TeamUsers)
+                .Where(x => !x.Deleted)
+               .ToListAsync();
+        }
+
+        public async Task<Team> GetByTeamId(int id)
+        {
+            return await DbContext.Teams.Include(x => x.Organization)
+                .Include(x => x.TeamUsers)
                 .Where(x => x.Id == id && !x.Deleted)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<Team>> GetByUserId(int userId)
+        {
+            return await DbContext.Teams
+                .Include(x => x.TeamUsers)
+                .Where(x => !x.Deleted)
+                .ToListAsync();
+        }
+
+        public async Task<Team> GetByName(string name)
+        {
+            return await DbContext.Teams.Where(x => x.Name == name && !x.Deleted).FirstOrDefaultAsync();
         }
 
         public async Task<List<Team>> GetByOrganizationId(int organizationId)
         {
             return await DbContext.Teams
+                .Include(x => x.TeamUsers)
                 .Where(x => x.OrganizationId == organizationId && !x.Deleted)
                 .ToListAsync();
         }
@@ -46,6 +69,25 @@ namespace PrimeApps.Model.Repositories
         public async Task<int> Update(Team team)
         {
             return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> UserTeamAdd(TeamUser teamUser)
+        {
+            DbContext.TeamUsers.Add(teamUser);
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> UserTeamDelete(TeamUser teamUser)
+        {
+            DbContext.TeamUsers.Remove(teamUser);
+            return await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<TeamUser> GetTeamUser(int UserId, int teamId)
+        {
+            return await DbContext.TeamUsers
+                 .Where(x => x.UserId == UserId && x.TeamId == teamId).FirstOrDefaultAsync();
+
         }
     }
 }

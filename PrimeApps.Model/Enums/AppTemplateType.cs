@@ -8,6 +8,9 @@ namespace PrimeApps.Model.Enums
 	public enum AppTemplateType
 	{
 		[EnumMember(Value = "email")]
-		Email = 1
+		Email = 1,
+
+		[EnumMember(Value = "document")]
+		Document = 2
 	}
 }

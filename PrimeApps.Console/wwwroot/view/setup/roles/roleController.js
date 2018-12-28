@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('RoleController', ['$rootScope', '$scope', '$filter', 'ngToast', 'guidEmpty', '$modal', 'RoleService', 'AppService', '$state',
-        function ($rootScope, $scope, $filter, ngToast, guidEmpty, $modal, RoleService, AppService, $state) {
+    .controller('RoleController', ['$rootScope', '$scope', '$filter', 'ngToast', 'guidEmpty', '$modal', 'RoleService', 'LayoutService', '$state',
+        function ($rootScope, $scope, $filter, ngToast, guidEmpty, $modal, RoleService, LayoutService, $state) {
             $scope.loading = true;
 
             if ($rootScope.branchAvailable && !$rootScope.user.profile.has_admin_rights) {
@@ -119,7 +119,7 @@ angular.module('primeapps')
                                 className: 'success'
                             });
 
-                            AppService.getMyAccount(true);
+                            LayoutService.getMyAccount(true);
 
                             $scope.deleteModal.hide();
                         });

@@ -17,12 +17,29 @@ namespace PrimeApps.Model.Repositories
         public OrganizationRepository(ConsoleDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
 
-        public List<Organization> Get(int userId, int organizationId)
+        public bool IsOrganizationAvaliable(int userId, int organizationId)
         {
-            return DbContext.OrganizationUsers
+            var orgId = DbContext.OrganizationUsers
+                .Where(x => x.UserId == userId && x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .Select(x => x.OrganizationId)
+                .FirstOrDefault();
+
+            return orgId != 0;
+        }
+
+        public async Task<Organization> Get(int userId, int organizationId)
+        {
+            return await DbContext.OrganizationUsers
                 .Where(x => x.UserId == userId && x.OrganizationId == organizationId && !x.Organization.Deleted)
                 .Select(x => x.Organization)
-                .ToList();
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<List<OrganizationUser>> GetUsersByOrganizationId(int organizationId)
+        {
+            return await DbContext.OrganizationUsers
+                .Where(x => x.OrganizationId == organizationId && !x.Organization.Deleted)
+                .ToListAsync();
         }
 
         public async Task<List<Organization>> GetByUserId(int userId)
@@ -50,14 +67,14 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Organization> GetAll(int organizationId, int userId)
+        public async Task<Organization> GetAll(int userId, int organizationId)
         {
             var organization = await DbContext.OrganizationUsers
                 .Include(x => x.Organization)
-                    .ThenInclude(x => x.OrganizationUsers)
+                    .ThenInclude(x => (x.Teams as Team).TeamUsers)
                 .Include(x => x.Organization)
-                    .ThenInclude(x => x.Teams)
-                .Where(x => x.OrganizationId == organizationId && x.UserId == userId)
+                    .ThenInclude(x => x.OrganizationUsers)
+                .Where(x => x.OrganizationId == organizationId && x.UserId == userId && !x.Organization.Deleted)
                 .FirstOrDefaultAsync();
 
             return organization.Organization;
