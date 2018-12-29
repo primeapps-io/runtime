@@ -89,7 +89,7 @@ namespace PrimeApps.Model.Helpers
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = false;
             }
@@ -129,7 +129,7 @@ namespace PrimeApps.Model.Helpers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = false;
             }
@@ -159,7 +159,7 @@ namespace PrimeApps.Model.Helpers
                     connection.Close();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 
@@ -188,7 +188,7 @@ namespace PrimeApps.Model.Helpers
                     connection.Close();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
 

@@ -44,7 +44,7 @@ namespace PrimeApps.Model.Repositories
                     command.CommandText = sql;
                     command.CommandType = CommandType.Text;
                     command.CommandTimeout = 300;//5 minutes
-                    command.ExecuteNonQuery();
+                    await command.ExecuteNonQueryAsync();
                 }
             }
 
@@ -66,10 +66,10 @@ namespace PrimeApps.Model.Repositories
           
 
              //Model.Entities.Platform.PlatformWarehouse warehouse = Model.Entities.Platform.PlatformWarehouse.Create(request);
-            await Sync(warehouse, modules, userEmail, tenantLanguage);
+            Sync(warehouse, modules, userEmail, tenantLanguage);
         }
 
-        public async Task Sync(Model.Entities.Platform.PlatformWarehouse warehouseEntity, ICollection<Module> modules, string userEmail, string tenantLanguage)
+        public void Sync(Model.Entities.Platform.PlatformWarehouse warehouseEntity, ICollection<Module> modules, string userEmail, string tenantLanguage)
         {
             if (warehouseEntity.Completed)
                 throw new Exception("Sync already completed");
