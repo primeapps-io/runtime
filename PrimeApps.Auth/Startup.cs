@@ -104,7 +104,6 @@ namespace PrimeApps.Auth
                 await next();
             });
             app.UseStaticFiles();
-            app.UseWebOptimizer();
             app.UseIdentityServer();
             app.UseMvcWithDefaultRoute();
         }
