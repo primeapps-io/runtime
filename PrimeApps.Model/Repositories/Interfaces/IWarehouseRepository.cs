@@ -9,7 +9,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     public interface IWarehouseRepository : IRepositoryBaseTenant
     {
         Task Create(WarehouseCreateRequest request, ICollection<Module> modules, string userEmail, string tenantLanguage);
-        Task Sync(PlatformWarehouse warehouse, ICollection<Module> modules, string userEmail, string tenantLanguage);
+        void Sync(PlatformWarehouse warehouse, ICollection<Module> modules, string userEmail, string tenantLanguage);
         void ChangePassword(string username, string password);
     }
 }
