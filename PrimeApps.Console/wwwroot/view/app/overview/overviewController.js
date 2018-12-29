@@ -2,14 +2,18 @@
 
 angular.module('primeapps')
 
-	.controller('OverviewController', ['$rootScope', '$scope',
-		function ($rootScope,$scope) {
+    .controller('OverviewController', ['$rootScope', '$scope',
+        function ($rootScope, $scope) {
 
-			 //console.log("asdfasdf")
-            $scope.$parent.menuTopTitle ="XBrand CRM";
-            $scope.$parent.activeMenu= 'app';
+            //console.log("asdfasdf")
+
+            $scope.$parent.activeMenu = 'app';
             $scope.$parent.activeMenuItem = 'overview';
-            $scope.$parent.tabTitle='Overview';
+            $scope.$parent.tabTitle = 'Overview';
+            if ($scope.$parent.setTopTitle) {
+                $scope.$parent.setTopTitle()
+            }
+
 
         }
-	]);
+    ]);

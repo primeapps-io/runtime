@@ -24,7 +24,7 @@ namespace PrimeApps.App.Controllers
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
-			SetCurrentUser(_componentRepository);
+			SetCurrentUser(_componentRepository, DBMode, TenantId, AppId);
 
 			base.OnActionExecuting(context);
 		}

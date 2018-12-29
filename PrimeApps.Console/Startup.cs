@@ -93,8 +93,6 @@ namespace PrimeApps.Console
                         opts.ResourcesPath = "Localization";
                     })
                 .AddDataAnnotationsLocalization();
-
-            RegisterBundle(services);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -127,7 +125,6 @@ namespace PrimeApps.Console
             }
 
             app.UseHangfireDashboard();
-            app.UseWebOptimizer();
             app.UseStaticFiles();
             app.UseAuthentication();
 

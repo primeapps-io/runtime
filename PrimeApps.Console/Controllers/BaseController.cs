@@ -33,11 +33,11 @@ namespace PrimeApps.Console.Controllers
             }
         }
 
-        public void SetCurrentUser(IRepositoryBaseTenant repository, string DBMode, int? tenantId, int? appId)
+        public void SetCurrentUser(IRepositoryBaseTenant repository, string dBMode, int? tenantId, int? appId)
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, DBMode = DBMode };
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, DBMode = dBMode };
             }
         }
 
