@@ -16,7 +16,7 @@ WORKDIR "/src/PrimeApps.Auth"
 RUN dotnet build "PrimeApps.Auth.csproj" --no-restore -c Debug -o /app
 
 FROM build AS publish
-RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore -c Debug --self-contained false /p:MicrosoftNETPlatformLibrary=Microsoft.NETCore.App -o  /app
+RUN dotnet publish "PrimeApps.Auth.csproj" --no-restore --self-contained false -c Debug -o /app
 
 FROM base AS final
 WORKDIR /app
