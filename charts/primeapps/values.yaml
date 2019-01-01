@@ -70,12 +70,6 @@ app:
         ForwardHeaders: "true"
         HttpsRedirection: "true"
         KubernetesClusterRootUrl: "http://kubernetes.default.svc.cluster.local"
-      webOptimizer:
-        enableCaching: "false"
-        enableMemoryCache: "false"
-        enableDiskCache: "false"
-        cacheDirectory: "/var/temp/weboptimizercache"
-        enableTagHelperBundling: "false"
       Sentry:
         Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
         IncludeRequestPayload: "true"
@@ -126,12 +120,6 @@ auth:
         ForwardHeaders: "true"
         HttpsRedirection: "true"
         AuthUrl: "https://auth-dev.primeapps.io"
-      webOptimizer:
-        enableCaching: "false"
-        enableMemoryCache: "false"
-        enableDiskCache: "false"
-        cacheDirectory: "/var/temp/weboptimizercache"
-        enableTagHelperBundling: "false"
       Sentry:
         Dsn: "https://72fdb461a2344589bad128b3cd2d135a@sentry-dev.primeapps.io/5"
         IncludeRequestPayload: "true"

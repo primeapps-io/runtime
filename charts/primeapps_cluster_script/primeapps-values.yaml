@@ -1,4 +1,5 @@
 # Default values for PrimeApps
+environment: kubernetes
 app:
   serviceType: NodePort
   servicePort: 80
