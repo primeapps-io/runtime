@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/dotnet/dotnet-22-runtime-rhel7  AS base
 SHELL ["/bin/bash", "-c"]
-ENV ASPNETCORE_ENVIRONMENT Docker
+ENV ASPNETCORE_ENVIRONMENT Development
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 ENV DOTNET_CORE_VERSION=2.2
