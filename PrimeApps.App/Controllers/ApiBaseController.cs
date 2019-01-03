@@ -23,7 +23,7 @@ namespace PrimeApps.App.Controllers
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
+            var configuration = (IConfiguration) HttpContext.RequestServices.GetService(typeof(IConfiguration));
             DBMode = configuration.GetSection("AppSettings")["DBMode"];
 
             var tenantId = 0;
@@ -52,28 +52,28 @@ namespace PrimeApps.App.Controllers
 
                 if (appId < 1)
                     context.Result = new UnauthorizedResult();
-            
-            AppId = appId;
-                
-            var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
-            var email = context.HttpContext.User.FindFirst("email").Value;
-            var cacheKeyPlatformUser = "platform_user_" + email + "_" + tenantId;
-            var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
 
-            if (platformUser == null)
-            {
-                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+                AppId = appId;
 
-                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+                var cacheHelper = (ICacheHelper) context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+                var email = context.HttpContext.User.FindFirst("email").Value;
+                var cacheKeyPlatformUser = "platform_user_" + email + "_" + tenantId;
+                var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
 
-                var reuslt = cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+                if (platformUser == null)
+                {
+                    var platformUserRepository = (IPlatformUserRepository) context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+                    platformUserRepository.CurrentUser = new CurrentUser {UserId = 1};
+
+                    platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+
+                    var reuslt = cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+                }
+
+                if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
+                    context.Result = new UnauthorizedResult();
+
+                context.HttpContext.Items.Add("user", platformUser);
             }
-
-            if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-                context.Result = new UnauthorizedResult();
-
-            context.HttpContext.Items.Add("user", platformUser);
         }
     }
-}
