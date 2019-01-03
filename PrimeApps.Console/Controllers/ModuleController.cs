@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.Mvc;
 using PrimeApps.Console.Models;
 using PrimeApps.Console.Helpers;
 using PrimeApps.Model.Constants;
@@ -13,8 +6,14 @@ using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+using Microsoft.AspNetCore.Http.Extensions;
+using System.Linq;
 
 namespace PrimeApps.Console.Controllers
 {

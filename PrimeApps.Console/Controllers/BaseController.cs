@@ -64,8 +64,6 @@ namespace PrimeApps.Console.Controllers
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var applicationRepository = (IApplicationRepository)HttpContext.RequestServices.GetService(typeof(IApplicationRepository));
 
-            var appInfo = applicationRepository.GetByName(configuration.GetSection("AppSettings")["ClientId"]);
-
             var appUser = new UserItem
             {
                 Id = platformUser.Id,

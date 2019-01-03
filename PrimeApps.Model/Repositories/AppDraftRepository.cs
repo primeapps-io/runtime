@@ -53,7 +53,7 @@ namespace PrimeApps.Model.Repositories
         {
             app.Deleted = true;
             return await DbContext.SaveChangesAsync();
-        }       
+        }
 
         public async Task<List<int>> GetByTeamId(int id)
         {
@@ -63,24 +63,28 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId)
+        public async Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId, string search = "", int page = 0, AppDraftStatus status = AppDraftStatus.NotSet)
         {
-            return await DbContext.Apps
-                .Include(x => x.Organization)
-                    .ThenInclude(x => x.OrganizationUsers)
-                .Include(x => x.Setting)
-                .Where(x => x.OrganizationId == organizationId && x.Organization.OrganizationUsers.Any(e => e.UserId == userId) && !x.Deleted)
+            var teamIds = await DbContext.TeamUsers.Where(x => x.UserId == userId && !x.Team.Deleted).Select(x => x.TeamId).ToListAsync();
+
+            var appCollabrator = await DbContext.AppCollaborators
+                .Where(x => !x.Deleted && x.AppDraft.OrganizationId == organizationId && (x.UserId == userId || (x.Team != null && teamIds.Contains((int)x.TeamId))) && (!string.IsNullOrEmpty(search) ? x.AppDraft.Label.Contains(search) : true) && (status != AppDraftStatus.NotSet ? x.AppDraft.Status == status : true))
                 .Select(x => new AppDraft
                 {
-                    Id = x.Id,
-                    OrganizationId = x.OrganizationId,
-                    Name = x.Name,
-                    Description = x.Description,
-                    Logo = x.Logo,
-                    TempletId = x.TempletId,
-                    Status = x.Status
+                    Id = x.AppDraft.Id,
+                    OrganizationId = x.AppDraft.OrganizationId,
+                    Name = x.AppDraft.Name,
+                    Description = x.AppDraft.Description,
+                    Logo = x.AppDraft.Logo,
+                    TempletId = x.AppDraft.TempletId,
+                    Status = x.AppDraft.Status
                 })
+                .Skip(50 * page)
+                .Take(50)
+                .Distinct()
                 .ToListAsync();
+
+            return appCollabrator;
         }
 
         public async Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0, AppDraftStatus status = AppDraftStatus.NotSet)
