@@ -10,12 +10,30 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'modules';
             $scope.modules = [];
 
-            ModuleService.getModules()
-                .then(function (response) {
-                    if (response.data) {
-                        $scope.modules = response.data;
-                    }
+            $scope.requestModel = {
+                limit: 10,
+                offset: 1
+            };
+
+            ModuleService.find($scope.requestModel).then(function (response) {
+                $scope.modules = response.data;
+            });
+
+            $scope.changePage = function (page) {
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+
+                ModuleService.find(requestModel).then(function (response) {
+                    $scope.modules = response.data;
                 });
+
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
+
 
             var getModules = function () {
                 $scope.modulesSetup = [];
@@ -25,18 +43,18 @@ angular.module('primeapps')
                         $scope.modulesSetup.push(module);
                 });
 
-                $scope.customModules = $filter('filter')($scope.modulesSetup, { system_type: 'custom' });
+                $scope.customModules = $filter('filter')($scope.modulesSetup, {system_type: 'custom'});
             };
 
             getModules();
 
             $scope.openDropdown = function (moduleItem) {
                 $scope['dropdown' + moduleItem.name] = $scope['dropdown' + moduleItem.name] || $dropdown(angular.element(document.getElementById('actionButton-' + moduleItem.name)), {
-                        placement: 'bottom-right',
-                        scope: $scope,
-                        animation: '',
-                        show: true
-                    });
+                    placement: 'bottom-right',
+                    scope: $scope,
+                    animation: '',
+                    show: true
+                });
 
                 var menuItems = [
                     {
@@ -118,12 +136,12 @@ angular.module('primeapps')
                 $scope.selectedModuleId = moduleId;
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
-                        scope: $scope,
-                        template: 'view/setup/modules/deleteForm.html',
-                        animation: '',
-                        backdrop: 'static',
-                        show: false
-                    });
+                    scope: $scope,
+                    template: 'view/setup/modules/deleteForm.html',
+                    animation: '',
+                    backdrop: 'static',
+                    show: false
+                });
 
                 $scope.deleteModal.$promise.then(function () {
                     $scope.deleteModal.show();
@@ -135,7 +153,7 @@ angular.module('primeapps')
 
                 ModuleService.delete($scope.selectedModuleId)
                     .then(function () {
-                        var deletedModule = $filter('filter')($rootScope.modules, { id: parseInt($scope.selectedModuleId) }, true)[0];
+                        var deletedModule = $filter('filter')($rootScope.modules, {id: parseInt($scope.selectedModuleId)}, true)[0];
                         deletedModule.display = false;
                         deletedModule.order = 0;
                         //Disable another module fields that are linked to the deleted module.

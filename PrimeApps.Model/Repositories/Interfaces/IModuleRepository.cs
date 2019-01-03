@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.Model.Repositories.Interfaces
@@ -38,5 +39,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<int> DeleteDependencyHard(Dependency dependency);
 		Task<ICollection<Component>> GetComponents();
 		Task<Field> GetFieldByName(string fieldName);
+	    Task<ICollection<Module>> Find(PaginationModel paginationModel);
 	}
 }

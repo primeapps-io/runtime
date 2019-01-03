@@ -10,65 +10,74 @@
         <div class="tab-content">
             <table class="table">
                 <thead>
-                    <tr>
-                        <th>Icon</th>
-                        <th>{{'Setup.Modules.Name' | translate}}</th>
-                        <th>{{'Setup.Modules.Type' | translate}}</th>
-                        <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
-                        <th>{{'Setup.Modules.Sharing' | translate}}</th>
-                        <th style="min-width: 110px;"></th>
-                    </tr>
+                <tr>
+                    <th>Icon</th>
+                    <th>{{'Setup.Modules.Name' | translate}}</th>
+                    <th>{{'Setup.Modules.Type' | translate}}</th>
+                    <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
+                    <th>{{'Setup.Modules.Sharing' | translate}}</th>
+                    <th style="min-width: 110px;"></th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']">
-                        <td><i class="{{module.menu_icon}}"></i></td>
-                        <td>
-                            <a href="#app/setup/module?id={{module.name}}" ng-if="(user.isDemo && module.created_by_id==user.id) || !user.is_demo">
-                                {{module['label_' + language + '_plural']}}
-                            </a>
-                            <span ng-if="user.isDemo && module.created_by_id!=user.ID">
+                <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']">
+                    <td><i class="{{module.menu_icon}}"></i></td>
+                    <td>
+                        <a href="#app/setup/module?id={{module.name}}"
+                           ng-if="(user.isDemo && module.created_by_id==user.id) || !user.is_demo">
+                            {{module['label_' + language + '_plural']}}
+                        </a>
+                        <span ng-if="user.isDemo && module.created_by_id!=user.ID">
                                 {{module['label_' + language + '_plural']}}
                             </span>
-                        </td>
-                        <td>{{'Setup.Modules.Type-' + module.system_type | translate}}</td>
-                        <td>{{module.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
-                        <td>{{module.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) : ('Setup.Modules.SharingPublic' | translate)}}</td>
-                        <td class="text-right">
-                            <button id="actionButton-{{module.name}}" ng-disabled="user.isDemo && module.created_by_id!=user.id" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i class="fa fa-caret-down"></i></button>
-                        </td>
-                    </tr>
+                    </td>
+                    <td>{{'Setup.Modules.Type-' + module.system_type | translate}}</td>
+                    <td>{{module.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
+                    <td>{{module.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) :
+                        ('Setup.Modules.SharingPublic' | translate)}}
+                    </td>
+                    <td class="text-right">
+                        <button id="actionButton-{{module.name}}"
+                                ng-disabled="user.isDemo && module.created_by_id!=user.id"
+                                class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i
+                                class="fa fa-caret-down"></i></button>
+                    </td>
+                </tr>
                 </tbody>
             </table>
             <div class="row table-pagination">
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <li>
-                                <a href="#" aria-label="Previous">
-                                    <i class="fas fa-step-backward"></i>
-                                </a>
-                            </li>
-                            <li class="active"><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li>
-                                <a href="#" aria-label="Next">
-                                    <i class="fas fa-step-forward"></i>
-                                </a>
-                            </li>
-                        </ul>
+                        <div paging
+                             text-first="&laquo;"
+                             ul-class="pagination"
+                             active-class="active"
+                             page="requestModel.offset"
+                             page-size="requestModel.limit"
+                             total="24"
+                             scroll-top="true"
+                             hide-if-empty="true"
+                             show-prev-next="true"
+                             show-first-last="true"
+                             text-next-class="fas fa-chevron-right"
+                             text-prev-class="fas fa-chevron-left"
+                             text-first-class="fas fa-step-backward"
+                             text-last-class="fas fa-step-forward"
+                             paging-action="changePage(page)">
+                        </div>
                     </nav>
                 </div>
-                <div class="col-sm-4 "><span class="pagination-span">1-10 of 86 </span></div>
-                <div class="col-sm-2"><span class="pagination-span">Items per page  </span>
-                    <select class="items-per-page-select">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select></div>
+                <div class="col-sm-2">
+                    <span class="pagination-span">Items per page  </span>
+                    <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="150">150</option>
+                        <option value="200">200</option>
+                    </select>
+                </div>
             </div>
         </div>
 

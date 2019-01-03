@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Linq;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -28,20 +29,20 @@ namespace PrimeApps.Console.Controllers
         private IConfiguration _configuration;
         private Warehouse _warehouse;
 
-		private IModuleHelper _moduleHelper;
+        private IModuleHelper _moduleHelper;
 
-		public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
-		{
-			_moduleRepository = moduleRepository;
-			_viewRepository = viewRepository;
-			_profileRepository = profileRepository;
-			_settingRepository = settingRepository;
-			_warehouse = warehouse;
-			_configuration = configuration;
-			_menuRepository = menuRepository;
+        public ModuleController(IModuleRepository moduleRepository, IViewRepository viewRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IMenuRepository menuRepository, IModuleHelper moduleHelper, IConfiguration configuration)
+        {
+            _moduleRepository = moduleRepository;
+            _viewRepository = viewRepository;
+            _profileRepository = profileRepository;
+            _settingRepository = settingRepository;
+            _warehouse = warehouse;
+            _configuration = configuration;
+            _menuRepository = menuRepository;
 
-			_moduleHelper = moduleHelper;
-		}
+            _moduleHelper = moduleHelper;
+        }
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
@@ -52,194 +53,205 @@ namespace PrimeApps.Console.Controllers
             SetCurrentUser(_profileRepository, DBMode, AppId, TenantId);
             SetCurrentUser(_settingRepository, DBMode, AppId, TenantId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get_by_id/{id:int}"), HttpGet]
-		public async Task<IActionResult> GetById(int id)
-		{
-			var module = await _moduleRepository.GetById(id);
+        [Route("find"), HttpPost]
+        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        {
+            var modules = await _moduleRepository.Find(paginationModel);
 
-			if (module == null)
-				return NotFound();
+            if (modules == null)
+                return NotFound();
 
-			return Ok(module);
-		}
+            return Ok(modules);
+        }
 
-		[Route("get_by_name/{name:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpGet]
-		public async Task<IActionResult> GetByName(string name)
-		{
-			var module = await _moduleRepository.GetByName(name);
+        [Route("get_by_id/{id:int}"), HttpGet]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var module = await _moduleRepository.GetById(id);
 
-			if (module == null)
-				return NotFound();
+            if (module == null)
+                return NotFound();
 
-			return Ok(module);
-		}
+            return Ok(module);
+        }
 
-		[Route("get_all"), HttpGet]
-		public async Task<ICollection<Module>> GetAll()
-		{
-			return await _moduleRepository.GetAll();
-		}
+        [Route("get_by_name/{name:regex(" + AlphanumericConstants.AlphanumericUnderscoreRegex + ")}"), HttpGet]
+        public async Task<IActionResult> GetByName(string name)
+        {
+            var module = await _moduleRepository.GetByName(name);
 
-		[Route("get_all_deleted"), HttpGet]
-		public async Task<ICollection<Module>> GetAllDeleted()
-		{
-			return await _moduleRepository.GetAllDeleted();
-		}
+            if (module == null)
+                return NotFound();
 
-		[Route("create"), HttpPost]
-		public async Task<IActionResult> Create([FromBody]ModuleBindingModel module)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            return Ok(module);
+        }
 
-			//Create module
-			var moduleEntity = _moduleHelper.CreateEntity(module);
-			var resultCreate = await _moduleRepository.Create(moduleEntity);
+        [Route("get_all"), HttpGet]
+        public async Task<ICollection<Module>> GetAll()
+        {
+            return await _moduleRepository.GetAll();
+        }
 
-			if (resultCreate < 1)
-				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+        [Route("get_all_deleted"), HttpGet]
+        public async Task<ICollection<Module>> GetAllDeleted()
+        {
+            return await _moduleRepository.GetAllDeleted();
+        }
 
-			//Create default views
-			try
-			{
-				var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
-				//var defaultViewMyRecordsEntity = ViewHelper.CreateDefaultViewMyRecords(moduleEntity);
+        [Route("create"), HttpPost]
+        public async Task<IActionResult> Create([FromBody]ModuleBindingModel module)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-				var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
+            //Create module
+            var moduleEntity = _moduleHelper.CreateEntity(module);
+            var resultCreate = await _moduleRepository.Create(moduleEntity);
 
-				if (resultCreateViewAllRecords < 1)
-				{
-					await _moduleRepository.DeleteHard(moduleEntity);
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-					//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-				}
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-				//var resultCreateViewMyRecords = await _viewRepository.Create(defaultViewMyRecordsEntity);
+            //Create default views
+            try
+            {
+                var defaultViewAllRecordsEntity = await ViewHelper.CreateDefaultViewAllRecords(moduleEntity, _moduleRepository, AppUser.TenantLanguage);
+                //var defaultViewMyRecordsEntity = ViewHelper.CreateDefaultViewMyRecords(moduleEntity);
 
-				//if (resultCreateViewMyRecords < 1)
-				//{
-				//    await _moduleRepository.DeleteHard(moduleEntity);
-				//    throw new HttpResponseException(HttpStatusCode.InternalServerError);
-				//}
-			}
-			catch (Exception)
-			{
-				await _moduleRepository.DeleteHard(moduleEntity);
-				throw;
-			}
+                var resultCreateViewAllRecords = await _viewRepository.Create(defaultViewAllRecordsEntity);
 
-			//Set warehouse database name
-			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+                if (resultCreateViewAllRecords < 1)
+                {
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
 
-			//Create dynamic table
-			try
-			{
-				moduleEntity.Name = char.IsNumber(moduleEntity.Name[0]) ? "n" + moduleEntity.Name : moduleEntity.Name;
-				var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
+                //var resultCreateViewMyRecords = await _viewRepository.Create(defaultViewMyRecordsEntity);
 
-				if (resultCreateTable != -1)
-				{
-					await _moduleRepository.DeleteHard(moduleEntity);
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-					//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-				}
-			}
-			catch (Exception)
-			{
-				await _moduleRepository.DeleteHard(moduleEntity);
-				throw;
-			}
+                //if (resultCreateViewMyRecords < 1)
+                //{
+                //    await _moduleRepository.DeleteHard(moduleEntity);
+                //    throw new HttpResponseException(HttpStatusCode.InternalServerError);
+                //}
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-			//Create dynamic table indexes
-			try
-			{
-				var resultCreateIndexes = await _moduleRepository.CreateIndexes(moduleEntity);
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-				if (resultCreateIndexes != -1)
-				{
-					await _moduleRepository.DeleteTable(moduleEntity);
-					await _moduleRepository.DeleteHard(moduleEntity);
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-					//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-				}
+            //Create dynamic table
+            try
+            {
+                moduleEntity.Name = char.IsNumber(moduleEntity.Name[0]) ? "n" + moduleEntity.Name : moduleEntity.Name;
+                var resultCreateTable = await _moduleRepository.CreateTable(moduleEntity, AppUser.TenantLanguage);
 
-			}
-			catch (Exception)
-			{
-				await _moduleRepository.DeleteTable(moduleEntity);
-				await _moduleRepository.DeleteHard(moduleEntity);
-				throw;
-			}
+                if (resultCreateTable != -1)
+                {
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-			//Create default permissions for the new module.
-			await _profileRepository.AddModuleAsync(moduleEntity.Id);
-			await _menuRepository.AddModuleToMenuAsync(moduleEntity);
+            //Create dynamic table indexes
+            try
+            {
+                var resultCreateIndexes = await _moduleRepository.CreateIndexes(moduleEntity);
 
-			_moduleHelper.AfterCreate(AppUser, moduleEntity);
+                if (resultCreateIndexes != -1)
+                {
+                    await _moduleRepository.DeleteTable(moduleEntity);
+                    await _moduleRepository.DeleteHard(moduleEntity);
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
 
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-			//return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-		}
+            }
+            catch (Exception)
+            {
+                await _moduleRepository.DeleteTable(moduleEntity);
+                await _moduleRepository.DeleteHard(moduleEntity);
+                throw;
+            }
 
-		[Route("update/{id:int}"), HttpPut]
-		public async Task<IActionResult> Update(int id, [FromBody]ModuleBindingModel module)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            //Create default permissions for the new module.
+            await _profileRepository.AddModuleAsync(moduleEntity.Id);
+            await _menuRepository.AddModuleToMenuAsync(moduleEntity);
 
-			var moduleEntity = await _moduleRepository.GetById(id);
+            _moduleHelper.AfterCreate(AppUser, moduleEntity);
 
-			if (moduleEntity == null)
-				return NotFound();
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+        }
 
-			//Update module
-			var moduleChanges = _moduleHelper.UpdateEntity(module, moduleEntity);
-			await _moduleRepository.Update(moduleEntity);
+        [Route("update/{id:int}"), HttpPut]
+        public async Task<IActionResult> Update(int id, [FromBody]ModuleBindingModel module)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			//If there is no changes for dynamic tables then return ok
-			if (moduleChanges == null)
-				return Ok();
+            var moduleEntity = await _moduleRepository.GetById(id);
 
-			//Set warehouse database name
-			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+            if (moduleEntity == null)
+                return NotFound();
 
-			//Alter dynamic table
-			try
-			{
-				var resultAlterTable = await _moduleRepository.AlterTable(moduleEntity, moduleChanges, AppUser.TenantLanguage);
+            //Update module
+            var moduleChanges = _moduleHelper.UpdateEntity(module, moduleEntity);
+            await _moduleRepository.Update(moduleEntity);
 
-				if (resultAlterTable != -1)
-				{
-					var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
-					await _moduleRepository.Update(entityRevert);
+            //If there is no changes for dynamic tables then return ok
+            if (moduleChanges == null)
+                return Ok();
 
-					throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-					//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-				}
-			}
-			catch (Exception ex)
-			{
-				var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
-				await _moduleRepository.Update(entityRevert);
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-				throw;
-			}
+            //Alter dynamic table
+            try
+            {
+                var resultAlterTable = await _moduleRepository.AlterTable(moduleEntity, moduleChanges, AppUser.TenantLanguage);
 
-			//Delete View Fields
-			var views = await _viewRepository.GetAll(id);
-			var fields = _moduleHelper.DeleteViewField(views, id, module.Fields);
-			if (fields.Count > 0)
-			{
-				foreach (var field in fields)
-				{
-					await _viewRepository.DeleteViewField(field.ViewId, field.Field);
-				}
-			}
+                if (resultAlterTable != -1)
+                {
+                    var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
+                    await _moduleRepository.Update(entityRevert);
+
+                    throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                    //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                }
+            }
+            catch (Exception ex)
+            {
+                var entityRevert = _moduleHelper.RevertEntity(moduleChanges, moduleEntity);
+                await _moduleRepository.Update(entityRevert);
+
+                throw;
+            }
+
+            //Delete View Fields
+            var views = await _viewRepository.GetAll(id);
+            var fields = _moduleHelper.DeleteViewField(views, id, module.Fields);
+            if (fields.Count > 0)
+            {
+                foreach (var field in fields)
+                {
+                    await _viewRepository.DeleteViewField(field.ViewId, field.Field);
+                }
+            }
 
             //var viewStates = await _viewRepository.GetAllViewStates(id);
             //if (viewStates.Count > 0)
@@ -250,194 +262,194 @@ namespace PrimeApps.Console.Controllers
             //    }
             //}
 
-			_moduleHelper.AfterUpdate(AppUser, moduleEntity);
+            _moduleHelper.AfterUpdate(AppUser, moduleEntity);
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("delete/{id:int}"), HttpDelete]
-		public async Task<IActionResult> Delete(int id)
-		{
-			var moduleEntity = await _moduleRepository.GetById(id);
+        [Route("delete/{id:int}"), HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var moduleEntity = await _moduleRepository.GetById(id);
 
-			if (moduleEntity == null)
-				return NotFound();
+            if (moduleEntity == null)
+                return NotFound();
 
-			var result = await _moduleRepository.DeleteSoft(moduleEntity);
+            var result = await _moduleRepository.DeleteSoft(moduleEntity);
 
-			if (result > 0)
-			{
-				_moduleHelper.AfterDelete(AppUser, moduleEntity);
-				await _menuRepository.DeleteModuleFromMenu(id);
-			}
+            if (result > 0)
+            {
+                _moduleHelper.AfterDelete(AppUser, moduleEntity);
+                await _menuRepository.DeleteModuleFromMenu(id);
+            }
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("create_relation/{moduleId:int}"), HttpPost]
-		public async Task<IActionResult> CreateRelation(int moduleId, [FromBody]RelationBindingModel relation)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+        [Route("create_relation/{moduleId:int}"), HttpPost]
+        public async Task<IActionResult> CreateRelation(int moduleId, [FromBody]RelationBindingModel relation)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetById(moduleId);
 
-			if (moduleEntity == null)
-				return NotFound();
+            if (moduleEntity == null)
+                return NotFound();
 
-			var currentRelations = moduleEntity.Relations.ToList();
-			var relationEntity = _moduleHelper.CreateRelationEntity(relation, moduleEntity);
-			var resultCreate = await _moduleRepository.CreateRelation(relationEntity);
+            var currentRelations = moduleEntity.Relations.ToList();
+            var relationEntity = _moduleHelper.CreateRelationEntity(relation, moduleEntity);
+            var resultCreate = await _moduleRepository.CreateRelation(relationEntity);
 
-			if (resultCreate < 1)
-				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-			//Set warehouse database name
-			_warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
+            //Set warehouse database name
+            _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-			if (relationEntity.RelationType == RelationType.ManyToMany && !relation.TwoWay)
-			{
-				//Create dynamic junction table
-				try
-				{
-					var resultCreateJunctionTable = await _moduleRepository.CreateJunctionTable(moduleEntity, relationEntity, currentRelations);
+            if (relationEntity.RelationType == RelationType.ManyToMany && !relation.TwoWay)
+            {
+                //Create dynamic junction table
+                try
+                {
+                    var resultCreateJunctionTable = await _moduleRepository.CreateJunctionTable(moduleEntity, relationEntity, currentRelations);
 
-					if (resultCreateJunctionTable != -1)
-					{
-						await _moduleRepository.DeleteRelationHard(relationEntity);
+                    if (resultCreateJunctionTable != -1)
+                    {
+                        await _moduleRepository.DeleteRelationHard(relationEntity);
 
-						throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+                        throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-						//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
-					}
-				}
-				catch (Exception)
-				{
-					await _moduleRepository.DeleteRelationHard(relationEntity);
-					throw;
-				}
-			}
+                        //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+                    }
+                }
+                catch (Exception)
+                {
+                    await _moduleRepository.DeleteRelationHard(relationEntity);
+                    throw;
+                }
+            }
 
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-			//return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-		}
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+        }
 
-		[Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
-		public async Task<IActionResult> UpdateRelation(int moduleId, int id, [FromBody]RelationBindingModel relation)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+        [Route("update_relation/{moduleId:int}/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateRelation(int moduleId, int id, [FromBody]RelationBindingModel relation)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetById(moduleId);
 
-			if (moduleEntity == null)
-				return NotFound();
+            if (moduleEntity == null)
+                return NotFound();
 
-			var relationEntity = await _moduleRepository.GetRelation(id);
+            var relationEntity = await _moduleRepository.GetRelation(id);
 
-			if (relationEntity == null)
-				return NotFound();
+            if (relationEntity == null)
+                return NotFound();
 
-			_moduleHelper.UpdateRelationEntity(relation, relationEntity, moduleEntity);
-			await _moduleRepository.UpdateRelation(relationEntity);
+            _moduleHelper.UpdateRelationEntity(relation, relationEntity, moduleEntity);
+            await _moduleRepository.UpdateRelation(relationEntity);
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("delete_relation/{id:int}"), HttpDelete]
-		public async Task<IActionResult> DeleteRelation(int id)
-		{
-			var relationEntity = await _moduleRepository.GetRelation(id);
+        [Route("delete_relation/{id:int}"), HttpDelete]
+        public async Task<IActionResult> DeleteRelation(int id)
+        {
+            var relationEntity = await _moduleRepository.GetRelation(id);
 
-			if (relationEntity == null)
-				return NotFound();
+            if (relationEntity == null)
+                return NotFound();
 
-			await _moduleRepository.DeleteRelationSoft(relationEntity);
+            await _moduleRepository.DeleteRelationSoft(relationEntity);
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("create_dependency/{moduleId:int}"), HttpPost]
-		public async Task<IActionResult> CreateDependency(int moduleId, [FromBody]DependencyBindingModel dependency)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+        [Route("create_dependency/{moduleId:int}"), HttpPost]
+        public async Task<IActionResult> CreateDependency(int moduleId, [FromBody]DependencyBindingModel dependency)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetById(moduleId);
 
-			if (moduleEntity == null)
-				return NotFound();
+            if (moduleEntity == null)
+                return NotFound();
 
-			var dependencyEntity = _moduleHelper.CreateDependencyEntity(dependency, moduleEntity);
-			var resultCreate = await _moduleRepository.CreateDependency(dependencyEntity);
+            var dependencyEntity = _moduleHelper.CreateDependencyEntity(dependency, moduleEntity);
+            var resultCreate = await _moduleRepository.CreateDependency(dependencyEntity);
 
-			if (resultCreate < 1)
-				throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
+            if (resultCreate < 1)
+                throw new ApplicationException(HttpStatusCode.Status500InternalServerError.ToString());
 
-			//throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
+            //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
-			var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-			//return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
-		}
+            var uri = new Uri(Request.GetDisplayUrl());
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+            //return Created(Request.Scheme + "://" + Request.Host + "/api/module/get?id=" + moduleEntity.Id, moduleEntity);
+        }
 
-		[Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
-		public async Task<IActionResult> UpdateDependency(int moduleId, int id, [FromBody]DependencyBindingModel dependency)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+        [Route("update_dependency/{moduleId:int}/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateDependency(int moduleId, int id, [FromBody]DependencyBindingModel dependency)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-			var moduleEntity = await _moduleRepository.GetById(moduleId);
+            var moduleEntity = await _moduleRepository.GetById(moduleId);
 
-			if (moduleEntity == null)
-				return NotFound();
+            if (moduleEntity == null)
+                return NotFound();
 
-			var dependencyEntity = await _moduleRepository.GetDependency(id);
+            var dependencyEntity = await _moduleRepository.GetDependency(id);
 
-			if (dependencyEntity == null)
-				return NotFound();
+            if (dependencyEntity == null)
+                return NotFound();
 
-			_moduleHelper.UpdateDependencyEntity(dependency, dependencyEntity, moduleEntity);
-			await _moduleRepository.UpdateDependency(dependencyEntity);
+            _moduleHelper.UpdateDependencyEntity(dependency, dependencyEntity, moduleEntity);
+            await _moduleRepository.UpdateDependency(dependencyEntity);
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("update_field/{id:int}"), HttpPut]
-		public async Task<IActionResult> UpdateField(int id, [FromBody]FieldBindingModel field)
-		{
-			var fieldEntity = await _moduleRepository.GetField(id);
+        [Route("update_field/{id:int}"), HttpPut]
+        public async Task<IActionResult> UpdateField(int id, [FromBody]FieldBindingModel field)
+        {
+            var fieldEntity = await _moduleRepository.GetField(id);
 
-			if (fieldEntity == null)
-				return NotFound();
+            if (fieldEntity == null)
+                return NotFound();
 
-			fieldEntity.InlineEdit = field.InlineEdit;
+            fieldEntity.InlineEdit = field.InlineEdit;
 
-			await _moduleRepository.UpdateField(fieldEntity);
+            await _moduleRepository.UpdateField(fieldEntity);
 
-			return Ok();
-		}
-		[Route("delete_dependency/{id:int}"), HttpDelete]
-		public async Task<IActionResult> DeleteDependency(int id)
-		{
-			var dependencyEntity = await _moduleRepository.GetDependency(id);
+            return Ok();
+        }
+        [Route("delete_dependency/{id:int}"), HttpDelete]
+        public async Task<IActionResult> DeleteDependency(int id)
+        {
+            var dependencyEntity = await _moduleRepository.GetDependency(id);
 
-			if (dependencyEntity == null)
-				return NotFound();
+            if (dependencyEntity == null)
+                return NotFound();
 
-			await _moduleRepository.DeleteDependencySoft(dependencyEntity);
+            await _moduleRepository.DeleteDependencySoft(dependencyEntity);
 
-			return Ok();
-		}
+            return Ok();
+        }
 
-		[Route("get_module_settings"), HttpGet]
-		public async Task<IActionResult> GetModuleSettings()
-		{
-			var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
+        [Route("get_module_settings"), HttpGet]
+        public async Task<IActionResult> GetModuleSettings()
+        {
+            var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
 
-			return Ok(moduleSettings);
-		}
-	}
+            return Ok(moduleSettings);
+        }
+    }
 }

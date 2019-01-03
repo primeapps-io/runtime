@@ -5,6 +5,9 @@ angular.module('primeapps')
     .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
             return {
+                find:function (data) {
+                    return $http.post(config.apiUrl + 'module/find',data);
+                },
                 getModules: function(){
                     return $http.get(config.apiUrl + 'module/get_all');
                 },
