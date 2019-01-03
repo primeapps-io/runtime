@@ -40,32 +40,35 @@ namespace PrimeApps.App.Controllers
             var tenantRepository = (ITenantRepository)HttpContext.RequestServices.GetService(typeof(ITenantRepository));
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
 
+            var cryptoString = CryptoHelper.Encrypt("app_id=5", "222EF106646458CD59995D4378B55DF2");
+            var decrypto = CryptoHelper.Decrypt("dZ1AdGTKBHFtas+vLzM30fPlOkVmzwJn7Nzd/nkcGH0=", "222EF106646458CD59995D4378B55DF2");
+
             if (preview != null)
             {
-                var previewDB = CryptoHelper.Decrypt(preview, "pr!me@pps");
+                var previewDB = CryptoHelper.Decrypt(preview, "222EF106646458CD59995D4378B55DF2");
                 if (previewDB.Contains("app"))
                 {
-                    var appId = int.Parse(previewDB.Split("app")[1]);
+                    var appId = int.Parse(previewDB.Split("app_id=")[1]);
                     var app = await applicationRepository.Get(appId);
-                    
-                    var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
+
+                    /*var tenant = await platformUserRepository.GetTenantByEmailAndAppId(HttpContext.User.FindFirst("email").Value, appId);
 
                     if (tenant == null)
                     {
                         Response.Cookies.Delete("app_id");
                         await HttpContext.SignOutAsync();
                         return Redirect(Request.Scheme + "://" + app.Setting.AuthDomain + "/Account/Logout?returnUrl=" + Request.Scheme + "://" + app.Setting.AppDomain);
-                    }
+                    }*/
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
                     await SetValues(userId, null, appId, true);
 
-                    Response.Cookies.Append("app_id", tenant.Id.ToString());
+                    Response.Cookies.Append("app_id", appId.ToString());
                 }
                 else
                 {
-                    var tenantId = int.Parse(previewDB.Split("tenant")[1]);
+                    var tenantId = int.Parse(previewDB.Split("tenant_id=")[1]);
                     var tenant = tenantRepository.Get(tenantId);
 
                     if (tenant == null)
@@ -105,8 +108,6 @@ namespace PrimeApps.App.Controllers
                 Response.Cookies.Append("tenant_id", tenant.Id.ToString());
             }
 
-           
-
             return View();
         }
 
@@ -139,7 +140,7 @@ namespace PrimeApps.App.Controllers
             var hasAdminRight = false;
 
             var componentRepository = (IComponentRepository)HttpContext.RequestServices.GetService(typeof(IComponentRepository));
-            componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId != null ? (int)appId : (int)tenantId };
+            componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId != null ? (int)appId : (int)tenantId, DBMode = appId != null ? "app" : "tenant" };
             var components = await componentRepository.GetByType(ComponentType.Component);
 
             if (components.Count > 0)
@@ -151,7 +152,7 @@ namespace PrimeApps.App.Controllers
                 var databaseContext = _scope.ServiceProvider.GetRequiredService<TenantDBContext>();
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
-                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId != null ? (int)appId : (int)tenantId };
+                    userRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = appId != null ? (int)appId : (int)tenantId, DBMode = appId != null ? "app" : "tenant" };
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
                     if (userInfo != null)

@@ -6,6 +6,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -87,9 +88,10 @@ namespace PrimeApps.App.Controllers
 
             //if (tenantUser == null)
             //{
+            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 
-            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
+            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId, DBMode = configuration.GetSection("AppSettings")["DBMode"] };
             var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
             // var result = cacheRepository.Add(key, tenantUser);
