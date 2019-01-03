@@ -2,7 +2,7 @@
     <div class="setup-liste-header row">
         <div class="col-sm-6"><h2 class="setup-title">Filters</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button"><i class="fas fa-plus"></i> Add New Filter</button>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Filter</button>
         </div>
     </div>
     <div>
@@ -11,29 +11,20 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>{{'Setup.Workflow.Name' | translate}}</th>
-                    <th>{{'Setup.Workflow.Module' | translate}}</th>
-                    <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-                    <th>{{'Common.Active' | translate}}</th>
-                    <th style="min-width: 110px;"></th>
+                    <th>{{'Setup.Modules.Name' | translate}}</th>
+                    <th>{{'View.ViewName' | translate}}</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="workflow in workflows">
-                    <td>{{workflow.name}}</td>
-                    <td>{{workflow.moduleStr}}</td>
-                    <td>{{workflow.operationsStr}}</td>
-                    <td>{{workflow.statusStr}}</td>
-                    <td class="text-right">
-                        <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
-                            translate}}</a>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
+                    <tr ng-repeat="view in customViews | filter:{deleted:'!true'} | orderBy:'order'">
+                        <td>{{view.parent_module['label_'+language+'_plural']}}</td>
+                        <td>{{view['label_' + language]}}</td>
+                        <td class="text-right">
+                            <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(view)">{{'Common.Edit' | translate}}</button>
+                            <button type="button" class="btn btn-xs btn-custom" confirm-click action="deleteView(view.id)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <div class="row table-pagination">

@@ -1,0 +1,15 @@
+{{- if .Values.auth.ingress.enabled }}
+{{- if eq .Values.environment "openshift" }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ template "fullname" . }}-auth-route
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  host: {{ .Values.auth.ingress.hostname | quote }} 
+  to:
+    kind: Service
+    name: {{ template "fullname" . }}-auth
+{{- end -}}
+{{- end -}}

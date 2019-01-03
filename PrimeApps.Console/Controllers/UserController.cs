@@ -3,14 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
-using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.User;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PrimeApps.Console.Controllers

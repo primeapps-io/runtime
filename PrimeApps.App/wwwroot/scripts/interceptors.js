@@ -24,7 +24,15 @@ angular.module('primeapps')
                         }
                     }
 
-                    config.headers['X-Tenant-Id'] = $cookies.get('tenant_id');
+                    var appId = $cookies.get('app_id');
+                    var tenantId = $cookies.get('tenant_id');
+
+                    if (appId)
+                        config.headers['X-App-Id'] = appId;
+
+                    if (tenantId)
+                        config.headers['X-Tenant-Id'] = tenantId;
+
 
                     return config;
                 },

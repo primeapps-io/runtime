@@ -44,7 +44,7 @@ namespace PrimeApps.Auth
                     };
                     opt.SerializerSettings.Converters.Add(new StringEnumConverter());
                 })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddLocalization(options => options.ResourcesPath = "Resources");
         }

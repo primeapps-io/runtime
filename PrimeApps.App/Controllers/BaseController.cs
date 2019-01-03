@@ -6,6 +6,7 @@ using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -26,11 +27,11 @@ namespace PrimeApps.App.Controllers
             }
         }
 
-        public void SetCurrentUser(IRepositoryBaseTenant repository)
+        public void SetCurrentUser(IRepositoryBaseTenant repository, string dBMode, int? tenantId, int? appId)
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, DBMode = dBMode };
             }
         }
 
@@ -87,12 +88,13 @@ namespace PrimeApps.App.Controllers
 
             //if (tenantUser == null)
             //{
+            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
 
-            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId };
+            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId, DBMode = configuration.GetSection("AppSettings")["DBMode"] };
             var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-           // var result = cacheRepository.Add(key, tenantUser);
+            // var result = cacheRepository.Add(key, tenantUser);
             //}
 
             appUser.RoleId = tenantUser.RoleId ?? 0;

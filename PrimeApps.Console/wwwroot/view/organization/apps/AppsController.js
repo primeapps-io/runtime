@@ -22,7 +22,14 @@ angular.module('primeapps')
                 }
             ;
 
-            AppsService.getOrganizationApps($state.params.organizationId)
+            $scope.appsFilter = {
+                organization_id: $state.params.organizationId,
+                search: null,
+                page: null,
+                status: 0
+            };
+
+            AppsService.getOrganizationApps($scope.appsFilter)
                 .then(function (result) {
                     $scope.apps = result.data;
                 });

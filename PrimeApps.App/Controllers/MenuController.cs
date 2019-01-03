@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using OfisimCRM.App.Helpers;
 using System.Web.Http;
 using System.Net;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
@@ -24,21 +25,23 @@ namespace PrimeApps.App.Controllers
 		private IProfileRepository _profileRepository;
 		private ISettingRepository _settingsRepository;
 		private IModuleRepository _moduleRepository;
+        private IConfiguration _configuration;
 
-		public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository, ISettingRepository settingsRepository, IModuleRepository moduleRepository)
+        public MenuController(IMenuRepository menuRepository, IProfileRepository profileRepository, ISettingRepository settingsRepository, IModuleRepository moduleRepository, IConfiguration configuration)
 		{
 			_profileRepository = profileRepository;
 			_menuRepository = menuRepository;
 			_settingsRepository = settingsRepository;
 			_moduleRepository = moduleRepository;
+            _configuration = configuration;
 		}
 
 		public override void OnActionExecuting(ActionExecutingContext context)
 		{
 			SetContext(context);
-			SetCurrentUser(_menuRepository);
-			SetCurrentUser(_profileRepository);
-			SetCurrentUser(_moduleRepository);
+			SetCurrentUser(_menuRepository, DBMode, TenantId, AppId);
+			SetCurrentUser(_profileRepository, DBMode, TenantId, AppId);
+			SetCurrentUser(_moduleRepository, DBMode, TenantId, AppId);
 
 			base.OnActionExecuting(context);
 		}
@@ -55,7 +58,7 @@ namespace PrimeApps.App.Controllers
 				return Ok();
 
 			var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
-			tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+			tenantUserRepository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId, DBMode = _configuration.GetSection("AppSettings")["DBMode"] };
 			var tenantUser = tenantUserRepository.GetByIdSync(AppUser.Id);
 			var menuItemsData = await _menuRepository.GetItems(menuEntity.Id);
 			//TODO Removed

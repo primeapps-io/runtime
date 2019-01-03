@@ -1,4 +1,5 @@
 {{- if .Values.auth.ingress.enabled }}
+{{- if eq .Values.environment "kubernetes" }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -19,6 +20,7 @@ spec:
   - secretName: {{ .Values.auth.ingress.hostname | quote }}
     hosts:
       - {{ .Values.auth.ingress.hostname | quote }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
           

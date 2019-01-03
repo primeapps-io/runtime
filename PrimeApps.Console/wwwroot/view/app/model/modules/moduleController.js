@@ -8,7 +8,14 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'modules';
-            $rootScope.breadcrumbListe[2].title = "asfasdf";
+            $scope.modules = [];
+
+            ModuleService.getModules()
+                .then(function (response) {
+                    if (response.data) {
+                        $scope.modules = response.data;
+                    }
+                });
 
             var getModules = function () {
                 $scope.modulesSetup = [];
@@ -18,18 +25,18 @@ angular.module('primeapps')
                         $scope.modulesSetup.push(module);
                 });
 
-                $scope.customModules = $filter('filter')($scope.modulesSetup, {system_type: 'custom'});
+                $scope.customModules = $filter('filter')($scope.modulesSetup, { system_type: 'custom' });
             };
 
             getModules();
 
             $scope.openDropdown = function (moduleItem) {
                 $scope['dropdown' + moduleItem.name] = $scope['dropdown' + moduleItem.name] || $dropdown(angular.element(document.getElementById('actionButton-' + moduleItem.name)), {
-                    placement: 'bottom-right',
-                    scope: $scope,
-                    animation: '',
-                    show: true
-                });
+                        placement: 'bottom-right',
+                        scope: $scope,
+                        animation: '',
+                        show: true
+                    });
 
                 var menuItems = [
                     {
@@ -111,12 +118,12 @@ angular.module('primeapps')
                 $scope.selectedModuleId = moduleId;
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
-                    scope: $scope,
-                    template: 'view/setup/modules/deleteForm.html',
-                    animation: '',
-                    backdrop: 'static',
-                    show: false
-                });
+                        scope: $scope,
+                        template: 'view/setup/modules/deleteForm.html',
+                        animation: '',
+                        backdrop: 'static',
+                        show: false
+                    });
 
                 $scope.deleteModal.$promise.then(function () {
                     $scope.deleteModal.show();
@@ -128,7 +135,7 @@ angular.module('primeapps')
 
                 ModuleService.delete($scope.selectedModuleId)
                     .then(function () {
-                        var deletedModule = $filter('filter')($rootScope.modules, {id: parseInt($scope.selectedModuleId)}, true)[0];
+                        var deletedModule = $filter('filter')($rootScope.modules, { id: parseInt($scope.selectedModuleId) }, true)[0];
                         deletedModule.display = false;
                         deletedModule.order = 0;
                         //Disable another module fields that are linked to the deleted module.

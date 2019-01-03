@@ -32,7 +32,7 @@ angular.module('primeapps')
                 }
             }
 
-
+            $rootScope.language = 'en';
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';

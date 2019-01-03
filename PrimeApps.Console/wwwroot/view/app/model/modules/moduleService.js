@@ -5,6 +5,9 @@ angular.module('primeapps')
     .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
             return {
+                getModules: function(){
+                    return $http.get(config.apiUrl + 'module/get_all');
+                },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
 
@@ -80,12 +83,15 @@ angular.module('primeapps')
                 getAllModuleProfileSettings: function () {
                     return $http.get(config.apiUrl + 'module_profile_settings/get_all');
                 },
+
                 createModuleProfileSetting: function (moduleProfileSetting) {
                     return $http.post(config.apiUrl + 'module_profile_settings/create', moduleProfileSetting);
                 },
+
                 updateModuleProfileSetting: function (id, moduleProfileSetting) {
                     return $http.put(config.apiUrl + 'module_profile_settings/update/' + id, moduleProfileSetting);
                 },
+
                 deleteModuleProfileSetting: function (id) {
                     return $http.delete(config.apiUrl + 'module_profile_settings/delete/' + id);
                 },

@@ -626,8 +626,6 @@ namespace PrimeApps.Model.Helpers
 
         private static string GetQueryParameterValue(Filter filter, int timeZoneOffset = 180)
         {
-            bool dynamicParameterValue = false;
-
             if (filter.Value.GetType() == typeof(JArray))
             {
                 if (filter.Operator == Operator.NotIn)
