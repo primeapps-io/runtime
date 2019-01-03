@@ -12,8 +12,8 @@ namespace PrimeApps.Model.Helpers
     {
         Task<T> GetAsync<T>(string key);
         T Get<T>(string key);
-        Task<bool> SetAsync(string key, object data);
-        bool Set(string key, object data);
+        Task SetAsync(string key, object data);
+        void Set(string key, object data);
         Task<bool> RemoveAsync(string key);
         bool Remove(string key);
     }
@@ -35,7 +35,7 @@ namespace PrimeApps.Model.Helpers
         public async Task<T> GetAsync<T>(string key)
         {
             if (string.IsNullOrEmpty(key))
-                return default(T);
+                throw new NullReferenceException("Key of Cache is not empty or null");
 
             var result = await _cacheService.GetStringAsync(key);
 
@@ -48,7 +48,7 @@ namespace PrimeApps.Model.Helpers
         public T Get<T>(string key)
         {
             if (string.IsNullOrEmpty(key))
-                return default(T);
+                throw new NullReferenceException("Key of Cache is not empty or null");
 
             var result = _cacheService.GetString(key);
 
@@ -58,40 +58,36 @@ namespace PrimeApps.Model.Helpers
             return JsonConvert.DeserializeObject<T>(result);
         }
 
-        public async Task<bool> SetAsync(string key, object data)
+        public async Task SetAsync(string key, object data)
         {
             if (string.IsNullOrEmpty(key))
-                return false;
+                throw new NullReferenceException("Key of Cache is not empty or null");
 
             var newData = JsonConvert.SerializeObject(data, Formatting.Indented, CacheSerializerSettings);
 
             if (string.IsNullOrEmpty(newData))
-                return false;
+                throw new JsonSerializationException("Object cannot convert json data for key:" + key);
 
             await _cacheService.SetStringAsync(key, newData);
-
-            return true;
         }
 
-        public bool Set(string key, object data)
+        public void Set(string key, object data)
         {
             if (string.IsNullOrEmpty(key))
-                return false;
+                throw new NullReferenceException("Key of Cache is not empty or null");
 
             var newData = JsonConvert.SerializeObject(data, Formatting.Indented, CacheSerializerSettings);
 
             if (string.IsNullOrEmpty(newData))
-                return false;
+                throw new JsonSerializationException("Object cannot convert json data for key:" + key);
 
             _cacheService.SetString(key, newData);
-
-            return true;
         }
 
         public async Task<bool> RemoveAsync(string key)
         {
             if (string.IsNullOrEmpty(key))
-                return false;
+                throw new NullReferenceException("Key of Cache is not empty or null");
 
             await _cacheService.RemoveAsync(key);
 
@@ -101,7 +97,7 @@ namespace PrimeApps.Model.Helpers
         public bool Remove(string key)
         {
             if (string.IsNullOrEmpty(key))
-                return false;
+                throw new NullReferenceException("Key of Cache is not empty or null");
 
             _cacheService.RemoveAsync(key);
 

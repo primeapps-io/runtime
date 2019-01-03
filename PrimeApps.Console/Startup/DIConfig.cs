@@ -16,6 +16,7 @@ namespace PrimeApps.Console
     {
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<ICacheHelper, CacheHelper>();
             services.AddDbContext<TenantDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("TenantDBConnection")));
             services.AddDbContext<PlatformDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("PlatformDBConnection")));
             services.AddDbContext<ConsoleDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("ConsoleDBConnection")));
