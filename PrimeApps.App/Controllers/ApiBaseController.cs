@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace PrimeApps.App.Controllers
 {
@@ -16,7 +17,7 @@ namespace PrimeApps.App.Controllers
     {
         public static int? AppId { get; set; }
         public static int? TenantId { get; set; }
-        public static string DBMode { get; set; }
+        public static string PreviewMode { get; set; }
 
         public void SetContext(ActionExecutingContext context)
         {
@@ -24,12 +25,12 @@ namespace PrimeApps.App.Controllers
                 context.Result = new UnauthorizedResult();
 
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
-            DBMode = configuration.GetSection("AppSettings")["DBMode"];
+            PreviewMode = configuration.GetSection("AppSettings")["PreviewMode"];
 
             var tenantId = 0;
             var appId = 0;
 
-            if (DBMode == "tenant")
+            if (PreviewMode == "tenant")
             {
                 if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
                     context.Result = new UnauthorizedResult();
@@ -66,15 +67,23 @@ namespace PrimeApps.App.Controllers
                 var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
                 platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
-                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+                if (AppId != 0)
+                {
+                    platformUser = platformUserRepository.GetByEmailAndTenantId(email, 1);
+                    platformUser.TenantsAsUser.Single().Tenant.AppId = appId;
+                }
+                else
+                    platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+
 
                 cacheHelper.Set(cacheKeyPlatformUser, platformUser);
             }
 
+
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 context.Result = new UnauthorizedResult();
 
-            context.HttpContext.Items.Add("user", platformUser); 
+            context.HttpContext.Items.Add("user", platformUser);
         }
     }
 }

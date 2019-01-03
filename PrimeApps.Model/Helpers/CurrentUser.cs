@@ -4,6 +4,6 @@
     {
         public int UserId { get; set; }
         public int TenantId { get; set; }
-        public string DBMode { get; set; }
+        public string PreviewMode { get; set; }
     }
 }

@@ -31,7 +31,9 @@ namespace PrimeApps.App.Jobs
                 var platformDatabaseContext = scope.ServiceProvider.GetRequiredService<PlatformDBContext>();
                 var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
                 var cacheHelper = scope.ServiceProvider.GetRequiredService<ICacheHelper>();
-                
+
+                var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+
                 using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
                 using (var userRepository = new UserRepository(databaseContext, _configuration))
                 {
@@ -39,7 +41,7 @@ namespace PrimeApps.App.Jobs
 
                     foreach (var tenant in tenants)
                     {
-                        userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = 1 };
+                        userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = 1, PreviewMode = previewMode };
                         var users = await userRepository.GetAllAsync();
 
                         foreach (var user in users)

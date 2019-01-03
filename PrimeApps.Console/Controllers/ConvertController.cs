@@ -22,7 +22,7 @@ using PrimeApps.Console.Helpers;
 namespace PrimeApps.Console.Controllers
 {
     [Route("api/convert"), Authorize]
-    public class ConvertController : ApiBaseController
+    public class ConvertController : DraftBaseController
     {
         private IModuleRepository _moduleRepository;
         private IRecordRepository _recordRepository;
@@ -54,13 +54,13 @@ namespace PrimeApps.Console.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_profileRepository);
-            SetCurrentUser(_picklistRepository);
-            SetCurrentUser(_documentRepository);
-            SetCurrentUser(_noteRepository);
-            SetCurrentUser(_conversionMappingRepository);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_documentRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_noteRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_conversionMappingRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }

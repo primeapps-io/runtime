@@ -33,6 +33,8 @@ namespace PrimeApps.App.Helpers
 
         public async Task<bool> UpdateUserRoleBulkAsync(Warehouse warehouse, UserItem appUser)
         {
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
                 var databaseContext = _scope.ServiceProvider.GetService<TenantDBContext>();
@@ -40,7 +42,7 @@ namespace PrimeApps.App.Helpers
                 using (var userRespository = new UserRepository(databaseContext, _configuration))
                 using (var roleRepository = new RoleRepository(databaseContext, warehouse, _configuration))
                 {
-                    userRespository.CurrentUser = roleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    userRespository.CurrentUser = roleRepository.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
                     var users = await userRespository.GetAllAsync();
 

@@ -59,7 +59,7 @@ namespace PrimeApps.Auth.UI
 
         public IBackgroundTaskQueue Queue { get; }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration _configuration { get; }
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -79,7 +79,7 @@ namespace PrimeApps.Auth.UI
             IRecordRepository recordRepository,
             IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
 
             _userManager = userManager;
             _signInManager = signInManager;
@@ -162,7 +162,7 @@ namespace PrimeApps.Auth.UI
                 return await ExternalLogin(vm.ExternalLoginScheme, vm.ReturnUrl);
             }
 
-            if(!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
+            if (!vm.ApplicationInfo.Theme["custom"].IsNullOrEmpty())
                 return View("Custom/Login" + vm.ApplicationInfo.Theme["custom"], vm);
 
             return View(vm);
@@ -202,7 +202,7 @@ namespace PrimeApps.Auth.UI
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberLogin, lockoutOnFailure: false);
 
-                var validUrls = Configuration.GetValue("AppSettings:ValidUrls", String.Empty);
+                var validUrls = _configuration.GetValue("AppSettings:ValidUrls", String.Empty);
                 Array validUrlsArr = null;
                 if (!string.IsNullOrEmpty(validUrls))
                     validUrlsArr = validUrls.Split(";");
@@ -382,7 +382,7 @@ namespace PrimeApps.Auth.UI
                 action = actions.Where(x => x["type"] != null && x["type"].ToString() == "register").FirstOrDefault();
 
                 await ExternalAuthHelper.Register(externalLogin, action, obj);
-            }       
+            }
 
             if (User?.Identity.IsAuthenticated == true)
             {
@@ -728,7 +728,7 @@ namespace PrimeApps.Auth.UI
                     var _language = !string.IsNullOrEmpty(Request.Cookies[".AspNetCore.Culture"]) ? Request.Cookies[".AspNetCore.Culture"].Split("uic=")[1] : null;
 
                     var cdnUrlStatic = "";
-                    var cdnUrl = Configuration.GetSection("webOptimizer")["cdnUrl"];
+                    var cdnUrl = _configuration.GetSection("webOptimizer")["cdnUrl"];
 
                     if (!string.IsNullOrEmpty(cdnUrl))
                     {
@@ -872,7 +872,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ResetPasswordViewModel> BuildResetPasswordViewModelAsync(string returnUrl, string code, Guid guid, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ResetPasswordViewModel
             {
@@ -894,7 +894,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ForgotPasswordViewModel> BuildForgotPasswordViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ForgotPasswordViewModel
             {
@@ -922,7 +922,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ForgotPasswordViewModel> BuildForgotPasswordViewModelAsync(ForgotPasswordViewModel model, string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ForgotPasswordViewModel
             {
@@ -937,7 +937,7 @@ namespace PrimeApps.Auth.UI
         private async Task<RegisterViewModel> BuildRegisterViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
 
             var schemes = await _schemeProvider.GetAllSchemesAsync();
 
@@ -982,7 +982,7 @@ namespace PrimeApps.Auth.UI
         private async Task<ApplicationViewModel> BuildIndexViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
 
             return new ApplicationViewModel
             {
@@ -1008,7 +1008,7 @@ namespace PrimeApps.Auth.UI
         private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, string success = "", string error = "")
         {
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
-            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(Configuration, Request, returnUrl, _applicationRepository);
+            var applicationInfo = await AuthHelper.GetApplicationInfoAsync(_configuration, Request, returnUrl, _applicationRepository);
 
             if (context?.IdP != null)
             {
@@ -1391,7 +1391,7 @@ namespace PrimeApps.Auth.UI
 
                 identityUser = await _userManager.FindByEmailAsync(model.Email);
             }
-            else if(identityUser != null && applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Console)
+            else if (identityUser != null && applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Console)
             {
                 response["Error"] = "UserExist";
                 return response;
@@ -1410,7 +1410,7 @@ namespace PrimeApps.Auth.UI
 
                 if (platformUser != null)
                 {
-                    if(applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
+                    if (applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
                         var appTenant = platformUser.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == applicationInfo.Id);
 
@@ -1512,10 +1512,12 @@ namespace PrimeApps.Auth.UI
 
                         await Postgres.CreateDatabaseWithTemplate(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, applicationInfo.Id);
 
-                        _userRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-                        _profileRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-                        _roleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
-                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = platformUser.Id };
+                        var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+
+                        _userRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
+                        _profileRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
+                        _roleRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
+                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
 
                         _profileRepository.TenantId = _roleRepository.TenantId = _userRepository.TenantId = _recordRepository.TenantId = tenantId;
 
@@ -1590,7 +1592,7 @@ namespace PrimeApps.Auth.UI
                         throw ex;
                     }
                 }
-              
+
             }
 
             return response;

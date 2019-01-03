@@ -42,8 +42,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		/// <returns></returns>
 		public override async Task<bool> Process(MessageDTO emailQueueItem, UserItem appUser)
 		{
-
-			string[] ids;
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+            string[] ids;
 			bool isAllSelected = false;
 			string emailTemplate = "",
 				query = "",
@@ -81,7 +81,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 					using (var tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
 					using (var notifitionRepository = new NotificationRepository(databaseContext, _configuration))
 					{
-						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+						notifitionRepository.CurrentUser = tenantRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 						/// get details of the email queue item.
 						///
 						var notificationId = Convert.ToInt32(emailQueueItem.Id);
@@ -164,7 +164,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 
 							using (var moduleRepository = new ModuleRepository(databaseContext, _configuration))
 							{
-								moduleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+								moduleRepository.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 								module = await moduleRepository.GetById(emailNotification.ModuleId);
 							}
 
@@ -230,7 +230,8 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 		{
 			/// create required parameters for composing.
 			Regex templatePattern = new Regex(@"{(.*?)}");
-			IList<Message> messages = new List<Message>();
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+            IList<Message> messages = new List<Message>();
 			IList<string> messageFields = new List<string>();
 			JArray messageStatusList = new JArray();
 			int successful = 0,
@@ -318,7 +319,7 @@ namespace PrimeApps.App.Jobs.Messaging.EMail
 						using (var picklistRepository = new PicklistRepository(databaseContext, _configuration))
 						using (var recordRepository = new RecordRepository(databaseContext, _configuration))
 						{
-							moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId };
+							moduleRepository.CurrentUser = picklistRepository.CurrentUser = recordRepository.CurrentUser = new CurrentUser { TenantId = messageDto.TenantId, UserId = userId, PreviewMode = previewMode };
 
 							foreach (string recordId in ids)
 							{

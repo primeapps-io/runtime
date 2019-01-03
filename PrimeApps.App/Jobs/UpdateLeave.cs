@@ -44,7 +44,7 @@ namespace PrimeApps.App.Jobs
                 using (var _tenantRepository = new TenantRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
                     var tenants = await _tenantRepository.GetAllActive();
-
+                    var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
                     foreach (var tenant in tenants)
                     {
                         try
@@ -52,7 +52,7 @@ namespace PrimeApps.App.Jobs
                             using (var _platformWarehouseRepository = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                             using (var _analyticRepository = new AnalyticRepository(databaseContext, _configuration))
                             {
-                                _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };
+                                _platformWarehouseRepository.CurrentUser = _analyticRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
 
                                 var warehouse = new Model.Helpers.Warehouse(_analyticRepository, _configuration);
 
@@ -65,7 +65,7 @@ namespace PrimeApps.App.Jobs
 
                                 using (var _moduleRepository = new ModuleRepository(databaseContext, _configuration))
                                 {
-                                    _moduleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };
+                                    _moduleRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
 
                                     var izinTurleriModule = await _moduleRepository.GetByName("izin_turleri");
 
@@ -74,7 +74,7 @@ namespace PrimeApps.App.Jobs
 
                                     using (var _recordRepository = new RecordRepository(databaseContext, warehouse, _configuration))
                                     {
-                                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };
+                                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
 
                                         var module = await _moduleRepository.GetByName("calisanlar") ??
                                                      await _moduleRepository.GetByName("human_resources");

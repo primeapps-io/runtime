@@ -54,6 +54,7 @@ namespace PrimeApps.App.Helpers
 
         public async Task<Microsoft.PowerBI.Api.V1.Models.Report> GetReportByName(UserItem appUser, string name)
         {
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
             Model.Entities.Platform.PlatformWarehouse warehouse;
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -62,7 +63,7 @@ namespace PrimeApps.App.Helpers
 
                 using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
-                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
                     warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
                 }
             }
@@ -80,6 +81,7 @@ namespace PrimeApps.App.Helpers
         {
             var reports = new List<ReportViewModel>();
             Model.Entities.Platform.PlatformWarehouse warehouse;
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -88,7 +90,7 @@ namespace PrimeApps.App.Helpers
 
                 using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
-                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
                     warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
 
                     if (warehouse == null)
@@ -123,6 +125,7 @@ namespace PrimeApps.App.Helpers
         public async Task<Microsoft.PowerBI.Api.V1.Models.Import> ImportPbix(string pbixUrl, string reportName, UserItem appUser)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -131,7 +134,7 @@ namespace PrimeApps.App.Helpers
 
                 using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
-                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
                     warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
                 }
             }
@@ -156,6 +159,7 @@ namespace PrimeApps.App.Helpers
         public async Task UpdateConnectionString(int analyticId, UserItem appUser)
         {
             Model.Entities.Platform.PlatformWarehouse warehouse;
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
 
             using (var _scope = _serviceScopeFactory.CreateScope())
             {
@@ -164,7 +168,7 @@ namespace PrimeApps.App.Helpers
 
                 using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
-                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
                     warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
                 }
             }
@@ -192,6 +196,7 @@ namespace PrimeApps.App.Helpers
 
         public async Task DeleteReport(UserItem appUser, int analyticId)
         {
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
             Model.Entities.Platform.PlatformWarehouse warehouse;
 
             using (var _scope = _serviceScopeFactory.CreateScope())
@@ -201,7 +206,7 @@ namespace PrimeApps.App.Helpers
 
                 using (var _warehouseRepo = new PlatformWarehouseRepository(platformDatabaseContext, _configuration, cacheHelper))
                 {
-                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    _warehouseRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
                     warehouse = await _warehouseRepo.GetByTenantId(appUser.TenantId);
                 }
             }

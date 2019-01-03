@@ -77,6 +77,7 @@ namespace PrimeApps.App.Helpers
             _configuration = configuration;
             _serviceScopeFactory = serviceScopeFactory;
 
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
             string tmpl = "",
                    appUrl = "",
                    appName = "",
@@ -101,7 +102,7 @@ namespace PrimeApps.App.Helpers
 
                 using (TemplateRepository tRepo = new TemplateRepository(tdbCtx, configuration))
                 {
-                    tRepo.CurrentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+                    tRepo.CurrentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
                     templateEntity = tRepo.GetByCode(resourceTypeName, language);
                 }
 

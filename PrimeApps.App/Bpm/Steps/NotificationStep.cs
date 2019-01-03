@@ -37,6 +37,7 @@ namespace PrimeApps.App.Bpm.Steps
 
         public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
             if (context == null)
                 throw new NullReferenceException();
 
@@ -44,7 +45,7 @@ namespace PrimeApps.App.Bpm.Steps
                 throw new NullReferenceException();
 
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
-            var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id, };
+            var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
             var newRequest = JObject.Parse(Request.Replace("\\", ""));
 
@@ -100,7 +101,7 @@ namespace PrimeApps.App.Bpm.Steps
                         var sendNotificationCC = new JArray();//sendNotification.CC;
                         var sendNotificationBCC = new JArray();//sendNotification.Bcc;
 
-                      if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1/* && !sendNotification.CC.Contains("@")*/)
+                        if (sendNotification.CCArray != null && sendNotification.CCArray.Length == 1/* && !sendNotification.CC.Contains("@")*/)
                             sendNotificationCC.Add(!record[sendNotification.CCArray[0]].IsNullOrEmpty() ? record[sendNotification.CCArray[0].ToString()].ToString() : null);
                         else
                             sendNotificationCC = sendNotification.CC;
