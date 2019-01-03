@@ -13,7 +13,7 @@ using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
 namespace PrimeApps.Console.Controllers
 {
     [Route("api/picklist"), Authorize]
-	public class PicklistController : ApiBaseController
+    public class PicklistController : DraftBaseController
     {
         private IPicklistRepository _picklistRepository;
 
@@ -22,15 +22,15 @@ namespace PrimeApps.Console.Controllers
             _picklistRepository = picklistRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_picklistRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
             var picklistEntity = await _picklistRepository.GetById(id);
@@ -74,7 +74,7 @@ namespace PrimeApps.Console.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
             //return Created(Request.Scheme + "://" + Request.Host + "/api/picklist/get/" + picklistEntity.Id, picklistEntity);
         }
 

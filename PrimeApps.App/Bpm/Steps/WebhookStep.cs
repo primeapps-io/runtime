@@ -36,6 +36,8 @@ namespace PrimeApps.App.Bpm.Steps
 
         public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
         {
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
+
             if (context == null)
                 throw new NullReferenceException();
 
@@ -48,7 +50,7 @@ namespace PrimeApps.App.Bpm.Steps
 
             //TODO REf Kontrol
             var appUser = JsonConvert.DeserializeObject<UserItem>(context.Workflow.Reference);
-            var _currentUser = new CurrentUser { TenantId = appUser.TenantId, UserId = appUser.Id };
+            var _currentUser = new CurrentUser { TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, UserId = appUser.Id, PreviewMode = previewMode };
 
             var newRequest = Request != null ? JObject.Parse(Request.Replace("\\", "")) : null;
 
@@ -84,11 +86,11 @@ namespace PrimeApps.App.Bpm.Steps
 
                         var data = JObject.FromObject(context.Workflow.Data);
 
-                        var record= data["record"].ToObject<JObject>();
+                        var record = data["record"].ToObject<JObject>();
 
                         var moduleId = data["module_id"].ToObject<int>();
                         var module = await _moduleRepository.GetById(moduleId);
-                        
+
                         var webHook = newRequest["webHook"];
 
                         if (!webHook.HasValues)
@@ -97,7 +99,7 @@ namespace PrimeApps.App.Bpm.Steps
                         var jsonData = new JObject();
                         jsonData["id"] = record["id"];
                         var recordId = record["id"].ToObject<int>();
-                        
+
                         if (!webHook["Parameters"].IsNullOrEmpty())
                         {
                             var parameters = webHook["Parameters"];

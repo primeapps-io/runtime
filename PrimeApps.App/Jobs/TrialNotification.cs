@@ -16,20 +16,21 @@ using System.Threading.Tasks;
 
 namespace PrimeApps.App.Jobs
 {
-	public class TrialNotification
-	{
-		private IConfiguration _configuration;
-		private IServiceScopeFactory _serviceScopeFactory;
+    public class TrialNotification
+    {
+        private IConfiguration _configuration;
+        private IServiceScopeFactory _serviceScopeFactory;
 
-		public TrialNotification(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
-		{
-			_configuration = configuration;
-			_serviceScopeFactory = serviceScopeFactory;
-		}
+        public TrialNotification(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+        {
+            _configuration = configuration;
+            _serviceScopeFactory = serviceScopeFactory;
+        }
 
-		public async Task TrialExpire()
-		{
-			IList<Tenant> trialTenants = new List<Tenant>();
+        public async Task TrialExpire()
+        {
+            IList<Tenant> trialTenants = new List<Tenant>();
+            var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
 
 			using (var scope = _serviceScopeFactory.CreateScope())
 			{
@@ -40,42 +41,42 @@ namespace PrimeApps.App.Jobs
 				{
 					var tenants = await tenantRepository.GetAllActive();
 
-					foreach (var tenant in tenants)
-					{
-						tenantRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId };
-						trialTenants = await tenantRepository.GetTrialTenants();
+                    foreach (var tenant in tenants)
+                    {
+                        tenantRepository.CurrentUser = new CurrentUser { TenantId = tenant.Id, UserId = tenant.OwnerId, PreviewMode = previewMode };
+                        trialTenants = await tenantRepository.GetTrialTenants();
 
-						if (trialTenants.Count == 0)
-							continue;
-					}
-				}
+                        if (trialTenants.Count == 0)
+                            continue;
+                    }
+                }
 
-				foreach (var tenant in trialTenants)
-				{
-					var emailData = new Dictionary<string, string>();
-					var tenantUser = tenant.TenantUsers.Single();
-					var user = tenantUser.PlatformUser;
+                foreach (var tenant in trialTenants)
+                {
+                    var emailData = new Dictionary<string, string>();
+                    var tenantUser = tenant.TenantUsers.Single();
+                    var user = tenantUser.PlatformUser;
 
-					var culture = "";
+                    var culture = "";
 
-					if (!tenant.App.UseTenantSettings)
-						culture = tenant.App.Setting.Culture;
-					else if (!tenant.UseUserSettings)
-						culture = tenant.Setting.Culture;
-					else
-						culture = user.Setting.Culture;
+                    if (!tenant.App.UseTenantSettings)
+                        culture = tenant.App.Setting.Culture;
+                    else if (!tenant.UseUserSettings)
+                        culture = tenant.Setting.Culture;
+                    else
+                        culture = user.Setting.Culture;
 
-					emailData.Add("UserName", user.FirstName + " " + user.LastName);
+                    emailData.Add("UserName", user.FirstName + " " + user.LastName);
 
-					if (!string.IsNullOrWhiteSpace(culture) && Helpers.Constants.CULTURES.Contains(culture))
-						Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
+                    if (!string.IsNullOrWhiteSpace(culture) && Helpers.Constants.CULTURES.Contains(culture))
+                        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
 
-					var appUser = new UserItem { AppId = tenant.AppId, Id = tenant.OwnerId, TenantId= tenant.Id };
-					var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
-					notification.AddRecipient(user.Email);
-					notification.AddToQueue();
-				}
-			}
-		}
-	}
+                    var appUser = new UserItem { AppId = tenant.AppId, Id = tenant.OwnerId, TenantId = tenant.Id };
+                    var notification = new Helpers.Email(EmailResource.TrialExpireMail, Thread.CurrentThread.CurrentCulture.Name, emailData, _configuration, _serviceScopeFactory, appUser.AppId, appUser);
+                    notification.AddRecipient(user.Email);
+                    notification.AddToQueue();
+                }
+            }
+        }
+    }
 }

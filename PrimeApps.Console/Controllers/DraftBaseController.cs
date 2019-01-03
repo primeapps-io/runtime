@@ -14,7 +14,7 @@ namespace PrimeApps.Console.Controllers
     {
         public static int? AppId { get; set; }
         public static int? TenantId { get; set; }
-        public static string DBMode { get; set; }
+        public static string PreviewMode { get; set; }
 
         public void SetContext(ActionExecutingContext context)
         {
@@ -57,7 +57,7 @@ namespace PrimeApps.Console.Controllers
                 else
                     context.HttpContext.Items.Add("tenant_id", tenantId);
 
-                DBMode = "tenant";
+                PreviewMode = "tenant";
                 TenantId = tenantId;
             }
             else
@@ -68,7 +68,7 @@ namespace PrimeApps.Console.Controllers
                 else
                     context.HttpContext.Items.Add("app_id", appId);
 
-                DBMode = "app";
+                PreviewMode = "app";
                 AppId = appId;
             }
         }

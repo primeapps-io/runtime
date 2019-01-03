@@ -13,7 +13,7 @@ namespace PrimeApps.Console.Controllers
 {
     [Route("api/action_button"), Authorize]
 
-	public class ActionButtonController : ApiBaseController
+    public class ActionButtonController : DraftBaseController
     {
         private IActionButtonRepository _actionButtonRepository;
 
@@ -22,15 +22,15 @@ namespace PrimeApps.Console.Controllers
             _actionButtonRepository = actionButtonRepository;
         }
 
-		public override void OnActionExecuting(ActionExecutingContext context)
-		{
-			SetContext(context);
-			SetCurrentUser(_actionButtonRepository);
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_actionButtonRepository, PreviewMode, TenantId, AppId);
 
-			base.OnActionExecuting(context);
-		}
+            base.OnActionExecuting(context);
+        }
 
-		[Route("get/{id:int}"), HttpGet]
+        [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> GetActionButtons(int id)
         {
             var buttons = await _actionButtonRepository.GetByModuleId(id);
@@ -55,8 +55,8 @@ namespace PrimeApps.Console.Controllers
             //throw new HttpResponseException(HttpStatusCode.Status500InternalServerError);
 
             var uri = new Uri(Request.GetDisplayUrl());
-			//return Created(uri.Scheme + "://" + uri.Authority + "/api/action_button/get/" + actionButtonEntity.Id, actionButtonEntity);
-			return Created(uri.Scheme + "://" + uri.Authority + "/api/action_button/get/" + actionButtonEntity.Id, actionButtonEntity);
+            //return Created(uri.Scheme + "://" + uri.Authority + "/api/action_button/get/" + actionButtonEntity.Id, actionButtonEntity);
+            return Created(uri.Scheme + "://" + uri.Authority + "/api/action_button/get/" + actionButtonEntity.Id, actionButtonEntity);
         }
 
 

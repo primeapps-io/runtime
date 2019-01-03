@@ -15,7 +15,7 @@ namespace PrimeApps.App.Controllers
     {
         public static int? AppId { get; set; }
         public static int? TenantId { get; set; }
-        public static string DBMode { get; set; }
+        public static string PreviewMode { get; set; }
 
         public void SetContext(ActionExecutingContext context)
         {
@@ -50,7 +50,7 @@ namespace PrimeApps.App.Controllers
                 context.Result = new UnauthorizedResult();
 
             TenantId = tenantId;
-            DBMode = "tenant";
+            PreviewMode = "tenant";
             context.HttpContext.Items.Add("user", platformUser);
         }
     }

@@ -33,7 +33,7 @@ namespace PrimeApps.App.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_userRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }

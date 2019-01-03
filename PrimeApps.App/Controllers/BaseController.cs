@@ -32,11 +32,11 @@ namespace PrimeApps.App.Controllers
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
-        public void SetCurrentUser(IRepositoryBaseTenant repository, string dBMode, int? tenantId, int? appId)
+        public void SetCurrentUser(IRepositoryBaseTenant repository, string previewMode, int? tenantId, int? appId)
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = appId != null ? (int) appId : (int)tenantId, DBMode = dBMode};
+                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, PreviewMode = previewMode };
             }
         }
 
@@ -90,22 +90,24 @@ namespace PrimeApps.App.Controllers
             var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
             var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
 
+            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
+            var previewMode = configuration.GetSection("AppSettings")["PreviewMode"];
+
             if (tenantUser == null)
             {
-                var configuration = (IConfiguration) HttpContext.RequestServices.GetService(typeof(IConfiguration));
                 var tenantUserRepository = (IUserRepository) HttpContext.RequestServices.GetService(typeof(IUserRepository));
-                tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = appUser.TenantId, DBMode = configuration.GetSection("AppSettings")["DBMode"]};
+                tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
 
                 tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
                cacheHelper.Set(cacheKeyTenantUser, tenantUser);
             }
 
-            appUser.RoleId = tenantUser.RoleId ?? 0;
-            appUser.ProfileId = tenantUser.RoleId ?? 0;
-            appUser.HasAdminProfile = tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
+            appUser.RoleId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
+            appUser.ProfileId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
+            appUser.HasAdminProfile = previewMode == "app" ? true : tenantUser.Profile != null && tenantUser.Profile.HasAdminRights;
 
-            if (tenant.License?.AnalyticsLicenseCount > 0)
+            if (previewMode != "app" && tenant.License?.AnalyticsLicenseCount > 0)
             {
                 var cacheKeyWarehouse = "platform_warehouse_" + appUser.Id;
                 var platformWarehouse = cacheHelper.Get<PlatformWarehouse>(cacheKeyWarehouse);
