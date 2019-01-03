@@ -5,6 +5,10 @@ angular.module('primeapps')
     .controller('RelationsController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'RelationsService', 'LayoutService', '$http', 'config',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config) {
 
+			$scope.$parent.menuTopTitle = "Models";
+			$scope.$parent.activeMenu = 'model';
+			$scope.$parent.activeMenuItem = 'relations';
+
             $rootScope.modules = [
                 {
                     "calculations": [],
@@ -28879,11 +28883,11 @@ angular.module('primeapps')
 
                     if ($scope.currentRelation.relation_type === 'many_to_many')
                         $scope.bindDragDrop();
-                    ;
-                    $scope.relationTypeChanged = function () {
-                        if ($scope.currentRelation.relation_type === 'many_to_many')
-                            $scope.bindDragDrop();
-                    }
+                    
+					$scope.relationTypeChanged = function () {
+						if ($scope.currentRelation.relation_type === 'many_to_many')
+							$scope.bindDragDrop();
+					};
                 }
             };
 
