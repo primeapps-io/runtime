@@ -13,6 +13,10 @@ namespace PrimeApps.App.Controllers
     [Authorize, CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
     public class MvcBaseController : BaseController
     {
+        public static int? AppId { get; set; }
+        public static int? TenantId { get; set; }
+        public static string DBMode { get; set; }
+
         public void SetContext(ActionExecutingContext context)
         {
             if (string.IsNullOrWhiteSpace(context.HttpContext.Request.Cookies["tenant_id"]))
@@ -45,6 +49,8 @@ namespace PrimeApps.App.Controllers
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 context.Result = new UnauthorizedResult();
 
+            TenantId = tenantId;
+            DBMode = "tenant";
             context.HttpContext.Items.Add("user", platformUser);
         }
     }

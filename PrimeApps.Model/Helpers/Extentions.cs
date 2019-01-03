@@ -259,7 +259,7 @@ namespace PrimeApps.Model.Helpers
                 else
                     return (T)newToken;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return default(T);
             }

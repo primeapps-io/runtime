@@ -34,7 +34,7 @@ namespace PrimeApps.Model.Repositories
         {
             var tag = DbContext.Tags.Where(x => !x.Deleted && x.Id == id);
 
-            return tag.FirstOrDefault();
+            return await tag.FirstOrDefaultAsync();
         }
 
         public async Task<int> Create(Tag tag)

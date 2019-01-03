@@ -430,7 +430,7 @@ namespace PrimeApps.Model.Repositories
                 {
                     await DbContext.Database.ExecuteSqlCommandAsync($"DELETE FROM {module.Name}_d WHERE created_by={userId};");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     retryList.Add(module.Name);
                 }
@@ -445,7 +445,7 @@ namespace PrimeApps.Model.Repositories
                     retryList.RemoveAt(cid);
                     cid++;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     cid++;
                 }

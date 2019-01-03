@@ -19,9 +19,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<Notification> GetById(int id)
         {
-            var notification = DbContext.Notifications
+            var notification = await DbContext.Notifications
                 .Include(x => x.CreatedBy)
-                .FirstOrDefault(r => r.Id == id && r.Deleted == false);
+                .FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
 
             return notification;
         }

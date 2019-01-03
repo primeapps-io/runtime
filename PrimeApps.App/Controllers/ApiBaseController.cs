@@ -7,28 +7,54 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer"), CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
     public class ApiBaseController : BaseController
     {
+        public static int? AppId { get; set; }
+        public static int? TenantId { get; set; }
+        public static string DBMode { get; set; }
+
         public void SetContext(ActionExecutingContext context)
         {
-            if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
-                context.Result = new UnauthorizedResult();
-
-            var tenantId = 0;
-
-            if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
-                context.Result = new UnauthorizedResult();
-
-            if (tenantId < 1)
-                context.Result = new UnauthorizedResult();
-
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
+            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
+            DBMode = configuration.GetSection("AppSettings")["DBMode"];
+
+            var tenantId = 0;
+            var appId = 0;
+
+            if (DBMode == "tenant")
+            {
+                if (!context.HttpContext.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValues))
+                    context.Result = new UnauthorizedResult();
+
+                if (tenantIdValues.Count == 0 || string.IsNullOrWhiteSpace(tenantIdValues[0]) || !int.TryParse(tenantIdValues[0], out tenantId))
+                    context.Result = new UnauthorizedResult();
+
+                if (tenantId < 1)
+                    context.Result = new UnauthorizedResult();
+
+                TenantId = tenantId;
+            }
+            else
+            {
+                if (!context.HttpContext.Request.Headers.TryGetValue("X-App-Id", out var appIdValues))
+                    context.Result = new UnauthorizedResult();
+
+                if (appIdValues.Count == 0 || string.IsNullOrWhiteSpace(appIdValues[0]) || !int.TryParse(appIdValues[0], out appId))
+                    context.Result = new UnauthorizedResult();
+
+                if (appId < 1)
+                    context.Result = new UnauthorizedResult();
+            
+            AppId = appId;
+                
             var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
             var email = context.HttpContext.User.FindFirst("email").Value;
             var cacheKeyPlatformUser = "platform_user_" + email + "_" + tenantId;

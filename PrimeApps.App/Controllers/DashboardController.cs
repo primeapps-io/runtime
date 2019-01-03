@@ -42,14 +42,14 @@ namespace PrimeApps.App.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_settingRepository);
-            SetCurrentUser(_dashboardRepository);
-            SetCurrentUser(_dashletRepository);
-            SetCurrentUser(_reportRepository);
-            SetCurrentUser(_recordRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_picklistRepository);
-            SetCurrentUser(_viewRepository);
+            SetCurrentUser(_settingRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_dashboardRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_dashletRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_reportRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_viewRepository, DBMode, TenantId, AppId);
             base.OnActionExecuting(context);
         }
 

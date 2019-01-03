@@ -72,16 +72,16 @@ namespace PrimeApps.App.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             SetContext(context);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_recordRepository);
             SetCurrentUser(_tenantRepository);
-            SetCurrentUser(_templateRepository);
-            SetCurrentUser(_documentRepository);
-            SetCurrentUser(_picklistRepository);
-            SetCurrentUser(_settingsRepository);
-            SetCurrentUser(_noteRepository);
-            SetCurrentUser(_moduleRepository);
-            SetCurrentUser(_viewRepository);
+            SetCurrentUser(_moduleRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_templateRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_documentRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_picklistRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_settingsRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_noteRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, DBMode, TenantId, AppId);
+            SetCurrentUser(_viewRepository, DBMode, TenantId, AppId);
             _recordHelper.SetCurrentUser(AppUser);
             base.OnActionExecuting(context);
         }
@@ -1434,7 +1434,7 @@ namespace PrimeApps.App.Controllers
                     switch (field.DataType)
                     {
                         case DataType.Number:
-                        case DataType.NumberAuto:                         
+                        case DataType.NumberAuto:
                         case DataType.NumberDecimal:
                         case DataType.Currency:
                             dt.Columns.Add(labelLocale).DataType = typeof(decimal);
@@ -1457,7 +1457,7 @@ namespace PrimeApps.App.Controllers
                     switch (field.DataType)
                     {
                         case DataType.Number:
-                        case DataType.NumberAuto:                          
+                        case DataType.NumberAuto:
                         case DataType.NumberDecimal:
                         case DataType.Currency:
                             dt.Columns.Add(labelLocale).DataType = typeof(decimal);
@@ -1699,7 +1699,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:                             
+                            case DataType.NumberAuto:
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
@@ -1719,7 +1719,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:                            
+                            case DataType.NumberAuto:
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
@@ -1771,7 +1771,7 @@ namespace PrimeApps.App.Controllers
                             switch (field.DataType)
                             {
                                 case DataType.Number:
-                                case DataType.NumberAuto:                               
+                                case DataType.NumberAuto:
                                 case DataType.NumberDecimal:
                                 case DataType.Currency:
                                     dr[i] = (decimal)record[field.Name];
@@ -1971,7 +1971,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:                            
+                            case DataType.NumberAuto:
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr : field.LabelEn;
@@ -1992,7 +1992,7 @@ namespace PrimeApps.App.Controllers
                         switch (field.DataType)
                         {
                             case DataType.Number:
-                            case DataType.NumberAuto:                             
+                            case DataType.NumberAuto:
                             case DataType.NumberDecimal:
                             case DataType.Currency:
                                 format = locale.Contains("tr") ? field.LabelTr + " (" + field.Name + ")" : field.LabelEn + " (" + field.Name + ")";
@@ -2044,7 +2044,7 @@ namespace PrimeApps.App.Controllers
                             switch (field.DataType)
                             {
                                 case DataType.Number:
-                                case DataType.NumberAuto:                                
+                                case DataType.NumberAuto:
                                 case DataType.NumberDecimal:
                                 case DataType.Currency:
                                     dr[i] = (decimal)record[field.Name];
