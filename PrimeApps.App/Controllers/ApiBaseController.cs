@@ -54,27 +54,27 @@ namespace PrimeApps.App.Controllers
                     context.Result = new UnauthorizedResult();
 
                 AppId = appId;
-
-                var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
-                var email = context.HttpContext.User.FindFirst("email").Value;
-                var cacheKeyPlatformUser = "platform_user_" + email + "_" + tenantId;
-                var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
-
-                if (platformUser == null)
-                {
-                    var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                    platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
-
-                    platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
-
-                    var reuslt = cacheHelper.Set(cacheKeyPlatformUser, platformUser);
-                }
-
-                if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
-                    context.Result = new UnauthorizedResult();
-
-                context.HttpContext.Items.Add("user", platformUser);
             }
+
+            var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+            var email = context.HttpContext.User.FindFirst("email").Value;
+            var cacheKeyPlatformUser = typeof(PlatformUser).Name + "_" + email + "_" + tenantId;
+            var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
+
+            if (platformUser == null)
+            {
+                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
+
+                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+
+                cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+            }
+
+            if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
+                context.Result = new UnauthorizedResult();
+
+            context.HttpContext.Items.Add("user", platformUser); 
         }
     }
 }

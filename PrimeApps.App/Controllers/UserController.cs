@@ -86,6 +86,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_platformRepository);
             SetCurrentUser(_tenantRepository);
             SetCurrentUser(_platformWarehouseRepository);
+            SetCurrentUser(_applicationRepository);
 
             base.OnActionExecuting(context);
         }

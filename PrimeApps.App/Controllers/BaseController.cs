@@ -98,7 +98,7 @@ namespace PrimeApps.App.Controllers
 
                 tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-                var result = cacheHelper.Set(cacheKeyTenantUser, tenantUser);
+               cacheHelper.Set(cacheKeyTenantUser, tenantUser);
             }
 
             appUser.RoleId = tenantUser.RoleId ?? 0;
@@ -115,7 +115,7 @@ namespace PrimeApps.App.Controllers
                     var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
                     platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
-                    var result = cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
+                    cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
                 }
 
                 appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
