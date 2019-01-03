@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.Model.Repositories;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
 
 namespace PrimeApps.App.Controllers
 {
     [Authorize, CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
-
     public class MvcBaseController : BaseController
     {
         public static int? AppId { get; set; }
@@ -30,20 +31,20 @@ namespace PrimeApps.App.Controllers
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            //var cacheRepository = (ICacheRepository)context.HttpContext.RequestServices.GetService(typeof(ICacheRepository));
+            var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+            var email = context.HttpContext.User.FindFirst("email").Value;
+            var cacheKeyPlatformUser = "platform_user_" + email + "_" + tenantId;
+            var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
 
-            string email = context.HttpContext.User.FindFirst("email").Value;
+            if (platformUser == null)
+            {
+                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
-            string key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
-            //var platformUser = cacheRepository.Get<PlatformUser>(key);
+                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-            //if (platformUser == null)
-            //{
-            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            var platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
-
-            //var data = cacheRepository.Add(key, platformUser);
-            //}
+                cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+            }
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 context.Result = new UnauthorizedResult();

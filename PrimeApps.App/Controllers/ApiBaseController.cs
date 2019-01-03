@@ -3,14 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using PrimeApps.App.ActionFilters;
 using PrimeApps.Model.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.Filters;
-using PrimeApps.Model.Helpers;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
 using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
 {
     [Authorize(AuthenticationSchemes = "Bearer"), CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
-
     public class ApiBaseController : BaseController
     {
         public static int? AppId { get; set; }
@@ -55,27 +56,25 @@ namespace PrimeApps.App.Controllers
                 AppId = appId;
             }
 
-            //var cacheRepository = (ICacheRepository)context.HttpContext.RequestServices.GetService(typeof(ICacheRepository));
-            string email = context.HttpContext.User.FindFirst("email").Value;
+            var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+            var email = context.HttpContext.User.FindFirst("email").Value;
+            var cacheKeyPlatformUser = typeof(PlatformUser).Name + "_" + email + "_" + tenantId;
+            var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
 
-            string key = typeof(PlatformUser).Name + "-" + email + "-" + tenantId;
-            // var platformUser = cacheRepository.Get<PlatformUser>(key);
+            if (platformUser == null)
+            {
+                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
+                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
 
-            //if (platformUser == null)
-            //{
-            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
-
-            var platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
-            // var data = cacheRepository.Add(key, platformUser);
-            // }
+                cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+            }
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)
                 context.Result = new UnauthorizedResult();
 
-
-            context.HttpContext.Items.Add("user", platformUser);
+            context.HttpContext.Items.Add("user", platformUser); 
         }
     }
 }

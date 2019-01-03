@@ -3,9 +3,9 @@ using PrimeApps.Model.Common.Cache;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Entities.Platform;
 using PrimeApps.Model.Helpers;
-using PrimeApps.Model.Repositories;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
+using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 
 namespace PrimeApps.App.Controllers
@@ -27,11 +27,16 @@ namespace PrimeApps.App.Controllers
             }
         }
 
+        public JsonSerializerSettings CacheSerializerSettings => new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
         public void SetCurrentUser(IRepositoryBaseTenant repository, string dBMode, int? tenantId, int? appId)
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = appId != null ? (int)appId : (int)tenantId, DBMode = dBMode };
+                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = appId != null ? (int) appId : (int)tenantId, DBMode = dBMode};
             }
         }
 
@@ -39,13 +44,13 @@ namespace PrimeApps.App.Controllers
         {
             if (AppUser != null)
             {
-                repository.CurrentUser = new CurrentUser { UserId = AppUser.Id, TenantId = AppUser.TenantId };
+                repository.CurrentUser = new CurrentUser {UserId = AppUser.Id, TenantId = AppUser.TenantId};
             }
         }
 
         private UserItem GetUser()
         {
-            var platformUser = (PlatformUser)HttpContext.Items["user"];
+            var platformUser = (PlatformUser) HttpContext.Items["user"];
             var tenant = platformUser.TenantsAsUser.Single().Tenant;
 
             var appUser = new UserItem
@@ -81,21 +86,20 @@ namespace PrimeApps.App.Controllers
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 
-            //var cacheRepository = (ICacheRepository)HttpContext.RequestServices.GetService(typeof(ICacheRepository));
+            var cacheHelper = (ICacheHelper) HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+            var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
+            var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
 
-            //string key = typeof(TenantUser).Name + "-" + appUser.Id;
-            //var tenantUser = cacheRepository.Get<TenantUser>(key);
+            if (tenantUser == null)
+            {
+                var configuration = (IConfiguration) HttpContext.RequestServices.GetService(typeof(IConfiguration));
+                var tenantUserRepository = (IUserRepository) HttpContext.RequestServices.GetService(typeof(IUserRepository));
+                tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = appUser.TenantId, DBMode = configuration.GetSection("AppSettings")["DBMode"]};
 
-            //if (tenantUser == null)
-            //{
-            var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
-            var tenantUserRepository = (IUserRepository)HttpContext.RequestServices.GetService(typeof(IUserRepository));
+                tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-            tenantUserRepository.CurrentUser = new CurrentUser { UserId = appUser.Id, TenantId = appUser.TenantId, DBMode = configuration.GetSection("AppSettings")["DBMode"] };
-            var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
-
-            // var result = cacheRepository.Add(key, tenantUser);
-            //}
+               cacheHelper.Set(cacheKeyTenantUser, tenantUser);
+            }
 
             appUser.RoleId = tenantUser.RoleId ?? 0;
             appUser.ProfileId = tenantUser.RoleId ?? 0;
@@ -103,10 +107,18 @@ namespace PrimeApps.App.Controllers
 
             if (tenant.License?.AnalyticsLicenseCount > 0)
             {
-                var warehouseRepository = (IPlatformWarehouseRepository)HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-                var warehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
+                var cacheKeyWarehouse = "platform_warehouse_" + appUser.Id;
+                var platformWarehouse = cacheHelper.Get<PlatformWarehouse>(cacheKeyWarehouse);
 
-                appUser.WarehouseDatabaseName = warehouse.DatabaseName;
+                if (platformWarehouse == null)
+                {
+                    var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                    platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
+
+                    cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
+                }
+
+                appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
             }
             else
             {

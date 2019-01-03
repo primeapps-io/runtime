@@ -2,6 +2,11 @@
 using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Platform;
+using PrimeApps.Model.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using PrimeApps.Model.Repositories.Interfaces;
 using System.Linq;
@@ -10,7 +15,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class ApplicationRepository : RepositoryBasePlatform, IApplicationRepository
     {
-        public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public ApplicationRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
         public async Task<App> Get(string domain)
         {
             return await DbContext.Apps

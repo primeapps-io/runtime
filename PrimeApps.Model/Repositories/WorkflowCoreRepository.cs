@@ -8,7 +8,7 @@ namespace PrimeApps.Model.Repositories
 {
     public class WorkflowCoreRepository : RepositoryBasePlatform, IWorkflowCoreRepository
     {
-        public WorkflowCoreRepository(PlatformDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+        public WorkflowCoreRepository(PlatformDBContext dbContext, IConfiguration configuration, ICacheHelper cacheHelper) : base(dbContext, configuration, cacheHelper) { }
 
         public JArray GetWorkflowInstances(string code)
         {

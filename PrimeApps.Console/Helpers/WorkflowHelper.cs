@@ -859,8 +859,9 @@ namespace PrimeApps.Console.Helpers
                             domain = string.Format(domain, subdomain);
 
                             //domain = "http://localhost:5554/";
+                            var cacheHelper = _scope.ServiceProvider.GetRequiredService<ICacheHelper>();
 
-                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration))
+                            using (var _appRepository = new ApplicationRepository(platformDatabaseContext, _configuration, cacheHelper))
                             {
                                 var app = await _appRepository.Get(appUser.AppId);
                                 if (app != null)

@@ -16,17 +16,16 @@ namespace PrimeApps.Console.Controllers
         public HomeController(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
             _configuration = configuration;
-            _serviceScopeFactory = serviceScopeFactory;
         }
 
         [Authorize]
         public async Task<ActionResult> Index()
         {
             var platformUserRepository = (IPlatformUserRepository)HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-            var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
+            var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value); 
             await SetValues(userId);
-
+             
             return View();
         }
 
