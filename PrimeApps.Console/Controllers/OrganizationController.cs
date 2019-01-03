@@ -164,17 +164,36 @@ namespace PrimeApps.Console.Controllers
         }
 
         [Route("apps"), HttpPost]
-        public async Task<IActionResult> Apps([FromBody] OrganizationAppModel model)
+        public async Task<IActionResult> Apps([FromBody] JObject request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var isOrganizationAvailable = _organizationRepository.IsOrganizationAvaliable(AppUser.Id, model.OrganizationId);
+            if (request["organization_id"].IsNullOrEmpty())
+                return BadRequest("Organization id required.");
+
+            var isOrganizationAvailable = _organizationRepository.IsOrganizationAvaliable(AppUser.Id, (int)request["organization_id"]);
 
             if (!isOrganizationAvailable)
                 return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 
-            var apps = await _appDraftRepository.GetByOrganizationId(AppUser.Id, model.OrganizationId);
+            var search = "";
+            var page = 0;
+            var status = AppDraftStatus.NotSet;
+
+            if (request != null)
+            {
+                if (!request["search"].IsNullOrEmpty())
+                    search = request["search"].ToString();
+
+                if (!request["page"].IsNullOrEmpty())
+                    page = (int)request["page"];
+
+                if (!request["status"].IsNullOrEmpty())
+                    status = (AppDraftStatus)int.Parse(request["status"].ToString());
+            }
+
+            var apps = await _appDraftRepository.GetByOrganizationId(AppUser.Id, (int)request["organization_id"], search, page, status);
 
 
             return Ok(apps);

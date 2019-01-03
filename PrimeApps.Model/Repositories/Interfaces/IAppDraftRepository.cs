@@ -16,7 +16,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Update(AppDraft app);
         Task<int> Delete(AppDraft app);
         Task<List<int>> GetByTeamId(int id);
-        Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId);
+        Task<List<AppDraft>> GetByOrganizationId(int userId, int organizationId, string search = "", int page = 0, AppDraftStatus status = AppDraftStatus.NotSet);
         Task<List<AppDraft>> GetAllByUserId(int userId, string search = "", int page = 0, AppDraftStatus status = AppDraftStatus.NotSet);
     }
 }
