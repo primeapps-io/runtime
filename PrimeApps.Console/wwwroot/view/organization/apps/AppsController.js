@@ -8,19 +8,19 @@ angular.module('primeapps')
             var organizationId = $location.search().organizationId;
 
             if (!organizationId) {
-                ngToast.create({ content: $filter('translate')('Common.NotFound'), className: 'warning' });
+                ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                 $state.go('app.allApps');
                 return;
             }
 
             $cookies.put('organization_id', organizationId);
 
-            $rootScope.breadcrumbListe = [
+            $rootScope.breadcrumbListe[0] =
                 {
                     title: 'First Organization',
                     link: '#/allApps'
                 }
-            ];
+            ;
 
             AppsService.getOrganizationApps($state.params.organizationId)
                 .then(function (result) {

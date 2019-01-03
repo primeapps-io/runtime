@@ -19,12 +19,16 @@ angular.module('primeapps')
                 $http.get(config.apiUrl + "app/get/" + $scope.appId).then(function (result) {
                     if (result.data) {
                         $scope.menuTopTitle = result.data.label;
-                        $localStorage.set("currentApp", result.data)
+                        $localStorage.set("currentApp", result.data);
+                        $rootScope.breadcrumbListe[1].title = result.data.label;
+                        $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/overview';
                     }
                 });
             } else {
-                $scope.setTopTitle = function () {
+                $scope.setTopTitle = function (link) {
                     $scope.menuTopTitle = $localStorage.get("currentApp").label;
+                    $rootScope.breadcrumbListe[1].title = $scope.menuTopTitle;
+                    $rootScope.breadcrumbListe[1].link = '#/app/' + $scope.appId + '/' + link;
                 }
             }
 
@@ -32,15 +36,8 @@ angular.module('primeapps')
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
-            $rootScope.breadcrumbListe = [
-                {
-                    title: 'First Organization',
-                    link: "asdasd"
-                },
-                {
-                    title: 'XBrand CRM'
-                }
-            ];
+
+
 
         }
     ]);

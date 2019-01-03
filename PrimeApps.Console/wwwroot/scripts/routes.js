@@ -279,30 +279,6 @@ angular.module('primeapps')
                             templateUrl: cdnUrl + 'view/app/app.html',
                             controller: 'AppController'
                         }
-                    },
-                    resolve: {
-                        start: ['$rootScope', '$q', '$state', 'LayoutService',
-                            function ($rootScope, $q, $state, LayoutService) {
-                                var deferred = $q.defer();
-
-                                if ($rootScope.preview) {
-                                    $state.go('app.allApps');
-                                    deferred.resolve();
-                                    return deferred.promise;
-                                }
-
-                                // if (!$rootScope.user) {
-                                //     LayoutService.getMyAccount()
-                                //         .then(function () {
-                                //             deferred.resolve();
-                                //         });
-                                // }
-                                // else {
-                                //     deferred.resolve();
-                                // }
-                                //
-                                // return deferred.promise;
-                            }]
                     }
                 })
                 .state('studio.app.overview', {
