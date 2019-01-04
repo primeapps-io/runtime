@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 using PrimeApps.Model.Constants;
 using PrimeApps.Model.Enums;
 using DataType = PrimeApps.Model.Enums.DataType;
@@ -260,48 +262,54 @@ namespace PrimeApps.Console.Models
 
     public class RelationBindingModel : IValidatableObject
     {
-        public int? Id { get; set; }
+		[DataMember(Name = "id"), JsonProperty("id")]
+		public int? Id { get; set; }
 
-        [Required]
-        public string RelatedModule { get; set; }
+		[DataMember(Name = "related_module"), JsonProperty("related_module"), Required]
+		public string RelatedModule { get; set; }
 
-        [Required]
-        public RelationType RelationType { get; set; }
+		[DataMember(Name = "relation_type"), JsonProperty("relation_type"), Required]
+		public RelationType RelationType { get; set; }
 
-        [StringLength(50)]
-        [RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
-        public string RelationField { get; set; }
+		[DataMember(Name = "relation_field"), JsonProperty("relation_field"), StringLength(50)]
+		[RegularExpression(AlphanumericConstants.AlphanumericUnderscoreRegexForField, ErrorMessage = ValidationMessages.AlphanumericError)]
+		public string RelationField { get; set; }
 
-        public string[] DisplayFields { get; set; }
+		[DataMember(Name = "display_fields"), JsonProperty("display_fields")]
+		public string[] DisplayFields { get; set; }
 
-        [Required, StringLength(50)]
-        public string LabelEnSingular { get; set; }
+		[DataMember(Name = "label_en_singular"), JsonProperty("label_en_singular"), Required, StringLength(50)]
+		public string LabelEnSingular { get; set; }
 
-        [Required, StringLength(50)]
-        public string LabelTrSingular { get; set; }
+		[DataMember(Name = "label_tr_singular"), JsonProperty("label_tr_singular"), Required, StringLength(50)]
+		public string LabelTrSingular { get; set; }
 
-        [Required, StringLength(50)]
-        public string LabelEnPlural { get; set; }
+		[DataMember(Name = "label_en_plural"), JsonProperty("label_en_plural"), Required, StringLength(50)]
+		public string LabelEnPlural { get; set; }
 
-        [Required, StringLength(50)]
-        public string LabelTrPlural { get; set; }
+		[DataMember(Name = "label_tr_plural"), JsonProperty("label_tr_plural"), Required, StringLength(50)]
+		public string LabelTrPlural { get; set; }
 
-        public bool Readonly { get; set; }
+		[DataMember(Name = "readonly"), JsonProperty("readonly")]
+		public bool Readonly { get; set; }
 
-        [Required]
-        public short Order { get; set; }
+		[DataMember(Name = "order"), JsonProperty("order"), Required]
+		public short Order { get; set; }
 
-        public bool Deleted { get; set; }
+		[DataMember(Name = "deleted"), JsonProperty("deleted")]
+		public bool Deleted { get; set; }
 
-        public bool TwoWay { get; set; }
+		[DataMember(Name = "two_way"), JsonProperty("two_way")]
+		public bool TwoWay { get; set; }
 
-        public DetailViewType DetailViewType { get; set; }
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (RelationType == RelationType.OneToMany && string.IsNullOrWhiteSpace(RelationField))
-                yield return new ValidationResult("The RelationField field is required.", new[] { "RelationField" });
-        }
-    }
+		[DataMember(Name = "detail_view_type"), JsonProperty("detail_view_type")]
+		public DetailViewType DetailViewType { get; set; }
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (RelationType == RelationType.OneToMany && string.IsNullOrWhiteSpace(RelationField))
+				yield return new ValidationResult("The RelationField field is required.", new[] { "RelationField" });
+		}
+	}
 
     public class DependencyBindingModel
     {

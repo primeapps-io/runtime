@@ -326,7 +326,8 @@ angular.module('primeapps')
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
                                 cdnUrl + 'view/app/model/relations/relationsController.js',
-                                cdnUrl + 'view/app/model/relations/relationsService.js'
+                                cdnUrl + 'view/app/model/relations/relationsService.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
                             ]);
                         }]
                     }

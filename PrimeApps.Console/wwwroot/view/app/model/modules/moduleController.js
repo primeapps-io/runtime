@@ -8,7 +8,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'modules';
-            $scope.modules = [];
+            $rootScope.modules = [];
 
             $scope.requestModel = {
                 limit: 10,
