@@ -8,13 +8,25 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'relations';
+            $rootScope.modules = [];
+            $rootScope.loading = true;
+
+            $scope.requestModel = {
+                limit: 10,
+                offset: 1
+            };
+
+            var promiseResult = ModuleService.getModules().then(function (response) {
+                //.find($scope.requestModel).then(function (response) {
+                $rootScope.modules = response.data;
+            });
 
             $scope.setRelations = function () {
                 $scope.relations = [];
                 for (var i = 0; i < $rootScope.modules.length; i++) {
                     var module = angular.copy($rootScope.modules[i]);
                     if (module.relations) {
-                        for (var j = 0; j < module.relations.length; j++) {
+                        for (var j = 0; j < module.relations.length; j++) { //
                             module.relations[j].parent_module = module;
                         }
                         $scope.relations = $scope.relations.concat(module.relations);
@@ -25,7 +37,9 @@ angular.module('primeapps')
                 $rootScope.loading = false;
             };
 
-            $scope.setRelations();
+            promiseResult.then(function onSuccess() {
+                $scope.setRelations();
+            });
 
             $scope.showFormModal = function (relation) {
                 if (!relation) {
@@ -223,17 +237,31 @@ angular.module('primeapps')
                 var success = function () {
                     if (!relation.two_way && relation.relation_type === 'many_to_many')
                         createRelationManyToManyModule();
-                    else
-                        LayoutService.getMyAccount(true)
-                            .then(function () {
-                                $scope.setRelations();
-                                ngToast.create({
-                                    content: $filter('translate')('Setup.Modules.RelationSaveSuccess'),
-                                    className: 'success'
-                                });
-                                $scope.saving = false;
-                                $scope.addNewRelationsFormModal.hide();
-                            });
+                    else {
+                        $rootScope.loading = true;
+                        ModuleService.getModules().then(function (response) {
+                            //.find($scope.requestModel).then(function (response) {
+                            $rootScope.modules = response.data;
+                            $scope.setRelations();
+                            $rootScope.loading = false;
+                        });
+                        ngToast.create({
+                            content: $filter('translate')('Setup.Modules.RelationSaveSuccess'),
+                            className: 'success'
+                        });
+                        $scope.saving = false;
+                        $scope.addNewRelationsFormModal.hide();
+                    }
+                    //     LayoutService.getMyAccount(true)
+                    // .then(function () {
+                    //     $scope.setRelations();
+                    //     ngToast.create({
+                    //         content: $filter('translate')('Setup.Modules.RelationSaveSuccess'),
+                    //         className: 'success'
+                    //     });
+                    //     $scope.saving = false;
+                    //     $scope.addNewRelationsFormModal.hide();
+                    // });
                 };
 
                 var error = function () {
@@ -270,12 +298,15 @@ angular.module('primeapps')
             $scope.delete = function (relation) {
                 ModuleService.deleteModuleRelation(relation.id)
                     .then(function () {
-                        LayoutService.getMyAccount(true)
-                            .then(function () {
-                                var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
-                                $scope.relations.splice(relationToDeleteIndex, 1);
-                                ngToast.create({ content: $filter('translate')('Setup.Modules.RelationDeleteSuccess'), className: 'success' });
-                            });
+                        var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
+                        $scope.relations.splice(relationToDeleteIndex, 1);
+                        ngToast.create({ content: $filter('translate')('Setup.Modules.RelationDeleteSuccess'), className: 'success' });
+                        // LayoutService.getMyAccount(true)
+                        //     .then(function () {
+                        //         var relationToDeleteIndex = helper.arrayObjectIndexOf($scope.relations, relation);
+                        //         $scope.relations.splice(relationToDeleteIndex, 1);
+                        //         ngToast.create({ content: $filter('translate')('Setup.Modules.RelationDeleteSuccess'), className: 'success' });
+                        //     });
                     })
                     .catch(function () {
                         $scope.relations = $scope.relationsState;

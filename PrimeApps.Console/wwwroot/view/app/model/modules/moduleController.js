@@ -16,7 +16,7 @@ angular.module('primeapps')
             };
 
             ModuleService.find($scope.requestModel).then(function (response) {
-                $scope.modules = response.data;
+                $rootScope.modules = response.data;
             });
 
             $scope.changePage = function (page) {
@@ -43,7 +43,7 @@ angular.module('primeapps')
                         $scope.modulesSetup.push(module);
                 });
 
-                $scope.customModules = $filter('filter')($scope.modulesSetup, {system_type: 'custom'});
+                $scope.customModules = $filter('filter')($scope.modulesSetup, { system_type: 'custom' });
             };
 
             getModules();
@@ -153,7 +153,7 @@ angular.module('primeapps')
 
                 ModuleService.delete($scope.selectedModuleId)
                     .then(function () {
-                        var deletedModule = $filter('filter')($rootScope.modules, {id: parseInt($scope.selectedModuleId)}, true)[0];
+                        var deletedModule = $filter('filter')($rootScope.modules, { id: parseInt($scope.selectedModuleId) }, true)[0];
                         deletedModule.display = false;
                         deletedModule.order = 0;
                         //Disable another module fields that are linked to the deleted module.

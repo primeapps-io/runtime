@@ -858,6 +858,10 @@ angular.module('primeapps')
                     delete relation.relationField;
                     delete relation.hasRelationField;
                     delete relation.type;
+                    delete relation.display_fields_array;
+                    delete relation.parent_module;
+                    delete relation.module;
+
 
                     var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
 

@@ -11,8 +11,6 @@ angular.module('primeapps')
                 myOrganizations: function () {
                     return $http.get(config.apiUrl + 'user/organizations');
                 },
-
-
                 getOrg: function (refresh) {
                     helper.hideLoader();
                 },
