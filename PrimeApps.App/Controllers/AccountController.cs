@@ -66,12 +66,12 @@ namespace PrimeApps.App.Controllers
 
 			Model.Entities.Platform.App app = null;
 
-            if (!string.IsNullOrEmpty(createBindingModel.AppName))
-                app = await _applicationRepository.GetByNameAsync(createBindingModel.AppName);
-            else if (createBindingModel.AppId != null)
-                app = await _applicationRepository.Get(createBindingModel.AppId);
-            else
-                return BadRequest();
+			if (!string.IsNullOrEmpty(createBindingModel.AppName))
+				app = await _applicationRepository.GetByNameAsync(createBindingModel.AppName);
+			else if (createBindingModel.AppId != null)
+				app = await _applicationRepository.Get(createBindingModel.AppId);
+			else
+				return BadRequest();
 
 			using (var client = new HttpClient())
 			{
@@ -184,10 +184,35 @@ namespace PrimeApps.App.Controllers
 			foreach (var template in templates)
 			{
 				var content = template.Content;
+				string appCodeUrl = "";
+				string appUrl = "";
+				if (int.Parse(request["app_id"].ToString()) == 1)
+				{
+					appCodeUrl = "http://www.ofisim.com/crm/";
+					appUrl = "http://www.ofisim.com/mail/crm/logo.png";
+				}
 
+				else if (int.Parse(request["app_id"].ToString()) == 4)
+				{
+					appCodeUrl = "http://www.ofisim.com/ik/";
+					appUrl = "http://www.ofisim.com/mail/ik/logo.png";
+				}
+
+				int startIndex = content.IndexOf("{{F}}");
+				int lastIndex = content.IndexOf("{{/F}}");
+
+				if (startIndex > -1 && lastIndex > -1)
+					content = content.Remove(startIndex, lastIndex - startIndex + 6);
+
+				else// if (string.Equals(socialMediaIcons, "true"))
+				{
+					content = content.Replace("{{F}}", "");
+					content = content.Replace("{{/F}}", "");
+				}
 				content = content.Replace("{:PasswordResetUrl}", string.Format(url, HttpUtility.UrlEncode(request["code"].ToString()), new Guid(request["guid_id"].ToString()), HttpUtility.UrlEncode(request["return_url"].ToString())));
 				content = content.Replace("{:FullName}", user.FirstName + " " + user.LastName);
-
+				content = content.Replace("{{APP_URL}}", appCodeUrl);
+				content = content.Replace("{{URL}}", appUrl);
 				Email notification = new Email(template.Subject, content, _configuration);
 
 				var req = JsonConvert.DeserializeObject<JObject>(template.Settings);
