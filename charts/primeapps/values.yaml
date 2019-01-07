@@ -70,7 +70,7 @@ app:
         ForwardHeaders: "true"
         HttpsRedirection: "true"
         KubernetesClusterRootUrl: "http://kubernetes.default.svc.cluster.local"
-        PreviewMode": "tenant"
+        PreviewMode: "tenant"
       Sentry:
         Dsn: "https://494e887684744adfaa39328e539a2a95@sentry-dev.primeapps.io/3"
         IncludeRequestPayload: "true"
