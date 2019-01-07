@@ -9,7 +9,6 @@ angular.module('primeapps')
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'relations';
             $rootScope.modules = [];
-            $rootScope.loading = true;
 
             $scope.loading = true;
             $scope.requestModel = {
