@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('DependenciesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
+    .factory('DependenciesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields','activityTypes','yesNo','transactionTypes',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields,activityTypes,yesNo,transactionTypes) {
             return {
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
@@ -90,8 +90,188 @@ angular.module('primeapps')
                     return $http.delete(config.apiUrl + 'module_profile_settings/delete/' + id);
                 },
 
-                getPicklists: function () {
+                getAllPicklists: function () {
                     return $http.get(config.apiUrl + 'picklist/get_all');
+                },
+
+                getPicklists: function (module, withRelatedPicklists) {
+                    var deferred = $q.defer();
+                    var fields = angular.copy(module.fields);
+                    var picklists = {};
+                    var picklistIds = [];
+
+                    if (withRelatedPicklists) {
+                        for (var i = 0; i < module.fields.length; i++) {
+                            var field = module.fields[i];
+
+                            if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'relation') {
+                                var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+
+                                if (!lookupModule)
+                                    continue;
+
+                                for (var j = 0; j < lookupModule.fields.length; j++) {
+                                    var lookupModuleField = lookupModule.fields[j];
+
+                                    if (lookupModuleField.data_type === 'picklist' || lookupModuleField.data_type === 'multiselect')
+                                        fields.push(lookupModuleField);
+                                }
+                            }
+                        }
+                    }
+
+                    var setDependency = function (picklist, field) {
+                        if (module.dependencies && module.dependencies.length > 0) {
+                            var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
+
+                            if (dependency && dependency.deleted != true && (dependency.dependency_type === 'list_field' || dependency.dependency_type === 'list_value')) {
+                                for (var i = 0; i < picklist.length; i++) {
+                                    var picklistItem = picklist[i];
+                                    picklistItem.hidden = true;
+                                }
+                            }
+                        }
+                    };
+
+                    for (var k = 0; k < fields.length; k++) {
+                        var fieldItem = fields[k];
+
+                        if (fieldItem.picklist_id) {
+                            var picklistCache = $cache.get('picklist_' + fieldItem.picklist_id);
+
+                            if (fieldItem.picklist_id === 900000) {
+                                if (picklistCache) {
+                                    picklists[fieldItem.picklist_id] = picklistCache;
+                                    continue;
+                                }
+
+                                var modulePicklist = [];
+
+                                for (var l = 0; l < $rootScope.modules.length; l++) {
+                                    var moduleItem = $rootScope.modules[l];
+
+                                    if (!moduleItem.display || moduleItem.name === 'activities')
+                                        continue;
+
+                                    if (!helper.hasPermission(moduleItem.name, operations.read))
+                                        continue;
+
+                                    var modulePicklistItem = {};
+                                    modulePicklistItem.id = parseInt(moduleItem.id) + 900000;
+                                    modulePicklistItem.type = 900000;
+                                    modulePicklistItem.system_code = moduleItem.name;
+                                    modulePicklistItem.order = moduleItem.order;
+                                    modulePicklistItem.label = {};
+                                    modulePicklistItem.label.en = moduleItem.label_en_singular;
+                                    modulePicklistItem.label.tr = moduleItem.label_tr_singular;
+                                    modulePicklistItem.labelStr = moduleItem['label_' + $rootScope.user.tenantLanguage + '_singular'];
+                                    modulePicklistItem.value = moduleItem.name;
+
+                                    modulePicklist.push(modulePicklistItem);
+                                }
+
+                                modulePicklist = $filter('orderBy')(modulePicklist, 'order');
+                                picklists['900000'] = modulePicklist;
+                                $cache.put('picklist_' + 900000, modulePicklist);
+
+                                continue;
+                            }
+
+                            if (!picklistCache) {
+                                picklistIds.push(fieldItem.picklist_id);
+                            }
+                            else {
+                                picklistCache = $filter('orderByLabel')(picklistCache, $rootScope.language);
+
+                                if (fieldItem.picklist_sortorder)
+                                    picklistCache = $filter('orderBy')(picklistCache, fieldItem.picklist_sortorder);
+
+                                setDependency(picklistCache, fieldItem);
+                                picklists[fieldItem.picklist_id] = picklistCache;
+                            }
+                        }
+                    }
+
+                    //Picklist for all modules (activity_type, yes_no)
+                    var activityTypePicklistCache = $cache.get('picklist_activity_type');
+
+                    if (activityTypePicklistCache)
+                        picklists['activity_type'] = activityTypePicklistCache;
+                    else
+                        picklists['activity_type'] = activityTypes;
+
+                    var transactionTypePicklistCache = $cache.get('picklist_transaction_type');
+
+                    if (transactionTypePicklistCache)
+                        picklists['transaction_type'] = transactionTypePicklistCache;
+                    else {
+                        if (module.name === 'accounts') {
+                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 1 }, true);
+                        } else if (module.name === 'suppliers') {
+                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 2 }, true);
+                        }
+                    }
+
+                    var yesNoPicklistCache = $cache.get('picklist_yes_no');
+
+                    if (yesNoPicklistCache)
+                        picklists['yes_no'] = yesNoPicklistCache;
+                    else
+                        picklists['yes_no'] = yesNo;
+
+                    //All picklists in cache. Return them.
+                    if (picklistIds.length <= 0) {
+                        deferred.resolve(picklists);
+                        return deferred.promise;
+                    }
+
+                    picklistIds = picklistIds.getUnique();
+
+                    this.findPicklist(picklistIds)
+                        .then(function (response) {
+                            if (!response.data) {
+                                deferred.resolve(picklists);
+                                return deferred.promise;
+                            }
+
+                            for (var i = 0; i < fields.length; i++) {
+                                var field = fields[i];
+
+                                if (!field.picklist_id)
+                                    continue;
+
+                                if (picklistIds.indexOf(field.picklist_id) < 0)
+                                    continue;
+
+                                var picklistItems = helper.mergePicklists(response.data);
+                                picklists[field.picklist_id] = $filter('filter')(picklistItems, { type: field.picklist_id }, true);
+                                picklists[field.picklist_id] = $filter('orderByLabel')(picklists[field.picklist_id], $rootScope.language);
+
+                                if (field.picklist_sortorder)
+                                    picklists[field.picklist_id] = $filter('orderBy')(picklists[field.picklist_id], field.picklist_sortorder);
+
+                                if (module.dependencies && module.dependencies.length > 0) {
+                                    var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
+
+                                    if (dependency && dependency.deleted != true && dependency.dependency_type === 'list_field') {
+                                        for (var j = 0; j < picklists[field.picklist_id].length; j++) {
+                                            var picklistItem = picklists[field.picklist_id][j];
+                                            picklistItem.hidden = true;
+                                        }
+                                    }
+                                }
+
+                                setDependency(picklists[field.picklist_id], field);
+                                $cache.put('picklist_' + field.picklist_id, picklists[field.picklist_id]);
+                            }
+
+                            deferred.resolve(picklists);
+                        })
+                        .catch(function (reason) {
+                            deferred.reject(reason.data);
+                        });
+
+                    return deferred.promise;
                 },
 
                 createPicklist: function (picklist) {
@@ -1015,6 +1195,34 @@ angular.module('primeapps')
 
                 updateField: function (fieldId, field) {
                     return $http.put(config.apiUrl + 'module/update_field/' + fieldId, field);
+                },
+
+                createModuleDependency: function (dependency, moduleId) {
+                    this.removeAppModules();
+                    return $http.post(config.apiUrl + 'module/create_dependency/' + moduleId, dependency);
+                },
+
+                updateModuleDependency: function (dependency, moduleId) {
+                    this.removeAppModules();
+                    return $http.put(config.apiUrl + 'module/update_dependency/' + moduleId + '/' + dependency.id, dependency);
+                },
+
+                deleteModuleDependency: function (id) {
+                    this.removeAppModules();
+                    return $http.delete(config.apiUrl + 'module/delete_dependency/' + id);
+                },
+
+                findPicklist: function (ids) {
+                    return $http.post(config.apiUrl + 'picklist/find', ids);
+                },
+
+                removeAppModules: function () {
+                    if ($rootScope.activeAppId) {
+                        var appModules = $filter('filter')($rootScope.appModules, { appId: $rootScope.activeAppId }, true)[0];
+
+                        if (appModules)
+                            $rootScope.appModules.splice($rootScope.appModules.indexOf(appModules), 1);
+                    }
                 }
             };
         }]);

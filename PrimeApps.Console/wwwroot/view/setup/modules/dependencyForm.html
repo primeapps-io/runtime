@@ -1,7 +1,7 @@
 <div class="modal setup-modal" tabindex="-1" role="dialog">
     <form name="dependencyForm" class="form-horizontal form-custom" ng-submit="save(dependencyForm);" autocomplete="off" novalidate>
         <div class="modal-header">
-            <div class="col-sm-6">
+            <div class="col-sm-8">
                 <h4 class="modal-title">{{currentDependency.isNew ? ('Setup.Modules.NewDependency' | translate) : ('Setup.Modules.EditDependency' | translate)}}</h4>
             </div>
             <div class="col-sm-6 col-sm-rigth">
@@ -75,7 +75,7 @@
                                                 data-multiple="1"
                                                 data-max-length="2"
                                                 data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                bs-options="o.id as o.label[language] for o in getPicklist() track by id"
+                                                bs-options="o.id as o['label_'+language] for o in getPicklist() track by id"
                                                 bs-select></button>
                                     </div>
                                 </div>

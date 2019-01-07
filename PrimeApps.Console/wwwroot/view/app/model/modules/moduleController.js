@@ -25,7 +25,7 @@ angular.module('primeapps')
 
 
                 ModuleService.find(requestModel).then(function (response) {
-                    $scope.modules = response.data;
+                    $rootScope.modules = response.data;
                 });
 
             };
