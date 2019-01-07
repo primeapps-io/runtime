@@ -67,7 +67,7 @@ namespace PrimeApps.App.Controllers
                 var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
                 platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
-                if (AppId != 0)
+                if (AppId != null && AppId != 0)
                 {
                     platformUser = platformUserRepository.GetByEmailAndTenantId(email, 1);
                     platformUser.TenantsAsUser.Single().Tenant.AppId = appId;

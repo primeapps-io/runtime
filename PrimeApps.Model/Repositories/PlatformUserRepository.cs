@@ -113,14 +113,18 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
 
-            var tenantForCache = user.TenantsAsUser.First().Tenant;
-            await CacheHelper.SetAsync(tenantKey + user.Id, tenantForCache);
+            if (user != null)
+            {
+                var tenantForCache = user?.TenantsAsUser.FirstOrDefault()?.Tenant;
+                if (tenantForCache != null)
+                    await CacheHelper.SetAsync(tenantKey + user.Id, tenantForCache);
 
-            var tempUserForCache = user;
-            tempUserForCache.TenantsAsOwner = null;
-            tempUserForCache.TenantsAsUser = null;
+                var tempUserForCache = user;
+                tempUserForCache.TenantsAsOwner = null;
+                tempUserForCache.TenantsAsUser = null;
 
-            await CacheHelper.SetAsync(platformKey, tempUserForCache);
+                await CacheHelper.SetAsync(platformKey, tempUserForCache);
+            }
 
             return user;
         }
