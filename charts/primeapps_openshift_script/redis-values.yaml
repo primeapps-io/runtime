@@ -1,0 +1,29 @@
+image:
+  registry: registry.access.redhat.com
+  repository: rhscl/redis-32-rhel7
+  tag: 3.2-29
+  pullPolicy: Always
+rbac:
+  create: true
+cluster:
+ enabled: false
+ slaveCount: 0
+usePassword: true
+password: 'pr!meApps!0'
+master:
+  port: 6379
+  service:
+    type: LoadBalancer
+    port: 6379
+  persistence:
+    enabled: true
+    path: /var/lib/redis/data
+    subPath: ""
+    storageClass: "gp2"
+    accessModes:
+    - ReadWriteOnce
+    size: 8Gi
+slave:
+  service:
+    ## Redis Slave Service type
+    type: ClusterIP
