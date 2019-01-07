@@ -1,12 +1,19 @@
-<div class="menu col-sm-3">
+<div class="menu col-sm-3 collaborators-left-menu">
     <h2 class="setup-title">Teams</h2>
     <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-repeat="team in teamArray" ng-class="team.id === teamId ? 'active' :''">
-            <a href ng-click="selectTeam(team.id)">
-                <i class="{{team.icon}}"> {{team.name}}</i>
-                <p class="small">Member :{{team.team_users.length}}</p>
+        <li ng-repeat="team in teamArray" ng-class="team.id === teamId ? 'active' :''" ng-click="selectTeam(team.id)">
 
-            </a>
+            <div class="user-info">
+                <div class="user-image">
+                    <!--<image src="" />-->
+                    <i ng-class="team.icon"></i>
+                </div>
+                <div class="user-text">
+                    <h2 class="ng-binding">{{team.name}}</h2>
+                    <h3 class="ng-binding">Member:{{team.team_users.length}}</h3>
+                </div>
+            </div>
+
         </li>
 
     </ul>
