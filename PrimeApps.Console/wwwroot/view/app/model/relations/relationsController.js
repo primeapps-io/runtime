@@ -11,35 +11,61 @@ angular.module('primeapps')
             $rootScope.modules = [];
             $rootScope.loading = true;
 
+            $scope.loading = true;
             $scope.requestModel = {
                 limit: 10,
                 offset: 1
             };
 
-            var promiseResult = ModuleService.getModules().then(function (response) {
-                //.find($scope.requestModel).then(function (response) {
-                $rootScope.modules = response.data;
+            RelationsService.count().then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+            RelationsService.find($scope.requestModel).then(function (response) {
+                $scope.relations = response.data;
+                $scope.loading = false;
             });
 
-            $scope.setRelations = function () {
-                $scope.relations = [];
-                for (var i = 0; i < $rootScope.modules.length; i++) {
-                    var module = angular.copy($rootScope.modules[i]);
-                    if (module.relations) {
-                        for (var j = 0; j < module.relations.length; j++) { //
-                            module.relations[j].parent_module = module;
-                        }
-                        $scope.relations = $scope.relations.concat(module.relations);
-                    }
-                }
-                $scope.relations = RelationsService.processRelations($scope.relations);
-                $scope.relationsState = angular.copy($scope.relations);
-                $rootScope.loading = false;
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+
+                RelationsService.find(requestModel).then(function (response) {
+                    $scope.relations = response.data;
+                    $scope.loading = false;
+                });
+
             };
 
-            promiseResult.then(function onSuccess() {
-                $scope.setRelations();
-            });
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
+
+            // var promiseResult = ModuleService.getModules().then(function (response) {
+            //     //.find($scope.requestModel).then(function (response) {
+            //     $rootScope.modules = response.data;
+            // });
+            //
+            // $scope.setRelations = function () {
+            //     $scope.relations = [];
+            //     for (var i = 0; i < $rootScope.modules.length; i++) {
+            //         var module = angular.copy($rootScope.modules[i]);
+            //         if (module.relations) {
+            //             for (var j = 0; j < module.relations.length; j++) { //
+            //                 module.relations[j].parent_module = module;
+            //             }
+            //             $scope.relations = $scope.relations.concat(module.relations);
+            //         }
+            //     }
+            //     $scope.relations = RelationsService.processRelations($scope.relations);
+            //     $scope.relationsState = angular.copy($scope.relations);
+            //     $rootScope.loading = false;
+            // };
+            //
+            // promiseResult.then(function onSuccess() {
+            //     $scope.setRelations();
+            // });
 
             $scope.showFormModal = function (relation) {
                 if (!relation) {
