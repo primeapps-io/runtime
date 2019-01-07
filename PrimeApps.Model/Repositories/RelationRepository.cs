@@ -103,7 +103,7 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Relations
                 .Include(relation => relation.Module)
-                .Include(related => related.RelatedModule)
+                .Include(relation => relation.RelatedModule)
                  .Where(x => !x.Deleted);
 
 
