@@ -1412,7 +1412,7 @@ namespace PrimeApps.Auth.UI
                 {
                     if (applicationInfo.Settings.RegistrationType == Model.Enums.RegistrationType.Tenant)
                     {
-                        var appTenant = platformUser.TenantsAsUser.FirstOrDefault(x => x.Tenant.AppId == applicationInfo.Id);
+                        var appTenant = platformUser.TenantsAsUser?.FirstOrDefault(x => x.Tenant.AppId == applicationInfo.Id);
 
                         if (appTenant != null)
                         {
@@ -1512,12 +1512,10 @@ namespace PrimeApps.Auth.UI
 
                         await Postgres.CreateDatabaseWithTemplate(_tenantRepository.DbContext.Database.GetDbConnection().ConnectionString, tenantId, applicationInfo.Id);
 
-                        var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
-
-                        _userRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
-                        _profileRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
-                        _roleRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
-                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = previewMode };
+                        _userRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        _profileRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        _roleRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
+                        _recordRepository.CurrentUser = new CurrentUser { TenantId = tenantId, UserId = platformUser.Id, PreviewMode = "tenant" };
 
                         _profileRepository.TenantId = _roleRepository.TenantId = _userRepository.TenantId = _recordRepository.TenantId = tenantId;
 
@@ -1534,6 +1532,8 @@ namespace PrimeApps.Auth.UI
                         await _userRepository.UpdateAsync(tenantUser);
                         await _recordRepository.UpdateSystemData(platformUser.Id, DateTime.UtcNow, tenant.Setting.Language, applicationInfo.Id);
 
+                        if (platformUser.TenantsAsUser == null)
+                            platformUser.TenantsAsUser = new List<UserTenant>();
 
                         platformUser.TenantsAsUser.Add(new UserTenant { Tenant = tenant, PlatformUser = platformUser });
 
