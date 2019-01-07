@@ -56,6 +56,16 @@ namespace PrimeApps.Console.Controllers
             base.OnActionExecuting(context);
         }
 
+        [Route("count"), HttpGet]
+        public async Task<IActionResult> Count()
+        {
+            var count = await _moduleRepository.Count();
+
+            if (count == null)
+                return NotFound();
+
+            return Ok(count);
+        }
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {

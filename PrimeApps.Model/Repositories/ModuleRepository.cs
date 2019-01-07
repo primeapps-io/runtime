@@ -27,7 +27,12 @@ namespace PrimeApps.Model.Repositories
             _warehouse = warehouse;
         }
 
-
+        public async Task<int> Count()
+        {
+            var count = DbContext.Modules
+               .Where(x => !x.Deleted).Count();
+            return count;
+        }
 
         public async Task<ICollection<Module>> Find(PaginationModel paginationModel)
         {

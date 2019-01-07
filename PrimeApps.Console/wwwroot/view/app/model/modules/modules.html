@@ -1,5 +1,6 @@
 <div class="col-sm-12" style="border: none ;">
-    <div class="setup-liste-header row">
+    <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+    <div class="setup-liste-header row"  >
         <div class="col-sm-6"><h2 class="setup-title">Modules</h2></div>
         <div class="col-sm-6 list-right-menu">
             <button class="btn add-button"><i class="fas fa-plus"></i> Add New Team</button>
@@ -54,7 +55,7 @@
                              active-class="active"
                              page="requestModel.offset"
                              page-size="requestModel.limit"
-                             total="24"
+                             total="pageTotal"
                              scroll-top="true"
                              hide-if-empty="true"
                              show-prev-next="true"

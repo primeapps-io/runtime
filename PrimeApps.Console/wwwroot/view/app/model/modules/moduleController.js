@@ -8,24 +8,30 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'modules';
-            $rootScope.modules = [];
-
+            $scope.modules = [];
+            $scope.loading = true;
             $scope.requestModel = {
                 limit: 10,
                 offset: 1
             };
 
+            ModuleService.count().then(function (response) {
+                $scope.pageTotal = response.data;
+            });
             ModuleService.find($scope.requestModel).then(function (response) {
-                $rootScope.modules = response.data;
+                $scope.modules = response.data;
+                $scope.loading = false;
             });
 
             $scope.changePage = function (page) {
+                $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
 
                 ModuleService.find(requestModel).then(function (response) {
-                    $rootScope.modules = response.data;
+                    $scope.modules = response.data;
+                    $scope.loading = false;
                 });
 
             };
@@ -33,7 +39,6 @@ angular.module('primeapps')
             $scope.changeOffset = function () {
                 $scope.changePage(1)
             };
-
 
             var getModules = function () {
                 $scope.modulesSetup = [];
@@ -43,7 +48,7 @@ angular.module('primeapps')
                         $scope.modulesSetup.push(module);
                 });
 
-                $scope.customModules = $filter('filter')($scope.modulesSetup, { system_type: 'custom' });
+                $scope.customModules = $filter('filter')($scope.modulesSetup, {system_type: 'custom'});
             };
 
             getModules();
@@ -153,7 +158,7 @@ angular.module('primeapps')
 
                 ModuleService.delete($scope.selectedModuleId)
                     .then(function () {
-                        var deletedModule = $filter('filter')($rootScope.modules, { id: parseInt($scope.selectedModuleId) }, true)[0];
+                        var deletedModule = $filter('filter')($rootScope.modules, {id: parseInt($scope.selectedModuleId)}, true)[0];
                         deletedModule.display = false;
                         deletedModule.order = 0;
                         //Disable another module fields that are linked to the deleted module.
