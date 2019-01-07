@@ -6445,6 +6445,68 @@ button:focus, select:focus {
   padding: 20px; }
 .primeapps button:focus {
   border: none; }
+.primeapps .dropdown .dropdown-input {
+  cursor: pointer;
+  border: solid 1px #cecece;
+  padding-left: 10px;
+  padding-right: 10px; }
+  .primeapps .dropdown .dropdown-input .dropdown-text {
+    display: flex;
+    align-items: center; }
+    .primeapps .dropdown .dropdown-input .dropdown-text h4 {
+      width: 95%; }
+.primeapps .dropdown .dropdown-menu {
+  width: 95%;
+  margin: 0 !important; }
+  .primeapps .dropdown .dropdown-menu li {
+    cursor: pointer; }
+.primeapps .collaborators-left-menu ul .active .user-image {
+  background: #0d6faa !important; }
+.primeapps .collaborators-left-menu ul .active h2 {
+  color: #0d6faa !important; }
+.primeapps .collaborators-left-menu ul .active h3 {
+  color: #0d6faa !important; }
+.primeapps .collaborators-left-menu ul li {
+  cursor: pointer; }
+  .primeapps .collaborators-left-menu ul li .user-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-bottom: none; }
+    .primeapps .collaborators-left-menu ul li .user-info .user-text h2 {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.75);
+      font-weight: bold;
+      line-height: 18px;
+      margin: 0;
+      padding-bottom: 7px;
+      font-weight: 400; }
+    .primeapps .collaborators-left-menu ul li .user-info .user-text h3 {
+      font-size: 12px;
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.75);
+      margin: 0;
+      font-weight: 400; }
+    .primeapps .collaborators-left-menu ul li .user-info .user-image {
+      background-color: rgba(0, 0, 0, 0.25);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 14px;
+      margin-right: 10px; }
+.primeapps .collaborator-info .user-info {
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.5); }
+  .primeapps .collaborator-info .user-info h2 {
+    font-size: 16px; }
+  .primeapps .collaborator-info .user-info h3 {
+    font-size: 12px; }
 .primeapps .page-loading {
   position: absolute;
   display: flex;

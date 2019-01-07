@@ -1,6 +1,6 @@
 //Reset
-button,select{
-  &:focus{
+button, select {
+  &:focus {
     outline: none !important;
   }
 }
@@ -9,12 +9,12 @@ $primeapps-color: #635fb3;
 .primeapps {
 
   //mix
-  @mixin hoverEffect(){
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
-}
+  @mixin hoverEffect() {
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+  }
   //Global
   .margin-0 {
     margin: 0px;
@@ -43,6 +43,109 @@ $primeapps-color: #635fb3;
   //EndGlobal
   button:focus {
     border: none;
+  }
+
+  //DropDown input
+  .dropdown {
+    .dropdown-input {
+      cursor: pointer;
+      border: solid 1px #cecece;
+      padding-left: 10px;
+      padding-right: 10px;
+      .dropdown-text {
+        display: flex;
+        align-items: center;
+        h4 {
+          width: 95%;
+        }
+      }
+
+    }
+    .dropdown-menu {
+      width: 95%;
+      margin: 0 !important;
+
+      li {
+        cursor: pointer;
+      }
+
+    }
+  }
+
+  //collaborators Left Menu
+  .collaborators-left-menu {
+    ul {
+      .active {
+        .user-image {
+          background: #0d6faa !important;
+        }
+        h2 {
+          color: #0d6faa !important;
+        }
+        h3 {
+          color: #0d6faa !important;
+        }
+      }
+
+      li {
+        cursor: pointer;
+        .user-info {
+
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding-top: 20px;
+          padding-bottom: 20px;
+          border-bottom: none;
+          .user-text {
+            h2 {
+              font-size: 16px;
+              color: rgba(0, 0, 0, 0.75);
+              font-weight: bold;
+              line-height: 18px;
+              margin: 0;
+              padding-bottom: 7px;
+              font-weight: 400;
+            }
+            h3 {
+              font-size: 12px;
+              font-weight: bold;
+              color: rgba(0, 0, 0, 0.75);
+              margin: 0;
+              font-weight: 400;
+            }
+          }
+          .user-image {
+            background-color: rgba(0, 0, 0, 0.25);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 14px;
+            margin-right: 10px;
+
+          }
+        }
+
+      }
+    }
+
+  }
+  .collaborator-info {
+    .user-info {
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      h2 {
+        font-size: 16px;
+
+      }
+      h3 {
+        font-size: 12px;
+      }
+    }
   }
   .page-loading {
     position: absolute;
@@ -684,7 +787,7 @@ $primeapps-color: #635fb3;
       font-size: 70px;
       line-height: 70px;
       color: rgba(0, 0, 0, 0.25);
-      &:hover{
+      &:hover {
         cursor: pointer;
         box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05);
       }

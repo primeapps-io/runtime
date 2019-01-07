@@ -1,38 +1,50 @@
 <div class="setup-liste-header row">
-    <div class="col-sm-6"><h2 class="setup-title">{{selectedCollaborator ? selectedCollaborator.full_name:'Collaborators'}}</h2></div>
+    <div class="col-sm-6"><h2 class="setup-title">{{selectedCollaborator ?
+        selectedCollaborator.full_name:'Collaborators'}}</h2></div>
     <div class="col-sm-6 list-right-menu">
 
     </div>
 </div>
 <div>
     <form ng-submit="save()">
-        <input type="email" ng-show="!selectedCollaborator" ng-model="newUserEmail" placeholder="Invite collaborators by email" style="margin-bottom:30px;width: -webkit-fill-available;" />
+        <div class="search-input" ng-show="!selectedCollaborator" >
+            <div class="search-input-icon">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <input ng-model="newUserEmail" placeholder="Invite collaborators by email"
+                   class="form-control form-control-lg form-control-borderless app-search-input ng-pristine ng-valid ng-empty ng-touched"
+                   type="email" style="">
+
+        </div>
+
+
     </form>
+    <br>
     <div class="tab-content" ng-show="!selectedCollaborator">
         <table class="table">
             <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="user in collaboratorArray">
-                    <td ng-click="selectCollaborators(user.id)" style="cursor:pointer;">
-                        {{user.full_name}}
-                        <p class="small">{{user.email}}</p>
-                    </td>
-                    <td>{{user.role ? user.role:'-'}}</td>
-                    <td class="text-right">
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}"
-                                confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
+            <tr ng-repeat="user in collaboratorArray">
+                <td ng-click="selectCollaborators(user.id)" style="cursor:pointer;">
+                    {{user.full_name}}
+                    <p class="small">{{user.email}}</p>
+                </td>
+                <td>{{user.role ? user.role:'-'}}</td>
+                <td class="text-right">
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}"
+                            confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
             </tbody>
         </table>
         <div class="row table-pagination">
@@ -70,28 +82,42 @@
         </div>
     </div>
 
-    <div class="tab-content" ng-show="selectedCollaborator">
-        <div class="center">
-            <i class="fas fa-user-circle fa-9x"></i>
-            {{selectedCollaborator.email}}
-            Joined :{{selectedCollaborator.created_at}}
 
-            <select id="role"
-                    name="role"
-                    ng-show="selectedCollaborator"
-                    class="form-control ng-animate-disabled"
-                    ng-change="update()"
-                    ng-model="selectedCollaborator.role">
-                <option value="">{{'Common.Select' | translate}}</option>
-                <option value="administrator">Administrator</option>
-                <option value="collaborator">Collaborator</option>
-            </select>
+    <div class="col-sm-5 collaborator-info" style="background: #fff;
+    padding: 100px;">
+        <div class="tab-content" ng-show="selectedCollaborator">
+            <div class="row">
+                <div class="col-sm-12 image-upload text-center">
+                    <i class="fas fa-user-circle fa-9x"></i>
+                </div>
+                <div class="col-sm-12 user-info text-center">
+                    <h2> {{selectedCollaborator.email}}</h2>
+                    <h3>Joined :{{selectedCollaborator.created_at}}</h3>
+                </div>
 
-            <button class="btn btn-danger btn-radius">Remove from organization</button>
+                <div class="dropdown col-sm-12">
+                    <div class="dropdown-input" data-animation="am-flip-x" bs-dropdown
+                         aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-text ">
+                            <h4>Administrator</h4>
+                            <i class="fas fa-angle-down"></i>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
+                        <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
+                        <li><a ng-click="$alert('Holy guacamole')">Collaborator</a>
+                        </li>
 
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="col-sm-12 text-center">
+                <br>
+                <button class="btn btn-red btn-radius">Remove from organization</button>
+            </div>
         </div>
+
     </div>
-
-
-
 </div>
