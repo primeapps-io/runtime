@@ -9,6 +9,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
+            var organitzationId = $rootScope.currentOrganization || 1;
 
             $scope.tabelPagination = {
                 currentPage: 1,
@@ -18,7 +19,7 @@ angular.module('primeapps')
 
             $scope.getCollaborators = function () {
                 var filter = {};
-                filter.organization_id = 1;
+                filter.organization_id = organitzationId;
                 filter.page = 1;
                 filter.order_by = null;
                 filter.order_field = null;
@@ -69,7 +70,7 @@ angular.module('primeapps')
                     return false;
 
                 var newCol = {};
-                newCol.organization_id = 1;
+                newCol.organization_id = organitzationId;
                 newCol.role = 'collaborator';
                 newCol.email = $scope.newUserEmail;
                 newCol.first_name = "";
@@ -119,7 +120,7 @@ angular.module('primeapps')
 
                 var data = {};
                 data.user_id = id;
-                data.organization_id = 1;
+                data.organization_id = organitzationIds;
                 data.role = result.role;
 
                 CollaboratorsService.delete(data)
