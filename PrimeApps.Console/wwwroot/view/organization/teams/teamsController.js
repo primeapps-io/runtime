@@ -11,13 +11,9 @@ angular.module('primeapps')
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
             $scope.teamId;
+            var organitzationId = $rootScope.currentOrganization || 1;
 
-            if (!$rootScope.currentOrganization) {
-                // $rootScope.currentOrganization = {
-                //     id: parseInt($stateParams.organizationId)
-                // }
-            }
-
+           
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
@@ -48,7 +44,7 @@ angular.module('primeapps')
             }
 
             $scope.getOrganizationUserList = function () {
-                TeamsService.getOrganizationUsers(1) //TODO Organization ID 
+                TeamsService.getOrganizationUsers(organitzationId) //TODO Organization ID 
                     .then(function (response) {
                         if (response.data) {
                             var userList = response.data;
