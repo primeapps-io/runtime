@@ -212,7 +212,7 @@ namespace PrimeApps.Auth.UI
                     {
                         var platformUser = await _platformUserRepository.GetWithTenants(model.Username);
 
-                        if (platformUser.TenantsAsUser.Count() > 0)
+                        if (platformUser?.TenantsAsUser?.Count() > 0)
                         {
                             var tenant = platformUser.TenantsAsUser.Where(x => x.Tenant.AppId == vm.ApplicationInfo.Id).FirstOrDefault();
                             if (tenant == null)
