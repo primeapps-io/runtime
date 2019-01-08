@@ -11,9 +11,9 @@ angular.module('primeapps')
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
             $scope.teamId;
-            var organitzationId = $rootScope.currentOrganization || 1;
+            var organitzationId = $rootScope.currentOrganization ? $rootSscope.currentOrganization.id : 1;
 
-           
+
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';

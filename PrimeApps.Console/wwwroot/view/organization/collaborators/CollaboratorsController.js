@@ -9,7 +9,7 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
-            var organitzationId = $rootScope.currentOrganization || 1;
+            var organitzationId = $rootScope.currentOrganization ? $rootSscope.currentOrganization.id : 1;
 
             $scope.tabelPagination = {
                 currentPage: 1,
@@ -120,7 +120,7 @@ angular.module('primeapps')
 
                 var data = {};
                 data.user_id = id;
-                data.organization_id = organitzationIds;
+                data.organization_id = organitzationId;
                 data.role = result.role;
 
                 CollaboratorsService.delete(data)
