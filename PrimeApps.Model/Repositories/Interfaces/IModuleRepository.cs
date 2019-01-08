@@ -17,6 +17,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<ICollection<Module>> GetByNamesBasic(List<string> names);
         Task<ICollection<Module>> GetAll();
         Task<ICollection<Module>> GetAllDeleted();
+        Task<ICollection<Module>> GetAllBasic();
         Task<int> Create(Module module);
         Task<int> CreateTable(Module module, string language);
         Task<int> CreateIndexes(Module module);

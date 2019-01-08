@@ -14,6 +14,7 @@ angular.module('primeapps')
                 getModules: function(){
                     return $http.get(config.apiUrl + 'module/get_all');
                 },
+
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
 
