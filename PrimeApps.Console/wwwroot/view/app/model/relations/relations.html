@@ -21,7 +21,7 @@
                 <tr ng-repeat="relation in relations | filter:{deleted:'!true'} | orderBy:'order'">
                     <td>{{relation['label_' + language + '_plural']}}</td>
                     <td>{{relation.parent_module['label_' + language + '_plural']}}</td>
-                    <td>{{relation.relatedModule['label_' + language + '_plural']}}</td>
+                    <td>{{relation.relation_module['label_' + language + '_plural']}}</td>
                     <td>{{relation.relation_type === 'one_to_many' ? ('Setup.Modules.OneToMany' | translate) : ('Setup.Modules.ManyToMany' | translate)}}</td>
                     <td class="text-right">
                         <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(relation)">{{'Common.Edit' | translate}}</button>

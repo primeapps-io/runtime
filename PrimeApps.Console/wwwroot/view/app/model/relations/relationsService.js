@@ -5,11 +5,11 @@ angular.module('primeapps')
     .factory('RelationsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
             return {
-                count:function () {
+                count: function () {
                     return $http.get(config.apiUrl + 'relation/count');
                 },
-                find:function (data) {
-                    return $http.post(config.apiUrl + 'relation/find',data);
+                find: function (data) {
+                    return $http.post(config.apiUrl + 'relation/find', data);
                 },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
@@ -729,9 +729,9 @@ angular.module('primeapps')
                     fields.selectedFields = [];
                     fields.availableFields = [];
                     fields.allFields = [];
-                    if (!module.relatedModule)
+                    if (!module.relation_module)
                         return fields;
-                    var moduleFields = angular.copy(module.relatedModule.fields);
+                    var moduleFields = angular.copy(module.relation_module.fields);
                     moduleFields = $filter('filter')(moduleFields, {
                         display_list: true,
                         lookup_type: '!relation'
@@ -739,7 +739,7 @@ angular.module('primeapps')
 
                     var seperatorFieldMain = {};
                     seperatorFieldMain.name = 'seperator-main';
-                    seperatorFieldMain.label = $rootScope.language === 'tr' ? module.relatedModule.label_tr_singular : module.relatedModule.label_en_singular;
+                    seperatorFieldMain.label = $rootScope.language === 'tr' ? module.relation_module.label_tr_singular : module.relation_module.label_en_singular;
                     seperatorFieldMain.order = 0;
                     seperatorFieldMain.seperator = true;
                     moduleFields.push(seperatorFieldMain);
@@ -792,10 +792,9 @@ angular.module('primeapps')
                         }
                         ;
 
-
                         var newField = {};
                         newField.name = field.name;
-                        newField.label = field.label;
+                        newField.label = field.label ? field.label : field['label_' + $rootScope.language];
                         newField.labelExt = field.labelExt;
                         newField.order = field.order;
                         newField.lookup_type = field.lookup_type;
