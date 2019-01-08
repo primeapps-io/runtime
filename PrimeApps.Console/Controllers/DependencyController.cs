@@ -18,70 +18,70 @@ using PrimeApps.Model.Common;
 
 namespace PrimeApps.Console.Controllers
 {
-    [Route("api/dependency")]
-    public class DependencyController : DraftBaseController
-    {
-        private IDependencyRepository _dependencyRepository;
-        private IProfileRepository _profileRepository;
-        private ISettingRepository _settingRepository;
-        private IConfiguration _configuration;
-        private Warehouse _warehouse;
+	[Route("api/dependency")]
+	public class DependencyController : DraftBaseController
+	{
+		private IDependencyRepository _dependencyRepository;
+		private IProfileRepository _profileRepository;
+		private ISettingRepository _settingRepository;
+		private IConfiguration _configuration;
+		private Warehouse _warehouse;
 
-        private IModuleHelper _moduleHelper;
+		private IModuleHelper _moduleHelper;
 
-        public DependencyController(IDependencyRepository dependencyRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration)
-        {
-            _dependencyRepository = dependencyRepository;
+		public DependencyController(IDependencyRepository dependencyRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration)
+		{
+			_dependencyRepository = dependencyRepository;
 
-            _profileRepository = profileRepository;
-            _settingRepository = settingRepository;
-            _warehouse = warehouse;
-            _configuration = configuration;
-            _moduleHelper = moduleHelper;
-        }
+			_profileRepository = profileRepository;
+			_settingRepository = settingRepository;
+			_warehouse = warehouse;
+			_configuration = configuration;
+			_moduleHelper = moduleHelper;
+		}
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_dependencyRepository, PreviewMode, AppId, TenantId);
-            SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
-            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_dependencyRepository, PreviewMode, AppId, TenantId);
+			SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
+			SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
 
-            base.OnActionExecuting(context);
-        }
+			base.OnActionExecuting(context);
+		}
 
-        [Route("count"), HttpGet]
-        public async Task<IActionResult> Count()
-        {
-            var count = await _dependencyRepository.Count();
+		[Route("count"), HttpGet]
+		public async Task<IActionResult> Count()
+		{
+			var count = await _dependencyRepository.Count();
 
-            if (count == null)
-                return NotFound();
+			if (count < 1)
+				return NotFound();
 
-            return Ok(count);
-        }
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
-        {
-            var relations = await _dependencyRepository.Find(paginationModel);
+			return Ok(count);
+		}
+		[Route("find"), HttpPost]
+		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		{
+			var relations = await _dependencyRepository.Find(paginationModel);
 
-            if (relations == null)
-                return NotFound();
+			if (relations == null)
+				return NotFound();
 
-            return Ok(relations);
-        }
+			return Ok(relations);
+		}
 
-        [Route("get_all"), HttpGet]
-        public async Task<ICollection<Dependency>> GetAll()
-        {
-            return await _dependencyRepository.GetAll();
-        }
+		[Route("get_all"), HttpGet]
+		public async Task<ICollection<Dependency>> GetAll()
+		{
+			return await _dependencyRepository.GetAll();
+		}
 
-        [Route("get_all_deleted"), HttpGet]
-        public async Task<ICollection<Dependency>> GetAllDeleted()
-        {
-            return await _dependencyRepository.GetAllDeleted();
-        }
+		[Route("get_all_deleted"), HttpGet]
+		public async Task<ICollection<Dependency>> GetAllDeleted()
+		{
+			return await _dependencyRepository.GetAllDeleted();
+		}
 
-    }
+	}
 }

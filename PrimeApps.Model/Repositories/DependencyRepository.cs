@@ -36,7 +36,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Dependency>> Find(PaginationModel paginationModel)
         {
-            var dependencies = GetPaginationGQuery(paginationModel)
+            var dependencies =  GetPaginationGQuery(paginationModel)
                 .Skip(paginationModel.Offset * paginationModel.Limit)
                 .Take(paginationModel.Limit).ToList();
 
@@ -96,13 +96,13 @@ namespace PrimeApps.Model.Repositories
         private IQueryable<Dependency> GetDependencyQuery()
         {
             return DbContext.Dependencies
-                .Include(dependency => dependency.Module);
+                .Include(dependency => dependency.ParentModule);
         }
 
         private IQueryable<Dependency> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
             return DbContext.Dependencies
-                .Include(dependency => dependency.Module)
+                .Include(dependency => dependency.ParentModule)
                 .Where(dependency => !dependency.Deleted);
         }
     }

@@ -110,16 +110,12 @@ namespace PrimeApps.Console.Controllers
 		{
 			return await _moduleRepository.GetAllDeleted();
 		}
-        [Route("get_all_deleted"), HttpGet]
-        public async Task<ICollection<Module>> GetAllDeleted()
-        {
-            return await _moduleRepository.GetAllDeleted();
-        }
-        [Route("get_all_basic"), HttpGet]
-        public async Task<ICollection<Module>> GetAllBasic()
-        {
-            return await _moduleRepository.GetAllBasic();
-        }
+
+		[Route("get_all_basic"), HttpGet]
+		public async Task<ICollection<Module>> GetAllBasic()
+		{
+			return await _moduleRepository.GetAllBasic();
+		}
 
 		[Route("create"), HttpPost]
 		public async Task<IActionResult> Create([FromBody]ModuleBindingModel module)

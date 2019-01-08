@@ -58,29 +58,28 @@ namespace PrimeApps.Model.Repositories
 			return modules;
 
 		}
-        public async Task<ICollection<Module>> GetAllBasic()
-        {
-            var modules = await DbContext.Modules.Select(x => new Module
-            {
-                Id = x.Id,
-                Name = x.LabelTrPlural,
-                LabelEnPlural = x.LabelEnPlural,
-                LabelEnSingular = x.LabelEnSingular,
-                LabelTrSingular = x.LabelTrSingular,
-                LabelTrPlural = x.LabelTrPlural,
-                Order = x.Order
+		public async Task<ICollection<Module>> GetAllBasic()
+		{
+			var modules = await DbContext.Modules.Select(x => new Module
+			{
+				Id = x.Id,
+				Name = x.Name,
+				LabelEnPlural = x.LabelEnPlural,
+				LabelEnSingular = x.LabelEnSingular,
+				LabelTrSingular = x.LabelTrSingular,
+				LabelTrPlural = x.LabelTrPlural,
+				Order = x.Order
+			})
+			 .Where(x => !x.Deleted)
+			 .ToListAsync();
 
+			return modules;
 
-            })
-             .Where(x => !x.Deleted)
-             .ToListAsync();
-
-            return modules;
-
-        }public async Task<Module> GetById(int id)
-        {
-            var module = await GetModuleQuery()
-                .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+		}
+		public async Task<Module> GetById(int id)
+		{
+			var module = await GetModuleQuery()
+				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
 			return module;
 		}
@@ -412,9 +411,9 @@ namespace PrimeApps.Model.Repositories
 
 		}
 	}
-    public class MyTable
-    {
-        public string Name { get; set; }
+	public class MyTable
+	{
+		public string Name { get; set; }
 
-    }
+	}
 }
