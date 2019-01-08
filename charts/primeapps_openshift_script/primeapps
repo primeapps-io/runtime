@@ -8,6 +8,8 @@ do
     then
         echo -e "${GREEN}Installing charts...${NC}"
         echo -e "${GREEN}Streaming:${NC}"
+        oc new-project stream
+        oc adm policy add-scc-to-user privileged -z default -n stream
         helm install --name stream --namespace stream -f nats-values.yaml stable/nats
         echo -e "${GREEN}Functions:${NC}"
         helm install --name functions --namespace functions  -f kubeless-values.yaml incubator/kubeless

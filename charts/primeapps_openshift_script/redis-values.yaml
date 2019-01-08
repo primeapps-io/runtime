@@ -1,7 +1,5 @@
 image:
-  registry: registry.access.redhat.com
-  repository: rhscl/redis-32-rhel7
-  tag: 3.2-29
+  tag: 5.0.3-ol-7-r30
   pullPolicy: Always
 rbac:
   create: true

@@ -16,8 +16,8 @@ app:
   imagePullPolicy: Always
   ##Secrets
   pullsecret: container-registry-secret
-  cpu: 10m
-  memory: 256Mi
+  cpu: 100m
+  memory: 1Gi
   ## Ingress settings
   ingress:
     enabled: true
@@ -92,8 +92,8 @@ auth:
   imagePullPolicy: Always
   ##Secrets
   pullsecret: container-registry-secret
-  cpu: 10m
-  memory: 256Mi
+  cpu: 100m
+  memory: 512Mi
   ## Ingress settings
   ingress:
     enabled: true
@@ -112,7 +112,6 @@ auth:
         PlatformDBConnection: "server=pg-dev.primeapps.io;port=5432;username=postgres;password=pr!m€Appsi0;database=platform;command timeout=0;keepalive=30;"
         WarehouseConnection: "Server=tcp:ofisim-dwh-dev.database.windows.net,1433;Database=master;User ID=ofisim;Password=0f!s!mDev;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
         StorageConnection: "http://51.144.165.200:9000"
-        ElasticConnection: "http://es-dev.primeapps.io:9200/"
       AppSettings:
         AuthCertLocation: "/cert/primeapps_id4.pfx"
         AuthCertExportKey: "1q2w3e4r5t"
