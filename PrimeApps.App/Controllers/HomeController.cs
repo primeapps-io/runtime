@@ -62,7 +62,7 @@ namespace PrimeApps.App.Controllers
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-                    await SetValues(userId, null, appId, true);
+                    await SetValues(userId, app, null, appId, true);
 
                     Response.Cookies.Append("app_id", appId.ToString());
                 }
@@ -82,7 +82,7 @@ namespace PrimeApps.App.Controllers
 
                     var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-                    await SetValues(userId, tenant.Id, null, true);
+                    await SetValues(userId, app, tenant.Id, null, true);
 
                     Response.Cookies.Append("tenant_id", tenant.Id.ToString());
                 }
@@ -103,7 +103,7 @@ namespace PrimeApps.App.Controllers
 
                 var userId = await platformUserRepository.GetIdByEmail(HttpContext.User.FindFirst("email").Value);
 
-                await SetValues(userId, tenant.Id, null, false);
+                await SetValues(userId, app, tenant.Id, null, false);
 
                 Response.Cookies.Append("tenant_id", tenant.Id.ToString());
             }
@@ -111,7 +111,7 @@ namespace PrimeApps.App.Controllers
             return View();
         }
 
-        private async Task SetValues(int userId, int? tenantId, int? appId, bool preview = false)
+        private async Task SetValues(int userId, Model.Entities.Platform.App app, int? tenantId, int? appId, bool preview = false)
         {
             var previewMode = _configuration.GetSection("AppSettings")["PreviewMode"];
             ViewBag.Token = await HttpContext.GetTokenAsync("access_token");
@@ -165,6 +165,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
             ViewBag.TenantId = tenantId;
+            ViewBag.AppId = app.Id;
         }
     }
 }

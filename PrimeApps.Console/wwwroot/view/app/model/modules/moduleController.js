@@ -18,6 +18,7 @@ angular.module('primeapps')
             ModuleService.count().then(function (response) {
                 $scope.pageTotal = response.data;
             });
+
             ModuleService.find($scope.requestModel).then(function (response) {
                 $scope.modules = response.data;
                 $scope.loading = false;

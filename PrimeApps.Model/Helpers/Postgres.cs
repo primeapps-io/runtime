@@ -18,6 +18,9 @@ namespace PrimeApps.Model.Helpers
         /// <returns></returns>
         public static string GetConnectionString(string connectionString, int tenantId, string databasePrefix, string externalConnectionString = null)
         {
+            if (string.IsNullOrEmpty(databasePrefix))
+                databasePrefix = "tenant";
+
             var database = databasePrefix + tenantId;
             var builder = new DbConnectionStringBuilder(false);
             builder.ConnectionString = string.IsNullOrWhiteSpace(externalConnectionString) ? connectionString : externalConnectionString;

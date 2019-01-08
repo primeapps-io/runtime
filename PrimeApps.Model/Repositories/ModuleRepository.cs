@@ -87,6 +87,14 @@ namespace PrimeApps.Model.Repositories
             return module;
         }
 
+        public async Task<Module> GetBasicByName(string name)
+        {
+            var module = await DbContext.Modules
+                .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
+
+            return module;
+        }
+
         public async Task<Module> GetByIdBasic(int id)
         {
             var module = await DbContext.Modules

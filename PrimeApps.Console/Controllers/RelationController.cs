@@ -24,17 +24,18 @@ namespace PrimeApps.Console.Controllers
         private IRelationRepository _relationRepository;
         private IProfileRepository _profileRepository;
         private ISettingRepository _settingRepository;
+        private IModuleRepository _moduleRepository;
         private IConfiguration _configuration;
         private Warehouse _warehouse;
 
         private IModuleHelper _moduleHelper;
 
-        public RelationController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration)
+        public RelationController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration)
         {
             _relationRepository = relationRepository;
-
             _profileRepository = profileRepository;
             _settingRepository = settingRepository;
+            _moduleRepository = moduleRepository;
             _warehouse = warehouse;
             _configuration = configuration;
             _moduleHelper = moduleHelper;
@@ -46,6 +47,7 @@ namespace PrimeApps.Console.Controllers
             SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
             SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
             SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+            SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
 
             base.OnActionExecuting(context);
         }
@@ -60,6 +62,7 @@ namespace PrimeApps.Console.Controllers
 
             return Ok(count);
         }
+
         [Route("find"), HttpPost]
         public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
         {
@@ -68,10 +71,14 @@ namespace PrimeApps.Console.Controllers
             if (relations == null)
                 return NotFound();
 
+            foreach (var relation in relations)
+            {
+                var relationModule = await _moduleRepository.GetBasicByName(relation.RelatedModule);
+                relation.RelationModule = relationModule;
+            }
+
             return Ok(relations);
         }
-
-
 
         [Route("get_all"), HttpGet]
         public async Task<ICollection<Relation>> GetAll()

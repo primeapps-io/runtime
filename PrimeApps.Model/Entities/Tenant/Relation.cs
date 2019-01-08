@@ -49,6 +49,9 @@ namespace PrimeApps.Model.Entities.Tenant
         public virtual Module Module { get; set; }
 
         [NotMapped]
+        public virtual Module RelationModule { get; set; }
+
+        [NotMapped]
         public string[] DisplayFieldsArray
         {
             get

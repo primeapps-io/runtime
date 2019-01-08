@@ -10,6 +10,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<Module> GetById(int id);
         Task<Module> GetByName(string name);
+        Task<Module> GetBasicByName(string name);
         Task<Module> GetByLabel(string name);
         Task<Module> GetByIdBasic(int id);
         Task<Module> GetByNameBasic(string name);

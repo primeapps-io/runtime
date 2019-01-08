@@ -19,6 +19,7 @@
     var hasAdminRight = ViewBag.HasAdminRight;
     var tenantId = ViewBag.TenantId;
     var token = ViewBag.Token;
+    var appId = ViewBag.AppId;
 }
 
 <!DOCTYPE html>
@@ -76,6 +77,7 @@
 	    var functionUrl = '@functionUrl';
         var tenantId = '@tenantId';
         var token = '@token';
+        var applicationId = '@appId';
 
 		var getParameterByName = function (name) {
 			var url = window.location.href;
