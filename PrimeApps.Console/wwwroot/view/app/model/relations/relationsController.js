@@ -71,8 +71,8 @@ angular.module('primeapps')
                     relation = {};
                     var sortOrders = [];
 
-                    angular.forEach($scope.relations, function (item) {
-                        sortOrders.push(item.order);
+                    angular.forEach($scope.relations, function (relation) {
+                        sortOrders.push(relation.order);
                     });
 
                     var maxOrder = Math.max.apply(null, sortOrders);

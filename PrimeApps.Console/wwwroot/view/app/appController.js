@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage',
-        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage) {
+    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService',
+        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService) {
 
             $scope.appId = $state.params.appId;
 
@@ -37,6 +37,13 @@ angular.module('primeapps')
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
 
+            $scope.getBasicModules = function () {
+                LayoutService.getBasicModules().then(function (result) {
+                    $scope.modules = result.data;
+                });
+            };
+            
+            $scope.getBasicModules();
 
 
         }

@@ -96,13 +96,13 @@ namespace PrimeApps.Model.Repositories
         private IQueryable<Relation> GetRelationQuery()
         {
             return DbContext.Relations
-                .Include(relation => relation.Module);
+                .Include(relation => relation.ParentModule);
         }
 
         private IQueryable<Relation> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
             return DbContext.Relations
-                .Include(relation => relation.Module)
+                .Include(relation => relation.ParentModule)
                 .Where(relation => !relation.Deleted);
 
 
