@@ -479,7 +479,20 @@ namespace PrimeApps.Model.Helpers
 
                 if (!string.IsNullOrWhiteSpace(findRequest.GroupBy))
                 {
-                    sql += $"GROUP BY \"{findRequest.GroupBy}\"";
+                    var groupByList = new List<string>();
+                    var groupByParts = new List<string>();
+
+                    if (findRequest.GroupBy.Contains(","))
+                        groupByParts = findRequest.GroupBy.Split(',').ToList();
+                    else
+                        groupByList.Add(findRequest.GroupBy);
+
+                    foreach (var groupByPart in groupByParts)
+                    {
+                        groupByList.Add("\"" + groupByPart + "\"");
+                    }
+
+                    sql += $"GROUP BY {string.Join(",", groupByList)}";
                 }
 
                 sql += ";\nEXECUTE SelectQuery";
