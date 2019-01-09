@@ -435,6 +435,10 @@ angular.module('primeapps')
                                 if (currentViewFieldName != field.name || !this.hasFieldDisplayPermission(field))
                                     continue;
 
+                                if (picklists == null) {
+                                    var picklistsValue = this.getPicklists(module);
+                                    picklists = picklistsValue.$$state.value;
+                                }
                                 this.processRecordsField(record, field, true);
                                 this.formatFieldValue(field, record[viewField.field], picklists, record, module);
 
