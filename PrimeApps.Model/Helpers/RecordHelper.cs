@@ -485,7 +485,7 @@ namespace PrimeApps.Model.Helpers
                     if (findRequest.GroupBy.Contains(","))
                         groupByParts = findRequest.GroupBy.Split(',').ToList();
                     else
-                        groupByList.Add(findRequest.GroupBy);
+                        groupByList.Add("\"" + findRequest.GroupBy + "\"");
 
                     foreach (var groupByPart in groupByParts)
                     {
