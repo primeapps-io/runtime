@@ -1051,10 +1051,15 @@ $primeapps-color: #635fb3;
       width: 250px;
       .open {
         background-color: #121212;
+        ul{
+          display: block;
+        }
       }
 
       li {
+        cursor: pointer;
         ul {
+          display: none;
           list-style: none;
           .active {
             color: #fff;
