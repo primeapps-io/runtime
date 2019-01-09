@@ -1902,7 +1902,7 @@ namespace PrimeApps.Model.Helpers
             return sql;
         }
 
-        public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true)
+        public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true, string currencyPicklistValue = null)
         {
             var recordNew = new JObject();
 
@@ -2041,7 +2041,7 @@ namespace PrimeApps.Model.Helpers
 
                                 if (currencyField != null)
                                 {
-                                    var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, (string)record["currency"], picklistLanguage);
+                                    var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, currencyPicklistValue ?? (string)record["currency"], picklistLanguage);
 
                                     if (currencyPicklistItem != null)
                                         culture.NumberFormat.CurrencySymbol = currencyPicklistItem.Value ?? "";
