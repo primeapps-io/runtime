@@ -47,12 +47,11 @@ namespace PrimeApps.Model.Repositories
 
             if (templateType == TemplateType.Email)
             {
-                //templates = templates.Where(x => !x.Deleted)
-                //      .Where(x => x.SharingType == TemplateSharingType.Everybody
-                //|| x.CreatedBy.Id == CurrentUser.UserId
-                //|| x.Shares.Any(j => j.Id == CurrentUser.UserId));
+                templates = templates.Where(x => x.SharingType == TemplateSharingType.Everybody
+                || x.CreatedBy.Id == CurrentUser.UserId
+                || x.Shares.Any(j => j.UserId == CurrentUser.UserId));
 
-                //return await templates.ToListAsync();
+                return await templates.ToListAsync();
             }
             else
             {
@@ -60,8 +59,6 @@ namespace PrimeApps.Model.Repositories
 
                 return await templates.ToListAsync();
             }
-
-            return await templates.ToListAsync();
         }
 
         public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")

@@ -1993,7 +1993,6 @@ namespace PrimeApps.App.Helpers
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
                                                         var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
                                                         var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
-                                                        var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
                                                         var salesOrderModule = await moduleRepository.GetByName("sales_orders");
 
                                                         var stock = new JObject();
@@ -2013,11 +2012,11 @@ namespace PrimeApps.App.Helpers
                                                         }
                                                         else if (module.Name == "purchase_order_products")
                                                         {
-                                                            //var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
-                                                            //stock["supplier"] = purchaseOrderItem["supplier"];
-                                                            //stock["quantity"] = record["quantity"];
-                                                            //stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_input").Id;
-                                                            //stock["purchase_order"] = (int)record["purchase_order"];
+                                                            var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                            stock["supplier"] = purchaseOrderItem["supplier"];
+                                                            stock["quantity"] = record["quantity"];
+                                                            stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_input").Id;
+                                                            stock["purchase_order"] = (int)record["purchase_order"];
                                                         }
 
                                                         var transactionBeforeCreate = await BeforeCreateUpdate(stockModule, stock, modelStateTransaction, appUser.TenantLanguage, moduleRepository, picklistRepository, profileRepository);
