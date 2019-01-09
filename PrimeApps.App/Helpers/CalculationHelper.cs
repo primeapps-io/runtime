@@ -1985,20 +1985,27 @@ namespace PrimeApps.App.Helpers
                                                     {
                                                         var modelStateTransaction = new ModelStateDictionary();
                                                         var transactionTypeField = stockModule != null ? stockModule.Fields.Single(x => x.Name == "stock_transaction_type") : null;
-
+                                                        if (transactionTypeField == null)
+                                                            break;
                                                         if (transactionTypeField == null)
                                                             break;
 
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
                                                         var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
+                                                        var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
+                                                        var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                        var salesOrderModule = await moduleRepository.GetByName("sales_orders");
 
                                                         var stock = new JObject();
                                                         stock["owner"] = appUser.Id;
                                                         stock["product"] = record["product"];
                                                         stock["transaction_date"] = DateTime.UtcNow.Date;
+                                                    
 
                                                         if (module.Name == "order_products" && IsCikanMiktarField)
                                                         {
+                                                            var salesOrderItem = recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
+                                                            stock["customer"] = salesOrderItem["account"];
                                                             stock["cikan_miktar"] = record["quantity"];
                                                             stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_output").Id;
                                                             stock["sales_order"] = (int)record["sales_order"];
@@ -2006,6 +2013,8 @@ namespace PrimeApps.App.Helpers
                                                         }
                                                         else if (module.Name == "purchase_order_products")
                                                         {
+                                                            var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                            stock["supplier"] = purchaseOrderItem["supplier"];
                                                             stock["quantity"] = record["quantity"];
                                                             stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_input").Id;
                                                             stock["purchase_order"] = (int)record["purchase_order"];
@@ -2733,7 +2742,7 @@ namespace PrimeApps.App.Helpers
                                                         }
 
                                                         var iseBaslamaTarihi2 = calisanModule.Fields.SingleOrDefault(x => x.Name == "ise_baslama_tarihi_2");
-                                                        if (iseBaslamaTarihi2 != null && !record["ise_baslama_tarihi_2"].IsNullOrEmpty())
+                                                        if (iseBaslamaTarihi2 != null && !record["ise_baslama_tarihi_2"].IsNullOrEmpty() && record["deneyim_yil"].IsNullOrEmpty())
                                                         {
                                                             var timespan = DateTime.UtcNow.Subtract((DateTime)record["ise_baslama_tarihi_2"]);
                                                             record["deneyim_yil"] = Math.Floor(timespan.TotalDays / 365);
@@ -3323,7 +3332,7 @@ namespace PrimeApps.App.Helpers
 
                     if (expertRecords.IsNullOrEmpty() || expertRecords.Count < 1)
                     {
-                        ErrorHandler.LogError(new Exception("Expert not found! FindRequest: " + findRequestExpert.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "timesheetId:" + timesheetId);
+                        //ErrorHandler.LogError(new Exception("Expert not found! FindRequest: " + findRequestExpert.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "timesheetId:" + timesheetId);
                         return false;
                     }
 

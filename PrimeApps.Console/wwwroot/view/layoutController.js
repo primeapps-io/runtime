@@ -10,11 +10,13 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
         $scope.bottomlinks = angular.element(document.getElementsByClassName('sidebar-bottom-link'));
         $scope.appLauncher = angular.element(document.getElementById('app-launcher'));
         $scope.organizations = [];
+        $scope.menuOpen = [];
         $rootScope.breadcrumbListe = [
             {},
             {},
             {}
         ];
+
 
         LayoutService.me()
             .then(function (response) {
@@ -27,6 +29,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             .then(function (response) {
                 if (response.data) {
                     $scope.organizations = response.data;
+                    $scope.menuOpen[$scope.organizations[0].id] = true;
                 }
             });
 

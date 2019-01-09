@@ -205,7 +205,6 @@
 			"Timesheet": "TIMESHEET",
 			"Timetracker": "TIMETRACKER",
 			"AdvancedDocumentSearch": "DOCUMENT SEARCH",
-			"Likes": "Likes",
 			"Reports": "REPORTS"
 		}
 	},
@@ -404,29 +403,30 @@
 		"NowMonth": "Now Month",
 		"NowDay": "Now Day"
 	},
-	"Note": {
-		"Notes": "Notes",
-		"AddNote": "Add Note",
-		"NewNote": "New Note",
-		"ShowMore": "Show more",
-		"ShowAllNotes": "Show all notes",
-		"ShowAllComments": "Show all comments",
-		"HideNotes": "Hide notes",
-		"HideComments": "Hide comments",
-		"AllNotesLoaded": "All notes are loaded",
-		"Message": "No note found.",
-		"NoteRefresh": "Feeds refreshed",
-		"Submit": "Submit",
-		"You": "You",
-		"And": "and",
-		"Other": "other",
-		"People": "people",
-		"Comment": "Comment",
-		"Like": "Like",
-		"Unlike": "Unlike",
-		"ShareNote": "Share what you think with your teammates",
-		"LimitWarn": "Your message is longer than 4000 characters"
-	},
+  "Note": {
+    "Notes": "Notes",
+    "AddNote": "Add Note",
+    "NewNote": "New Note",
+    "ShowMore": "Show more",
+    "ShowAllNotes": "Show all notes",
+    "ShowAllComments": "Show all comments",
+    "HideNotes": "Hide notes",
+    "HideComments": "Hide comments",
+    "AllNotesLoaded": "All notes are loaded",
+    "Message": "No note found.",
+    "NoteRefresh": "Feeds refreshed",
+    "Submit": "Submit",
+    "You": "You",
+    "And": "and",
+    "Other": "other",
+    "People": "people",
+    "Comment": "Comment",
+    "Like": "Like",
+    "Unlike": "Unlike",
+    "ShareNote": "Share what you think with your teammates",
+    "LimitWarn": "Your message is longer than 4000 characters",
+    "Likes": "Likes"
+  },
 	"Expenses": {
 		"Expenses": "EXPENSES",
 		"AddExpenseItem": "Add Expense Item",
@@ -1636,7 +1636,7 @@
     "ColumnSettings": "Column Settings",
     "HelpDefaultValue": "If you input a value here, it will be used for empty field values in your file. If you mark \"Override column values\" option, every value for this column will be replaced with it.",
     "TemplateName": "Please enter the template name.",
-    "IsMappingSkip": "Skip the matching step."
+    "IsMappingSkip": "Skip the matching step"
   },
 	"Convert": {
 		"Title": "Convert {{type}}",

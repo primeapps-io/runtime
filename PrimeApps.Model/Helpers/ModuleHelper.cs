@@ -69,6 +69,9 @@ namespace PrimeApps.Model.Helpers
         {
             var fields = new List<string>();
 
+            if (module == null)
+                return fields;
+
             switch (module.Name)
             {
                 case "quotes":
@@ -389,6 +392,8 @@ namespace PrimeApps.Model.Helpers
             userModule.Fields.Add(new Field { DataType = DataType.TextSingle, Name = "full_name", LabelTr = "Ad Soyad", LabelEn = "Full Name", Primary = true });
             userModule.Fields.Add(new Field { DataType = DataType.Checkbox, Name = "is_active" });
             userModule.Fields.Add(new Field { DataType = DataType.Checkbox, Name = "is_subscriber" });
+            userModule.Fields.Add(new Field { DataType = DataType.Number, Name = "profile_id" });
+            userModule.Fields.Add(new Field { DataType = DataType.Number, Name = "role_id" });
 
             return userModule;
         }

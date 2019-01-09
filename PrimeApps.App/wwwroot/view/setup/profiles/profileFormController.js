@@ -116,6 +116,11 @@ angular.module('primeapps')
                 var setValue = $scope.profile.PageStart.value;
                 $scope.profile[setValue] = true;
 
+                if ($scope.profile.PageStart.value === "Newsfeed") {
+                    var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
+                    startPageNewsfeedControl.Read = true;
+                }
+
             };
 
 
@@ -153,6 +158,11 @@ angular.module('primeapps')
                     var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
 
                     $scope.profile[setPage.value] = true;
+
+                    if ($scope.profile.startpage === "newsfeed") {
+                        var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
+                        startPageNewsfeedControl.Read = true;
+                    }
 
                     if ($scope.profile.parent_id) {
                         $scope.profile.parent_id = $scope.profile.parent_id.id;

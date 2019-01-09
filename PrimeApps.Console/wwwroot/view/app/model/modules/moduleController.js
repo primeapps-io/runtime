@@ -29,7 +29,6 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-
                 ModuleService.find(requestModel).then(function (response) {
                     $scope.modules = response.data;
                     $scope.loading = false;
