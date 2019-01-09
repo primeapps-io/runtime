@@ -1,16 +1,12 @@
+image:
+  tag: RELEASE.2018-12-27T18-33-08Z
 mode: standalone
 existingSecret: ""
-accessKey: "AKIAIOSFODNN7EXAMPLE"
-secretKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-configPath: "/root/.minio/"
-mountPath: "/export"
+accessKey: "47551d03d5524a4405c517aac418ef55"
+secretKey: "9983289d439f83dfe364b4e9884e9870"
+configPath: ".minio/"
+mountPath: "/storage"
 replicas: 2
-tls:
-  enabled: false
-  ## Create a secret with private.key and public.crt files and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
-  certSecret: ""
-  publicCrt: public.crt
-  privateKey: private.key
 persistence:
   enabled: true
   storageClass: gp2
@@ -18,28 +14,27 @@ persistence:
   size: 10Gi
 service:
   type: ClusterIP
-ingress:
-  enabled: true
-  annotations:
-     kubernetes.io/ingress.class: nginx
-     kubernetes.io/tls-acme: "true"
   path: /
-  hosts:
-    - storage-test.primeapps.io
-  tls: 
-    - secretName: storage-test-tls
-      hosts:
-        - storage-test.primeapps.io
 minioConfig:
   region: "eu-west-1"
   browser: "on"
-  domain: "storage-test.primeapps.io"
+  domain: "storage.okd.primeapps.io"
   redis:
     enable: true
     format: "namespace"
-    address: "cache-redis-master.cache.svc.cluster.local:6379"
+    address: "redis-master.cache.svc:6379"
     password: "pr!meApps!0"
     key: "minio"
 networkPolicy:
   enabled: true
   allowExternal: true
+environment:
+  ## To disable Minio Browser, set this value to off
+  MINIO_BROWSER: "on"
+## TLS Settings for Minio
+tls:
+  enabled: false
+  ## Create a secret with private.key and public.crt files and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
+  certSecret: ""
+  publicCrt: public.crt
+  privateKey: private.key

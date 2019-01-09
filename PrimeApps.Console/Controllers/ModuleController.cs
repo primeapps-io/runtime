@@ -67,6 +67,7 @@ namespace PrimeApps.Console.Controllers
 
 			return Ok(count);
 		}
+
 		[Route("find"), HttpPost]
 		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
 		{

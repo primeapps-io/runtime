@@ -168,7 +168,7 @@ angular.module('primeapps')
             $scope.multiselectModal = function (searchTerm, field) {
                 var picklistItems = [];
 
-                angular.forEach($scope.picklistsModule[field.picklist_id], function (picklistItem) {
+                angular.forEach($scope.picklistsModuleModal[field.picklist_id], function (picklistItem) {
                     if (picklistItem.inactive)
                         return;
 

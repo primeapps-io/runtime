@@ -87,8 +87,9 @@ namespace PrimeApps.Model.Repositories
 					var aggregationType = aggregation.AggregationType.ToString().ToLower();
 					var aggregationField = aggregation.Field != "id" ? aggregation.Field : "created_at";
 					var field = aggregationType + "(" + aggregationField + ")";
+                    string currencyFilterValue = null;
 
-					findRequest.Fields.Add(field);
+                    findRequest.Fields.Add(field);
 
 					if (report.Filters != null && report.Filters.Count > 0)
 					{
@@ -97,7 +98,10 @@ namespace PrimeApps.Model.Repositories
 						foreach (var reportFilter in report.Filters)
 						{
 							findRequest.Filters.Add(new Filter { Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value, No = reportFilter.No });
-						}
+
+                            if (reportFilter.Field == "currency")
+                                currencyFilterValue = reportFilter.Value;
+                        }
 					}
 
 					var records = recordRepository.Find(report.Module.Name, findRequest, roleBasedEnabled, timezoneOffset);
@@ -114,9 +118,9 @@ namespace PrimeApps.Model.Repositories
 							var record = new JObject();
 							record[aggregation.Field] = records[0].First().First();
 
-							var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+							var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules, currencyPicklistValue: currencyFilterValue);
 
-							dataItem["value"] = !recordFormatted[aggregation.Field].IsNullOrEmpty() ? recordFormatted[aggregation.Field] : noneLabel;
+                            dataItem["value"] = !recordFormatted[aggregation.Field].IsNullOrEmpty() ? recordFormatted[aggregation.Field] : noneLabel;
 						}
 						else
 						{
@@ -148,8 +152,9 @@ namespace PrimeApps.Model.Repositories
 					var aggregation = report.Aggregations.Single();
 					var aggregationFieldName = aggregation.Field != "id" ? aggregation.Field : "created_at";
 					var aggregationField = aggregation.AggregationType.ToString().ToLower() + "(" + aggregationFieldName + ")";
+                    string currencyFilterValue = null;
 
-					findRequest.Fields.Add(aggregationField);
+                    findRequest.Fields.Add(aggregationField);
 					findRequest.Fields.Add(report.GroupField);
 
 					if (report.Filters != null && report.Filters.Count > 0)
@@ -159,7 +164,10 @@ namespace PrimeApps.Model.Repositories
 						foreach (var reportFilter in report.Filters)
 						{
 							findRequest.Filters.Add(new Filter { Field = reportFilter.Field, Operator = reportFilter.Operator, Value = reportFilter.Value, No = reportFilter.No });
-						}
+
+                            if (reportFilter.Field == "currency")
+                                currencyFilterValue = reportFilter.Value;
+                        }
 					}
 
 					var records = recordRepository.Find(report.Module.Name, findRequest, roleBasedEnabled, timezoneOffset);
@@ -176,9 +184,9 @@ namespace PrimeApps.Model.Repositories
 						if (aggregation.Field != report.GroupField)
 							record[aggregation.Field] = record.First().First();
 
-						var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules);
+						var recordFormatted = await RecordHelper.FormatRecordValues(report.Module, (JObject)record, moduleRepository, picklistRepository, configuration, appUser.TenantGuid, appUser.TenantLanguage, currentCulture, timezoneOffset, lookupModules, currencyPicklistValue: currencyFilterValue);
 
-						dataItem["label"] = !recordFormatted[report.GroupField].IsNullOrEmpty() ? recordFormatted[report.GroupField] : noneLabel;
+                        dataItem["label"] = !recordFormatted[report.GroupField].IsNullOrEmpty() ? recordFormatted[report.GroupField] : noneLabel;
 						dataItem["valueFormatted"] = recordFormatted[aggregation.Field];
 
 						if (showDisplayValue)

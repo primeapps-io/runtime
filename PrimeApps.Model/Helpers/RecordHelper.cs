@@ -1902,7 +1902,7 @@ namespace PrimeApps.Model.Helpers
             return sql;
         }
 
-        public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true)
+        public static async Task<JObject> FormatRecordValues(Module module, JObject record, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IConfiguration configuration, Guid tenantGuid, string picklistLanguage, string currentCulture, int timezoneMinutesFromUtc = 180, ICollection<Module> lookupModules = null, bool convertImage = false, bool formatNumeric = true, string currencyPicklistValue = null)
         {
             var recordNew = new JObject();
 
@@ -1998,13 +1998,12 @@ namespace PrimeApps.Model.Helpers
                             if (!string.IsNullOrEmpty(field.CurrencySymbol))
                                 culture.NumberFormat.CurrencySymbol = field.CurrencySymbol;
 
-                            if (!record["currency"].IsNullOrEmpty())
-                            {
+                          
                                 var currencyField = module.Fields.FirstOrDefault(x => x.Name == "currency");
 
-                                if (currencyField == null)
-                                {
-                                    switch (module.Name)
+                            if (currencyField == null && !record["currency"].IsNullOrEmpty())
+                            {
+                                switch (module.Name)
                                     {
                                         case "quote_products":
                                             if (moduleQuote == null)
@@ -2041,12 +2040,12 @@ namespace PrimeApps.Model.Helpers
 
                                 if (currencyField != null)
                                 {
-                                    var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, (string)record["currency"], picklistLanguage);
+                                    var currencyPicklistItem = await picklistRepository.FindItemByLabel(currencyField.PicklistId.Value, currencyPicklistValue ?? (string)record["currency"], picklistLanguage);
 
                                     if (currencyPicklistItem != null)
                                         culture.NumberFormat.CurrencySymbol = currencyPicklistItem.Value ?? "";
                                 }
-                            }
+                            
 
                             var formatCurrency = "c" + (field.DecimalPlaces > 0 ? field.DecimalPlaces.ToString() : "2");
                             recordNew[property.Key] = ((decimal)property.Value).ToString(formatCurrency, culture);

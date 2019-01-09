@@ -41,13 +41,13 @@
                                maxlength="50"
                                ng-model="currentActionButton.name">
                     </div>
-                    <div class="form-group"
+                    <div ng-show="currentActionButton.type !== 1" class="form-group"
                          ng-class="{'has-error': actionButtonForm.$submitted && actionButtonForm.url.$invalid}">
                         <label class="col-sm-4 required-field">* URL</label>
                         <input type="text"
                                name="url"
                                class="form-control ng-animate-disabled col-sm-8"
-                               required
+                                ng-required ="currentActionButton.type !== 1"
                                maxlength="100"
                                ng-model="currentActionButton.url">
                     </div>

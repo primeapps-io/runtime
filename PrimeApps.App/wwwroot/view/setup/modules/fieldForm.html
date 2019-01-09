@@ -680,8 +680,8 @@
 											   name="{{picklistItem.order}}"
 											   class="form-control ng-animate-disabled col-sm-8"
 											   maxlength="100"
-											   focus="!picklistItem.label"
-											   ng-disabled="picklistItem.inactive"
+											   focus="!picklistItem.label || picklistItem.system_code"
+                                               ng-disabled="picklistItem.inactive || picklistItem.system_code"
 											   ng-model="picklistItem.label">
 										<span class="option-dragging">{{picklistItem.label}}</span>
 										<span class="action-buttons" ng-if="!picklistItem.id">

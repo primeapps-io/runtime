@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.requestModel = {
                 limit: 10,
-                offset: 1
+                offset: 0
             };
 
             RelationsService.count().then(function (response) {

@@ -17,7 +17,8 @@ angular.module('primeapps')
             var getActionButtons = function (refresh) {
                 ModuleService.getActionButtons($scope.module.id, refresh)
                     .then(function (actionButtons) {
-                        $scope.actionButtons = $filter('filter')(actionButtons, { action_type: '!Scripting' }, true);
+                        //$scope.actionButtons = $filter('filter')(actionButtons, { action_type: '!Scripting' }, true);
+                        $scope.actionButtons = actionButtons;
                         $scope.actionButtonState = angular.copy($scope.actionButtons);
                     });
             };
@@ -36,6 +37,10 @@ angular.module('primeapps')
                     {
                         type: 'Modal',
                         value: 3
+                    },
+                    {
+                        type: 'Script',
+                        value: 1
                     },
                     {
                         type: 'Webhook',
@@ -61,6 +66,9 @@ angular.module('primeapps')
                         value: 3
                     }
                 ];
+
+                if (actionButton.action_type === 'Scripting')
+                    actionButton.type = 1;
 
                 if (actionButton.action_type === 'Webhook')
                     actionButton.type = 2;
@@ -198,6 +206,8 @@ angular.module('primeapps')
                     delete actionButton.isNew;
 
                 actionButton.module_id = $scope.module.id;
+                //if type !Script
+                if (actionButton.type !== 1)
                 actionButton.template = 'template';
                 actionButton.trigger = actionButton.triggerType;
 
@@ -222,7 +232,9 @@ angular.module('primeapps')
                 }
                 else {
                     actionButton.parameters = null;
-                    actionButton.method_type = "";
+                    actionButton.method_type = null;
+                    actionButton.url = actionButton.type === 1 ? '#' : $scope.currentActionButton.url;
+
                 }
 
                 if (!actionButton.css_class)

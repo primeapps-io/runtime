@@ -1985,14 +1985,14 @@ namespace PrimeApps.App.Helpers
                                                     {
                                                         var modelStateTransaction = new ModelStateDictionary();
                                                         var transactionTypeField = stockModule != null ? stockModule.Fields.Single(x => x.Name == "stock_transaction_type") : null;
-
+                                                        if (transactionTypeField == null)
+                                                            break;
                                                         if (transactionTypeField == null)
                                                             break;
 
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
                                                         var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
                                                         var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
-                                                        var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
                                                         var salesOrderModule = await moduleRepository.GetByName("sales_orders");
 
                                                         var stock = new JObject();
