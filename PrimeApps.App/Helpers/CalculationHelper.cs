@@ -1993,15 +1993,18 @@ namespace PrimeApps.App.Helpers
                                                         var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
                                                         var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
                                                         var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                        var salesOrderModule = await moduleRepository.GetByName("sales_orders");
 
                                                         var stock = new JObject();
                                                         stock["owner"] = appUser.Id;
                                                         stock["product"] = record["product"];
                                                         stock["transaction_date"] = DateTime.UtcNow.Date;
-                                                        stock["supplier"] = purchaseOrderItem["supplier"];
+                                                    
 
                                                         if (module.Name == "order_products" && IsCikanMiktarField)
                                                         {
+                                                            var salesOrderItem = recordRepository.GetById(salesOrderModule, (int)record["sales_order"], false);
+                                                            stock["customer"] = salesOrderItem["account"];
                                                             stock["cikan_miktar"] = record["quantity"];
                                                             stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_output").Id;
                                                             stock["sales_order"] = (int)record["sales_order"];
@@ -2009,6 +2012,8 @@ namespace PrimeApps.App.Helpers
                                                         }
                                                         else if (module.Name == "purchase_order_products")
                                                         {
+                                                            var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
+                                                            stock["supplier"] = purchaseOrderItem["supplier"];
                                                             stock["quantity"] = record["quantity"];
                                                             stock["stock_transaction_type"] = transactionTypes.Items.Single(x => x.SystemCode == "stock_input").Id;
                                                             stock["purchase_order"] = (int)record["purchase_order"];
