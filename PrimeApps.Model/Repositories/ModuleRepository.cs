@@ -410,6 +410,15 @@ namespace PrimeApps.Model.Repositories
 
 
 		}
+
+		public async Task<ICollection<Field>> GetModuleFieldByName(string moduleName)
+		{
+			var module = await DbContext.Modules
+				.Include(x => x.Fields)
+				.FirstOrDefaultAsync(x => x.Name == moduleName && !x.Deleted);
+
+			return module.Fields;
+		}
 	}
 	public class MyTable
 	{

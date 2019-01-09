@@ -15,6 +15,7 @@ using System;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Linq;
 using PrimeApps.Model.Common;
+using System.Web.Http;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -466,6 +467,14 @@ namespace PrimeApps.Console.Controllers
 			var moduleSettings = await _settingRepository.GetAsync(SettingType.Module);
 
 			return Ok(moduleSettings);
+		}
+
+		[Route("get_module_fields"), HttpGet]
+		public async Task<IActionResult> GetModuleFieldByName([FromUri]string moduleName)
+		{
+			var fields = await _moduleRepository.GetModuleFieldByName(moduleName);
+
+			return Ok(fields);
 		}
 	}
 }

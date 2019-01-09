@@ -789,8 +789,7 @@ angular.module('primeapps')
                             if (selectedFieldName) {
                                 selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
                             }
-                        }
-                        ;
+                        } ;
 
                         var newField = {};
                         newField.name = field.name;

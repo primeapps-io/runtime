@@ -190,24 +190,30 @@ angular.module('primeapps')
 
             $scope.relatedModuleChanged = function () {
 
-                if ($scope.currentRelation.module) {
+                var relatedModuleName = $scope.currentRelation.relation_module.name;
+                var filter = {};
+                $scope.parentModuleLists = filter['label_' + $rootScope.language + '_plural'] = '!' + relatedModuleName['label_' + $rootScope.language + '_plural'];
+                $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
+                ModuleService.getModuleFields(relatedModuleName).then(function (response) {
+                    $scope.currentRelation.relation_module.fields = response.data;
+                    if ($scope.currentRelation.module) {
+                        $scope.currentRelation.relationField = null;
 
-                    $scope.currentRelation.relationField = null;
+                        if ($scope.currentRelation.relation_module)
+                            $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.relation_module.fields, { data_type: 'lookup', lookup_type: $scope.currentRelation.module.name, deleted: false }, true).length > 0;
 
-                    if ($scope.currentRelation.relatedModule)
-                        $scope.currentRelation.hasRelationField = $filter('filter')($scope.currentRelation.relation_module.fields, { data_type: 'lookup', lookup_type: $scope.currentRelation.module.name, deleted: false }, true).length > 0;
+                        $scope.currentRelation.display_fields = null;
+                        $scope.fields = RelationsService.getFields($scope.currentRelation, $scope.$parent.modules);
 
-                    $scope.currentRelation.display_fields = null;
-                    $scope.fields = RelationsService.getFields($scope.currentRelation, $scope.$parent.modules);
-
-                    if ($scope.currentRelation.relation_type === 'many_to_many')
-                        $scope.bindDragDrop();
-
-                    $scope.relationTypeChanged = function () {
                         if ($scope.currentRelation.relation_type === 'many_to_many')
                             $scope.bindDragDrop();
-                    };
-                }
+
+                        $scope.relationTypeChanged = function () {
+                            if ($scope.currentRelation.relation_type === 'many_to_many')
+                                $scope.bindDragDrop();
+                        };
+                    }
+                });
             };
 
             $scope.save = function (relationForm) {
@@ -234,7 +240,7 @@ angular.module('primeapps')
                     });
                 }
                 else {
-                    var primaryField = $filter('filter')(relation.relatedModule.fields, { primary: true })[0];
+                    var primaryField = $filter('filter')(relation.relation_module.fields, { primary: true })[0];
                     relation.display_fields.push(primaryField.name);
                 }
 
@@ -259,7 +265,7 @@ angular.module('primeapps')
                         hasRelationField: false,
                         isNew: true,
                         order: $scope.currentRelation.order,
-                        relatedModule: $scope.currentRelation.relatedModule, //$scope.module,
+                        relation_module: $scope.currentRelation.relation_module, //$scope.module,
                         relationField: null,
                         relation_type: "many_to_many",
                         $valid: true,
@@ -284,7 +290,6 @@ angular.module('primeapps')
                         createRelationManyToManyModule();
                     else {
                         $scope.loading = true;
-                        $scope.$parent.getBasicModules();
                         ngToast.create({
                             content: $filter('translate')('Setup.Modules.RelationSaveSuccess'),
                             className: 'success'
