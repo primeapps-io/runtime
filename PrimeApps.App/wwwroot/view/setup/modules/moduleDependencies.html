@@ -33,7 +33,7 @@
 
                                 <td class="text-right">
                                     <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(dependency)">{{'Common.Edit' | translate}}</button>
-                                    <button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(dependency)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
+                                    <button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(dependency)" ng-disabled="dependency.parentField.systemRequired" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
                                 </td>
                             </tr>
                         </tbody>
