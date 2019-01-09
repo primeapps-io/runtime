@@ -6804,7 +6804,8 @@ button:focus, select:focus {
   .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
     padding-left: 40px;
     padding-right: 40px;
-    border: none; }
+    border: none;
+    height: 80vh; }
     .primeapps .setup-modal .modal-content .form-custom, .primeapps .module-modal .modal-content .form-custom {
       margin-bottom: 100px; }
       .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {

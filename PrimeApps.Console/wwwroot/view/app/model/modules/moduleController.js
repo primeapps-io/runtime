@@ -11,7 +11,7 @@ angular.module('primeapps')
             $scope.modules = [];
             $scope.loading = true;
             $scope.requestModel = {
-                limit: 10,
+                limit: "10",
                 offset: 0
             };
 
