@@ -2733,7 +2733,7 @@ namespace PrimeApps.App.Helpers
                                                         }
 
                                                         var iseBaslamaTarihi2 = calisanModule.Fields.SingleOrDefault(x => x.Name == "ise_baslama_tarihi_2");
-                                                        if (iseBaslamaTarihi2 != null && !record["ise_baslama_tarihi_2"].IsNullOrEmpty())
+                                                        if (iseBaslamaTarihi2 != null && !record["ise_baslama_tarihi_2"].IsNullOrEmpty() && record["deneyim_yil"].IsNullOrEmpty())
                                                         {
                                                             var timespan = DateTime.UtcNow.Subtract((DateTime)record["ise_baslama_tarihi_2"]);
                                                             record["deneyim_yil"] = Math.Floor(timespan.TotalDays / 365);
