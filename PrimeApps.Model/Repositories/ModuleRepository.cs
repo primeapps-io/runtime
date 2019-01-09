@@ -68,7 +68,8 @@ namespace PrimeApps.Model.Repositories
 				LabelEnSingular = x.LabelEnSingular,
 				LabelTrSingular = x.LabelTrSingular,
 				LabelTrPlural = x.LabelTrPlural,
-				Order = x.Order
+				Order = x.Order,
+				Display = x.Display
 			})
 			 .Where(x => !x.Deleted)
 			 .ToListAsync();

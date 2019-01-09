@@ -16,94 +16,96 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories
 {
-    public class DependencyRepository : RepositoryBaseTenant, IDependencyRepository
-    {
-        private Warehouse _warehouse;
+	public class DependencyRepository : RepositoryBaseTenant, IDependencyRepository
+	{
+		private Warehouse _warehouse;
 
-        public DependencyRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
+		public DependencyRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
-        public DependencyRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
-        {
-            _warehouse = warehouse;
-        }
+		public DependencyRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
+		{
+			_warehouse = warehouse;
+		}
 
-        public async Task<int> Count()
-        {
-            var count = DbContext.Dependencies
-               .Where(x => !x.Deleted).Count();
-            return count;
-        }
+		public async Task<int> Count()
+		{
+			var count = DbContext.Dependencies
+			   .Where(x => !x.Deleted).Count();
+			return count;
+		}
 
-        public async Task<ICollection<Dependency>> Find(PaginationModel paginationModel)
-        {
-            var dependencies =  GetPaginationGQuery(paginationModel)
-                .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToList();
+		public async Task<ICollection<Dependency>> Find(PaginationModel paginationModel)
+		{
+			var dependencies = GetPaginationGQuery(paginationModel)
+				.Skip(paginationModel.Offset * paginationModel.Limit)
+				.Take(paginationModel.Limit).ToList();
 
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+			{
+				var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
 
-                if (paginationModel.OrderType == "asc")
-                {
-                    dependencies = dependencies.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    dependencies = dependencies.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
+				if (paginationModel.OrderType == "asc")
+				{
+					dependencies = dependencies.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+				else
+				{
+					dependencies = dependencies.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+				}
 
-            }
+			}
 
-            return dependencies;
+			return dependencies;
 
-        }
+		}
 
-        public async Task<Dependency> GetById(int id)
-        {
-            var dependency = await GetDependencyQuery()
-                .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+		public async Task<Dependency> GetById(int id)
+		{
+			var dependency = await GetDependencyQuery()
+				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
-            return dependency;
-        }
+			return dependency;
+		}
 
-        public async Task<ICollection<Dependency>> GetAll()
-        {
-            var dependencies = await GetDependencyQuery()
-                .Where(x => !x.Deleted)
-                .ToListAsync();
+		public async Task<ICollection<Dependency>> GetAll()
+		{
+			var dependencies = await GetDependencyQuery()
+				.Where(x => !x.Deleted)
+				.ToListAsync();
 
-            return dependencies;
-        }
+			return dependencies;
+		}
 
-        public async Task<ICollection<Dependency>> GetAllDeleted()
-        {
-            var dependencies = await GetDependencyQuery()
-                .Where(x => x.Deleted)
-                .ToListAsync();
+		public async Task<ICollection<Dependency>> GetAllDeleted()
+		{
+			var dependencies = await GetDependencyQuery()
+				.Where(x => x.Deleted)
+				.ToListAsync();
 
-            return dependencies;
-        }
+			return dependencies;
+		}
 
-        public async Task<Dependency> GetDependency(int id)
-        {
-            var dependency = await DbContext.Dependencies
-                .FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
+		public async Task<Dependency> GetDependency(int id)
+		{
+			var dependency = await DbContext.Dependencies
+				.FirstOrDefaultAsync(x => x.Id == id && !x.Deleted);
 
-            return dependency;
-        }
+			return dependency;
+		}
 
-        private IQueryable<Dependency> GetDependencyQuery()
-        {
-            return DbContext.Dependencies
-                .Include(dependency => dependency.ParentModule);
-        }
+		private IQueryable<Dependency> GetDependencyQuery()
+		{
+			return DbContext.Dependencies
+				.Include(dependency => dependency.Module)
+				.ThenInclude(x => x.Fields);
+		}
 
-        private IQueryable<Dependency> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
-        {
-            return DbContext.Dependencies
-                .Include(dependency => dependency.ParentModule)
-                .Where(dependency => !dependency.Deleted);
-        }
-    }
+		private IQueryable<Dependency> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
+		{
+			return DbContext.Dependencies
+				.Include(dependency => dependency.Module).ThenInclude(module => module.Sections)
+				.Include(dependency => dependency.Module).ThenInclude(module => module.Fields)
+				.Where(dependency => !dependency.Deleted);
+		}
+	}
 }

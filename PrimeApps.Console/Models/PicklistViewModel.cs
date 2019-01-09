@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PrimeApps.Console.Models.ViewModel.Crm.Picklist
+namespace PrimeApps.Console.Models.ViewModel.Picklist
 {
     public class PicklistViewModel
     {

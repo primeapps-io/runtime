@@ -63,12 +63,12 @@ namespace PrimeApps.Console.Controllers
 		[Route("find"), HttpPost]
 		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
 		{
-			var relations = await _dependencyRepository.Find(paginationModel);
+			var dependencies = await _dependencyRepository.Find(paginationModel);
 
-			if (relations == null)
+			if (dependencies == null)
 				return NotFound();
 
-			return Ok(relations);
+			return Ok(dependencies);
 		}
 
 		[Route("get_all"), HttpGet]

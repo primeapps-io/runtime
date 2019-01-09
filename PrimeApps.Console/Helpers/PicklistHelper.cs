@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PrimeApps.Console.Models;
-using PrimeApps.Console.Models.ViewModel.Crm.Picklist;
+using PrimeApps.Console.Models.ViewModel.Picklist;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 

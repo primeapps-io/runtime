@@ -147,11 +147,11 @@ angular.module('primeapps')
                     if (moduleName === 'stage_history')
                         moduleName = 'opportunities';
 
-                    var module = $filter('filter')($rootScope.modules, {name: moduleName}, true)[0];
+                    var module = $filter('filter')($rootScope.modules, { name: moduleName }, true)[0];
 
                     if (!module) return false;
 
-                    var permission = $filter('filter')($rootScope.user.profile.permissions, {module_id: module.id}, true)[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, { module_id: module.id }, true)[0];
 
                     if (permission && permission[operation]) {
                         if ((operation === 'Modify' || operation === 'Remove') && record && (!record.shared_users_edit || record.shared_users_edit.indexOf($rootScope.user.ID) === -1) && (record.shared_users && record.shared_users.indexOf($rootScope.user.ID) > -1)) {
@@ -200,7 +200,7 @@ angular.module('primeapps')
                     return false;
                 },
                 hasDocumentsPermission: function (operation) {
-                    var permission = $filter('filter')($rootScope.user.profile.permissions, {type: 1})[0];
+                    var permission = $filter('filter')($rootScope.user.profile.permissions, { type: 1 })[0];
 
                     if (!permission)
                         return false;
@@ -609,7 +609,7 @@ angular.module('primeapps')
                                 picklistItem.system_code = picklistResponseItem.system_code;
                                 picklistItem.order = picklistResponseItem.order;
                                 picklistItem.inactive = picklistResponseItem.inactive;
-                                picklistItem.labelStr = picklistItem.label[$rootScope.user.tenant_language];
+                                picklistItem.labelStr = picklistItem.label[$rootScope.language];
 
                                 picklistItems.push(picklistItem);
                             }
@@ -926,23 +926,23 @@ angular.module('primeapps')
                 var template = {
                     excel: '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',
                     excelML: '<?xml version="1.0"?>'
-                    + '<?mso-application progid="Excel.Sheet"?>'
-                    + '<ss:Workbook xmlns:="urn:schemas-microsoft-com:office:spreadsheet" '
-                    + 'xmlns:o="urn:schemas-microsoft-com:office:office" '
-                    + 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
-                    + 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" '
-                    + 'xmlns:html="http://www.w3.org/TR/REC-html40">'
-                    + '<ss:Styles>'
-                    + '<ss:Style ss:ID="1">'
-                    + '<ss:Font ss:Bold="1"/>'
-                    + '</ss:Style>'
-                    + '</ss:Styles>'
-                    + '<ss:Worksheet ss:Name="Sheet1">'
-                    + '<ss:Table>'
-                    + '{columns}{rows}'
-                    + '</ss:Table>'
-                    + '</ss:Worksheet>'
-                    + '</ss:Workbook>',
+                        + '<?mso-application progid="Excel.Sheet"?>'
+                        + '<ss:Workbook xmlns:="urn:schemas-microsoft-com:office:spreadsheet" '
+                        + 'xmlns:o="urn:schemas-microsoft-com:office:office" '
+                        + 'xmlns:x="urn:schemas-microsoft-com:office:excel" '
+                        + 'xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet" '
+                        + 'xmlns:html="http://www.w3.org/TR/REC-html40">'
+                        + '<ss:Styles>'
+                        + '<ss:Style ss:ID="1">'
+                        + '<ss:Font ss:Bold="1"/>'
+                        + '</ss:Style>'
+                        + '</ss:Styles>'
+                        + '<ss:Worksheet ss:Name="Sheet1">'
+                        + '<ss:Table>'
+                        + '{columns}{rows}'
+                        + '</ss:Table>'
+                        + '</ss:Worksheet>'
+                        + '</ss:Workbook>',
                     rowOpen: "<ss:Row>",
                     rowClose: "</ss:Row>",
                     dataOpenString: '<ss:Data ss:Type="String">',
@@ -1014,7 +1014,7 @@ angular.module('primeapps')
                 }
 
                 var byteArray = new Uint8Array(byteNumbers);
-                var blob = new Blob([byteArray], {type: 'application/octet-stream'});
+                var blob = new Blob([byteArray], { type: 'application/octet-stream' });
 
                 /// save it by file save dialog.
                 saveAs(blob, name);

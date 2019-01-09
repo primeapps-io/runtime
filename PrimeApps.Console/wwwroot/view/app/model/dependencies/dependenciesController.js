@@ -8,10 +8,9 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Models";
             $scope.$parent.activeMenu = 'model';
             $scope.$parent.activeMenuItem = 'dependencies';
-            $rootScope.loading = true;
             $scope.loading = true;
             $scope.picklistsModule = {};
-
+            // $scope.moduleLists = $scope.$parent.modules;//$filter('filter')(, { display: true }, true);
             $scope.requestModel = {
                 limit: 10,
                 offset: 1
@@ -21,13 +20,19 @@ angular.module('primeapps')
                 $scope.pageTotal = response.data;
             });
             DependenciesService.find($scope.requestModel).then(function (response) {
-                $scope.dependencies = response.data;
-                angular.forEach($scope.dependencies, function (dependency) {
-                    DependenciesService.getPicklists(dependency.parent_module.name)
-                        .then(function (picklists) {
-                            $scope.picklistsModule = angular.merge({}, $scope.picklistsModule, picklists);
-                        });
+                var dependencies = response.data;
+                angular.forEach(dependencies, function (dependency) {
+                    dependency.parentField = $filter('filter')(dependency.module.fields, { name: dependency.parent_field, deleted: '!true' })[0];
+                    dependency.childField = $filter('filter')(dependency.module.fields, { name: dependency.child_field, deleted: '!true' })[0];
+                    dependency.parent_module = dependency.module;
+                    dependency.dependencyType = dependency.dependency_type === 'display' ? 'display' : 'value';
+                    dependency.type = dependency.dependency_type;
+                    dependency.sectionField = $filter('filter')(dependency.module.sections, {
+                        name: dependency.child_section,
+                        deleted: '!true'
+                    })[0];
                 });
+                $scope.dependencies = dependencies;
                 $scope.loading = false;
             });
 
@@ -36,67 +41,44 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-
-                DependenciesService.find(requestModel).then(function (response) {
-                    $scope.dependencies = response.data;
-                    angular.forEach($scope.dependencies, function (dependency) {
-                        DependenciesService.getPicklists(dependency.parent_module.name)
-                            .then(function (picklists) {
-                                $scope.picklistsModule = angular.merge({}, $scope.picklistsModule, picklists);
-                            });
+                DependenciesService.find($scope.requestModel).then(function (response) {
+                    var dependencies = response.data;
+                    angular.forEach(dependencies, function (dependency) {
+                        dependency.parentField = $filter('filter')(dependency.module.fields, { name: dependency.parent_field, deleted: '!true' })[0];
+                        dependency.childField = $filter('filter')(dependency.module.fields, { name: dependency.child_field, deleted: '!true' })[0];
+                        dependency.parent_module = dependency.module;
+                        dependency.dependencyType = dependency.dependency_type === 'display' ? 'display' : 'value';
+                        dependency.type = dependency.dependency_type;
+                        dependency.sectionField = $filter('filter')(dependency.module.sections, {
+                            name: dependency.child_section,
+                            deleted: '!true'
+                        })[0];
                     });
+                    $scope.dependencies = dependencies;
                     $scope.loading = false;
                 });
 
             };
 
-
-            // var promiseResult = ModuleService.getModules().then(function (response) {
-            //     $rootScope.modules = response.data;
-            //     $scope.setDependencies();
-            // });
-            //
-            // promiseResult.then(function onSuccess() {
-            //     $scope.moduleLists = $filter('filter')($rootScope.modules, {display: true}, true);
-            // });
             $scope.picklistsModule = {};
 
-            // $scope.setDependencies = function () {
-            //     $scope.dependencies = [];
-            //     for (var i = 0; i < $rootScope.modules.length; i++) {
-            //         var module = angular.copy($rootScope.modules[i]);
-            //
-            //         ModuleService.getPicklists(module)
-            //             .then(function (picklists) {
-            //                 $scope.picklistsModule = angular.merge({}, $scope.picklistsModule, picklists);
-            //             });
-            //         var dependencies = $filter('filter')(DependenciesService.processDependencies(module), {deleted: false}, true);
-            //         if (dependencies) {
-            //             for (var j = 0; j < dependencies.length; j++) {
-            //                 dependencies[j].parent_module = module;
-            //                 if (systemReadonlyFields.all.indexOf(dependencies[j].parentField.name) > -1 || (systemReadonlyFields[module.name] && systemReadonlyFields[module.name].indexOf(dependencies[j].parentField.name) > -1))
-            //                     dependencies[j].hidden = true;
-            //             }
-            //
-            //             $scope.dependencies = $scope.dependencies.concat(dependencies);
-            //         }
-            //     }
-            //     $rootScope.loading = false;
-            //     $scope.dependenciesState = angular.copy($scope.dependencies);
-            // };
-
-
             $scope.moduleChanged = function () {
+
+                $scope.parentDisplayFields = [];
+                $scope.parentValueFields = [];
+                $scope.childValueListFields = [];
+                $scope.childValueTextFields = [];
+                $scope.childDisplayFields = [];
+                $scope.picklistFields = [];
+
                 $scope.module = $scope.currentDependency.module;
                 $scope.sections = $scope.currentDependency.module.sections;
-                /*ModuleService.getPicklists($scope.module)
-                    .then(function (picklists) {
-                        $scope.picklistsModule = angular.copy(picklists);
-                    });*/
-                getFields();
-                getDependencyTypes();
-                getValueChangeTypes();
-
+                ModuleService.getModuleFields($scope.module.name).then(function (response) {
+                    $scope.module.fields = response.data;
+                    getFields();
+                    getDependencyTypes();
+                    getValueChangeTypes();
+                });
             };
 
             //$scope.module = angular.copy(module);
@@ -108,18 +90,18 @@ angular.module('primeapps')
 
             $scope.getPicklist = function () {
                 var parentField = $filter('filter')($scope.module.fields, { name: $scope.currentDependency.parent_field }, true)[0];
-                var picklist = $filter('filter')($scope.picklistsModule.data, { deleted: false });//[parentField.picklist_id], { inactive: '!true' });
+                var picklist = $filter('filter')($scope.picklistsModule[parentField.picklist_id], { inactive: '!true' });
 
                 return picklist;
             };
 
             var getFields = function () {
-                $scope.parentDisplayFields = [];
+                /*$scope.parentDisplayFields = [];
                 $scope.parentValueFields = [];
                 $scope.childValueListFields = [];
                 $scope.childValueTextFields = [];
                 $scope.childDisplayFields = [];
-                $scope.picklistFields = [];
+                $scope.picklistFields = [];*/
 
                 angular.forEach($scope.module.fields, function (field) {
                     if (isSystemField(field))
@@ -209,8 +191,8 @@ angular.module('primeapps')
             };
             /*getFields();
             getDependencyTypes();
-            getValueChangeTypes();*/
-
+            getValueChangeTypes();
+            */
             $scope.dependencyTypeChanged = function () {
                 if ($scope.currentDependency.dependencyType === 'value') {
                     $scope.currentDependency.type = 'list_text';
@@ -218,7 +200,7 @@ angular.module('primeapps')
 
                 $scope.currentDependency.parent_field = null;
                 $scope.currentDependency.child_field = null;
-                $scope.currentDependency.child_section = null;
+                // $scope.currentDependency.child_section = null;
             };
 
             $scope.valueChangeTypeChanged = function () {
@@ -301,7 +283,7 @@ angular.module('primeapps')
             var setCurrentDependency = function (dependency) {
                 $scope.currentDependency = dependency;
                 $scope.currentDependency.hasRelationField = true;
-                $scope.currentDependency.module = dependency.parent_module;
+                $scope.currentDependency.module = dependency.module;
                 $scope.currentDependencyState = angular.copy($scope.currentDependency);
             };
 
@@ -365,24 +347,24 @@ angular.module('primeapps')
 
                     $scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
                     // $scope.dependencies = $filter('filter')(DependenciesService.processDependencies($scope.module), { deleted: false }, true);
-                    ModuleService.getModules().then(function (response) {
-
-                        $rootScope.modules = response.data;
-                        $scope.moduleLists = $filter('filter')($rootScope.modules, { display: true }, true);
-                        //$scope.dependencies = $filter('filter')(DependenciesService.processDependencies($scope.module), { deleted: false }, true);
-                        $scope.setDependencies();
-                        angular.forEach($scope.dependencies, function (dependency) {
-                            if (dependency.type && (dependency.type === 'list_field' || dependency.type === 'list_value'))
-                                $cache.remove('picklist_' + dependency.childField.picklist_id);
-                        });
-
-                        ngToast.create({
-                            content: $filter('translate')('Setup.Modules.DependencySaveSuccess'),
-                            className: 'success'
-                        });
-                        $scope.saving = false;
-                        $scope.addNewDependencyModal.hide();
-                    });
+                    // ModuleService.getModules().then(function (response) {
+                    //
+                    //     $rootScope.modules = response.data;
+                    //     $scope.moduleLists = $filter('filter')($rootScope.modules, { display: true }, true);
+                    //     //$scope.dependencies = $filter('filter')(DependenciesService.processDependencies($scope.module), { deleted: false }, true);
+                    //     $scope.setDependencies();
+                    //     angular.forEach($scope.dependencies, function (dependency) {
+                    //         if (dependency.type && (dependency.type === 'list_field' || dependency.type === 'list_value'))
+                    //             $cache.remove('picklist_' + dependency.childField.picklist_id);
+                    //     });
+                    //
+                    //     ngToast.create({
+                    //         content: $filter('translate')('Setup.Modules.DependencySaveSuccess'),
+                    //         className: 'success'
+                    //     });
+                    //     $scope.saving = false;
+                    //     $scope.addNewDependencyModal.hide();
+                    // });
                     // AppService.getMyAccount(true)
                     //     .then(function () {
                     //         /*$scope.module = angular.copy($filter('filter')($rootScope.modules, { name: $stateParams.module }, true)[0]);
@@ -465,6 +447,15 @@ angular.module('primeapps')
                             $scope.saving = false;
                         }
                     });
+
+                $scope.parentValueChanged = function () {
+                    $scope.currentDependency.child_field = null;
+                    $scope.currentDependency.child_section = null;
+                    $scope.currentDependency.value_maps = {};
+                    $scope.currentDependency.values = [];
+                    $scope.currentDependency.field_map = {};
+                };
             };
+
         }
     ]);
