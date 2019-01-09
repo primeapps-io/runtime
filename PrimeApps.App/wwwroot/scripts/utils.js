@@ -1526,8 +1526,8 @@ angular.module('primeapps')
         }
     }])
 
-    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector',
-        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector) {
+    .factory('components', ['$rootScope', '$timeout', '$filter', '$localStorage', '$sessionStorage', '$q', '$http', 'config', '$cache', 'ngToast', '$injector', '$state', '$stateParams',
+        function ($rootScope, $timeout, $filter, $localStorage, $sessionStorage, $q, $http, config, $cache, ngToast, $injector, $state, $stateParams) {
             return {
                 run: function (place, type, scope, record, field) {
                     var ModuleService = $injector.get('ModuleService');
