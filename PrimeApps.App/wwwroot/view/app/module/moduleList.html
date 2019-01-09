@@ -140,7 +140,7 @@
 			</div>
 		</div>
 		<div class="pull-right">
-			<button class="{{custombutton.css_class}}" type="button"
+			<button class="{{custombutton.css_class}} ladda-button" type="button"
 					custom-scripting="{{custombutton.template}}" data-spinner-color="#666" ladda="running"
 					ng-repeat="custombutton in actionButtons"
 					ng-if="custombutton.action_type === 'Scripting' && hasActionButtonDisplayPermission(custombutton)"
