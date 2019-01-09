@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
@@ -39,7 +40,7 @@ namespace PrimeApps.Model.Repositories
                 .Select(x => x.Role)
                 .FirstOrDefaultAsync();
         }
-
+         
         public async Task<int> Create(OrganizationUser user)
         {
             DbContext.OrganizationUsers.Add(user);

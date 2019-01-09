@@ -5,6 +5,14 @@ angular.module('primeapps')
     .factory('TeamsService', ['$rootScope', '$http', 'config',
         function ($rootScope, $http, config) {
             return {
+                find: function (model, id) {
+                    return $http.post(config.apiUrl + 'team/find/' + id, model);
+                },
+
+                count: function (id) {
+                    return $http.get(config.apiUrl + 'team/count/' + id);
+                },
+
                 get: function (id) {
                     return $http.get(config.apiUrl + 'team/get/' + id);
                 },
