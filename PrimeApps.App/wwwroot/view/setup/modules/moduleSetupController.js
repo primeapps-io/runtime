@@ -19,6 +19,10 @@ angular.module('primeapps')
 
 			getModules();
 
+			$scope.moduleListFilter = function(item){
+				return item.name != 'users' && item.name != 'profiles' && item.name != 'roles';
+			};
+
 			$scope.openDropdown = function (moduleItem) {
 				$scope['dropdown' + moduleItem.name] = $scope['dropdown' + moduleItem.name] || $dropdown(angular.element(document.getElementById('actionButton-' + moduleItem.name)), {
 					placement: 'bottom-right',

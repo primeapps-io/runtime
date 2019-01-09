@@ -5,11 +5,11 @@ angular.module('primeapps')
     .factory('RelationsService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
             return {
-                count:function () {
+                count: function () {
                     return $http.get(config.apiUrl + 'relation/count');
                 },
-                find:function (data) {
-                    return $http.post(config.apiUrl + 'relation/find',data);
+                find: function (data) {
+                    return $http.post(config.apiUrl + 'relation/find', data);
                 },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
@@ -159,7 +159,7 @@ angular.module('primeapps')
 
                     var sortOrders = [];
 
-                    angular.forEach($rootScope.modules, function (moduleItem) {
+                    angular.forEach($scope.$parent.modules, function (moduleItem) {
                         sortOrders.push(moduleItem.order);
                     });
 
@@ -458,7 +458,7 @@ angular.module('primeapps')
                         module['label_' + otherLanguage + '_plural'] = module['label_' + $rootScope.language + '_plural'];
                         module['label_' + otherLanguage + '_singular'] = module['label_' + $rootScope.language + '_singular'];
                         module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']);
-                        var allModules = $rootScope.modules.concat(deletedModules);
+                        var allModules = $scope.$parent.modules.concat(deletedModules);
                         var i = 2;
 
                         while (true) {
@@ -724,14 +724,14 @@ angular.module('primeapps')
                     return deferred.promise;
                 },
 
-                getFields: function (module) {
+                getFields: function (module, allModules) {
                     var fields = {};
                     fields.selectedFields = [];
                     fields.availableFields = [];
                     fields.allFields = [];
-                    if (!module.relatedModule)
+                    if (!module.relation_module)
                         return fields;
-                    var moduleFields = angular.copy(module.relatedModule.fields);
+                    var moduleFields = angular.copy(module.relation_module.fields);
                     moduleFields = $filter('filter')(moduleFields, {
                         display_list: true,
                         lookup_type: '!relation'
@@ -739,7 +739,7 @@ angular.module('primeapps')
 
                     var seperatorFieldMain = {};
                     seperatorFieldMain.name = 'seperator-main';
-                    seperatorFieldMain.label = $rootScope.language === 'tr' ? module.relatedModule.label_tr_singular : module.relatedModule.label_en_singular;
+                    seperatorFieldMain.label = $rootScope.language === 'tr' ? module.relation_module.label_tr_singular : module.relation_module.label_en_singular;
                     seperatorFieldMain.order = 0;
                     seperatorFieldMain.seperator = true;
                     moduleFields.push(seperatorFieldMain);
@@ -747,7 +747,7 @@ angular.module('primeapps')
 
                     angular.forEach(moduleFields, function (field) {
                         if (field.data_type === 'lookup' && field.lookup_type != 'relation') {
-                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0]);
+                            var lookupModule = angular.copy($filter('filter')(allModules, { name: field.lookup_type }, true)[0]);
                             seperatorLookupOrder += 100;
                             if (lookupModule === null || lookupModule === undefined) return;
                             var seperatorFieldLookup = {};
@@ -789,13 +789,11 @@ angular.module('primeapps')
                             if (selectedFieldName) {
                                 selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
                             }
-                        }
-                        ;
-
+                        } ;
 
                         var newField = {};
                         newField.name = field.name;
-                        newField.label = field.label;
+                        newField.label = field.label ? field.label : field['label_' + $rootScope.language];
                         newField.labelExt = field.labelExt;
                         newField.order = field.order;
                         newField.lookup_type = field.lookup_type;
@@ -828,9 +826,9 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'convert/delete_fields_mappings/', request);
                 },
 
-                processRelations: function (relations) {
+                processRelations: function (relations, modules) {
                     angular.forEach(relations, function (relation) {
-                        var relatedModule = $filter('filter')($rootScope.modules, { name: relation.related_module }, true)[0];
+                        var relatedModule = $filter('filter')(modules, { name: relation.related_module }, true)[0];
 
                         if (!relatedModule || relatedModule.order === 0) {
                             relation.deleted = true;
@@ -855,12 +853,12 @@ angular.module('primeapps')
                 },
 
                 prepareRelation: function (relation) {
-                    relation.related_module = relation.relatedModule.name;
+                    relation.related_module = relation.relation_module.name;
 
                     if (relation.relationField)
                         relation.relation_field = relation.relationField.name;
 
-                    delete relation.relatedModule;
+                    delete relation.relation_module;
                     delete relation.relationField;
                     delete relation.hasRelationField;
                     delete relation.type;
@@ -1025,6 +1023,17 @@ angular.module('primeapps')
 
                 updateField: function (fieldId, field) {
                     return $http.put(config.apiUrl + 'module/update_field/' + fieldId, field);
+                },
+                createModuleRelation: function (relation, moduleId) {
+                    return $http.post(config.apiUrl + 'module/create_relation/' + moduleId, relation);
+                },
+
+                updateModuleRelation: function (relation, moduleId) {
+                    return $http.put(config.apiUrl + 'module/update_relation/' + moduleId + '/' + relation.id, relation);
+                },
+
+                deleteModuleRelation: function (id) {
+                    return $http.delete(config.apiUrl + 'module/delete_relation/' + id);
                 }
             };
         }]);

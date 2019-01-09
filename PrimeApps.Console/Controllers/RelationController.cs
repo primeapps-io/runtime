@@ -18,72 +18,79 @@ using PrimeApps.Model.Common;
 
 namespace PrimeApps.Console.Controllers
 {
-    [Route("api/relation")]
-    public class RelationController : DraftBaseController
-    {
-        private IRelationRepository _relationRepository;
-        private IProfileRepository _profileRepository;
-        private ISettingRepository _settingRepository;
-        private IConfiguration _configuration;
-        private Warehouse _warehouse;
+	[Route("api/relation")]
+	public class RelationController : DraftBaseController
+	{
+		private IRelationRepository _relationRepository;
+		private IProfileRepository _profileRepository;
+		private ISettingRepository _settingRepository;
+		private IModuleRepository _moduleRepository;
+		private IConfiguration _configuration;
+		private Warehouse _warehouse;
 
-        private IModuleHelper _moduleHelper;
+		private IModuleHelper _moduleHelper;
 
-        public RelationController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration)
-        {
-            _relationRepository = relationRepository;
+		public RelationController(IRelationRepository relationRepository, IProfileRepository profileRepository, ISettingRepository settingRepository, IModuleRepository moduleRepository, Warehouse warehouse, IModuleHelper moduleHelper, IConfiguration configuration)
+		{
+			_relationRepository = relationRepository;
+			_profileRepository = profileRepository;
+			_settingRepository = settingRepository;
+			_moduleRepository = moduleRepository;
+			_warehouse = warehouse;
+			_configuration = configuration;
+			_moduleHelper = moduleHelper;
+		}
 
-            _profileRepository = profileRepository;
-            _settingRepository = settingRepository;
-            _warehouse = warehouse;
-            _configuration = configuration;
-            _moduleHelper = moduleHelper;
-        }
+		public override void OnActionExecuting(ActionExecutingContext context)
+		{
+			SetContext(context);
+			SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
+			SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
+			SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+			SetCurrentUser(_moduleRepository, PreviewMode, AppId, TenantId);
 
-        public override void OnActionExecuting(ActionExecutingContext context)
-        {
-            SetContext(context);
-            SetCurrentUser(_relationRepository, PreviewMode, AppId, TenantId);
-            SetCurrentUser(_profileRepository, PreviewMode, AppId, TenantId);
-            SetCurrentUser(_settingRepository, PreviewMode, AppId, TenantId);
+			base.OnActionExecuting(context);
+		}
 
-            base.OnActionExecuting(context);
-        }
+		[Route("count"), HttpGet]
+		public async Task<IActionResult> Count()
+		{
+			var count = await _relationRepository.Count();
 
-        [Route("count"), HttpGet]
-        public async Task<IActionResult> Count()
-        {
-            var count = await _relationRepository.Count();
+			if (count < 1)
+				return NotFound();
 
-            if (count == null)
-                return NotFound();
+			return Ok(count);
+		}
 
-            return Ok(count);
-        }
-        [Route("find"), HttpPost]
-        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
-        {
-            var relations = await _relationRepository.Find(paginationModel);
+		[Route("find"), HttpPost]
+		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+		{
+			var relations = await _relationRepository.Find(paginationModel);
 
-            if (relations == null)
-                return NotFound();
+			if (relations == null)
+				return NotFound();
 
-            return Ok(relations);
-        }
+			foreach (var relation in relations)
+			{
+				var relationModule = await _moduleRepository.GetBasicByName(relation.RelatedModule);
+				relation.RelationModule = relationModule;
+			}
 
+			return Ok(relations);
+		}
 
+		[Route("get_all"), HttpGet]
+		public async Task<ICollection<Relation>> GetAll()
+		{
+			return await _relationRepository.GetAll();
+		}
 
-        [Route("get_all"), HttpGet]
-        public async Task<ICollection<Relation>> GetAll()
-        {
-            return await _relationRepository.GetAll();
-        }
+		[Route("get_all_deleted"), HttpGet]
+		public async Task<ICollection<Relation>> GetAllDeleted()
+		{
+			return await _relationRepository.GetAllDeleted();
+		}
 
-        [Route("get_all_deleted"), HttpGet]
-        public async Task<ICollection<Relation>> GetAllDeleted()
-        {
-            return await _relationRepository.GetAllDeleted();
-        }
-
-    }
+	}
 }

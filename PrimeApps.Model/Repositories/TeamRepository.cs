@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
@@ -16,6 +17,13 @@ namespace PrimeApps.Model.Repositories
     {
         public TeamRepository(ConsoleDBContext dbContext, IConfiguration configuration)
             : base(dbContext, configuration) { }
+
+        public async Task<int> Count(int organizationId)
+        {
+            var count = (await GetByOrganizationId(organizationId)).Count();
+
+            return count;
+        }
 
         public async Task<List<Team>> GetAll()
         {
@@ -52,6 +60,31 @@ namespace PrimeApps.Model.Repositories
                 .Include(x => x.TeamUsers)
                 .Where(x => x.OrganizationId == organizationId && !x.Deleted)
                 .ToListAsync();
+        }
+
+        public async Task<ICollection<Team>> Find(PaginationModel paginationModel, int organizationId)
+        {
+            var teams = await GetByOrganizationId(organizationId);
+            teams = teams.Skip(paginationModel.Offset * paginationModel.Limit)
+            .Take(paginationModel.Limit).ToList();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Team).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    teams = teams.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    teams = teams.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+
+            }
+
+            return teams;
+
         }
 
         public async Task<int> Create(Team team)

@@ -721,6 +721,42 @@ angular.module('primeapps')
                     fieldPhone.display_detail = true;
                     userModule.fields.push(fieldPhone);
 
+                    var fieldProfileId = {};
+                    fieldProfileId.name = 'profile_id';
+                    fieldProfileId.system_type = 'system';
+                    fieldProfileId.data_type = 'number';
+                    fieldProfileId.order = 6;
+                    fieldProfileId.section = 1;
+                    fieldProfileId.section_column = 1;
+                    fieldProfileId.primary = false;
+                    fieldProfileId.inline_edit = true;
+                    fieldProfileId.editable = true;
+                    fieldProfileId.show_label = true;
+                    fieldProfileId.label_en = 'Profile Id';
+                    fieldProfileId.label_tr = 'Profile Id';
+                    fieldProfileId.display_list = true;
+                    fieldProfileId.display_form = true;
+                    fieldProfileId.display_detail = true;
+                    userModule.fields.push(fieldProfileId);
+
+                    var fieldRoleId = {};
+                    fieldRoleId.name = 'role_id';
+                    fieldRoleId.system_type = 'system';
+                    fieldRoleId.data_type = 'number';
+                    fieldRoleId.order = 7;
+                    fieldRoleId.section = 1;
+                    fieldRoleId.section_column = 1;
+                    fieldRoleId.primary = false;
+                    fieldRoleId.inline_edit = true;
+                    fieldRoleId.editable = true;
+                    fieldRoleId.show_label = true;
+                    fieldRoleId.label_en = 'Role Id';
+                    fieldRoleId.label_tr = 'Role Id';
+                    fieldRoleId.display_list = true;
+                    fieldRoleId.display_form = true;
+                    fieldRoleId.display_detail = true;
+                    userModule.fields.push(fieldRoleId);
+
                     return userModule;
                 },
                 processModule: function (module) {

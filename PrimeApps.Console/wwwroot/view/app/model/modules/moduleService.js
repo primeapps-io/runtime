@@ -5,15 +5,16 @@ angular.module('primeapps')
     .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
         function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
             return {
-                count:function () {
+                count: function () {
                     return $http.get(config.apiUrl + 'module/count');
                 },
-                find:function (data) {
-                    return $http.post(config.apiUrl + 'module/find',data);
+                find: function (data) {
+                    return $http.post(config.apiUrl + 'module/find', data);
                 },
-                getModules: function(){
+                getModules: function () {
                     return $http.get(config.apiUrl + 'module/get_all');
                 },
+
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
 
@@ -1027,6 +1028,9 @@ angular.module('primeapps')
 
                 updateField: function (fieldId, field) {
                     return $http.put(config.apiUrl + 'module/update_field/' + fieldId, field);
+                },
+                getModuleFields: function (moduleName) {
+                    return $http.get(config.apiUrl + 'module/get_module_fields?moduleName=' + moduleName);
                 }
             };
         }]);

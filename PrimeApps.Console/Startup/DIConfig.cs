@@ -54,6 +54,7 @@ namespace PrimeApps.Console
 
             services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();
+            services.AddScoped<IOrganizationHelper, OrganizationHelper>();
 
             services.AddScoped<Email, Email>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();

@@ -11,23 +11,45 @@ angular.module('primeapps')
             $scope.orgranizationUserArray = [];
             $scope.teamModel = {};
             $scope.teamId;
-            var organitzationId = $rootScope.currentOrganization || 1;
+            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
-           
+
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'teams';
 
-
-            $scope.tabelPagination = {
-                currentPage: 1,
-                total: 100,
-                pageSize: 10
+            $scope.requestModel = {
+                limit: "10",
+                offset: 0
             };
 
-            //$scope.changePage = function (page) {
-            //    console.log(page);
-            //};
+            TeamsService.count(organitzationId).then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+
+            TeamsService.find($scope.requestModel, organitzationId).then(function (response) {
+                $scope.teamArray = response.data;
+                $scope.$parent.teamArray = response.data;
+                $scope.loading = false;
+            });
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+
+                TeamsService.find(requestModel, organitzationId).then(function (response) {
+                    $scope.teamArray = response.data;
+                    $scope.$parent.teamArray = response.data;
+                    $scope.loading = false;
+                });
+
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
+            };
 
             $scope.getTeamsList = function () {
                 TeamsService.getAll()
@@ -60,7 +82,7 @@ angular.module('primeapps')
                     });
             }
 
-            $scope.getTeamsList();
+            //$scope.getTeamsList();
 
             $scope.selectTeam = function (id) {
                 if (id)

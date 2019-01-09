@@ -59,6 +59,24 @@ namespace PrimeApps.Model.Repositories
 
         }
 
+        public async Task<ICollection<Module>> GetAllBasic()
+        {
+            var modules = await DbContext.Modules.Select(x => new Module
+            {
+                Id = x.Id,
+                Name = x.Name,
+                LabelEnPlural = x.LabelEnPlural,
+                LabelEnSingular = x.LabelEnSingular,
+                LabelTrSingular = x.LabelTrSingular,
+                LabelTrPlural = x.LabelTrPlural,
+                Order = x.Order
+            })
+             .Where(x => !x.Deleted)
+             .ToListAsync();
+
+            return modules;
+
+        }
         public async Task<Module> GetById(int id)
         {
             var module = await GetModuleQuery()
@@ -82,6 +100,15 @@ namespace PrimeApps.Model.Repositories
         public async Task<Module> GetByName(string name)
         {
             var module = await GetModuleQuery()
+                .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
+
+            return module;
+        }
+
+        public async Task<Module> GetBasicByName(string name)
+        {
+            var module = await DbContext.Modules
+                .Include(x => x.Fields)
                 .FirstOrDefaultAsync(x => x.Name == name && !x.Deleted);
 
             return module;
@@ -381,8 +408,21 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Modules
                  .Where(x => !x.Deleted);
-
-
+            
         }
+
+        public async Task<ICollection<Field>> GetModuleFieldByName(string moduleName)
+        {
+            var module = await DbContext.Modules
+                .Include(x => x.Fields)
+                .FirstOrDefaultAsync(x => x.Name == moduleName && !x.Deleted);
+
+            return module.Fields;
+        }
+    }
+    public class MyTable
+    {
+        public string Name { get; set; }
+
     }
 }

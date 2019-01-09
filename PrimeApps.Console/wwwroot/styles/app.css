@@ -6804,7 +6804,8 @@ button:focus, select:focus {
   .primeapps .setup-modal .modal-content, .primeapps .module-modal .modal-content {
     padding-left: 40px;
     padding-right: 40px;
-    border: none; }
+    border: none;
+    height: 80vh; }
     .primeapps .setup-modal .modal-content .form-custom, .primeapps .module-modal .modal-content .form-custom {
       margin-bottom: 100px; }
       .primeapps .setup-modal .modal-content .form-custom .field-form-body, .primeapps .module-modal .modal-content .form-custom .field-form-body {
@@ -7152,39 +7153,44 @@ button:focus, select:focus {
   width: 250px; }
   .primeapps #sidebar-wrapper ul .open {
     background-color: #121212; }
-  .primeapps #sidebar-wrapper ul li ul {
-    list-style: none; }
-    .primeapps #sidebar-wrapper ul li ul .active {
-      color: #fff; }
-    .primeapps #sidebar-wrapper ul li ul li {
-      line-height: 20px; }
-      .primeapps #sidebar-wrapper ul li ul li a {
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 14px; }
-        .primeapps #sidebar-wrapper ul li ul li a i {
-          font-size: 14px;
-          background: none; }
-        .primeapps #sidebar-wrapper ul li ul li a:hover {
-          background: none;
-          color: #fff; }
-  .primeapps #sidebar-wrapper ul li a {
-    font-weight: bold;
-    font-size: 15px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    display: flex;
-    align-items: center; }
-    .primeapps #sidebar-wrapper ul li a i {
+    .primeapps #sidebar-wrapper ul .open ul {
+      display: block; }
+  .primeapps #sidebar-wrapper ul li {
+    cursor: pointer; }
+    .primeapps #sidebar-wrapper ul li ul {
+      display: none;
+      list-style: none; }
+      .primeapps #sidebar-wrapper ul li ul .active {
+        color: #fff; }
+      .primeapps #sidebar-wrapper ul li ul li {
+        line-height: 20px; }
+        .primeapps #sidebar-wrapper ul li ul li a {
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 14px; }
+          .primeapps #sidebar-wrapper ul li ul li a i {
+            font-size: 14px;
+            background: none; }
+          .primeapps #sidebar-wrapper ul li ul li a:hover {
+            background: none;
+            color: #fff; }
+    .primeapps #sidebar-wrapper ul li a {
+      font-weight: bold;
+      font-size: 15px;
+      padding-top: 5px;
+      padding-bottom: 5px;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 30px;
-      height: 30px;
-      font-size: 14px;
-      padding: 10px;
-      background: #9e005d;
-      border-radius: 50%;
-      margin-right: 13px; }
+      align-items: center; }
+      .primeapps #sidebar-wrapper ul li a i {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        padding: 10px;
+        background: #9e005d;
+        border-radius: 50%;
+        margin-right: 13px; }
 .primeapps #sidebar-wrapper .color-blue {
   color: #0d6faa; }
 .primeapps #sidebar-wrapper .background-white {

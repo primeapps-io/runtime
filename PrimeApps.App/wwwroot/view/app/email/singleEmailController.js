@@ -94,14 +94,14 @@ angular.module('primeapps')
                 template.name = $scope.template_name;
                 template.subject = $scope.template_subject;
                 template.content = $scope.tinymce_content;
-                template.system_type = $scope.newtemplate.sharing_type;
+                template.sharing_type = $scope.newtemplate.sharing_type;
                 template.template_type = 2;
                 template.active = true;
 
                 if ($scope.newtemplate.system_type === 'custom') {
                     template.shares = [];
 
-                    angular.forEach($scope.shares, function (user) {
+                    angular.forEach($scope.newtemplate.shares, function (user) {
                         template.shares.push(user.id);
                     });
                 }
@@ -117,6 +117,7 @@ angular.module('primeapps')
                 }
 
                 result.then(function (saveResponse) {
+                    $scope.currentTemplate = saveResponse.data;
                     TemplateService.getAll('email', $scope.module.name)
                         .then(function (listResponse) {
                             $scope.templates = listResponse.data;
@@ -145,7 +146,7 @@ angular.module('primeapps')
 
                 if (temp) {
                     $scope.newtemplate.system_type = 'custom';
-                    $scope.newtemplate.system_type = 'me';
+                    $scope.newtemplate.sharing_type = 'me';
                     $scope.tinymceModel = template.content;
                     $scope.subject = template.subject;
                     $scope.currentTemplate = template;
@@ -167,6 +168,13 @@ angular.module('primeapps')
             $scope.setTemplate = function () {
                 $scope.template_subject = $scope.subject;
                 $scope.tinymce_content = $scope.tinymceModel;
+                if ($scope.currentTemplate) {
+                    $scope.newtemplate.sharing_type = $scope.currentTemplate.sharing_type;
+                    $scope.newtemplate.shares = $scope.currentTemplate.shares;
+                }
+                else {
+                    $scope.newtemplate.sharing_type = 'me';
+                }
             };
 
             $scope.backTemplate = function () {

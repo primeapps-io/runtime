@@ -114,7 +114,7 @@ namespace PrimeApps.App.Jobs
                                             }
                                         }
 
-                                        if (!calisan["ise_baslama_tarihi_2"].IsNullOrEmpty())
+                                        if (!calisan["ise_baslama_tarihi_2"].IsNullOrEmpty() && calisan["deneyim_yil"].IsNullOrEmpty())
                                         {
                                             var timespan = DateTime.UtcNow.Subtract((DateTime)calisan["ise_baslama_tarihi_2"]);
                                             var calisanDeneyimYil = (int)Math.Floor(timespan.TotalDays / 365);

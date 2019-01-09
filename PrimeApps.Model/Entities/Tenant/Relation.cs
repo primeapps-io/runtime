@@ -46,7 +46,10 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("detail_view_type")]
         public DetailViewType DetailViewType { get; set; }
 
-        public virtual Module Module { get; set; }
+        public virtual Module ParentModule { get; set; }
+
+        [NotMapped]
+        public virtual Module RelationModule { get; set; }
 
         [NotMapped]
         public string[] DisplayFieldsArray

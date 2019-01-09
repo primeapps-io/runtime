@@ -43,7 +43,7 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("clear")]
         public bool Clear { get; set; }
 
-        public virtual Module Module { get; set; }
+        public virtual Module ParentModule { get; set; }
 
         [NotMapped]
         public string[] ValuesArray

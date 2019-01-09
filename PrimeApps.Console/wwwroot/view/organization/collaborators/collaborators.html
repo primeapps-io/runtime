@@ -1,19 +1,25 @@
 <div class="setup-liste-header row">
-    <div class="col-sm-6"><h2 class="setup-title">{{selectedCollaborator ?
-        selectedCollaborator.full_name:'Collaborators'}}</h2></div>
+    <div class="col-sm-6">
+        <h2 class="setup-title">
+            {{
+selectedCollaborator ?
+        selectedCollaborator.full_name:'Collaborators'
+            }}
+        </h2>
+    </div>
     <div class="col-sm-6 list-right-menu">
 
     </div>
 </div>
 <div>
     <form ng-submit="save()">
-        <div class="search-input" ng-show="!selectedCollaborator" >
+        <div class="search-input" ng-show="!selectedCollaborator">
             <div class="search-input-icon">
                 <i class="fas fa-user-plus"></i>
             </div>
             <input ng-model="newUserEmail" placeholder="Invite collaborators by email"
-                   class="form-control form-control-lg form-control-borderless app-search-input ng-pristine ng-valid ng-empty ng-touched"
-                   type="email" style="">
+                   class="form-control form-control-lg form-control-borderless app-search-input ng-pristine ng-valid ng-empty ng-touched required-field"
+                   type="email" style="" required>
 
         </div>
 
@@ -23,28 +29,28 @@
     <div class="tab-content" ng-show="!selectedCollaborator">
         <table class="table">
             <thead>
-            <tr>
-                <th>Name</th>
-                <th>Role</th>
-                <th style="min-width: 110px;"></th>
-            </tr>
+                <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th style="min-width: 110px;"></th>
+                </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="user in collaboratorArray">
-                <td ng-click="selectCollaborators(user.id)" style="cursor:pointer;">
-                    {{user.full_name}}
-                    <p class="small">{{user.email}}</p>
-                </td>
-                <td>{{user.role ? user.role:'-'}}</td>
-                <td class="text-right">
-                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                            action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                            confirm-yes="{{'Common.Yes' | translate}}"
-                            confirm-no="{{'Common.No' | translate}}">
-                        {{'Common.Remove' | translate}}
-                    </button>
-                </td>
-            </tr>
+                <tr ng-repeat="user in collaboratorArray">
+                    <td ng-click="selectCollaborators(user.id)" style="cursor:pointer;">
+                        {{user.full_name}}
+                        <p class="small">{{user.email}}</p>
+                    </td>
+                    <td>{{user.role ? user.role:'-'}}</td>
+                    <td class="text-right">
+                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                                action="delete(user.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                confirm-yes="{{'Common.Yes' | translate}}"
+                                confirm-no="{{'Common.No' | translate}}">
+                            {{'Common.Remove' | translate}}
+                        </button>
+                    </td>
+                </tr>
             </tbody>
         </table>
         <div class="row table-pagination">
@@ -54,9 +60,9 @@
                          text-first="&laquo;"
                          ul-class="pagination"
                          active-class="active"
-                         page="1"
-                         page-size="2"
-                         total="1000"
+                         page="tabelPagination.currentPage"
+                         page-size="tabelPagination.pageSize"
+                         total="tabelPagination.total"
                          disabled="true"
                          scroll-top="true"
                          hide-if-empty="true"
@@ -72,11 +78,13 @@
             </div>
             <div class="col-sm-2">
                 <span class="pagination-span">Items per page  </span>
-                <select class="items-per-page-select">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
+                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
                 </select>
             </div>
         </div>
@@ -105,7 +113,8 @@
                     </div>
                     <ul class="dropdown-menu" style="width:  calc(100% - 2em);   margin-top: 0;" role="menu">
                         <li><a ng-click="$alert('Holy guacamole')">Administrator</a></li>
-                        <li><a ng-click="$alert('Holy guacamole')">Collaborator</a>
+                        <li>
+                            <a ng-click="$alert('Holy guacamole')">Collaborator</a>
                         </li>
 
                     </ul>
