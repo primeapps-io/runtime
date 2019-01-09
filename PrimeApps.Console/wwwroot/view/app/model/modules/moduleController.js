@@ -11,8 +11,8 @@ angular.module('primeapps')
             $scope.modules = [];
             $scope.loading = true;
             $scope.requestModel = {
-                limit: 10,
-                offset: 1
+                limit: "10",
+                offset: 0
             };
 
             ModuleService.count().then(function (response) {
@@ -28,7 +28,6 @@ angular.module('primeapps')
                 $scope.loading = true;
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
-
 
                 ModuleService.find(requestModel).then(function (response) {
                     $scope.modules = response.data;
