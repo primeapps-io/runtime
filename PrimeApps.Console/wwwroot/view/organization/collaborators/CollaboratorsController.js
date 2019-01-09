@@ -9,12 +9,39 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Organization";
             $scope.$parent.activeMenu = 'organization';
             $scope.$parent.activeMenuItem = 'collaborators';
-            var organitzationId = $rootScope.currentOrganization ? $rootSscope.currentOrganization.id : 1;
+            var organitzationId = $rootScope.currentOrganization ? $rootScope.currentOrganization.id : 1;
 
-            $scope.tabelPagination = {
-                currentPage: 1,
-                total: 100,
-                pageSize: 10
+            $scope.requestModel = {
+                limit: "10",
+                offset: 0
+            };
+
+            CollaboratorsService.count(organitzationId).then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+
+            CollaboratorsService.find($scope.requestModel, organitzationId).then(function (response) {
+                $scope.collaboratorArray = response.data;
+                $scope.$parent.collaboratorArray = response.data;
+                $scope.loading = false;
+            });
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+
+                CollaboratorsService.find(requestModel, organitzationId).then(function (response) {
+                    $scope.collaboratorArray = response.data;
+                    $scope.$parent.collaboratorArray = response.data;
+                    $scope.loading = false;
+                });
+
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
             };
 
             $scope.getCollaborators = function () {
@@ -36,7 +63,7 @@ angular.module('primeapps')
                     });
             }
 
-            $scope.getCollaborators();
+            //$scope.getCollaborators();
 
             $scope.selectCollaborators = function (id) {
                 if (!id)

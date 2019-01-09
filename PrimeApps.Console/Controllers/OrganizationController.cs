@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Constants;
 using PrimeApps.Console.Helpers;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Organization;
 using PrimeApps.Model.Common.Team;
 using PrimeApps.Model.Entities.Console;
@@ -28,7 +29,7 @@ using System.Threading.Tasks;
 namespace PrimeApps.Console.Controllers
 {
     [Route("api/organization"), Authorize(AuthenticationSchemes = "Bearer"), ActionFilters.CheckHttpsRequire, ResponseCache(CacheProfileName = "Nocache")]
-    public class OrganizationController : BaseController
+    public class OrganizationController : ApiBaseController
     {
         private IConfiguration _configuration;
         private IOrganizationRepository _organizationRepository;
@@ -42,8 +43,14 @@ namespace PrimeApps.Console.Controllers
         private ITeamRepository _teamRepository;
 
         private IPermissionHelper _permissionHelper;
+        private IOrganizationHelper _organizationHelper;
 
-        public OrganizationController(IConfiguration configuration, IOrganizationRepository organizationRepository, IOrganizationUserRepository organizationUserRepository, IPlatformUserRepository platformUserRepository, IAppDraftRepository applicationDraftRepository, ITeamRepository teamRepository, IApplicationRepository applicationRepository, IPlatformRepository platformRepository, IConsoleUserRepository consoleUserRepository, IServiceScopeFactory serviceScopeFactory, IPermissionHelper permissionHelper)
+        public OrganizationController(IConfiguration configuration, IOrganizationRepository organizationRepository, IOrganizationUserRepository organizationUserRepository,
+            IPlatformUserRepository platformUserRepository, IAppDraftRepository applicationDraftRepository,
+            ITeamRepository teamRepository, IApplicationRepository applicationRepository,
+            IPlatformRepository platformRepository, IConsoleUserRepository consoleUserRepository,
+            IServiceScopeFactory serviceScopeFactory, IPermissionHelper permissionHelper,
+            IOrganizationHelper organizationHelper)
         {
             _organizationRepository = organizationRepository;
             _appDraftRepository = applicationDraftRepository;
@@ -57,6 +64,7 @@ namespace PrimeApps.Console.Controllers
             _configuration = configuration;
 
             _permissionHelper = permissionHelper;
+            _organizationHelper = organizationHelper;
         }
 
         public override void OnActionExecuting(ActionExecutingContext context)
@@ -64,7 +72,16 @@ namespace PrimeApps.Console.Controllers
             if (!context.HttpContext.User.Identity.IsAuthenticated || string.IsNullOrWhiteSpace(context.HttpContext.User.FindFirst("email").Value))
                 context.Result = new UnauthorizedResult();
 
-            SetContextUser();
+            SetContext(context);
+
+            SetCurrentUser(_organizationRepository);
+            SetCurrentUser(_appDraftRepository);
+            SetCurrentUser(_platformUserRepository);
+            SetCurrentUser(_organizationUserRepository);
+            SetCurrentUser(_consoleUserRepository);
+            SetCurrentUser(_platformRepository);
+            SetCurrentUser(_teamRepository);
+
         }
 
         [Route("get/{id:int}"), HttpGet]
@@ -87,42 +104,23 @@ namespace PrimeApps.Console.Controllers
                 return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
 
             var users = await _organizationUserRepository.GetByOrganizationId(model.OrganizationId);
-            var collaborators = new List<OrganizationUserModel>();
 
-            foreach (var user in users)
-            {
-                var platformUser = await _platformUserRepository.GetSettings(user.UserId);
+            var collaborators = await _organizationHelper.CreateCollaorators(users, model.OrganizationId);
 
-                if (platformUser != null)
-                {
-                    collaborators.Add(new OrganizationUserModel
-                    {
-                        Id = user.UserId,
-                        OrganizationId = model.OrganizationId,
-                        Role = user.Role,
-                        Email = platformUser.Email,
-                        FirstName = platformUser.FirstName,
-                        LastName = platformUser.LastName,
-                        FullName = platformUser.FirstName + " " + platformUser.LastName,
-                        CreatedAt = platformUser.CreatedAt,
-                    });
-                }
-            }
-
-            if (model.OrderBy != null && model.OrderBy.ToLower() == "desc")
-            {
-                if (model.OrderField != null && model.OrderField.ToLower() == "role")
-                    collaborators = collaborators.OrderByDescending(x => x.Role).ToList();
-                else
-                    collaborators = collaborators.OrderByDescending(x => x.FullName).ToList();
-            }
-            else
-            {
-                if (model.OrderField != null && model.OrderField.ToLower() == "role")
-                    collaborators = collaborators.OrderBy(x => x.Role).ToList();
-                else
-                    collaborators = collaborators.OrderBy(x => x.FullName).ToList();
-            }
+            //if (model.OrderBy != null && model.OrderBy.ToLower() == "desc")
+            //{
+            //    if (model.OrderField != null && model.OrderField.ToLower() == "role")
+            //        collaborators = collaborators.OrderByDescending(x => x.Role).ToList();
+            //    else
+            //        collaborators = collaborators.OrderByDescending(x => x.FullName).ToList();
+            //}
+            //else
+            //{
+            //    if (model.OrderField != null && model.OrderField.ToLower() == "role")
+            //        collaborators = collaborators.OrderBy(x => x.Role).ToList();
+            //    else
+            //        collaborators = collaborators.OrderBy(x => x.FullName).ToList();
+            //}
 
             return Ok(collaborators);
         }
@@ -491,5 +489,59 @@ namespace PrimeApps.Console.Controllers
 
             return Ok(result);
         }
+
+        [Route("find/{organizationId:int}"), HttpPost]
+        public async Task<IActionResult> Find(int organizationId, [FromBody]PaginationModel paginationModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var isOrganizationAvailable = _organizationRepository.IsOrganizationAvaliable(AppUser.Id, organizationId);
+
+            if (!isOrganizationAvailable)
+                return BadRequest(ApiResponseMessages.ORGANIZATION_NOT_FOUND);
+
+            var users = await _organizationUserRepository.GetByOrganizationId(organizationId);
+
+            var collaborators = await _organizationHelper.CreateCollaorators(users, organizationId);
+            collaborators = collaborators.Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Team).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    collaborators = collaborators.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    collaborators = collaborators.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+
+            }
+
+            if (collaborators == null)
+                return NotFound();
+
+            return Ok(collaborators);
+        }
+
+        [Route("count/{organizationId:int}"), HttpGet]
+        public async Task<IActionResult> Count(int organizationId)
+        {
+            var users = await _organizationUserRepository.GetByOrganizationId(organizationId);
+
+            var collaborators = await _organizationHelper.CreateCollaorators(users, organizationId);
+
+            var count = collaborators != null ? collaborators.Count() : 0;
+
+            if (count < 1)
+                return NotFound();
+
+            return Ok(count);
+        }
+
     }
 }

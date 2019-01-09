@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Constants;
 using PrimeApps.Console.Helpers;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Team;
 using PrimeApps.Model.Entities.Console;
 using PrimeApps.Model.Enums;
@@ -156,6 +157,28 @@ namespace PrimeApps.Console.Controllers
             var teams = await _teamRepository.GetByUserId(AppUser.Id);
 
             return Ok(teams);
+        }
+
+        [Route("find/{organizationId:int}"), HttpPost]
+        public async Task<IActionResult> Find(int organizationId, [FromBody]PaginationModel paginationModel)
+        {
+            var teams = await _teamRepository.Find(paginationModel, organizationId);
+
+            if (teams == null)
+                return NotFound();
+
+            return Ok(teams);
+        }
+
+        [Route("count/{organizationId:int}"), HttpGet]
+        public async Task<IActionResult> Count(int organizationId)
+        {
+            var count = await _teamRepository.Count(organizationId);
+
+            if (count < 1)
+                return NotFound();
+
+            return Ok(count);
         }
 
         [Route("is_unique_name"), HttpGet]
