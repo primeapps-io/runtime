@@ -1991,11 +1991,14 @@ namespace PrimeApps.App.Helpers
 
                                                         var transactionTypes = await picklistRepository.GetById(transactionTypeField.PicklistId.Value);
                                                         var IsCikanMiktarField = stockModule.Fields.Where(x => x.Name == "cikan_miktar").Any();
+                                                        var purchaseOrderModule = await moduleRepository.GetByName("purchase_orders");
+                                                        var purchaseOrderItem = recordRepository.GetById(purchaseOrderModule, (int)record["purchase_order"], false);
 
                                                         var stock = new JObject();
                                                         stock["owner"] = appUser.Id;
                                                         stock["product"] = record["product"];
                                                         stock["transaction_date"] = DateTime.UtcNow.Date;
+                                                        stock["supplier"] = purchaseOrderItem["supplier"];
 
                                                         if (module.Name == "order_products" && IsCikanMiktarField)
                                                         {
