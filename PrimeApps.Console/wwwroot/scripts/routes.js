@@ -314,6 +314,24 @@ angular.module('primeapps')
                         }]
                     }
                 })
+                .state('studio.app.moduledesigner', {
+                    url: '/moduleDesigner?:id',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/model/modules/moduleDesigner.html',
+                            controller: 'moduleDesignerController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/model/modules/moduleDesignerController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })
+
                 .state('studio.app.relations', {
                     url: '/relations',
                     views: {

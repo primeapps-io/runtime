@@ -1,53 +1,68 @@
 <div class="setup-liste-header row">
-    <div class="col-sm-6"><h2 class="setup-title">{{selectedTeam ? selectedTeam.name:'Teams'}}</h2></div>
+    <div class="col-sm-6"><h2 class="setup-title">{{selectedTeam ? selectedTeam.name:'Teams'}}</h2>
+        <button class="btn add-button">
+            <i class="fas fa-users"></i> Members (8)
+        </button>
+        <button class="btn btn-radius btn-gray">
+            <i class="fas fa-users"></i> Apps (8)
+        </button>
+
+    </div>
+    <br>
     <div class="col-sm-6 list-right-menu" ng-show="!selectedTeam">
         <button class="btn add-button" ng-click="addNewTeam()">
             <i class="fas fa-plus"></i> Add New Team
         </button>
     </div>
     <div class="col-sm-6 list-right-menu" ng-show="selectedTeam">
-        <button class="btn btn-danger btn-radius" ng-click="delete(teamId)">
+        <button class="btn   btn-radius btn-red" ng-click="delete(teamId)">
             <i class="fas fa-plus"></i> Delete
         </button>
-        <button class="btn add-button" ng-click="addNewTeam(teamId)">
+        <button class="btn btn-radius btn-blue" ng-click="addNewTeam(teamId)">
             <i class="fas fa-plus"></i> Edit
         </button>
     </div>
 </div>
 <div>
     <div class="tab-content">
+        <br>
         <table class="table table-hover" ng-show="!selectedTeam">
             <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Team member</th>
-                    <th>Organization</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
+            <tr>
+                <th>Name</th>
+                <th>Team member</th>
+                <th>Organization</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="team in teamArray">
-                    <td ng-click="selectTeam(team.id)" style="cursor:pointer;"><i class="{{team.icon}}"></i> {{team.name}}</td>
-                    <td>{{team.team_users ? team.team_users.length:0}}</td>
-                    <td>{{team.organization.name}}</td>
-                    <td class="text-right">
-                        <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">
-                            {{ 'Common.Edit' | translate }}
-                        </a>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}"
-                                confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
+            <tr ng-repeat="team in teamArray">
+                <td ng-click="selectTeam(team.id)" style="cursor:pointer;"><i class="{{team.icon}}"></i> {{team.name}}
+                </td>
+                <td>{{team.team_users ? team.team_users.length:0}}</td>
+                <td>{{team.organization.name}}</td>
+                <td class="text-right">
+                    <a href="" ng-click="addNewTeam(team.id)" class="btn btn-xs btn-custom">
+                        {{ 'Common.Edit' | translate }}
+                    </a>
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="delete(team.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}"
+                            confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
             </tbody>
         </table>
 
-        <ui-select ng-show="selectedTeam" ng-model="selectedUser" on-select="selectUserForTeam($select.selected.user_id)" style="margin-bottom: 30px;">
-            <ui-select-match allow-clear="true" placeholder="Add collaborators from PrimeApps">{{$select.selected.full_name}}</ui-select-match>
-            <ui-select-choices repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
+        <ui-select ng-show="selectedTeam" ng-model="selectedUser"
+                   on-select="selectUserForTeam($select.selected.user_id)" style="margin-bottom: 30px;">
+            <ui-select-match allow-clear="true" placeholder="Add collaborators from PrimeApps">
+                {{$select.selected.full_name}}
+            </ui-select-match>
+            <ui-select-choices
+                    repeat="item in orgranizationUserArray | filter:{full_name: $select.search} | orderBy:'full_name'">
                 <span ng-bind-html="item.full_name | highlight: $select.search"></span>
             </ui-select-choices>
         </ui-select>
@@ -62,28 +77,28 @@
         </select>-->
         <table class="table table-hover" ng-show="selectedTeam">
             <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="user in selectedTeam.team_users">
-                    <td>
-                        {{user.full_name}}
-                        <p class="small">{{user.email}}</p>
-                    </td>
-                    <td>{{user.role ? user.role:'-'}}</td>
-                    <td class="text-right">
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
-                                confirm-yes="{{'Common.Yes' | translate}}"
-                                confirm-no="{{'Common.No' | translate}}">
-                            {{'Common.Remove' | translate}}
-                        </button>
-                    </td>
-                </tr>
+            <tr ng-repeat="user in selectedTeam.team_users">
+                <td>
+                    {{user.full_name}}
+                    <p class="small">{{user.email}}</p>
+                </td>
+                <td>{{user.role ? user.role:'-'}}</td>
+                <td class="text-right">
+                    <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
+                            action="deleteUser(user.user_id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                            confirm-yes="{{'Common.Yes' | translate}}"
+                            confirm-no="{{'Common.No' | translate}}">
+                        {{'Common.Remove' | translate}}
+                    </button>
+                </td>
+            </tr>
             </tbody>
         </table>
         <div class="row table-pagination">

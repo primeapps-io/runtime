@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService',
-        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService) {
+    .controller('AppController', ['$rootScope', '$scope', '$filter', 'ngToast', '$state', '$cookies', '$http', 'config', '$localStorage', 'LayoutService', '$q',
+        function ($rootScope, $scope, $filter, ngToast, $state, $cookies, $http, config, $localStorage, LayoutService, $q) {
 
             $scope.appId = $state.params.appId;
 
@@ -36,15 +36,16 @@ angular.module('primeapps')
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
+            var deferred = $q.defer();
 
             $scope.getBasicModules = function () {
                 LayoutService.getBasicModules().then(function (result) {
                     $scope.modules = result.data;
                 });
             };
-            
-            $scope.getBasicModules();
 
+            $scope.getBasicModules();
+            deferred.resolve();
 
         }
     ]);
