@@ -3323,7 +3323,7 @@ namespace PrimeApps.App.Helpers
 
                     if (expertRecords.IsNullOrEmpty() || expertRecords.Count < 1)
                     {
-                        ErrorHandler.LogError(new Exception("Expert not found! FindRequest: " + findRequestExpert.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "timesheetId:" + timesheetId);
+                        //ErrorHandler.LogError(new Exception("Expert not found! FindRequest: " + findRequestExpert.ToJsonString()), "email: " + appUser.Email + " " + "tenant_id:" + appUser.TenantId + "timesheetId:" + timesheetId);
                         return false;
                     }
 
