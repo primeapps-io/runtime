@@ -1636,7 +1636,7 @@
     "ColumnSettings": "Column Settings",
     "HelpDefaultValue": "If you input a value here, it will be used for empty field values in your file. If you mark \"Override column values\" option, every value for this column will be replaced with it.",
     "TemplateName": "Please enter the template name.",
-    "IsMappingSkip": "Skip the matching step."
+    "IsMappingSkip": "Skip the matching step"
   },
 	"Convert": {
 		"Title": "Convert {{type}}",

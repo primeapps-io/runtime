@@ -1635,7 +1635,7 @@
     "ColumnSettings": "Alan Ayarları",
     "HelpDefaultValue": "Burada seçeceğiniz bir kayıt dosyanızda boş bırakılan alanların yerine kullanılacaktır. \"Kolon verilerini geçersiz kıl\" seçeneğini işaretlerseniz ayarladığınız alan için tüm değerler seçilen kayıtla değiştirilecektir.",
     "TemplateName": "Lütfen şablon adını giriniz.",
-    "IsMappingSkip": "Eşleştirme adımı atla."
+    "IsMappingSkip": "Eşleştirme adımı atla"
   },
 	"Convert": {
 		"Title": "{{type}} Dönüştür",
