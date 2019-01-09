@@ -1985,7 +1985,8 @@ namespace PrimeApps.App.Helpers
                                                     {
                                                         var modelStateTransaction = new ModelStateDictionary();
                                                         var transactionTypeField = stockModule != null ? stockModule.Fields.Single(x => x.Name == "stock_transaction_type") : null;
-
+                                                        if (transactionTypeField == null)
+                                                            break;
                                                         if (transactionTypeField == null)
                                                             break;
 
