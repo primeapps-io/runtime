@@ -69,6 +69,9 @@ namespace PrimeApps.Model.Helpers
         {
             var fields = new List<string>();
 
+            if (module == null)
+                return fields;
+
             switch (module.Name)
             {
                 case "quotes":
