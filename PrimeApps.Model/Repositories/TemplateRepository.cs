@@ -45,7 +45,21 @@ namespace PrimeApps.Model.Repositories
             if (!string.IsNullOrEmpty(moduleName))
                 templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
 
-            templates = templates.OrderByDescending(x => x.CreatedAt);
+            if (templateType == TemplateType.Email)
+            {
+                templates = templates.Where(x => !x.Deleted)
+                      .Where(x => x.SharingType == TemplateSharingType.Everybody
+                || x.CreatedBy.Id == CurrentUser.UserId
+                || x.Shares.Any(j => j.Id == CurrentUser.UserId));
+
+                return await templates.ToListAsync();
+            }
+            else
+            {
+                templates = templates.OrderByDescending(x => x.CreatedAt);
+
+                return await templates.ToListAsync();
+            }
 
             return await templates.ToListAsync();
         }
