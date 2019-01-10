@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('primeapps')
-    .controller('LeadConvertMapController', ['$rootScope', '$scope', '$filter', '$cache', 'helper', 'ConvertMapService',
-        function ($rootScope, $scope, $filter, $cache, helper, ConvertMapService) {
+    .controller('LeadConvertMapController', ['$rootScope', '$scope', '$filter', '$cache', 'helper', 'ConvertMapService', 'ngToast',
+        function ($rootScope, $scope, $filter, $cache, helper, ConvertMapService, ngToast) {
             $scope.$parent.collapsed = true;
             $scope.language = $rootScope.language;
             $scope.leadModule = $filter('filter')($rootScope.modules, { name: 'leads' }, true)[0];
@@ -44,25 +44,25 @@ angular.module('primeapps')
 
             getMappings();
 
-			$scope.customFilter = function (leadField) {
-				return function (field) {
-					if (field.data_type === 'lookup' && leadField.data_type === 'lookup') {
-						if (field.lookup_type === leadField.lookup_type) {
-							return true;
-						}
-						return false;
-					}
-					else if (field.data_type === 'picklist' && leadField.data_type === 'picklist') {
-						if (field.picklist_id === leadField.picklist_id) {
-							return true;
-						}
-						return false;
-					}
-					else {
-						return true;
-					}
-				};
-			};
+            $scope.customFilter = function (leadField) {
+                return function (field) {
+                    if (field.data_type === 'lookup' && leadField.data_type === 'lookup') {
+                        if (field.lookup_type === leadField.lookup_type) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    else if (field.data_type === 'picklist' && leadField.data_type === 'picklist') {
+                        if (field.picklist_id === leadField.picklist_id) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    else {
+                        return true;
+                    }
+                };
+            };
 
             $scope.mappingModuleFieldChanged = function (module, leadField, lastSelection) {
                 var conversionMapping = {};
