@@ -21,13 +21,13 @@ namespace PrimeApps.Model.Repositories
     {
         private Warehouse _warehouse;
 
-        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration){}
+        public UserRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
         public UserRepository(TenantDBContext dbContext, Warehouse warehouse, IConfiguration configuration) : base(dbContext, configuration)
         {
             _warehouse = warehouse;
         }
-        
+
         /// <summary>
         /// Creates a new user.
         /// </summary>
@@ -153,7 +153,9 @@ namespace PrimeApps.Model.Repositories
         /// <returns></returns>
         public async Task<TenantUser> GetById(int userId)
         {
-            return await DbContext.Users.FindAsync(userId);
+            return DbContext.Users
+                .Include(x => x.Profile)
+                .FirstOrDefault(x => x.Id == userId);
         }
 
         public TenantUser GetByIdSync(int userId)

@@ -106,7 +106,7 @@ namespace PrimeApps.App.Controllers
         }
 
         [Route("update_user_role"), HttpPut]
-        public async Task UpdateUserRole([FromQuery(Name = "userId")]int userId, [FromQuery(Name = "roleId")]int roleId)
+        public async Task UpdateUserRole([FromQuery(Name = "user_Id")]int userId, [FromQuery(Name = "role_Id")]int roleId)
         {
             var user = await _userRepository.GetById(AppUser.Id);
 
@@ -115,12 +115,12 @@ namespace PrimeApps.App.Controllers
 
             if (user.RoleId.HasValue)
             {
-                await _roleRepository.RemoveUserAsync(user.Id, user.RoleId.Value);
+                await _roleRepository.RemoveUserAsync(userId, user.RoleId.Value);
             }
 
             _warehouse.DatabaseName = AppUser.WarehouseDatabaseName;
 
-            await _roleRepository.AddUserAsync(user.Id, roleId);
+            await _roleRepository.AddUserAsync(userId, roleId);
         }
 
         [Route("update_user_role_bulk"), HttpPut]
