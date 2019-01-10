@@ -611,7 +611,7 @@ relatedModule['label_'
                                                     <span ng-if="field.custom_label" style="line-height: 24px;">
                                                         {{field.custom_label}}
                                                     </span>
-                                                    {{record[field.name].labelStr}}
+                                                    {{record[field.name].label[language] }}
                                                 </span>
                                                 <span ng-switch-when="text_multi">
                                                     <span ng-if="field.multiline_type_use_html === true" ng-bind-html="trustAsHtml(record[field.name])"></span>
