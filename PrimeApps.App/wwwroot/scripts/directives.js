@@ -441,8 +441,8 @@ angular.module('primeapps')
         };
     })
 
-    .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService',
-        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations, ModuleService) {
+    .directive('subTable', ['$rootScope', 'ngTableParams', 'ngToast', 'blockUI', '$filter', '$cache', 'helper', 'exportFile', 'operations', 'ModuleService', 'components',
+        function ($rootScope, ngTableParams, ngToast, blockUI, $filter, $cache, helper, exportFile, operations, ModuleService, components) {
             return {
                 restrict: 'EA',
                 scope: {
@@ -482,9 +482,9 @@ angular.module('primeapps')
 
                             if ($scope.relatedModule.detail_view_type != 'flat') {
                                 var transactionType =
-                                    $scope.$parent.$parent.$parent['picklistsModule'].transaction_type;
+                                    $scope.$parent.$parent.picklistsModule.transaction_type;
                             } else {
-                                var transactionType = $scope.$parent.$parent['picklistsModule'].transaction_type;
+                                var transactionType = $scope.$parent.$parent.picklistsModule.transaction_type;
                             }
                             angular.forEach(transactionType, function (item) {
                                 if (item.system_code === 'sales_invoice')
