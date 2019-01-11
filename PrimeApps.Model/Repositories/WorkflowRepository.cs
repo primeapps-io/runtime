@@ -10,7 +10,7 @@ using PrimeApps.Model.Repositories.Interfaces;
 
 namespace PrimeApps.Model.Repositories
 {
-	public class WorkflowRepository : RepositoryBaseTenant, IWorkflowRepository
+    public class WorkflowRepository : RepositoryBaseTenant, IWorkflowRepository
     {
         public WorkflowRepository(TenantDBContext dbContext, IConfiguration configuration) : base(dbContext, configuration) { }
 
@@ -43,6 +43,13 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
 
             return workflows;
+        }
+
+        public async Task<int> Count()
+        {
+            var count = await DbContext.Workflows.Where(x => !x.Deleted).CountAsync();
+
+            return count;
         }
 
         public async Task<int> Create(Workflow workflow)

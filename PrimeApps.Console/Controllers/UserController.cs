@@ -87,6 +87,9 @@ namespace PrimeApps.Console.Controllers
         {
             var organizations = await _organizationRepository.GetByUserId(AppUser.Id);
 
+            if (organizations.Count < 1)
+                return Ok(null);
+
             return Ok(organizations);
         }
     }

@@ -9,7 +9,8 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<Workflow> GetById(int id);
         Task<ICollection<Workflow>> GetAll(int? moduleId = null, bool? active = null);
-        Task<ICollection<Workflow>> GetAllBasic();
+        Task<ICollection<Workflow>> GetAllBasic(); 
+        Task<int> Count();
         Task<int> Create(Workflow workflow);
         Task<int> Update(Workflow workflow, List<int> currentFilterIds);
         Task<int> DeleteSoft(Workflow workflow);

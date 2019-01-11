@@ -28,6 +28,7 @@
 		"Sort": "Sort",
 		"Everyone": "Everyone",
 		"Active": "Active",
+		"Passive": "Passive",
 		"Find": "Find",
 		"Clear": "Clear",
 		"NetworkError": "Network connection has lost. Please try again later.",
