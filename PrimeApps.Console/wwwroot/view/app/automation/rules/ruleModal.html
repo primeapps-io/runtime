@@ -20,23 +20,23 @@
             <div class="modal-contanier">
                 <div class="col-sm-2 modal-left-menu">
                     <ul class="nav bs-sidenav" bs-scrollspy-list>
-                        <li><a class="active" onclick="javascript(0)" href="#section1">{{'Setup.Workflow.RuleInformation' | translate}}</a></li>
-                        <li><a onclick="javascript(0)" href="#section1">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
-                        <li><a onclick="javascript(0)" href="#section2">{{'Setup.Workflow.Actions' | translate}}</a></li>
-                        <li><a onclick="javascript(0)" href="#section2">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li> 
+                        <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? wizardStep = 0 : false">{{'Setup.Workflow.RuleInformation' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate() ? $parent.$parent.wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
                     </ul>
                 </div>
                 <div class="col-sm-10">
-                    <form name="workflowForm" class="form-horizontal form-custom" ng-submit="saveField(workflowForm);"
+                    <form name="$parent.workflowForm" class="form-horizontal form-custom" ng-submit="saveField(workflowForm);"
                           ng-if="!$parent.showPicklistForm" autocomplete="off" novalidate>
 
                         <div id="field-form-body" class="modal-body">
-                            <div class="section" id="section1" ng-show="wizardStep == 1">
+                            <div class="section" id="section1" ng-show="$parent.wizardStep == 0">
                                 <h4>{{'Setup.Workflow.RuleInformation' | translate}}</h4>
                                 <div class="panel">
-                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workFlowName.$invalid}">
+                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
                                         <label class=" col-sm-4">* {{'Setup.Workflow.Name' | translate}}:</label>
-                                        <input name="workFlowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
+                                        <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
                                     </div>
                                     <div class="form-group"
                                          ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
@@ -49,7 +49,7 @@
                                                 ng-model="workflowModel.module"
                                                 ng-change="selectModule()"
                                                 ng-disabled="id"
-                                                ng-options="o.id as o['label_' + language + '_singular'] for o in modules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
+                                                ng-options="o as o['label_' + language + '_singular'] for o in modules | filter:{deleted:'false'} | orderNotZero | orderBy:'order' track by o.id">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
@@ -63,13 +63,13 @@
                                          ng-class="{'has-error': workflowForm.$submitted && workflowForm.operation.$invalid}">
                                         <label class="col-sm-4">* {{'Setup.Workflow.RuleTrigger' | translate}}: </label>
                                         <label class="checkbox-inline col-sm-10">
-                                            <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></span>
+                                            <input name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(workflowForm)"><span ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></span>
                                         </label><br>
                                         <label class="checkbox-inline col-sm-10">
                                             <input ng-change="operationUpdateChanged(workflowModel.operation.update)" name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
                                         </label><br>
                                         <label class="checkbox-inline col-sm-10">
-                                            <input name="operation" type="checkbox" ng-model="workflowModel.operation.delete" ng-change="validateOperations()"><span ng-bind-html="'Setup.Workflow.RuleTriggers.deleteLabel' | translate"></span>
+                                            <input name="operation" type="checkbox" ng-model="workflowModel.operation.delete" ng-change="validateOperations(workflowForm)"><span ng-bind-html="'Setup.Workflow.RuleTriggers.deleteLabel' | translate"></span>
                                         </label>
 
                                     </div>
@@ -86,7 +86,7 @@
                                                 required
                                                 ng-model="workflowModel.changed_field"
                                                 ng-disabled="!workflowModel.module"
-                                                ng-options="o as o['label_' + language] for o in workflowModel.module.fields | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                ng-options="o as o['label_' + language] for o in workflowModel.module.fields | filter:{deleted:'false',display_list:'true'} | orderNotZero | orderBy:'order'">
                                             <option value="">{{'Common.Select' | translate}}</option>
                                         </select>
                                     </div>
@@ -107,793 +107,266 @@
                                         <label class="col-sm-4">{{'Setup.Workflow.DeleteLogs' | translate}}:</label>
                                         <input type="checkbox" ng-model="workflowModel.delete_logs">
                                     </div>
-                                    <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workFlowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
+                                    <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
                                         <div class="callout callout-danger">
-                                            <p ng-if="workflowForm.workFlowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                            <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
                                             <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
                                         </div>
                                     </div>
-
+                                    <div class="form-group text-right">
+                                        <button type="button" class="btn btn-primary btn-w-sm"
+                                                ng-click="validate(workflowForm) ? $parent.wizardStep = 1 : false;">
+                                            <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
+                                            {{'Common.Next' | translate}}
+                                        </button>
+                                    </div>
 
                                     <div ng-if="showPermissionWarning" class="callout callout-warning">
 
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="form-group"
-                                 ng-if="currentField.dataType.name === 'lookup' && !currentField.systemReadonly"
-                                 ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
-                                <label class="col-sm-4 required-field">
-                                    * {{
-'Setup.Modules.LookupType' |
-                                    translate
-                                    }}:
-                                </label>
-                                <select name="lookupType"
-                                        class="form-control ng-animate-disabled col-sm-8"
-                                        required
-                                        ng-model="currentField.lookupType"
-                                        ng-change="lookupTypeChanged(currentField)"
-                                        ng-disabled="currentField.id"
-                                        ng-options="o as o.label[language] for o in lookupTypes | orderBy:'order' track by o.id">
-                                    <option value="">{{'Common.Select' | translate}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group"
-                                 ng-if="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'"
-                                 ng-class="{'has-error': fieldForm.$submitted && fieldForm.picklistType.$invalid}"
-                                 ng-show="!currentField.systemReadonly">
-                                <label class="col-sm-4 required-field">
-                                    * {{
-'Setup.Modules.PicklistType' |
-                                    translate
-                                    }}:
-                                </label>
-                                <select name="picklistType"
-                                        class="form-control ng-animate-disabled col-sm-8"
-                                        required
-                                        ng-model="currentField.picklist_id"
-                                        ng-disabled="currentField.id"
-                                        ng-options="o.id as o['label_' + language] for o in picklists | orderBy:'label_' + language"
-                                        ng-change="getPicklistById(currentField.picklist_id)">
-                                    <option value="">{{'Common.Select' | translate}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group"
-                                 ng-if="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect'">
-                                <div class="col-sm-offset-4">
-                                    <button type="button"
-                                            class="col-sm-offset-4 btn btn-xs btn-w-lg btn-custom new-picklist"
-                                            ng-click="newPicklist()" ng-show="currentField.isNew">
-                                        <i class="fa fa-plus pull-left"></i> {{
-'Setup.Modules.PicklistNew' |
-                                        translate
-                                        }}
-                                    </button>
-                                    <button type="button"
-                                            class="col-sm-offset-4 btn btn-xs btn-w-lg btn-custom edit-picklist"
-                                            ng-class="{'edit-picklist-extra': currentField.isNew}"
-                                            ng-click="editPicklist()"
-                                            ng-show="currentField.picklist_id && currentField.picklist_id != 1 && currentField.picklist_id != 2">
-                                        <i class="fa fa-edit pull-left"></i> {{
-'Setup.Modules.PicklistEdit' |
-                                        translate
-                                        }}
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
-                                 ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField1.$invalid}">
-                                <label class="col-sm-4 required-field">
-                                    * {{
-'Setup.Modules.CombinationField1' |
-                                    translate
-                                    }}:
-                                </label>
-                                <select name="combinationField1"
-                                        class="form-control ng-animate-disabled col-sm-8"
-                                        required
-                                        ng-model="currentField.combinationField1"
-                                        ng-options="o.name as o['label_' + language] for o in module.fields | filter:filterToCombinations">
-                                    <option value="">{{'Common.Select' | translate}}</option>
-                                </select>
-                            </div>
-                            <div class="form-group" ng-if="currentField.dataType.name === 'combination'"
-                                 ng-class="{'has-error': fieldForm.$submitted && fieldForm.combinationField2.$invalid}">
-                                <label class="col-sm-4 required-field">
-                                    * {{
-'Setup.Modules.CombinationField2' |
-                                    translate
-                                    }}:
-                                </label>
-                                <select name="combinationField2"
-                                        class="form-control ng-animate-disabled col-sm-8"
-                                        required
-                                        ng-model="currentField.combinationField2"
-                                        ng-options="o.name as o['label_' + language] for o in module.fields | filter:filterToCombinations">
-                                    <option value="">{{'Common.Select' | translate}}</option>
-                                </select>
-                            </div>
-                            <a href class="advanced-options-link"
-                               ng-click="$parent.$parent.showAdvancedOptions = !$parent.$parent.showAdvancedOptions; $parent.$parent.showPermissions = true;"
-                               ng-show="currentField.dataType && !currentField.systemReadonly">
-                                {{'Setup.Modules.AdvancedOptions' | translate}}
-                                <i class="fa fa-caret-right" ng-if="!$parent.showAdvancedOptions"></i>
-                                <i class="fa fa-caret-down" ng-if="$parent.showAdvancedOptions"></i>
-                            </a>
-
-
-                            <div class="section" id="section3">
+                            <div class="section" id="section2" ng-show="$parent.wizardStep == 1">
+                                <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
                                 <div class="panel">
+                                    <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                    <div ng-show="!loadingFilter">
+                                        <table class="filter-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="padding-left: 5px; padding-right: 10px;">{{'View.No' | translate}}</th>
+                                                    <th>{{'View.Field' | translate}}</th>
+                                                    <th>{{'View.Operator' | translate}}</th>
+                                                    <th>{{'View.Value' | translate}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="filter in filters">
+                                                    <td>
+                                                        <span class="filter-no">{{filter.no}}.</span>
+                                                    </td>
+                                                    <td>
+                                                        <select id="field"
+                                                                name="field"
+                                                                class="form-control ng-animate-disabled"
+                                                                ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
+                                                                ng-change="filter.value = null; filter.operator = null; filter.disabled = false;"
+                                                                ng-model="filter.field">
+                                                            <option value="">{{'Common.Select' | translate}}</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select id="operator"
+                                                                name="operator"
+                                                                class="form-control ng-animate-disabled"
+                                                                ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
+                                                                ng-change="operatorChanged(filter.field, $index)"
+                                                                ng-model="filter.operator">
+                                                            <option value="">{{'Common.Select' | translate}}</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="filter.operator.name == 'empty' || filter.operator.name == 'not_empty'"
+                                                               maxlength="100"
+                                                               ng-if="filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined" />
 
-                                    <!--Default value options-->
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'combination' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'"
-                                         ng-class="{'has-error': fieldForm.$submitted && fieldForm.userLookup.$invalid}">
-                                        <label class="control-label col-sm-4">
-                                            {{
-'Setup.Modules.DefaultValue' |
-                                            translate
-                                            }}:
-                                        </label>
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="filter.disabled"
+                                                               maxlength="50"
+                                                               numeric
+                                                               ng-if="filter.field.data_type === 'number' || filter.field.data_type === 'number_auto'" />
 
-                                        <div class="col-sm-8" style="padding: 0;">
-                                            <input type="text"
-                                                   class="form-control ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   ng-change="changeDefaultValue()"
-                                                   ng-disabled="currentField.placeholder"
-                                                   ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'url'" />
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="filter.disabled"
+                                                               maxlength="19"
+                                                               places="filter.field.decimal_places || 2"
+                                                               number-decimal
+                                                               ng-if="filter.field.data_type === 'number_decimal'" />
 
-                                            <textarea class="form-control ng-animate-disabled"
-                                                      ng-model="currentField.default_value"
-                                                      maxlength="500"
-                                                      auto-grow
-                                                      ng-if="currentField.dataType.name === 'text_multi'"></textarea>
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="filter.disabled"
+                                                               maxlength="50"
+                                                               places="filter.field.decimal_places || 2"
+                                                               currency-symbol="filter.field.currency_symbol"
+                                                               number-currency
+                                                               ng-if="filter.field.data_type === 'currency'" />
 
-                                            <input type="text"
-                                                   class="form-control ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   ng-trim="false"
-                                                   numeric
-                                                   ng-if="currentField.dataType.name === 'number'" />
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="filter.disabled"
+                                                               data-autoclose="1"
+                                                               data-date-type="iso"
+                                                               data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
+                                                               data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
+                                                               data-icon-left="fa fa-chevron-left"
+                                                               data-icon-right="fa fa-chevron-right"
+                                                               data-placement="bottom-right"
+                                                               bs-datepicker
+                                                               ng-if="filter.field.data_type === 'date'">
 
-                                            <input type="text"
-                                                   class="form-control ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   number-decimal
-                                                   ng-if="currentField.dataType.name === 'number_decimal'" />
+                                                        <div class="clearfix datetime-pick" ng-if="filter.field.data_type === 'date_time'">
+                                                            <input type="text"
+                                                                   class="form-control ng-animate-disabled date-pick"
+                                                                   ng-model="filter.value"
+                                                                   ng-change="dateTimeChanged(filter.field)"
+                                                                   ng-disabled="filter.disabled"
+                                                                   placeholder="{{'Common.Date' | translate}}"
+                                                                   data-autoclose="1"
+                                                                   data-date-type="iso"
+                                                                   data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
+                                                                   data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
+                                                                   data-icon-left="fa fa-chevron-left"
+                                                                   data-icon-right="fa fa-chevron-right"
+                                                                   data-placement="bottom-right"
+                                                                   bs-datepicker>
+                                                            <input type="text"
+                                                                   class="form-control ng-animate-disabled time-pick"
+                                                                   ng-model="filter.value"
+                                                                   ng-disabled="!filter.value"
+                                                                   placeholder="{{'Common.Time' | translate}}"
+                                                                   data-autoclose="1"
+                                                                   data-time-type="iso"
+                                                                   data-icon-up="fa fa-chevron-up"
+                                                                   data-icon-down="fa fa-chevron-down"
+                                                                   data-length="1"
+                                                                   data-minute-step="10"
+                                                                   data-arrow-behavior="picker"
+                                                                   data-placement="bottom-right"
+                                                                   bs-timepicker>
+                                                        </div>
 
-                                            <input type="text"
-                                                   class="form-control ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   currency-symbol="currencySymbol"
-                                                   number-currency
-                                                   ng-if="currentField.dataType.name === 'currency'" />
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="filter.disabled"
+                                                               placeholder="{{'Common.Time' | translate}}"
+                                                               data-autoclose="1"
+                                                               data-time-type="iso"
+                                                               data-icon-up="fa fa-chevron-up"
+                                                               data-icon-down="fa fa-chevron-down"
+                                                               data-length="1"
+                                                               data-minute-step="10"
+                                                               data-arrow-behavior="picker"
+                                                               data-placement="bottom-right"
+                                                               bs-timepicker
+                                                               ng-if="filter.field.data_type === 'time'">
 
-                                            <input type="email"
-                                                   class="form-control ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   ng-if="currentField.dataType.name === 'email'" />
+                                                        <select class="form-control ng-animate-disabled"
+                                                                ng-model="filter.value"
+                                                                ng-disabled="filter.disabled"
+                                                                ng-options="o as o.label[language] for o in modulePicklists[filter.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
+                                                                ng-if="filter.field.data_type === 'picklist'">
+                                                            <option value="">{{'Common.Select' | translate}}</option>
+                                                        </select>
 
-                                            <input type="text"
-                                                   class="form-control ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   ng-disabled="currentField.default_value_now"
-                                                   data-autoclose="1"
-                                                   data-date-type="iso"
-                                                   data-icon-left="fa fa-chevron-left"
-                                                   data-icon-right="fa fa-chevron-right"
-                                                   bs-datepicker
-                                                   ng-if="currentField.dataType.name === 'date'">
+                                                        <tags-input class="ng-animate-disabled"
+                                                                    ng-model="filter.value"
+                                                                    display-property="labelStr"
+                                                                    key-property="id"
+                                                                    placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                                    replace-spaces-with-dashes="false"
+                                                                    add-from-autocomplete-only="true"
+                                                                    ng-disabled="filter.disabled"
+                                                                    ng-if="filter.field.data_type === 'multiselect'">
+                                                            <auto-complete source="multiselect($query, filter.field)"
+                                                                           min-length="0"
+                                                                           load-on-focus="true"
+                                                                           load-on-empty="true"
+                                                                           max-results-to-show="9999"></auto-complete>
+                                                        </tags-input>
 
-                                            <div class="clearfix datetime-container"
-                                                 ng-if="currentField.dataType.name === 'date_time'">
-                                                <input type="text"
-                                                       class="form-control ng-animate-disabled pull-left datetime-date"
-                                                       ng-model="currentField.default_value"
-                                                       ng-disabled="currentField.default_value_now"
-                                                       placeholder="{{'Common.Date' | translate}}"
-                                                       data-autoclose="1"
-                                                       data-date-type="iso"
-                                                       data-icon-left="fa fa-chevron-left"
-                                                       data-icon-right="fa fa-chevron-right"
-                                                       bs-datepicker>
-                                                <input type="text"
-                                                       class="form-control datetime-time"
-                                                       style="margin-left: 1px; margin-top: 10px"
-                                                       ng-model="currentField.default_value"
-                                                       ng-disabled="currentField.default_value_now"
-                                                       placeholder="{{'Common.Time' | translate}}"
-                                                       data-autoclose="1"
-                                                       data-time-type="iso"
-                                                       data-icon-up="fa fa-chevron-up"
-                                                       data-icon-down="fa fa-chevron-down"
-                                                       data-length="1"
-                                                       data-minute-step="10"
-                                                       data-arrow-behavior="picker"
-                                                       bs-timepicker>
-                                                <label>
-                                                    <input type="checkbox"
-                                                           class="ng-animate-disabled"
-                                                           ng-change="defaultValueNowChanged()"
-                                                           ng-model="currentField.default_value_now">{{
-'View.Now' |
-                                                    translate
-                                                    }}
-                                                </label>
+                                                        <select class="form-control ng-animate-disabled"
+                                                                ng-model="filter.value"
+                                                                ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
+                                                                ng-if="filter.field.data_type === 'checkbox'">
+                                                            <option value="">{{'Common.Select' | translate}}</option>
+                                                        </select>
+
+                                                        <tags-input ng-model="filter.value"
+                                                                    display-property="full_name"
+                                                                    key-property="id"
+                                                                    min-tags="1"
+                                                                    max-tags="1"
+                                                                    placeholder="{{'Common.Search' | translate}}"
+                                                                    replace-spaces-with-dashes="false"
+                                                                    add-from-autocomplete-only="true"
+                                                                    ng-disabled="filter.disabled"
+                                                                    ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users'">
+                                                            <auto-complete source="lookupUser($query, 'logged_in_user')"
+                                                                           min-length="0"
+                                                                           load-on-focus="true"
+                                                                           load-on-empty="true"
+                                                                           max-results-to-show="9999"></auto-complete>
+                                                        </tags-input>
+                                                        <input-stars ng-if="filter.field.data_type === 'rating'"
+                                                                     max="{{filter.field.validation.min_length}}"
+                                                                     allow-half
+                                                                     icon-base="fa fa-fw"
+                                                                     icon-empty="fa-star-o"
+                                                                     icon-half="fa-star-half-o"
+                                                                     icon-full="fa-star"
+                                                                     icon-hover-full="fa-star"
+                                                                     ng-model="filter.value">
+                                                        </input-stars>
+                                                        <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
+                                                        <input type="text" class="form-control ng-animate-disabled" disabled ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && filter.disabled" />
+                                                        <angucomplete-alt input-name="{{'filterLookup' + filter.no}}"
+                                                                          id="{{'filterLookup' + filter.no}}"
+                                                                          input-class="form-control"
+                                                                          match-class="highlight-angucomplete"
+                                                                          pause="200"
+                                                                          selected-object="filter.value"
+                                                                          initial-value="filter.value"
+                                                                          remote-api-handler="lookup"
+                                                                          search-fields="name"
+                                                                          title-field="primary_value"
+                                                                          minlength="1"
+                                                                          template-url="view/common/angucomplete.html"
+                                                                          focus-in="setCurrentLookupField(filter.field)"
+                                                                          use-original-object="true"
+                                                                          text-searching="{{'Common.Searching' | translate}}"
+                                                                          text-no-results="{{'Common.NoResults' | translate}}"
+                                                                          ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && !filter.disabled" />
+                                                        <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div style="margin-top: 50px" ng-show="showProcessFilter">
+                                            <label class="col-sm-3">* {{'Setup.Workflow.ProcessFilterDesc' | translate}}: </label>
+                                            <div class="col-sm-9">
+                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="pending"> {{'Setup.Workflow.Pending' | translate}}</label><br>
+
+                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="approved"> {{'Setup.Workflow.Approved' | translate}}</label><br>
+
+                                                <label><input type="radio" ng-model="workflowModel.processFilter" value="rejected"> {{'Setup.Workflow.Rejected' | translate}}</label><br>
+
+                                                <label><input type="radio" ng-checked="true" ng-model="workflowModel.processFilter" value="all"> {{'Setup.Workflow.All' | translate}}</label>
                                             </div>
-
-                                            <input type="text"
-                                                   class="form-control"
-                                                   ng-model="currentField.default_value"
-                                                   ng-disabled="currentField.default_value_now"
-                                                   data-autoclose="1"
-                                                   data-time-type="iso"
-                                                   data-icon-up="fa fa-chevron-up"
-                                                   data-icon-down="fa fa-chevron-down"
-                                                   data-length="1"
-                                                   data-minute-step="10"
-                                                   data-arrow-behavior="picker"
-                                                   placeholder="{{'Common.Time' | translate}}"
-                                                   bs-timepicker
-                                                   ng-if="currentField.dataType.name === 'time'">
-
-                                            <label ng-if="currentField.dataType.name === 'date' || currentField.dataType.name === 'time'">
-                                                <input type="checkbox"
-                                                       class="ng-animate-disabled"
-                                                       ng-change="defaultValueNowChanged()"
-                                                       ng-model="currentField.default_value_now">{{'View.Now' | translate}}
-                                            </label>
-
-                                            <select class="form-control ng-animate-disabled"
-                                                    ng-model="currentField.default_value"
-                                                    ng-options="o.id as o['label_' + language] for o in defaulPicklistValues | filter:{inactive:'!true',hidden:'!true'} track by o.id"
-                                                    ng-if="currentField.dataType.name === 'picklist'">
-                                                <option value="">{{'Common.Select' | translate}}</option>
-                                            </select>
-
-                                            <input type="checkbox"
-                                                   class="ng-animate-disabled"
-                                                   ng-model="currentField.default_value"
-                                                   ng-if="currentField.dataType.name === 'checkbox'">
-
-                                            <tags-input ng-model="currentField.defaultValueMultiselect"
-                                                        display-property="labelStr"
-                                                        key-property="id"
-                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                        replace-spaces-with-dashes="false"
-                                                        add-from-autocomplete-only="true"
-                                                        min-length="1"
-                                                        ng-if="currentField.dataType.name === 'multiselect'">
-                                                <auto-complete source="multiselect($query, currentField)"
-                                                               min-length="0"
-                                                               load-on-focus="true"
-                                                               load-on-empty="true"
-                                                               max-results-to-show="9999"></auto-complete>
-                                            </tags-input>
-
-                                            <div class="inner-addon right-addon hide"
-                                                 ng-if="currentField.dataType.name === 'location'">
-                                                <i class="glyphicon glyphicon-map-marker" style="height: 27px;"
-                                                   ng-click="openLocationModal(field.name)"></i>
-                                                <input name="{{field.name}}" ng-model="currentField.default_value"
-                                                       type="text"
-                                                       class="form-control" />
+                                        </div>
+                                        <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.$error.operations)">
+                                            <div class="callout callout-danger">
+                                                <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                                <p ng-if="workflowForm.$error.operations">{{'Setup.Workflow.OperationRequiredError' | translate}}</p>
                                             </div>
-
-                                            <tags-input name="userLookup"
-                                                        class="ng-animate-disabled"
-                                                        ng-model="currentField.default_value"
-                                                        display-property="full_name"
-                                                        key-property="id"
-                                                        max-tags="1"
-                                                        placeholder="{{'Common.Search' | translate}}"
-                                                        replace-spaces-with-dashes="false"
-                                                        add-from-autocomplete-only="true"
-                                                        ng-if="currentField.dataType.name === 'lookup' && currentField.lookupType.value === 'users'">
-                                                <auto-complete source="lookupUser($query, 'logged_in_user')"
-                                                               min-length="0"
-                                                               load-on-focus="true"
-                                                               load-on-empty="true"
-                                                               max-results-to-show="9999"></auto-complete>
-                                            </tags-input>
-
-                                            <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
-                                            <angucomplete-alt input-name="lookupDefaultValue"
-                                                              id="lookupDefaultValue"
-                                                              input-class="form-control ng-animate-disabled"
-                                                              selected-object="currentField.default_value"
-                                                              initial-value="currentField.temporary_default_value"
-                                                              match-class="highlight-angucomplete"
-                                                              pause="200"
-                                                              remote-api-handler="lookup"
-                                                              search-fields="name"
-                                                              title-field="primary_value"
-                                                              minlength="2"
-                                                              template-url="view/common/angucomplete.html"
-                                                              focus-in="setCurrentLookupField(currentField)"
-                                                              text-searching="{{'Common.Searching' | translate}}"
-                                                              text-no-results="{{'Common.NoResults' | translate}}"
-                                                              use-original-object="true"
-                                                              value-changed="fieldValueChange(currentField);"
-                                                              ng-if="currentField.dataType.name === 'lookup' && currentField.lookupType.value != 'users'" />
-                                            <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
                                         </div>
-                                    </div>
-                                    <!--End of Default value options-->
-
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'lookup'"
-                                         ng-class="{'has-error': fieldForm.$submitted && fieldForm.lookupType.$invalid}">
-                                        <label class="col-sm-4">{{'Setup.Modules.SearchType' | translate}}: </label>
-                                        <select name="lookup_search_type"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.lookup_search_type"
-                                                ng-options="o.name as o.value for o in lookupSearchTypes"></select>
-                                    </div>
-
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'text_multi'">
-                                        <label class="col-sm-4">{{'Setup.Modules.MultilineType' | translate}}: </label>
-                                        <select name="multilineType"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.multiline_type"
-                                                ng-change="setMultilineDataType()"
-                                                ng-disabled="currentField.id"
-                                                ng-options="o.value as o.label for o in multilineTypes">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-
-                                    </div>
-                                    <div class="form-group" ng-if="multiLineShowHtml">
-                                        <label class="col-sm-4">{{'Setup.Modules.MultilineTypeHtml' | translate}}: </label>
-                                        <input type="checkbox" ng-model="currentField.multiline_type_use_html">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'">
-                                        <label class="col-sm-4">{{'Setup.Modules.DecimalPlaces' | translate}}: </label>
-                                        <input type="text"
-                                               name="decimalPlaces"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="27"
-                                               numeric
-                                               ng-model="currentField.decimal_places">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'">
-                                        <label class="col-sm-4">{{'Setup.Modules.RoundingType' | translate}}: </label>
-                                        <select name="rounding"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.rounding"
-                                                ng-options="o.value as o.label for o in roundingTypes">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'number'|| currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.MinimumValue' | translate}}: </label>
-                                        <input type="text"
-                                               name="min"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="27"
-                                               numeric
-                                               ng-model="currentField.validation.min">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'number' || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.MaximumValue' | translate}}: </label>
-                                        <input type="text"
-                                               name="max"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="27"
-                                               numeric
-                                               ng-model="currentField.validation.max">
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'currency'">
-                                        <label class="col-sm-4">{{'Setup.Modules.CurrencySymbol' | translate}}: </label>
-                                        <input type="text"
-                                               name="currencySymbol"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="1"
-                                               ng-model="currentField.currency_symbol">
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'number_auto'">
-                                        <label class="col-sm-4">{{'Setup.Modules.AutoNumberPrefix' | translate}}: </label>
-                                        <input type="text"
-                                               name="autoNumberPrefix"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="10"
-                                               ng-model="currentField.auto_number_prefix">
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'number_auto'">
-                                        <label class="col-sm-4">{{'Setup.Modules.AutoNumberSuffix' | translate}}: </label>
-                                        <input type="text"
-                                               name="autoNumberSuffix"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="10"
-                                               ng-model="currentField.auto_number_suffix">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'text_multi' || currentField.dataType.name === 'email' || currentField.dataType.name === 'url' || currentField.dataType.name === 'number' || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'"
-                                         ng-class="{'has-error': fieldForm.$submitted && fieldForm.minLength.$invalid}"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.MinimumLength' | translate}}: </label>
-                                        <input type="text"
-                                               name="minLength"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="{{currentField.dataType.maxLength}}"
-                                               max-value="currentField.dataType.max"
-                                               numeric
-                                               ng-model="currentField.validation.min_length">
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'rating'"
-                                         ng-class="{'has-error': fieldForm.$submitted && fieldForm.minLength.$invalid}"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.StarCount' | translate}}: </label>
-                                        <input type="text"
-                                               name="minLength"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="{{currentField.dataType.maxLength}}"
-                                               numeric
-                                               max-value="10"
-                                               ng-model="currentField.validation.min_length">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'text_multi' || currentField.dataType.name === 'email' || currentField.dataType.name === 'url' ||currentField.dataType.name === 'number' || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency'"
-                                         ng-class="{'has-error': fieldForm.$submitted && fieldForm.maxLength.$invalid}"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.MaximumLength' | translate}}: </label>
-                                        <input type="text"
-                                               name="maxLength"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               maxlength="{{currentField.dataType.maxLength}}"
-                                               max-value="currentField.dataType.max"
-                                               numeric
-                                               ng-model="currentField.validation.max_length">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'text_multi' || currentField.dataType.name === 'url'"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.Pattern' | translate}}: </label>
-                                        <input type="text"
-                                               name="pattern"
-                                               maxlength="200"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               ng-model="currentField.validation.pattern">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'checkbox' || currentField.dataType.name === 'picklist' || currentField.dataType.name === 'rating' "
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.CustomLabel' | translate}}: </label>
-                                        <input type="text"
-                                               name="customLabel"
-                                               maxlength="1000"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               ng-model="currentField.custom_label" />
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'text_single'"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">{{'Setup.Modules.Mask' | translate}}: </label>
-                                        <input type="text"
-                                               name="mask"
-                                               maxlength="100"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               ng-model="currentField.mask">
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'text_single'"
-                                         ng-show="!currentField.validation.readonly">
-                                        <label class="col-sm-4">
-                                            <label ng-if="!currentField.show_label && !currentField.editable"
-                                                   style="color:#b30000">
-                                                * {{
-'Setup.Modules.Placeholder' |
-                                            translate
-                                                }}:
-                                            </label><label ng-show="currentField.show_label || currentField.editable">
-                                                {{
-'Setup.Modules.Placeholder'
-                                            | translate
-                                                }}:
-                                            </label>
-                                        </label>
-                                        <textarea class="form-control ng-animate-disabled"
-                                                  ng-model="currentField.placeholder"
-                                                  ng-disabled="currentField.default_value || currentField.show_label"
-                                                  maxlength="500"
-                                                  ng-required="!currentField.show_label && !currentField.editable"
-                                                  auto-grow></textarea>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'picklist' || currentField.dataType.name === 'multiselect' ||  currentField.dataType.name === 'tag' ">
-                                        <label class="col-sm-4">{{'Setup.Modules.PicklistSortOrder' | translate}}: </label>
-                                        <select name="picklistSortOrder"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.picklist_sortorder"
-                                                ng-options="o.value as o.label for o in sortOrderTypes">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'date_time'">
-                                        <label class="col-sm-4">{{'Setup.Modules.CalendarDateType' | translate}}: </label>
-                                        <select name="calendarDateType"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-change="calendarDateTypeChanged()"
-                                                ng-options="o.value as o.label for o in calendarDateTypes"
-                                                ng-model="currentField.calendar_date_type">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group" ng-if="currentField.dataType.name === 'combination'">
-                                        <label class="col-sm-4">
-                                            {{
-'Setup.Modules.CombinationCharacter' |
-                                            translate
-                                            }}:
-                                        </label>
-                                        <input type="text"
-                                               name="placeholder"
-                                               maxlength="50"
-                                               class="form-control ng-animate-disabled col-sm-8"
-                                               ng-disabled="currentField.combinationCharacterEmpty"
-                                               ng-model="currentField.combinationCharacter">
-
-
-
-                                        <!--<label class="checkbox-inline">-->
-                                        <!--<input type="checkbox" ng-model="currentField.combinationCharacterEmpty"> {{'Setup.Modules.DisplayList' | translate}}-->
-                                        <!--</label>-->
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-sm-4">{{'Setup.Modules.Display' | translate}}: </label>
-                                        8"
-                                        <div class="col-sm-8" style="padding-left: 0;">
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" ng-model="currentField.display_form"
-                                                       ng-disabled="currentField.validation.required || currentField.systemRequired">
-
-                                                {{'Setup.Modules.DisplayForm' | translate}}
-                                            </label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" ng-model="currentField.display_detail">
-                                                {{'Setup.Modules.DisplayDetail' | translate}}
-                                            </label>
-                                            <label class="checkbox-inline">
-                                                <input type="checkbox" ng-model="currentField.display_list"
-                                                       ng-disabled="currentField.primary || currentField.encrypted">
-                                                {{'Setup.Modules.DisplayList' | translate}}
-                                            </label>
+                                        <div class="form-group text-right">
+                                            <button type="button" class="btn btn-primary btn-w-sm"
+                                                    ng-click="validate(workflowForm) ? $parent.wizardStep = 2 : false;">
+                                                <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
+                                                {{'Common.Next' | translate}}
+                                            </button>
                                         </div>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' &&  currentField.dataType.name != 'location' && currentField.dataType.name != 'rating'">
-                                        <label class="col-sm-4">{{'Setup.Modules.InlineEdit' | translate}}: </label>
-                                        <input type="checkbox" ng-model="currentField.inline_edit"
-                                               ng-disabled="!currentField.editable">
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="col-sm-4" ng-if="currentField.dataType.name == 'text_single'">
-                                            {{
-'Setup.Modules.ShowLabel'
-                                            | translate
-                                            }}:
-                                        </label>
-                                        <input type="checkbox" name="show_label" ng-disabled="currentField.default_value"
-                                               ng-if="currentField.dataType.name == 'text_single'"
-                                               ng-change="changeShowLabel()"
-                                               ng-model="currentField.show_label">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'document' && documentSearch == true">
-                                        <label class="col-sm-4">
-                                            {{
-'Setup.Modules.DocumentTypeFullTextSearch' |
-                                            translate
-                                            }}:
-                                        </label>
-                                        <input type="checkbox" ng-model="currentField.document_search">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="!currentField.validation.readonly && currentField.dataType.name != 'combination' && currentField.dataType.name != 'number_auto' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'checkbox'  && currentField.dataType.name !='json' ">
-                                        <label class="col-sm-4">{{'Setup.Modules.UniqueValue' | translate}}: </label>
-                                        <input type="checkbox" ng-model="currentField.validation.unique"
-                                               ng-disabled="!currentField.isNew && currentField.validation.unique != true">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'text_single' || currentField.dataType.name === 'number'  || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'email' || currentField.dataType.name === 'currency' || currentField.dataType.name === 'url'">
-                                        <label class="col-sm-4">Şifreli Alan:</label>
-                                        <input type="checkbox" ng-model="currentField.encrypted"
-                                               ng-disabled="!currentField.isNew" ng-change="encryptedFieldChange()">
-                                    </div>
-                                    <div class="form-group" ng-show="currentField.encrypted">
-                                        <label class="col-sm-4">Şifre Sahipleri</label>
-                                        <div class="col-sm-8">
-                                            <tags-input style="width: 300px" name="modules"
-                                                        tabindex="999"
-                                                        ng-model="currentField.encryption_authorized_users"
-                                                        display-property="full_name"
-                                                        key-property="id"
-                                                        max-tags="250"
-                                                        placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
-                                                        replace-spaces-with-dashes="false"
-                                                        add-from-autocomplete-only="true"
-                                                        min-length="1">
-                                                <auto-complete source="multiselectEncryptionUsers()"
-                                                               min-length="0"
-                                                               load-on-focus="true"
-                                                               load-on-empty="true"
-                                                               max-results-to-show="9999"></auto-complete>
-                                            </tags-input>
-                                        </div>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.dataType.name === 'lookup'">
-                                        <label class="col-sm-4">{{'Setup.Modules.ShowAsDropdown' | translate}}: </label>
-                                        <input type="checkbox" ng-model="currentField.show_as_dropdown">
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'image'">
-                                        <label class="col-sm-4">{{'Setup.Modules.ImageSizeList' | translate}}: </label>
-                                        <input style="width: 60px;" type="number" ng-model="currentField.image_size_list">
-                                        <label>px</label>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name === 'image'">
-                                        <label class="col-sm-4">{{'Setup.Modules.ImageSizeDetail' | translate}}: </label>
-                                        <input style="width: 60px;" type="number" ng-model="currentField.image_size_detail">
-                                        <label>px</label>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name == 'picklist' ||  currentField.dataType.name == 'text_single' || currentField.dataType.name == 'multi_line'">
-                                        <label class="col-sm-4">{{'Setup.Modules.AddresType' | translate}}: </label>
-                                        <select name="uniqueCombination"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.address_type"
-                                                ng-options="o.name as o.value for o in addressTypes">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name == 'picklist'">
-                                        <label class="col-sm-4">{{'Setup.Modules.FieldViewType' | translate}}: </label>
-                                        <select name="fieldViewType"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.view_type"
-                                                ng-options="o.name as o.value for o in viewTypes">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name == 'picklist' || currentField.dataType.name=='rating'">
-                                        <label class="col-sm-4">{{'Setup.Modules.Position' | translate}}: </label>
-                                        <select name="fieldPosition"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.position"
-                                                ng-options="o.name as o.value for o in positions">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-if="currentField.validation && currentField.validation.unique">
-                                        <label class="col-sm-4">{{'Setup.Modules.UniqueCombination' | translate}}: </label>
-                                        <select name="uniqueCombination"
-                                                class="form-control ng-animate-disabled col-sm-8"
-                                                ng-model="currentField.unique_combine"
-                                                ng-disabled="!currentField.isNew"
-                                                ng-options="o.name as o['label_' + language] for o in module.fields | filter:filterToUniqueCombinations">
-                                            <option value="">{{'Common.Select' | translate}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name != 'lookup' && currentField.dataType.name != 'multiselect' && currentField.dataType.name != 'tag'  && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && !currentField.isNew">
-                                        <label class="col-sm-4">{{'Setup.Modules.PrimaryField' | translate}}: </label>
-                                        <input type="checkbox" ng-model="currentField.primary" disabled
-                                               ng-if="currentField.primary && currentField.primary === true">
-                                        <a href ng-click="makePrimary(currentField)" ng-if="!currentField.primary">
-                                            <i class="fa fa-check"></i> {{'Setup.Modules.MakePrimary' | translate}}
-                                        </a>
-                                    </div>
-                                    <div class="form-group"
-                                         ng-show="currentField.dataType.name != 'lookup' && currentField.dataType.name != 'multiselect' &&  currentField.dataType.name != 'tag' && currentField.dataType.name != 'text_multi' && currentField.dataType.name != 'document' && currentField.dataType.name != 'image' && !currentField.isNew">
-                                        <label class="col-sm-4">{{'Setup.Modules.PrimaryFieldLookup' | translate}}: </label>
-                                        <input type="checkbox" ng-model="currentField.primary_lookup" disabled
-                                               ng-if="currentField.primary_lookup && currentField.primary_lookup === true">
-                                        <a href ng-click="makePrimaryLookup(currentField)"
-                                           ng-if="!currentField.primary_lookup">
-                                            <i class="fa fa-check"></i> {{
-'Setup.Modules.MakePrimaryLookup' |
-                                            translate
-                                            }}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="advanced-options"
-                                 ng-show="$parent.$parent.showAdvancedOptions && !currentField.systemReadonly">
-
-                                <a href class="advanced-options-link" style="margin-top: 25px;"
-                                   ng-click="$parent.$parent.showPermissions = !$parent.$parent.showPermissions"
-                                   ng-show="currentField.dataType && !currentField.systemReadonly">
-                                    {{'Setup.Modules.Permissions' | translate}}
-                                    <i class="fa fa-caret-right" ng-if="!$parent.showPermissions"></i>
-                                    <i class="fa fa-caret-down" ng-if="$parent.showPermissions"></i>
-                                </a>
-                                <div class="advanced-options" style="margin-bottom: 20px;"
-                                     ng-show="$parent.$parent.showPermissions && !currentField.systemReadonly">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>{{'Setup.Modules.Profile' | translate}}</th>
-                                                <th class="text-center">{{'Setup.Modules.PermissionFull' | translate}}</th>
-                                                <th class="text-center">
-                                                    {{'Setup.Modules.PermissionReadOnly' | translate}}
-                                                </th>
-                                                <th class="text-center">{{'Setup.Modules.PermissionNone' | translate}}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr ng-repeat="permission in currentField.permissions | orderBy:'profile_id'">
-                                                <td>{{permission.profile_name}}</td>
-                                                <td class="text-center user-not-select">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="full" />
-                                                </td>
-                                                <td class="text-center user-not-select">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="read_only"
-                                                           ng-disabled="permission.profile_is_admin"
-                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
-                                                </td>
-                                                <td class="text-center user-not-select">
-                                                    <input type="radio"
-                                                           ng-model="permission.type"
-                                                           value="none"
-                                                           ng-disabled="permission.profile_is_admin"
-                                                           title="{{permission.profile_is_admin ? ('Setup.Modules.PermissionDisabledInfo1' | translate) : (currentField.validation.required ? ('Setup.Modules.PermissionDisabledInfo2' | translate) : '')}}" />
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="form-group" ng-show="fieldForm.$submitted && fieldForm.$invalid">
-                                <div class="col-sm-12">
-                                    <div class="callout callout-danger">
-                                        <p ng-if="fieldForm.$error.required">
-                                            {{
-'Setup.Modules.RequiredError' |
-                                            translate
-                                            }}
-                                        </p>
-                                        <p ng-if="fieldForm.$error.max && (currentField.dataType.name === 'text_single')">
-                                            {{'Setup.Modules.MaxError400' | translate}}
-                                        </p>
-                                        <p ng-if="fieldForm.$error.max && (currentField.dataType.name === 'email')">
-                                            {{'Setup.Modules.MaxError100' | translate}}
-                                        </p>
-                                        <p ng-if="fieldForm.$error.max && currentField.dataType.name === 'text_multi' && currentField.multiline_type != 'large'">
-                                            {{'Setup.Modules.MaxError2000' | translate}}
-                                        </p>
-                                        <p ng-if="fieldForm.$error.max && currentField.dataType.name === 'text_multi' && currentField.multiline_type === 'large'">
-                                            {{'Setup.Modules.MaxError32000' | translate}}
-                                        </p>
-                                        <p ng-if="fieldForm.$error.max && (currentField.dataType.name === 'number' || currentField.dataType.name === 'number_decimal' || currentField.dataType.name === 'currency')">
-                                            {{'Setup.Modules.MaxError27' | translate}}
-                                        </p>
-                                        <p ng-if="fieldForm.$error.maxTags && currentField.temporary_default_value && currentField.temporary_default_value.length > 1">
-                                            {{'Setup.Modules.MaxTagUser' | translate}}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group" ng-if="currentField.systemReadonly">
-                                <div class="col-sm-12">
-                                    <div class="callout callout-info">
-                                        <p ng-bind-html="'Setup.Modules.SystemFieldCannotEdit' | translate"></p>
                                     </div>
                                 </div>
                             </div>

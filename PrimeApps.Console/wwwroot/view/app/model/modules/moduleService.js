@@ -1029,9 +1029,11 @@ angular.module('primeapps')
                 updateField: function (fieldId, field) {
                     return $http.put(config.apiUrl + 'module/update_field/' + fieldId, field);
                 },
+
                 getModuleFields: function (moduleName) {
                     return $http.get(config.apiUrl + 'module/get_module_fields?moduleName=' + moduleName);
                 },
+
                 getModuleByName: function (moduleName) {
                     return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
                 },
