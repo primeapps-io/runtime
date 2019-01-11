@@ -1031,7 +1031,10 @@ angular.module('primeapps')
                 },
                 getModuleFields: function (moduleName) {
                     return $http.get(config.apiUrl + 'module/get_module_fields?moduleName=' + moduleName);
-                }
+                },
+                getModuleByName: function (moduleName) {
+                    return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
+                },
             };
         }]);
 
