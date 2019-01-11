@@ -32,18 +32,20 @@ namespace PrimeApps.App.Controllers
         private IPicklistRepository _picklistRepository;
         private IProfileRepository _profileRepository;
         private IProcessRepository _processRepository;
+        private ISettingRepository _settingRepository;
         private Warehouse _warehouse;
         private IConfiguration _configuration;
 
         private IRecordHelper _recordHelper;
 
-        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IProcessRepository processRepository, IProfileRepository profileRepository)
+        public RecordController(IRecordRepository recordRepository, IModuleRepository moduleRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IRecordHelper recordHelper, Warehouse warehouse, IConfiguration configuration, IProcessRepository processRepository, IProfileRepository profileRepository)
         {
             _recordRepository = recordRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
             _profileRepository = profileRepository;
             _processRepository = processRepository;
+            _settingRepository = settingRepository;
             _warehouse = warehouse;
 
             _recordHelper = recordHelper;
@@ -57,7 +59,7 @@ namespace PrimeApps.App.Controllers
             SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_picklistRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_profileRepository, PreviewMode, TenantId, AppId);
-
+            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
             base.OnActionExecuting(context);
         }
 
@@ -161,6 +163,22 @@ namespace PrimeApps.App.Controllers
 
                 throw;
             }
+
+            var sensitiveFieldsSettings = await _settingRepository.GetByKeyAsync("sensitive_read_" + moduleEntity.Name);
+            string[] sensitiveFields = null;
+            if (sensitiveFieldsSettings != null)
+                sensitiveFields = sensitiveFieldsSettings.Value.Split(',');
+            if (!AppUser.HasAdminProfile && !AppUser.IsIntegrationUser && sensitiveFields != null && sensitiveFields.Length > 0)
+            {
+                var newRecord = record;
+                foreach (var r in record)
+                {
+                    if (sensitiveFields.Contains(r.Key))
+                        newRecord[r.Key] = null;
+                }
+                record = newRecord;
+            }
+
 
             return Ok(record);
         }
@@ -280,6 +298,27 @@ namespace PrimeApps.App.Controllers
                 throw;
             }
 
+            var sensitiveFieldsSettings = await _settingRepository.GetByKeyAsync("sensitive_read_" + module);
+            string[] sensitiveFields = null;
+            if (sensitiveFieldsSettings != null)
+                sensitiveFields = sensitiveFieldsSettings.Value.Split(',');
+            if (!AppUser.HasAdminProfile && !AppUser.IsIntegrationUser && sensitiveFields != null && sensitiveFields.Length > 0)
+            {
+                var newRecord = records;
+                for (int i = 0; i < records.Count; i++)
+                {
+                    var record = records[i];
+                    foreach (var obj in record)
+                    {
+                        JProperty jProperty = obj.ToObject<JProperty>();
+                        string propertyName = jProperty.Name;
+                        if (sensitiveFields.Contains(propertyName))
+                            newRecord[i][propertyName] = null;
+                    }
+                }
+                records = newRecord;
+            }
+
             return Ok(records);
         }
 
@@ -346,7 +385,7 @@ namespace PrimeApps.App.Controllers
                     {
                         foreach (var combinationField in combinationFields)
                         {
-                            _recordHelper.SetCombinations(currentRecord,_moduleRepository,AppUser.Culture, null, combinationField,180);
+                            _recordHelper.SetCombinations(currentRecord, _moduleRepository, AppUser.Culture, null, combinationField, 180);
                         }
 
                         hasUpdate = true;
@@ -477,7 +516,7 @@ namespace PrimeApps.App.Controllers
             if (moduleEntity == null || record == null)
                 return BadRequest();
 
-            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _profileRepository, ModelState , _warehouse);
+            var resultBefore = await _recordHelper.BeforeDelete(moduleEntity, record, AppUser, _processRepository, _profileRepository, ModelState, _warehouse);
 
             if (!record["freeze"].IsNullOrEmpty() && (bool)record["freeze"])
                 return StatusCode(HttpStatusCode.Status403Forbidden);
@@ -508,7 +547,7 @@ namespace PrimeApps.App.Controllers
                 if (moduleEntity == null || record == null)
                     return BadRequest();
 
-                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser:AppUser);
+                var resultBefore = await _recordHelper.BeforeCreateUpdate(moduleEntity, record, ModelState, AppUser.TenantLanguage, _moduleRepository, _picklistRepository, _profileRepository, appUser: AppUser);
 
                 if (resultBefore != HttpStatusCode.Status200OK && !ModelState.IsValid)
                     return StatusCode(resultBefore, ModelState);

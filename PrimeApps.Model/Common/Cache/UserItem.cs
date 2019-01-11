@@ -21,5 +21,6 @@ namespace PrimeApps.Model.Common.Cache
         public bool HasAdminProfile { get; set; }
         public string WarehouseDatabaseName { get; set; }
         public int OrganizationId { get; set; }
+        public bool IsIntegrationUser { get; set; }
     }
 }

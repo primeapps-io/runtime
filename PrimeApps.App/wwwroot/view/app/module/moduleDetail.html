@@ -525,13 +525,12 @@ relatedModule['label_'
                                                                       hide-create-new="hideCreateNew(field)"
                                                                       ng-show="editLookup[field.name]" />
                                                 </div>
-                                                <a href="#/app/crm/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
+                                                <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                                                    class="link"
                                                    ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link"
                                                    ng-show="!editLookup[field.name]">
                                                     <i class="fa fa-external-link"></i>
                                                 </a>
-
                                                 <a href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                                                    class="link"
                                                    ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && field.external_link"
@@ -656,7 +655,12 @@ relatedModule['label_'
 
                                                 <a href="#/app/module/{{field.lookup_type != 'relation' ? field.lookup_type : record.related_module.value}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
                                                    class="link"
-                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name]"
+                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && !field.external_link"
+                                                   ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
+
+                                                <a href="{{field.external_link}}?id={{record[field.name].id}}&ptype={{type}}&pid={{id}}"
+                                                   class="link"
+                                                   ng-if="field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && record[field.name] && field.external_link"
                                                    ng-show="!editLookup[field.name]"><i class="fa fa-external-link"></i></a>
 
                                                 <pre name="{{field.name}}"

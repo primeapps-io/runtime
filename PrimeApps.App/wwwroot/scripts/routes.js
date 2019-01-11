@@ -1347,7 +1347,7 @@ angular.module('primeapps')
                     var files = [];
                     var componentContent = angular.fromJson(component.content);
 
-                    var url = componentContent.local === 't' ? 'views/app/crm/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId ) + '/' + component.name + '/';
+                    var url = componentContent.local === 't' ? 'views/app/' + component.name + '/' : blobUrl + '/components/' + (componentContent.level === 'app' ? 'app-' + applicationId : 'tenant-' + tenantId ) + '/' + component.name + '/';
 
                     for (var i = 0; i < componentContent.files.length; i++) {
                         files.push(componentContent.files[i].includes('http') ? componentContent.files[i] : url + componentContent.files[i]);

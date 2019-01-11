@@ -127,8 +127,8 @@ angular.module('primeapps')
                                     /*
                                    * Check branch mode is available.
                                    * */
-                                    if (response[11].status === 200 && response[11].data.value) {
-                                        $rootScope.branchAvailable = response[11].data.value === 't';
+                                    if (response[12].status === 200 && response[12].data.value) {
+                                        $rootScope.branchAvailable = response[12].data.value === 't';
 
                                         var calisanRequest = {
                                             filters: [
