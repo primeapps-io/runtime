@@ -22,7 +22,7 @@
         var appId = ViewBag.AppId;
         var encryptedUserId = ViewBag.EncryptedUserId;
         var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
-        var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject("{}"));
+        var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     }
 
 <!DOCTYPE html>
