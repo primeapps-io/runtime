@@ -144,6 +144,8 @@ namespace PrimeApps.App.Controllers
             componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
             var components = await componentRepository.GetByType(ComponentType.Component);
 
+            var globalConfig = await componentRepository.GetGlobalConfig();
+
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
 
@@ -157,15 +159,17 @@ namespace PrimeApps.App.Controllers
                     var userInfo = await userRepository.GetUserInfoAsync(userId);
 
                     if (userInfo != null)
-                    {
                         hasAdminRight = userInfo.profile.HasAdminRights;
-                    }
+
                 }
             }
+
             ViewBag.Components = jsonString;
             ViewBag.HasAdminRight = hasAdminRight;
             ViewBag.TenantId = tenantId;
             ViewBag.AppId = app.Id;
+            ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
+            ViewBag.GlobalConfig = globalConfig != null ? globalConfig.Content : null;
         }
     }
 }

@@ -26,6 +26,9 @@ namespace PrimeApps.Model.Entities.Platform
         [Column("updated_at")]
         public DateTime? UpdatedAt { get; set; }
 
+        [Column("is_integration_user")]
+        public bool IsIntegrationUser { get; set; }
+
         public virtual ICollection<UserTenant> TenantsAsUser { get; set; }
 
         public virtual ICollection<Tenant> TenantsAsOwner { get; set; }

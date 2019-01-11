@@ -111,10 +111,10 @@ angular.module('primeapps')
                 //Module relations list remove itself
                 var filter = {};
                 if (relation.parent_module) {
-                    filter['label_' + $rootScope.language + '_plural'] = '!' + relation.parent_module['label_' + $rootScope.language + '_plural'];
+                    filter['label_' + $scope.language + '_plural'] = '!' + relation.parent_module['label_' + $scope.language + '_plural'];
                 }
                 //Module relations list remove itself
-                $scope.parentModuleLists = $scope.$parent.modules;
+                //$scope.parentModuleLists = $scope.$parent.modules;
                 $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
@@ -182,7 +182,7 @@ angular.module('primeapps')
                 if ($scope.currentRelation.module) {
                     $scope.module = $scope.currentRelation.module;
                     var filter = {};
-                    filter['label_' + $rootScope.language + '_plural'] = '!' + $scope.module['label_' + $rootScope.language + '_plural'];
+                    filter['label_' + $scope.language + '_plural'] = '!' + $scope.module['label_' + $scope.language + '_plural'];
                     //Module relations list remove itself
                     $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
                 }
@@ -192,7 +192,8 @@ angular.module('primeapps')
 
                 var relatedModuleName = $scope.currentRelation.relation_module.name;
                 var filter = {};
-                $scope.parentModuleLists = filter['label_' + $rootScope.language + '_plural'] = '!' + relatedModuleName['label_' + $rootScope.language + '_plural'];
+                filter['label_' + $scope.language + '_plural'] = filter['label_' + $scope.language + '_plural'] = '!' + relatedModuleName['label_' + $scope.language + '_plural'];
+                // $scope.parentModuleLists = filter['label_' + $rootScope.language + '_plural'] = '!' + relatedModuleName['label_' + $rootScope.language + '_plural'];
                 $scope.moduleLists = $filter('filter')($scope.$parent.modules, filter, true);
                 ModuleService.getModuleFields(relatedModuleName).then(function (response) {
                     $scope.currentRelation.relation_module.fields = response.data;

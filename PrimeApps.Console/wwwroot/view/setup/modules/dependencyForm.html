@@ -5,7 +5,7 @@
                 <h4 class="modal-title">{{currentDependency.isNew ? ('Setup.Modules.NewDependency' | translate) : ('Setup.Modules.EditDependency' | translate)}}</h4>
             </div>
             <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewDependencyModal.hide();">
+                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewDependencyModal.hide(); setCurrentDependency(currentDependencyState);">
                     <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
                 </button>
                 <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="currentRelation.many ? !currentRelation.hasRelationField : false">
@@ -42,7 +42,7 @@
                                             ng-options="o.value as o.label for o in dependencyTypes"></select>
                                 </div>
                                 <div class="form-group" ng-if="currentDependency.dependencyType === 'value'" ng-class="{'has-error': dependencyForm.$submitted && dependencyForm.type.$invalid}">
-                                    <label class="col-sm-4 required-field">* {{'Setup.Modules.ValueChangeType' | translate}}: </label>
+                                    <label class="col-sm-6 required-field">* {{'Setup.Modules.ValueChangeType' | translate}}: </label>
                                     <select name="type"
                                             class="form-control ng-animate-disabled col-sm-8"
                                             required
@@ -75,7 +75,7 @@
                                                 data-multiple="1"
                                                 data-max-length="2"
                                                 data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                bs-options="o.id as o['label_'+language] for o in getPicklist() track by id"
+                                                bs-options="o.id as o['label_'+language] for o in picklist track by id"
                                                 bs-select></button>
                                     </div>
                                 </div>
@@ -99,6 +99,7 @@
                                             class="form-control ng-animate-disabled col-sm-8"
                                             required
                                             ng-model="currentDependency.child_field"
+                                            ng-change="getMappingOptions()"
                                             ng-options="o.name as o['label_' + language] for o in getChildFields() | filter:{hidden:'!true'} | orderBy:'order'">
                                         <option value="">{{'Common.Select' | translate}}</option>
                                     </select>
@@ -122,7 +123,7 @@
                                 </div>
                                 <div class="form-group"
                                      ng-if="currentDependency.type === 'list_text' && currentDependency.dependencyType === 'value'">
-                                    <label class="col-sm-4">{{'Setup.Modules.RemoveChildValue' | translate}}: </label>
+                                    <label class="col-sm-6">{{'Setup.Modules.RemoveChildValue' | translate}}: </label>
                                     <input type="checkbox"
                                            ng-model="currentDependency.clear">
                                 </div>
@@ -152,8 +153,8 @@
                                     <label class="col-sm-4">{{'Setup.Modules.MappingOptions' | translate}}:</label>
                                     <div class="col-sm-12">
                                         <div class="value-map-container">
-                                            <div class="form-group" ng-repeat="option in getMappingOptions()">
-                                                <label class="col-sm-6">{{option.label[language]}}: </label>
+                                            <div class="form-group" ng-repeat="option in parentPicklist">
+                                                <label class="col-sm-4">{{option['label_'+language]}}: </label>
                                                 <div class="col-sm-8 multiselect-container">
                                                     <button type="button"
                                                             class="btn btn-default ng-animate-disabled multiselect"
@@ -166,7 +167,7 @@
                                                             data-multiple="1"
                                                             data-max-length="2"
                                                             data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                            bs-options="o.id as o.label[language] for o in option.childPicklist"
+                                                            bs-options="o.id as o['label_'+language] for o in option.childPicklist | orderBy:('label_'+language)"
                                                             bs-select></button>
                                                 </div>
                                             </div>

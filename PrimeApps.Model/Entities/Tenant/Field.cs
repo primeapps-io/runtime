@@ -152,6 +152,9 @@ namespace PrimeApps.Model.Entities.Tenant
         [Column("show_as_dropdown")]
         public bool ShowAsDropdown { get; set; }
 
+        [Column("external_link"), MaxLength(400)]
+        public string ExternalLink { get; set; }
+
         [Column("encrypted")]
         public bool Encrypted { get; set; }
 

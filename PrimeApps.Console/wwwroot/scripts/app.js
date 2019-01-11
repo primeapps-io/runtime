@@ -37,7 +37,8 @@ angular.module('primeapps',
         'mentio',
         'mwl.calendar',
         'angular.filter',
-        'bw.paging'
+        'bw.paging',
+        'dndLists'
     ])
 
     .config(['$locationProvider', '$compileProvider', '$filterProvider', '$controllerProvider', '$provide', '$httpProvider', '$qProvider', '$sceDelegateProvider', '$translateProvider', 'tmhDynamicLocaleProvider', '$datepickerProvider', 'ngToastProvider', 'blockUIConfig', '$animateProvider', 'pluploadOptionProvider', 'config', 'uiSelectConfig',

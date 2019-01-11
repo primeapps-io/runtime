@@ -7,8 +7,10 @@ using PrimeApps.Model.Enums;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
-	public interface IComponentRepository : IRepositoryBaseTenant
-	{
-		Task<List<Component>> GetByType(ComponentType type);
-	}
+    public interface IComponentRepository : IRepositoryBaseTenant
+    {
+        Task<List<Component>> GetByType(ComponentType type);
+        Task<List<Component>> GetByPlace(ComponentPlace place);
+        Task<Component> GetGlobalConfig();
+    }
 }

@@ -1064,86 +1064,88 @@ angular.module('primeapps')
                     }
                 },
 
-                processDependencies: function (module) {
-                    if (!module.dependencies)
-                        module.dependencies = [];
-
-                    if (!module.display_dependencies)
-                        module.display_dependencies = [];
-
-                    var dependencies = [];
-
-                    angular.forEach(module.dependencies, function (dependency) {
-                        dependency.type = dependency.dependency_type;
-                        dependency.parentField = $filter('filter')(module.fields, {
-                            name: dependency.parent_field,
-                            deleted: '!true'
-                        })[0];
-                        dependency.childField = $filter('filter')(module.fields, {
-                            name: dependency.child_field,
-                            deleted: '!true'
-                        })[0];
-                        dependency.sectionField = $filter('filter')(module.sections, {
-                            name: dependency.child_section,
-                            deleted: '!true'
-                        })[0];
-
-                        if (dependency.dependency_type === 'display') {
-                            dependency.dependencyType = 'display';
-                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
-
-                            if (dependency.values && !Array.isArray(dependency.values)) {
-                                var values = dependency.values.split(',');
-                                dependency.values = [];
-
-                                angular.forEach(values, function (value) {
-                                    dependency.values.push(parseInt(value));
-                                });
-                            }
-                        }
-                        else if (dependency.dependency_type === 'freeze') {
-                            dependency.dependencyType = 'freeze';
-                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
-
-                            if (dependency.values && !Array.isArray(dependency.values)) {
-                                var values = dependency.values.split(',');
-                                dependency.values = [];
-
-                                angular.forEach(values, function (value) {
-                                    dependency.values.push(parseInt(value));
-                                });
-                            }
-                        }
-
-                        else {
-                            dependency.dependencyType = 'value';
-                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
-
-
-                            if (dependency.field_map_parent) {
-                                dependency.field_map = {};
-                                dependency.field_map.parent_map_field = dependency.field_map_parent;
-                                dependency.field_map.child_map_field = dependency.field_map_child;
-                            }
-
-                            if (dependency.value_map && !dependency.value_maps) {
-                                dependency.value_maps = {};
-
-                                var valueMaps = dependency.value_map.split('|');
-
-                                angular.forEach(valueMaps, function (valueMap) {
-                                    var map = valueMap.split(';');
-                                    dependency.value_maps[map[0]] = map[1].split(',');
-                                });
-                            }
-                        }
-
-                        if (dependency.parentField && dependency.childField)
-                            dependencies.push(dependency);
-                    });
-
-                    return dependencies;
-                },
+                // processDependencies: function (module) {
+                //     var copyModule = module;
+                //     if (!module.dependencies)
+                //         module.dependencies = [];
+                //
+                //     if (!module.display_dependencies)
+                //         module.display_dependencies = [];
+                //
+                //     var dependencies = [];
+                //
+                //     angular.forEach(module.dependencies, function (dependency) {
+                //         dependency.parent_module = copyModule;
+                //         dependency.type = dependency.dependency_type;
+                //         dependency.parentField = $filter('filter')(module.fields, {
+                //             name: dependency.parent_field,
+                //             deleted: '!true'
+                //         })[0];
+                //         dependency.childField = $filter('filter')(module.fields, {
+                //             name: dependency.child_field,
+                //             deleted: '!true'
+                //         })[0];
+                //         dependency.sectionField = $filter('filter')(module.sections, {
+                //             name: dependency.child_section,
+                //             deleted: '!true'
+                //         })[0];
+                //
+                //         if (dependency.dependency_type === 'display') {
+                //             dependency.dependencyType = 'display';
+                //             dependency.name = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
+                //
+                //             if (dependency.values && !Array.isArray(dependency.values)) {
+                //                 var values = dependency.values.split(',');
+                //                 dependency.values = [];
+                //
+                //                 angular.forEach(values, function (value) {
+                //                     dependency.values.push(parseInt(value));
+                //                 });
+                //             }
+                //         }
+                //         else if (dependency.dependency_type === 'freeze') {
+                //             dependency.dependencyType = 'freeze';
+                //             dependency.name = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
+                //
+                //             if (dependency.values && !Array.isArray(dependency.values)) {
+                //                 var values = dependency.values.split(',');
+                //                 dependency.values = [];
+                //
+                //                 angular.forEach(values, function (value) {
+                //                     dependency.values.push(parseInt(value));
+                //                 });
+                //             }
+                //         }
+                //
+                //         else {
+                //             dependency.dependencyType = 'value';
+                //             dependency.name = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
+                //
+                //
+                //             if (dependency.field_map_parent) {
+                //                 dependency.field_map = {};
+                //                 dependency.field_map.parent_map_field = dependency.field_map_parent;
+                //                 dependency.field_map.child_map_field = dependency.field_map_child;
+                //             }
+                //
+                //             if (dependency.value_map && !dependency.value_maps) {
+                //                 dependency.value_maps = {};
+                //
+                //                 var valueMaps = dependency.value_map.split('|');
+                //
+                //                 angular.forEach(valueMaps, function (valueMap) {
+                //                     var map = valueMap.split(';');
+                //                     dependency.value_maps[map[0]] = map[1].split(',');
+                //                 });
+                //             }
+                //         }
+                //
+                //         if (dependency.parentField && dependency.childField)
+                //             dependencies.push(dependency);
+                //     });
+                //
+                //     return dependencies;
+                // },
 
                 prepareDependency: function (dependency) {
                     switch (dependency.dependencyType) {
@@ -1242,6 +1244,74 @@ angular.module('primeapps')
                         if (appModules)
                             $rootScope.appModules.splice($rootScope.appModules.indexOf(appModules), 1);
                     }
+                },
+                processDependencies: function (dependencies) {
+                    angular.forEach(dependencies, function (dependency) {
+                        dependency.parent_module = dependency.module;
+                        dependency.type = dependency.dependency_type;
+                        dependency.parentField = $filter('filter')(dependency.module.fields, {
+                            name: dependency.parent_field,
+                            deleted: '!true'
+                        })[0];
+                        dependency.childField = $filter('filter')(dependency.module.fields, {
+                            name: dependency.child_field,
+                            deleted: '!true'
+                        })[0];
+                        dependency.sectionField = $filter('filter')(dependency.module.sections, {
+                            name: dependency.child_section,
+                            deleted: '!true'
+                        })[0];
+
+                        if (dependency.dependency_type === 'display') {
+                            dependency.dependencyType = 'display';
+                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeDisplay');
+
+                            if (dependency.values && !Array.isArray(dependency.values)) {
+                                var values = dependency.values.split(',');
+                                dependency.values = [];
+
+                                angular.forEach(values, function (value) {
+                                    dependency.values.push(parseInt(value));
+                                });
+                            }
+                        }
+                        else if (dependency.dependency_type === 'freeze') {
+                            dependency.dependencyType = 'freeze';
+                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeFreeze');
+
+                            if (dependency.values && !Array.isArray(dependency.values)) {
+                                var values = dependency.values.split(',');
+                                dependency.values = [];
+
+                                angular.forEach(values, function (value) {
+                                    dependency.values.push(parseInt(value));
+                                });
+                            }
+                        }
+                        else {
+                            dependency.dependencyType = 'value';
+                            dependency.name = $filter('translate')('Setup.Modules.DependencyTypeValueChange');
+
+
+                            if (dependency.field_map_parent) {
+                                dependency.field_map = {};
+                                dependency.field_map.parent_map_field = dependency.field_map_parent;
+                                dependency.field_map.child_map_field = dependency.field_map_child;
+                            }
+
+                            if (dependency.value_map && !dependency.value_maps) {
+                                dependency.value_maps = {};
+
+                                var valueMaps = dependency.value_map.split('|');
+
+                                angular.forEach(valueMaps, function (valueMap) {
+                                    var map = valueMap.split(';');
+                                    dependency.value_maps[map[0]] = map[1].split(',');
+                                });
+                            }
+                        }
+                    });
+                    return dependencies;
                 }
             };
         }]);
