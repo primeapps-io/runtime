@@ -56,6 +56,13 @@ namespace PrimeApps.Model.Enums
         AfterSendToProcessApproval = 16,
 
         [EnumMember(Value = "before_list_request")]
-        BeforeListRequest = 17
+        BeforeListRequest = 17,
+        
+        
+        /*
+         * Global config script
+         */
+        [EnumMember(Value = "global_config")]
+        GlobalConfig = 100
     }
 }

@@ -16,8 +16,9 @@ angular.module('primeapps')
                         config.headers['Authorization'] = 'Bearer ' + accessToken;
 
                     if (functionUrl && config.url.indexOf(functionUrl) > -1) {
-                        config.headers['user_id'] = $rootScope.user.ID;
-                        config.headers['tenant_id'] = $rootScope.user.tenantId;
+                        config.headers['user_id'] = $rootScope.user.id;
+                        config.headers['tenant_id'] = $rootScope.user.tenant_id;
+                        config.headers['X-Auth-Key'] = encryptedUserId;
 
                         if ($rootScope.branchAvailable) {
                             config.headers['branch_id'] = $rootScope.user.branchId;

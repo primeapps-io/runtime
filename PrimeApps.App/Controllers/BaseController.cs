@@ -61,7 +61,8 @@ namespace PrimeApps.App.Controllers
                 TenantGuid = tenant.GuidId,
                 TenantLanguage = tenant.Setting?.Language,
                 Email = platformUser.Email,
-                FullName = platformUser.FirstName + " " + platformUser.LastName
+                FullName = platformUser.FirstName + " " + platformUser.LastName,
+                IsIntegrationUser = platformUser.IsIntegrationUser
             };
 
             if (!tenant.App.UseTenantSettings)
