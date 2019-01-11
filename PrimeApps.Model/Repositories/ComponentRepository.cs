@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => !x.Deleted && x.Place == place).ToListAsync();
         }
 
-        public async Task<Component> GetGlobalConfig()
+        public async Task<Component> GetGlobalSettings()
         {
             return await DbContext.Components
                 .Where(x => !x.Deleted && x.Place == ComponentPlace.GlobalConfig)

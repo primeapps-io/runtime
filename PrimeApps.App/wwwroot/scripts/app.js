@@ -179,7 +179,7 @@ angular.module('primeapps',
 			$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
 				try {
 					$rootScope.currentPath = $location.$$url;
-					$window.yaCounter47616517.hit($location.path());
+					//$window.yaCounter47616517.hit($location.path());
 				}
 				catch (error) {
 					return;
