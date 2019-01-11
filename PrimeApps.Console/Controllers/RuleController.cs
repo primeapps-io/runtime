@@ -42,10 +42,24 @@ namespace PrimeApps.Console.Controllers
         [Route("get/{id:int}"), HttpGet]
         public async Task<IActionResult> Get(int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var workflowEntity = await _workflowRepository.GetById(id);
 
-            return Ok(null);
+            if (workflowEntity == null)
+                return NotFound();
+
+            if (workflowEntity.SendNotification != null && workflowEntity.SendNotification.RecipientsArray.Length > 0)
+                workflowEntity.SendNotification.RecipientList = await _workflowRepository.GetRecipients(workflowEntity);
+
+            if (workflowEntity.SendNotification != null && workflowEntity.SendNotification.CCArray != null && workflowEntity.SendNotification.CCArray.Length > 0)
+                workflowEntity.SendNotification.CCList = await _workflowRepository.GetCC(workflowEntity);
+
+            if (workflowEntity.SendNotification != null && workflowEntity.SendNotification.BccArray != null && workflowEntity.SendNotification.BccArray.Length > 0)
+                workflowEntity.SendNotification.BccList = await _workflowRepository.GetBcc(workflowEntity);
+
+            if (workflowEntity.CreateTask != null && workflowEntity.CreateTask.Owner > -1)
+                workflowEntity.CreateTask.OwnerUser = await _workflowRepository.GetTaskOwner(workflowEntity);
+
+            return Ok(workflowEntity); 
         }
 
         [Route("get_all"), HttpGet]

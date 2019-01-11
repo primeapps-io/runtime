@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('RulesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper',
-        function ($rootScope, $http, config, $filter, $q, helper, ) {
+    .factory('RulesService', ['$rootScope', '$http', 'config', '$filter', 'operators', '$q', 'helper',
+        function ($rootScope, $http, config, $filter, operators, $q, helper, ) {
             return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'rule/find/', model);
@@ -79,6 +79,447 @@ angular.module('primeapps')
                     }
 
                     return dueDateItems;
+                },
+
+                processWorkflow: function (workflow, module, language, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, taskFields, picklistUpdateModule, notificationFields, dynamicFiledUpdatefields) {
+                    var workflowModel = {};
+                    workflowModel.id = workflow.id;
+                    workflowModel.created_by = workflow.created_by;
+                    workflowModel.updated_by = workflow.updated_by;
+                    workflowModel.created_at = workflow.created_at;
+                    workflowModel.updated_at = workflow.updated_at;
+                    workflowModel.deleted = workflow.deleted;
+                    workflowModel.name = workflow.name;
+                    workflowModel.module = module;
+                    workflowModel.active = workflow.active;
+                    workflowModel.delete_logs = workflow.delete_logs;
+                    workflowModel.processFilter = workflow.process_filter;
+                    workflowModel.frequency = workflow.frequency || 'one_time';
+
+                    if (workflow.changed_field) {
+                        workflowModel.changed_field_checkbox = true;
+                        workflowModel.changed_field = $filter('filter')(module.fields, { name: workflow.changed_field }, true)[0];
+                    }
+
+                    workflowModel.operation = {};
+
+                    angular.forEach(workflow.operations_array, function (operation) {
+                        workflowModel.operation[operation] = true;
+                    });
+
+                    if (workflow.filters) {
+                        workflow.filters = $filter('orderBy')(workflow.filters, 'no');
+
+                        for (var i = 0; i < workflow.filters.length; i++) {
+                            var filter = workflow.filters[i];
+                            var field = $filter('filter')(workflowModel.module.fields, { name: filter.field }, true)[0];
+                            var fieldValue = null;
+
+                            if (!field)
+                                return;
+
+                            switch (field.data_type) {
+                                case 'picklist':
+                                    var result = $filter('filter')(picklistsModule, { id: field.picklist_id }, true)[0];
+                                    if (result)
+                                        fieldValue = result['label_' + language];
+                                    break;
+                                case 'multiselect':
+                                    var picklistItems = filter.value.split('|');
+                                    fieldValue = [];
+
+                                    angular.forEach(picklistItems, function (picklistLabel) {
+                                        var picklist = $filter('filter')(picklistsModule[field.picklist_id], { labelStr: picklistLabel }, true)[0];
+
+                                        if (picklist)
+                                            fieldValue.push(picklist);
+                                    });
+                                    break;
+                                case 'tag':
+                                    var Items = filter.value.split('|');
+                                    fieldValue = [];
+
+                                    angular.forEach(Items, function (item) {
+                                        fieldValue.push(item);
+                                    });
+                                    break;
+                                case 'lookup':
+                                    if (field.lookup_type === 'users') {
+                                        fieldValue = null;
+                                        filter.valueState = angular.copy(filter.value);
+                                    }
+                                    else
+                                        fieldValue = filter.value;
+                                    break;
+                                case 'checkbox':
+                                    fieldValue = $filter('filter')(picklistsModule['yes_no'], { system_code: filter.value })[0];
+                                    break;
+                                default:
+                                    fieldValue = filter.value;
+                                    break;
+                            }
+
+                            filter.field = field;
+                            filter.operator = operators[filter.operator];
+                            filter.value = fieldValue;
+
+                            if (field.data_type === 'lookup') {
+                                field.operators = [];
+                                field.operators.push(operators.equals);
+                                field.operators.push(operators.not_equal);
+                                field.operators.push(operators.empty);
+                                field.operators.push(operators.not_empty);
+                            }
+
+                            filters[i] = filter;
+                        }
+                    }
+
+                    if (workflow.send_notification) {
+                        workflowModel.send_notification = {};
+                        workflowModel.send_notification.subject = workflow.send_notification.subject;
+                        workflowModel.send_notification.message = workflow.send_notification.message;
+
+                        workflowModel.send_notification.recipients = [];
+                        workflowModel.send_notification.cc = [];
+                        workflowModel.send_notification.bcc = [];
+
+                        if (workflow.send_notification.recipients_array) {
+                            angular.forEach(workflow.send_notification.recipients_array, function (email) {
+                                var recipient = {};
+
+                                if (email === '[owner]') {
+                                    var moduleObj = {};
+                                    moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                    moduleObj.isSameModule = false;
+                                    moduleObj.systemName = null;
+                                    moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+
+
+                                    workflowModel.send_notification_module = moduleObj;
+                                    recipient.id = 0;
+                                    recipient.email = '[owner]';
+                                    recipient.full_name = $filter('translate')('Common.RecordOwner');
+                                    workflowModel.send_notification.recipients.push(recipient);
+                                }
+                                else {
+                                    var moduleObj = {};
+                                    if (email.indexOf('@') > -1) {
+                                        moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                        moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                        moduleObj.isSameModule = false;
+                                        moduleObj.systemName = null;
+                                        moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+                                        workflowModel.send_notification_module = moduleObj;
+                                        var recipientUser = $filter('filter')(workflow.send_notification.recipient_list, { email: email }, true)[0];
+                                        recipient.id = recipientUser.id;
+                                        recipient.email = recipientUser.email;
+                                        recipient.full_name = recipientUser.full_name;
+                                        workflowModel.send_notification.recipients.push(recipient);
+                                    } else {
+                                        if (email.indexOf('.') > -1) {
+                                            var lookupField = email.split('.');
+                                            var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
+                                            var recipientModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                                            var paramModule = $filter('filter')(notificationFields, { systemName: lookupField[0] }, true)[0];
+                                            moduleObj.module = recipientModule;
+                                            moduleObj.name = lookupModule['label_' + $rootScope.language] + ' ' + '(' + moduleObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                            moduleObj.isSameModule = paramModule.isSameModule;
+                                            moduleObj.systemName = lookupField[0];
+                                            moduleObj.id = paramModule.id;
+                                            workflowModel.send_notification_module = moduleObj;
+                                            workflowModel.send_notification.customRecipient = $filter('filter')(recipientModule.fields, { name: lookupField[1] }, true)[0];
+                                        }
+                                        else {
+                                            moduleObj.module = workflow.module;
+                                            moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                            moduleObj.isSameModule = true;
+                                            moduleObj.systemName = null;
+                                            moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+                                            workflowModel.send_notification_module = moduleObj;
+                                            workflowModel.send_notification.customRecipient = $filter('filter')(workflow.module.fields, { name: email }, true)[0];
+                                        }
+                                    }
+
+                                }
+
+
+                            });
+                        }
+
+                        if (workflow.send_notification.cc_array) {
+                            angular.forEach(workflow.send_notification.cc_array, function (email) {
+                                var ccObj = {};
+
+                                if (email === '[owner]') {
+                                    var moduleObj = {};
+                                    moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                    moduleObj.isSameModule = false;
+                                    moduleObj.systemName = null;
+                                    moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+
+                                    workflowModel.send_notification_ccmodule = moduleObj;
+                                    ccObj.id = 0;
+                                    ccObj.email = '[owner]';
+                                    ccObj.full_name = $filter('translate')('Common.RecordOwner');
+                                    workflowModel.send_notification.cc.push(ccObj);
+                                }
+                                else {
+                                    var moduleObj = {};
+                                    if (email.indexOf('@') > -1) {
+                                        moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                        moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                        moduleObj.isSameModule = false;
+                                        moduleObj.systemName = null;
+                                        moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+                                        workflowModel.send_notification_ccmodule = moduleObj;
+                                        var ccUser = $filter('filter')(workflow.send_notification.cc_list, { email: email }, true)[0];
+
+                                        ccObj.id = ccUser.id;
+                                        ccObj.email = ccUser.email;
+                                        ccObj.full_name = ccUser.full_name;
+                                        workflowModel.send_notification.cc.push(ccObj)
+                                    } else {
+                                        if (email.indexOf('.') > -1) {
+                                            var lookupField = email.split('.');
+                                            var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
+                                            var ccModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                                            var paramModule = $filter('filter')(notificationFields, { systemName: lookupField[0] }, true)[0];
+                                            moduleObj.module = ccModule;
+                                            moduleObj.name = lookupModule['label_' + $rootScope.language] + ' ' + '(' + moduleObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                            moduleObj.isSameModule = paramModule.isSameModule;
+                                            moduleObj.systemName = lookupField[0];
+                                            moduleObj.id = paramModule.id;
+                                            workflowModel.send_notification_ccmodule = moduleObj;
+                                            workflowModel.send_notification.customCC = $filter('filter')(ccModule.fields, { name: lookupField[1] }, true)[0];
+                                        }
+                                        else {
+                                            moduleObj.module = workflow.module;
+                                            moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                            moduleObj.isSameModule = true;
+                                            moduleObj.systemName = null;
+                                            moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+                                            workflowModel.send_notification_ccmodule = moduleObj;
+                                            workflowModel.send_notification.customCC = $filter('filter')(workflow.module.fields, { name: email }, true)[0];
+                                        }
+                                    }
+
+                                }
+
+
+                            });
+                        }
+
+                        if (workflow.send_notification.bcc_array) {
+                            angular.forEach(workflow.send_notification.bcc_array, function (email) {
+                                var bccObj = {};
+
+                                if (email === '[owner]') {
+                                    var moduleObj = {};
+                                    moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                    moduleObj.isSameModule = false;
+                                    moduleObj.systemName = null;
+                                    moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+
+                                    workflowModel.send_notification_bccmodule = moduleObj;
+                                    bccObj.id = 0;
+                                    bccObj.email = '[owner]';
+                                    bccObj.full_name = $filter('translate')('Common.RecordOwner');
+                                    workflowModel.send_notification.bcc.push(bccObj);
+                                }
+                                else {
+                                    var moduleObj = {};
+                                    if (email.indexOf('@') > -1) {
+                                        moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                        moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                        moduleObj.isSameModule = false;
+                                        moduleObj.systemName = null;
+                                        moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+                                        workflowModel.send_notification_bccmodule = moduleObj;
+                                        var bccUser = $filter('filter')(workflow.send_notification.bcc_list, { email: email }, true)[0];
+
+                                        bccObj.id = bccUser.id;
+                                        bccObj.email = bccUser.email;
+                                        bccObj.full_name = bccUser.full_name;
+                                        workflowModel.send_notification.bcc.push(bccObj);
+                                    } else {
+                                        if (email.indexOf('.') > -1) {
+                                            var lookupField = email.split('.');
+                                            var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
+                                            var bccModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                                            var paramModule = $filter('filter')(notificationFields, { systemName: lookupField[0] }, true)[0];
+                                            moduleObj.module = bccModule;
+                                            moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                            moduleObj.isSameModule = paramModule.isSameModule;
+                                            moduleObj.systemName = paramModule.systemName;
+                                            moduleObj.id = paramModule.id;
+                                            workflowModel.send_notification_bccmodule = moduleObj;
+                                            workflowModel.send_notification.customBcc = $filter('filter')(bccModule.fields, { name: lookupField[1] }, true)[0];
+                                        }
+                                        else {
+                                            moduleObj.module = workflow.module;
+                                            moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
+                                            moduleObj.isSameModule = true;
+                                            moduleObj.systemName = null;
+                                            moduleObj.id = $filter('filter')(notificationFields, { name: moduleObj.name }, true)[0].id;
+
+                                            workflowModel.send_notification_bccmodule = moduleObj;
+                                            workflowModel.send_notification.customBcc = $filter('filter')(workflow.module.fields, { name: email }, true)[0];
+                                        }
+                                    }
+
+                                }
+
+
+                            });
+                        }
+
+
+                        if (workflow.send_notification.schedule != null || workflow.send_notification.schedule != undefined) {
+                            var schedule = angular.copy(workflow.send_notification.schedule);
+
+                            if (workflow.send_notification.schedule === 0)
+                                schedule = 'now';
+
+                            workflowModel.send_notification.schedule = $filter('filter')(scheduleItems, { value: schedule }, true)[0];
+                        }
+                    }
+
+                    if (workflow.create_task) {
+                        workflowModel.create_task = {};
+                        workflowModel.create_task.owner = [];
+                        workflowModel.create_task.subject = workflow.create_task.subject;
+                        var dueDate = angular.copy(workflow.create_task.task_due_date);
+
+                        if (workflow.create_task.owner === 0) {
+                            var owner = {};
+                            owner.id = 0;
+                            owner.email = '[owner]';
+                            owner.full_name = $filter('translate')('Common.RecordOwner');
+                            workflowModel.create_task.owner.push(owner);
+                        }
+                        else {
+                            workflowModel.create_task.owner.push(workflow.create_task.owner_user);
+                        }
+
+                        if (workflow.create_task.task_due_date === 0)
+                            dueDate = 'now';
+
+                        workflowModel.create_task.task_due_date = $filter('filter')(dueDateItems, { value: dueDate }, true)[0];
+
+                        if (workflow.create_task.task_status)
+                            workflowModel.create_task.task_status = $filter('filter')(picklistsActivity[taskFields.task_status.picklist_id], { id: workflow.create_task.task_status }, true)[0];
+
+                        if (workflow.create_task.task_priority)
+                            workflowModel.create_task.task_priority = $filter('filter')(picklistsActivity[taskFields.task_priority.picklist_id], { id: workflow.create_task.task_priority }, true)[0];
+
+                        if (workflow.create_task.task_notification)
+                            workflowModel.create_task.task_notification = $filter('filter')(picklistsActivity.yes_no, { id: workflow.create_task.task_notification }, true)[0];
+
+                        if (workflow.create_task.description)
+                            workflowModel.create_task.description = workflow.create_task.description;
+                    }
+
+                    if (workflow.field_update) {
+                        workflowModel.field_update = {};
+
+                        if (workflow.field_update.module.split(',').length > 1) {
+                            workflowModel.field_update.updateOption = '2';
+                            var firstModule = workflow.field_update.module.split(',')[0];
+                            var secondModule = workflow.field_update.module.split(',')[1];
+                            var firstModuleObj = {};
+                            var secondModuleObj = {};
+
+                            if (firstModule === module.name) {
+                                firstModuleObj.module = module;
+                                firstModuleObj.name = firstModuleObj.module['label_' + $rootScope.language + '_singular'];
+                                firstModuleObj.isSameModule = true;
+                                firstModuleObj.systemName = firstModule;
+                                firstModuleObj.id = $filter('filter')(notificationFields, { name: firstModuleObj.name }, true)[0].id;
+                            } else {
+                                var firstMainModule = $filter('filter')(workflowModel.module.fields, { name: firstModule }, true)[0];
+                                var firstCurrentModule = $filter('filter')($rootScope.modules, { name: firstMainModule.lookup_type }, true)[0];
+                                var firstParamModule = $filter('filter')(dynamicFiledUpdatefields, { systemName: firstModule }, true)[0];
+                                firstModuleObj.module = firstCurrentModule;
+                                firstModuleObj.name = firstMainModule['label_' + $rootScope.language] + ' ' + '(' + firstModuleObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                firstModuleObj.isSameModule = firstParamModule.isSameModule;
+                                firstModuleObj.systemName = firstModule;
+                                firstModuleObj.id = firstParamModule.id;
+                            }
+
+                            if (secondModule === module.name) {
+                                secondModuleObj.module = module;
+                                secondModuleObj.name = secondModuleObj.module['label_' + $rootScope.language + '_singular'];
+                                secondModuleObj.isSameModule = true;
+                                secondModuleObj.systemName = secondModule;
+                                secondModuleObj.id = $filter('filter')(notificationFields, { name: secondModuleObj.name }, true)[0].id;
+                            }
+                            else {
+                                var secondMainModule = $filter('filter')(workflowModel.module.fields, { name: secondModule }, true)[0];
+                                var secondCurrentModule = $filter('filter')($rootScope.modules, { name: secondMainModule.lookup_type }, true)[0];
+                                var secondParamModule = $filter('filter')(dynamicFiledUpdatefields, { systemName: secondModule }, true)[0];
+                                secondModuleObj.module = secondCurrentModule;
+                                secondModuleObj.name = secondMainModule['label_' + $rootScope.language] + ' ' + '(' + secondModuleObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                secondModuleObj.isSameModule = secondParamModule.isSameModule;
+                                secondModuleObj.systemName = secondModule;
+                                secondModuleObj.id = secondParamModule.id;
+                            }
+
+                            workflowModel.field_update.firstModule = firstModuleObj;
+                            workflowModel.field_update.first_field = $filter('filter')(firstModuleObj.module.fields, { name: workflow.field_update.value }, true)[0];
+                            workflowModel.field_update.secondModule = secondModuleObj;
+                            workflowModel.field_update.second_field = $filter('filter')(secondModuleObj.module.fields, { name: workflow.field_update.field }, true)[0];
+                        } else {
+                            workflowModel.field_update.updateOption = '1';
+                            workflowModel.field_update.module = $filter('filter')($rootScope.modules, { name: workflow.field_update.module }, true)[0];
+                            workflowModel.field_update.field = $filter('filter')(workflowModel.field_update.module.fields, { name: workflow.field_update.field }, true)[0];
+                            if (workflowModel.field_update.field.data_type === 'multiselect') {
+                                var picklistItems = workflow.field_update.value.split('|');
+                                workflow.field_update.value = [];
+
+                                angular.forEach(picklistItems, function (picklistLabel) {
+                                    var picklist = $filter('filter')(picklistsModule[workflowModel.field_update.field.picklist_id], { labelStr: picklistLabel }, true)[0];
+
+                                    if (picklist)
+                                        workflow.field_update.value.push(picklist.labelStr);
+                                });
+                            }
+
+                            if (workflowModel.field_update.field.data_type === 'tag') {
+                                var itemValue = workflow.field_update.value.split('|');
+                                workflow.field_update.value = [];
+                                angular.forEach(itemValue, function (item) {
+                                    workflow.field_update.value.push(item);
+                                });
+                            }
+
+
+                            var updateFieldRecordFake = {};
+                            updateFieldRecordFake[workflow.field_update.field] = workflow.field_update.value;
+                            ModuleService.processRecordField(updateFieldRecordFake, workflowModel.field_update.field, picklistUpdateModule);
+                            workflowModel.field_update.value = updateFieldRecordFake[workflow.field_update.field];
+
+                            if (workflowModel.field_update.field.data_type === 'lookup') {
+                                // if (workflowModel.field_update.field.lookup_type === 'users')
+                                //     workflowModel.field_update.value = [workflow.field_update.value];
+                                // else
+                                workflowModel.field_update.value = workflow.field_update.value;
+                            }
+                        }
+                    }
+
+                    if (workflow.web_hook) {
+                        workflowModel.webHook = {};
+                        workflowModel.webHook.callbackUrl = workflow.web_hook.callback_url;
+                        workflowModel.webHook.methodType = workflow.web_hook.method_type;
+                        workflowModel.webHook.parameters = workflow.web_hook.parameters;
+                        //params
+                    }
+
+                    return workflowModel;
                 },
 
                 prepareWorkflow: function (workflowModel, filters, updateFieldValue) {

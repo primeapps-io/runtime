@@ -5,6 +5,7 @@ angular.module('primeapps')
     .controller('RulesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'operators', 'RulesService', 'ModuleService', 'LayoutService', '$http', 'config',
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, operators, RulesService, ModuleService, LayoutService, $http, config) {
             $scope.loading = true;
+            $scope.$parent.loadingFilter = false;
             $scope.$parent.wizardStep = 0;
             $scope.rules = [];
             $scope.$parent.rules = [];
@@ -99,82 +100,92 @@ angular.module('primeapps')
             setTaskFields();
 
 
-            ModuleService.getPicklists(activityModule, false)
-                .then(function (picklistsActivity) {
-                    $scope.picklistsActivity = picklistsActivity;
+            var selectRule = function () {
+                ModuleService.getPicklists(activityModule, false)
+                    .then(function (picklistsActivity) {
+                        $scope.picklistsActivity = picklistsActivity;
 
-                    if (!$scope.id) {
-                        $scope.workflowModel = {};
-                        $scope.workflowModel.active = true;
-                        $scope.workflowModel.processFilter = 'none';
-                        $scope.workflowModel.frequency = 'continuous';
-                        $scope.loading = false;
-                    }
-                    else {
-                        RulesService.get($scope.id)
-                            .then(function (workflow) {
-                                workflow = workflow.data;
-                                $scope.module = $filter('filter')($scope.modules, { id: workflow.module_id }, true)[0];
+                        if (!$scope.id) {
+                            $scope.workflowModel = {};
+                            $scope.workflowModel.active = true;
+                            $scope.workflowModel.processFilter = 'none';
+                            $scope.workflowModel.frequency = 'continuous';
+                            $scope.loading = false;
+                        }
+                        else {
+                            RulesService.get($scope.id)
+                                .then(function (workflow) {
+                                    $scope.workflowModel = workflow = workflow.data;
+                                    $scope.module = workflow.module;
+                                    $scope.workflowModel.operation = {};
 
-                                if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
-                                    $scope.showProcessFilter = true;
-
-                                ModuleService.getPicklists($scope.module)
-                                    .then(function (picklists) {
-                                        $scope.modulePicklists = picklists;
-                                        $scope.filters = [];
-
-                                        for (var i = 0; i < 5; i++) {
-                                            var filter = {};
-                                            filter.id = i;
-                                            filter.field = null;
-                                            filter.operator = null;
-                                            filter.value = null;
-                                            filter.no = i + 1;
-
-                                            $scope.filters.push(filter);
-                                        }
-
-                                        if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
-                                            $scope.picklistsModule = picklists;
-                                            $scope.getSendNotificationUpdatableModules($scope.module);
-                                            $scope.getDynamicFieldUpdateModules($scope.module);
-                                            $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
-                                            $scope.getUpdatableModules();
-                                            $scope.generateHookModules();
-                                        }
-                                        else {
-                                            var fieldUpdateModule;
-                                            if (workflow.field_update.module.split(',').length > 1) {
-                                                var updModule = workflow.field_update.module.split(',')[0];
-                                                if (updModule === $scope.module.name)
-                                                    fieldUpdateModule = $filter('filter')(scope.modules, { name: updModule }, true)[0];
-                                                else {
-                                                    fieldUpdateModule = $filter('filter')($scope.modules, { name: $scope.module.name }, true)[0];
-                                                }
-                                            }
-                                            else
-                                                fieldUpdateModule = $filter('filter')($scope.modules, { name: workflow.field_update.module }, true)[0];
-
-                                            ModuleService.getPicklists(fieldUpdateModule)
-                                                .then(function (picklistUpdateModule) {
-                                                    $scope.picklistsModule = picklistUpdateModule;
-                                                    $scope.getSendNotificationUpdatableModules($scope.module);
-                                                    $scope.getDynamicFieldUpdateModules($scope.module);
-                                                    $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
-                                                    $scope.getUpdatableModules();
-                                                    $scope.generateHookModules();
-                                                });
-                                        }
-
-                                        $scope.prepareFilters();
-
-                                        $scope.lastStepClicked = true;
-                                        $scope.loading = false;
+                                    angular.forEach($scope.workflowModel.operations_array, function (value) {
+                                        if (value)
+                                            $scope.workflowModel.operation[value.toString()] = true;
                                     });
-                            });
-                    }
-                });
+
+                                    if ($filter('filter')($rootScope.approvalProcesses, { module_id: $scope.module.id }, true)[0])
+                                        $scope.showProcessFilter = true;
+
+                                    ModuleService.getPicklists($scope.module)
+                                        .then(function (picklists) {
+                                            $scope.modulePicklists = picklists.data;
+                                            $scope.filters = [];
+
+                                            for (var i = 0; i < 5; i++) {
+                                                var filter = {};
+                                                filter.id = i;
+                                                filter.field = null;
+                                                filter.operator = null;
+                                                filter.value = null;
+                                                filter.no = i + 1;
+
+                                                $scope.filters.push(filter);
+                                            }
+
+                                            if (!workflow.field_update || workflow.field_update.module === $scope.module.name) {
+                                                $scope.picklistsModule = picklists;
+                                                $scope.getSendNotificationUpdatableModules($scope.module);
+                                                $scope.getDynamicFieldUpdateModules($scope.module);
+                                                //TODO
+                                                //$scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.language, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                $scope.getUpdatableModules();
+                                                $scope.generateHookModules();
+                                            }
+                                            else {
+                                                var fieldUpdateModule;
+                                                if (workflow.field_update.module.split(',').length > 1) {
+                                                    var updModule = workflow.field_update.module.split(',')[0];
+                                                    if (updModule === $scope.module.name)
+                                                        fieldUpdateModule = $filter('filter')($scope.modules, { name: updModule }, true)[0];
+                                                    else {
+                                                        fieldUpdateModule = $filter('filter')($scope.modules, { name: $scope.module.name }, true)[0];
+                                                    }
+                                                }
+                                                else
+                                                    fieldUpdateModule = $filter('filter')($scope.modules, { name: workflow.field_update.module }, true)[0];
+
+                                                ModuleService.getPicklists(fieldUpdateModule)
+                                                    .then(function (picklistUpdateModule) {
+                                                        $scope.picklistsModule = picklistUpdateModule;
+                                                        $scope.getSendNotificationUpdatableModules($scope.module);
+                                                        $scope.getDynamicFieldUpdateModules($scope.module);
+                                                        //TODO
+                                                        //$scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                        $scope.getUpdatableModules();
+                                                        $scope.generateHookModules();
+                                                    });
+                                            }
+
+                                            $scope.prepareFilters();
+
+                                            $scope.lastStepClicked = true;
+                                            $scope.loading = false;
+                                        });
+                                });
+                        }
+                    });
+            }
 
             $scope.selectModule = function () {
                 $scope.loadingFilter = true;
@@ -1702,20 +1713,25 @@ angular.module('primeapps')
             $scope.showFormModal = function (id) {
                 if (id) {
                     $scope.id = id;
-                    $scope.workflowModel = $filter('filter')($scope.rules, { id: id }, true)[0];
+                    //  $scope.workflowModel = $filter('filter')($scope.rules, { id: id }, true)[0];
 
-                    ModuleService.getModuleFields($scope.workflowModel.module.name)
-                        .then(function (response) {
-                            if (response.data) {
-                                $scope.workflowModel.module.fields = response.data;
-                            }
-                        });
+                    //$scope.workflowModel.operation = {};
 
-                    $scope.workflowModel.operation = {};
-                    angular.forEach($scope.workflowModel.operations_array, function (value) {
-                        if (value)
-                            $scope.workflowModel.operation[value.toString()] = true;
-                    });
+                    //angular.forEach($scope.workflowModel.operations_array, function (value) {
+                    //    if (value)
+                    //        $scope.workflowModel.operation[value.toString()] = true;
+                    //});
+
+                    selectRule();
+
+                    //ModuleService.getModuleFields($scope.workflowModel.module.name)
+                    //    .then(function (response) {
+                    //        if (response.data) {
+
+                    //            $scope.workflowModel.module.fields = response.data;
+
+                    //        }
+                    //    });
                 }
 
                 $scope.ruleFormModal = $scope.ruleFormModal || $modal({
