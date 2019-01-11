@@ -11,6 +11,6 @@ namespace PrimeApps.Model.Repositories.Interfaces
     {
         Task<List<Component>> GetByType(ComponentType type);
         Task<List<Component>> GetByPlace(ComponentPlace place);
-        Task<Component> GetGlobalConfig();
+        Task<Component> GetGlobalSettings();
     }
 }

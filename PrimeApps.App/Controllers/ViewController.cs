@@ -22,7 +22,6 @@ namespace PrimeApps.App.Controllers
         private IViewRepository _viewRepository;
         private IUserRepository _userRepository;
         private IDashboardRepository _dashboardRepository;
-
         private IRecordHelper _recordHelper;
 
         public ViewController(IViewRepository viewRepository, IUserRepository userRepository, IDashboardRepository dashboardRepository, IRecordHelper recordHelper)
@@ -30,7 +29,6 @@ namespace PrimeApps.App.Controllers
             _viewRepository = viewRepository;
             _userRepository = userRepository;
             _dashboardRepository = dashboardRepository;
-
             _recordHelper = recordHelper;
         }
 
@@ -39,6 +37,7 @@ namespace PrimeApps.App.Controllers
             SetContext(context);
             SetCurrentUser(_userRepository, PreviewMode, TenantId, AppId);
             SetCurrentUser(_viewRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_dashboardRepository, PreviewMode, TenantId, AppId);
 
             base.OnActionExecuting(context);
         }

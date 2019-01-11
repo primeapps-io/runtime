@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('AppService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'sipHelper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce',
-        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, sipHelper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce) {
+    .factory('AppService', ['$rootScope', '$http', '$localStorage', '$cache', '$q', '$filter', '$timeout', '$state', 'config', 'helper', 'sipHelper', 'entityTypes', 'taskDate', 'dataTypes', 'activityTypes', 'operators', 'systemRequiredFields', 'systemReadonlyFields', '$window', '$modal', '$sce', 'AuthService', '$cookies', 'blockUI',
+        function ($rootScope, $http, $localStorage, $cache, $q, $filter, $timeout, $state, config, helper, sipHelper, entityTypes, taskDate, dataTypes, activityTypes, operators, systemRequiredFields, systemReadonlyFields, $window, $modal, $sce, AuthService, $cookies, blockUI) {
             return {
 
                 getMyAccount: function (refresh) {
@@ -30,7 +30,16 @@ angular.module('primeapps')
                                     deferred.resolve(false);
                                 }
 
-                                $window.location.href = '/Auth/SignOut';
+                                AuthService.logout()
+                                    .then(function (response) {
+                                        $rootScope.app = 'crm';
+                                        AuthService.logoutComplete();
+                                        $cookies.remove('tenant_id')
+                                        //$state.go('auth.login');
+                                        window.location = response.data['redirect_url'];
+                                        blockUI.stop();
+                                    });
+
 
                                 return deferred.promise;
                             }
