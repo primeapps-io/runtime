@@ -218,9 +218,28 @@ $primeapps-color: #635fb3;
     background-repeat: repeat !important;
     .sidebar-nav {
       .sidebar-brand {
-        padding-left: 15px !important;
+        padding: 20px 10px !important;
+        height: 80px !important;
       }
     }
+    .logo
+    {
+      
+      height: 40px;
+      padding: 0px;
+      svg{
+        height: 100%;
+        .st0{fill:#FFF;}
+        .st1{fill:#FFF;}
+        .st2{fill:#FCAD2D;}
+        .st3{fill:#F06933;}
+        .st4{fill:#E89728;}
+        .st5{fill:#0D6FAA;}
+      }
+      
+    }
+    
+    
     .panel-body {
       a {
         background: none;
@@ -1225,32 +1244,3 @@ $primeapps-color: #635fb3;
   }
 }
 
-.advancedDemo .dropzone .dndPlaceholder {
-  background-color: #ddd !important;
-  display: block;
-  min-height: 42px;
-}
-
-/***************************** Element type specific styles *****************************/
-
-.advancedDemo .dropzone .itemlist {
-  min-height: 120px !important;
-}
-
-.advancedDemo .dropzone .itemlist > li {
-  background-color: #337ab7;
-  border: none;
-  border-radius: .25em;
-  color: #fff;
-  float: left;
-  font-weight: 700;
-  height: 50px;
-  margin: 5px;
-  padding: 3px;
-  text-align: center;
-  width: 80px;
-}
-
-.advancedDemo .dropzone .container-element {
-  margin: 10px;
-}
