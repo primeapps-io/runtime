@@ -387,7 +387,7 @@ angular.module('primeapps')
 
                 $scope.formModal = $scope.formModal || $modal({
                     scope: $scope,
-                    templateUrl: 'views/app/crm/module/moduleFormModal.html',
+                    templateUrl: 'views/app/module/moduleFormModal.html',
                     animation: '',
                     backdrop: 'static',
                     show: false,
@@ -412,23 +412,23 @@ angular.module('primeapps')
                     resolve: {
                         plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
                             return $ocLazyLoad.load([
-                                cdnUrl + 'views/app/crm/module/moduleFormController.js',
-                                cdnUrl + 'views/app/crm/module/moduleFormModalController.js',
-                                cdnUrl + 'views/app/crm/product/quoteProductsController.js',
-                                cdnUrl + 'views/app/crm/product/quoteProductsService.js',
-                                cdnUrl + 'views/app/crm/product/orderProductsController.js',
-                                cdnUrl + 'views/app/crm/product/orderProductsService.js',
-                                cdnUrl + 'views/app/crm/product/purchaseProductsController.js',
-                                cdnUrl + 'views/app/crm/product/purchaseProductsService.js',
-                                cdnUrl + 'views/app/crm/actionbutton/actionButtonFrameController.js',
-                                cdnUrl + 'views/app/crm/product/salesInvoiceProductsController.js',
-                                cdnUrl + 'views/app/crm/product/salesInvoiceProductsService.js',
-                                cdnUrl + 'views/app/crm/product/purchaseInvoiceProductsController.js',
-                                cdnUrl + 'views/app/crm/product/purchaseInvoiceProductsService.js'
+                                cdnUrl + 'views/app/module/moduleFormController.js',
+                                cdnUrl + 'views/app/module/moduleFormModalController.js',
+                                cdnUrl + 'views/app/product/quoteProductsController.js',
+                                cdnUrl + 'views/app/product/quoteProductsService.js',
+                                cdnUrl + 'views/app/product/orderProductsController.js',
+                                cdnUrl + 'views/app/product/orderProductsService.js',
+                                cdnUrl + 'views/app/product/purchaseProductsController.js',
+                                cdnUrl + 'views/app/product/purchaseProductsService.js',
+                                cdnUrl + 'views/app/actionbutton/actionButtonFrameController.js',
+                                cdnUrl + 'views/app/product/salesInvoiceProductsController.js',
+                                cdnUrl + 'views/app/product/salesInvoiceProductsService.js',
+                                cdnUrl + 'views/app/product/purchaseInvoiceProductsController.js',
+                                cdnUrl + 'views/app/product/purchaseInvoiceProductsService.js'
                             ]);
                         }]
                     },
-                    templateUrl: 'views/app/crm/module/moduleForm.html',
+                    templateUrl: 'views/app/module/moduleForm.html',
                     backdrop: 'static',
                     show: false,
                     tag: 'editModal',
@@ -449,7 +449,7 @@ angular.module('primeapps')
             $scope.expenseSettingsModal = function () {
                 $scope.settingsFormModal = $scope.settingsFormModal || $modal({
                     scope: $scope,
-                    templateUrl: 'views/app/crm/expensesheet/expenseSettingsModal.html',
+                    templateUrl: 'views/app/expensesheet/expenseSettingsModal.html',
                     animation: '',
                     backdrop: 'static',
                     show: false,
@@ -596,7 +596,7 @@ angular.module('primeapps')
                 if ($scope.runProcess) {
                     $scope.rejectModal = $scope.rejectModal || $modal({
                         scope: $scope,
-                        templateUrl: 'views/app/crm/module/rejectProcessModal.html',
+                        templateUrl: 'views/app/module/rejectProcessModal.html',
                         animation: '',
                         backdrop: 'static',
                         show: false,

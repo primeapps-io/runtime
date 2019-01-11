@@ -25,6 +25,7 @@ namespace PrimeApps.Model.Repositories
                 .FirstOrDefaultAsync(x => !x.Deleted && x.Id == id);
 
             return view;
+       
         }
 
         public async Task<ICollection<View>> GetAll(int moduleId)
