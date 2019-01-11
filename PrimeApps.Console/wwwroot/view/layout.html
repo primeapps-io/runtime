@@ -71,7 +71,7 @@
                 <a ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
                         class="fas fa-home"></i> {{organization.name}} </a>
                 <ul>
-                    <li><a Senin ağzını yüzünü sikiyim amk
+                    <li><a
                             ng-class="currentPath == '/apps?organizationId='+organization.id  ? 'active' :'' "
                             href="#/apps?organizationId={{organization.id}}"><i class="fas fa-layer-group"></i> Apps</a>
                     </li>
@@ -82,8 +82,8 @@
                     <li><a href="#"><i class="fas fa-cog"></i> Manage</a></li>
                 </ul>
             </li>
-            <li class="sidebar-li" ng-click="addNewOrganization()">
-                <a href="#"><i class="fas fa-plus background-white color-blue"></i> Add New Organization</a>
+            <li class="sidebar-li" >
+                <a  href="" ng-click="addNewOrganization()"><i class="fas fa-plus background-white color-blue"></i> Add New Organization</a>
 
             </li>
 
