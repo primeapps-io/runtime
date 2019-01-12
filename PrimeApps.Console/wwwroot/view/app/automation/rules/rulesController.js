@@ -7,6 +7,7 @@ angular.module('primeapps')
             $scope.loading = true;
             $scope.$parent.loadingFilter = false;
             $scope.$parent.wizardStep = 0;
+            $scope.$parent.tab = 0;
             $scope.rules = [];
             $scope.$parent.rules = [];
             $scope.$parent.menuTopTitle = "Automation";
@@ -220,7 +221,7 @@ angular.module('primeapps')
 
                 ModuleService.getPicklists($scope.module)
                     .then(function (picklists) {
-                        $scope.modulePicklists = picklists;
+                        $scope.modulePicklists = picklists.data;
                         $scope.filters = [];
 
                         for (var i = 0; i < 5; i++) {
@@ -1152,8 +1153,12 @@ angular.module('primeapps')
                 return false;
             };
 
-            $scope.setFormValid = function () {
+            $scope.setFormValid = function (form) {
+                if (!$scope.workflowForm)
+                    $scope.workflowForm = form;
+
                 $scope.workflowForm.$submitted = false;
+                
                 if ($scope.workflowForm.recipients)
                     $scope.workflowForm.recipients.$setValidity('minTags', true);
 
