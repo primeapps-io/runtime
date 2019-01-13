@@ -41,7 +41,7 @@
                          active-class="active"
                          page="requestModel.offset"
                          page-size="requestModel.limit"
-                         total="24"
+                         total="pageTotal"
                          scroll-top="true"
                          hide-if-empty="true"
                          show-prev-next="true"
@@ -57,7 +57,7 @@
             <div class="col-sm-2">
                 <span class="pagination-span">Items per page  </span>
                 <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option value="10">10</option>
+                    <option ng-selected="true" value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>

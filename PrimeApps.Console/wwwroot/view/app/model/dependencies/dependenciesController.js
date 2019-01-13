@@ -6,14 +6,14 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, helper, $cache, systemRequiredFields, systemReadonlyFields, DependenciesService, LayoutService, ModuleService, $timeout) {
 
             $scope.$parent.menuTopTitle = "Models";
-            $scope.$parent.activeMenu = 'model';
-            $scope.$parent.activeMenuItem = 'dependencies';
+            $scope.$parent.activeMenu = "model";
+            $scope.$parent.activeMenuItem = "dependencies";
             $scope.loading = true;
             $scope.picklist = [];
             $scope.picklistsModule = {};
 
             $scope.requestModel = {
-                limit: 10,
+                limit: '10',
                 offset: 1
             };
 
@@ -32,12 +32,16 @@ angular.module('primeapps')
                 var requestModel = angular.copy($scope.requestModel);
                 requestModel.offset = page - 1;
 
-                DependenciesService.find($scope.requestModel).then(function (response) {
+                DependenciesService.find(requestModel).then(function (response) {
                     var dependencies = response.data;
                     $scope.dependencies = DependenciesService.processDependencies(dependencies);
                     $scope.dependenciesState = $scope.dependencies;
                     $scope.loading = false;
                 });
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1)
             };
 
             $scope.moduleChanged = function () {

@@ -1,8 +1,8 @@
 <div class="col-sm-12" style="border: none ;">
     <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">Relations</h2></div>
+        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Modules.TitleRelations' | translate}}</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Relations</button>
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewRelation' | translate}}</button>
         </div>
     </div>
     <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
@@ -39,7 +39,7 @@
                          active-class="active"
                          page="requestModel.offset"
                          page-size="requestModel.limit"
-                         total="24"
+                         total="pageTotal"
                          scroll-top="true"
                          hide-if-empty="true"
                          show-prev-next="true"
@@ -55,7 +55,7 @@
             <div class="col-sm-2">
                 <span class="pagination-span">Items per page  </span>
                 <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option value="10">10</option>
+                    <option ng-selected="true" value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
