@@ -1,24 +1,24 @@
 <div class="row">
     <div class="col-sm-9" style="border: none ;">
         <div class="page-content">
-            <ul dnd-list="model.sections"
+            <ul dnd-list="module"
                 dnd-allowed-types="['container']"
                 dnd-external-sources="true"
                 dnd-dragover="dragoverCallback(index, external, type, callback)"
                 dnd-drop="dropCallback(index, item, external, type)">
-                <li ng-repeat="container in model.sections"
+                <li ng-repeat="container in module"
                     dnd-draggable="container"
                     dnd-type="'container'"
-                    dnd-effect-allowed="move"
-                    dnd-moved="containers.splice($index, 1)"
-                    dnd-callback="container.fields.length">
+                    dnd-effect-allowed="copyMove"
+                    dnd-moved="module.splice($index, 1)"
+                    dnd-callback="module.length">
                     <div class="container-element box box-blue">
-                        <h3>Container (effects allowed: {{container.effectAllowed}})</h3>
-                        <ul dnd-list="container.items"
+                        <h3>{{container.name }}</h3>
+                        <ul dnd-list="container.fields"
                             dnd-allowed-types="['item']"
                             dnd-horizontal-list="true"
                             dnd-external-sources="true"
-                            dnd-effect-allowed="move"
+                            dnd-effect-allowed="{{container.effectAllowed}}"
                             dnd-dragover="dragoverCallback(index, external, type)"
                             dnd-drop="dropCallback(index, item, external, type)"
                             dnd-inserted="logListEvent('inserted at', index, external, type)"
@@ -26,9 +26,9 @@
                             <li ng-repeat="item in container.fields"
                                 dnd-draggable="item"
                                 dnd-type="'item'"
-                                dnd-effect-allowed="move"
+                                dnd-effect-allowed="{{item.effectAllowed}}"
                                 dnd-dragstart="logEvent('Started to drag an item')"
-                                dnd-moved="container.items.splice($index, 1)"
+                                dnd-moved="container.fields.splice($index, 1)"
                                 dnd-dragend="logEvent('Drag operation ended. Drop effect: ' + dropEffect)">
                                 {{item.label}}
                             </li>
@@ -37,7 +37,6 @@
                     </div>
                 </li>
             </ul>
-
         </div>
 
     </div>
@@ -51,4 +50,4 @@
     </ul>
 </div>
 
-{{ model}}
+{{ model[0]}}
