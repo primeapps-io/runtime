@@ -6,11 +6,11 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, RelationsService, LayoutService, $http, config, ModuleService) {
 
             $scope.$parent.menuTopTitle = "Models";
-            $scope.$parent.activeMenu = 'model';
-            $scope.$parent.activeMenuItem = 'relations';
+            $scope.$parent.activeMenu = "model";
+            $scope.$parent.activeMenuItem = "relations";
             $scope.loading = true;
             $scope.requestModel = {
-                limit: 10,
+                limit: '10',
                 offset: 0
             };
 

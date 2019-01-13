@@ -52,11 +52,23 @@ namespace PrimeApps.Console
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
 
-            services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
+			services.AddScoped<Helpers.IRecordHelper, Helpers.RecordHelper>();
+			services.AddScoped<Helpers.IAuditLogHelper, Helpers.AuditLogHelper>();
+			services.AddScoped<Helpers.ICalculationHelper, Helpers.CalculationHelper>();
+			services.AddScoped<Helpers.IChangeLogHelper, Helpers.ChangeLogHelper>();
+			services.AddScoped<Helpers.IModuleHelper, Helpers.ModuleHelper>();
+			services.AddScoped<Helpers.IWorkflowHelper, Helpers.WorkflowHelper>();
+			services.AddScoped<Helpers.IProcessHelper, Helpers.ProcessHelper>();
+			services.AddScoped<Helpers.IBpmHelper, Helpers.BpmHelper>();
+			services.AddScoped<IModuleHelper, Helpers.ModuleHelper>();
             services.AddScoped<IAuditLogHelper, AuditLogHelper>();
             services.AddScoped<IOrganizationHelper, OrganizationHelper>();
 
-            services.AddScoped<Email, Email>();
+
+			services.AddScoped<Notifications.INotificationHelper, Notifications.NotificationHelper>();
+			services.AddScoped<Notifications.IActivityHelper, Notifications.ActivityHelper>();
+
+			services.AddScoped<Email, Email>();
             services.AddScoped<IPermissionHelper, PermissionHelper>();
         }
     }
