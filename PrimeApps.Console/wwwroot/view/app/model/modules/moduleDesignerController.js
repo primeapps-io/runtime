@@ -53,8 +53,49 @@ angular.module('primeapps')
                     "id": 2,
                     "name": "Text",
                     "order": 0,
-                    "label_tr": "Text Alan",
-                    "label": "Text Alan"
+                    "label_tr": "Yazı Tek Satır",
+                    "label": "Yazı Tek Satır"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Yazı Çok Satır",
+                    "label": "Yazı Çok Satır"
+                },
+
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı",
+                    "label": "Sayı"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı Otomatik",
+                    "label": "Sayı Otomatik"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı Otomatik",
+                    "label": "Sayı Otomatik"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı Ondalık",
+                    "label": "Sayı Ondalık"
                 }
             ];
 
