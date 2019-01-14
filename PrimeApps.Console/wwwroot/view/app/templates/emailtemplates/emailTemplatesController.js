@@ -2,14 +2,23 @@
 
 angular.module('primeapps')
 
-    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService',  '$http', 'config','$modal',
-        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config,$modal) {
+    .controller('EmailTemplatesController', ['$rootScope', '$scope', '$state', '$stateParams', '$location', 'ngToast', '$filter', '$cache', '$q', 'helper', 'dragularService', 'operators', 'EmailTemplatesService', '$http', 'config', '$modal',
+        function ($rootScope, $scope, $state, $stateParams, $location, ngToast, $filter, $cache, $q, helper, dragularService, operators, EmailTemplatesService, $http, config, $modal) {
 
             $scope.$parent.menuTopTitle = "Templates";
             $scope.$parent.activeMenu = 'templates';
             $scope.$parent.activeMenuItem = 'templatesEmail';
+            $scope.loading = true;
 
-            $scope.showFormModal = function () {
+            EmailTemplatesService.getAll(2).then(function (response) {
+                $scope.templates = response.data;
+            }).finally(function () {
+                $scope.loading = false;
+            });
+
+            $scope.showFormModal = function (template) {
+
+                $scope.template = template;
 
                 $scope.addNewEmailTemplateFormModal = $scope.addNewEmailTemplateFormModal || $modal({
                     scope: $scope,
@@ -20,9 +29,6 @@ angular.module('primeapps')
                 });
 
                 $scope.addNewEmailTemplateFormModal.$promise.then(function () {
-                    // if (!relation.isNew)
-                    //     $scope.bindDragDrop();
-
                     $scope.addNewEmailTemplateFormModal.show();
                 });
             };
