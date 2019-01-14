@@ -74,26 +74,30 @@
             </li>
 
             <li class="sidebar-li">
-                <a href="#"><i class="fas fa-home"></i> All Apps</a>
+                <a  data-trigger="hover" data-type="info" data-title="All Apps" bs-tooltip data-placement="right"
+                        href="#"><i class="fas fa-home"></i> <span>All Apps</span></a>
             </li>
             <li class="sidebar-li" ng-repeat="organization in organizations"
                 ng-class="menuOpen[organization.id] ? 'open' : ''">
-                <a ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
-                        class="fas fa-home"></i> {{organization.name}} </a>
+                <a data-trigger="hover" data-type="info" data-title="{{organization.name}}" bs-tooltip data-placement="right"
+                        ng-click="changeOrganization(organization); menuOpen[organization.id] = menuOpen[organization.id] ? false : true"><i
+                        class="fas fa-home"></i><span> {{organization.name}} </span></a>
                 <ul>
-                    <li><a
+                    <li><a data-trigger="hover" data-type="info" data-title="Apps" bs-tooltip data-placement="right"
                             ng-class="currentPath == '/apps?organizationId='+organization.id  ? 'active' :'' "
-                            href="#/apps?organizationId={{organization.id}}"><i class="fas fa-layer-group"></i> Apps</a>
+                            href="#/apps?organizationId={{organization.id}}"><i class="fas fa-layer-group"></i><span> Apps</span></a>
                     </li>
-                    <li><a
+                    <li><a data-trigger="hover" data-type="info" data-title="People" bs-tooltip data-placement="right"
                             ng-class="currentPath == '/organization/'+organization.id+'/collaborators'  ? 'active' :'' "
-                            href="#/organization/{{organization.id}}/collaborators"> <i class="fas fa-users"></i> People</a>
+                            href="#/organization/{{organization.id}}/collaborators"> <i class="fas fa-users"></i><span> People</span></a>
                     </li>
-                    <li><a href="#"><i class="fas fa-cog"></i> Manage</a></li>
+                    <li><a data-trigger="hover" data-type="info" data-title="Manage" bs-tooltip data-placement="right"
+                            href="#"><i class="fas fa-cog"></i> <span> Manage</span></a></li>
                 </ul>
             </li>
             <li class="sidebar-li" >
-                <a  href="" ng-click="addNewOrganization()"><i class="fas fa-plus background-white color-blue"></i> Add New Organization</a>
+                <a  data-trigger="hover" data-type="info" data-title="Add New Organization" bs-tooltip data-placement="right"
+                        href="" ng-click="addNewOrganization()"><i class="fas fa-plus background-white color-blue"></i><span> Add New Organization</span></a>
 
             </li>
 

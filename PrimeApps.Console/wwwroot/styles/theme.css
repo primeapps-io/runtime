@@ -2,6 +2,76 @@ button:focus, select:focus {
   outline: none !important;
 }
 
+.primeapps .module-designer {
+  /**
+   * An element with .dndPlaceholder class will be added as child of the dnd-list
+   * while the user is dragging over it.
+   */
+}
+.primeapps .module-designer .container-element {
+  margin: 10px;
+}
+.primeapps .module-designer ul {
+  list-style: none;
+}
+.primeapps .module-designer .module-section {
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+  background: #fff;
+  border-radius: 5px;
+  margin-bottom: 30px;
+  min-height: 180px;
+}
+.primeapps .module-designer .module-section .dndPlaceholder {
+  background-color: #fff !important;
+  display: block;
+  min-height: 180px;
+  border: 1px dotted #0c6eaa;
+}
+.primeapps .module-designer .module-section .section-container {
+  min-height: 180px;
+}
+.primeapps .module-designer .module-section .section-header {
+  padding: 10px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+.primeapps .module-designer .module-section .section-header h4 {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+}
+.primeapps .template-field {
+  background-color: #fff;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.primeapps .template-field .dndDragging {
+  border: 1px dotted #0d6faa;
+  background: #fff !important;
+}
+.primeapps .template-field .template-field-box {
+  border: 1px dotted #fff;
+  width: calc(50% - 10px);
+  float: left;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  margin: 5px;
+}
+.primeapps .template-field .template-field-box:hover {
+  border: 1px dotted #0d6faa;
+  background: #fff !important;
+}
+.primeapps .template-field .template-field-box .template-field-icon span {
+  font-size: 22px;
+  color: rgba(0, 0, 0, 0.5);
+}
+.primeapps .template-field .template-field-box .template-field-icon h4 {
+  font-size: 15px !important;
+}
+.primeapps .template-field .template-field-box .template-field-icon .template-field-text h4 {
+  font-size: 15px !important;
+}
 .primeapps .margin-0 {
   margin: 0px;
 }
@@ -25,9 +95,6 @@ button:focus, select:focus {
 }
 .primeapps .padding-20 {
   padding: 20px;
-}
-.primeapps button:focus {
-  border: none;
 }
 .primeapps .dropdown .dropdown-input {
   cursor: pointer;
@@ -200,6 +267,12 @@ button:focus, select:focus {
 .primeapps #sidebar-wrapper .panel-body .fa-sidebar-icon-background {
   background: none !important;
 }
+.primeapps #sidebar-wrapper ul {
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+}
 .primeapps .sidebar-nav a.active {
   background-color: #121212 !important;
   border-radius: inherit;
@@ -318,7 +391,7 @@ button:focus, select:focus {
   font-size: 15px;
 }
 .primeapps .setup-layout {
-  padding-top: 109px;
+  padding-top: 90px;
   margin-bottom: 50px;
 }
 .primeapps .setup-layout .setup-title {
@@ -330,15 +403,15 @@ button:focus, select:focus {
 }
 .primeapps .setup-layout .setup-nav {
   background: #fff;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   border-radius: 5px;
 }
 .primeapps .setup-layout .setup-nav .active:before {
-  left: 104%;
+  left: 100%;
   top: 50%;
   border: solid transparent;
   content: " ";
@@ -348,31 +421,35 @@ button:focus, select:focus {
   pointer-events: none;
   border-color: rgba(136, 183, 213, 0);
   border-left-color: #fff;
-  border-width: 30px;
-  margin-top: -30px;
+  border-width: 20px;
+  margin-top: -20px;
 }
 .primeapps .setup-layout .setup-nav .active:after {
   border-color: rgba(194, 225, 245, 0);
   border-left-color: #c2e1f5;
-  border-width: 36px;
-  margin-top: -36px;
+  border-width: 26px;
+  margin-top: -26px;
 }
 .primeapps .setup-layout .setup-nav li {
   border-bottom: solid 1px rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
-  height: 50px;
+  height: 40px;
 }
 .primeapps .setup-layout .setup-nav li a {
   font-family: Nunito;
-  font-size: 16px !important;
+  font-size: 14px !important;
   font-weight: bold;
   width: 90%;
   color: rgba(0, 0, 0, 0.5) !important;
+  line-height: 20px;
+  padding: 5px 10px;
 }
 .primeapps .setup-layout .setup-nav li a i {
   font-size: 18px;
-  margin-right: 20px;
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
 }
 .primeapps .setup-layout .setup-nav li .costume-bage {
   height: 20px;
@@ -384,6 +461,9 @@ button:focus, select:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.primeapps .setup-layout .setup-nav li:last-child {
+  border-color: transparent;
 }
 .primeapps .setup-layout .nav-pills > li.active > a, .primeapps .setup-layout .nav-pills > li.active > a:hover, .primeapps .setup-layout .nav-pills > li.active > a:focus {
   background: initial !important;
@@ -916,9 +996,6 @@ button:focus, select:focus {
 .primeapps .font-bold {
   font-weight: bold;
 }
-.primeapps .full-toggled .sidebar-li:hover {
-  position: relative;
-}
 .primeapps #sidebar-wrapper .sidebar-brand a:hover {
   background: none;
 }
@@ -974,19 +1051,13 @@ button:focus, select:focus {
   padding: 10px;
   background: #9e005d;
   border-radius: 50%;
-  margin-right: 13px;
+  margin-right: 10px;
 }
 .primeapps #sidebar-wrapper .color-blue {
   color: #0d6faa;
 }
 .primeapps #sidebar-wrapper .background-white {
   background: #ffffff;
-}
-.primeapps #sidebar-wrapper .footer .menu-togle i {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  margin-left: 15px;
 }
 .primeapps .dropdown-menu {
   border: none;
@@ -1064,22 +1135,82 @@ button:focus, select:focus {
   margin: 5px;
   border: none;
 }
+.primeapps #wrapper {
+  padding-left: 270px;
+  padding-right: 20px;
+}
+.primeapps #wrapper #navbar-wrapper {
+  left: 250px;
+}
+.primeapps #wrapper #sidebar-wrapper {
+  width: 250px;
+  left: 0px;
+  margin-left: 0px;
+  overflow-x: scroll;
+  overflow-y: inherit;
+  z-index: 2000;
+}
+.primeapps #wrapper #sidebar-wrapper .tooltip {
+  display: none !important;
+}
+.primeapps #wrapper #sidebar-wrapper .sidebar-li {
+  line-height: 30px;
+  position: relative;
+}
+.primeapps #wrapper #sidebar-wrapper .sidebar-li ul {
+  padding-left: 10px;
+}
+.primeapps #wrapper #sidebar-wrapper .sidebar-li ul li a i {
+  margin-right: 0px;
+}
+.primeapps #wrapper #sidebar-wrapper .sidebar-li a {
+  padding: 10px;
+}
+.primeapps #wrapper #sidebar-wrapper .footer .menu-togle i {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  width: 30px;
+  text-align: center;
+  margin-left: 0px;
+}
+.primeapps #wrapper.toggled {
+  padding-left: 70px;
+}
+.primeapps #wrapper.toggled #navbar-wrapper {
+  left: 50px;
+  padding-left: 0px;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper {
+  width: 50px;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper .tooltip {
+  display: block !important;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper .tooltip-inner {
+  background: #0f1015;
+  color: #FFF;
+  padding: 5px 10px !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  white-space: nowrap;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper .tooltip-arrow {
+  border-right-color: #0f1015;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper ul {
+  padding-left: 0px;
+  width: 50px;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li:hover {
+  position: relative;
+}
+.primeapps #wrapper.toggled #sidebar-wrapper .sidebar-li a span {
+  display: none;
+}
 .primeapps svg.logo-icon, .primeapps .full-toggled svg.full-logo {
   display: none;
 }
 .primeapps .full-toggled svg.logo-icon {
   display: block;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper {
-  width: 50px;
-}
-.primeapps #navbar-wrapper.toggled {
-  left: 50px;
-  padding-left: 50px;
-}
-.primeapps #navbar-wrapper.toggled #sidebar-wrapper ul {
-  padding-left: 0px;
-}
-.primeapps #wrapper.toggled #sidebar-wrapper ul ul {
-  padding-left: 0px;
 }
