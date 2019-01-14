@@ -1,7 +1,16 @@
+@mixin hoverEffect() {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+}
+
 //Reset
 button, select {
+  @include hoverEffect;
   &:focus {
     outline: none !important;
+    
   }
 }
 
@@ -93,12 +102,7 @@ $primeapps-color: #635fb3;
   }
 
   //mix
-  @mixin hoverEffect() {
-    -webkit-transition: all 0.2s ease;
-    -moz-transition: all 0.2s ease;
-    -o-transition: all 0.2s ease;
-    -ms-transition: all 0.2s ease;
-  }
+  
   //Global
   .margin-0 {
     margin: 0px;
@@ -476,7 +480,7 @@ $primeapps-color: #635fb3;
     font-size: 15px;
   }
   .setup-layout {
-    padding-top: 90px;
+    padding-top: 100px;
     margin-bottom: 50px;
     .setup-title {
       font-family: Nunito;
@@ -484,6 +488,7 @@ $primeapps-color: #635fb3;
       font-weight: bold;
       color: #0d6faa;
       margin-bottom: 16px;
+      margin: 10px 0px;
     }
     .setup-nav {
       background: #fff;
@@ -565,23 +570,34 @@ $primeapps-color: #635fb3;
       color: #0d6faa !important;
     }
     .add-button {
+      @include hoverEffect;
       border-radius: 30px;
       background-color: rgba(13, 111, 170, 0.75);
       font-weight: bold;
       color: #fff !important;
+      padding: 5px 10px;
+      font-size: 12px;
+      &:hover
+      {
+        background-color: rgba(13, 111, 170, 1);
+      }
     }
     .list-right-menu {
       display: flex;
       flex-direction: row;
       justify-content: flex-end;
+      align-items: center;
+      height: 42px;
     }
   }
   .table {
     border: none;
+    
+    
+    
     thead:first-child > tr:first-child > th {
       line-height: 38px !important;
       border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-      font-family: Nunito !important;
       font-weight: 400 !important;
       color: rgba(0, 0, 0, 0.5) !important;
       padding-left: 20px !important;
@@ -590,7 +606,6 @@ $primeapps-color: #635fb3;
       td {
         line-height: 47px;
         color: rgba(0, 0, 0, 0.75) !important;
-        font-family: Nunito;
         font-weight: 400 !important;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
         border-right: 1px solid rgba(0, 0, 0, 0.05);

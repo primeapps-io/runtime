@@ -1,3 +1,9 @@
+button, select {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+}
 button:focus, select:focus {
   outline: none !important;
 }
@@ -268,10 +274,10 @@ button:focus, select:focus {
   background: none !important;
 }
 .primeapps #sidebar-wrapper ul {
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
 }
 .primeapps .sidebar-nav a.active {
   background-color: #121212 !important;
@@ -391,7 +397,7 @@ button:focus, select:focus {
   font-size: 15px;
 }
 .primeapps .setup-layout {
-  padding-top: 90px;
+  padding-top: 100px;
   margin-bottom: 50px;
 }
 .primeapps .setup-layout .setup-title {
@@ -400,6 +406,7 @@ button:focus, select:focus {
   font-weight: bold;
   color: #0d6faa;
   margin-bottom: 16px;
+  margin: 10px 0px;
 }
 .primeapps .setup-layout .setup-nav {
   background: #fff;
@@ -474,15 +481,26 @@ button:focus, select:focus {
   color: #0d6faa !important;
 }
 .primeapps .setup-layout .add-button {
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
   border-radius: 30px;
   background-color: rgba(13, 111, 170, 0.75);
   font-weight: bold;
   color: #fff !important;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.primeapps .setup-layout .add-button:hover {
+  background-color: #0d6faa;
 }
 .primeapps .setup-layout .list-right-menu {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
+  height: 42px;
 }
 .primeapps .table {
   border: none;
@@ -490,7 +508,6 @@ button:focus, select:focus {
 .primeapps .table thead:first-child > tr:first-child > th {
   line-height: 38px !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-  font-family: Nunito !important;
   font-weight: 400 !important;
   color: rgba(0, 0, 0, 0.5) !important;
   padding-left: 20px !important;
@@ -498,7 +515,6 @@ button:focus, select:focus {
 .primeapps .table tr td {
   line-height: 47px;
   color: rgba(0, 0, 0, 0.75) !important;
-  font-family: Nunito;
   font-weight: 400 !important;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
   border-right: 1px solid rgba(0, 0, 0, 0.05);
@@ -760,10 +776,10 @@ button:focus, select:focus {
   font-weight: 400;
 }
 .primeapps .scratch-page .scratch-box {
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
   padding: 50px 10px;
   border-radius: 5px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
@@ -879,10 +895,10 @@ button:focus, select:focus {
   border-top-color: rgba(0, 0, 0, 0.75);
 }
 .primeapps .page-container .app-layout-box .app-box {
-  -webkit-transition: all 0.2s ease;
-  -moz-transition: all 0.2s ease;
-  -o-transition: all 0.2s ease;
-  -ms-transition: all 0.2s ease;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
   height: 200px;
   border-radius: 5px;
   box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
