@@ -8,6 +8,90 @@ button, select {
 $primeapps-color: #635fb3;
 .primeapps {
 
+  //ModuleDesigner scss
+  .module-designer {
+
+    /**
+     * An element with .dndPlaceholder class will be added as child of the dnd-list
+     * while the user is dragging over it.
+     */
+
+    .container-element {
+      margin: 10px;
+    }
+
+    ul {
+      list-style: none;
+    }
+    .module-section {
+      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+      background: #fff;
+      border-radius: 5px;
+      margin-bottom: 30px;
+      min-height: 180px;
+      .dndPlaceholder {
+        background-color: #fff !important;
+        display: block;
+        min-height: 180px;
+        border: 1px dotted #0c6eaa;
+      }
+
+      .section-container {
+        min-height: 180px;
+
+      }
+      .section-header {
+        padding: 10px;
+        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+
+        h4 {
+          font-size: 16px;
+          font-weight: bold;
+          padding: 0;
+          margin: 0;
+        }
+      }
+    }
+  }
+  .template-field {
+    background-color: #fff;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    .dndDragging {
+      border: 1px dotted #0d6faa;
+      background: #fff !important;
+    }
+    .template-field-box {
+      border: 1px dotted #fff;
+
+      width: calc(50% - 10px);
+      float: left;
+      border-radius: 5px;
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: 10px;
+      margin: 5px;
+      &:hover {
+        border: 1px dotted #0d6faa;
+        background: #fff !important;
+      }
+      .template-field-icon {
+        span {
+          font-size: 22px;
+          color: rgba(0, 0, 0, 0.5);
+        }
+        h4 {
+          font-size: 15px !important;
+        }
+        .template-field-text {
+          h4 {
+            font-size: 15px !important;
+          }
+        }
+
+      }
+    }
+  }
+
   //mix
   @mixin hoverEffect() {
     -webkit-transition: all 0.2s ease;
@@ -222,24 +306,34 @@ $primeapps-color: #635fb3;
         height: 80px !important;
       }
     }
-    .logo
-    {
-      
+    .logo {
+
       height: 40px;
       padding: 0px;
-      svg{
+      svg {
         height: 100%;
-        .st0{fill:#FFF;}
-        .st1{fill:#FFF;}
-        .st2{fill:#FCAD2D;}
-        .st3{fill:#F06933;}
-        .st4{fill:#E89728;}
-        .st5{fill:#0D6FAA;}
+        .st0 {
+          fill: #FFF;
+        }
+        .st1 {
+          fill: #FFF;
+        }
+        .st2 {
+          fill: #FCAD2D;
+        }
+        .st3 {
+          fill: #F06933;
+        }
+        .st4 {
+          fill: #E89728;
+        }
+        .st5 {
+          fill: #0D6FAA;
+        }
       }
-      
+
     }
-    
-    
+
     .panel-body {
       a {
         background: none;
