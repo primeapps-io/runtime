@@ -1,19 +1,26 @@
 <div class="row">
     <div class="col-sm-9" style="border: none ;">
-        <div class="page-content">
+        <div class="page-content module-designer">
             <ul dnd-list="module"
                 dnd-allowed-types="['container']"
                 dnd-external-sources="true"
                 dnd-dragover="dragoverCallback(index, external, type, callback)"
-                dnd-drop="dropCallback(index, item, external, type)">
+                dnd-drop="dropCallback(index, item, external, type)"
+                class="module-designer-area">
+
                 <li ng-repeat="container in module"
                     dnd-draggable="container"
                     dnd-type="'container'"
                     dnd-effect-allowed="copyMove"
                     dnd-moved="module.splice($index, 1)"
-                    dnd-callback="module.length">
+                    dnd-callback="module.length"
+                    class="module-section">
+                    <div class="section-header">
+                        <h4>{{container.name }}</h4>
+                    </div>
+
                     <div class="container-element box box-blue">
-                        <h3>{{container.name }}</h3>
+
                         <ul dnd-list="container.fields"
                             dnd-allowed-types="['item']"
                             dnd-horizontal-list="true"
@@ -22,11 +29,11 @@
                             dnd-dragover="dragoverCallback(index, external, type)"
                             dnd-drop="dropCallback(index, item, external, type)"
                             dnd-inserted="logListEvent('inserted at', index, external, type)"
-                            class="itemlist">
+                            class="section-container">
                             <li ng-repeat="item in container.fields"
                                 dnd-draggable="item"
                                 dnd-type="'item'"
-                                dnd-effect-allowed="{{item.effectAllowed}}"
+                                dnd-effect-allowed="all"
                                 dnd-dragstart="logEvent('Started to drag an item')"
                                 dnd-moved="container.fields.splice($index, 1)"
                                 dnd-dragend="logEvent('Drag operation ended. Drop effect: ' + dropEffect)">
@@ -40,14 +47,19 @@
         </div>
 
     </div>
-</div>
-<div class="col-sm-2" style="border: none ;">
-    <ul>
-        <li ng-repeat="item in templatesFields" dnd-draggable="item" dnd-effect-allowed="copy"
-            dnd-copied="item.id = item.id + 1" dnd-type="item.type">
-            <button type="button" class="btn btn-default btn-lg" disabled="disabled">{{item.label}}</button>
-        </li>
-    </ul>
+    <div class="col-sm-3 template-field">
+        <div class="template-field-box text-center" ng-repeat="item in templatesFields" dnd-draggable="item"
+             dnd-effect-allowed="copy"
+             dnd-copied="item.id = item.id + 1" dnd-type="item.type">
+            <div class="template-field-icon">
+                <span ng-class="item.icon" class="k-icon"></span>
+            </div>
+            <div class="template-field-text">
+                <h4 style="font-size: 15px">{{item.label}}</h4>
+            </div>
+        </div>
+        <!--<button type="button" class="btn btn-default btn-lg" disabled="disabled"></button>-->
+    </div>
 </div>
 
-{{ model[0]}}
+

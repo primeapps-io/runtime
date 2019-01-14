@@ -34,69 +34,148 @@ angular.module('primeapps')
             };
 
 
-            $scope.$watch('model', function (model) {
-                $scope.modelAsJson = angular.toJson(module, true);
-            }, true);
-
-
             $scope.templatesFields = [
                 {
                     "type": "item",
-                    "id": 2,
-                    "name": "Text",
                     "order": 0,
-                    "label_tr": "Cep Telefonu",
-                    "label": "Cep Telefonu"
+                    "label_tr": "Text (Single Line)",
+                    "label": "Text (Single Line)",
+                    "icon": "k-i-foreground-color"
                 },
                 {
                     "type": "item",
-                    "id": 2,
-                    "name": "Text",
                     "order": 0,
-                    "label_tr": "Yazı Tek Satır",
-                    "label": "Yazı Tek Satır"
+                    "label_tr": "Text (Multi Line)",
+                    "label": "Text (Multi Line)",
+                    "icon": "k-i-table-align-top-left"
                 },
                 {
                     "type": "item",
-                    "id": 2,
-                    "name": "Text",
                     "order": 0,
-                    "label_tr": "Yazı Çok Satır",
-                    "label": "Yazı Çok Satır"
-                },
-
-                {
-                    "type": "item",
-                    "id": 2,
-                    "name": "Text",
-                    "order": 0,
-                    "label_tr": "Sayı",
-                    "label": "Sayı"
+                    "label_tr": "Number",
+                    "label": "Number",
+                    "icon": "k-i-custom-format"
                 },
                 {
                     "type": "item",
-                    "id": 2,
-                    "name": "Text",
                     "order": 0,
-                    "label_tr": "Sayı Otomatik",
-                    "label": "Sayı Otomatik"
+                    "label_tr": "Number (Auto) ",
+                    "label": "Number (Auto) ",
+                    "icon": "k-i-list-numbered"
                 },
                 {
                     "type": "item",
-                    "id": 2,
-                    "name": "Text",
                     "order": 0,
-                    "label_tr": "Sayı Otomatik",
-                    "label": "Sayı Otomatik"
+                    "label_tr": "Number (Decimal) ",
+                    "label": "Number (Decimal) ",
+                    "icon": "k-i-decimal-decrease"
                 },
                 {
                     "type": "item",
-                    "id": 2,
-                    "name": "Text",
                     "order": 0,
-                    "label_tr": "Sayı Ondalık",
-                    "label": "Sayı Ondalık"
+                    "label_tr": "Currency ",
+                    "label": "Currency ",
+                    "icon": "k-i-dollar"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Date ",
+                    "label": "Date ",
+                    "icon": "k-i-calendar"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Date / Time ",
+                    "label": "Date / Time ",
+                    "icon": "k-i-calendar-date"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Time ",
+                    "label": "Time ",
+                    "icon": "k-i-clock"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "E-mail ",
+                    "label": "E-mail ",
+                    "icon": "k-i-email"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Pick List ",
+                    "label": "Pick List ",
+                    "icon": "k-i-list-unordered"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Multi Select ",
+                    "label": "Multi Select ",
+                    "icon": "k-i-select-box"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Lookup ",
+                    "label": "Lookup ",
+                    "icon": "k-i-search"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Check Box",
+                    "label": "Check Box",
+                    "icon": "k-i-checkbox-checked"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Document",
+                    "label": "Document",
+                    "icon": "k-i-file"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Url",
+                    "label": "Url",
+                    "icon": "k-i-link-horizontal"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Location",
+                    "label": "Location",
+                    "icon": "k-i-marker-pin-target"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Image",
+                    "label": "Image",
+                    "icon": "k-i-image"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Rating",
+                    "label": "Rating",
+                    "icon": "k-i-star-outline"
+                },
+                {
+                    "type": "item",
+                    "order": 0,
+                    "label_tr": "Combination",
+                    "label": "Combination",
+                    "icon": "k-i-hyperlink-open-sm"
                 }
+
             ];
 
 
@@ -105,30 +184,6 @@ angular.module('primeapps')
                     "fields": [
                         {
                             "label": "all 12",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 10",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 15",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 13",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 14",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 16",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 11",
                             "effectAllowed": "all"
                         }
                     ],
@@ -139,30 +194,6 @@ angular.module('primeapps')
                     "fields": [
                         {
                             "label": "all 12",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 10",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 15",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 13",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 14",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 16",
-                            "effectAllowed": "all"
-                        },
-                        {
-                            "label": "all 11",
                             "effectAllowed": "all"
                         }
                     ],
