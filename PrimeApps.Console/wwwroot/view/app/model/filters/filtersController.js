@@ -116,7 +116,12 @@ angular.module('primeapps')
                     templateUrl: 'view/app/model/filters/filtersForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
-                    show: false
+                    show: false,
+                    controller: function ($scope) {
+                        $scope.$on('dragulardrop', function (e, el) {
+                            $scope.viewForm.$setValidity('field', true);
+                        });
+                    }
                 });
 
                 $scope.addNewFiltersModal.$promise.then(function () {
@@ -129,17 +134,11 @@ angular.module('primeapps')
                 moduleChanged($scope.module, true);
             };
 
-            function accepts(el, target, source) {
-                if (source != target) {
-                    return true;
-                }
-            }
-
             var dragular = function () {
-                dragularService.cleanEnviroment();
-
                 var containerLeft = document.querySelector('#availableFields');
                 var containerRight = document.querySelector('#selectedFields');
+
+                dragularService.cleanEnviroment();
 
                 dragularService([containerLeft], {
                     scope: $scope,
@@ -162,6 +161,12 @@ angular.module('primeapps')
                     },
                     containersModel: [$scope.fields.selectedFields]
                 });
+
+                function accepts(el, target, source) {
+                    if (source != target) {
+                        return true;
+                    }
+                }
             };
 
             var moduleChanged = function (module, setView) {
@@ -341,10 +346,6 @@ angular.module('primeapps')
                     dragular();
                 }, 1000);
             };
-
-            $scope.$on('dragulardrop', function (e, el) {
-                $scope.viewForm.$setValidity('field', true);
-            });
 
             $scope.multiselect = function (searchTerm, field) {
                 var picklistItems = [];
@@ -577,7 +578,7 @@ angular.module('primeapps')
                 }
             }
 
-            $scope.validate = function (viewForm) {
+            $scope.validate = function (viewForm , wizardStep) {
 
                 viewForm.$submitted = true;
 
@@ -585,7 +586,7 @@ angular.module('primeapps')
                     return false;
                 }
 
-                if ($scope.fields.selectedFields.length < 1) {
+                if ($scope.fields.selectedFields.length < 1 && wizardStep != 0) {
                     viewForm.$setValidity('field', false);
                     return false;
                 }

@@ -22,7 +22,15 @@
                     <ul class="nav bs-sidenav" bs-scrollspy-list>
                         <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? wizardStep = 0 : false">{{'Setup.Workflow.RuleInformation' | translate}}</a></li>
                         <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
-                        <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a></li>
+                        <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
+                        <ul>
+                            <li><a ng-class="{'active':tab==0}" ng-click="setFormValid(workflowForm) ? tab = 0 : false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
+                            <li><a ng-class="{'active':tab==1}" ng-click="setFormValid(workflowForm) ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>
+                            <li><a ng-class="{'active':tab==2}" ng-click="setFormValid(workflowForm) ? tab = 2 : false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
+                            <li><a ng-class="{'active':tab==3}" ng-click="setFormValid(workflowForm) ? tab = 2 : false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
+                             
+                        </ul>
+                        </li>
                         <li><a ng-class="{'active':wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
                     </ul>
                 </div>
