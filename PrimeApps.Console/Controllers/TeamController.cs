@@ -50,6 +50,7 @@ namespace PrimeApps.Console.Controllers
             SetCurrentUser(_organizationUserRepository);
             SetCurrentUser(_teamRepository);
 
+            base.OnActionExecuting(context);
         }
 
         [Route("create"), HttpPost]

@@ -144,7 +144,7 @@ namespace PrimeApps.App.Controllers
             componentRepository.CurrentUser = new CurrentUser { UserId = userId, TenantId = previewMode == "app" ? (int)appId : (int)tenantId, PreviewMode = previewMode };
             var components = await componentRepository.GetByType(ComponentType.Component);
 
-            var globalConfig = await componentRepository.GetGlobalConfig();
+            var globalSettings = await componentRepository.GetGlobalSettings();
 
             if (components.Count > 0)
                 jsonString = JsonConvert.SerializeObject(components);
@@ -169,7 +169,7 @@ namespace PrimeApps.App.Controllers
             ViewBag.TenantId = tenantId;
             ViewBag.AppId = app.Id;
             ViewBag.EncryptedUserId = CryptoHelper.Encrypt(userId.ToString(), ".btA99KnTp+%','L");
-            ViewBag.GlobalConfig = globalConfig != null ? globalConfig.Content : null;
+            ViewBag.GlobalSettings = globalSettings != null ? globalSettings.Content : null;
         }
     }
 }

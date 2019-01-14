@@ -29,7 +29,7 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             .then(function (response) {
                 if (response.data) {
                     $scope.organizations = response.data;
-                    $scope.menuOpen[$scope.organizations[0].id] = true;
+                    //$scope.menuOpen[$scope.organizations[0].id] = true;
                 }
             });
 

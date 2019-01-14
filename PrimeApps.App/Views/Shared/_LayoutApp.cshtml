@@ -1,28 +1,29 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using PrimeApps.App.Extensions
 @{
-    var app = "primeapps";
-    if (ViewBag.AppInfo != null)
-    {
-        app = ViewBag.AppInfo["app"].Value;
+        var app = "primeapps";
+        if (ViewBag.AppInfo != null)
+        {
+            app = ViewBag.AppInfo["app"].Value;
+        }
+        var googleCode = app == "crm" ? "UA-78675728-1" : "UA-112242194-1";
+        //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
+        //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
+        /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
+        var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
+        var customDomain = false;
+        var customLanguage = string.Empty;
+        //var favicon = ViewBag.AppInfo["favicon"].Value;
+        var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
+        var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
+        var hasAdminRight = ViewBag.HasAdminRight;
+        var tenantId = ViewBag.TenantId;
+        var token = ViewBag.Token;
+        var appId = ViewBag.AppId;
+        var encryptedUserId = ViewBag.EncryptedUserId;
+        var globalSettings = ViewBag.GlobalSettings != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalSettings) : null;
+        var globalConfigs = globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"] != null ? new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(((Newtonsoft.Json.Linq.JObject)globalSettings).Root["configs"])) : new HtmlString(Newtonsoft.Json.JsonConvert.SerializeObject(""));
     }
-    var googleCode = app == "crm" ? "UA-78675728-1" : "UA-112242194-1";
-    //var enableBundle = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["EnableBundle"]);
-    //var useCdn = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["UseCdn"]);
-    /*var versionStatic = ((AssemblyVersionStaticAttribute)typeof(ControllerContext).Assembly.GetCustomAttributes(typeof(AssemblyVersionStaticAttribute), false)[0]).Version;
-    var cdnUrlStatic = useCdn ? System.Configuration.ConfigurationManager.AppSettings["CdnUrl"] + "/" + versionStatic : "";*/
-    var customDomain = false;
-    var customLanguage = string.Empty;
-    //var favicon = ViewBag.AppInfo["favicon"].Value;
-    var blobUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.BlobUrl : "";
-    var functionUrl = !string.IsNullOrWhiteSpace(ViewBag.Components) ? ViewBag.FunctionUrl : "";
-    var hasAdminRight = ViewBag.HasAdminRight;
-    var tenantId = ViewBag.TenantId;
-    var token = ViewBag.Token;
-    var appId = ViewBag.AppId;
-    var encryptedUserId = ViewBag.EncryptedUserId;
-    var globalConfig = ViewBag.GlobalConfig != null ? Newtonsoft.Json.JsonConvert.DeserializeObject(ViewBag.GlobalConfig) : null;
-}
 
 <!DOCTYPE html>
 <html lang="{{language}}" ng-app="primeapps">
@@ -41,9 +42,9 @@
     @*<link rel="stylesheet" href="/styles/bundles-css/auth.css" inline />*@
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&subset=latin,latin-ext' rel='stylesheet' type='text/css' />
 
-    @if (globalConfig != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["css"]["before"] != null)
+    @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["before"] != null)
     {
-        @foreach (var beforeCss in ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["css"]["before"])
+        @foreach (var beforeCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["before"])
         {
             <link rel="stylesheet" href="@beforeCss" />
         }
@@ -74,9 +75,9 @@
         <link rel="stylesheet" href="/styles/bundles-css/app.css" />
     </environment>
 
-    @if (globalConfig != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["css"]["after"] != null)
+    @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"] != null)
     {
-        @foreach (var afterCss in ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["css"]["after"])
+        @foreach (var afterCss in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["css"]["after"])
         {
             <link rel="stylesheet" href="@afterCss" />
         }
@@ -85,6 +86,7 @@
 <body custom-background=custom-background language-class=language-class app-class=app-class ng-class="theme">
     @RenderBody()
     <script>
+        var globalConfigs = @globalConfigs;
 		var version = '@typeof(ControllerContext).Assembly.GetName().Version';
 		var cdnUrl = '@ViewBag.CdnUrlDynamic';
 		var isCustomDomain = '@customDomain' === 'True';
@@ -98,7 +100,6 @@
         var token = '@token';
         var applicationId = '@appId';
         var encryptedUserId = '@encryptedUserId';
-
 		var getParameterByName = function (name) {
 			var url = window.location.href;
 			name = name.replace(/[\[\]]/g, '\\$&');
@@ -196,9 +197,9 @@
         </script>
     }
 
-    @if (globalConfig != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["js"]["before"] != null)
+    @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"] != null)
     {
-        @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["js"]["before"])
+        @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["before"])
         {
             <script src="@afterJs"></script>
         }
@@ -312,9 +313,9 @@
         <script src="/scripts/bundles-js/app.js"></script>
     </environment>
 
-    @if (globalConfig != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["js"]["after"] != null)
+    @if (globalSettings != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"] != null && ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"] != null)
     {
-        @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalConfig).Root["imports"]["js"]["after"])
+        @foreach (var afterJs in ((Newtonsoft.Json.Linq.JObject)globalSettings).Root["imports"]["js"]["after"])
         {
             <script src="@afterJs"></script>
         }

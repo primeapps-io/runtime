@@ -13,21 +13,25 @@
                     <th>{{'Setup.Workflow.Name' | translate}}</th>
                     <th>{{'Setup.Workflow.Module' | translate}}</th>
                     <th>{{'Setup.Workflow.RuleTrigger' | translate}}</th>
-                    <th>{{'Common.Active' | translate}}</th>
+                    <th>{{'Setup.Workflow.Status' | translate}}</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="workflow in workflows">
-                    <td>{{workflow.name}}</td>
-                    <td>{{workflow.moduleStr}}</td>
-                    <td>{{workflow.operationsStr}}</td>
-                    <td>{{workflow.statusStr}}</td>
+                <tr ng-repeat="rule in rules">
+                    <td ng-click="showFormModal(rule.id)" style="cursor:pointer;">{{rule.name}}</td>
+                    <td>{{rule.module['label_'+language+'_plural']}}</td>
+                    <td>{{rule.operations}}</td>
+                    <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
                     <td class="text-right">
-                        <a href="#/app/setup/workflow?id={{workflow.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' |
-                            translate}}</a>
+                        <a href="#" ng-click="" class="btn btn-xs btn-custom">
+                            {{
+'Common.Edit' |
+                            translate
+                            }}
+                        </a>
                         <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
-                                action="delete(workflow.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
+                                action="delete(rule.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
                                 confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
                             {{'Common.Remove' | translate}}
                         </button>
@@ -36,35 +40,38 @@
             </tbody>
         </table>
         <div class="row table-pagination">
-            <div class="col-sm-6">
+            <div class="col-sm-10">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <li>
-                            <a href="#" aria-label="Previous">
-                                <i class="fas fa-step-backward"></i>
-                            </a>
-                        </li>
-                        <li class="active"><a href="#">1</a></li>
-                        <li><a href="#">2</a></li>
-                        <li><a href="#">3</a></li>
-                        <li><a href="#">4</a></li>
-                        <li><a href="#">5</a></li>
-                        <li>
-                            <a href="#" aria-label="Next">
-                                <i class="fas fa-step-forward"></i>
-                            </a>
-                        </li>
-                    </ul>
+                    <div paging
+                         text-first="&laquo;"
+                         ul-class="pagination"
+                         active-class="active"
+                         page="tabelPagination.currentPage"
+                         page-size="tabelPagination.pageSize"
+                         total="tabelPagination.total"
+                         scroll-top="true"
+                         hide-if-empty="true"
+                         show-prev-next="true"
+                         show-first-last="true"
+                         text-next-class="fas fa-chevron-right"
+                         text-prev-class="fas fa-chevron-left"
+                         text-first-class="fas fa-step-backward"
+                         text-last-class="fas fa-step-forward"
+                         paging-action="changePage(page)">
+                    </div>
                 </nav>
             </div>
-            <div class="col-sm-4 "><span class="pagination-span">1-10 of 86 </span></div>
-            <div class="col-sm-2"><span class="pagination-span">Items per page  </span>
-                <select class="items-per-page-select">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select></div>
+            <div class="col-sm-2">
+                <span class="pagination-span">Items per page  </span>
+                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>

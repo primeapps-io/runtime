@@ -8,14 +8,13 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'ss';
             $scope.tabTitle = 'ss';
 
-
             $scope.dragoverCallback = function (index, external, type, callback) {
                 $scope.logListEvent('dragged over', index, external, type);
                 // Invoke callback to origin for container types.
                 if (type == 'container' && !external) {
                     console.log('Container being dragged contains ' + callback() + ' items');
                 }
-
+                return index < 10; // Disallow dropping in the third row.
             };
 
             $scope.dropCallback = function (index, item, external, type) {
@@ -34,6 +33,12 @@ angular.module('primeapps')
                 console.log(message);
             };
 
+
+            $scope.$watch('model', function (model) {
+                $scope.modelAsJson = angular.toJson(module, true);
+            }, true);
+
+
             $scope.templatesFields = [
                 {
                     "type": "item",
@@ -42,54 +47,131 @@ angular.module('primeapps')
                     "order": 0,
                     "label_tr": "Cep Telefonu",
                     "label": "Cep Telefonu"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Yazı Tek Satır",
+                    "label": "Yazı Tek Satır"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Yazı Çok Satır",
+                    "label": "Yazı Çok Satır"
+                },
+
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı",
+                    "label": "Sayı"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı Otomatik",
+                    "label": "Sayı Otomatik"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı Otomatik",
+                    "label": "Sayı Otomatik"
+                },
+                {
+                    "type": "item",
+                    "id": 2,
+                    "name": "Text",
+                    "order": 0,
+                    "label_tr": "Sayı Ondalık",
+                    "label": "Sayı Ondalık"
                 }
             ];
 
 
-            // Initialize model
-
-
-            $scope.$watch('model', function (model) {
-                $scope.modelAsJson = angular.toJson(model, true);
-
-            }, true);
-
-
-            $scope.model = {
-                sections: [
-                    {
-                        column: 1,
-                        name: 'Section 1',
-                        fields: [
-                            {
-                                "type": "item",
-                                "id": 2,
-                                "name": "Text",
-                                "order": 0,
-                                "label_tr": "Cep Telefonu",
-                                "label": "Cep Telefonu"
-                            }
-                        ]
-
-                    },
-                    {
-                        column: 1,
-                        name: 'Section 2',
-                        fields: [
-                            {
-                                "type": "item",
-                                "id": 2,
-                                "name": "Text",
-                                "order": 0,
-                                "label_tr": "Cep Telefonu",
-                                "label": "Cep Telefonu"
-                            }
-                        ]
-
-                    }
-                ]
-            }
-
+            $scope.module = [
+                {
+                    "fields": [
+                        {
+                            "label": "all 12",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 10",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 15",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 13",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 14",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 16",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 11",
+                            "effectAllowed": "all"
+                        }
+                    ],
+                    "effectAllowed": "all",
+                    "name": "Section 1 "
+                },
+                {
+                    "fields": [
+                        {
+                            "label": "all 12",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 10",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 15",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 13",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 14",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 16",
+                            "effectAllowed": "all"
+                        },
+                        {
+                            "label": "all 11",
+                            "effectAllowed": "all"
+                        }
+                    ],
+                    "effectAllowed": "all",
+                    "name": "Section 2 "
+                }
+            ]
 
         }
+
+
     ]);
