@@ -149,7 +149,7 @@ angular.module('primeapps')
                                                 $scope.getSendNotificationUpdatableModules($scope.module);
                                                 $scope.getDynamicFieldUpdateModules($scope.module);
                                                 //TODO
-                                                //$scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.language, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.language, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklists, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                 $scope.getUpdatableModules();
                                                 $scope.generateHookModules();
                                             }
@@ -172,7 +172,7 @@ angular.module('primeapps')
                                                         $scope.getSendNotificationUpdatableModules($scope.module);
                                                         $scope.getDynamicFieldUpdateModules($scope.module);
                                                         //TODO
-                                                        //$scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
+                                                        $scope.workflowModel = RulesService.processWorkflow(workflow, $scope.module, $scope.modulePicklists, $scope.filters, $scope.scheduleItems, $scope.dueDateItems, $scope.picklistsActivity, $scope.taskFields, picklistUpdateModule, $scope.fieldUpdateModulesForNotification, $scope.dynamicfieldUpdateModules);
                                                         $scope.getUpdatableModules();
                                                         $scope.generateHookModules();
                                                     });
