@@ -119,7 +119,7 @@ angular.module('primeapps')
 
                 $scope.addNewRelationsFormModal = $scope.addNewRelationsFormModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/setup/modules/relationForm.html',
+                    templateUrl: 'view/app/model/relations/relationForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false

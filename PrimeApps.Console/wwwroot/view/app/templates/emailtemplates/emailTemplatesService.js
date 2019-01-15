@@ -21,6 +21,12 @@ angular.module('primeapps')
 
                 delete: function (id) {
                     return $http.delete(config.apiUrl + 'template/delete/' + id);
+                },
+                count: function (templateType) {
+                    return $http.get(config.apiUrl + 'template/count?TemplateType=' + templateType);
+                },
+                find: function (data, templateType) {
+                    return $http.post(config.apiUrl + 'template/find?TemplateType=' + templateType, data);
                 }
             };
         }]);

@@ -75,7 +75,6 @@ angular.module('primeapps')
                 var moduleName = $scope.selectedModuleExcel.name;
                 $window.open("/attach/export_excel?module=" + moduleName + '&locale=' + $rootScope.locale, "_blank");
                 ngToast.create({ content: $filter('translate')('Module.ExcelDesktop'), className: 'success' });
-
             };
 
             $scope.moduleChanged = function () {
