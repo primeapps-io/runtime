@@ -1,0 +1,81 @@
+<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <form name="uploadForm" class="form-horizontal form-custom" ng-submit="save(uploadForm);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="col-sm-6">
+                <h4 class="modal-title">Şablon Yükle</h4>
+            </div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewEmailTemplateFormModal.hide();">
+                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                </button>
+                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="saving">
+                    <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-dialog modal-600">
+            <div class="modal-content padding-0">
+                <div class="modal-body">
+                    <div id="field-form-body" class="modal-body">
+                        <div class="section" id="section1">
+                            <div class="panel">
+                                <!--<div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.module.$invalid}">-->
+                                    <!--<label class="col-sm-3 control-label">{{'Setup.Templates.Module' | translate}}</label>-->
+                                    <!--<select name="module"-->
+                                            <!--class="ng-animate-disabled form-control"-->
+                                            <!--ng-model="template.module"-->
+                                            <!--ng-required="true"-->
+                                            <!--ng-options="moduleItem['label_'+language+'_plural'] for moduleItem in $parent.modules | orderNotZero | filter:{name:'!users'} | orderBy:['-system_type','order']">-->
+                                        <!--<option value="">{{'Common.Select' | translate}}</option>-->
+                                    <!--</select>-->
+                                <!--</div>-->
+
+                                <div class="form-group" ng-class="{'has-error': uploadForm.$submitted && uploadForm.templateName.$invalid}">
+                                    <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateName' | translate}}</label>
+                                    <input type="text" name="templateName" class="form-control" ng-required="true" ng-model="template.name" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateStatus' | translate}}</label>
+                                    <div class="col-sm-9" ng-init="template.active = true">
+                                        <label class="radio-inline">
+                                            <input type="radio" name="templateStatus" ng-value="true" ng-model="template.active" />
+                                            {{'Setup.Templates.TemplateActive' | translate}}
+                                        </label>
+
+                                        <label class="radio-inline">
+                                            <input type="radio" name="templateStatus" ng-value="false" ng-model="template.active" />
+                                            {{'Setup.Templates.TemplateDeactive' | translate}}
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!--<div class="form-group">-->
+                                    <!--<label class="col-sm-3 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>-->
+                                    <!--<div class="col-sm-9">-->
+                                        <!--<span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (id && !templateFileCleared) || saving">-->
+                                            <!--{{'Setup.Templates.ChooseFiles' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file" />-->
+                                        <!--</span>-->
+                                        <!--<span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span>-->
+                                        <!--<a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && id">{{template.content}}</a>-->
+                                        <!--<a class="btn btn-default clear-button" ng-show="fileUpload.uploader.files.length || (!templateFileCleared && id)" ng-disabled="saving" ng-click="clearTemplateFile()"><i class="fa fa-times-circle"></i></a>-->
+                                    <!--</div>-->
+                                <!--</div>-->
+
+                                <div class="form-group" ng-show="uploadForm.$submitted && uploadForm.$invalid">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <div class="callout callout-danger">
+                                            <p ng-if="uploadForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
