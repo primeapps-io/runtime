@@ -2,10 +2,10 @@
     <form name="uploadForm" class="form-horizontal form-custom" ng-submit="save(uploadForm);" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="col-sm-6">
-                <h4 class="modal-title">Şablon Yükle</h4>
+                <h4 class="modal-title">{{'Setup.Templates.UploadTemplate' | translate}}</h4>
             </div>
             <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewWordTemplateFormModal.hide(); template.content = currentContent;">
+                <button type="button" class="btn btn-radius btn-gray " ng-click="addNewExcelTemplateFormModal.hide();">
                     <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
                 </button>
                 <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving" ng-disabled="saving">
@@ -55,7 +55,7 @@
                                     <label class="col-sm-3 control-label">{{'Setup.Templates.TemplateFile' | translate}}</label>
                                     <div class="col-sm-9">
                                         <span class="file-input btn btn-custom btn-sm btn-file" plupload="fileUpload" ng-disabled="fileUpload.uploader.files.length || (template.id && !templateFileCleared) || saving">
-                                            {{'Setup.Templates.ChooseFiles' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".docx,.doc" add-file="add-file" />
+                                            {{'Module.ChooseFilesExcel' | translate}} <input id="uploadFile" type="file" name="fileUpload" accept=".xls,.xlsx" add-file="add-file" />
                                         </span>
                                         <span ng-show="fileUpload.uploader.files.length">{{fileUpload.uploader.files[0].name}}</span>
                                         <a href="{{templateDownloadUrl}}" target="_blank" ng-show="!fileUpload.uploader.files.length && template.id">{{template.content}}</a>
