@@ -2,11 +2,12 @@
     <a href ng-click="toggle(this)" ng-if="node.nodes && node.nodes.length > 0" data-nodrag>
         <i ng-class="{'fa fa-plus-square-o': collapsed,'fa fa-minus-square-o': !collapsed}"></i>
     </a>
-    <a href="#/app/setup/role?id={{node.id}}">{{node.title}}</a>
+    <a ng-click="showFormModal(node.id)">{{node.title}}</a>
     <span class="action-buttons">
-        <a href="#/app/setup/role?id=&reportsTo={{node.id}}" class="action-icon add-role-button" data-nodrag>
-            {{'Common.Add' | translate}}
+        <a ng-click="showFormModal(node.id, true)" class="action-icon add-role-button" data-nodrag>
+        {{'Common.Add' | translate}}
         </a>
+        <!--href="#/app/setup/role?id=&reportsTo={{node.id}}"-->
         <span ng-if="node.id != 'role_ceo'"> | </span>
         <a id="deleteButton{{node.id}}" href class="action-icon delete-role-button" ng-click="showDeleteForm(node.id)" ng-if="node.id != 'role_ceo'" data-nodrag>
             {{'Common.Delete' | translate}}
@@ -14,5 +15,5 @@
     </span>
 </span>
 <ol ng-model="node.nodes" ng-class="{hidden: collapsed}" class="fa-ul" data-nodrag>
-    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/setup/roles/roleTreeTemplate.html'" data-nodrag></li>
+    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'view/app/authorization/roles/roleTreeTemplate.html'" data-nodrag></li>
 </ol>
