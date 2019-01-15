@@ -26,7 +26,7 @@
                     <td ng-if="helpside.show_type==='publish'">{{'Setup.HelpGuide.PublishStatus' | translate}}</td>
                     <td ng-if="helpside.show_type==='draft'">{{'Setup.HelpGuide.DraftStatus' | translate}}</td>
                     <td class="text-right">
-                        <a href="#/app/setup/helpside?id={{helpside.id}}" class="btn btn-xs btn-custom">{{'Common.Edit' | translate}}</a>
+                        <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(helpside)">{{'Common.Edit' | translate}}</button>
                         <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left" action="delete(helpside.id)" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
                     </td>
                 </tr>
