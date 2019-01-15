@@ -87,22 +87,22 @@ namespace PrimeApps.App.Controllers
                 appUser.TimeZone = platformUser.Setting?.TimeZone;
             }
 
-            var cacheHelper = (ICacheHelper) HttpContext.RequestServices.GetService(typeof(ICacheHelper));
-            var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
-            var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
+            //var cacheHelper = (ICacheHelper) HttpContext.RequestServices.GetService(typeof(ICacheHelper));
+            //var cacheKeyTenantUser = "tenant_user_" + appUser.Id;
+            //var tenantUser = cacheHelper.Get<TenantUser>(cacheKeyTenantUser);
 
             var configuration = (IConfiguration)HttpContext.RequestServices.GetService(typeof(IConfiguration));
             var previewMode = configuration.GetSection("AppSettings")["PreviewMode"];
 
-            if (tenantUser == null)
-            {
+            //if (tenantUser == null)
+            //{
                 var tenantUserRepository = (IUserRepository) HttpContext.RequestServices.GetService(typeof(IUserRepository));
                 tenantUserRepository.CurrentUser = new CurrentUser {UserId = appUser.Id, TenantId = previewMode == "app" ? appUser.AppId : appUser.TenantId, PreviewMode = previewMode };
 
-                tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
+               var tenantUser = tenantUserRepository.GetByIdSync(platformUser.Id);
 
-               cacheHelper.Set(cacheKeyTenantUser, tenantUser);
-            }
+               //cacheHelper.Set(cacheKeyTenantUser, tenantUser);
+            //}
 
             appUser.RoleId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
             appUser.ProfileId = previewMode == "app" ? 1 : tenantUser.RoleId ?? 0;
@@ -110,16 +110,16 @@ namespace PrimeApps.App.Controllers
 
             if (previewMode != "app" && tenant.License?.AnalyticsLicenseCount > 0)
             {
-                var cacheKeyWarehouse = "platform_warehouse_" + appUser.Id;
-                var platformWarehouse = cacheHelper.Get<PlatformWarehouse>(cacheKeyWarehouse);
+                //var cacheKeyWarehouse = "platform_warehouse_" + appUser.Id;
+                //var platformWarehouse = cacheHelper.Get<PlatformWarehouse>(cacheKeyWarehouse);
 
-                if (platformWarehouse == null)
-                {
-                    var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
-                    platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
+                //if (platformWarehouse == null)
+                //{
+                  var warehouseRepository = (IPlatformWarehouseRepository) HttpContext.RequestServices.GetService(typeof(IPlatformWarehouseRepository));
+                   var platformWarehouse = warehouseRepository.GetByTenantIdSync(tenant.Id);
 
-                    cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
-                }
+                    //cacheHelper.Set(cacheKeyWarehouse, platformWarehouse);
+                //}
 
                 appUser.WarehouseDatabaseName = platformWarehouse.DatabaseName;
             }
