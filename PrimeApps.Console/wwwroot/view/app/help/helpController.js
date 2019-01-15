@@ -17,6 +17,12 @@ angular.module('primeapps')
             var location;
             $scope.loading = true;
 
+            if(!$scope.moduleFilter){
+                HelpService.getBasicModules().then(function (result) {
+                    $scope.moduleFilter = $filter('filter')(result.data, { deleted: false });
+                });
+            }
+
             $scope.requestModel = {
                 limit: "10",
                 offset: 0

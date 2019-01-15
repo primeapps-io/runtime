@@ -47,46 +47,57 @@ angular.module('primeapps')
                 process: function (helpsidesData, modules, routes, helpEnums) {
                     var helpsides = [];
 
-                    for (var i = 0; i < helpsidesData.length; i++) {
-                        var helpside = helpsidesData[i];
-                        helpside.binding = '';
-                        helpside.tpye = '';
+                    var helpProcess = function () {
+                        for (var i = 0; i < helpsidesData.length; i++) {
+                            var helpside = helpsidesData[i];
+                            helpside.binding = '';
+                            helpside.tpye = '';
 
-                        if (helpside.module_id) {
-                            var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
-                            var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
+                            if (helpside.module_id) {
 
-                            if (helpside.modal_type == "modal"){
-                                helpside.binding = module.label_tr_plural;
-                                helpside.type = "Tanıtım Ekranı";
+                                var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
+                                var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
+
+                                if (helpside.modal_type == "modal") {
+                                    helpside.binding = module.label_tr_plural;
+                                    helpside.type = "Tanıtım Ekranı";
+                                }
+                                else {
+                                    helpside.binding = (module ? module['label_' + $rootScope.language + '_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
+                                    helpside.type = "Yardım Ekranı";
+                                }
                             }
-                            else{
-                                helpside.binding = (module ? module['label_' + $rootScope.language + '_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
-                                helpside.type = "Yardım Ekranı";
+                            else if (helpside.route_url) {
+                                var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
+
+                                if (route)
+                                    helpside.binding = route.name;
+                                else
+                                    helpside.binding = "Açılış Ekranı"
+                                if (helpside.modal_type == "modal") {
+                                    helpside.type = "Tanıtım Ekranı (Diğer)";
+                                }
+                                else {
+                                    helpside.type = "Yardım Ekranı (Diğer)";
+                                }
                             }
+                            else {
+                                helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
+                                helpside.type = "Bağımsız";
+                            }
+
+                            helpsides.push(helpside);
                         }
-                        else if (helpside.route_url) {
-                            var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
-
-                            if (route)
-                                helpside.binding = route.name;
-                            else
-                                helpside.binding = "Açılış Ekranı"
-                            if (helpside.modal_type == "modal"){
-                                helpside.type = "Tanıtım Ekranı (Diğer)";
-                            }
-                            else{
-                                helpside.type = "Yardım Ekranı (Diğer)";
-                            }
-                        }
-                        else {
-                            helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
-                            helpside.type = "Bağımsız";
-                        }
-
-                        helpsides.push(helpside);
+                    };
+                    if (!modules) {
+                        this.getBasicModules().then(function (result) {
+                            modules = result.data;
+                            helpProcess();
+                        });
                     }
-
+                    else {
+                        helpProcess();
+                    }
                     return helpsides;
                 }
             };
