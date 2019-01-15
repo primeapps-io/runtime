@@ -18,7 +18,7 @@ namespace PrimeApps.Console.Controllers
     [Route("api/rule")]
     public class RuleController : DraftBaseController
     {
-        private IConfiguration _configuration; 
+        private IConfiguration _configuration;
         private IWorkflowRepository _workflowRepository;
         private IModuleRepository _moduleRepository;
         private IPicklistRepository _picklistRepository;
@@ -81,24 +81,8 @@ namespace PrimeApps.Console.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var rules = await _workflowRepository.GetAllBasic();
 
-            rules = rules.Skip(paginationModel.Offset * paginationModel.Limit).Take(paginationModel.Limit).ToList();
-
-            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
-            {
-                var propertyInfo = typeof(Workflow).GetProperty(paginationModel.OrderColumn);
-
-                if (paginationModel.OrderType == "asc")
-                {
-                    rules = rules.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-                else
-                {
-                    rules = rules.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
-                }
-
-            }
+            var rules = await _workflowRepository.Find(paginationModel);
 
             return Ok(rules);
         }

@@ -2,6 +2,7 @@
 using PrimeApps.Model.Entities.Tenant;
 using System.Threading.Tasks;
 using PrimeApps.Model.Helpers;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories.Interfaces
 {
@@ -19,5 +20,7 @@ namespace PrimeApps.Model.Repositories.Interfaces
         Task<int> Update(Process process, List<int> currentFilterIds, List<int> currentApproverIds);
         Task<ICollection<ProcessApprover>> GetUsers(Process process);
         Task<ICollection<Process>> GetAllBasic();
+        Task<ICollection<Process>> Find(PaginationModel paginationModel);
+        Task<int> Count();
     }
 }

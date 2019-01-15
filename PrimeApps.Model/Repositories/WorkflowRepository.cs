@@ -7,6 +7,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Helpers;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -43,6 +44,29 @@ namespace PrimeApps.Model.Repositories
                 .ToListAsync();
 
             return workflows;
+        }
+
+        public async Task<ICollection<Workflow>> Find(PaginationModel paginationModel)
+        {
+            var rules = await DbContext.Workflows
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToListAsync();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Workflow).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    rules = rules.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    rules = rules.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+            }
+
+            return rules;
         }
 
         public async Task<int> Count()
