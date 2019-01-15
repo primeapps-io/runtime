@@ -1,17 +1,15 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='profiles' ? 'active' :''">
-            <a href="/#/app/5/profiles">
-                <i class="fas fa-th-large"></i>
-                Profiles
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='roles' ? 'active' :''">
-            <a href="/#/app/5/roles">
-                <i class="fas fa-code-branch"></i>
-               Roles
-            </a>
-        </li>
-   </ul>
-</div>
+<h2 class="setup-title">{{ menuTopTitle }}</h2>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='profiles' ? 'active' :''">
+        <a href="/#/app/5/profiles" data-trigger="hover" data-type="info" data-title="Profiles" bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Profiles</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='roles' ? 'active' :''">
+        <a href="/#/app/5/roles" data-trigger="hover" data-type="info" data-title="Roles" bs-tooltip data-placement="right">
+            <i class="fas fa-code-branch"></i>
+            <span>Roles</span>
+        </a>
+    </li>
+</ul>
