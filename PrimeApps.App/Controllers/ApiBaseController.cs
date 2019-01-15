@@ -59,25 +59,25 @@ namespace PrimeApps.App.Controllers
 
             var cacheHelper = (ICacheHelper)context.HttpContext.RequestServices.GetService(typeof(ICacheHelper));
             var email = context.HttpContext.User.FindFirst("email").Value;
-            var cacheKeyPlatformUser = typeof(PlatformUser).Name + "_" + email + "_" + tenantId;
-            var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
+            //var cacheKeyPlatformUser = typeof(PlatformUser).Name + "_" + email + "_" + tenantId;
+            //var platformUser = cacheHelper.Get<PlatformUser>(cacheKeyPlatformUser);
+            var platformUser = new PlatformUser();
+            //if (platformUser == null)
+            //{
+            var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
+            platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
 
-            if (platformUser == null)
+            if (AppId != null && AppId != 0)
             {
-                var platformUserRepository = (IPlatformUserRepository)context.HttpContext.RequestServices.GetService(typeof(IPlatformUserRepository));
-                platformUserRepository.CurrentUser = new CurrentUser { UserId = 1 };
-
-                if (AppId != null && AppId != 0)
-                {
-                    platformUser = platformUserRepository.GetByEmailAndTenantId(email, 1);
-                    platformUser.TenantsAsUser.Single().Tenant.AppId = appId;
-                }
-                else
-                    platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
-
-
-                cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+                platformUser = platformUserRepository.GetByEmailAndTenantId(email, 1);
+                platformUser.TenantsAsUser.Single().Tenant.AppId = appId;
             }
+            else
+                platformUser = platformUserRepository.GetByEmailAndTenantId(email, tenantId);
+
+
+            // cacheHelper.Set(cacheKeyPlatformUser, platformUser);
+            // }
 
 
             if (platformUser?.TenantsAsUser == null || platformUser.TenantsAsUser.Count < 1)

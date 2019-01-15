@@ -1,25 +1,23 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='authentication' ? 'active' :''">
-            <a href="/#/app/5/authentication">
-                <i class="fas fa-th-large"></i>
-                Authentication
-            </a>
-        </li>
+<h2 class="setup-title">{{ menuTopTitle }}</h2>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='authentication' ? 'active' :''">
+        <a href="/#/app/5/authentication" data-trigger="hover" data-type="info" data-title="Authentication" bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Authentication</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='identity' ? 'active' :''">
-            <a href="/#/app/5/identity">
-                <i class="fas fa-network-wired"></i>
-                Identity Provider
-            </a>
-        </li>
+    <li ng-class="activeMenuItem ==='identity' ? 'active' :''">
+        <a href="/#/app/5/identity" data-trigger="hover" data-type="info" data-title="Identity Provider" bs-tooltip data-placement="right">
+            <i class="fas fa-network-wired"></i>
+            <span>Identity Provider</span>
+        </a>
+    </li>
 
-        <li ng-class="activeMenuItem ==='singleSingOn' ? 'active' :''">
-            <a href="/#/app/5/singleSingOn">
-                <i class="fas fa-sliders-h"></i>
-                Single Sign-On
-            </a>
-        </li>
-    </ul>
-</div>
+    <li ng-class="activeMenuItem ==='singleSingOn' ? 'active' :''">
+        <a href="/#/app/5/singleSingOn" data-trigger="hover" data-type="info" data-title="Single Sign-On" bs-tooltip data-placement="right">
+            <i class="fas fa-sliders-h"></i>
+            <span>Single Sign-On</span>
+        </a>
+    </li>
+</ul>

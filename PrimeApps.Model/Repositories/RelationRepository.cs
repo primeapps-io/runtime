@@ -29,8 +29,8 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count()
         {
-            var count = DbContext.Relations
-               .Where(x => !x.Deleted).Count();
+            var count =await DbContext.Relations
+               .Where(x => !x.Deleted).CountAsync();
             return count;
         }
 

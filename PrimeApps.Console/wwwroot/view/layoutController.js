@@ -2,6 +2,20 @@
 
 angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scope', '$location', '$state', '$cookies', '$localStorage', '$window', '$filter', '$anchorScroll', 'config', '$popover', 'ngToast', 'entityTypes', 'guidEmpty', 'component', 'convert', 'helper', 'operations', 'blockUI', '$cache', 'helps', 'LayoutService', 'AuthService', '$sessionStorage', '$sce', '$modal', 'FileUploader',
     function ($rootScope, $scope, $location, $state, $cookies, $localStorage, $window, $filter, $anchorScroll, config, $popover, ngToast, entityTypes, guidEmpty, component, convert, helper, operations, blockUI, $cache, helps, LayoutService, AuthService, $sessionStorage, $sce, $modal, FileUploader) {
+        angular.element($window).on('load resize', function () {
+            if ($window.innerWidth < 1366) {
+                $scope.$apply(function () {
+                    $scope.toggleClass = 'full-toggled toggled';
+                    $rootScope.subtoggleClass = 'full-toggled2';
+                });
+            }
+            else {
+                $scope.$apply(function () {
+                    $scope.toggleClass = '';
+                });
+            }
+        });
+
         $scope.hasPermission = helper.hasPermission;
         $scope.entityTypes = entityTypes;
         $scope.operations = operations;

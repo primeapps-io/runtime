@@ -1,0 +1,101 @@
+<div class="modal setup-modal" tabindex="-1" role="dialog">
+    <form name="roleForm" class="form-horizontal form-custom" ng-submit="save(roleForm);" autocomplete="off" novalidate>
+        <div class="modal-header">
+            <div class="col-sm-8">
+                <h4 class="modal-title">{{'Setup.Roles.Title2' | translate}}</h4>
+            </div>
+            <div class="col-sm-6 col-sm-rigth">
+                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" ng-click="addNewRoleFormModal.hide(); ">
+                    <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
+                </button>
+                <button type="submit" class="btn btn-radius btn-blue " style="margin-left: 5px" ladda="saving">
+                    <i class="fas fa-save"></i>{{'Common.Save' | translate}}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-dialog modal-900">
+            <div class="modal-content">
+                <div class="modal-contanier">
+                    <div class="col-sm-2 modal-left-menu">
+                        <ul class="nav bs-sidenav" bs-scrollspy-list>
+                            <li><a>{{'Setup.Roles.Title2' | translate}}</a></li>
+                            <li><a ng-show="true">{{'Setup.Roles.Title3' | translate}}</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-10">
+                        <div id="field-form-body" class="modal-body">
+                            <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                            <div ng-show="!loading" class="section" id="section1">
+                                <h4>{{'Setup.Roles.Title2' | translate}}</h4>
+                                <div class="panel">
+                                    <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.name.$invalid}">
+                                        <label class="col-sm-4 control-label">*{{'Setup.Roles.RoleName' | translate}}:</label>
+                                        <input name="name" class="form-control col-sm-8" maxlength="200" required ng-model="role.label" />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">{{'Setup.Roles.RoleDescription' | translate}}</label>
+                                        <textarea rows="2" name="description" class="form-control col-sm-8" maxlength="200" auto-grow ng-model="role.description"></textarea>
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.reportsTo.$invalid}">
+                                        <label class="col-sm-4 control-label">{{'Setup.Roles.ReportsTo' | translate}}</label>
+                                        <ui-select name="reportsTo" style="width:300px;"
+                                                   on-select="roleUpdateChange()"
+                                                   ng-model="role.reports_to"
+                                                   ng-required="!role.master">
+                                            <ui-select-match>{{$select.selected[('label_'+language)]}}</ui-select-match>
+                                            <ui-select-choices repeat="item.id as item in roles | filter:{[('label_'+language)]:$select.search} | orderBy:('label_'+language)" value="{{$select.selected.id}}">
+                                                <div ng-bind-html="item[('label_'+language)] | highlight: $select.search" ng-attr-data-id="item.id"></div>
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </div>
+
+                                    <div class="form-group" ng-class="{'has-error': roleForm.$submitted && roleForm.share_data.$invalid}">
+                                        <label class="col-sm-6 control-label">{{'Setup.Roles.ShareData' | translate}}</label>
+                                        <label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="true" ng-model="role.share_data">{{'Setup.Roles.ShareDataYes' | translate}}</label>
+                                        <label class="radio-inline" style="font-weight: 400 !important;"><input type="radio" name="shareData" ng-value="false" ng-model="role.share_data">{{'Setup.Roles.ShareDataNo' | translate}}</label>
+                                    </div>
+
+                                    <div class="form-group" ng-show="roleForm.$submitted && roleForm.$invalid">
+                                        <div class="col-sm-12">
+                                            <div class="callout callout-danger">
+                                                <p ng-if="roleForm.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section" id="section2">
+                                    <h4>{{'Setup.Roles.Title3' | translate}}</h4>
+                                    <div class="tab-content">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{'Setup.Users.UserEmail' | translate}}</th>
+                                                    <th>{{'Setup.Users.UserFullName' | translate}}</th>
+                                                    <th>{{'Setup.Users.UserStatus' | translate}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="userItem in roleUsers | filter:{ IsActive:true } track by userItem.id">
+                                                    <td>{{userItem.Email}}</td>
+                                                    <td><span ng-if="userItem.id">{{userItem.FirstName + " " + userItem.LastName}}</span></td>
+                                                    <td>
+                                                        <span ng-if="userItem.IsSubscriber">{{'Setup.Users.GroupOwner' | translate}}</span>
+                                                        <span ng-if="userItem.id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus1' | translate}}</span>
+                                                        <span ng-if="!userItem.id && !userItem.IsSubscriber">{{'Setup.Users.UserStatus2' | translate}}</span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

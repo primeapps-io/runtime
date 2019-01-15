@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using PrimeApps.Console.Helpers;
 using PrimeApps.Console.Models;
 using PrimeApps.Console.Storage;
+using PrimeApps.Model.Common;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
 using HttpStatusCode = Microsoft.AspNetCore.Http.StatusCodes;
@@ -137,6 +138,28 @@ namespace PrimeApps.Console.Controllers
 			await _templateRepostory.DeleteSoft(templateEntity);
 
 			return Ok();
+		}
+
+		[Route("count"), HttpGet]
+		public async Task<IActionResult> Count([FromUri]TemplateType templateType)
+		{
+			var count = await _templateRepostory.Count(templateType);
+
+			//if (count < 1)
+			//	return NotFound(count);
+
+			return Ok(count);
+		}
+
+		[Route("find"), HttpPost]
+		public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel, [FromUri]TemplateType templateType)
+		{
+			var templates = await _templateRepostory.Find(paginationModel, templateType);
+
+			//if (templates == null)
+			//	return NotFound();
+
+			return Ok(templates);
 		}
 	}
 }

@@ -1,24 +1,22 @@
-<div class="menu col-sm-2">
-    <h2 class="setup-title">{{ menuTopTitle }}</h2>
-    <ul class="nav nav-pills nav-stacked setup-nav">
-        <li ng-class="activeMenuItem ==='workflows' ? 'active' :''">
-            <a href="/#/app/5/workflows">
-                <i class="fas fa-th-large"></i>
-               	Workflows
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='rules' ? 'active' :''">
-            <a href="/#/app/5/rules">
-                <i class="fas fa-code-branch"></i>
-               	Business Rules
-            </a>
-        </li>
-        <li ng-class="activeMenuItem ==='processes' ? 'active' :''">
-            <a href="/#/app/5/processes">
-                <i class="fas fa-network-wired"></i>
-             	Approval Processes
-            </a>
-        </li>
+<h2 class="setup-title">{{ menuTopTitle }}</h2>
+<ul class="nav nav-pills nav-stacked setup-nav">
+    <li ng-class="activeMenuItem ==='workflows' ? 'active' :''">
+        <a href="/#/app/5/workflows" data-trigger="hover" data-type="info" data-title="Workflows" bs-tooltip data-placement="right">
+            <i class="fas fa-th-large"></i>
+            <span>Workflows</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='rules' ? 'active' :''">
+        <a href="/#/app/5/rules" data-trigger="hover" data-type="info" data-title="Business Rules" bs-tooltip data-placement="right">
+            <i class="fas fa-code-branch"></i>
+            <span>Business Rules</span>
+        </a>
+    </li>
+    <li ng-class="activeMenuItem ==='processes' ? 'active' :''">
+        <a href="/#/app/5/processes" data-trigger="hover" data-type="info" data-title="Approval Processes" bs-tooltip data-placement="right">
+            <i class="fas fa-network-wired"></i>
+            <span>Approval Processes</span>
+        </a>
+    </li>
 
-    </ul>
-</div>
+</ul>

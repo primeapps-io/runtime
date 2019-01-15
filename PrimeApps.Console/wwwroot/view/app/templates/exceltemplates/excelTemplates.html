@@ -2,6 +2,7 @@
     <div class="setup-liste-header row">
         <div class="col-sm-6"><h2 class="setup-title">{{'Common.ExcelTemplate' | translate}}</h2></div>
         <div class="col-sm-6 list-right-menu">
+            <button class="btn add-button" ng-click="showTemplateGuideModal()"><i class="pull-left fa fa-book"></i>{{'Setup.Templates.SelectTemplateFields' | translate}}</button>
             <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Templates.AddNewExcelTemplate' | translate}}</button>
         </div>
     </div>
@@ -9,13 +10,13 @@
     <div class="tab-content">
         <table class="table">
             <thead>
-            <tr>
-                <th>{{'Setup.Templates.TemplateName' | translate}}</th>
-                <th>{{'Setup.Templates.Module' | translate}}</th>
-                <th>{{'Setup.Templates.Status' | translate}}</th>
-                <th>{{'Setup.Templates.TemplateFile' | translate}}</th>
-                <th></th>
-            </tr>
+                <tr>
+                    <th>{{'Setup.Templates.TemplateName' | translate}}</th>
+                    <th>{{'Setup.Templates.Module' | translate}}</th>
+                    <th>{{'Setup.Templates.Status' | translate}}</th>
+                    <th>{{'Setup.Templates.TemplateFile' | translate}}</th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="template in templates">

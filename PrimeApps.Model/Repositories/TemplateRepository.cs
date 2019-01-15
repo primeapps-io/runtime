@@ -8,6 +8,7 @@ using PrimeApps.Model.Context;
 using PrimeApps.Model.Entities.Tenant;
 using PrimeApps.Model.Enums;
 using PrimeApps.Model.Repositories.Interfaces;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -30,38 +31,34 @@ namespace PrimeApps.Model.Repositories
 			return template;
 		}
 
-		public async Task<ICollection<Template>> GetAll(TemplateType templateType)//, string moduleName = "")
+		public async Task<ICollection<Template>> GetAll(TemplateType templateType, string moduleName = "")
 		{
-
-			//var templates = DbContext.Templates
-			//    .Include(x => x.Shares)
-			//    .ThenInclude(x => x.TenantUser)
-			//    .Include(x => x.Permissions)
-			//    .Where(x => x.Code == null && x.Deleted == false);
 			var templates = DbContext.Templates
-				.Where(x => x.TemplateType == templateType && !x.Deleted);
+				   .Include(x => x.Shares)
+				   .ThenInclude(x => x.TenantUser)
+				   .Include(x => x.Permissions)
+				   .Where(x => x.Code == null && x.Deleted == false);
 
-			//if (templateType != TemplateType.NotSet)
-			//	templates = templates.Where(x => x.TemplateType == templateType);
+			if (templateType != TemplateType.NotSet)
+				templates = templates.Where(x => x.TemplateType == templateType);
 
-			//if (!string.IsNullOrEmpty(moduleName))
-			//	templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
+			if (!string.IsNullOrEmpty(moduleName))
+				templates = templates.Where(x => x.Module == moduleName || string.IsNullOrEmpty(x.Module));
 
-			//if (templateType == TemplateType.Email)
-			//{
-			//	templates = templates.Where(x => x.SharingType == TemplateSharingType.Everybody
-			//	|| x.CreatedBy.Id == CurrentUser.UserId
-			//	|| x.Shares.Any(j => j.UserId == CurrentUser.UserId));
+			if (templateType == TemplateType.Email)
+			{
+				templates = templates.Where(x => x.SharingType == TemplateSharingType.Everybody
+				|| x.CreatedBy.Id == CurrentUser.UserId
+				|| x.Shares.Any(j => j.UserId == CurrentUser.UserId));
 
-			//	return await templates.ToListAsync();
-			//}
-			//else
-			//{
-			//	templates = templates.OrderByDescending(x => x.CreatedAt);
+				return await templates.ToListAsync();
+			}
+			else
+			{
+				templates = templates.OrderByDescending(x => x.CreatedAt);
 
-			//	return await templates.ToListAsync();
-			//}
-			return await templates.ToListAsync();
+				return await templates.ToListAsync();
+			}
 		}
 
 		public async Task<ICollection<Template>> GetAllList(TemplateType templateType = TemplateType.NotSet, TemplateType excelType = TemplateType.NotSet, string moduleName = "")
@@ -114,6 +111,45 @@ namespace PrimeApps.Model.Repositories
 			DbContext.Templates.Remove(template);
 
 			return await DbContext.SaveChangesAsync();
+		}
+
+		public async Task<int> Count(TemplateType templateType)
+		{
+			var count = DbContext.Templates
+			   .Where(x => !x.Deleted && x.TemplateType == templateType).Count();
+			return count;
+		}
+
+		public async Task<ICollection<Template>> Find(PaginationModel paginationModel, TemplateType templateType)
+		{
+			var templates = GetPaginationGQuery(paginationModel, templateType)
+				.Skip(paginationModel.Offset * paginationModel.Limit)
+				.Take(paginationModel.Limit).ToList();
+
+			if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+			{
+				var propertyInfo = typeof(Module).GetProperty(paginationModel.OrderColumn);
+
+				if (paginationModel.OrderType == "asc")
+				{
+					templates = templates.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+				else
+				{
+					templates = templates.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+				}
+
+			}
+
+			return templates;
+
+		}
+
+		private IQueryable<Template> GetPaginationGQuery(PaginationModel paginationModel, TemplateType templateType, bool withIncludes = true)
+		{
+			return DbContext.Templates
+				 .Where(x => !x.Deleted && x.TemplateType == templateType);
+
 		}
 	}
 }

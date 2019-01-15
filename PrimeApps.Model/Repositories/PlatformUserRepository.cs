@@ -85,25 +85,25 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<PlatformUser> GetWithTenants(string email)
         {
-            var platformKey = typeof(PlatformUser).Name + "_" + email;
-            var tenantKey = "tenant_user_";
+            //var platformKey = typeof(PlatformUser).Name + "_" + email;
+            //var tenantKey = "tenant_user_";
 
-            var cachedPlatformUser = await CacheHelper.GetAsync<PlatformUser>(platformKey);
+            //var cachedPlatformUser = await CacheHelper.GetAsync<PlatformUser>(platformKey);
 
-            if (cachedPlatformUser != null)
-            {
-                tenantKey += cachedPlatformUser.Id;
-                var cachedTenant = await CacheHelper.GetAsync<Tenant>(tenantKey);
+            //if (cachedPlatformUser != null)
+            //{
+                //tenantKey += cachedPlatformUser.Id;
+            //    var cachedTenant = await CacheHelper.GetAsync<Tenant>(tenantKey);
 
-                if (cachedTenant != null)
-                {
-                    var tenantsAsUserCached = new List<UserTenant>();
-                    tenantsAsUserCached.Add(new UserTenant { Tenant = cachedTenant, TenantId = cachedTenant.Id });
-                    cachedPlatformUser.TenantsAsUser = tenantsAsUserCached;
+            //    if (cachedTenant != null)
+            //    {
+            //        var tenantsAsUserCached = new List<UserTenant>();
+            //        tenantsAsUserCached.Add(new UserTenant { Tenant = cachedTenant, TenantId = cachedTenant.Id });
+            //        cachedPlatformUser.TenantsAsUser = tenantsAsUserCached;
 
-                    return cachedPlatformUser;
-                }
-            }
+            //        return cachedPlatformUser;
+            //    }
+            //}
 
             var user = await DbContext.Users
                 .Include(x => x.Setting)
@@ -113,18 +113,18 @@ namespace PrimeApps.Model.Repositories
                 .Where(x => x.Email == email)
                 .SingleOrDefaultAsync();
 
-            if (user != null)
-            {
-                var tenantForCache = user?.TenantsAsUser.FirstOrDefault()?.Tenant;
-                if (tenantForCache != null)
-                    await CacheHelper.SetAsync(tenantKey + user.Id, tenantForCache);
+            //if (user != null)
+            //{
+            //    var tenantForCache = user?.TenantsAsUser.FirstOrDefault()?.Tenant;
+            //    if (tenantForCache != null)
+            //        await CacheHelper.SetAsync(tenantKey + user.Id, tenantForCache);
 
-                var tempUserForCache = user;
-                tempUserForCache.TenantsAsOwner = null;
-                tempUserForCache.TenantsAsUser = null;
+            //    var tempUserForCache = user;
+            //    tempUserForCache.TenantsAsOwner = null;
+            //    tempUserForCache.TenantsAsUser = null;
 
-                await CacheHelper.SetAsync(platformKey, tempUserForCache);
-            }
+            //    await CacheHelper.SetAsync(platformKey, tempUserForCache);
+            //}
 
             return user;
         }

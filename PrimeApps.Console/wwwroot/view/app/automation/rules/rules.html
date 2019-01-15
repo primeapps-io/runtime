@@ -24,12 +24,9 @@
                     <td>{{rule.operations}}</td>
                     <td>{{rule.active ? 'Common.Active':'Common.Passive' | translate}}</td>
                     <td class="text-right">
-                        <a href="#" ng-click="" class="btn btn-xs btn-custom">
-                            {{
-'Common.Edit' |
-                            translate
-                            }}
-                        </a>
+                        <button type="button" ng-click="showFormModal(rule.id)" class="btn btn-xs btn-custom">
+                            {{'Common.Edit' | translate }}
+                        </button>
                         <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left"
                                 action="delete(rule.id)" confirm-message="{{'Common.AreYouSure' | translate}}"
                                 confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">

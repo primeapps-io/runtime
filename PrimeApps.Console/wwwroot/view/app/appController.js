@@ -36,16 +36,15 @@ angular.module('primeapps')
             $scope.activeMenu = 'app';
             $scope.activeMenuItem = 'overview';
             $scope.tabTitle = 'Overview';
-            var deferred = $q.defer();
 
             $scope.getBasicModules = function () {
-                LayoutService.getBasicModules().then(function (result) {
-                    $scope.modules = result.data;
-                });
+                    LayoutService.getBasicModules().then(function (result) {
+                        $scope.modules = result.data;
+                    });
             };
 
             $scope.getBasicModules();
-            deferred.resolve();
+
 
         }
     ]);

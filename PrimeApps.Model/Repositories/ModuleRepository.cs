@@ -29,8 +29,8 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count()
         {
-            var count = DbContext.Modules
-               .Where(x => !x.Deleted).Count();
+            var count =await DbContext.Modules
+               .Where(x => !x.Deleted).CountAsync();
             return count;
         }
 
@@ -406,7 +406,7 @@ namespace PrimeApps.Model.Repositories
 
         private IQueryable<Module> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
-            return DbContext.Modules
+            return  DbContext.Modules
                  .Where(x => !x.Deleted);
             
         }

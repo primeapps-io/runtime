@@ -273,7 +273,7 @@ angular.module('primeapps')
 
                 $scope.addNewDependencyModal = $scope.addNewDependencyModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/setup/modules/dependencyForm.html',
+                    templateUrl: 'view/app/model/dependencies/dependencyForm.html',
                     animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
