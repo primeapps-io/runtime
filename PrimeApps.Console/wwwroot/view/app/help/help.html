@@ -2,7 +2,8 @@
     <div class="setup-liste-header row">
         <div class="col-sm-6"><h2 class="setup-title">Help</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> Add New Help</button>
+            <button class="btn add-button" ng-click="showFormModal()" style="margin-right: 10px"><i class="fas fa-plus"></i>Tanıtım Ekranı Ekle </button>
+            <button class="btn add-button" ng-click="showFormSideModal()"><i class="fas fa-plus"></i> Yardım Ekranı Ekle </button>
         </div>
     </div>
 
@@ -11,6 +12,7 @@
             <thead>
                 <tr>
                     <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
+                    <th>Yardım Ekranı Türü</th>
                     <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
                     <th>{{'Setup.HelpGuide.Status' | translate}}</th>
                     <th style="min-width: 110px;"></th>
@@ -19,6 +21,7 @@
             <tbody>
                 <tr ng-repeat="helpside in helpsides">
                     <td>{{helpside.name}}</td>
+                    <td>{{helpside.type}}</td>
                     <td>{{helpside.binding}}</td>
                     <td ng-if="helpside.show_type==='publish'">{{'Setup.HelpGuide.PublishStatus' | translate}}</td>
                     <td ng-if="helpside.show_type==='draft'">{{'Setup.HelpGuide.DraftStatus' | translate}}</td>

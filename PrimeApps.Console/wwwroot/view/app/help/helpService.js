@@ -48,12 +48,14 @@ angular.module('primeapps')
                     for (var i = 0; i < helpsidesData.length; i++) {
                         var helpside = helpsidesData[i];
                         helpside.binding = '';
+                        helpside.tpye = '';
 
                         if (helpside.module_id) {
                             var module = $filter('filter')(modules, { id: helpside.module_id }, true)[0];
                             var helpEnum = $filter('filter')(helpEnums, { Name: helpside.module_type }, true)[0];
 
                             helpside.binding = (module ? module['label_' + $rootScope.language + '_singular'] + ' ' + '(' : '') + (helpEnum ? helpEnum.Label + ')' : '');
+
                         }
                         else if (helpside.route_url) {
                             var route = $filter('filter')(routes, { value: helpside.route_url }, true)[0];
@@ -65,6 +67,7 @@ angular.module('primeapps')
                             helpside.binding = $filter('translate')('Setup.HelpGuide.Independent');
                         }
 
+                        helpside.type = helpside.modal_type;
                         helpsides.push(helpside);
                     }
 
