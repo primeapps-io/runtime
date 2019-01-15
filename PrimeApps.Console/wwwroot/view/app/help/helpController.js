@@ -17,7 +17,7 @@ angular.module('primeapps')
             var location;
             $scope.loading = true;
 
-            if(!$scope.moduleFilter){
+            if (!$scope.moduleFilter) {
                 HelpService.getBasicModules().then(function (result) {
                     $scope.moduleFilter = $filter('filter')(result.data, { deleted: false });
                 });
@@ -32,10 +32,13 @@ angular.module('primeapps')
                 $scope.pageTotal = response.data;
             });
 
-            HelpService.find($scope.requestModel).then(function (response) {
-                $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
-                $scope.loading = false;
-            });
+            var helpData = function () {
+                HelpService.find($scope.requestModel).then(function (response) {
+                    $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
+                    $scope.loading = false;
+                });
+            }
+            helpData();
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
@@ -617,6 +620,7 @@ angular.module('primeapps')
                             .then(function (response) {
                                 $scope.helpTemplates = response.data;
                                 $scope.addNewHelpFormModal.hide();
+                                helpData();
                                 ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
                             });
 
