@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
+    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes) {
             return {
                 count: function () {
                     return $http.get(config.apiUrl + 'module/count');
@@ -86,6 +86,102 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'picklist/get/' + id);
                 },
 
+                formatFieldValue: function (field, value, picklists, record, module) {
+                    field.valueFormatted = '';
+
+                    if (value === undefined || value === null)
+                        return;
+
+                    switch (field.data_type) {
+                        case 'number_decimal':
+                            field.valueFormatted = $filter('number')(value, field.decimal_places || 2);
+                            break;
+                        case 'number_auto':
+                            var valueFormatted = value.toString();
+
+                            if (field.auto_number_prefix)
+                                valueFormatted = field.auto_number_prefix + valueFormatted;
+
+                            if (field.auto_number_suffix)
+                                valueFormatted += field.auto_number_suffix;
+
+                            field.valueFormatted = valueFormatted;
+                            break;
+                        case 'currency':
+                            var recordCurrencySymbol;
+
+                            if (record && record['currency']) {
+                                if (angular.isObject(record['currency'])) {
+                                    recordCurrencySymbol = record['currency'].value;
+                                }
+                                else {
+                                    var currencyField = $filter('filter')(module.fields, { name: 'currency' }, true)[0];
+                                    var currencyPicklistItem = $filter('filter')(picklists[currencyField.picklist_id], { labelStr: record['currency'] })[0];
+
+                                    if (currencyPicklistItem && currencyPicklistItem.value)
+                                        recordCurrencySymbol = currencyPicklistItem.value;
+                                }
+                            }
+
+                            field.valueFormatted = $filter('currency')(value, recordCurrencySymbol || field.currency_symbol || $rootScope.currencySymbol, field.decimal_places || 2);
+                            break;
+                        case 'date':
+                            field.valueFormatted = $filter('date')(value, 'shortDate');
+                            break;
+                        case 'date_time':
+                            field.valueFormatted = $filter('date')(value, 'short');
+                            break;
+                        case 'time':
+                            field.valueFormatted = $filter('date')(value, 'shortTime');
+                            break;
+                        case 'picklist':
+                            if (!angular.isObject(value)) {
+                                var picklistItem = $filter('filter')(picklists[field.picklist_id], { labelStr: value }, true)[0];
+                                field.valueFormatted = picklistItem ? picklistItem.label[$rootScope.language] : value;
+                            }
+                            else {
+                                field.valueFormatted = value.label[$rootScope.language];
+                            }
+                            break;
+                        case 'multiselect':
+                            for (var i = 0; i < value.length; i++) {
+                                var item = value[i];
+
+                                if (!angular.isObject(item)) {
+                                    var picklistItem = $filter('filter')(picklists[field.picklist_id], { labelStr: item }, true)[0];
+                                    field.valueFormatted += (picklistItem ? picklistItem.label[$rootScope.language] : item) + '; ';
+                                }
+                                else {
+                                    field.valueFormatted += (item.label ? item.label[$rootScope.language] : '') + '; ';
+                                }
+                            }
+
+                            field.valueFormatted = field.valueFormatted.slice(0, -2);
+                            break;
+                        case 'tag':
+                            for (var i = 0; i < value.length; i++) {
+                                var item = value[i];
+
+                                if (!angular.isObject(item)) {
+
+                                    field.valueFormatted += " " + item + ";";
+                                }
+                                else {
+                                    field.valueFormatted += " " + item;
+                                }
+                            }
+
+                            // field.valueFormatted = field.valueFormatted.slice(0, -2);
+                            break;
+                        case 'checkbox':
+                            field.valueFormatted = $filter('filter')(picklists['yes_no'], { system_code: value.toString() })[0].label[$rootScope.language];
+                            break;
+                        default:
+                            field.valueFormatted = value;
+                            break;
+                    }
+                },
+
                 //moduleProfileSettings
                 getAllModuleProfileSettings: function () {
                     return $http.get(config.apiUrl + 'module_profile_settings/get_all');
@@ -106,13 +202,203 @@ angular.module('primeapps')
                 getPicklists: function () {
                     return $http.get(config.apiUrl + 'picklist/get_all');
                 },
+                getPickItemsLists: function (module, withRelatedPicklists) {
+                    var deferred = $q.defer();
+                    var fields = angular.copy(module.fields);
+                    var picklists = {};
+                    var picklistIds = [];
 
+                    /*if(module.name === 'izinler'){
+                     var leave_entry_type = [
+                     { label:{ en:"Morning", tr:"Sabah" }, order:1, system_code:"true", type:2 },
+                     { label:{ en:"Afternoon", tr:"Öğleden Sonra" }, order:2, system_code:"true", type:2 }
+                     ]
+                     picklists["leave_entry_type"] = leave_entry_type;
+                     }*/
+
+                    if (withRelatedPicklists) {
+                        for (var i = 0; i < module.fields.length; i++) {
+                            var field = module.fields[i];
+
+                            if (field.data_type === 'lookup' && field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
+                                var lookupModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+
+                                if (!lookupModule)
+                                    continue;
+
+                                for (var j = 0; j < lookupModule.fields.length; j++) {
+                                    var lookupModuleField = lookupModule.fields[j];
+
+                                    if (lookupModuleField.data_type === 'picklist' || lookupModuleField.data_type === 'multiselect')
+                                        fields.push(lookupModuleField);
+                                }
+                            }
+                        }
+                    }
+
+                    var setDependency = function (picklist, field) {
+                        if (module.dependencies && module.dependencies.length > 0) {
+                            var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
+
+                            if (dependency && dependency.deleted != true && dependency.dependency_type === 'list_field') {
+                                for (var i = 0; i < picklist.length; i++) {
+                                    var picklistItem = picklist[i];
+                                    picklistItem.hidden = true;
+                                }
+                            }
+                        }
+                    };
+
+                    for (var k = 0; k < fields.length; k++) {
+                        var fieldItem = fields[k];
+
+                        if (fieldItem.picklist_id) {
+                            var picklistCache = $cache.get('picklist_' + fieldItem.picklist_id);
+
+                            if (fieldItem.picklist_id === 900000) {
+                                if (picklistCache) {
+                                    picklists[fieldItem.picklist_id] = picklistCache;
+                                    continue;
+                                }
+
+                                var modulePicklist = [];
+
+                                for (var l = 0; l < $scope.modules.length; l++) {
+                                    var moduleItem = $scope.modules[l];
+
+                                    if (!moduleItem.display || moduleItem.name === 'activities')
+                                        continue;
+
+                                    if (!helper.hasPermission(moduleItem.name, operations.read))
+                                        continue;
+
+                                    var modulePicklistItem = {};
+                                    modulePicklistItem.id = parseInt(moduleItem.id) + 900000;
+                                    modulePicklistItem.type = 900000;
+                                    modulePicklistItem.system_code = moduleItem.name;
+                                    modulePicklistItem.order = moduleItem.order;
+                                    modulePicklistItem.label = {};
+                                    modulePicklistItem.label.en = moduleItem.label_en_singular;
+                                    modulePicklistItem.label.tr = moduleItem.label_tr_singular;
+                                    modulePicklistItem.labelStr = moduleItem['label_' + $rootScope.Language + '_singular'];
+                                    modulePicklistItem.value = moduleItem.name;
+
+                                    modulePicklist.push(modulePicklistItem);
+                                }
+
+                                modulePicklist = $filter('orderBy')(modulePicklist, 'order');
+                                picklists['900000'] = modulePicklist;
+                                $cache.put('picklist_' + 900000, modulePicklist);
+
+                                continue;
+                            }
+
+                            if (!picklistCache) {
+                                picklistIds.push(fieldItem.picklist_id);
+                            }
+                            else {
+                                picklistCache = $filter('orderByLabel')(picklistCache, $rootScope.language);
+
+                                if (fieldItem.picklist_sortorder && !fieldItem.deleted)
+                                    picklistCache = $filter('orderBy')(picklistCache, fieldItem.picklist_sortorder);
+
+                                setDependency(picklistCache, fieldItem);
+                                picklists[fieldItem.picklist_id] = picklistCache;
+                            }
+                        }
+                    }
+
+                    //Picklist for all modules (activity_type, yes_no)
+                    var activityTypePicklistCache = $cache.get('picklist_activity_type');
+
+                    if (activityTypePicklistCache)
+                        picklists['activity_type'] = activityTypePicklistCache;
+                    else
+                        picklists['activity_type'] = activityTypes;
+
+                    var transactionTypePicklistCache = $cache.get('picklist_transaction_type');
+
+                    if (transactionTypePicklistCache)
+                        picklists['transaction_type'] = transactionTypePicklistCache;
+                    else {
+                        if (module.name === 'accounts') {
+                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 1 }, true);
+                        } else if (module.name === 'suppliers') {
+                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 2 }, true);
+                        }
+                    }
+
+                    var yesNoPicklistCache = $cache.get('picklist_yes_no');
+
+                    if (yesNoPicklistCache)
+                        picklists['yes_no'] = yesNoPicklistCache;
+                    else
+                        picklists['yes_no'] = yesNo;
+
+                    //All picklists in cache. Return them.
+                    if (picklistIds.length <= 0) {
+                        deferred.resolve(picklists);
+                        return deferred.promise;
+                    }
+
+                    picklistIds = picklistIds.getUnique();
+
+                    this.findPicklist(picklistIds)
+                        .then(function (response) {
+                            if (!response.data) {
+                                deferred.resolve(picklists);
+                                return deferred.promise;
+                            }
+
+                            for (var i = 0; i < fields.length; i++) {
+                                var field = fields[i];
+
+                                if (!field.picklist_id)
+                                    continue;
+
+                                if (picklistIds.indexOf(field.picklist_id) < 0)
+                                    continue;
+
+                                var picklistItems = helper.mergePicklists(response.data);
+                                picklists[field.picklist_id] = $filter('filter')(picklistItems, { type: field.picklist_id }, true);
+                                picklists[field.picklist_id] = $filter('orderByLabel')(picklists[field.picklist_id], $rootScope.language);
+
+                                if (field.picklist_sortorder && !field.deleted)
+                                    picklists[field.picklist_id] = $filter('orderBy')(picklists[field.picklist_id], field.picklist_sortorder);
+
+                                if (module.dependencies && module.dependencies.length > 0) {
+                                    var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
+
+                                    if (dependency && dependency.deleted != true && dependency.dependency_type === 'list_field') {
+                                        for (var j = 0; j < picklists[field.picklist_id].length; j++) {
+                                            var picklistItem = picklists[field.picklist_id][j];
+                                            picklistItem.hidden = true;
+                                        }
+                                    }
+                                }
+
+                                setDependency(picklists[field.picklist_id], field);
+                                $cache.put('picklist_' + field.picklist_id, picklists[field.picklist_id]);
+                            }
+
+                            deferred.resolve(picklists);
+                        })
+                        .catch(function (reason) {
+                            deferred.reject(reason.data);
+                        });
+
+                    return deferred.promise;
+                },
                 createPicklist: function (picklist) {
                     return $http.post(config.apiUrl + 'picklist/create', picklist);
                 },
 
                 updatePicklist: function (picklist) {
                     return $http.put(config.apiUrl + 'picklist/update/' + picklist.id, picklist);
+                },
+
+                findPicklist: function (ids) {
+                    return $http.post(config.apiUrl + 'picklist/find', ids);
                 },
 
                 processPicklist: function (picklist) {
@@ -152,6 +438,96 @@ angular.module('primeapps')
                     });
 
                     return module;
+                },
+
+                processRecordField: function (record, field, picklists) {
+                    var that = this;
+                    var fieldName = field.name;
+
+                    switch (field.data_type) {
+                        case 'lookup':
+                            var lookupRecord = {};
+                            var lookupIsNull = record[fieldName + '.id'] === null;
+
+                            if (record[fieldName + '.id'] === undefined) {
+                                field.inline_edit = false;
+                                lookupIsNull = true;
+                            }
+
+                            for (var key in record) {
+                                if (record.hasOwnProperty(key)) {
+                                    var value = record[key];
+
+                                    if (key.startsWith(fieldName + ".")) {
+                                        if (!lookupIsNull) {
+                                            var keyParts = key.split('.');
+
+                                            if (keyParts[0] != field.name)
+                                                continue;
+
+                                            lookupRecord[keyParts[1]] = value;
+                                        }
+
+                                        delete record[key];
+                                    }
+                                }
+                            }
+
+                            if (lookupIsNull)
+                                return;
+
+                            if (field.lookup_type === 'users') {
+                                lookupRecord.primary_value = lookupRecord['full_name'];
+                            }
+                            else if (field.lookup_type === 'profiles') {
+                                lookupRecord.primary_value = lookupRecord['name'];
+                            }
+                            else if (field.lookup_type === 'roles') {
+                                lookupRecord.primary_value = lookupRecord['label_' + $rootScope.user.tenant_language];
+                            }
+                            else if (field.lookup_type === 'relation') {
+                                if (record[field.lookup_relation] && record['related_to'])
+                                    lookupRecord = record['related_to'];
+                                else
+                                    lookupRecord = null;
+                            }
+                            else {
+                                var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                                var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true, deleted: false }, true)[0];
+                                lookupRecord.primary_value = lookupRecord[lookupModulePrimaryField.name];
+                            }
+
+                            record[fieldName] = lookupRecord;
+                            break;
+                        case 'picklist':
+                            var picklistItem = $filter('filter')(picklists[field.picklist_id], { labelStr: record[fieldName], inactive: '!true' }, true)[0];
+                            record[fieldName] = picklistItem;
+                            break;
+                        case 'multiselect':
+                            var picklistItems = [];
+
+                            if (record[fieldName] && record[fieldName].length > 0) {
+                                for (var i = 0; i < record[fieldName].length; i++) {
+                                    var multiselectItem = record[fieldName][i];
+
+                                    var picklistItem = $filter('filter')(picklists[field.picklist_id], { labelStr: multiselectItem, inactive: '!true' }, true)[0];
+                                    //Check if item name exist in picklist ( Item name can be change )
+                                    if (picklistItem)
+                                        picklistItems.push(picklistItem);
+                                }
+                            }
+
+                            record[fieldName] = picklistItems;
+                            break;
+                        case 'date':
+                        case 'date_time':
+                        case 'time':
+                            if (record[fieldName] === undefined || record[fieldName] === null || !record[fieldName].length)
+                                return;
+
+                            record[fieldName] = new Date(record[fieldName]);
+                            break;
+                    }
                 },
 
                 prepareDefaults: function (module) {
@@ -1014,6 +1390,213 @@ angular.module('primeapps')
                     }
                 },
 
+                prepareRecord: function (record, module, currentRecord) {
+                    var newRecord = angular.copy(record);
+                    var newCurrentRecord = angular.copy(currentRecord);
+
+                    //region BUG 1061
+                    if (currentRecord) {
+                        for (var i = 0; i < module.dependencies.length; i++) {
+                            var dependency = module.dependencies[i];
+                            if (dependency.dependency_type == 'display' && !dependency.deleted) {
+                                if (!angular.equals(record[dependency.parent_field], currentRecord[dependency.parent_field])) {
+                                    if (dependency.values_array && dependency.values_array.length > 0) {
+                                        var empty = true;
+                                        for (var j = 0; j < dependency.values_array.length; j++) {
+                                            var value = dependency.values_array[j];
+                                            if (Array.isArray(record[dependency.parent_field])) {
+                                                for (var k = 0; k < record[dependency.parent_field].length; k++) {
+                                                    var multiValue = record[dependency.parent_field][k];
+                                                    if (multiValue.id.toString() === value) {
+                                                        empty = false;
+                                                    }
+                                                }
+                                            } else if (record[dependency.parent_field].id.toString() === value) {
+                                                empty = false;
+                                            }
+                                        }
+                                        if (empty && dependency.child_field) {
+                                            newRecord[dependency.child_field] = null;
+                                        }
+                                    } else if (!record[dependency.parent_field] && dependency.child_field) {
+                                        newRecord[dependency.child_field] = null;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //endregion
+
+                    for (var i = 0; i < module.fields.length; i++) {
+                        var field = module.fields[i];
+
+                        if ((typeof newRecord[field.name] === 'string' && newRecord[field.name].trim() === ''))
+                            newRecord[field.name] = undefined;
+
+                        if (!currentRecord && !newRecord[field.name])
+                            continue;
+
+                        if (currentRecord && !currentRecord[field.name] && !newRecord[field.name]) {
+                            delete newRecord[field.name];
+                            continue;
+                        }
+
+                        if (field.data_type == 'checkbox' && newRecord[field.name] === null && currentRecord[field.name])
+                            newRecord[field.name] = false;
+
+                        if (field.deleted) {
+                            delete newRecord[field.name];
+                            continue;
+                        }
+
+                        if (newRecord[field.name] !== undefined && newRecord[field.name] !== null) {
+                            if (!newCurrentRecord)
+                                newCurrentRecord = {};
+
+                            switch (field.data_type) {
+                                case 'number':
+                                    newRecord[field.name] = parseInt(newRecord[field.name]);
+                                    newCurrentRecord[field.name] = newCurrentRecord[field.name] ? parseInt(newCurrentRecord[field.name]) : null;
+                                    break;
+                                case 'number_decimal':
+                                    break;
+                                case 'checkbox':
+                                    if (newRecord[field.name] === null && newRecord[field.name] === undefined) {
+                                        newRecord[field.name] = false;
+                                    }
+                                    break;
+                                case 'currency':
+                                    newRecord[field.name] = parseFloat(newRecord[field.name]);
+                                    newCurrentRecord[field.name] = newCurrentRecord[field.name] ? parseFloat(newCurrentRecord[field.name]) : null;
+                                    break;
+                                case 'date':
+                                    var dateParts = moment(newRecord[field.name]).format().split('+');
+                                    var datePartsCurrent = moment(newCurrentRecord[field.name]).format().split('+');
+                                    newRecord[field.name] = dateParts[0];
+                                    newCurrentRecord[field.name] = newCurrentRecord[field.name] ? datePartsCurrent[0] : null;
+                                    break;
+                                case 'picklist':
+                                case 'lookup':
+                                    newRecord[field.name] = newRecord[field.name].id;
+                                    newCurrentRecord[field.name] = newCurrentRecord[field.name] ? newCurrentRecord[field.name].id : null;
+                                    break;
+                                case 'text_multi':
+                                    function htmltext(html) {
+                                        var tag = document.createElement('div');
+                                        tag.innerHTML = html;
+
+                                        return tag.innerHTML.toString();
+                                    }
+
+                                    var htmlValue = newRecord[field.name];
+                                    if (field.multiline_type_use_html === true) {
+                                        var htmlValueConvert = htmltext(htmlValue);
+                                        newRecord[field.name] = htmlValueConvert;
+                                    }
+                                    break;
+                                case 'multiselect':
+                                    var ids = [];
+                                    var currentIds = [];
+
+                                    for (var j = 0; j < newRecord[field.name].length; j++) {
+                                        var item = newRecord[field.name][j];
+                                        ids.push(item.id);
+                                    }
+
+                                    if (newCurrentRecord[field.name]) {
+                                        for (var k = 0; k < newCurrentRecord[field.name].length; k++) {
+                                            var picklistItem = newCurrentRecord[field.name][k];
+                                            currentIds.push(picklistItem.id);
+                                        }
+                                    }
+
+                                    if (ids && ids.length)
+                                        newRecord[field.name] = ids;
+                                    else
+                                        newRecord[field.name] = null;
+
+                                    if (currentIds && currentIds.length)
+                                        newCurrentRecord[field.name] = currentIds;
+                                    else
+                                        newCurrentRecord[field.name] = null;
+                                    break;
+                                case "tag":
+                                    var tags = [];
+                                    angular.forEach(newRecord[field.name], function (item) {
+                                        tags.push(item["text"]);
+                                    });
+                                    newRecord[field.name] = tags.toString();
+                                    break;
+
+                            }
+
+                            if (currentRecord && angular.equals(newCurrentRecord[field.name], newRecord[field.name]))
+                                delete newRecord[field.name];
+                        }
+                        else {
+                            newRecord[field.name] = null;
+                        }
+                    }
+
+                    if (newRecord.shared_read && newRecord.shared_read.length) {
+                        newRecord.shared_users = [];
+                        newRecord.shared_user_groups = [];
+
+                        for (var l = 0; l < newRecord.shared_read.length; l++) {
+                            var shared = newRecord.shared_read[l];
+
+                            if (shared.type === 'user')
+                                newRecord.shared_users.push(shared.id);
+
+                            if (shared.type === 'group')
+                                newRecord.shared_user_groups.push(shared.id);
+                        }
+
+                        if (!newRecord.shared_users.length)
+                            newRecord.shared_users = null;
+
+                        if (!newRecord.shared_user_groups.length)
+                            newRecord.shared_user_groups = null;
+
+                        delete newRecord.shared_read;
+                    }
+                    else {
+                        newRecord.shared_users = null;
+                        newRecord.shared_user_groups = null;
+                        delete newRecord.shared_read;
+                    }
+
+                    if (newRecord.shared_edit && newRecord.shared_edit.length) {
+                        newRecord.shared_users_edit = [];
+                        newRecord.shared_user_groups_edit = [];
+
+                        for (var m = 0; m < newRecord.shared_edit.length; m++) {
+                            var sharedEdit = newRecord.shared_edit[m];
+
+                            if (sharedEdit.type === 'user')
+                                newRecord.shared_users_edit.push(sharedEdit.id);
+
+                            if (sharedEdit.type === 'group')
+                                newRecord.shared_user_groups_edit.push(sharedEdit.id);
+                        }
+
+                        if (!newRecord.shared_users_edit.length)
+                            newRecord.shared_users_edit = null;
+
+                        if (!newRecord.shared_user_groups_edit.length)
+                            newRecord.shared_user_groups_edit = null;
+
+                        delete newRecord.shared_edit;
+                    }
+                    else {
+                        newRecord.shared_users_edit = null;
+                        newRecord.shared_user_groups_edit = null;
+                        delete newRecord.shared_edit;
+                    }
+
+                    return newRecord;
+                },
+
                 createActionButton: function (actionButton) {
                     return $http.post(config.apiUrl + 'action_button/create', actionButton);
                 },
@@ -1037,6 +1620,61 @@ angular.module('primeapps')
                 getModuleByName: function (moduleName) {
                     return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
                 },
+
+                getFieldOperator: function (module) {
+                    angular.forEach(module.fields, function (field) {
+                        field.dataType = dataTypes[field.data_type];
+                        field.operators = [];
+                        if (field.data_type === 'lookup') {
+                            if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
+                                var lookupModule = $filter('filter')($scope.$parent.modules, { name: field.lookup_type }, true)[0];
+                                //TODO GETFIELDS
+                                field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true)[0];
+
+                                if (!field.lookupModulePrimaryField)
+                                    field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+
+                                var lookupModulePrimaryFieldDataType = dataTypes[field.lookupModulePrimaryField.data_type];
+
+                                for (var m = 0; m < lookupModulePrimaryFieldDataType.operators.length; m++) {
+                                    var operatorIdLookup = lookupModulePrimaryFieldDataType.operators[m];
+                                    var operatorLookup = operators[operatorIdLookup];
+                                    field.operators.push(operatorLookup);
+                                }
+                            }
+                            else {
+                                field.operators.push(operators.equals);
+                                field.operators.push(operators.not_equal);
+                                field.operators.push(operators.empty);
+                                field.operators.push(operators.not_empty);
+
+                                // if (field.lookup_type === 'users') {
+                                //     var lookupModule = $filter('filter')(modules, { name: 'users' }, true)[0];
+                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                // }
+                                // else if (field.lookup_type === 'profiles') {
+                                //     var lookupModule = $filter('filter')(modules, { name: 'profiles' }, true)[0];
+                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                // }
+                                // else if (field.lookup_type === 'roles') {
+                                //     var lookupModule = $filter('filter')(modules, { name: 'roles' }, true)[0];
+                                //     field.lookupModulePrimaryField = $filter('filter')(lookupModule.fields, { primary: true }, true)[0];
+                                // }
+                            }
+
+                        }
+                        else {
+                            for (var n = 0; n < field.dataType.operators.length; n++) {
+                                var operatorId = field.dataType.operators[n];
+                                var operator = operators[operatorId];
+                                field.operators.push(operator);
+                            }
+                        }
+
+                    });
+                    return module;
+                },
+
             };
         }]);
 

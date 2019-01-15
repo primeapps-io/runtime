@@ -54,7 +54,7 @@ namespace PrimeApps.App.Controllers
         [Route("get_all"), HttpGet]
         public async Task<IActionResult> GetAll([FromQuery(Name = "type")]TemplateType type = TemplateType.NotSet, [FromQuery(Name = "moduleName")]string moduleName = "")
         {
-            var templates = await _templateRepostory.GetAll(type, moduleName);
+            var templates = await _templateRepostory.GetAll(type);
 
             return Ok(templates);
         }

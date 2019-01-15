@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('RulesService', ['$rootScope', '$http', 'config', '$filter', 'operators', '$q', 'helper',
-        function ($rootScope, $http, config, $filter, operators, $q, helper, ) {
+    .factory('RulesService', ['$rootScope', '$http', 'config', '$filter', 'operators', '$q', 'helper', 'ModuleService',
+        function ($rootScope, $http, config, $filter, operators, $q, helper, ModuleService) {
             return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'rule/find/', model);
@@ -25,8 +25,8 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'rule/create/', model);
                 },
 
-                update: function (model) {
-                    return $http.put(config.apiUrl + 'rule/update/', model);
+                update: function (id, model) {
+                    return $http.put(config.apiUrl + 'rule/update/' + id, model);
                 },
 
                 delete: function (id) {
@@ -81,7 +81,7 @@ angular.module('primeapps')
                     return dueDateItems;
                 },
 
-                processWorkflow: function (workflow, module, language, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, taskFields, picklistUpdateModule, notificationFields, dynamicFiledUpdatefields) {
+                processWorkflow: function (workflow, module, modules, picklistsModule, filters, scheduleItems, dueDateItems, picklistsActivity, taskFields, picklistUpdateModule, notificationFields, dynamicFiledUpdatefields) {
                     var workflowModel = {};
                     workflowModel.id = workflow.id;
                     workflowModel.created_by = workflow.created_by;
@@ -120,9 +120,7 @@ angular.module('primeapps')
 
                             switch (field.data_type) {
                                 case 'picklist':
-                                    var result = $filter('filter')(picklistsModule, { id: field.picklist_id }, true)[0];
-                                    if (result)
-                                        fieldValue = result['label_' + language];
+                                    fieldValue = $filter('filter')(picklistsModule[field.picklist_id], { labelStr: filter.value }, true)[0];
                                     break;
                                 case 'multiselect':
                                     var picklistItems = filter.value.split('|');
@@ -190,7 +188,7 @@ angular.module('primeapps')
 
                                 if (email === '[owner]') {
                                     var moduleObj = {};
-                                    moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    moduleObj.module = $filter('filter')(modules, { name: 'users' }, true)[0];
                                     moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
                                     moduleObj.isSameModule = false;
                                     moduleObj.systemName = null;
@@ -206,7 +204,7 @@ angular.module('primeapps')
                                 else {
                                     var moduleObj = {};
                                     if (email.indexOf('@') > -1) {
-                                        moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                        moduleObj.module = $filter('filter')(modules, { name: 'users' }, true)[0];
                                         moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
                                         moduleObj.isSameModule = false;
                                         moduleObj.systemName = null;
@@ -221,7 +219,7 @@ angular.module('primeapps')
                                         if (email.indexOf('.') > -1) {
                                             var lookupField = email.split('.');
                                             var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
-                                            var recipientModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                                            var recipientModule = $filter('filter')(modules, { name: lookupModule.lookup_type }, true)[0];
                                             var paramModule = $filter('filter')(notificationFields, { systemName: lookupField[0] }, true)[0];
                                             moduleObj.module = recipientModule;
                                             moduleObj.name = lookupModule['label_' + $rootScope.language] + ' ' + '(' + moduleObj.module['label_' + $rootScope.language + '_singular'] + ')';
@@ -254,7 +252,7 @@ angular.module('primeapps')
 
                                 if (email === '[owner]') {
                                     var moduleObj = {};
-                                    moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    moduleObj.module = $filter('filter')(modules, { name: 'users' }, true)[0];
                                     moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
                                     moduleObj.isSameModule = false;
                                     moduleObj.systemName = null;
@@ -269,7 +267,7 @@ angular.module('primeapps')
                                 else {
                                     var moduleObj = {};
                                     if (email.indexOf('@') > -1) {
-                                        moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                        moduleObj.module = $filter('filter')(modules, { name: 'users' }, true)[0];
                                         moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
                                         moduleObj.isSameModule = false;
                                         moduleObj.systemName = null;
@@ -285,7 +283,7 @@ angular.module('primeapps')
                                         if (email.indexOf('.') > -1) {
                                             var lookupField = email.split('.');
                                             var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
-                                            var ccModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                                            var ccModule = $filter('filter')(modules, { name: lookupModule.lookup_type }, true)[0];
                                             var paramModule = $filter('filter')(notificationFields, { systemName: lookupField[0] }, true)[0];
                                             moduleObj.module = ccModule;
                                             moduleObj.name = lookupModule['label_' + $rootScope.language] + ' ' + '(' + moduleObj.module['label_' + $rootScope.language + '_singular'] + ')';
@@ -318,7 +316,7 @@ angular.module('primeapps')
 
                                 if (email === '[owner]') {
                                     var moduleObj = {};
-                                    moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                    moduleObj.module = $filter('filter')(modules, { name: 'users' }, true)[0];
                                     moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
                                     moduleObj.isSameModule = false;
                                     moduleObj.systemName = null;
@@ -333,7 +331,7 @@ angular.module('primeapps')
                                 else {
                                     var moduleObj = {};
                                     if (email.indexOf('@') > -1) {
-                                        moduleObj.module = $filter('filter')($rootScope.modules, { name: 'users' }, true)[0];
+                                        moduleObj.module = $filter('filter')(modules, { name: 'users' }, true)[0];
                                         moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
                                         moduleObj.isSameModule = false;
                                         moduleObj.systemName = null;
@@ -349,7 +347,7 @@ angular.module('primeapps')
                                         if (email.indexOf('.') > -1) {
                                             var lookupField = email.split('.');
                                             var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
-                                            var bccModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
+                                            var bccModule = $filter('filter')(modules, { name: lookupModule.lookup_type }, true)[0];
                                             var paramModule = $filter('filter')(notificationFields, { systemName: lookupField[0] }, true)[0];
                                             moduleObj.module = bccModule;
                                             moduleObj.name = moduleObj.module['label_' + $rootScope.language + '_singular'];
@@ -441,7 +439,7 @@ angular.module('primeapps')
                                 firstModuleObj.id = $filter('filter')(notificationFields, { name: firstModuleObj.name }, true)[0].id;
                             } else {
                                 var firstMainModule = $filter('filter')(workflowModel.module.fields, { name: firstModule }, true)[0];
-                                var firstCurrentModule = $filter('filter')($rootScope.modules, { name: firstMainModule.lookup_type }, true)[0];
+                                var firstCurrentModule = $filter('filter')(modules, { name: firstMainModule.lookup_type }, true)[0];
                                 var firstParamModule = $filter('filter')(dynamicFiledUpdatefields, { systemName: firstModule }, true)[0];
                                 firstModuleObj.module = firstCurrentModule;
                                 firstModuleObj.name = firstMainModule['label_' + $rootScope.language] + ' ' + '(' + firstModuleObj.module['label_' + $rootScope.language + '_singular'] + ')';
@@ -459,7 +457,7 @@ angular.module('primeapps')
                             }
                             else {
                                 var secondMainModule = $filter('filter')(workflowModel.module.fields, { name: secondModule }, true)[0];
-                                var secondCurrentModule = $filter('filter')($rootScope.modules, { name: secondMainModule.lookup_type }, true)[0];
+                                var secondCurrentModule = $filter('filter')(modules, { name: secondMainModule.lookup_type }, true)[0];
                                 var secondParamModule = $filter('filter')(dynamicFiledUpdatefields, { systemName: secondModule }, true)[0];
                                 secondModuleObj.module = secondCurrentModule;
                                 secondModuleObj.name = secondMainModule['label_' + $rootScope.language] + ' ' + '(' + secondModuleObj.module['label_' + $rootScope.language + '_singular'] + ')';
@@ -474,7 +472,7 @@ angular.module('primeapps')
                             workflowModel.field_update.second_field = $filter('filter')(secondModuleObj.module.fields, { name: workflow.field_update.field }, true)[0];
                         } else {
                             workflowModel.field_update.updateOption = '1';
-                            workflowModel.field_update.module = $filter('filter')($rootScope.modules, { name: workflow.field_update.module }, true)[0];
+                            workflowModel.field_update.module = $filter('filter')(modules, { name: workflow.field_update.module }, true)[0];
                             workflowModel.field_update.field = $filter('filter')(workflowModel.field_update.module.fields, { name: workflow.field_update.field }, true)[0];
                             if (workflowModel.field_update.field.data_type === 'multiselect') {
                                 var picklistItems = workflow.field_update.value.split('|');

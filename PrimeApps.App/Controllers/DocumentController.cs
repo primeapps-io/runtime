@@ -565,7 +565,7 @@ namespace PrimeApps.App.Controllers
 
             if (UniqueFileName != null)
             {
-                AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
+               await AzureStorage.CommitFile(UniqueFileName, UniqueFileName, MimeType, "record-detail-" + TenantId, ChunkSize, _configuration);
                 return Ok(UniqueFileName);
             }
 

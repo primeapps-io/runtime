@@ -9,7 +9,7 @@
                 translate
                 }}
             </button>
-            <button type="submit" class="btn btn-radius btn-blue" ng-click="MinMaxValue()">
+            <button type="button" class="btn btn-radius btn-blue" ng-click="save();">
                 <i class="fa fa-check-circle pull-left"></i> {{'Common.Save' | translate}}
             </button>
         </div>
@@ -22,14 +22,15 @@
                     <ul class="nav bs-sidenav" bs-scrollspy-list>
                         <li><a ng-class="{'active':wizardStep==0}" ng-click="validate(workflowForm) ? wizardStep = 0 : false">{{'Setup.Workflow.RuleInformation' | translate}}</a></li>
                         <li><a ng-class="{'active':wizardStep==1}" ng-click="validate(workflowForm) ? wizardStep = 1 : false">{{'Setup.Workflow.FilterCriteria' | translate}}</a></li>
-                        <li><a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
-                        <ul>
-                            <li><a ng-class="{'active':tab==0}" ng-click="setFormValid(workflowForm) ? tab = 0 : false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
-                            <li><a ng-class="{'active':tab==1}" ng-click="setFormValid(workflowForm) ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>
-                            <li><a ng-class="{'active':tab==2}" ng-click="setFormValid(workflowForm) ? tab = 2 : false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
-                            <li><a ng-class="{'active':tab==3}" ng-click="setFormValid(workflowForm) ? tab = 2 : false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
-                             
-                        </ul>
+                        <li>
+                            <a ng-class="{'active':wizardStep==2}" ng-click="validate(workflowForm) ? wizardStep = 2 : false">{{'Setup.Workflow.Actions' | translate}}</a>
+                            <ul>
+                                <li><a ng-class="{'active':tab==0}" ng-click="validate(workflowForm) ? tab = 0 : false">{{'Setup.Workflow.SendNotification' | translate}}</a></li>
+                                <li><a ng-class="{'active':tab==1}" ng-click="validate(workflowForm) ? tab = 1 : false">{{'Setup.Workflow.AssignTask' | translate}}</a></li>
+                                <li><a ng-class="{'active':tab==2}" ng-click="validate(workflowForm) ? tab = 2 : false">{{'Setup.Workflow.FieldUpdate' | translate}}</a></li>
+                                <li><a ng-class="{'active':tab==3}" ng-click="validate(workflowForm) ? tab = 2 : false">{{'Setup.Workflow.WebHook' | translate}}</a></li>
+
+                            </ul>
                         </li>
                         <li><a ng-class="{'active':wizardStep==3}" ng-click="(lastStepClicked && workflowForm.$valid && validate(workflowForm) ? wizardStep = 3 : false); getSummary();">{{'Setup.Workflow.SummaryAndConfirmation' | translate}}</a></li>
                     </ul>
@@ -598,6 +599,7 @@
                                         <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.owner.$invalid}">
                                             <label class="col-sm-4"><span class="required-field">*</span> {{taskFields.owner['label_' + language]}}:</label>
                                             <tags-input name="owner"
+                                                        class="form-control"
                                                         ng-model="workflowModel.create_task.owner"
                                                         display-property="full_name"
                                                         key-property="id"
@@ -729,7 +731,7 @@
                                                             name="firstModule"
                                                             tabindex="1"
                                                             required
-                                                            ng-model="workflowModel.field_update.firstModule"
+                                                            ng-model="workflowModel.field_update.firstModule.module"
                                                             ng-change="updateModuleChanged(); setFormValid(workflowForm);"
                                                             ng-options="o as o.name for o in dynamicfieldUpdateModules | filter:{display:'!false'}:true | orderNotZero track by o.id">
                                                         <option value="">{{'Common.Select' | translate}}</option>
@@ -766,7 +768,7 @@
                                                             name="secondModule"
                                                             tabindex="1"
                                                             required
-                                                            ng-model="workflowModel.field_update.secondModule"
+                                                            ng-model="workflowModel.field_update.secondModule.module"
                                                             ng-change="updateModuleChanged(); setFormValid(workflowForm);"
                                                             ng-options="o as o.name for o in dynamicfieldUpdateModules | filter:{display:'!false'}:true | orderNotZero track by o.id">
                                                         <option value="">{{'Common.Select' | translate}}</option>
@@ -838,7 +840,7 @@
                                                         required
                                                         ng-model="workflowModel.field_update.module"
                                                         ng-change="updateModuleChanged(); setFormValid(workflowForm);"
-                                                        ng-options="o as o['label_' + language + '_singular'] for o in updatableModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
+                                                        ng-options="o as o['label_' + language + '_singular'] for o in updatableModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
                                                     <option value="">{{'Common.Select' | translate}}</option>
                                                 </select>
                                             </div>
@@ -1224,7 +1226,7 @@
 
                                     <div class="form-group text-right">
                                         <button type="button" class="btn btn-primary btn-w-sm"
-                                                ng-click="validate(workflowForm) ? $parent.wizardStep = 3 : false;">
+                                                ng-click="validate(workflowForm) ? $parent.wizardStep = 3 : false; getSummary();">
                                             <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>
                                             {{'Common.Next' | translate}}
                                         </button>
