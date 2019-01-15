@@ -12,7 +12,6 @@ angular.module('primeapps').controller('LayoutController', ['$rootScope', '$scop
             else {
                 $scope.$apply(function () {
                     $scope.toggleClass = '';
-                    $rootScope.subtoggleClass = '';
                 });
             }
         });

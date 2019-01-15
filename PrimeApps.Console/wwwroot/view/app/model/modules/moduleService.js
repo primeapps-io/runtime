@@ -12,9 +12,187 @@ angular.module('primeapps')
                     return $http.post(config.apiUrl + 'module/find', data);
                 },
                 getModules: function () {
-                    return $http.get(config.apiUrl + 'module/get_all');
+                    var deferred = $q.defer();
+                    var promises = [];
+                    promises.push($http.get(config.apiUrl + 'module/get_all'));
+                    $q.all(promises)
+                        .then(function (response) {
+                            if (response[0].status != 200) {
+                                deferred.resolve(false);
+                                return deferred.promise;
+                            }
+                        })
                 },
+                getTemplateSection: function () {
+                    return {
+                        "column_count": 2,
+                        "label_en": '',
+                        "label_tr": '',
+                        "display_form": '',
+                        "display_detail": '',
+                        "deleted": false,
+                        "showPermissionWarning": false,
+                        "permissions": [],
+                        "order": 0,
+                        "isNew": true,
+                        "fields": [
+                            {
+                                "label": "all 12"
 
+                            }
+                        ],
+
+                        "name": "Section 1 "
+                    };
+                },
+                getTemplateSections: function () {
+
+                },
+                getTemplateFields: function () {
+                    return [
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Text (Single Line)",
+                            "label": "Text (Single Line)",
+                            "icon": "k-i-foreground-color"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Text (Multi Line)",
+                            "label": "Text (Multi Line)",
+                            "icon": "k-i-table-align-top-left"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Number",
+                            "label": "Number",
+                            "icon": "k-i-custom-format"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Number (Auto) ",
+                            "label": "Number (Auto) ",
+                            "icon": "k-i-list-numbered"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Number (Decimal) ",
+                            "label": "Number (Decimal) ",
+                            "icon": "k-i-decimal-decrease"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Currency ",
+                            "label": "Currency ",
+                            "icon": "k-i-dollar"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Date ",
+                            "label": "Date ",
+                            "icon": "k-i-calendar"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Date / Time ",
+                            "label": "Date / Time ",
+                            "icon": "k-i-calendar-date"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Time ",
+                            "label": "Time ",
+                            "icon": "k-i-clock"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "E-mail ",
+                            "label": "E-mail ",
+                            "icon": "k-i-email"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Pick List ",
+                            "label": "Pick List ",
+                            "icon": "k-i-list-unordered"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Multi Select ",
+                            "label": "Multi Select ",
+                            "icon": "k-i-select-box"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Lookup ",
+                            "label": "Lookup ",
+                            "icon": "k-i-search"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Check Box",
+                            "label": "Check Box",
+                            "icon": "k-i-checkbox-checked"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Document",
+                            "label": "Document",
+                            "icon": "k-i-file"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Url",
+                            "label": "Url",
+                            "icon": "k-i-link-horizontal"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Location",
+                            "label": "Location",
+                            "icon": "k-i-marker-pin-target"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Image",
+                            "label": "Image",
+                            "icon": "k-i-image"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Rating",
+                            "label": "Rating",
+                            "icon": "k-i-star-outline"
+                        },
+                        {
+                            "type": "item",
+                            "order": 0,
+                            "label_tr": "Combination",
+                            "label": "Combination",
+                            "icon": "k-i-hyperlink-open-sm"
+                        }
+
+                    ]
+                },
                 getDataTypes: function () {
                     $rootScope.dataTypesExtended = angular.copy(dataTypes);
 
@@ -79,7 +257,7 @@ angular.module('primeapps')
                 getPicklist: function (id) {
                     if (id >= 900000) {
                         var deffered = $q.defer();
-                        deffered.resolve({ data: { items: [] } });
+                        deffered.resolve({data: {items: []}});
                         return deffered.promise;
                     }
 
@@ -562,8 +740,8 @@ angular.module('primeapps')
                     section1.display_detail = true;
                     section1.deleted = false;
                     section1.columns = [];
-                    section1.columns.push({ no: 1 });
-                    section1.columns.push({ no: 2 });
+                    section1.columns.push({no: 1});
+                    section1.columns.push({no: 2});
 
                     module.sections.push(section1);
 
@@ -578,8 +756,8 @@ angular.module('primeapps')
                     section2.display_detail = true;
                     section2.deleted = false;
                     section2.columns = [];
-                    section2.columns.push({ no: 1 });
-                    section2.columns.push({ no: 2 });
+                    section2.columns.push({no: 1});
+                    section2.columns.push({no: 2});
 
                     module.sections.push(section2);
 
@@ -849,7 +1027,7 @@ angular.module('primeapps')
                             var findMatch = module.name.match(/(\D+)?\d/);
                             var index = findMatch ? findMatch[0].length - 1 : -1;
                             var newModuleName = index === 0 ? 'n' + module.name : module.name; // if first index value === 0, its starts_with number
-                            var existingModule = $filter('filter')(allModules, { name: newModuleName }, true)[0];
+                            var existingModule = $filter('filter')(allModules, {name: newModuleName}, true)[0];
 
                             if (!existingModule)
                                 break;
@@ -874,14 +1052,14 @@ angular.module('primeapps')
                         if (section.name.indexOf('custom_section') > -1) {
                             var newSectionName = helper.getSlug(section['label_' + $rootScope.language]);
 
-                            var sectionFields = $filter('filter')(module.fields, { section: section.name }, true);
+                            var sectionFields = $filter('filter')(module.fields, {section: section.name}, true);
 
                             angular.forEach(sectionFields, function (sectionField) {
                                 sectionField.section = newSectionName;
                             });
 
                             var cleanSlug = angular.copy(newSectionName);
-                            var existingSection = $filter('filter')(module.sections, { name: cleanSlug }, true)[0];
+                            var existingSection = $filter('filter')(module.sections, {name: cleanSlug}, true)[0];
 
                             if (existingSection) {
                                 do {
@@ -907,7 +1085,7 @@ angular.module('primeapps')
                                     else
                                         newSlug = cleanSlug + 2;
 
-                                    existingSection = $filter('filter')(module.sections, { name: newSlug }, true)[0];
+                                    existingSection = $filter('filter')(module.sections, {name: newSlug}, true)[0];
 
                                     if (!existingSection)
                                         section.name = newSlug;
@@ -941,12 +1119,12 @@ angular.module('primeapps')
                             var field2Name = field.combinationField2;
 
                             if (field1Name.indexOf('custom_field') > -1) {
-                                var field1 = $filter('filter')(module.fields, { name: field1Name }, true)[0];
+                                var field1 = $filter('filter')(module.fields, {name: field1Name}, true)[0];
                                 field1Name = helper.getSlug(field1['label_' + $rootScope.language]);
                             }
 
                             if (field2Name.indexOf('custom_field') > -1) {
-                                var field2 = $filter('filter')(module.fields, { name: field2Name }, true)[0];
+                                var field2 = $filter('filter')(module.fields, {name: field2Name}, true)[0];
                                 field2Name = helper.getSlug(field2['label_' + $rootScope.language]);
                             }
 
@@ -978,7 +1156,7 @@ angular.module('primeapps')
                         }
 
                         if (field.unique_combine && field.unique_combine.indexOf('custom_field') > -1) {
-                            var combinationField = $filter('filter')(module.fields, { name: field.unique_combine }, true)[0];
+                            var combinationField = $filter('filter')(module.fields, {name: field.unique_combine}, true)[0];
                             field.unique_combine = helper.getSlug(combinationField['label_' + $rootScope.language]);
                         }
 
@@ -1043,7 +1221,7 @@ angular.module('primeapps')
                                 slug = slug + '_c';
 
                             var cleanSlug = angular.copy(slug);
-                            var existingField = $filter('filter')(module.fields, { name: slug }, true)[0];
+                            var existingField = $filter('filter')(module.fields, {name: slug}, true)[0];
 
                             if (existingField) {
                                 do {
@@ -1069,7 +1247,7 @@ angular.module('primeapps')
                                     else
                                         newSlug = cleanSlug + 2;
 
-                                    existingField = $filter('filter')(module.fields, { name: newSlug }, true)[0];
+                                    existingField = $filter('filter')(module.fields, {name: newSlug}, true)[0];
 
                                     if (!existingField)
                                         field.name = newSlug;
@@ -1130,7 +1308,7 @@ angular.module('primeapps')
 
                     angular.forEach(moduleFields, function (field) {
                         if (field.data_type === 'lookup' && field.lookup_type != 'relation') {
-                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0]);
+                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0]);
                             seperatorLookupOrder += 100;
                             if (lookupModule === null || lookupModule === undefined) return;
                             var seperatorFieldLookup = {};
@@ -1146,7 +1324,7 @@ angular.module('primeapps')
                             moduleFields.push(seperatorFieldLookup);
 
                             var lookupModuleFields = angular.copy(lookupModule.fields);
-                            lookupModuleFields = $filter('filter')(lookupModuleFields, { display_list: true }, true);
+                            lookupModuleFields = $filter('filter')(lookupModuleFields, {display_list: true}, true);
 
                             angular.forEach(lookupModuleFields, function (fieldLookup) {
                                 if (fieldLookup.data_type === 'lookup')
@@ -1170,7 +1348,7 @@ angular.module('primeapps')
                         if (module.display_fields) {
                             var selectedFieldName = $filter('filter')(module.display_fields, field.name, true)[0];
                             if (selectedFieldName) {
-                                selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
+                                selectedField = $filter('filter')(moduleFields, {"name": selectedFieldName}, true)[0];
                             }
                         }
                         ;
@@ -1190,7 +1368,7 @@ angular.module('primeapps')
                             fields.selectedFields.push(newField);
                         }
                         else {
-                            var primaryField = $filter('filter')(moduleFields, { primary: true }, true)[0];
+                            var primaryField = $filter('filter')(moduleFields, {primary: true}, true)[0];
 
                             if (field.name != primaryField.name)
                                 fields.availableFields.push(newField);
@@ -1213,7 +1391,7 @@ angular.module('primeapps')
 
                 processRelations: function (relations) {
                     angular.forEach(relations, function (relation) {
-                        var relatedModule = $filter('filter')($rootScope.modules, { name: relation.related_module }, true)[0];
+                        var relatedModule = $filter('filter')($rootScope.modules, {name: relation.related_module}, true)[0];
 
                         if (!relatedModule || relatedModule.order === 0) {
                             relation.deleted = true;
@@ -1222,7 +1400,10 @@ angular.module('primeapps')
 
                         relation.relatedModule = relatedModule;
 
-                        var relationField = $filter('filter')(relatedModule.fields, { name: relation.relation_field, deleted: false }, true)[0];
+                        var relationField = $filter('filter')(relatedModule.fields, {
+                            name: relation.relation_field,
+                            deleted: false
+                        }, true)[0];
 
                         if (!relationField && relation.relation_type === 'one_to_many') {
                             relation.deleted = true;
@@ -1267,8 +1448,14 @@ angular.module('primeapps')
 
                     angular.forEach(module.dependencies, function (dependency) {
                         dependency.type = dependency.dependency_type;
-                        dependency.parentField = $filter('filter')(module.fields, { name: dependency.parent_field, deleted: '!true' })[0];
-                        dependency.childField = $filter('filter')(module.fields, { name: dependency.child_field, deleted: '!true' })[0];
+                        dependency.parentField = $filter('filter')(module.fields, {
+                            name: dependency.parent_field,
+                            deleted: '!true'
+                        })[0];
+                        dependency.childField = $filter('filter')(module.fields, {
+                            name: dependency.child_field,
+                            deleted: '!true'
+                        })[0];
                         dependency.sectionField = $filter('filter')(module.sections, {
                             name: dependency.child_section,
                             deleted: '!true'
