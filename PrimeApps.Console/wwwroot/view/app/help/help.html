@@ -14,7 +14,6 @@
                     <th>{{'Setup.HelpGuide.HelpScreenName' | translate}}</th>
                     <th>Yardım Ekranı Türü</th>
                     <th>{{'Setup.HelpGuide.HelpScreenRelation' | translate}}</th>
-                    <th>{{'Setup.HelpGuide.Status' | translate}}</th>
                     <th style="min-width: 110px;"></th>
                 </tr>
             </thead>
@@ -23,11 +22,9 @@
                     <td>{{helpside.name}}</td>
                     <td>{{helpside.type}}</td>
                     <td>{{helpside.binding}}</td>
-                    <td ng-if="helpside.show_type==='publish'">{{'Setup.HelpGuide.PublishStatus' | translate}}</td>
-                    <td ng-if="helpside.show_type==='draft'">{{'Setup.HelpGuide.DraftStatus' | translate}}</td>
                     <td class="text-right">
-                        <button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(helpside)">{{'Common.Edit' | translate}}</button>
-                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left" action="delete(helpside.id)" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
+                        <button type="button" class="btn btn-xs btn-custom" ng-click="helpEdit(helpside)">{{'Common.Edit' | translate}}</button>
+                        <button type="button" class="btn btn-xs btn-custom" confirm-click data-placement="left" action="delete(helpside)" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>
                     </td>
                 </tr>
             </tbody>

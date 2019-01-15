@@ -68,7 +68,7 @@
                                     <div class="col-sm-5">
                                     </div>
                                     <div class="col-sm-7 pull-right">
-                                        <div ng-show="helpModalObj.selectHelp==='detail' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
+                                        <div ng-show="helpModalObj.selectHelp==='list' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
                                             <select class="form-control pull-left"
                                                     ng-model="helpModalObj.modulePicklist"
                                                     ng-disabled="editDisable"
@@ -76,16 +76,16 @@
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
                                         </div>
-                                        <div ng-show="helpModalObj.selectHelp==='form' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
-                                            <select class="form-control"
+                                        <div ng-show="helpModalObj.selectHelp==='detail' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
+                                            <select class="form-control pull-left"
                                                     ng-model="helpModalObj.moduleDetail"
                                                     ng-disabled="editDisable"
                                                     ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
                                         </div>
-                                        <div ng-show="helpModalObj.selectHelp==='list' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
-                                            <select class="form-control"
+                                        <div ng-show="helpModalObj.selectHelp==='form' && helpModalObj.selectHelpRelation!= 'other' && helpModalObj.selectHelpRelation!= 'any'">
+                                            <select class="form-control pull-left"
                                                     ng-model="helpModalObj.moduleForm"
                                                     ng-disabled="editDisable"
                                                     ng-options="o as o['label_' + language + '_singular'] for o in moduleFilter | filter:{display:'!false'}:true | orderNotZero | orderBy:'order'">
@@ -96,7 +96,7 @@
                                             <select class="form-control"
                                                     ng-model="helpModalObj.routeModules"
                                                     ng-disabled="editDisable"
-                                                    ng-options="item.name for item in helpModalObj.routeModuleSide">
+                                                    ng-options="item.name for item in routeModule">
                                                 <option value="">{{'Common.Select' | translate}}</option>
                                             </select>
                                         </div>
