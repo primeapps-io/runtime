@@ -878,6 +878,21 @@ angular.module('primeapps')
                 });
             };
 
+            $scope.showFormSideModal = function (template) {
+                $scope.template = template;
+                $scope.addNewHelpFormSideModal = $scope.addNewHelpFormSideModal || $modal({
+                        scope: $scope,
+                        templateUrl: 'view/app/help/helpPageSide.html',
+                        animation: 'am-fade-and-slide-right',
+                        backdrop: 'static',
+                        show: false
+                    });
+
+                $scope.addNewHelpFormSideModal.$promise.then(function () {
+                    $scope.addNewHelpFormSideModal.show();
+                });
+            };
+
             $scope.delete = function (id) {
                 HelpService.delete(id)
                     .then(function () {

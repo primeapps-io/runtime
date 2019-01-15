@@ -2,14 +2,11 @@
     <form name="HelpPage" class="form-horizontal form-custom" autocomplete="off" novalidate>
         <div class="modal-header">
             <div class="col-sm-6">
-                <h4 class="modal-title">Tanıtım Ekranı Ekle</h4>
+                <h4 class="modal-title">Yardım Ekranı Ekle</h4>
             </div>
             <div class="col-sm-6 col-sm-rigth">
-                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" style="margin-right:5px" ng-click="addNewHelpFormModal.hide();">
+                <button type="button" class="btn btn-radius btn-gray " ng-disabled="saving" style="margin-right:5px" ng-click="addNewHelpFormSideModal.hide();">
                     <i class="fas fa-times"></i>{{'Common.Cancel' | translate}}
-                </button>
-                <button type="button" class="btn btn-radius btn-danger" ng-show="helpTemplates" action="templateDelete()" confirm-click placement="bottom" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}" title="{{'Common.Delete' | translate}}">
-                    {{'Template.TemplateDelete' | translate}}
                 </button>
                 <button type="submit" class="btn btn-radius btn-blue"  ng-click="helpModalSave()" style="margin-left: 5px" ladda="saving" ng-disabled="saving">
                     <i class="fas fa-save"></i>{{'Common.Save' | translate}}
