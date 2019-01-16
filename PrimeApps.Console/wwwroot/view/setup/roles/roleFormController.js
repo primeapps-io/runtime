@@ -22,8 +22,8 @@ angular.module('primeapps')
 
                     if ($scope.id) {
                         $scope.role = $filter('filter')($scope.allRoles, { id: $scope.id }, true)[0];
-                        $scope.role.label = $scope.role['label_' + $rootScope.language];
-                        $scope.role.description = $scope.role['description_' + $rootScope.language];
+                        $scope.role.label = $scope.role['label_' + $scope.language];
+                        $scope.role.description = $scope.role['description_' + $scope.language];
 
                         if (!$scope.role.master) {
                             $scope.role.reports_to = $filter('filter')($scope.allRoles, { id: $scope.role.reports_to }, true)[0].id;
