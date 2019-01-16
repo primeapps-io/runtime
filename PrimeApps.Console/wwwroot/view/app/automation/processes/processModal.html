@@ -26,9 +26,558 @@
                 </ul>
             </div>
             <div class="col-sm-10">
-                <form name="workflowForm" ng-submit="save()" class="form-horizontal form-custom" autocomplete="off" novalidate>
+                <form name="$parent.workflowForm" ng-submit="save()" class="form-horizontal form-custom" autocomplete="off" novalidate>
                     <div id="field-form-body" class="modal-body">
-                    
+                        <div class="section" ng-show="wizardStep == 0">
+                            <h4>{{'Setup.Workflow.ApprovelProcess.RuleInformation' | translate}}</h4>
+                            <div class="panel">
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.workflowName.$invalid}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.Name' | translate}}:</label>
+                                    <input name="workflowName" class="form-control" maxlength="200" required ng-model="workflowModel.name" />
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.module.$invalid}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.Module' | translate}}:</label>
+                                    <select class="form-control"
+                                            name="module"
+                                            required
+                                            ng-model="workflowModel.module"
+                                            ng-change="selectModule(workflowModel.module)"
+                                            ng-disabled="id"
+                                            ng-options="o as o['label_' + language + '_singular'] for o in filteredModules | filter:{display:'!false'}:true | orderNotZero | orderBy:'order' track by o.id">
+                                        <option value="">{{'Common.Select' | translate}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.user.$invalid}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.User' | translate}}</label>
+                                    <select ng-disabled="isEdit || isChosenModule" class="form-control"
+                                            name="user"validateOperations()
+                                            tabindex="1"
+                                            required
+                                            ng-model="workflowModel.user"
+                                            ng-options="o.id as o.email for o in users">
+                                        <option value="">{{'Setup.Workflow.ApprovelProcess.SelectUser' | translate}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4">{{'Setup.Workflow.Status' | translate}}:</label>
+                                    <label class="checkbox-inline">
+                                        <input ng-disabled="!allowEdit" type="checkbox" ng-model="workflowModel.active"> {{'Common.Active' | translate}}
+                                    </label>
+                                </div>
+                                <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.$error.operations}">
+                                    <label class="col-sm-4"><span class="required-field">*</span> {{'Setup.Workflow.RuleTrigger' | translate}}:</label>
+                                    <label class="checkbox-inline">
+                                        <input ng-disabled="isEdit" name="operation" type="checkbox" ng-model="workflowModel.operation.insert" ng-change="validateOperations(workflowForm)"><span ng-bind-html="'Setup.Workflow.RuleTriggers.insertLabel' | translate"></span>
+                                    </label><br>
+                                    <label class="checkbox-inline">
+                                        <input ng-disabled="isEdit" name="operation" type="checkbox" ng-model="workflowModel.operation.update" ng-change="validateOperations(workflowForm)"><span ng-bind-html="'Setup.Workflow.RuleTriggers.updateLabel' | translate"></span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label"><span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.TriggerTime' | translate}}:</label>
+                                    <label class="radio-inline">
+                                        <input ng-disabled="isEdit" name="triggerTime" type="radio" value="instant" ng-model="workflowModel.trigger_time" ng-change="validateOperations(workflowForm)">{{'Setup.Workflow.ApprovelProcess.Instant' | translate}}</span>
+                                    </label><br>
+                                    <label class="radio-inline">
+                                        <input ng-disabled="isEdit" name="triggerTime" type="radio" value="manuel" ng-model="workflowModel.trigger_time" ng-change="validateOperations(workflowForm)">{{'Setup.Workflow.ApprovelProcess.Manuel' | translate}}</span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-4">{{'Setup.Workflow.ApprovelProcess.ProfileAuthorization' | translate}}: </label>
+                                    <tags-input name="profiles"
+                                                style="max-width: 300px !important;"
+                                                tabindex="999"
+                                                ng-model="workflowModel.profiles"
+                                                display-property="name"
+                                                key-property="id"
+                                                placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                replace-spaces-with-dashes="false"
+                                                add-from-autocomplete-only="true"
+                                                min-length="1"
+                                                ng-required="false">
+                                        <auto-complete source="multiselectProfiles()"
+                                                       min-length="0"
+                                                       load-on-focus="true"
+                                                       load-on-empty="true"
+                                                       max-results-to-show="9999"></auto-complete>
+                                    </tags-input>
+                                </div>
+                                <div class="form-group" ng-show="workflowModel.operation == 'update'">
+                                    <label class="col-sm-4">{{'Setup.Workflow.ExecutionFrequency' | translate}}:</label>
+                                    <label class="radio-inline">
+                                        <input name="frequency" type="radio" ng-model="workflowModel.frequency" value="one_time">
+                                        {{'Setup.Workflow.ExecutionFrequencies.OneTime' | translate}}
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input name="frequency" type="radio" ng-model="workflowModel.frequency" value="continuous">
+                                        {{'Setup.Workflow.ExecutionFrequencies.Continuous' | translate}}
+                                    </label>
+                                </div>
+                                <div class="form-group" ng-show="workflowForm.$submitted && (workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.user.$error.required)">
+                                    <div class="callout callout-danger">
+                                        <p ng-if="workflowForm.workflowName.$error.required || workflowForm.module.$error.required || workflowForm.user.$error.required">{{'Module.RequiredError' | translate}}</p>
+                                    </div>
+                                </div>
+                                <div class="callout callout-info">
+                                    <p style="font-weight: 500;">{{'Common.Tips' | translate}}</p>
+                                    <p> - {{'Setup.Workflow.ApprovelProcess.Tip1' | translate}}</p>
+                                    <p> - {{'Setup.Workflow.ApprovelProcess.Tip2' | translate}}</p>
+                                </div>
+
+                                <div class="wizard-buttons text-right">
+                                    <button type="button" class="btn btn-custom">{{'Common.Cancel' | translate}}</button>
+                                    <button type="button" class="btn btn-primary btn-w-sm"
+                                            ng-click="validate(workflowForm) ? wizardStep = 1 : false;">
+                                        <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section" ng-show="wizardStep == 1">
+                            <h4>{{'Setup.Workflow.FilterCriteria' | translate}}</h4>
+                            <div class="panel">
+                                <div ng-if="loadingFilter" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+                                <div ng-show="!loadingFilter">
+                                    <table class="filter-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="padding-left: 5px; padding-right: 10px;">{{'View.No' | translate}}</th>
+                                                <th>{{'View.Field' | translate}}</th>
+                                                <th>{{'View.Operator' | translate}}</th>
+                                                <th>{{'View.Value' | translate}}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="filter in filters">
+                                                <td>
+                                                    <span class="filter-no">{{filter.no}}.</span>
+                                                </td>
+                                                <td>
+                                                    <select id="field"
+                                                            name="field"
+                                                            class="form-control"
+                                                            ng-options="o as o['label_' + language] for o in module.fields | filter:{deleted:'!true'} | orderBy:'order' track by o.name"
+                                                            ng-change="filter.value = null; filter.operator = null; filter.disabled = false;"
+                                                            ng-model="filter.field">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select id="operator"
+                                                            name="operator"
+                                                            class="form-control"
+                                                            ng-options="o as o.label[language] for o in filter.field.operators | orderBy:'order' track by o.order"
+                                                            ng-change="operatorChanged(filter.field, $index)"
+                                                            ng-model="filter.operator">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="100"
+                                                           ng-if="filter.field.data_type === 'text_single' || filter.field.data_type === 'text_multi' || filter.field.data_type === 'email' || filter.field.data_type === undefined" />
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="50"
+                                                           numeric
+                                                           ng-if="filter.field.data_type === 'number' || filter.field.data_type === 'number_auto'" />
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="19"
+                                                           places="filter.field.decimal_places || 2"
+                                                           number-decimal
+                                                           ng-if="filter.field.data_type === 'number_decimal'" />
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           maxlength="50"
+                                                           places="filter.field.decimal_places || 2"
+                                                           currency-symbol="filter.field.currency_symbol"
+                                                           number-currency
+                                                           ng-if="filter.field.data_type === 'currency'" />
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           data-autoclose="1"
+                                                           data-date-type="iso"
+                                                           data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
+                                                           data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
+                                                           data-icon-left="fa fa-chevron-left"
+                                                           data-icon-right="fa fa-chevron-right"
+                                                           data-placement="bottom-right"
+                                                           bs-datepicker
+                                                           ng-if="filter.field.data_type === 'date'">
+
+                                                    <div class="clearfix datetime-pick" ng-if="filter.field.data_type === 'date_time'">
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled date-pick"
+                                                               ng-model="filter.value"
+                                                               ng-change="dateTimeChanged(filter.field)"
+                                                               ng-disabled="filter.disabled"
+                                                               placeholder="{{'Common.Date' | translate}}"
+                                                               data-autoclose="1"
+                                                               data-date-type="iso"
+                                                               data-min-date="{{(filter.field.validation.min ? (filter.field.validation.min === 'today' ? currentDayMin : filter.field.validation.min) : undefined)}}"
+                                                               data-max-date="{{(filter.field.validation.max ? (filter.field.validation.max === 'today' ? currentDayMax : filter.field.validation.max) : undefined)}}"
+                                                               data-icon-left="fa fa-chevron-left"
+                                                               data-icon-right="fa fa-chevron-right"
+                                                               data-placement="bottom-right"
+                                                               bs-datepicker>
+                                                        <input type="text"
+                                                               class="form-control ng-animate-disabled time-pick"
+                                                               ng-model="filter.value"
+                                                               ng-disabled="!filter.value"
+                                                               placeholder="{{'Common.Time' | translate}}"
+                                                               data-autoclose="1"
+                                                               data-time-type="iso"
+                                                               data-icon-up="fa fa-chevron-up"
+                                                               data-icon-down="fa fa-chevron-down"
+                                                               data-length="1"
+                                                               data-minute-step="10"
+                                                               data-arrow-behavior="picker"
+                                                               data-placement="bottom-right"
+                                                               bs-timepicker>
+                                                    </div>
+
+                                                    <input type="text"
+                                                           class="form-control ng-animate-disabled"
+                                                           ng-model="filter.value"
+                                                           ng-disabled="filter.disabled"
+                                                           placeholder="{{'Common.Time' | translate}}"
+                                                           data-autoclose="1"
+                                                           data-time-type="iso"
+                                                           data-icon-up="fa fa-chevron-up"
+                                                           data-icon-down="fa fa-chevron-down"
+                                                           data-length="1"
+                                                           data-minute-step="10"
+                                                           data-arrow-behavior="picker"
+                                                           data-placement="bottom-right"
+                                                           bs-timepicker
+                                                           ng-if="filter.field.data_type === 'time'">
+
+                                                    <input-stars ng-if="filter.field.data_type === 'rating'"
+                                                                 max="{{filter.field.validation.min_length}}"
+                                                                 allow-half
+                                                                 icon-base="fa fa-fw"
+                                                                 icon-empty="fa-star-o"
+                                                                 icon-half="fa-star-half-o"
+                                                                 icon-full="fa-star"
+                                                                 icon-hover-full="fa-star"
+                                                                 ng-model="filter.value"></input-stars>
+
+                                                    <select class="form-control ng-animate-disabled"
+                                                            ng-model="filter.value"
+                                                            ng-disabled="filter.disabled"
+                                                            ng-options="o as o.label[language] for o in modulePicklists[filter.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
+                                                            ng-if="filter.field.data_type === 'picklist'">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+
+                                                    <tags-input class="ng-animate-disabled"
+                                                                ng-model="filter.value"
+                                                                display-property="labelStr"
+                                                                key-property="id"
+                                                                placeholder="{{'Common.MultiselectPlaceholder' | translate}}"
+                                                                replace-spaces-with-dashes="false"
+                                                                add-from-autocomplete-only="true"
+                                                                ng-if="filter.field.data_type === 'multiselect'">
+                                                        <auto-complete source="multiselect($query, filter.field)"
+                                                                       min-length="0"
+                                                                       load-on-focus="true"
+                                                                       load-on-empty="true"
+                                                                       max-results-to-show="9999"></auto-complete>
+                                                    </tags-input>
+
+                                                    <select class="form-control ng-animate-disabled"
+                                                            ng-model="filter.value"
+                                                            ng-options="o as o.label[language] for o in modulePicklists['yes_no'] track by o.id"
+                                                            ng-if="filter.field.data_type === 'checkbox'">
+                                                        <option value="">{{'Common.Select' | translate}}</option>
+                                                    </select>
+
+                                                    <tags-input ng-model="filter.value"
+                                                                display-property="full_name"
+                                                                key-property="id"
+                                                                min-tags="1"
+                                                                max-tags="1"
+                                                                placeholder="{{'Common.Search' | translate}}"
+                                                                replace-spaces-with-dashes="false"
+                                                                add-from-autocomplete-only="true"
+                                                                ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type === 'users'">
+                                                        <auto-complete source="lookupUser($query, 'logged_in_user')"
+                                                                       min-length="0"
+                                                                       load-on-focus="true"
+                                                                       load-on-empty="true"
+                                                                       max-results-to-show="9999"></auto-complete>
+                                                    </tags-input>
+
+                                                    <!--Create new input above. angucomplete-alt must be at the bottom of the form-->
+                                                    <input type="text" class="form-control ng-animate-disabled" disabled
+                                                           ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && filter.disabled" />
+
+                                                    <angucomplete-alt input-name="{{'filterLookup' + filter.no}}"
+                                                                      id="{{'filterLookup' + filter.no}}"
+                                                                      input-class="form-control"
+                                                                      match-class="highlight-angucomplete"
+                                                                      pause="200"
+                                                                      selected-object="filter.value"
+                                                                      initial-value="filter.value"
+                                                                      remote-api-handler="lookup"
+                                                                      search-fields="name"
+                                                                      title-field="primary_value"
+                                                                      minlength="1"
+                                                                      template-url="view/common/angucomplete.html"
+                                                                      focus-in="setCurrentLookupField(filter.field)"
+                                                                      use-original-object="true"
+                                                                      text-searching="{{'Common.Searching' | translate}}"
+                                                                      text-no-results="{{'Common.NoResults' | translate}}"
+                                                                      ng-if="filter.field.data_type === 'lookup' && filter.field.lookup_type != 'users' && !filter.disabled" />
+                                                    <!--Don't add new input below angucomplete-alt. Add above angucomplete-alt-->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="wizard-buttons text-right">
+                                    <button type="button" ng-click="cancel();" class="btn btn-custom">{{'Common.Cancel' | translate}}</button>
+                                    <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 0">
+                                        <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous' | translate }}
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 2">
+                                        <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section" ng-show="wizardStep == 2">
+                            <h4>{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</h4>
+                            <div class="panel">
+                                <div class="form-group"
+                                     ng-class="{'has-error': workflowForm.$submitted && workflowForm.approverType.$invalid}">
+                                    <label class="col-sm-2 control-label text-left">
+                                        <span class="required-field">*</span>{{'Setup.Workflow.ApprovelProcess.ApproverType' | translate}}:
+                                    </label>
+                                    <select ng-disabled="isEdit"
+                                            class="form-control"
+                                            name="approverType"
+                                            tabindex="1"
+                                            required
+                                            ng-change="approverTypeChanged()"
+                                            ng-model="workflowModel.approver_type">
+                                        <option value="">{{'Setup.Workflow.ApprovelProcess.SelectApproverType' | translate}}</option>
+                                        <option value="dynamicApprover">{{'Setup.Workflow.ApprovelProcess.Dynamic' | translate}}</option>
+                                        <option value="staticApprover">{{'Setup.Workflow.ApprovelProcess.Static' | translate}}</option>
+                                    </select>
+                                </div>
+                                <div ng-if="workflowModel.approver_type == 'dynamicApprover'">
+                                    <div class="" style="margin-bottom: -25px"><label class="col-sm-offset-5 control-label">1. {{'Setup.Workflow.ApprovelProcess.Approver' | translate}}</label></div>
+                                    <hr>
+                                    <div class="form-group clearfix"
+                                         ng-class="{'has-error': workflowForm.$submitted && workflowForm.firstApproverModule.$invalid}">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.ApproverModule' | translate}}:
+                                        </label>
+                                        <select ng-disabled="isEdit"
+                                                class="form-control"
+                                                name="firstApproverModule"
+                                                tabindex="1"
+                                                required
+                                                ng-model="workflowModel.firstApproverModule"
+                                                ng-change="firstApproverModuleChanged()"
+                                                ng-options="o as o.name for o in dynamicprocessModules | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group clearfix"
+                                         ng-class="{'has-error': workflowForm.$submitted && workflowForm.firtApproverLookup.$invalid}"
+                                         ng-if="workflowModel.firstApproverModule">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>
+                                            {{'Setup.Workflow.ApprovelProcess.ApproverLookup' | translate}}:
+                                        </label>
+                                        <select ng-disabled="isEdit"
+                                                class="form-control"
+                                                name="firtApproverLookup"
+                                                tabindex="2"
+                                                required
+                                                ng-model="workflowModel.first_approver_lookup"
+                                                ng-change="updateFieldChanged(); firstApproverLookupChange(false);"
+                                                ng-options="o as o['label_' + language] for o in workflowModel.firstApproverModule.module.fields | filter:{data_type:'lookup', deleted:'!true'} | orderBy:'order' track by o.id">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group clearfix"
+                                         ng-class="{'has-error': workflowForm.$submitted && workflowForm.firtsApproverField.$invalid}"
+                                         ng-if="workflowModel.first_approver_lookup && workflowModel.firstApproverModule">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>
+                                            {{'Setup.Workflow.ApprovelProcess.ApproverEmailField' | translate}}:
+                                        </label>
+                                        <select ng-disabled="isEdit"
+                                                class="form-control"
+                                                name="firtsApproverField"
+                                                tabindex="3"
+                                                required
+                                                ng-model="workflowModel.first_approver_field"
+                                                ng-change="updateFieldChanged()"
+                                                ng-options="o as o['label_' + language] for o in firstDynamicApproverFields.fields | filter:{data_type:'email', deleted:'!true'} | orderBy:'order' track by o.name">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="" style="margin-bottom: -25px"><label class="col-sm-offset-5 control-label">2. {{'Setup.Workflow.ApprovelProcess.Approver' | translate}}</label></div>
+                                    <hr>
+                                    <div class="form-group clearfix">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">*</span> {{'Setup.Workflow.ApprovelProcess.ApproverModule' | translate}}:
+                                        </label>
+                                        <select ng-disabled="isEdit || !workflowModel.first_approver_field"
+                                                class="form-control"
+                                                name="secondApproverModule"
+                                                tabindex="1"
+                                                required
+                                                ng-model="workflowModel.secondApproverModule"
+                                                ng-change="secondApproverModuleChanged()"
+                                                ng-options="o as o.name for o in dynamicprocessModules | filter:{display:'!false'}:true | orderNotZero track by o.id">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group clearfix"
+                                         ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondApproverLookup.$invalid}"
+                                         ng-if="workflowModel.secondApproverModule">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>
+                                            {{'Setup.Workflow.ApprovelProcess.ApproverLookup' | translate}}:
+                                        </label>
+                                        <select ng-disabled="isEdit"
+                                                class="form-control"
+                                                name="secondApproverLookup"
+                                                tabindex="2"
+                                                required
+                                                ng-model="workflowModel.second_approver_lookup"
+                                                ng-change="updateFieldChanged(); secondApproverLookupChange(false);"
+                                                ng-options="o as o['label_' + language] for o in workflowModel.secondApproverModule.module.fields | filter:{data_type:'lookup', deleted:'!true'} | orderBy:'order' track by o.id">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group clearfix"
+                                         ng-class="{'has-error': workflowForm.$submitted && workflowForm.secondApproverField.$invalid}"
+                                         ng-if="workflowModel.second_approver_lookup && workflowModel.secondApproverModule">
+                                        <label class="col-sm-4">
+                                            <span class="required-field">* </span>
+                                            {{'Setup.Workflow.ApprovelProcess.ApproverEmailField' | translate}}:
+                                        </label>
+                                        <select ng-disabled="isEdit"
+                                                class="form-control"
+                                                name="secondApproverField"
+                                                tabindex="3"
+                                                required
+                                                ng-model="workflowModel.second_approver_field"
+                                                ng-change="updateFieldChanged()"
+                                                ng-options="o as o['label_' + language] for o in secondDynamicApproverFields.fields | filter:{data_type:'email', deleted:'!true'} | orderBy:'order' track by o.name">
+                                            <option value="">{{'Common.Select' | translate}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!--<div ng-if="workflowModel.approver_type == 'staticApprover'" class="row">
+                                    <div class="form-group" ng-class="{'has-error': workflowForm.$submitted && workflowForm.hookModule.$invalid}">
+                                        <table class="filter-table">
+                                            <tbody>
+                                                <tr ng-repeat="parameter in hookParameters">
+                                                    <td>{{$index + 1}}-</td>
+                                                    <td>
+                                                        <select ng-disabled="isEdit" class="form-control"
+                                                                name="hookModule"
+                                                                tabindex="1"
+                                                                required
+                                                                ng-model="parameter.approver"
+                                                                ng-options="o.email for o in parameter.selectedUsers | filter:{isSelected:'false'} ">
+                                                            <option value="">{{'Setup.Workflow.ApprovelProcess.SelectApprover' | translate}}</option>
+                                                        </select>
+                                                    </td>
+                                                    <td ng-show="!isEdit">
+                                                        <a href ng-show="hookParameters.length > 1" ng-click="removeApprover(parameter, $index)"><i class="fa fa-minus-square"></i></a>
+                                                        <a href ng-show="$last && hookParameters.length < approversLength" ng-click="addNewApprover(parameter, $index)"><i class="fa fa-plus-square"></i></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>-->
+                            </div>
+                            <div class="form-group" ng-show="actionError">
+                                <input name="actions" type="hidden" ng-model="taskFields.subject.name">
+                                <div class="callout callout-danger">
+                                    <p ng-if="workflowForm.$error.actionRequired">{{'Setup.Workflow.ApprovelProcess.ApproverRequiredError' | translate}}</p>
+                                </div>
+                            </div>
+                            <div class="wizard-buttons text-right">
+                                <button type="button" ng-click="cancel();" class="btn btn-custom">
+                                    {{'Common.Cancel' | translate}}
+                                </button>
+                                <button type="button" class="btn btn-primary btn-w-sm" ng-click="wizardStep = 1">
+                                    <i class="fa fa-angle-left pull-left" style="margin-top: 3px;"></i>{{'Common.Previous' | translate}}
+                                </button>
+                                <button type="button" class="btn btn-primary btn-w-sm"
+                                        ng-click="lastStepClicked = true; (validate(workflowForm) ? wizardStep = 3 : false); getSummary()">
+                                    <i class="fa fa-angle-right pull-right" style="margin-top: 3px;"></i>{{'Common.Next' | translate}}
+                                </button>
+                            </div>
+                        </div>
+                        <div class="section" ng-show="wizardStep == 3">
+                            <h4>{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}</h4>
+                            <div class="panel">
+                                <div>
+                                    <h5 class="text-center summary-header">{{'Setup.Workflow.ApprovelProcess.SummaryFor' | translate:{name: workflowModel.name} }}</h5>
+                                    <span class="summary-label">{{'Setup.Workflow.Module' | translate}}:</span>
+                                    <p class="summary-content">{{workflowModel.module['label_' + language + '_singular']}}</p>
+                                    <span class="summary-label">{{'Setup.Workflow.RuleTrigger' | translate}}:</span>
+                                    <p class="summary-content" ng-bind-html="ruleTriggerText"></p>
+                                    <span class="summary-label" ng-show="ruleFilterText">{{'Setup.Workflow.FilterCriteria' | translate}}:</span>
+                                    <p class="summary-content" ng-show="ruleFilterText" ng-bind-html="ruleFilterText"></p>
+                                    <span class="summary-label">{{'Setup.Workflow.ApprovelProcess.Approvers' | translate}}:</span>
+                                    <span ng-show="hookParameters.length > 0 && workflowModel.approver_type == 'dynamicApprover'" class="summary-content">{{'Setup.Workflow.ApprovelProcess.DynamicApprover' | translate}} ({{workflowModel.module['label_' + language + '_singular']}} - {{workflowModel.approver_field.name}})</span>
+                                    <p class="summary-content" ng-bind-html="ruleActionsText"></p>
+                                    <table class="filter-table" ng-show="hookParameters.length > 0 && workflowModel.approver_type == 'staticApprover'">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>{{'Setup.Workflow.ApprovelProcess.User' | translate}}</th>
+                                                <th>E-mail</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="parameter in hookParameters">
+                                                <td>
+                                                    <span ng-bind="$index+1 + '-'"></span>
+                                                </td>
+                                                <td>
+                                                    <span ng-bind="parameter.approver.userName"></span>
+                                                </td>
+                                                <td>
+                                                    <span ng-bind="parameter.approver.email"></span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <span ng-show="hookParameters.length < 1" class="summary-content">{{'Setup.Workflow.NoParameterAdded' | translate}}</span>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </form>
             </div>

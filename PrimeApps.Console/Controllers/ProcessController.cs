@@ -36,6 +36,7 @@ namespace PrimeApps.Console.Controllers
             _processRepository = processRepository;
             _moduleRepository = moduleRepository;
             _picklistRepository = picklistRepository;
+            _processHelper = processHelper;
             _viewRepository = viewRepository;
             _warehouse = warehouse;
         }

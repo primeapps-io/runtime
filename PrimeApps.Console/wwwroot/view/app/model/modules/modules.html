@@ -1,6 +1,6 @@
 <div class="col-sm-12" style="border: none ;">
     <div ng-if="loading" class="page-loading">
-        <img width="300" height="300" src="images/primeapps/loading-animat-rocket.gif"/>
+        <img width="500" height="500" src="images/primeapps/loading-animation.gif"/>
     </div>
     <div class="setup-liste-header row">
         <div class="col-sm-6"><h2 class="setup-title">Modules</h2></div>
@@ -14,42 +14,61 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Icon</th>
+                    <th class="text-center">Icon</th>
                     <th>{{'Setup.Modules.Name' | translate}}</th>
                     <th>{{'Setup.Modules.Type' | translate}}</th>
                     <th>{{'Setup.Modules.DisplayOnMenu' | translate}}</th>
                     <th>{{'Setup.Modules.Sharing' | translate}}</th>
-                    <th style="min-width: 110px;"></th>
+                    <th style="min-width: 50px;"></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']">
-                    <td><i class="{{module.menu_icon}}"></i></td>
-                    <td>
-                        <a href="#app/setup/module?id={{module.name}}"
-                           ng-if="(user.isDemo && module.created_by_id==user.id) || !user.is_demo">
+                    <td ui-sref="studio.app.moduledesigner({id:module.id})" class="text-center"><i class="{{module.menu_icon}}"></i></td>
+                    <td ui-sref="studio.app.moduledesigner({id:module.id})">
+                        <span>
                             {{module['label_' + language + '_plural']}}
-                        </a>
+                        </span>
                         <span ng-if="user.isDemo && module.created_by_id!=user.ID">
                                 {{module['label_' + language + '_plural']}}
                             </span>
                     </td>
-                    <td>{{'Setup.Modules.Type-' + module.system_type | translate}}</td>
-                    <td>{{module.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
-                    <td>{{module.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) :
+                    <td ui-sref="studio.app.moduledesigner({id:module.id})">{{'Setup.Modules.Type-' + module.system_type | translate}}</td>
+                    <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.display ? ('Common.Yes' | translate) : ('Common.No' | translate)}}</td>
+                    <td ui-sref="studio.app.moduledesigner({id:module.id})">{{module.sharing === 'private' ? ('Setup.Modules.SharingPrivate' | translate) :
                         ('Setup.Modules.SharingPublic' | translate)}}
                     </td>
-                    <td class="text-right">
-                        <button id="actionButton-{{module.name}}"
-                                ng-disabled="user.isDemo && module.created_by_id!=user.id"
-                                class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"><i
-                                class="fa fa-caret-down"></i></button>
+                    <td class="text-center">
+                        <div class="action-buttons-block">
+                            <button id="actionButton-{{module.name}}" type="button" data-toggle="dropdown"
+                                    ng-disabled="user.isDemo && module.created_by_id!=user.id"
+                                    class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(moduleItem)"
+                                    placement="bottom-right"
+                                    data-animation="am-flip-x"
+                                    bs-dropdown
+                                    aria-haspopup="true" aria-expanded="false" >
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li>
+                                    <a href="#anotherAction">
+                                        Edit
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#anotherAction">
+                                        Delete
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
-            <div class="row table-pagination">
-                <div class="col-sm-10">
+            <div class="table-pagination">
+                <div>
                     <nav aria-label="Page navigation">
                         <div paging
                              text-first="&laquo;"
@@ -70,7 +89,10 @@
                         </div>
                     </nav>
                 </div>
-                <div class="col-sm-2">
+                <div>
+                    1 - 10 of 86 items
+                </div>
+                <div>
                     <span class="pagination-span">Items per page  </span>
                     <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
                         <option ng-selected="true" value="10">10</option>

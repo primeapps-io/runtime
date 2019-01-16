@@ -11,16 +11,18 @@
                 
             </div>
             <ul class="nav navbar-nav navbar-right">
-                <li class="rigth-oval-toolbar-item"
+                <li>
+                    <button style="border:none" type="button" class="rigth-oval-toolbar-item"
                     aria-hidden="true"
                     data-title="Test"
                     data-template-url="view/common/user-dropdown.html"
                     data-animation="am-flip-x"
                     data-auto-close="1"
                     data-placement="bottom-right"
-                    bs-popover
-                >
-                    <i class="fas fa-user"></i>
+                    bs-popover aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    
                 </li>
                 <li>
                     <button style="border:none" type="button" class="rigth-oval-toolbar-item"
@@ -32,7 +34,6 @@
                     </button>
 
                     <ul class="dropdown-menu new-app" role="menu">
-                        <div class="arrow"></div>
                         <li>
                             <a href="#anotherAction">
                                 Add New App
@@ -101,7 +102,8 @@
         </ul>
         <div class="footer" style="bottom: 0;position: absolute;">
             <div class="menu-togle" ng-click="toggleLeftMenu()">
-                <i class="fas fa-long-arrow-alt-left"></i>
+                <i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close" bs-tooltip data-placement="top"></i>
+                <i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Open" bs-tooltip data-placement="top"></i>
             </div>
         </div>
     </div>
