@@ -330,8 +330,8 @@ angular.module('primeapps')
                     template.id = $scope.currentTemplate.id;
                     result = EmailTemplatesService.update(template);
                     $scope.addNewEmailTemplateFormModal.hide();
+                    $scope.changeOffset();
                     ngToast.create({ content: $filter('translate')('Template.SuccessMessage'), className: 'success' });
-
                 }
                 else {
                     result = EmailTemplatesService.create(template);
