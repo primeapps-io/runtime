@@ -45,7 +45,7 @@ namespace PrimeApps.App.Storage
             fileContent.Seek(0, SeekOrigin.Begin);
 
             //put block to the blob AzureStorage.
-            await tempBlob.PutBlockAsync(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3) }, new OperationContext());
+            await tempBlob.PutBlockAsync(blockId, fileContent, null, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions() {RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3)}, new OperationContext());
         }
 
         /// <summary>
@@ -82,6 +82,7 @@ namespace PrimeApps.App.Storage
             {
                 newBlob.Metadata.Add("recordid", relatedMetadataRecordIdForBlob);
             }
+
             if (relatedMetadataModuleNameForBlob != null)
             {
                 newBlob.Metadata.Add("module", relatedMetadataModuleNameForBlob);
@@ -96,6 +97,7 @@ namespace PrimeApps.App.Storage
             {
                 newBlob.Metadata.Add("viewfilename", relatedMetadataViewFileName);
             }
+
             //copy data from temprorary blob to the new blob.
             await MoveBlockBlobAsync(tempBlob, newBlob);
 
@@ -160,8 +162,7 @@ namespace PrimeApps.App.Storage
             // create blob container
             blobClient = cloudStorageAccount.CreateCloudBlobClient();
             blobContainer = blobClient.GetContainerReference(containerName);
-            blobContainer.CreateIfNotExistsAsync();
-
+            blobContainer.CreateIfNotExistsAsync(accessType, null, null);
 
             return blobContainer;
         }
@@ -226,7 +227,6 @@ namespace PrimeApps.App.Storage
 
             try
             {
-
                 // Lease the source blob for the copy operation to prevent another client from modifying it.
                 // Specifying null for the lease interval creates an infinite lease.
                 leaseId = await sourceBlob.AcquireLeaseAsync(null);
@@ -285,7 +285,5 @@ namespace PrimeApps.App.Storage
         //    };
         //    return result;
         //}
-
     }
-
 }
