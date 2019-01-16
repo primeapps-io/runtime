@@ -6,6 +6,7 @@ angular.module('primeapps')
         function ($timeout, $scope, $filter, $element, dragularService) {
             var drakeRows;
             var drakeCells;
+            var templetFields;
 
             var setDraggableLayout = function () {
                 if (drakeRows)
@@ -15,7 +16,7 @@ angular.module('primeapps')
                     drakeCells.destroy();
 
                 var moduleLayout = $scope.$parent.moduleLayout;
-                var templateFields = $scope.$parent.moduleLayout;
+                var templateFieldContainer = template-field;
                 var container = $element.children().eq(0);
                 var rowContainers = [];
                 var cellContainers = [];
@@ -36,11 +37,7 @@ angular.module('primeapps')
                     }
                 }
 
-                dragulaService.options($scope, 'templatesFields', {
-                    moves: function (el, container, handle) {
-                        console.log(container);
-                    }
-                });
+
 
                 drakeRows = dragularService(container, {
                     scope: $scope,
@@ -78,7 +75,7 @@ angular.module('primeapps')
                     }
                 });
 
-                drakeCells = dragularService(cellContainers, {
+                templetFields = dragularService(cellContainers, {
                     scope: $scope,
                     nameSpace: 'cells',
                     containersModel: (function () {
@@ -103,6 +100,7 @@ angular.module('primeapps')
 
             };
 
+
             $timeout(function () {
                 setDraggableLayout();
             }, 0);
@@ -110,7 +108,7 @@ angular.module('primeapps')
             $scope.$on('dragulardrop', function (e, el) {
                 e.stopPropagation();
                 $timeout(function () {
-                    $scope.$parent.refreshModule();
+                    $scope.refreshModule();
                 }, 0);
             });
 

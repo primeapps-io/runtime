@@ -5,7 +5,7 @@
     <div class="setup-liste-header row">
         <div class="col-sm-6"><h2 class="setup-title">Modules</h2></div>
         <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button"><i class="fas fa-plus"></i> Add New Modules</button>
+            <button class="btn add-button" ui-sref="studio.app.moduledesigner"><i class="fas fa-plus"></i> Add New Modules</button>
         </div>
     </div>
     <div>
@@ -23,7 +23,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']">
+                <tr ng-repeat="module in modules| filter:{name:'!users'} | orderBy:['-system_type','order']"
+                    ui-sref="studio.app.moduledesigner({id:module.id})">
                     <td ui-sref="studio.app.moduledesigner({id:module.id})" class="text-center"><i class="{{module.menu_icon}}"></i></td>
                     <td ui-sref="studio.app.moduledesigner({id:module.id})">
                         <span>

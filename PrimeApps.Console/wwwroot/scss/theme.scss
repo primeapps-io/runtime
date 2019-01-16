@@ -6,7 +6,7 @@
 }
 
 .wrt:before,
-.wrt:after{
+.wrt:after {
   content: ' ';
   display: table;
   margin-left: -15px;
@@ -20,55 +20,125 @@ button, select {
   @include hoverEffect;
   &:focus {
     outline: none !important;
-    
+
   }
 }
 
 $primeapps-color: #0D6FAA;
 .primeapps {
-  
+
   //ModuleDesigner scss
-  .module-designer {
 
-    /**
-     * An element with .dndPlaceholder class will be added as child of the dnd-list
-     * while the user is dragging over it.
-     */
+  .add-new-section {
+    padding: 15px;
+    border: 2px dashed #e2e2e2;
+    border-radius: 5px;
+    cursor: pointer;
+    span {
+      font-weight: bold;
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 14px;
+    }
+  }
 
-    .container-element {
-      margin: 10px;
+    .subpanel-draggable {
+    box-shadow: none !important;
+  }
+
+  .module-section {
+    .cell-container {
+      .form-group {
+
+        display: flex;
+        align-items: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border: 1px dashed transparent;
+        .required-field {
+          color: #ce0404 !important;
+          position: relative;
+        }
+        .field-area{
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 20px;
+          background: rgba(0,0,0,0.05);
+          color: rgba(0,0,0,0.25);
+        }
+        .action-buttons {
+          padding: 0;
+          position: absolute;
+          right: 10px;
+    top: 50%;
+          transform: translate(0%, -50%);
+          .action-icon
+          {
+            color: rgba(13, 111, 170, 0.5) !important;
+          }
+        }
+        .control-label {
+          text-align: left;
+          padding-bottom: 0;
+}
+    &:hover {
+      box-shadow: none;
+    background-color: rgba(13, 111, 170, 0.25);
+    border-color: rgba(0, 0, 0, 0.25);
+        }
+
+      }
     }
-  
-    ul {
-      list-style: none;
-    }
-    .module-section {
       box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-      background: #fff;
+      background: #fff;border: none !important;
       border-radius: 5px;
       margin-bottom: 30px;
       min-height: 180px;
-      .dndPlaceholder {
-        background-color: #fff !important;
-        display: block;
-        min-height: 180px;
-        border: 1px dotted #0c6eaa;
-      }
+      .action-buttons {
+        display: none;
+      width: auto !important;
 
-      .section-container {
-        min-height: 180px;
-
-      }
-      .section-header {
-        padding: 10px;
-        border-bottom: 2px solid rgba(0, 0, 0, 0.05);
-
-        h4 {
-          font-size: 16px;
-          font-weight: bold;
-          padding: 0;
-          margin: 0;
         }
+    .section-header {
+      border: none !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+      padding: 10px !important;
+      span {
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.75);
+        font-size: 16px;
+        i {
+          color: rgba(0, 0, 0, 0.5) !important;
+          margin-right: 15px;
+        }
+      }
+      &:hover {
+        background: rgba(13, 111, 170, 0.1);
+        border: none !important;
+        .action-buttons {
+          display: block;
+        }
+      }
+
+    }
+
+    .section-container {
+      min-height: 180px;
+
+    }
+    .section-header {
+      padding: 10px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+      cursor: move;
+      h4 {
+        i {
+          margin-right: 15px;
+          color: rgba(0, 0, 0, 0.5);
+
+        }
+        font-size: 16px;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
       }
     }
   }
@@ -76,13 +146,10 @@ $primeapps-color: #0D6FAA;
     background-color: #fff;
     padding-top: 15px;
     padding-bottom: 15px;
-    .dndDragging {
-      border: 1px dotted #0d6faa;
-      background: #fff !important;
-    }
+
     .template-field-box {
       border: 1px dotted #fff;
-
+      cursor: move;
       width: calc(50% - 10px);
       float: left;
       border-radius: 5px;
@@ -112,7 +179,7 @@ $primeapps-color: #0D6FAA;
   }
 
   //mix
-  
+
   //Global
   .margin-0 {
     margin: 0px;
@@ -322,6 +389,10 @@ $primeapps-color: #0D6FAA;
         background: none !important;
       }
     }
+    ul {
+      @include hoverEffect();
+    }
+
   }
 ;
   .sidebar-nav a.active {
@@ -454,9 +525,10 @@ $primeapps-color: #0D6FAA;
   }
   .table {
     border: none;
+    
+    
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     background: transparent;
-
     thead:first-child > tr:first-child > th {
       line-height: 15px !important;
       font-size: 12px;
@@ -468,7 +540,7 @@ $primeapps-color: #0D6FAA;
       background: transparent;
     }
     tbody{
-      
+
       tr
       {
         td {
@@ -483,7 +555,7 @@ $primeapps-color: #0D6FAA;
         &:hover{
           background: rgba(0,0,0,0.03);
           cursor: pointer;
-          
+
         }
         .action-buttons-block
         {
@@ -499,7 +571,7 @@ $primeapps-color: #0D6FAA;
         }
       }
     }
-    
+
 
   }
   .table-pagination {
@@ -705,13 +777,13 @@ $primeapps-color: #0D6FAA;
     }
     .user_divider
     {
-      
+
       height: 1px;
       display: block;
       background:rgba(0, 0, 0, 0.1);
       margin: 10px 0px;
     }
-    
+
     .user-info {
       display: flex;
       flex-direction: row;
@@ -747,7 +819,7 @@ $primeapps-color: #0D6FAA;
       }
     }
 
-    
+
     .btn-logout {
       width: 100%;
       height: 30px;
@@ -1126,7 +1198,7 @@ $primeapps-color: #0D6FAA;
     .background-white {
       background: #ffffff;
     }
-    
+
   }
   .dropdown-menu {
     border: none;
@@ -1153,7 +1225,7 @@ $primeapps-color: #0D6FAA;
       &:before {
         left: auto;
         right:10px;
-        
+
       }
     }
     li {
@@ -1236,23 +1308,21 @@ $primeapps-color: #0D6FAA;
         }
       }
     }
-    
+
   }
-  #wrapper
-  {
+  #wrapper {
     padding-left: 270px;
     padding-right: 20px;
-    #navbar-wrapper
-    {
-      left:250px;
+
+    #navbar-wrapper {
+
+      left: 250px;
     }
-    #page-content-wrapper
-    {
+    #page-content-wrapper {
       position: relative;
     }
-    #sidebar-wrapper
-    {
-      
+    #sidebar-wrapper {
+
       width: 250px;
       left: 0px;
       margin-left: 0px;
@@ -1267,12 +1337,13 @@ $primeapps-color: #0D6FAA;
           padding: 20px 10px !important;
           height: 80px !important;
         }
-        .tooltip
+      .tooltip
         {
           display: none !important;
         }
-        
+
       }
+      
       
       
       ul{
@@ -1282,54 +1353,65 @@ $primeapps-color: #0D6FAA;
         height: 40px;
         padding: 0px;
         position: relative;
-        svg { height: 100%;
-          .st0 { fill: #FFF; }
-          .st1 { fill: rgba(255,255,255,0.75); }
-          .st2 { fill: #FCAD2D; }
-          .st3 { fill: #F06933; }
-          .st4 { fill: #E89728; }
-          .st5 { fill: #0D6FAA; }
+        svg {
+          height: 100%;
+          .st0 {
+            fill: #FFF;
+          }
+          .st1 {
+            fill: rgba(255, 255, 255, 0.75);
+          }
+          .st2 {
+            fill: #FCAD2D;
+          }
+          .st3 {
+            fill: #F06933;
+          }
+          .st4 {
+            fill: #E89728;
+          }
+          .st5 {
+            fill: #0D6FAA;
+          }
         }
-        .logo-icon
-        {
+        .logo-icon {
           position: absolute;
           height: 100%;
           left: 11%;
         }
       }
       
+
+      
       .sidebar-li
       {
         line-height: 30px;
         position: relative;
-        span{
+        span {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        ul
-        {
-          
+        ul {
+
           padding-left: 10px;
-          li{
-            a{
+          li {
+            a {
               padding:5px 10px;
-              i{
+              i {
                 margin-right: 0px;
               }
-              
-            }
+              }
             &:last-child{
               margin-bottom: 10px;
             }
           }
         }
-        a
-        {
+        a {
           padding: 10px;
         }
       }
-      
+
       .footer {
         .menu-togle {
           display: flex;
@@ -1349,60 +1431,50 @@ $primeapps-color: #0D6FAA;
         }
       }
     }
-    
-    &.toggled
-    {
+
+    &.toggled {
       padding-left: 70px;
       padding-right: 20px;
-      .sidebar-brand{
-        a{
+      .sidebar-brand {
+        a {
           justify-content: center;
         }
       }
-      #navbar-wrapper
-      {
-        left:50px;
+      #navbar-wrapper {
+        left: 50px;
         padding-left: 0px;
       }
-      #page-content-wrapper
-      {
+      #page-content-wrapper {
         margin-right: 0px;
       }
-      #sidebar-wrapper
-      {
+      #sidebar-wrapper {
         width: 50px !important;
-        .logo{
-          .full-logo{
+        .logo {
+          .full-logo {
             display: none;
           }
         }
-        .sidebar-nav
-        {
+        .sidebar-nav {
           .sidebar-brand {
             padding: 20px 0px !important;
             height: 80px !important;
           }
         }
-        .tooltip
-        {
-          display:block !important;
+        .tooltip {
+          display: block !important;
         }
-        
+
         ul
         {
           padding-left: 0px;
           width: 50px;
         }
-        .sidebar-li
-        {
-          &:hover
-          {
+        .sidebar-li {
+          &:hover {
             position: relative;
           }
-          a
-          {
-            span
-            {
+          a {
+            span {
               display: none;
             }
           }
@@ -1424,14 +1496,14 @@ $primeapps-color: #0D6FAA;
     .setup-layout {
       padding-top: 100px;
       margin-bottom: 50px;
-      
-      .app-menu2{
+
+      .app-menu2 {
         @include hoverEffect();
-        float:left;
+        float: left;
         width: 250px;
-        padding-left:15px;
+        padding-left: 15px;
         padding-right: 15px;
-        
+
         .setup-nav {
           background: #fff;
           padding: 20px;
@@ -1441,8 +1513,7 @@ $primeapps-color: #0D6FAA;
           {
             display: none !important;
           }
-          .active
-          {
+          .active {
             position: relative;
             &:before {
               margin-top: 0px;
@@ -1451,7 +1522,7 @@ $primeapps-color: #0D6FAA;
               content: " ";
               position: absolute;
               pointer-events: none;
-              transform: translate(0%,-50%);
+              transform: translate(0%, -50%);
               left: auto;
               width: 0;
               height: 0;
@@ -1477,10 +1548,10 @@ $primeapps-color: #0D6FAA;
               display: block;
               align-items: center;
               width: 100%;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              span
+
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;span
               {
                 margin-left: 10px;
               }
@@ -1503,13 +1574,15 @@ $primeapps-color: #0D6FAA;
               align-items: center;
               justify-content: center;
             }
-            &:last-child
-            {
+            &:last-child {
               border-color: transparent;
             }
           }
 
         }
+        
+        
+        
         .submenu-togle
         {
           width: 70px;
@@ -1522,42 +1595,38 @@ $primeapps-color: #0D6FAA;
             display: none;
           }
         }
-        
       }
-      .content-in2
-      {
-        float:left;
+      .content-in2 {
+        float: left;
         width: calc(100% - 250px);
-        padding-left:15px;
+        padding-left: 15px;
         padding-right: 15px;
         @include hoverEffect();
       }
-      &.full-toggled2
-      {
+      &.full-toggled2 {
         .content-in2
         {
           width: calc(100% - 100px);
         }
-        .app-menu2{
+        .app-menu2 {
           width: 100px;
-          .tooltip
-          {
-            display:block !important;
+          .tooltip {
+            display: block !important;
           }
-          
-          
+
+
         }
-        
+
         .setup-nav
         {
           li{
-            
+
             a{
               i
               {
-                
+
               }
-              span{
+              span {
                 display: none;
                 margin-left: 0px;
               }
@@ -1574,8 +1643,7 @@ $primeapps-color: #0D6FAA;
           }
         }
       }
-      
-      
+
       .setup-title {
         font-size: 16px;
         font-weight: bold;
@@ -1583,7 +1651,7 @@ $primeapps-color: #0D6FAA;
         margin-bottom: 16px;
         margin: 20px 0px;
       }
-      
+
       .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
         background: initial !important;
         color: #0d6faa !important;
@@ -1600,8 +1668,7 @@ $primeapps-color: #0D6FAA;
         color: #fff !important;
         padding: 5px 10px;
         font-size: 12px;
-        &:hover
-        {
+        &:hover {
           background-color: rgba(13, 111, 170, 1);
         }
       }
@@ -1612,23 +1679,20 @@ $primeapps-color: #0D6FAA;
         align-items: center;
         height: 42px;
       }
-      .full-toggled2
-      {
-        .setup-nav
-        {
-          li{
-            a{
+      .full-toggled2 {
+        .setup-nav {
+          li {
+            a {
               justify-content: center;
-              span{
+              span {
                 display: none;
               }
             }
           }
         }
-        
+
       }
-      
-    }
+      }
     .tooltip{
       &.tooltip-info{
         .tooltip-inner
@@ -1639,7 +1703,7 @@ $primeapps-color: #0D6FAA;
           font-size: 12px !important;
           font-weight: bold !important;
           white-space: nowrap;
-  
+
         }
         &.right{
           .tooltip-arrow
@@ -1658,6 +1722,6 @@ $primeapps-color: #0D6FAA;
       }
     }
   }
-  
+
 }
 

@@ -10,7 +10,6 @@ angular.module('primeapps')
             $rootScope.subtoggleClass = 'full-toggled2';
 
             $scope.templatesFields = ModuleService.getTemplateFields();
-            $scope.templatesSections = ModuleService.getTemplateSections();
 
             $scope.id = $location.search().id;
             $scope.clone = $location.search().clone;
@@ -56,209 +55,360 @@ angular.module('primeapps')
             ];
             var module = {};
 
+            $scope.dragger = function () {
+                var drakeRows;
+                var drakeCells;
+                var templateFieldDrag;
+
+                var setDraggableLayout = function () {
+                    if (drakeRows)
+                        drakeRows.destroy();
+
+                    if (drakeCells)
+                        drakeCells.destroy();
+                    if (templateFieldDrag)
+                        templateFieldDrag.destroy();
+
+                    var moduleLayout = $scope.moduleLayout;
+
+                    var templatesFields = $scope.templatesFields;
+
+                    var container = angular.element(document.querySelector('.row-container'));
+                    var templateContainer = angular.element(document.querySelector('.template-field'));
+
+                    var rowContainers = [];
+                    var cellContainers = [];
+                    var templateFieldsContainers = [];
+                    for (var i = 0; i < templateContainer.children().length; i++) {
+
+                        var templateFieldContainer = templateContainer.children()[i];
+
+                        if (templateFieldContainer.className.indexOf('template-field-box') > -1)
+                            templateFieldsContainers.push(templateFieldContainer);
+                    }
+
+                    for (var i = 0; i < container.children().length; i++) {
+                        var rowContainer = container.children().eq(i);
+
+                        if (rowContainer[0].className.indexOf('subpanel') > -1)
+                            rowContainers.push(rowContainer);
+                    }
+
+                    for (var j = 0; j < rowContainers.length; j++) {
+                        var columnContainer = rowContainers[j].children().children().children();
+
+                        for (var k = 0; k < columnContainer.length; k++) {
+                            if (columnContainer[k].className.indexOf('cell-container') > -1)
+                                cellContainers.push(columnContainer[k]);
+                        }
+                    }
+
+
+                    drakeRows = dragularService(container, {
+                        scope: $scope,
+                        nameSpace: 'rows',
+                        containersModel: moduleLayout.rows,
+                        classes: {
+                            mirror: 'gu-mirror-module',
+                            transit: 'gu-transit-module'
+                        },
+                        moves: function (el, container, handle) {
+                            return handle.classList.contains('row-handle');
+                        }
+                    });
+
+                    drakeCells = dragularService(cellContainers, {
+                        scope: $scope,
+                        nameSpace: 'cells',
+                        containersModel: (function () {
+                            var containersModel = [];
+
+                            angular.forEach(moduleLayout.rows, function (row) {
+                                angular.forEach(row.columns, function (column) {
+                                    containersModel.push(column.cells);
+                                })
+                            });
+
+                            return containersModel;
+                        })(),
+                        classes: {
+                            mirror: 'gu-mirror-field',
+                            transit: 'gu-transit-field'
+                        },
+                        moves: function (el, container, handle) {
+                            return handle.classList.contains('cell-handle');
+                        }
+                    });
+
+                    templateFieldDrag = dragularService(templateContainer, {
+                        scope: $scope,
+                        nameSpace: 'cells',
+                        containersModel: templatesFields,
+                        copy: true,
+                        classes: {
+                            mirror: 'gu-mirror-field',
+                            transit: 'gu-transit-field'
+                        },
+
+                    });
+
+
+                };
+
+                $timeout(function () {
+                    setDraggableLayout();
+                }, 0);
+
+                $scope.$on('dragulardrop', function (e, el) {
+                    e.stopPropagation();
+                    $timeout(function () {
+                        $scope.refreshModule();
+                    }, 0);
+                });
+
+                $scope.$watch('moduleChange', function (value) {
+                    if (!value)
+                        return;
+
+                    $timeout(function () {
+                        setDraggableLayout();
+                    }, 0);
+                });
+            };
+
+            $scope.initModuleDesginer = function () {
+
+                $scope.module = ModuleService.processModule2($scope.module, $scope.modules);
+                $scope.module = ModuleService.processModule($scope.module);
+
+                $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
+
+                $scope.dragger();
+                ModuleService.getPicklists()
+
+                    .then(function onSuccess(picklists) {
+                        $scope.picklists = picklists.data;
+                    });
+
+                var getMultilineTypes = function () {
+                    var multilineType1 = {
+                        value: 'small',
+                        label: $filter('translate')('Setup.Modules.MultilineTypeSmall')
+                    };
+                    var multilineType2 = {
+                        value: 'large',
+                        label: $filter('translate')('Setup.Modules.MultilineTypeLarge')
+                    };
+
+                    $scope.multilineTypes = [];
+                    $scope.multilineTypes.push(multilineType1);
+                    $scope.multilineTypes.push(multilineType2);
+                };
+
+                var getLookupTypes = function (refresh) {
+                    helper.getPicklists([0], refresh, $scope.$parent.modules)
+                        .then(function (picklists) {
+                            $scope.lookupTypes = picklists['900000'];
+
+                            var hasUserLookType = $filter('filter')($scope.lookupTypes, {name: 'users'}, true).length > 0;
+
+                            if (!hasUserLookType) {
+                                var userLookType = {};
+                                userLookType.id = 900000;
+                                userLookType.label = {};
+                                userLookType.label.en = defaultLabels.UserLookupFieldEn;
+                                userLookType.label.tr = defaultLabels.UserLookupFieldTr;
+                                userLookType.order = 0;
+                                userLookType.type = 0;
+                                userLookType.value = 'users';
+
+                                $scope.lookupTypes.unshift(userLookType);
+
+                                var profileLookType = {};
+                                profileLookType.id = 900100;
+                                profileLookType.label = {};
+                                profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
+                                profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
+                                profileLookType.order = 0;
+                                profileLookType.type = 0;
+                                profileLookType.value = 'profiles';
+
+                                $scope.lookupTypes.push(profileLookType);
+
+                                var roleLookType = {};
+                                roleLookType.id = 900101;
+                                roleLookType.label = {};
+                                roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
+                                roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
+                                roleLookType.order = 0;
+                                roleLookType.type = 0;
+                                roleLookType.value = 'roles';
+
+                                $scope.lookupTypes.push(roleLookType);
+                            }
+                        });
+                };
+
+
+                var getRoundingTypes = function () {
+                    var roundingType1 = {value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff')};
+                    var roundingType2 = {value: 'down', label: $filter('translate')('Setup.Modules.RoundingTypeDown')};
+                    var roundingType3 = {value: 'up', label: $filter('translate')('Setup.Modules.RoundingTypeUp')};
+
+                    $scope.roundingTypes = [];
+                    $scope.roundingTypes.push(roundingType1);
+                    $scope.roundingTypes.push(roundingType2);
+                    $scope.roundingTypes.push(roundingType3);
+                };
+
+                var getSortOrderTypes = function () {
+                    var sortOrderType1 = {
+                        value: 'alphabetical',
+                        label: $filter('translate')('Setup.Modules.PicklistSortOrderAlphabetical')
+                    };
+                    var sortOrderType2 = {
+                        value: 'order',
+                        label: $filter('translate')('Setup.Modules.PicklistSortOrderOrder')
+                    };
+
+                    $scope.sortOrderTypes = [];
+                    $scope.sortOrderTypes.push(sortOrderType1);
+                    $scope.sortOrderTypes.push(sortOrderType2);
+                };
+
+                var getCalendarDateTypes = function () {
+                    var calendarDateType1 = {
+                        value: 'start_date',
+                        label: $filter('translate')('Setup.Modules.CalendarDateTypeStartDate')
+                    };
+                    var calendarDateType2 = {
+                        value: 'end_date',
+                        label: $filter('translate')('Setup.Modules.CalendarDateTypeEndDate')
+                    };
+
+                    $scope.calendarDateTypes = [];
+                    $scope.calendarDateTypes.push(calendarDateType1);
+                    $scope.calendarDateTypes.push(calendarDateType2);
+                };
+
+                getMultilineTypes();
+                getLookupTypes(false);
+                getRoundingTypes();
+                getSortOrderTypes();
+                getCalendarDateTypes();
+
+                ModuleService.getDeletedModules()
+                    .then(function (deletedModules) {
+                        $scope.deletedModules = deletedModules;
+                    });
+
+
+                ModuleService.getPicklists($scope.module)
+                    .then(function (picklists) {
+                        $scope.picklistsModule = picklists;
+                    });
+
+                var currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
+
+            };
+
             if (!$scope.id && !$scope.clone) {
                 $scope.module = ModuleService.prepareDefaults(module);
                 $scope.moduleLabelNotChanged = true;
+
+                $scope.initModuleDesginer();
+
             }
             else {
-                module = $filter('filter')($rootScope.modules, {name: $scope.id || $scope.clone}, true)[0];
-
-                if (!module) {
-                    ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
-                    $state.go('app.dashboard');
-                    return;
-                }
-
-                $scope.module = angular.copy(module);
-
-                if ($scope.clone) {
-                    if ($scope.clone === 'opportunity' || $scope.clone === 'activity') {
+                ModuleService.getModuleById($scope.id).then(function (result) {
+                    $scope.module = result.data;
+                    if (!$scope.module) {
                         ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
                         $state.go('app.dashboard');
                         return;
                     }
 
-                    $scope.module.label_en_plural = $scope.module.label_en_plural + ' (Copy)';
-                    $scope.module.label_en_singular = $scope.module.label_en_singular + ' (Copy)';
-                    $scope.module.label_tr_plural = $scope.module.label_tr_plural + ' (Kopya)';
-                    $scope.module.label_tr_singular = $scope.module.label_tr_singular + ' (Kopya)';
-                    $scope.module.related_modules = [];
-                    $scope.moduleLabelNotChanged = true;
-                    $scope.module.system_type = 'custom';
-                    var sortOrders = [];
-
-                    angular.forEach($rootScope.modules, function (moduleItem) {
-                        sortOrders.push(moduleItem.order);
-                    });
-
-                    angular.forEach($scope.module.fields, function (field) {
-                        if (!field.deleted) {
-                            if (systemRequiredFields.all.indexOf(field.name) < 0) {
-                                field.systemRequired = false;
-                            }
-
-                            if (systemReadonlyFields.all.indexOf(field.name) < 0) {
-                                field.systemReadonly = false;
-                            }
-                        }
-                    });
-
-                    var sectionsCopied = angular.copy($filter('filter')($scope.module.sections, {deleted: '!true'}, true));
-                    var fieldsCopied = angular.copy($filter('filter')($scope.module.fields, {deleted: '!true'}, true));
-                    var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at'];
-                    var sectionNames = [];
-
-                    for (var i = 0; i < sectionsCopied.length; i++) {
-                        var section = sectionsCopied[i];
-                        delete section.id;
-                        var newName = 'custom_section' + i + 1;
-
-                        var sectionName = $filter('filter')(sectionNames, {name: section.name}, true)[0];
-
-                        if (!sectionName)
-                            sectionNames.push({name: section.name, newName: newName});
-
-                        section.name = newName;
-                    }
-
-                    for (var j = 0; j < fieldsCopied.length; j++) {
-                        var field = fieldsCopied[j];
-
-                        if (defaultFields.indexOf(field.name) < 0) {
-                            delete field.id;
-                            field.name = 'custom_field' + j + 1;
+                    if ($scope.clone) {
+                        if ($scope.clone === 'opportunity' || $scope.clone === 'activity') {
+                            ngToast.create({content: $filter('translate')('Common.NotFound'), className: 'warning'});
+                            $state.go('app.dashboard');
+                            return;
                         }
 
-                        var sectionName = $filter('filter')(sectionNames, {name: field.section}, true)[0];
+                        $scope.module.label_en_plural = $scope.module.label_en_plural + ' (Copy)';
+                        $scope.module.label_en_singular = $scope.module.label_en_singular + ' (Copy)';
+                        $scope.module.label_tr_plural = $scope.module.label_tr_plural + ' (Kopya)';
+                        $scope.module.label_tr_singular = $scope.module.label_tr_singular + ' (Kopya)';
+                        $scope.module.related_modules = [];
+                        $scope.moduleLabelNotChanged = true;
+                        $scope.module.system_type = 'custom';
+                        var sortOrders = [];
 
-                        field.section = sectionName.newName;
+                        angular.forEach($rootScope.modules, function (moduleItem) {
+                            sortOrders.push(moduleItem.order);
+                        });
+
+                        angular.forEach($scope.module.fields, function (field) {
+                            if (!field.deleted) {
+                                if (systemRequiredFields.all.indexOf(field.name) < 0) {
+                                    field.systemRequired = false;
+                                }
+
+                                if (systemReadonlyFields.all.indexOf(field.name) < 0) {
+                                    field.systemReadonly = false;
+                                }
+                            }
+                        });
+
+                        var sectionsCopied = angular.copy($filter('filter')($scope.module.sections, {deleted: '!true'}, true));
+                        var fieldsCopied = angular.copy($filter('filter')($scope.module.fields, {deleted: '!true'}, true));
+                        var defaultFields = ['owner', 'created_by', 'created_at', 'updated_by', 'updated_at'];
+                        var sectionNames = [];
+
+                        for (var i = 0; i < sectionsCopied.length; i++) {
+                            var section = sectionsCopied[i];
+                            delete section.id;
+                            var newName = 'custom_section' + i + 1;
+
+                            var sectionName = $filter('filter')(sectionNames, {name: section.name}, true)[0];
+
+                            if (!sectionName)
+                                sectionNames.push({name: section.name, newName: newName});
+
+                            section.name = newName;
+                        }
+
+                        for (var j = 0; j < fieldsCopied.length; j++) {
+                            var field = fieldsCopied[j];
+
+                            if (defaultFields.indexOf(field.name) < 0) {
+                                delete field.id;
+                                field.name = 'custom_field' + j + 1;
+                            }
+
+                            var sectionName = $filter('filter')(sectionNames, {name: field.section}, true)[0];
+
+                            field.section = sectionName.newName;
+                        }
+
+                        $scope.module.sections = sectionsCopied;
+                        $scope.module.fields = fieldsCopied;
+
+                        $scope.module.order = Math.max.apply(null, sortOrders) + 1;
+                        $scope.module.name = 'custom_module' + module.order + '_c';
                     }
 
-                    $scope.module.sections = sectionsCopied;
-                    $scope.module.fields = fieldsCopied;
+                    if (!$scope.module.detail_view_type)
+                        $scope.module.detail_view_type = 'tab';
 
-                    $scope.module.order = Math.max.apply(null, sortOrders) + 1;
-                    $scope.module.name = 'custom_module' + module.order + '_c';
-                }
 
-                if (!$scope.module.detail_view_type)
-                    $scope.module.detail_view_type = 'tab';
+                    $scope.initModuleDesginer();
+
+                });
+
+
             }
 
-            $scope.module = ModuleService.processModule($scope.module);
-            $scope.moduleLayout = ModuleService.getModuleLayout($scope.module);
-
-            ModuleService.getPicklists()
-                .then(function onSuccess(picklists) {
-                    $scope.picklists = picklists.data;
-                });
-
-
-            var getMultilineTypes = function () {
-                var multilineType1 = {value: 'small', label: $filter('translate')('Setup.Modules.MultilineTypeSmall')};
-                var multilineType2 = {value: 'large', label: $filter('translate')('Setup.Modules.MultilineTypeLarge')};
-
-                $scope.multilineTypes = [];
-                $scope.multilineTypes.push(multilineType1);
-                $scope.multilineTypes.push(multilineType2);
-            };
-
-            var getLookupTypes = function (refresh) {
-                helper.getPicklists([0], refresh, $scope.$parent.modules)
-                    .then(function (picklists) {
-                        $scope.lookupTypes = picklists['900000'];
-
-                        var hasUserLookType = $filter('filter')($scope.lookupTypes, {name: 'users'}, true).length > 0;
-
-                        if (!hasUserLookType) {
-                            var userLookType = {};
-                            userLookType.id = 900000;
-                            userLookType.label = {};
-                            userLookType.label.en = defaultLabels.UserLookupFieldEn;
-                            userLookType.label.tr = defaultLabels.UserLookupFieldTr;
-                            userLookType.order = 0;
-                            userLookType.type = 0;
-                            userLookType.value = 'users';
-
-                            $scope.lookupTypes.unshift(userLookType);
-
-                            var profileLookType = {};
-                            profileLookType.id = 900100;
-                            profileLookType.label = {};
-                            profileLookType.label.en = defaultLabels.ProfileLookupFieldEn;
-                            profileLookType.label.tr = defaultLabels.ProfileLookupFieldTr;
-                            profileLookType.order = 0;
-                            profileLookType.type = 0;
-                            profileLookType.value = 'profiles';
-
-                            $scope.lookupTypes.push(profileLookType);
-
-                            var roleLookType = {};
-                            roleLookType.id = 900101;
-                            roleLookType.label = {};
-                            roleLookType.label.en = defaultLabels.RoleLookupFieldEn;
-                            roleLookType.label.tr = defaultLabels.RoleLookupFieldTr;
-                            roleLookType.order = 0;
-                            roleLookType.type = 0;
-                            roleLookType.value = 'roles';
-
-                            $scope.lookupTypes.push(roleLookType);
-                        }
-                    });
-            };
-
-
-            var getRoundingTypes = function () {
-                var roundingType1 = {value: 'off', label: $filter('translate')('Setup.Modules.RoundingTypeOff')};
-                var roundingType2 = {value: 'down', label: $filter('translate')('Setup.Modules.RoundingTypeDown')};
-                var roundingType3 = {value: 'up', label: $filter('translate')('Setup.Modules.RoundingTypeUp')};
-
-                $scope.roundingTypes = [];
-                $scope.roundingTypes.push(roundingType1);
-                $scope.roundingTypes.push(roundingType2);
-                $scope.roundingTypes.push(roundingType3);
-            };
-
-            var getSortOrderTypes = function () {
-                var sortOrderType1 = {
-                    value: 'alphabetical',
-                    label: $filter('translate')('Setup.Modules.PicklistSortOrderAlphabetical')
-                };
-                var sortOrderType2 = {
-                    value: 'order',
-                    label: $filter('translate')('Setup.Modules.PicklistSortOrderOrder')
-                };
-
-                $scope.sortOrderTypes = [];
-                $scope.sortOrderTypes.push(sortOrderType1);
-                $scope.sortOrderTypes.push(sortOrderType2);
-            };
-
-            var getCalendarDateTypes = function () {
-                var calendarDateType1 = {
-                    value: 'start_date',
-                    label: $filter('translate')('Setup.Modules.CalendarDateTypeStartDate')
-                };
-                var calendarDateType2 = {
-                    value: 'end_date',
-                    label: $filter('translate')('Setup.Modules.CalendarDateTypeEndDate')
-                };
-
-                $scope.calendarDateTypes = [];
-                $scope.calendarDateTypes.push(calendarDateType1);
-                $scope.calendarDateTypes.push(calendarDateType2);
-            };
-
-            getMultilineTypes();
-            getLookupTypes(false);
-            getRoundingTypes();
-            getSortOrderTypes();
-            getCalendarDateTypes();
-
-            ModuleService.getDeletedModules()
-                .then(function (deletedModules) {
-                    $scope.deletedModules = deletedModules;
-                });
 
             $scope.lookup = function (searchTerm) {
                 if (!$scope.currentLookupField.lookupType) {
@@ -330,10 +480,10 @@ angular.module('primeapps')
                 return startDateField && endDateField;
             };
 
-            var newField = function () {
+            $scope.newField = function (name) {
                 var field = {};
-                field.label_en = '';
-                field.label_tr = '';
+                field.label_en = name;
+                field.label_tr = name;
                 field.validation = {};
                 field.validation.required = false;
                 field.primary = false;
@@ -344,35 +494,12 @@ angular.module('primeapps')
                 field.editable = true;
                 field.show_label = true;
                 field.deleted = false;
-
-                var sortOrders = [];
-
-                angular.forEach($scope.module.fields, function (item) {
-                    sortOrders.push(item.order);
-                });
-
-                field.order = Math.max.apply(null, sortOrders) + 1;
-                field.name = 'custom_field' + field.order;
+                field.name = name;
                 field.isNew = true;
                 field.permissions = [];
-
-                angular.forEach($rootScope.profiles, function (profile) {
-                    if (profile.is_persistent && profile.has_admin_rights)
-                        profile.name = $filter('translate')('Setup.Profiles.Administrator');
-
-                    if (profile.is_persistent && !profile.has_admin_rights)
-                        profile.name = $filter('translate')('Setup.Profiles.Standard');
-
-                    field.permissions.push({
-                        profile_id: profile.id,
-                        profile_name: profile.name,
-                        type: 'full',
-                        profile_is_admin: profile.has_admin_rights
-                    });
-                });
-
                 return field;
             };
+
 
             $scope.showFieldModal = function (row, column, field) {
                 $scope.currentRow = row;
@@ -999,12 +1126,6 @@ angular.module('primeapps')
                     $scope.currencySymbol = $scope.record.currency.value || $rootScope.currencySymbol;
             };
 
-
-            ModuleService.getPicklists($scope.module)
-                .then(function (picklists) {
-                    $scope.picklistsModule = picklists;
-                });
-
             //multiselect default value
             $scope.multiselect = function (searchTerm, field) {
                 var picklistItems = [];
@@ -1231,7 +1352,7 @@ angular.module('primeapps')
                 if (cacheKey)
                     $cache.remove(cacheKey + "_" + cacheKey);
             };
-            var currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
+
             $scope.saveModule = function () {
                 if (!checkRequiredFields())
                     return;

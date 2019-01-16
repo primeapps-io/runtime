@@ -38,9 +38,9 @@ angular.module('primeapps')
             $scope.tabTitle = 'Overview';
 
             $scope.getBasicModules = function () {
-                    LayoutService.getBasicModules().then(function (result) {
-                        $scope.modules = result.data;
-                    });
+                LayoutService.getBasicModules().then(function (result) {
+                    $scope.modules = result.data;
+                });
             };
 
             $scope.getBasicModules();

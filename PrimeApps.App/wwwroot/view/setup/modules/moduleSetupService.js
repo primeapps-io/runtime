@@ -1016,7 +1016,9 @@ angular.module('primeapps')
                 updateField: function (fieldId, field) {
                     return $http.put(config.apiUrl + 'module/update_field/' + fieldId, field);
                 }
+
             };
+
         }]);
 
 angular.module('primeapps')

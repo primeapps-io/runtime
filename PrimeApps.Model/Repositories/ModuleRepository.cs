@@ -29,7 +29,7 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<int> Count()
         {
-            var count =await DbContext.Modules
+            var count = await DbContext.Modules
                .Where(x => !x.Deleted).CountAsync();
             return count;
         }
@@ -57,22 +57,22 @@ namespace PrimeApps.Model.Repositories
 
             return modules;
 
-		}
-		public async Task<ICollection<Module>> GetAllBasic()
-		{
-			var modules = await DbContext.Modules.Select(x => new Module
-			{
-				Id = x.Id,
-				Name = x.Name,
-				LabelEnPlural = x.LabelEnPlural,
-				LabelEnSingular = x.LabelEnSingular,
-				LabelTrSingular = x.LabelTrSingular,
-				LabelTrPlural = x.LabelTrPlural,
-				Order = x.Order,
-				Display = x.Display
-			})
-			 .Where(x => !x.Deleted)
-			 .ToListAsync();
+        }
+        public async Task<ICollection<Module>> GetAllBasic()
+        {
+            var modules = await DbContext.Modules.Select(x => new Module
+            {
+                Id = x.Id,
+                Name = x.Name,
+                LabelEnPlural = x.LabelEnPlural,
+                LabelEnSingular = x.LabelEnSingular,
+                LabelTrSingular = x.LabelTrSingular,
+                LabelTrPlural = x.LabelTrPlural,
+                Order = x.Order,
+                Display = x.Display
+            })
+             .Where(x => !x.Deleted)
+             .ToListAsync();
 
             return modules;
 
@@ -382,15 +382,15 @@ namespace PrimeApps.Model.Repositories
         {
             return DbContext.Modules
                 .Include(module => module.Sections)
-                    .ThenInclude(section => section.Permissions)
+                .ThenInclude(section => section.Permissions)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Validation)
+                .ThenInclude(field => field.Validation)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Combination)
+                .ThenInclude(field => field.Combination)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Filters)
+                .ThenInclude(field => field.Filters)
                 .Include(module => module.Fields)
-                    .ThenInclude(field => field.Permissions)
+                .ThenInclude(field => field.Permissions)
                 .Include(module => module.Relations)
                 .Include(module => module.Dependencies)
                 .Include(module => module.Calculations)
@@ -406,9 +406,9 @@ namespace PrimeApps.Model.Repositories
 
         private IQueryable<Module> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
-            return  DbContext.Modules
+            return DbContext.Modules
                  .Where(x => !x.Deleted);
-            
+
         }
 
         public async Task<ICollection<Field>> GetModuleFieldByName(string moduleName)
@@ -420,9 +420,5 @@ namespace PrimeApps.Model.Repositories
             return module.Fields;
         }
     }
-    public class MyTable
-    {
-        public string Name { get; set; }
-
-    }
+    
 }
