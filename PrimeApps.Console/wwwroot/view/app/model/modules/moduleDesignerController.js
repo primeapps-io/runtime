@@ -8,6 +8,7 @@ angular.module('primeapps')
             $scope.$parent.activeMenuItem = 'ss';
             $scope.tabTitle = 'ss';
             $rootScope.subtoggleClass = 'full-toggled2';
+            $rootScope.toggleClass = 'toggled full-toggled';
 
             $scope.templatesFields = ModuleService.getTemplateFields();
 
@@ -148,10 +149,16 @@ angular.module('primeapps')
                         classes: {
                             mirror: 'gu-mirror-field',
                             transit: 'gu-transit-field'
-                        },
-
+                        }
                     });
 
+
+                    templateContainer.on('dragularenter', function (e) {
+                        //console.log(e);
+                    });
+                    templateContainer.on('dragularleave dragularrelease', function (e) {
+                        e.isDefaultPrevented();
+                    });
 
                 };
 
@@ -165,6 +172,7 @@ angular.module('primeapps')
                         $scope.refreshModule();
                     }, 0);
                 });
+
 
                 $scope.$watch('moduleChange', function (value) {
                     if (!value)
@@ -308,7 +316,7 @@ angular.module('primeapps')
                         $scope.picklistsModule = picklists;
                     });
 
-                var currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
+                $scope.currenyPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
 
             };
 
@@ -507,7 +515,7 @@ angular.module('primeapps')
                 $scope.showPermissionWarning = false;
 
                 if (!field) {
-                    field = newField();
+                    field = $scope.newField();
                 }
                 else {
                     if (field.data_type === 'lookup')
@@ -1366,7 +1374,7 @@ angular.module('primeapps')
                 }
                 //When update modelu primary key also change view lookup view.
                 var newPK = $filter('filter')($scope.module.fields, {primary: true}, true)[0];
-                if (currenyPK.name !== newPK.name) {
+                if ($scope.currenyPK.name !== newPK.name) {
                     for (var moduleKey = $rootScope.modules.length - 1; moduleKey >= 0; moduleKey--) {
                         for (var fieldKey = $rootScope.modules[moduleKey].fields.length - 1; fieldKey >= 0; fieldKey--) {
                             if ($rootScope.modules[moduleKey].fields[fieldKey].lookup_type == $scope.module.name) {
@@ -1397,13 +1405,10 @@ angular.module('primeapps')
                 var resultPromise;
 
                 if (!$scope.id || $scope.clone) {
-                    resultPromise = ModuleService.create(moduleModel);
+                    resultPromise = ModuleService.moduleCreate(moduleModel);
                 }
                 else {
-                    delete moduleModel.relations;
-                    delete moduleModel.dependencies;
-
-                    resultPromise = ModuleService.update(moduleModel, moduleModel.id);
+                     resultPromise = ModuleService.update(moduleModel, moduleModel.id);
                 }
 
                 resultPromise

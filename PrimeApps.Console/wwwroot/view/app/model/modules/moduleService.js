@@ -12,6 +12,9 @@ angular.module('primeapps')
                 find: function (data) {
                     return $http.post(config.apiUrl + 'module/find', data);
                 },
+                moduleCreate: function (module) {
+                    return $http.post(config.apiUrl + 'module/create', module);
+                },
                 getModuleById: function (id) {
                     return $http.get(config.apiUrl + 'module/get_by_id/' + id);
                 },
@@ -1165,36 +1168,6 @@ angular.module('primeapps')
                 prepareModule: function (module, picklistsModule, deletedModules) {
                     var otherLanguage = $rootScope.language === 'en' ? 'tr' : 'en';
 
-                    if (module.name.indexOf('custom_module') > -1) {
-                        module['label_' + otherLanguage + '_plural'] = module['label_' + $rootScope.language + '_plural'];
-                        module['label_' + otherLanguage + '_singular'] = module['label_' + $rootScope.language + '_singular'];
-                        module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']);
-                        var allModules = $rootScope.modules.concat(deletedModules);
-                        var i = 2;
-
-                        while (true) {
-
-                            var findMatch = module.name.match(/(\D+)?\d/);
-                            var index = findMatch ? findMatch[0].length - 1 : -1;
-                            var newModuleName = index === 0 ? 'n' + module.name : module.name; // if first index value === 0, its starts_with number
-                            var existingModule = $filter('filter')(allModules, {name: newModuleName}, true)[0];
-
-                            if (!existingModule)
-                                break;
-
-                            if (i < 20) {
-                                module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']) + i;
-                                i++;
-                            }
-                            else {
-                                var dt = new Date();
-                                module.name = helper.getSlug(module['label_' + $rootScope.language + '_plural']) + dt.getTime();
-                            }
-                        }
-                    }
-
-                    module['label_' + otherLanguage + '_plural'] = module['label_' + $rootScope.language + '_plural'];
-                    module['label_' + otherLanguage + '_singular'] = module['label_' + $rootScope.language + '_singular'];
 
                     angular.forEach(module.sections, function (section) {
                         delete section.columns;
