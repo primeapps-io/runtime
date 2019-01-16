@@ -11,7 +11,12 @@
             <ng-include ng-show="activeMenu==='security'" src="'view/app/common/securityMenu.html'"></ng-include>
             <ng-include ng-show="activeMenu==='identity'" src="'view/app/common/identityMenu.html'"></ng-include>
             <ng-include ng-show="activeMenu==='settings'" src="'view/app/common/settingsMenu.html'"></ng-include>
+            <div class="submenu-togle" ng-click="toggledSubMenu()">
+                <i class="fas fa-long-arrow-alt-left" data-trigger="hover" data-type="info" data-title="Close" bs-tooltip data-placement="top"></i>
+                <i class="fas fa-long-arrow-alt-right" data-trigger="hover" data-type="info" data-title="Open" bs-tooltip data-placement="top"></i>
+            </div>
         </div>
+        
         <div class="content-in2" style="border: none ;">
             <div ui-view="app"></div>
         </div>
