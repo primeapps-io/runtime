@@ -43,6 +43,9 @@ angular.module('primeapps')
 
                     return field;
                 },
+                getModuleFields: function (moduleName) {
+                    return $http.get(config.apiUrl + 'module/get_module_fields?moduleName=' + moduleName);
+                },
                 getTemplateFields: function () {
                     var fields = [];
                     var that = this;
@@ -182,7 +185,6 @@ angular.module('primeapps')
                         }
 
                     });
-                    console.log(fields);
                     return fields;
 
                 },
