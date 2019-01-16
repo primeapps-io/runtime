@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('RolesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper',   '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper,  $cache, dataTypes, systemFields) {
+    .factory('RolesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', '$cache', 'dataTypes', 'systemFields',
+        function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields) {
             return {
 
                 getAll: function () {
@@ -25,7 +25,6 @@ angular.module('primeapps')
                 updateUserRole: function (userId, roleId) {
                     return $http.put(config.apiUrl + 'role/update_user_role?user_Id=' + userId + '&role_Id=' + roleId);
                 }
-
             };
         }]);
 

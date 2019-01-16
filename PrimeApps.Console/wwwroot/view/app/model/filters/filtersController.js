@@ -108,7 +108,7 @@ angular.module('primeapps')
                     moduleChanged(module, false);
                 }
                 else {
-                    $scope.view = [];
+                    $scope.view = {};
                     //moduleChanged($scope.module, true);
                 }
                 $scope.addNewFiltersModal = $scope.addNewFiltersModal || $modal({
@@ -578,7 +578,7 @@ angular.module('primeapps')
                 }
             }
 
-            $scope.validate = function (viewForm , wizardStep) {
+            $scope.validate = function (viewForm, wizardStep) {
 
                 viewForm.$submitted = true;
 

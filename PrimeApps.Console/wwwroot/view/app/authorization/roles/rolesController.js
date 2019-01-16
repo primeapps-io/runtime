@@ -8,17 +8,16 @@ angular.module('primeapps')
             $scope.$parent.menuTopTitle = "Authorization";
             $scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'roles';
-
             $scope.loading = true;
 
-            if ($rootScope.branchAvailable && !$rootScope.user.profile.has_admin_rights) {
-                ngToast.create({
-                    content: $filter('translate')('Common.Forbidden'),
-                    className: 'warning'
-                });
-                $state.go('app.dashboard');
-                return;
-            }
+            // if ($rootScope.branchAvailable && !$rootScope.user.profile.has_admin_rights) {
+            //     ngToast.create({
+            //         content: $filter('translate')('Common.Forbidden'),
+            //         className: 'warning'
+            //     });
+            //     $state.go('app.dashboard');
+            //     return;
+            // }
 
             RolesService.getAll().then(function (response) {
                 $scope.roles = response.data;
@@ -78,9 +77,10 @@ angular.module('primeapps')
             };
 
             $scope.showDeleteForm = function (roleId) {
-                // $scope.selectedRoleId = roleId;
-                // $scope.transferRoles = $filter('filter')($scope.roles, { id: '!' + roleId });
-                // $scope.transferRoles = $filter('filter')($scope.transferRoles, { reports_to: '!' + roleId });
+
+                $scope.selectedRoleId = roleId;
+                $scope.transferRoles = $filter('filter')($scope.roles, { id: '!' + roleId });
+                $scope.transferRoles = $filter('filter')($scope.transferRoles, { reports_to: '!' + roleId });
 
                 ////TODO: Add loop here
                 //var reportsTo = $filter('filter')($scope.transferRoles, {reports_to: roleId})[0];
@@ -95,8 +95,8 @@ angular.module('primeapps')
 
                 $scope.deleteModal = $scope.deleteModal || $modal({
                     scope: $scope,
-                    templateUrl: 'view/setup/roles/roleDelete.html',
-                    animation: '',
+                    templateUrl: 'view/app/authorization/roles/roleDelete.html',
+                    animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
                 });
@@ -136,60 +136,65 @@ angular.module('primeapps')
             };
 
             $scope.showFormModal = function (id, reportsTo = false) {
-                $scope.loading = true;
-                $scope.id = reportsTo ? undefined : id;//parseInt($location.search().id);
-                var reportsTo = reportsTo ? id : undefined;//parseInt($location.search().reportsTo);
-                $scope.roleUsers = [];
-                $scope.role = {};
-                $scope.role.share_data = false;
-                $scope.role_change = false;
-                $scope.reportsTo_disabled = true;
-                if (!$scope.id)
-                    $scope.reportsTo_disabled = false;
+                if (id) {
+                    $scope.loading = true;
+                    $scope.id = reportsTo ? undefined : id;//parseInt($location.search().id);
+                    var reportsTo = reportsTo ? id : undefined;//parseInt($location.search().reportsTo);
+                    $scope.roleUsers = [];
+                    $scope.role = {};
+                    $scope.role.share_data = false;
+                    $scope.role_change = false;
+                    $scope.reportsTo_disabled = true;
+                    if (!$scope.id)
+                        $scope.reportsTo_disabled = false;
 
-                RolesService.getAll()
-                    .then(function (response) {
-                        $scope.allRoles = response.data;
-                        $scope.roles = $filter('filter')($scope.allRoles, { id: '!' + $scope.id });
+                    RolesService.getAll()
+                        .then(function (response) {
+                            $scope.allRoles = response.data;
+                            $scope.roles = $filter('filter')($scope.allRoles, { id: '!' + $scope.id });
 
-                        if ($scope.id) {
-                            $scope.role = $filter('filter')($scope.allRoles, { id: $scope.id }, true)[0];
-                            $scope.role.label = $scope.role['label_' + $rootScope.language];
-                            $scope.role.description = $scope.role['description_' + $rootScope.language];
+                            if ($scope.id) {
+                                $scope.role = $filter('filter')($scope.allRoles, { id: $scope.id }, true)[0];
+                                $scope.role.label = $scope.role['label_' + $scope.language];
+                                $scope.role.description = $scope.role['description_' + $scope.language];
 
-                            if (!$scope.role.master) {
-                                $scope.role.reports_to = $filter('filter')($scope.allRoles, { id: $scope.role.reports_to }, true)[0].id;
+                                if (!$scope.role.master) {
+                                    $scope.role.reports_to = $filter('filter')($scope.allRoles, { id: $scope.role.reports_to }, true)[0].id;
+                                }
+
+                                if ($scope.role.share_data == undefined || $scope.role.share_data == null) {
+                                    $scope.role.share_data = false;
+                                }
+
+                                // angular.forEach($scope.role.users, function (userId) {
+                                //     var user = $filter('filter')($rootScope.workgroup.users, { id: userId }, true)[0];
+                                //
+                                //     if (user)
+                                //         $scope.roleUsers.push($filter('filter')($rootScope.users, { id: user.Id }, true)[0]);
+                                // });
                             }
-
-                            if ($scope.role.share_data == undefined || $scope.role.share_data == null) {
-                                $scope.role.share_data = false;
+                            else if (reportsTo) {
+                                $scope.role.reports_to = reportsTo;
                             }
-
-                            angular.forEach($scope.role.users, function (userId) {
-                                var user = $filter('filter')($rootScope.workgroup.users, { id: userId }, true)[0];
-
-                                if (user)
-                                    $scope.roleUsers.push($filter('filter')($rootScope.users, { id: user.Id }, true)[0]);
-                            });
-                        }
-                        else if (reportsTo) {
-                            $scope.role.reports_to = reportsTo;
-                        }
-
-                        $scope.loading = false;
-
-                        $scope.addNewRoleFormModal = $scope.addNewRoleFormModal || $modal({
-                            scope: $scope,
-                            templateUrl: 'view/app/authorization/roles/roleForm.html',
-                            animation: 'am-fade-and-slide-right',
-                            backdrop: 'static',
-                            show: false,
+                            $scope.loading = false;
                         });
+                }
+                else {
+                    $scope.role = {};
+                    $scope.role.share_data = false;
+                }
 
-                        $scope.addNewRoleFormModal.$promise.then(function () {
-                            $scope.addNewRoleFormModal.show();
-                        });
-                    });
+                $scope.addNewRoleFormModal = $scope.addNewRoleFormModal || $modal({
+                    scope: $scope,
+                    templateUrl: 'view/app/authorization/roles/roleForm.html',
+                    animation: 'am-fade-and-slide-right',
+                    backdrop: 'static',
+                    show: false
+                });
+
+                $scope.addNewRoleFormModal.$promise.then(function () {
+                    $scope.addNewRoleFormModal.show();
+                });
             };
 
             $scope.save = function (roleForm) {
@@ -217,11 +222,15 @@ angular.module('primeapps')
                         if (roleChange)
                             successMess = 'Setup.Roles.LongSaveSuccess';
 
-                        ngToast.create({
-                            content: $filter('translate')(successMess),
-                            className: 'success'
-                        });
+                        swal($filter('translate')(successMess), "", "success");
+                        $scope.addNewRoleFormModal.hide();
                         $state.go('studio.app.roles');
+                        $scope.loading = true;
+                        RolesService.getAll().then(function (response) {
+                            $scope.roles = response.data;
+                            $scope.tree = $scope.rolesToTree(response.data);
+                            $scope.loading = false;
+                        });
                     }).finally(function () {
                         $scope.saving = false;
                     });
@@ -231,5 +240,6 @@ angular.module('primeapps')
             $scope.roleUpdateChange = function () {
                 $scope.role_change = true;
             };
+
         }
     ]);

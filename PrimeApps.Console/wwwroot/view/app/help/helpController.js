@@ -32,13 +32,12 @@ angular.module('primeapps')
                 $scope.pageTotal = response.data;
             });
 
-            var helpData = function () {
-                HelpService.find($scope.requestModel).then(function (response) {
-                    $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
-                    $scope.loading = false;
-                });
-            }
-            helpData();
+
+            HelpService.find($scope.requestModel).then(function (response) {
+                $scope.helpsides = HelpService.process(response.data, $scope.moduleFilter, $scope.helpModalObj.routeModuleSide, $scope.helpEnums);
+                $scope.loading = false;
+            });
+
 
             $scope.changePage = function (page) {
                 $scope.loading = true;
@@ -611,6 +610,7 @@ angular.module('primeapps')
                     help.id = $scope.currentTemplate.id;
                     HelpService.update(help);
                     $cache.removeAll();
+                    $scope.changeOffset();
                     $scope.addNewHelpFormModal.hide();
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
@@ -619,8 +619,8 @@ angular.module('primeapps')
                         HelpService.getByType($scope.modalType)
                             .then(function (response) {
                                 $scope.helpTemplates = response.data;
+                                $scope.changeOffset();
                                 $scope.addNewHelpFormModal.hide();
-                                helpData();
                                 ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
                             });
 
@@ -732,6 +732,7 @@ angular.module('primeapps')
                 if ($scope.currentTemplate) {
                     help.id = $scope.currentTemplate.id;
                     HelpService.update(help);
+                    $scope.changeOffset();
                     $scope.addNewHelpFormSideModal.hide();
                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplateUpdate'), className: 'success' });
                 }
@@ -752,6 +753,7 @@ angular.module('primeapps')
                                     $scope.helpTemplates = response.data;
                                     createHelpList();
                                     // $state.reload();
+                                    $scope.changeOffset();
                                     $scope.addNewHelpFormSideModal.hide();
                                     ngToast.create({ content: $filter('translate')('Setup.HelpGuide.HelPTemplatePublish'), className: 'success' });
                                 });
