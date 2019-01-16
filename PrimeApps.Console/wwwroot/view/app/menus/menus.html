@@ -1,39 +1,69 @@
-<div class="panel panel-default setup-panel profiles">
-    <div class="panel-body">
-        <div ng-if="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-        <div ng-show="!loading">
-            <div class="subpanel">
-                <h5 class="subpanel-heading">{{'Menu.MenuSettings'|translate}}</h5>
-                <div class="subpanel-body">
-                    <div class="text-right">
-                        <a href="#/app/setup/menu" class="btn btn-custom btn-sm btn-w-lg pull-right"><i class="fa fa-plus pull-left"></i> {{'Menu.NewMenu'|translate}}</a>
+<div class="col-sm-12" style="border: none ;">
+    <div class="setup-liste-header row">
+        <div class="col-sm-6"><h2 class="setup-title">{{'Menu.MenuSettings'|translate}}</h2></div>
+        <div class="col-sm-6 list-right-menu">
+            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Menu.NewMenu'|translate}}</button>
+        </div>
+    </div>
+
+    <div class="tab-content">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{'Menu.MenuName'|translate}}</th>
+                    <th>{{'Menu.ProfileName'|translate}}</th>
+                    <th>{{'Menu.DefaultMenu'|translate}}</th>
+                    <th class="action-column"></th>
+                </tr>
+            </thead>
+            <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+            <tbody ng-show="!loading">
+                <tr ng-repeat="item in menuList | orderBy:'!default'">
+                    <td class="profile-name"><a ng-click="showFormModal(item)">{{item.name}}</a></td>
+                    <td><p>{{item.profile_name}}</p></td>
+                    <td><p ng-show="item.default">{{'Menu.DefaultValueTrue'|translate}} </p>
+                        <p ng-show="!item.default">{{'Menu.DefaultValueFalse'|translate}}</p>
+                    </td>
+                    <td class="text-right">
+                        <button id="actionButton-{{item.name}}" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(item)"><i class="fa fa-caret-down"></i></button>
+                    </td>
+                </tr>
+                <!--<button type="button" class="btn btn-xs btn-custom" ng-click="showFormModal(relation)">{{'Common.Edit' | translate}}</button>-->
+                <!--<button type="button" class="btn btn-xs btn-custom" confirm-click action="delete(relation)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">{{'Common.Remove' | translate}}</button>-->
+            </tbody>
+        </table>
+        <div class="row table-pagination">
+            <div class="col-sm-10">
+                <nav aria-label="Page navigation">
+                    <div paging
+                         text-first="&laquo;"
+                         ul-class="pagination"
+                         active-class="active"
+                         page="requestModel.offset"
+                         page-size="requestModel.limit"
+                         total="pageTotal"
+                         scroll-top="true"
+                         hide-if-empty="true"
+                         show-prev-next="true"
+                         show-first-last="true"
+                         text-next-class="fas fa-chevron-right"
+                         text-prev-class="fas fa-chevron-left"
+                         text-first-class="fas fa-step-backward"
+                         text-last-class="fas fa-step-forward"
+                         paging-action="changePage(page)">
                     </div>
-                    <div class="empty-message" ng-show="!loading && menuList.length <= 0">{{'Common.EmptyMessage' | translate}}</div>
-                    <div ng-show="!loading && menuList.length > 0">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>{{'Menu.MenuName'|translate}}</th>
-                                    <th>{{'Menu.ProfileName'|translate}}</th>
-                                    <th>{{'Menu.DefaultMenu'|translate}}</th>
-                                    <th class="action-column"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in menuList | orderBy:'!default'">
-                                    <td class="profile-name"><a href="#/app/setup/menu?id={{item.id}}">{{item.name}}</a></td>
-                                    <td><p>{{item.profile_name}}</p></td>
-                                    <td><p ng-show="item.default">{{'Menu.DefaultValueTrue'|translate}} </p>
-                                        <p ng-show="!item.default">{{'Menu.DefaultValueFalse'|translate}}</p>
-                                    </td>
-                                    <td class="text-right">
-                                        <button id="actionButton-{{item.name}}" ng-disabled="user.isDemo" class="btn btn-xs btn-default list-action-button" ng-click="openDropdown(item)"><i class="fa fa-caret-down"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                </nav>
+            </div>
+            <div class="col-sm-2">
+                <span class="pagination-span">Items per page  </span>
+                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                    <option ng-selected="true" value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="150">150</option>
+                    <option value="200">200</option>
+                </select>
             </div>
         </div>
     </div>

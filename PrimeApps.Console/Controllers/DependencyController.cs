@@ -56,7 +56,7 @@ namespace PrimeApps.Console.Controllers
 			var count = await _dependencyRepository.Count();
 
 			if (count < 1)
-				return NotFound();
+				return Ok(null);
 
 			return Ok(count);
 		}
@@ -66,7 +66,7 @@ namespace PrimeApps.Console.Controllers
 			var dependencies = await _dependencyRepository.Find(paginationModel);
 
 			if (dependencies == null)
-				return NotFound();
+				return Ok(null);
 
 			return Ok(dependencies);
 		}

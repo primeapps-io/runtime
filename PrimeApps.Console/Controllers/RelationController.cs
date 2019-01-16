@@ -58,7 +58,7 @@ namespace PrimeApps.Console.Controllers
 			var count = await _relationRepository.Count();
 
 			if (count < 1)
-				return NotFound();
+				return Ok(null);
 
 			return Ok(count);
 		}
@@ -69,7 +69,7 @@ namespace PrimeApps.Console.Controllers
 			var relations = await _relationRepository.Find(paginationModel);
 
 			if (relations == null)
-				return NotFound();
+				return Ok(null);
 
 			foreach (var relation in relations)
 			{
