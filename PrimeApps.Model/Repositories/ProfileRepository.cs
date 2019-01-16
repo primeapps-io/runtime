@@ -97,8 +97,8 @@ namespace PrimeApps.Model.Repositories
 
             if (result > 0)
             {
-                if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
-                    throw new Exception("Warehouse cannot be null during create/update/delete record.");
+                //if (string.IsNullOrWhiteSpace(_warehouse?.DatabaseName))
+                //    throw new Exception("Warehouse cannot be null during create/update/delete record.");
 
                 if (_warehouse?.DatabaseName != "0")
                 {

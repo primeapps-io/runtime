@@ -1,4 +1,5 @@
-﻿using PrimeApps.Model.Entities.Tenant;
+﻿using PrimeApps.Model.Common;
+using PrimeApps.Model.Entities.Tenant;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace PrimeApps.Model.Repositories.Interfaces
 		Task<MenuItem> GetMenuItemIdByName(string labelName, int menuId);
 		Task<ICollection<MenuItem>> GetMenuItemsByMenuId(int menuId);
 		Task<ICollection<MenuItem>> GetAllMenuItems();
+
+		Task<int> Count();
+		Task<ICollection<Menu>> Find(PaginationModel paginationModel);
 
 	}
 }
