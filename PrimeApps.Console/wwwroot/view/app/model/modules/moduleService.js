@@ -1808,7 +1808,7 @@ angular.module('primeapps')
                     return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
                 },
 
-                getFieldOperator: function (module) {
+                getFieldsOperator: function (module) {
                     angular.forEach(module.fields, function (field) {
                         field.dataType = dataTypes[field.data_type];
                         field.operators = [];
