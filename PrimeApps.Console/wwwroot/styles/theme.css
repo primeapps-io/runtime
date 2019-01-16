@@ -603,6 +603,8 @@ button, select {
     .primeapps .scratch-page .scratch-box:hover {
       cursor: pointer;
       box-shadow: 10px 10px 10px 0 rgba(0, 0, 0, 0.05); }
+.primeapps .btn i {
+  margin-right: 5px; }
 .primeapps .btn-bold {
   font-weight: bold; }
 .primeapps .btn-radius {

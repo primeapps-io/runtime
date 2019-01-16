@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes', 'systemRequiredFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes, systemRequiredFields) {
+    .factory('ModuleService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', 'activityTypes', '$cache', 'dataTypes', 'operators', 'systemFields', 'yesNo', 'transactionTypes', 'systemRequiredFields', 'icons',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, activityTypes, $cache, dataTypes, operators, systemFields, yesNo, transactionTypes, systemRequiredFields, icons) {
 
             return {
                 count: function () {
@@ -15,33 +15,14 @@ angular.module('primeapps')
                 getModuleById: function (id) {
                     return $http.get(config.apiUrl + 'module/get_by_id/' + id);
                 },
-                getTemplateSection: function () {
-                    return {
-                        "column_count": 2,
-                        "label_en": '',
-                        "label_tr": '',
-                        "display_form": '',
-                        "display_detail": '',
-                        "deleted": false,
-                        "showPermissionWarning": false,
-                        "permissions": [],
-                        "order": 0,
-                        "isNew": true,
-                        "fields": [
-                            {
-                                "label": "all 12"
-
-                            }
-                        ],
-
-                        "name": "Section 1 "
-                    };
+                getModuleByName: function (moduleName) {
+                    return $http.get(config.apiUrl + 'module/get_by_name/' + moduleName);
                 },
-                getTemplateSections: function () {
-
+                getIcons: function () {
+                    return icons.icons;
                 },
                 newField: function (dataType) {
-                    console.log(dataType);
+
                     var field = {};
                     field.label_en = dataType.label.en;
                     field.data_type = dataType.name;
@@ -59,7 +40,7 @@ angular.module('primeapps')
                     field.name = dataType.name;
                     field.isNew = true;
                     field.permissions = [];
-                    console.log(field);
+
                     return field;
                 },
                 getTemplateFields: function () {
@@ -136,6 +117,12 @@ angular.module('primeapps')
                                     field: that.newField(dataType)
                                 });
                                 break;
+                            case 'picklist':
+                                fields.push({
+                                    icon: "k-i-list-ordered",
+                                    field: that.newField(dataType)
+                                });
+                                break;
                             case 'lookup':
                                 fields.push({
                                     icon: "k-icon k-i-search",
@@ -177,6 +164,19 @@ angular.module('primeapps')
                                     icon: "k-icon k-i-hyperlink-open-sm",
                                     field: that.newField(dataType)
                                 });
+                                break;
+                            case 'multiselect':
+                                fields.push({
+                                    icon: "k-i-select-box",
+                                    field: that.newField(dataType)
+                                });
+                                break;
+                            case 'document':
+                                fields.push({
+                                    icon: "k-i-file",
+                                    field: that.newField(dataType)
+                                });
+
                                 break;
 
                         }
@@ -246,7 +246,6 @@ angular.module('primeapps')
 
                     return dataTypeList;
                 },
-
                 getPicklist: function (id) {
                     if (id >= 900000) {
                         var deffered = $q.defer();
@@ -256,7 +255,6 @@ angular.module('primeapps')
 
                     return $http.get(config.apiUrl + 'picklist/get/' + id);
                 },
-
                 formatFieldValue: function (field, value, picklists, record, module) {
                     field.valueFormatted = '';
 

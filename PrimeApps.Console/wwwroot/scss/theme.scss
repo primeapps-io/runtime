@@ -41,7 +41,7 @@ $primeapps-color: #0D6FAA;
     }
   }
 
-    .subpanel-draggable {
+  .subpanel-draggable {
     box-shadow: none !important;
   }
 
@@ -58,49 +58,49 @@ $primeapps-color: #0D6FAA;
           color: #ce0404 !important;
           position: relative;
         }
-        .field-area{
+        .field-area {
           display: flex;
           justify-content: space-between;
           padding: 10px 20px;
-          background: rgba(0,0,0,0.05);
-          color: rgba(0,0,0,0.25);
+          background: rgba(0, 0, 0, 0.05);
+          color: rgba(0, 0, 0, 0.25);
         }
         .action-buttons {
           padding: 0;
           position: absolute;
           right: 10px;
-    top: 50%;
+          top: 50%;
           transform: translate(0%, -50%);
-          .action-icon
-          {
+          .action-icon {
             color: rgba(13, 111, 170, 0.5) !important;
           }
         }
         .control-label {
           text-align: left;
           padding-bottom: 0;
-}
-    &:hover {
-      box-shadow: none;
-    background-color: rgba(13, 111, 170, 0.25);
-    border-color: rgba(0, 0, 0, 0.25);
+        }
+        &:hover {
+          box-shadow: none;
+          background-color: rgba(13, 111, 170, 0.25);
+          border-color: rgba(0, 0, 0, 0.25);
         }
 
       }
     }
-      box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
-      background: #fff;border: none !important;
-      border-radius: 5px;
-      margin-bottom: 30px;
-      min-height: 180px;
-      .action-buttons {
-        display: none;
+    box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
+    background: #fff;
+    border: none !important;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    min-height: 180px;
+    .action-buttons {
+      display: none;
       width: auto !important;
 
-        }
+    }
     .section-header {
       border: none !important;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
       padding: 10px !important;
       span {
         font-weight: bold;
@@ -517,16 +517,14 @@ $primeapps-color: #0D6FAA;
     font-family: Nunito;
     font-size: 15px;
   }
-  .tab-content
-  {
+  .tab-content {
     border-radius: 5px;
     background: #FFF;
     box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
   }
   .table {
     border: none;
-    
-    
+
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     background: transparent;
     thead:first-child > tr:first-child > th {
@@ -539,10 +537,9 @@ $primeapps-color: #0D6FAA;
       text-align: inherit;
       background: transparent;
     }
-    tbody{
+    tbody {
 
-      tr
-      {
+      tr {
         td {
           line-height: 20px;
           padding: 20px !important;
@@ -552,26 +549,23 @@ $primeapps-color: #0D6FAA;
           border-right: 1px solid rgba(0, 0, 0, 0.05);
           background: transparent;
         }
-        &:hover{
-          background: rgba(0,0,0,0.03);
+        &:hover {
+          background: rgba(0, 0, 0, 0.03);
           cursor: pointer;
 
         }
-        .action-buttons-block
-        {
-          button
-          {
+        .action-buttons-block {
+          button {
             background: transparent;
             width: 40px;
             height: 20px;
             text-align: center;
             border: none;
-            color: rgba(0,0,0,0.5);
+            color: rgba(0, 0, 0, 0.5);
           }
         }
       }
     }
-
 
   }
   .table-pagination {
@@ -766,21 +760,20 @@ $primeapps-color: #0D6FAA;
 
   .user-dropdown {
     padding: 20px;
-    a{
+    a {
       padding: 0px 10px;
       line-height: 15px;
-      i{
+      i {
         width: 20px;
         text-align: center;
         display: inline-block;
       }
     }
-    .user_divider
-    {
+    .user_divider {
 
       height: 1px;
       display: block;
-      background:rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.1);
       margin: 10px 0px;
     }
 
@@ -818,7 +811,6 @@ $primeapps-color: #0D6FAA;
 
       }
     }
-
 
     .btn-logout {
       width: 100%;
@@ -893,7 +885,11 @@ $primeapps-color: #0D6FAA;
   }
 
   //Button
-
+  .btn {
+    i {
+      margin-right: 5px;
+    }
+  }
   .btn-bold {
     font-weight: bold;
   }
@@ -1220,11 +1216,10 @@ $primeapps-color: #0D6FAA;
       border-color: transparent transparent #FFF transparent;
       pointer-events: none;
     }
-    &.bottom-right
-    {
+    &.bottom-right {
       &:before {
         left: auto;
-        right:10px;
+        right: 10px;
 
       }
     }
@@ -1287,7 +1282,7 @@ $primeapps-color: #0D6FAA;
         border: none;
         background: transparent;
         &:hover {
-          color:#000;
+          color: #000;
         }
       }
     }
@@ -1296,7 +1291,7 @@ $primeapps-color: #0D6FAA;
         color: #fff;
         background-color: rgba(17, 87, 163, 0.75);
         &:hover {
-          color:#fff;
+          color: #fff;
         }
       }
       .disabled {
@@ -1337,16 +1332,13 @@ $primeapps-color: #0D6FAA;
           padding: 20px 10px !important;
           height: 80px !important;
         }
-      .tooltip
-        {
+        .tooltip {
           display: none !important;
         }
 
       }
-      
-      
-      
-      ul{
+
+      ul {
         @include hoverEffect();
       }
       .logo {
@@ -1380,11 +1372,8 @@ $primeapps-color: #0D6FAA;
           left: 11%;
         }
       }
-      
 
-      
-      .sidebar-li
-      {
+      .sidebar-li {
         line-height: 30px;
         position: relative;
         span {
@@ -1397,12 +1386,12 @@ $primeapps-color: #0D6FAA;
           padding-left: 10px;
           li {
             a {
-              padding:5px 10px;
+              padding: 5px 10px;
               i {
                 margin-right: 0px;
               }
-              }
-            &:last-child{
+            }
+            &:last-child {
               margin-bottom: 10px;
             }
           }
@@ -1424,8 +1413,7 @@ $primeapps-color: #0D6FAA;
             text-align: center;
             margin-left: 0px;
           }
-          .fa-long-arrow-alt-right
-          {
+          .fa-long-arrow-alt-right {
             display: none;
           }
         }
@@ -1464,8 +1452,7 @@ $primeapps-color: #0D6FAA;
           display: block !important;
         }
 
-        ul
-        {
+        ul {
           padding-left: 0px;
           width: 50px;
         }
@@ -1481,12 +1468,10 @@ $primeapps-color: #0D6FAA;
         }
         .footer {
           .menu-togle {
-            .fa-long-arrow-alt-right
-            {
+            .fa-long-arrow-alt-right {
               display: block;
             }
-            .fa-long-arrow-alt-left
-            {
+            .fa-long-arrow-alt-left {
               display: none;
             }
           }
@@ -1509,8 +1494,7 @@ $primeapps-color: #0D6FAA;
           padding: 20px;
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
           border-radius: 5px;
-          .tooltip
-          {
+          .tooltip {
             display: none !important;
           }
           .active {
@@ -1549,10 +1533,10 @@ $primeapps-color: #0D6FAA;
               align-items: center;
               width: 100%;
 
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;span
-              {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              span {
                 margin-left: 10px;
               }
 
@@ -1580,18 +1564,15 @@ $primeapps-color: #0D6FAA;
           }
 
         }
-        
-        
-        
-        .submenu-togle
-        {
+
+        .submenu-togle {
           width: 70px;
           padding: 20px;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          .fa-long-arrow-alt-right{
+          .fa-long-arrow-alt-right {
             display: none;
           }
         }
@@ -1604,8 +1585,7 @@ $primeapps-color: #0D6FAA;
         @include hoverEffect();
       }
       &.full-toggled2 {
-        .content-in2
-        {
+        .content-in2 {
           width: calc(100% - 100px);
         }
         .app-menu2 {
@@ -1614,16 +1594,13 @@ $primeapps-color: #0D6FAA;
             display: block !important;
           }
 
-
         }
 
-        .setup-nav
-        {
-          li{
+        .setup-nav {
+          li {
 
-            a{
-              i
-              {
+            a {
+              i {
 
               }
               span {
@@ -1633,12 +1610,11 @@ $primeapps-color: #0D6FAA;
             }
           }
         }
-        .submenu-togle
-        {
-          .fa-long-arrow-alt-right{
+        .submenu-togle {
+          .fa-long-arrow-alt-right {
             display: block;
           }
-          .fa-long-arrow-alt-left{
+          .fa-long-arrow-alt-left {
             display: none;
           }
         }
@@ -1692,11 +1668,10 @@ $primeapps-color: #0D6FAA;
         }
 
       }
-      }
-    .tooltip{
-      &.tooltip-info{
-        .tooltip-inner
-        {
+    }
+    .tooltip {
+      &.tooltip-info {
+        .tooltip-inner {
           background: #0f1015 !important;
           color: #FFF;
           padding: 5px 10px !important;
@@ -1705,18 +1680,16 @@ $primeapps-color: #0D6FAA;
           white-space: nowrap;
 
         }
-        &.right{
-          .tooltip-arrow
-          {
+        &.right {
+          .tooltip-arrow {
             border-color: transparent !important;
-            border-right-color:#0f1015 !important;
+            border-right-color: #0f1015 !important;
           }
         }
-        &.top{
-          .tooltip-arrow
-          {
+        &.top {
+          .tooltip-arrow {
             border-color: transparent !important;
-            border-top-color:#0f1015 !important;
+            border-top-color: #0f1015 !important;
           }
         }
       }

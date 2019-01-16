@@ -2,20 +2,15 @@
     <div class="col-sm-9" style="border: none ;">
         <div class="panel panel-default setup-panel">
             <div class="panel-heading clearfix">
-                <h4 class="pull-left">
-                    <span class="module-label">{{module['label_' + language + '_plural']}}</span>
-                    <span class="action-buttons">
-                <a href ng-click="showEditModal(false)" class="action-icon" title="{{'Common.Edit' | translate}}"><i
-                        class="flaticon-pencil124"></i></a>
-            </span>
-                </h4>
+                <div class="pull-left">
+                    <h2 class="setup-title">{{module['label_' + language + '_plural']}}</h2>
+                </div>
                 <div class="pull-right">
-                    <a ng-href="{{!redirect ? '#app/setup/modules' : '#/app/moduleForm/' + module.name}}"
-                       class="btn btn-sm btn-custom" ng-disabled="saving">{{'Common.Cancel' | translate}}</a>
-                    <button type="button" class="btn btn-sm btn-primary"
-                            ng-class="{'btn-w-sm':!redirect, 'btn-w-xxlg':(redirect && language === 'tr'), 'btn-w-xlg':(redirect && language === 'en')}"
-                            ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving"><i
-                            class="fa fa-check pull-left"></i> {{!redirect ? ('Common.Save' | translate) :
+                    <a class="btn  btn-radius btn-gray"><i class="fas fa-angle-left"></i> {{'Common.Cancel' | translate}}</a>
+                    <button ng-click="showEditModal(false)"  class="btn  btn-radius btn-blue"><i class="fas fa-cog"></i>Settings</button>
+                    <button type="button" class="btn btn-radius btn-blue"
+                            ladda="saving" ng-click="isModuleSaving = true; saveModule()" ng-disabled="saving">
+                        <i class="fas fa-save"></i> {{!redirect ? ('Common.Save' | translate) :
                         ('Setup.Modules.SaveFormChanges' | translate)}}
                     </button>
                 </div>
@@ -23,7 +18,7 @@
             <div class="panel-body">
                 <div class="module-form-setup">
                     <div class="form-horizontal form-custom">
-                        <div class="draggable-form" ng-controller="ModuleLayoutController">
+                        <div class="draggable-form">
                             <div class="row-container">
                                 <div class="subpanel module-section" ng-class="{'subpanel-draggable':handleHover}"
                                      ng-init="handleHover=false"
@@ -70,305 +65,110 @@
                                                         <div class="field-area"
                                                              ng-if="cell.field.data_type === 'text_single'">
                                                             <span> {{cell.field.dataType['label_' + language]}}</span>
-                                                            <i class="fas fa-user-plus"></i>
+                                                            <i class="k-icon k-i-foreground-color"></i>
                                                         </div>
 
                                                         <div class="field-area"
                                                              ng-if="cell.field.data_type === 'text_multi'">
                                                             <span> {{cell.field.dataType['label_' + language]}}</span>
-                                                            <i class="fas fa-user-plus"></i>
+                                                            <i class="k-icon k-i-table-align-top-left"></i>
+                                                        </div>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'number'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-custom-format"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'number_auto'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-list-numbered"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'number_decimal'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-decimal-decrease"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'currency'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-dollar"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'date'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-calendar"></i>
                                                         </div>
 
 
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field); calculate(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                ng-trim="false"
-                                                                ng-minlength="cell.field.validation.min_length || 0"
-                                                                maxlength="{{cell.field.validation.max_length || 18}}"
-                                                                min="cell.field.validation.min"
-                                                                max="cell.field.validation.max"
-                                                                numeric
-                                                                ng-if="cell.field.data_type === 'number'"/>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'email'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-email"></i>
+                                                        </div>
 
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-disabled="true"
-                                                                ng-if="cell.field.data_type === 'number_auto'"/>
-
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field); calculate(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                maxlength="{{cell.field.validation.max_length || 19}}"
-                                                                min="cell.field.validation.min"
-                                                                max="cell.field.validation.max"
-                                                                places="cell.field.decimal_places || 2"
-                                                                rounding="cell.field.rounding"
-                                                                number-decimal
-                                                                ng-if="cell.field.data_type === 'number_decimal'"/>
-
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field); calculate(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                maxlength="{{cell.field.validation.max_length || 21}}"
-                                                                min="cell.field.validation.min"
-                                                                max="cell.field.validation.max"
-                                                                places="cell.field.decimal_places || 2"
-                                                                rounding="cell.field.rounding"
-                                                                currency-symbol="cell.field.currency_symbol"
-                                                                number-currency
-                                                                ng-if="cell.field.data_type === 'currency'"/>
-
-                                                        <input
-                                                                type="email"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                ng-minlength="cell.field.validation.min_length || 0"
-                                                                maxlength="{{cell.field.validation.max_length || 100}}"
-                                                                ng-if="cell.field.data_type === 'email'"/>
-
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                data-autoclose="1"
-                                                                data-date-type="iso"
-                                                                data-min-date="{{(cell.field.validation.min ? (cell.field.validation.min === 'today' ? currentDayMin : cell.field.validation.min) : undefined)}}"
-                                                                data-max-date="{{(cell.field.validation.max ? (cell.field.validation.max === 'today' ? currentDayMax : cell.field.validation.max) : undefined)}}"
-                                                                data-icon-left="fa fa-chevron-left"
-                                                                data-icon-right="fa fa-chevron-right"
-                                                                bs-datepicker
-                                                                ng-if="cell.field.data_type === 'date'">
-
-                                                        <div class="clearfix"
+                                                        <div class="field-area"
                                                              ng-if="cell.field.data_type === 'date_time'">
-                                                            <input
-                                                                    type="text"
-                                                                    name="{{cell.field.name}}"
-                                                                    class="form-control ng-animate-disabled pull-left datetime-date"
-                                                                    tabindex="{{cell.field.order}}"
-                                                                    ng-model="record[cell.field.name]"
-                                                                    ng-change="setDependency(cell.field);"
-                                                                    ng-disabled="cell.field.systemReadonly"
-                                                                    placeholder="{{'Common.Date' | translate}}"
-                                                                    data-autoclose="1"
-                                                                    data-date-type="iso"
-                                                                    data-min-date="{{(cell.field.validation.min ? (cell.field.validation.min === 'today' ? currentDayMin : cell.field.validation.min) : undefined)}}"
-                                                                    data-max-date="{{(cell.field.validation.max ? (cell.field.validation.max === 'today' ? currentDayMax : cell.field.validation.max) : undefined)}}"
-                                                                    data-icon-left="fa fa-chevron-left"
-                                                                    data-icon-right="fa fa-chevron-right"
-                                                                    bs-datepicker>
-                                                            <input
-                                                                    type="text"
-                                                                    class="form-control datetime-time"
-                                                                    tabindex="{{cell.field.order}}"
-                                                                    ng-model="record[cell.field.name]"
-                                                                    ng-change="setDependency(cell.field);"
-                                                                    ng-disabled="cell.field.systemReadonly"
-                                                                    placeholder="{{'Common.Time' | translate}}"
-                                                                    data-autoclose="1"
-                                                                    data-time-type="iso"
-                                                                    data-icon-up="fa fa-chevron-up"
-                                                                    data-icon-down="fa fa-chevron-down"
-                                                                    data-length="1"
-                                                                    data-minute-step="10"
-                                                                    data-arrow-behavior="picker"
-                                                                    bs-timepicker>
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-calendar-date"></i>
                                                         </div>
 
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                data-autoclose="1"
-                                                                data-time-type="iso"
-                                                                data-icon-up="fa fa-chevron-up"
-                                                                data-icon-down="fa fa-chevron-down"
-                                                                data-length="1"
-                                                                data-minute-step="10"
-                                                                data-arrow-behavior="picker"
-                                                                placeholder="{{'Common.Time' | translate}}"
-                                                                bs-timepicker
-                                                                ng-if="cell.field.data_type === 'time'">
-                                                        <span
-                                                                style="padding: 0px;  margin-bottom: 10px;"
-                                                                class="ng-animate-disabled radio-btn-custom-label"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="field.custom_label"
-                                                                ng-class="{'col-sm-12':cell.field.custom_label && cell.field.position==='left'}"
-                                                                ng-if="(cell.field.data_type === 'picklist' || cell.field.data_type === 'rating') && cell.field.custom_label">{{cell.field.custom_label}}</span>
-                                                        <select
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                ng-options="o as o['label_' + language] for o in picklistsModule[cell.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
-                                                                ng-if="cell.field.data_type === 'picklist' && ( cell.field.view_type ==='dropdown' || cell.field.view_type ==='' || cell.field.view_type===undefined)">
-                                                            <option value="">{{cell.field.dataType['label_' +
-                                                                language]}}
-                                                            </option>
-                                                        </select>
-                                                        <div ng-repeat="radio in picklistsModule[cell.field.picklist_id] | filter:{inactive:'!true'}"
-                                                             ng-if="cell.field.data_type === 'picklist' &&  cell.field.view_type ==='radio'">
-                                                            <input
-                                                                    id="{{cell.field.name+radio.id}}"
-                                                                    tabindex="{{cell.field.order}}"
-                                                                    ng-disabled="cell.field.validation.readonly"
-                                                                    ng-required="{{cell.field.validation.required}}"
-                                                                    name="{{cell.field.name}}"
-                                                                    type="radio"
-                                                                    ng-model="record[cell.field.name]"
-                                                                    ng-change="setDependency(cell.field);"
-                                                                    ng-value="radio">
-                                                            <label for="{{cell.field.name+radio.id}}"
-                                                                   style="font-size: 16px;font-weight: 300 !important;">
-                                                                {{radio.label[language]}}</label>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'time'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-clock"></i>
                                                         </div>
-                                                        <button
-                                                                type="button"
-                                                                name="{{cell.field.name}}"
-                                                                class="btn btn-default multiselect"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-change="setDependency(cell.field);"
-                                                                ng-disabled="cell.field.systemReadonly"
-                                                                data-icon-checkmark="fa fa-check"
-                                                                data-placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                data-html="1"
-                                                                data-multiple="1"
-                                                                data-max-length="2"
-                                                                data-max-length-html="{{'Common.Multiselected' | translate}}"
-                                                                bs-options="o as o['label_' + language] for o in picklistsModule[cell.field.picklist_id] | filter:{inactive:'!true'} track by o.id"
-                                                                bs-select
-                                                                ng-if="cell.field.data_type === 'multiselect' || cell.field.data_type === 'tag'">
-                                                        </button>
 
-                                                        <input type="checkbox"
-                                                               name="{{cell.field.name}}"
-                                                               class="ng-animate-disabled"
-                                                               tabindex="{{cell.field.order}}"
-                                                               ng-model="record[cell.field.name]"
-                                                               ng-change="setDependency(cell.field);"
-                                                               ng-disabled="cell.field.systemReadonly"
-                                                               ng-if="cell.field.data_type === 'checkbox' && !cell.field.custom_label">
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'picklist'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-list-ordered"></i>
+                                                        </div>
 
-                                                        <span class="ng-animate-disabled"
-                                                              tabindex="{{cell.field.order}}"
-                                                              ng-model="record[cell.field.name]"
-                                                              ng-if="cell.field.data_type === 'checkbox' && cell.field.custom_label">{{cell.field.custom_label}}</span>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'rating'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-star-outline"></i>
+                                                        </div>
 
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-value="record[cell.field.combination.field_1] && record[cell.field.combination.field_2] ? record[cell.field.combination.field_1] + ' ' + record[cell.field.combination.field_2] : null"
-                                                                ng-disabled="true"
-                                                                ng-if="cell.field.data_type === 'combination'"/>
-                                                        <input
-                                                                type="file"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-disabled="true"
-                                                                ng-if="cell.field.data_type === 'document'"/>
-                                                        <input
-                                                                type="file"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-disabled="true"
-                                                                ng-if="cell.field.data_type === 'image'"/>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'image'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-image"></i>
+                                                        </div>
 
-                                                        <input
-                                                                type="text"
-                                                                name="{{cell.field.name}}"
-                                                                class="form-control ng-animate-disabled"
-                                                                placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                tabindex="{{cell.field.order}}"
-                                                                ng-model="record[cell.field.name]"
-                                                                ng-minlength="cell.field.validation.min_length || 0"
-                                                                maxlength="{{cell.field.validation.max_length || 400}}"
-                                                                ng-if="cell.field.data_type === 'url'"/>
-                                                        <span ng-if="cell.field.data_type === 'url'"
-                                                              class="fa fa-chain input-with-icon"></span>
-                                                        <input-stars
-                                                                ng-if="cell.field.data_type === 'rating'"
-                                                                max="{{cell.field.validation.min_length}}"
-                                                                allow-half
-                                                                icon-base="fa fa-fw"
-                                                                icon-empty="fa-star-o"
-                                                                icon-half="fa-star-half-o"
-                                                                icon-full="fa-star"
-                                                                icon-hover-full="fa-star"
-                                                                ng-model="record[cell.field.name]"
-                                                        ></input-stars>
-                                                        <div class="inner-addon right-addon"
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'multiselect'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-select-box"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'document'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-i-file"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'lookup'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-search"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
                                                              ng-if="cell.field.data_type === 'location'">
-                                                            <i class="glyphicon glyphicon-map-marker"></i>
-                                                            <input type="text" class="form-control"/>
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-marker-pin-target"></i>
                                                         </div>
 
-                                                        <angucomplete-alt input-name="{{cell.field.name}}"
-                                                                          input-class="form-control ng-animate-disabled"
-                                                                          placeholder="{{cell.field.dataType['label_' + language]}}"
-                                                                          match-class="highlight-angucomplete"
-                                                                          field-tabindex="{{cell.field.order}}"
-                                                                          pause="200"
-                                                                          selected-object="record[cell.field.name]"
-                                                                          initial-value="record[cell.field.name]"
-                                                                          disable-input="cell.field.systemReadonly"
-                                                                          remote-api-handler="lookup"
-                                                                          search-fields="name"
-                                                                          title-field="primary_value"
-                                                                          minlength="2"
-                                                                          template-url="view/common/angucomplete.html"
-                                                                          focus-in="setCurrentLookupField(cell.field)"
-                                                                          text-searching="{{'Common.Searching' | translate}}"
-                                                                          text-no-results="{{'Common.NoResults' | translate}}"
-                                                                          use-original-object="true"
-                                                                          ng-if="cell.field.data_type === 'lookup'"/>
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'url'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-link-horizontal"></i>
+                                                        </div>
 
 
                                                     </div>
