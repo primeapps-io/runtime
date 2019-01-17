@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using PrimeApps.Model.Common.Profile;
 using PrimeApps.Model.Helpers;
 using Hangfire;
+using PrimeApps.Model.Common;
 
 namespace PrimeApps.Model.Repositories
 {
@@ -401,6 +402,79 @@ namespace PrimeApps.Model.Repositories
             profile.Deleted = true;
 
             return await DbContext.SaveChangesAsync();
+        }
+        public async Task<int> Count()
+        {
+            var count = DbContext.Templates
+               .Where(x => !x.Deleted).Count();
+            return count;
+        }
+
+        public async Task<ICollection<ProfileWithUsersDTO>> Find(PaginationModel paginationModel)
+        {
+            var getPagination = await GetPaginationQuery(paginationModel);
+
+            var profiles = getPagination
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToList();
+
+            if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
+            {
+                var propertyInfo = typeof(Profile).GetProperty(paginationModel.OrderColumn);
+
+                if (paginationModel.OrderType == "asc")
+                {
+                    profiles = profiles.OrderBy(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+                else
+                {
+                    profiles = profiles.OrderByDescending(x => propertyInfo.GetValue(x, null)).ToList();
+                }
+
+            }
+
+            return profiles;
+
+        }
+        private async Task<List<ProfileWithUsersDTO>> GetPaginationQuery(PaginationModel paginationModel)
+        {
+            return await DbContext.Profiles
+                               .Select(x => new ProfileWithUsersDTO()
+                               {
+                                   ID = x.Id,
+                                   Description = x.Description,
+                                   Name = x.Name,
+                                   IsPersistent = x.IsPersistent,
+                                   HasAdminRights = x.HasAdminRights,
+                                   SendEmail = x.SendEmail,
+                                   SendSMS = x.SendSMS,
+                                   ExportData = x.ExportData,
+                                   ImportData = x.ImportData,
+                                   WordPdfDownload = x.WordPdfDownload,
+                                   LeadConvert = x.LeadConvert,
+                                   CreatedBy = x.CreatedById,
+                                   DocumentSearch = x.DocumentSearch,
+                                   Tasks = x.Tasks,
+                                   Calendar = x.Calendar,
+                                   Newsfeed = x.Newsfeed,
+                                   Report = x.Report,
+                                   Dashboard = x.Dashboard,
+                                   Home = x.Home,
+                                   CollectiveAnnualLeave = x.CollectiveAnnualLeave,
+                                   StartPage = x.StartPage,
+                                   ParentId = x.ParentId,
+                                   UserIds = x.Users.Select(z => z.Id).ToList(),
+                                   Permissions = x.Permissions.Select(y => new ProfilePermissionDTO()
+                                   {
+                                       ID = x.Id,
+                                       ModuleId = y.ModuleId,
+                                       Type = (int)y.Type,
+                                       Modify = y.Modify,
+                                       Read = y.Read,
+                                       Remove = y.Remove,
+                                       Write = y.Write
+                                   }).ToList()
+                               }).ToListAsync();
         }
     }
 }

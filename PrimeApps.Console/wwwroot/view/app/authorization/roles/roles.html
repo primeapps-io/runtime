@@ -1,16 +1,11 @@
-<div class="col-sm-12" style="border: none ;">
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Nav.Tabs.Roles' | translate}}</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Roles.NewRole' | translate}}</button>
-        </div>
-    </div>
-
-    <div class="tab-content">
-        <div ui-tree id="tree-root">
-            <ol ui-tree-nodes ng-model="tree">
-                <li ng-repeat="node in tree" ui-tree-node ng-include="'view/app/authorization/roles/roleTreeTemplate.html'"></li>
-            </ol>
-        </div>
+<div class="setup-title">
+    <h2>{{'Setup.Nav.Tabs.Roles' | translate}}</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i>{{'Setup.Roles.NewRole' | translate}}</button>
+</div>
+<div class="tab-content">
+    <div ui-tree id="tree-root">
+        <ol ui-tree-nodes ng-model="tree">
+            <li ng-repeat="node in tree" ui-tree-node ng-include="'view/app/authorization/roles/roleTreeTemplate.html'"></li>
+        </ol>
     </div>
 </div>

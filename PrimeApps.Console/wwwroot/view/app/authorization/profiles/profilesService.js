@@ -8,7 +8,12 @@ angular.module('primeapps')
                 getAll: function () {
                     return $http.post(config.apiUrl + 'Profile/GetAll', {});
                 },
-
+                count: function () {
+                    return $http.get(config.apiUrl + 'Profile/count');
+                },
+                find: function (data) {
+                    return $http.post(config.apiUrl + 'Profile/find', data);
+                },
                 getAllBasic: function () {
                     return $http.get(config.apiUrl + 'Profile/GetAllBasic');
                 },

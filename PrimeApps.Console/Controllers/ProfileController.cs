@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using System.Linq;
 using PrimeApps.Model.Common;
 using PrimeApps.Model.Common.Profile;
+using System.Web.Http;
 
 namespace PrimeApps.Console.Controllers
 {
@@ -138,6 +139,28 @@ namespace PrimeApps.Console.Controllers
             await _profileRepository.DeleteSoft(profileEntity);
 
             return Ok();
+        }
+
+        [Route("count"), HttpGet]
+        public async Task<IActionResult> Count([FromUri]TemplateType templateType)
+        {
+            var count = await _profileRepository.Count();
+
+            //if (count < 1)
+            //	return NotFound(count);
+
+            return Ok(count);
+        }
+
+        [Route("find"), HttpPost]
+        public async Task<IActionResult> Find([FromBody]PaginationModel paginationModel)
+        {
+            var templates = await _profileRepository.Find(paginationModel);
+
+            //if (templates == null)
+            //	return NotFound();
+
+            return Ok(templates);
         }
 
     }
