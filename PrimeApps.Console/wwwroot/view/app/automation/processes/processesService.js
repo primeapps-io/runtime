@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ProcessesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields) {
+    .factory('ProcessesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', 'defaultLabels', '$cache', 'dataTypes', 'systemFields', 'ModuleService',
+        function ($rootScope, $http, config, $filter, $q, helper, defaultLabels, $cache, dataTypes, systemFields, ModuleService) {
             return {
                 find: function (model) {
                     return $http.post(config.apiUrl + 'process/find/', model);
@@ -144,33 +144,54 @@ angular.module('primeapps')
                         var lookupField = processApproverField[0].split('.');
                         var lookupModule = $filter('filter')(workflowModel.module.fields, { name: lookupField[0] }, true)[0];
                         var approverModule = $filter('filter')($rootScope.modules, { name: lookupModule.lookup_type }, true)[0];
-                        var paramModule = $filter('filter')(dynamicprocessModules, { systemName: lookupField[0] }, true)[0];
-                        moduleObj.module = approverModule;
-                        moduleObj.name = lookupModule['label_' + $rootScope.language] + ' ' + '(' + moduleObj.module['label_' + $rootScope.language + '_singular'] + ')';
-                        moduleObj.isSameModule = paramModule.isSameModule;
-                        moduleObj.systemName = lookupField[0];
-                        moduleObj.id = paramModule.id;
-                        workflowModel.firstApproverModule = moduleObj;
-                        workflowModel.first_approver_lookup = $filter('filter')(approverModule.fields, { name: lookupField[1] }, true)[0];
-                        var firstDynamicApproverFields = $filter('filter')($rootScope.modules, { name: workflowModel.first_approver_lookup.lookup_type }, true)[0];
-                        workflowModel.first_approver_field = $filter('filter')(firstDynamicApproverFields.fields, { name: lookupField[2] }, true)[0];
+                        ModuleService.getModuleFields(approverModule.name)
+                            .then(function (response1) {
+                                if (response1.data) {
+                                    approverModule.fields = response1.data;
+                                }
 
-                        if (processApproverField.length > 1) {
-                            var secondModuleObj = {};
-                            var secondLookupField = processApproverField[1].split('.');
-                            var secondLookupModule = $filter('filter')(workflowModel.module.fields, { name: secondLookupField[0] }, true)[0];
-                            var secondApproverModule = $filter('filter')($rootScope.modules, { name: secondLookupModule.lookup_type }, true)[0];
-                            var secondParamModule = $filter('filter')(dynamicprocessModules, { systemName: secondLookupField[0] }, true)[0];
-                            secondModuleObj.module = secondApproverModule;
-                            secondModuleObj.name = secondLookupModule['label_' + $rootScope.language] + ' ' + '(' + secondModuleObj.module['label_' + $rootScope.language + '_singular'] + ')';
-                            secondModuleObj.isSameModule = secondParamModule.isSameModule;
-                            secondModuleObj.systemName = secondLookupField[0];
-                            secondModuleObj.id = secondParamModule.id;
-                            workflowModel.secondApproverModule = secondModuleObj;
-                            workflowModel.second_approver_lookup = $filter('filter')(secondApproverModule.fields, { name: secondLookupField[1] }, true)[0];
-                            var secondDynamicApproverFields = $filter('filter')($rootScope.modules, { name: workflowModel.second_approver_lookup.lookup_type }, true)[0];
-                            workflowModel.second_approver_field = $filter('filter')(secondDynamicApproverFields.fields, { name: secondLookupField[2] }, true)[0];
-                        }
+                                var paramModule = $filter('filter')(dynamicprocessModules, { systemName: lookupField[0] }, true)[0];
+                                moduleObj.module = approverModule;
+                                moduleObj.name = lookupModule['label_' + $rootScope.language] + ' ' + '(' + moduleObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                moduleObj.isSameModule = paramModule.isSameModule;
+                                moduleObj.systemName = lookupField[0];
+                                moduleObj.id = paramModule.id;
+                                workflowModel.firstApproverModule = moduleObj;
+                                workflowModel.first_approver_lookup = $filter('filter')(approverModule.fields, { name: lookupField[1] }, true)[0];
+                                var firstDynamicApproverFields = $filter('filter')($rootScope.modules, { name: workflowModel.first_approver_lookup.lookup_type }, true)[0];
+                                ModuleService.getModuleFields(firstDynamicApproverFields.name)
+                                    .then(function (response2) {
+                                        if (response2.data) {
+                                            firstDynamicApproverFields.fields = response2.data;
+                                        }
+                                        workflowModel.first_approver_field = $filter('filter')(firstDynamicApproverFields.fields, { name: lookupField[2] }, true)[0];
+
+                                        if (processApproverField.length > 1) {
+                                            var secondModuleObj = {};
+                                            var secondLookupField = processApproverField[1].split('.');
+                                            var secondLookupModule = $filter('filter')(workflowModel.module.fields, { name: secondLookupField[0] }, true)[0];
+                                            var secondApproverModule = $filter('filter')($rootScope.modules, { name: secondLookupModule.lookup_type }, true)[0];
+                                            ModuleService.getModuleFields(secondApproverModule.name)
+                                                .then(function (response3) {
+                                                    if (response3.data) {
+                                                        secondApproverModule.fields = response3.data;
+                                                    }
+
+                                                    var secondParamModule = $filter('filter')(dynamicprocessModules, { systemName: secondLookupField[0] }, true)[0];
+                                                    secondModuleObj.module = secondApproverModule;
+                                                    secondModuleObj.name = secondLookupModule['label_' + $rootScope.language] + ' ' + '(' + secondModuleObj.module['label_' + $rootScope.language + '_singular'] + ')';
+                                                    secondModuleObj.isSameModule = secondParamModule.isSameModule;
+                                                    secondModuleObj.systemName = secondLookupField[0];
+                                                    secondModuleObj.id = secondParamModule.id;
+                                                    workflowModel.secondApproverModule = secondModuleObj;
+                                                    workflowModel.second_approver_lookup = $filter('filter')(secondApproverModule.fields, { name: secondLookupField[1] }, true)[0];
+                                                    var secondDynamicApproverFields = $filter('filter')($rootScope.modules, { name: workflowModel.second_approver_lookup.lookup_type }, true)[0];
+                                                    workflowModel.second_approver_field = $filter('filter')(secondDynamicApproverFields.fields, { name: secondLookupField[2] }, true)[0];
+
+                                                });
+                                        }
+                                    });
+                            });
                     }
 
                     workflowModel.operation = {};
@@ -344,4 +365,3 @@ angular.module('primeapps')
 
 angular.module('primeapps')
 
-    
