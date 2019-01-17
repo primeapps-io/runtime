@@ -415,7 +415,6 @@ $primeapps-color: #0D6FAA;
     }
 
   }
-;
   .sidebar-nav a.active {
     background-color: #121212 !important;
     border-radius: inherit;
@@ -906,11 +905,6 @@ $primeapps-color: #0D6FAA;
   }
 
   //Button
-  .btn {
-    i {
-      margin-right: 5px;
-    }
-  }
   .btn-bold {
     font-weight: bold;
   }
@@ -1174,7 +1168,7 @@ $primeapps-color: #0D6FAA;
             line-height: 20px;
             a {
               color: rgba(255, 255, 255, 0.5);
-              font-size: 14px;
+              font-size: 12px;
               i {
                 font-size: 14px;
                 background: none;
@@ -1188,7 +1182,7 @@ $primeapps-color: #0D6FAA;
         }
         a {
           font-weight: bold;
-          font-size: 15px;
+          font-size: 14px;
           padding-top: 5px;
           padding-bottom: 5px;
           display: flex;
@@ -1344,7 +1338,7 @@ $primeapps-color: #0D6FAA;
       margin-left: 0px;
       overflow-x: inherit; //scroll kapalı halı
       overflow-y: inherit;
-      z-index: 1000;
+      z-index: 2000;
       background: url("../images/primeapps/menu_background.png") !important;
       background-repeat: repeat !important;
       .sidebar-nav {
@@ -1366,26 +1360,13 @@ $primeapps-color: #0D6FAA;
         height: 40px;
         padding: 0px;
         position: relative;
-        svg {
-          height: 100%;
-          .st0 {
-            fill: #FFF;
-          }
-          .st1 {
-            fill: rgba(255, 255, 255, 0.75);
-          }
-          .st2 {
-            fill: #FCAD2D;
-          }
-          .st3 {
-            fill: #F06933;
-          }
-          .st4 {
-            fill: #E89728;
-          }
-          .st5 {
-            fill: #0D6FAA;
-          }
+        svg { height: 100%;
+          .st0 { fill: #FFF; }
+          .st1 { fill: rgba(255,255,255,0.75); }
+          .st2 { fill: #FCAD2D; }
+          .st3 { fill: #F06933; }
+          .st4 { fill: #E89728; }
+          .st5 { fill: #0D6FAA; }
         }
         .logo-icon {
           position: absolute;
@@ -1512,7 +1493,7 @@ $primeapps-color: #0D6FAA;
 
         .setup-nav {
           background: #fff;
-          padding: 20px;
+          padding: 20px 10px;
           box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.05);
           border-radius: 5px;
           .tooltip {
@@ -1522,7 +1503,7 @@ $primeapps-color: #0D6FAA;
             position: relative;
             &:before {
               margin-top: 0px;
-              right: -30px;
+              right: -20px;
               top: 50%;
               content: " ";
               position: absolute;
@@ -1587,7 +1568,7 @@ $primeapps-color: #0D6FAA;
         }
 
         .submenu-togle {
-          width: 70px;
+          width: 50px;
           padding: 20px;
           cursor: pointer;
           display: flex;
@@ -1605,12 +1586,34 @@ $primeapps-color: #0D6FAA;
         padding-right: 15px;
         @include hoverEffect();
       }
+      .setup-title {
+        font-size: 16px;
+        margin: 0px;
+        padding:10px;
+        font-weight: bold;
+        color: #0d6faa;
+        display: block;
+        height: 40px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        i{
+          width: 30px;
+          text-align: center;
+        }
+        span{
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          margin-left: 10px;
+        }
+      }
       &.full-toggled2 {
         .content-in2 {
-          width: calc(100% - 100px);
+          width: calc(100% - 80px);
         }
         .app-menu2 {
-          width: 100px;
+          width: 80px;
           .tooltip {
             display: block !important;
           }
@@ -1639,60 +1642,64 @@ $primeapps-color: #0D6FAA;
             display: none;
           }
         }
-      }
-
-      .setup-title {
-        font-size: 16px;
-        font-weight: bold;
-        color: #0d6faa;
-        margin-bottom: 16px;
-        margin: 20px 0px;
-      }
-
-      .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-        background: initial !important;
-        color: #0d6faa !important;
-      }
-      .nav > li > a:hover, .nav > li > a:focus {
-        background: initial !important;
-        color: #0d6faa !important;
-      }
-      .add-button {
-        @include hoverEffect;
-        border-radius: 30px;
-        background-color: rgba(13, 111, 170, 0.75);
-        font-weight: bold;
-        color: #fff !important;
-        padding: 5px 10px;
-        font-size: 12px;
-        &:hover {
-          background-color: rgba(13, 111, 170, 1);
+        .setup-title {
+          span{
+            display: none;
+          }
         }
       }
-      .list-right-menu {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        align-items: center;
-        height: 42px;
+      
+    }
+      
+    .nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+      background: initial !important;
+      color: #0d6faa !important;
+    }
+    .nav > li > a:hover, .nav > li > a:focus {
+      background: initial !important;
+      color: #0d6faa !important;
+    }
+    .add-button {
+      @include hoverEffect;
+      border-radius: 30px;
+      background-color: rgba(13, 111, 170, 0.75);
+      font-weight: bold;
+      color: #fff !important;
+      padding: 5px 10px;
+      font-size: 12px;
+      &:hover{
+      
+        background-color: rgba(13, 111, 170, 1);
       }
-      .full-toggled2 {
-        .setup-nav {
-          li {
-            a {
-              justify-content: center;
-              span {
-                display: none;
-              }
+    }
+    .list-right-menu {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      height: 42px;
+    }
+    .full-toggled2{
+    
+      .setup-nav{
+      
+        li{
+          a{
+            justify-content: center;
+            span{
+              display: none;
             }
           }
         }
-
       }
+      
     }
-    .tooltip {
-      &.tooltip-info {
-        .tooltip-inner {
+      }
+    
+    .tooltip{
+      &.tooltip-info{
+        .tooltip-inner
+        {
           background: #0f1015 !important;
           color: #FFF;
           padding: 5px 10px !important;
