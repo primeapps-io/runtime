@@ -6,7 +6,7 @@ angular.module('primeapps')
         function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, ModuleService, ProcessesService, operators) {
             $scope.loading = true;
             //$scope.modules = $http.get(config.apiUrl + 'module/get_all');
-           
+
             $scope.$parent.wizardStep = 0;
             $scope.processes = [];
             $scope.$parent.processes = [];
@@ -23,7 +23,7 @@ angular.module('primeapps')
             $scope.isChosenModule = true;
             $scope.users = [];// angular.copy($rootScope.workgroup.users);
             $scope.$parent.collapsed = true;
-            $scope.allowEdit = true; 
+            $scope.allowEdit = true;
             $scope.workflowModel = {};
             $scope.workflowModel.active = true;
             $scope.workflowModel.frequency = 'continuous';
@@ -761,12 +761,12 @@ angular.module('primeapps')
                         }
                         ModuleService.update(processModule, processModule.id).then(function () {
                             $scope.saving = false;
-                            $state.go('app.setup.approvel_process');
+                            $scope.changeOffset(1);
                             ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
-                        })
+                        });
                     } else {
                         $scope.saving = false;
-                        $state.go('app.setup.approvel_process');
+                        $scope.changeOffset(1);
                         ngToast.create({ content: $filter('translate')('Setup.Workflow.ApprovelProcess.SubmitSuccess'), className: 'success' });
                     }
                 };
@@ -820,7 +820,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (id) {
                 if (id) {
                     $scope.id = id;
-                    selectProcess(id);
+                    $scope.selectProcess(id);
                 }
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({

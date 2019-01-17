@@ -59,7 +59,7 @@ namespace PrimeApps.Model.Repositories
         private IQueryable<Help> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
         {
             return DbContext.Helps
-                 .Where(x => !x.Deleted);
+                 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
 
         }
 

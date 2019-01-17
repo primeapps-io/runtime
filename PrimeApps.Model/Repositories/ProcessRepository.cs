@@ -83,8 +83,9 @@ namespace PrimeApps.Model.Repositories
 
         public async Task<ICollection<Process>> Find(PaginationModel paginationModel)
         {
-            var processes = await DbContext.Processes.Where(x => !x.Deleted).Skip(paginationModel.Offset * paginationModel
-                .Limit).Take(paginationModel.Limit).OrderByDescending(x => x.Id).ToListAsync();
+            var processes = await DbContext.Processes.Where(x => !x.Deleted).OrderByDescending(x => x.Id)
+                .Skip(paginationModel.Offset * paginationModel.Limit)
+                .Take(paginationModel.Limit).ToListAsync();
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {

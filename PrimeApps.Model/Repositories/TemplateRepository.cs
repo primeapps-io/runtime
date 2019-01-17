@@ -148,7 +148,7 @@ namespace PrimeApps.Model.Repositories
 		private IQueryable<Template> GetPaginationGQuery(PaginationModel paginationModel, TemplateType templateType, bool withIncludes = true)
 		{
 			return DbContext.Templates
-				 .Where(x => !x.Deleted && x.TemplateType == templateType);
+				 .Where(x => !x.Deleted && x.TemplateType == templateType).OrderByDescending(x => x.Id);
 
 		}
 	}

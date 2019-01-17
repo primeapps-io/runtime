@@ -105,7 +105,7 @@ namespace PrimeApps.Model.Repositories
 			return DbContext.Dependencies
 				.Include(dependency => dependency.Module).ThenInclude(module => module.Sections)
 				.Include(dependency => dependency.Module).ThenInclude(module => module.Fields)
-				.Where(dependency => !dependency.Deleted);
+				.Where(dependency => !dependency.Deleted).OrderByDescending(x => x.Id);
 		}
 	}
 }
