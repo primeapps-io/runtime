@@ -820,7 +820,7 @@ angular.module('primeapps')
             $scope.showFormModal = function (id) {
                 if (id) {
                     $scope.id = id;
-                    selectProcess(id);
+                    $scope.selectProcess(id);
                 }
 
                 $scope.prosessFormModal = $scope.prosessFormModal || $modal({
