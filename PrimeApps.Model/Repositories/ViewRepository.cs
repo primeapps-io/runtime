@@ -190,7 +190,7 @@ namespace PrimeApps.Model.Repositories
 		private IQueryable<View> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
 		{
 			return DbContext.Views
-				 .Where(x => !x.Deleted);
+				 .Where(x => !x.Deleted).OrderByDescending(x => x.Id);
 
 		}
 	}

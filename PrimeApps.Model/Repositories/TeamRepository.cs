@@ -58,7 +58,7 @@ namespace PrimeApps.Model.Repositories
         {
             return await DbContext.Teams
                 .Include(x => x.TeamUsers)
-                .Where(x => x.OrganizationId == organizationId && !x.Deleted)
+                .Where(x => x.OrganizationId == organizationId && !x.Deleted).OrderByDescending(x => x.Id)
                 .ToListAsync();
         }
 
@@ -66,7 +66,7 @@ namespace PrimeApps.Model.Repositories
         {
             var teams = await GetByOrganizationId(organizationId);
             teams = teams.Skip(paginationModel.Offset * paginationModel.Limit)
-            .Take(paginationModel.Limit).OrderByDescending(x => x.Id).ToList();
+            .Take(paginationModel.Limit).ToList();
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {

@@ -218,7 +218,7 @@ namespace PrimeApps.Model.Repositories
 		private IQueryable<Menu> GetPaginationGQuery(PaginationModel paginationModel, bool withIncludes = true)
 		{
 			return DbContext.Menus
-				.Where(menus => !menus.Deleted);
+				.Where(menus => !menus.Deleted).OrderByDescending(x => x.Id);
 		}
 
 
