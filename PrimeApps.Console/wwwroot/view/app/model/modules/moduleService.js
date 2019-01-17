@@ -65,12 +65,12 @@ angular.module('primeapps')
                                     icon: "k-i-table-align-top-left",
                                     field: that.newField(dataType)
                                 });
-                                dataType.maxLength = 4;
                                 break;
                             case 'number':
                                 fields.push({
                                     icon: "k-i-custom-format",
                                     field: that.newField(dataType)
+
                                 });
 
                                 break;
@@ -177,6 +177,7 @@ angular.module('primeapps')
                                     field: that.newField(dataType)
                                 });
                                 break;
+
                         }
 
                     });
@@ -246,7 +247,7 @@ angular.module('primeapps')
                 getPicklist: function (id) {
                     if (id >= 900000) {
                         var deffered = $q.defer();
-                        deffered.resolve({ data: { items: [] } });
+                        deffered.resolve({data: {items: []}});
                         return deffered.promise;
                     }
 
@@ -281,8 +282,8 @@ angular.module('primeapps')
                                     recordCurrencySymbol = record['currency'].value;
                                 }
                                 else {
-                                    var currencyField = $filter('filter')(module.fields, { name: 'currency' }, true)[0];
-                                    var currencyPicklistItem = $filter('filter')(picklists[currencyField.picklist_id], { labelStr: record['currency'] })[0];
+                                    var currencyField = $filter('filter')(module.fields, {name: 'currency'}, true)[0];
+                                    var currencyPicklistItem = $filter('filter')(picklists[currencyField.picklist_id], {labelStr: record['currency']})[0];
 
                                     if (currencyPicklistItem && currencyPicklistItem.value)
                                         recordCurrencySymbol = currencyPicklistItem.value;
@@ -302,7 +303,7 @@ angular.module('primeapps')
                             break;
                         case 'picklist':
                             if (!angular.isObject(value)) {
-                                var picklistItem = $filter('filter')(picklists[field.picklist_id], { labelStr: value }, true)[0];
+                                var picklistItem = $filter('filter')(picklists[field.picklist_id], {labelStr: value}, true)[0];
                                 field.valueFormatted = picklistItem ? picklistItem.label[$rootScope.language] : value;
                             }
                             else {
@@ -314,7 +315,7 @@ angular.module('primeapps')
                                 var item = value[i];
 
                                 if (!angular.isObject(item)) {
-                                    var picklistItem = $filter('filter')(picklists[field.picklist_id], { labelStr: item }, true)[0];
+                                    var picklistItem = $filter('filter')(picklists[field.picklist_id], {labelStr: item}, true)[0];
                                     field.valueFormatted += (picklistItem ? picklistItem.label[$rootScope.language] : item) + '; ';
                                 }
                                 else {
@@ -340,7 +341,7 @@ angular.module('primeapps')
                             // field.valueFormatted = field.valueFormatted.slice(0, -2);
                             break;
                         case 'checkbox':
-                            field.valueFormatted = $filter('filter')(picklists['yes_no'], { system_code: value.toString() })[0].label[$rootScope.language];
+                            field.valueFormatted = $filter('filter')(picklists['yes_no'], {system_code: value.toString()})[0].label[$rootScope.language];
                             break;
                         default:
                             field.valueFormatted = value;
@@ -388,7 +389,7 @@ angular.module('primeapps')
                             var field = module.fields[i];
 
                             if (field.data_type === 'lookup' && field.lookup_type !== 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
-                                var lookupModule = $filter('filter')($scope.modules, { name: field.lookup_type }, true)[0];
+                                var lookupModule = $filter('filter')($scope.modules, {name: field.lookup_type}, true)[0];
 
                                 if (!lookupModule)
                                     continue;
@@ -405,7 +406,7 @@ angular.module('primeapps')
 
                     var setDependency = function (picklist, field) {
                         if (module.dependencies && module.dependencies.length > 0) {
-                            var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
+                            var dependency = $filter('filter')(module.dependencies, {child_field: field.name}, true)[0];
 
                             if (dependency && dependency.deleted !== true && dependency.dependency_type === 'list_field') {
                                 for (var i = 0; i < picklist.length; i++) {
@@ -489,9 +490,9 @@ angular.module('primeapps')
                         picklists['transaction_type'] = transactionTypePicklistCache;
                     else {
                         if (module.name === 'accounts') {
-                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 1 }, true);
+                            picklists['transaction_type'] = $filter('filter')(transactionTypes, {type: 1}, true);
                         } else if (module.name === 'suppliers') {
-                            picklists['transaction_type'] = $filter('filter')(transactionTypes, { type: 2 }, true);
+                            picklists['transaction_type'] = $filter('filter')(transactionTypes, {type: 2}, true);
                         }
                     }
 
@@ -527,14 +528,14 @@ angular.module('primeapps')
                                     continue;
 
                                 var picklistItems = helper.mergePicklists(response.data);
-                                picklists[field.picklist_id] = $filter('filter')(picklistItems, { type: field.picklist_id }, true);
+                                picklists[field.picklist_id] = $filter('filter')(picklistItems, {type: field.picklist_id}, true);
                                 picklists[field.picklist_id] = $filter('orderByLabel')(picklists[field.picklist_id], $rootScope.language);
 
                                 if (field.picklist_sortorder && !field.deleted)
                                     picklists[field.picklist_id] = $filter('orderBy')(picklists[field.picklist_id], field.picklist_sortorder);
 
                                 if (module.dependencies && module.dependencies.length > 0) {
-                                    var dependency = $filter('filter')(module.dependencies, { child_field: field.name }, true)[0];
+                                    var dependency = $filter('filter')(module.dependencies, {child_field: field.name}, true)[0];
 
                                     if (dependency && dependency.deleted !== true && dependency.dependency_type === 'list_field') {
                                         for (var j = 0; j < picklists[field.picklist_id].length; j++) {
@@ -648,7 +649,7 @@ angular.module('primeapps')
                         field.label = field['label_' + $rootScope.language];
                         field.dataType = dataTypes[field.data_type];
                         field.operators = [];
-                        field.sectionObj = $filter('filter')(module.sections, { name: field.section }, true)[0];
+                        field.sectionObj = $filter('filter')(module.sections, {name: field.section}, true)[0];
                         //
                         // if (field.data_type === 'lookup') {
                         //     if (field.lookup_type != 'users' && field.lookup_type != 'profiles' && field.lookup_type != 'roles' && field.lookup_type != 'relation') {
@@ -809,7 +810,7 @@ angular.module('primeapps')
                                     lookupRecord = null;
                             }
                             else {
-                                var lookupModule = $filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0];
+                                var lookupModule = $filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0];
                                 var lookupModulePrimaryField = $filter('filter')(lookupModule.fields, {
                                     primary: true,
                                     deleted: false
@@ -873,7 +874,7 @@ angular.module('primeapps')
                     });
 
                     module.order = Math.max.apply(null, sortOrders) + 1;
-                    module.name = 'custom_module' + module.order;
+                    module.name = 'custom_module_' + 9999;
                     module.sections = [];
                     module.fields = [];
 
@@ -888,8 +889,8 @@ angular.module('primeapps')
                     section1.display_detail = true;
                     section1.deleted = false;
                     section1.columns = [];
-                    section1.columns.push({ no: 1 });
-                    section1.columns.push({ no: 2 });
+                    section1.columns.push({no: 1});
+                    section1.columns.push({no: 2});
 
                     module.sections.push(section1);
 
@@ -904,8 +905,8 @@ angular.module('primeapps')
                     section2.display_detail = true;
                     section2.deleted = false;
                     section2.columns = [];
-                    section2.columns.push({ no: 1 });
-                    section2.columns.push({ no: 2 });
+                    section2.columns.push({no: 1});
+                    section2.columns.push({no: 2});
 
                     module.sections.push(section2);
 
@@ -1170,14 +1171,14 @@ angular.module('primeapps')
                         if (section.name.indexOf('custom_section') > -1) {
                             var newSectionName = helper.getSlug(section['label_' + $rootScope.language]);
 
-                            var sectionFields = $filter('filter')(module.fields, { section: section.name }, true);
+                            var sectionFields = $filter('filter')(module.fields, {section: section.name}, true);
 
                             angular.forEach(sectionFields, function (sectionField) {
                                 sectionField.section = newSectionName;
                             });
 
                             var cleanSlug = angular.copy(newSectionName);
-                            var existingSection = $filter('filter')(module.sections, { name: cleanSlug }, true)[0];
+                            var existingSection = $filter('filter')(module.sections, {name: cleanSlug}, true)[0];
 
                             if (existingSection) {
                                 do {
@@ -1203,7 +1204,7 @@ angular.module('primeapps')
                                     else
                                         newSlug = cleanSlug + 2;
 
-                                    existingSection = $filter('filter')(module.sections, { name: newSlug }, true)[0];
+                                    existingSection = $filter('filter')(module.sections, {name: newSlug}, true)[0];
 
                                     if (!existingSection)
                                         section.name = newSlug;
@@ -1237,12 +1238,12 @@ angular.module('primeapps')
                             var field2Name = field.combinationField2;
 
                             if (field1Name.indexOf('custom_field') > -1) {
-                                var field1 = $filter('filter')(module.fields, { name: field1Name }, true)[0];
+                                var field1 = $filter('filter')(module.fields, {name: field1Name}, true)[0];
                                 field1Name = helper.getSlug(field1['label_' + $rootScope.language]);
                             }
 
                             if (field2Name.indexOf('custom_field') > -1) {
-                                var field2 = $filter('filter')(module.fields, { name: field2Name }, true)[0];
+                                var field2 = $filter('filter')(module.fields, {name: field2Name}, true)[0];
                                 field2Name = helper.getSlug(field2['label_' + $rootScope.language]);
                             }
 
@@ -1274,7 +1275,7 @@ angular.module('primeapps')
                         }
 
                         if (field.unique_combine && field.unique_combine.indexOf('custom_field') > -1) {
-                            var combinationField = $filter('filter')(module.fields, { name: field.unique_combine }, true)[0];
+                            var combinationField = $filter('filter')(module.fields, {name: field.unique_combine}, true)[0];
                             field.unique_combine = helper.getSlug(combinationField['label_' + $rootScope.language]);
                         }
 
@@ -1339,7 +1340,7 @@ angular.module('primeapps')
                                 slug = slug + '_c';
 
                             var cleanSlug = angular.copy(slug);
-                            var existingField = $filter('filter')(module.fields, { name: slug }, true)[0];
+                            var existingField = $filter('filter')(module.fields, {name: slug}, true)[0];
 
                             if (existingField) {
                                 do {
@@ -1365,7 +1366,7 @@ angular.module('primeapps')
                                     else
                                         newSlug = cleanSlug + 2;
 
-                                    existingField = $filter('filter')(module.fields, { name: newSlug }, true)[0];
+                                    existingField = $filter('filter')(module.fields, {name: newSlug}, true)[0];
 
                                     if (!existingField)
                                         field.name = newSlug;
@@ -1426,7 +1427,7 @@ angular.module('primeapps')
 
                     angular.forEach(moduleFields, function (field) {
                         if (field.data_type === 'lookup' && field.lookup_type !== 'relation') {
-                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, { name: field.lookup_type }, true)[0]);
+                            var lookupModule = angular.copy($filter('filter')($rootScope.modules, {name: field.lookup_type}, true)[0]);
                             seperatorLookupOrder += 100;
                             if (lookupModule === null || lookupModule === undefined) return;
                             var seperatorFieldLookup = {};
@@ -1442,7 +1443,7 @@ angular.module('primeapps')
                             moduleFields.push(seperatorFieldLookup);
 
                             var lookupModuleFields = angular.copy(lookupModule.fields);
-                            lookupModuleFields = $filter('filter')(lookupModuleFields, { display_list: true }, true);
+                            lookupModuleFields = $filter('filter')(lookupModuleFields, {display_list: true}, true);
 
                             angular.forEach(lookupModuleFields, function (fieldLookup) {
                                 if (fieldLookup.data_type === 'lookup')
@@ -1466,7 +1467,7 @@ angular.module('primeapps')
                         if (module.display_fields) {
                             var selectedFieldName = $filter('filter')(module.display_fields, field.name, true)[0];
                             if (selectedFieldName) {
-                                selectedField = $filter('filter')(moduleFields, { "name": selectedFieldName }, true)[0];
+                                selectedField = $filter('filter')(moduleFields, {"name": selectedFieldName}, true)[0];
                             }
                         }
                         ;
@@ -1486,7 +1487,7 @@ angular.module('primeapps')
                             fields.selectedFields.push(newField);
                         }
                         else {
-                            var primaryField = $filter('filter')(moduleFields, { primary: true }, true)[0];
+                            var primaryField = $filter('filter')(moduleFields, {primary: true}, true)[0];
 
                             if (field.name !== primaryField.name)
                                 fields.availableFields.push(newField);
@@ -1509,7 +1510,7 @@ angular.module('primeapps')
 
                 processRelations: function (relations) {
                     angular.forEach(relations, function (relation) {
-                        var relatedModule = $filter('filter')($rootScope.modules, { name: relation.related_module }, true)[0];
+                        var relatedModule = $filter('filter')($rootScope.modules, {name: relation.related_module}, true)[0];
 
                         if (!relatedModule || relatedModule.order === 0) {
                             relation.deleted = true;
@@ -1776,7 +1777,7 @@ angular.module('primeapps')
 
                     if (field.data_type === 'lookup') {
                         if (field.lookup_type !== 'users' && field.lookup_type !== 'profiles' && field.lookup_type !== 'roles' && field.lookup_type !== 'relation') {
-                            var lookupModule = $filter('filter')(modules, { name: field.lookup_type }, true)[0];
+                            var lookupModule = $filter('filter')(modules, {name: field.lookup_type}, true)[0];
 
                             if (!lookupModule) {
                                 module.fields[counter] = field;
@@ -1786,13 +1787,13 @@ angular.module('primeapps')
                             this.getModuleFields(lookupModule.name).then(function (response) {
                                 if (response.data) {
                                     lookupModule.fields = response.data;
-                                    var tempPrimaryLookup = $filter('filter')(lookupModule.fields, { primary_lookup: true }, true);
+                                    var tempPrimaryLookup = $filter('filter')(lookupModule.fields, {primary_lookup: true}, true);
 
                                     if (tempPrimaryLookup)
                                         field.lookupModulePrimaryField = tempPrimaryLookup[0];
                                     else//if (!field.lookupModulePrimaryField)
                                     {
-                                        tempPrimaryLookup = $filter('filter')(lookupModule.fields, { primary: true }, true);
+                                        tempPrimaryLookup = $filter('filter')(lookupModule.fields, {primary: true}, true);
 
                                         if (tempPrimaryLookup)
                                             field.lookupModulePrimaryField = tempPrimaryLookup[0];
@@ -1811,7 +1812,9 @@ angular.module('primeapps')
                                     module.fields[counter] = field;
                                     return this.getFieldsOperator(module, modules, counter++);
                                 }
-                            }).catch(function (err) { console.log(err); });
+                            }).catch(function (err) {
+                                console.log(err);
+                            });
                         }
                         else {
                             field.operators.push(operators.equals);
@@ -1841,13 +1844,12 @@ angular.module('primeapps')
                 getAllProcess: function (id) {
                     return $http.get(config.apiUrl + 'process/get_all');
                 }
-
             };
 
 
         }
     ])
-    ;
+;
 
 angular.module('primeapps')
 

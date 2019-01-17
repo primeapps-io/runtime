@@ -32,14 +32,18 @@ $primeapps-color: #0D6FAA;
 
   .add-new-section {
     padding: 15px;
-    border: 2px dashed #e2e2e2;
+    border: 1px dashed rgba(0, 0, 0, 0.28);
     border-radius: 5px;
     cursor: pointer;
-
+    @include hoverEffect();
+    &:hover{
+      border: 1px dashed rgba(0, 0, 0, 0.50);
+    }
     span {
       font-weight: bold;
       color: rgba(0, 0, 0, 0.5);
       font-size: 14px;
+
     }
   }
 
@@ -78,7 +82,7 @@ $primeapps-color: #0D6FAA;
           transform: translate(0%, -50%);
 
           .action-icon {
-            color: rgba(13, 111, 170, 0.5) !important;
+            color:rgba(6, 6, 6, 0.75) !important;
           }
         }
 
@@ -203,10 +207,13 @@ $primeapps-color: #0D6FAA;
 
   .module-designer {
     .new-field {
-      border: 2px dashed #e2e2e2;
+      border: 1px dashed rgba(0, 0, 0, 0.28);
       cursor: pointer;
       padding: 15px !important;
       background: none;
+      &:hover{
+        border: 1px dashed rgba(0, 0, 0, 0.50);
+      }
 
       span {
         font-weight: bold;

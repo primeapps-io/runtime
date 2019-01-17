@@ -57,7 +57,8 @@
                                              ng-repeat="column in row.columns">
                                             <div class="cell-container">
                                                 <div class="form-group"
-                                                     ng-repeat="cell in column.cells | filter:{deleted:'!true'}">
+                                                     ng-repeat="cell in column.cells | filter:{deleted:'!true'}"
+                                                >
                                                     <label
                                                             ng-if="!cell.field.custom_label"
                                                             class="control-label cell-handle"
@@ -181,31 +182,47 @@
                                                             <i class="k-icon k-i-link-horizontal"></i>
                                                         </div>
 
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'checkbox'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-checkbox-checked"></i>
+                                                        </div>
+
+                                                        <div class="field-area"
+                                                             ng-if="cell.field.data_type === 'combination'">
+                                                            <span> {{cell.field.dataType['label_' + language]}}</span>
+                                                            <i class="k-icon k-i-hyperlink-open-sm"></i>
+                                                        </div>
+
 
                                                     </div>
                                                     <span class="action-buttons">
-                                        <a href ng-click="showFieldModal(row, column, cell.field)" class="action-icon"
-                                           title="{{'Common.Edit' | translate}}"><i class="fas fa-pen-alt"></i></a>
+                                        <a href ng-click="showFieldModal(row, column, cell.field)"
+                                           class="action-icon"
+                                           title="{{'Common.Edit' | translate}}">
+                                            <i class="fas fa-pen-alt"></i>
+                                        </a>
+
                                         <i class="fas fa-trash action-icon"
                                            ng-if="!cell.field.primary && !cell.field.systemRequired" confirm-click
                                            action="deleteField(cell.field.name)" placement="left"
                                            confirm-message="{{'Common.AreYouSure' | translate}}"
                                            confirm-yes="{{'Common.Yes' | translate}}"
                                            confirm-no="{{'Common.No' | translate}}"
-                                           title="{{'Common.Delete' | translate}}"></i>
+                                           title="{{'Common.Delete' | translate}}">
 
-                                                        <i class="fas fa-trash action-icon-disabled"
-                                                           ng-if="cell.field.primary || cell.field.systemRequired"
-                                                           data-placement="left"
-                                                           data-title="{{cell.field.primary ? ('Setup.Modules.PrimaryFieldCannotDelete' | translate) : ('Setup.Modules.SystemFieldCannotDelete' | translate)}}"
-                                                           bs-tooltip></i>
-                                    </span>
+                                        </i>
+
+                                    <i class="fas fa-trash action-icon-disabled"
+                                       ng-if="cell.field.primary || cell.field.systemRequired"
+                                       data-placement="left"
+                                       data-title="{{cell.field.primary ? ('Setup.Modules.PrimaryFieldCannotDelete' | translate) : ('Setup.Modules.SystemFieldCannotDelete' | translate)}}"
+                                       bs-tooltip></i>
+                                </span>
                                                 </div>
                                             </div>
-                                            <div class="new-field">
-
-                                                <span
-                                                        ng-click="showFieldModal(row, column)">
+                                            <div class="new-field" ng-click="showFieldModal(row, column)">
+                                                <span>
                                                       <i class="fas fa-plus"></i>{{'Setup.Modules.NewField' |
                                                     translate}}</span>
                                             </div>

@@ -458,7 +458,7 @@ angular.module('primeapps')
                 $scope.editModal = $scope.editModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/model/modules/editForm.html',
-                    animation: '',
+                    animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
                 });
@@ -612,7 +612,7 @@ angular.module('primeapps')
                 $scope.fieldModal = $scope.fieldModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/model/modules/fieldForm.html',
-                    animation: '',
+                    animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
                 });
@@ -890,7 +890,7 @@ angular.module('primeapps')
                 $scope.sectionModal = $scope.sectionModal || $modal({
                     scope: $scope,
                     templateUrl: 'view/app/model/modules/sectionForm.html',
-                    animation: '',
+                    animation: 'am-fade-and-slide-right',
                     backdrop: 'static',
                     show: false
                 });
