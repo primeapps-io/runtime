@@ -630,6 +630,23 @@ angular.module('primeapps')
                         }]
                     }
                 })
+                .state('studio.app.moduleprofilesettings', {
+                    url: '/moduleprofilesettings',
+                    views: {
+                        'app': {
+                            templateUrl: cdnUrl + 'view/app/model/modules/moduleProfileSettings.html',
+                            controller: 'ModuleProfileSettingController'
+                        }
+                    },
+                    resolve: {
+                        plugins: ['$$animateJs', '$ocLazyLoad', function ($$animateJs, $ocLazyLoad) {
+                            return $ocLazyLoad.load([
+                                cdnUrl + 'view/app/model/modules/moduleProfileSettingsController.js',
+                                cdnUrl + 'view/app/model/modules/moduleService.js'
+                            ]);
+                        }]
+                    }
+                })
                 .state('studio.app.roles', {
                     url: '/roles',
                     views: {
