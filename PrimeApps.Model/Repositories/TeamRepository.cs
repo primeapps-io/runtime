@@ -66,7 +66,7 @@ namespace PrimeApps.Model.Repositories
         {
             var teams = await GetByOrganizationId(organizationId);
             teams = teams.Skip(paginationModel.Offset * paginationModel.Limit)
-            .Take(paginationModel.Limit).ToList();
+            .Take(paginationModel.Limit).OrderByDescending(x => x.Id).ToList();
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {

@@ -2,14 +2,12 @@
 
 angular.module('primeapps')
 
-    .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover','$location',
-        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover,$location) {
+    .controller('ProfilesController', ['$rootScope', '$scope', '$filter', '$state', '$stateParams', 'ngToast', '$modal', '$timeout', 'helper', 'dragularService', 'ProfilesService', 'LayoutService', '$http', 'config', '$popover', '$location',
+        function ($rootScope, $scope, $filter, $state, $stateParams, ngToast, $modal, $timeout, helper, dragularService, ProfilesService, LayoutService, $http, config, $popover, $location) {
             $scope.$parent.menuTopTitle = "Authorization";
             $scope.$parent.activeMenu = 'authorization';
             $scope.$parent.activeMenuItem = 'profiles';
             $scope.loading = true;
-            var id = parseInt($location.search().id);
-            var clone = parseInt($location.search().clone);
 
             $scope.moduleLead = $filter('filter')($scope.$parent.modules, { name: 'leads' }, true)[0];
             $scope.moduleIzinler = $filter('filter')($scope.$parent.modules, { name: 'izinler' }, true)[0];
@@ -49,59 +47,31 @@ angular.module('primeapps')
             function getProfile() {
                 ProfilesService.getAll()
                     .then(function (response) {
-                        $scope.profiles = ProfilesService.getProfiles(response.data,$scope.$parent.modules, false);
+                        $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
                         $scope.profilesCopy = angular.copy($scope.profiles);
+                        $scope.profile = {};
 
-                        if (id) {
-                            $scope.profile = $filter('filter')($scope.profiles, { id: id }, true)[0];
-
-                            //Update
-                            var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
-                            $scope.profile.PageStart = setPageStart;
-
-                            if ($scope.profile.parent_id != 0) {
-                                $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: $scope.profile.parent_id }, true)[0];
-                            }
-                        }
-                        else {
-                            $scope.profile = {};
-                            if (clone) {
-                                var profile = $filter('filter')($scope.profiles, { id: clone }, true)[0];
-                                $scope.profile = profile;
-                                delete  $scope.profile.name;
-                                delete  $scope.profile.user_ids;
-                                delete  $scope.profile.description;
-                                delete  $scope.profile.is_persistent;
-                                delete  $scope.profile.CreatedBy;
-                                delete  $scope.profile.id;
-                                var setPageStart = $filter('filter')($scope.startPageList, {valueLower: $scope.profile.start_page}, true)[0];
-                                $scope.profile.PageStart = setPageStart;
-                                $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
-                            }
-                            else {
-                                $scope.profile.has_admin_rights = false;
-                                $scope.profile.is_persistent = false;
-                                $scope.profile.business_intelligence = false;
-                                $scope.profile.send_email = false;
-                                $scope.profile.send_sms = false;
-                                $scope.profile.export_data = false;
-                                $scope.profile.import_data = false;
-                                $scope.profile.word_pdf_download = false;
-                                $scope.profile.lead_convert = false;
-                                $scope.profile.document_search = false;
-                                $scope.profile.tasks = false;
-                                $scope.profile.calendar = false;
-                                $scope.profile.newsfeed = false;
-                                $scope.profile.report = false;
-                                $scope.profile.dashboard = true;
-                                $scope.profile.home = false;
-                                $scope.profile.collective_annual_leave = false;
-                                $scope.profile.permissions = $filter('filter')($scope.profiles, { is_persistent: true, has_admin_rights: true })[0].permissions;
-                                //Create
-                                var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
-                                $scope.profile.PageStart = dashboard;
-                            }
-                        }
+                        $scope.profile.has_admin_rights = false;
+                        $scope.profile.is_persistent = false;
+                        $scope.profile.business_intelligence = false;
+                        $scope.profile.send_email = false;
+                        $scope.profile.send_sms = false;
+                        $scope.profile.export_data = false;
+                        $scope.profile.import_data = false;
+                        $scope.profile.word_pdf_download = false;
+                        $scope.profile.lead_convert = false;
+                        $scope.profile.document_search = false;
+                        $scope.profile.tasks = false;
+                        $scope.profile.calendar = false;
+                        $scope.profile.newsfeed = false;
+                        $scope.profile.report = false;
+                        $scope.profile.dashboard = true;
+                        $scope.profile.home = false;
+                        $scope.profile.collective_annual_leave = false;
+                        $scope.profile.permissions = $filter('filter')($scope.profiles, { is_persistent: true, has_admin_rights: true })[0].permissions;
+                        //Create
+                        var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
+                        $scope.profile.PageStart = dashboard;
 
                         $scope.loading = false;
                     })
@@ -152,44 +122,44 @@ angular.module('primeapps')
                 validate();
 
                 // if ($scope.profileForm.$valid) {
-                    $scope.profileSubmit = true;
-                    var result = null;
+                $scope.profileSubmit = true;
+                var result = null;
 
-                    $scope.profile.start_page = $scope.profile.PageStart.valueLower;
-                    var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
+                $scope.profile.start_page = $scope.profile.PageStart.valueLower;
+                var setPage = $filter('filter')($scope.startPageList, { value: $scope.profile.PageStart.value }, true)[0];
 
-                    $scope.profile[setPage.value] = true;
+                $scope.profile[setPage.value] = true;
 
-                    if ($scope.profile.startpage === "newsfeed") {
-                        var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
-                        startPageNewsfeedControl.Read = true;
-                    }
+                if ($scope.profile.startpage === "newsfeed") {
+                    var startPageNewsfeedControl = $filter('filter')($scope.profile.Permissions, { Type: 3 }, true)[0];
+                    startPageNewsfeedControl.Read = true;
+                }
 
-                    if ($scope.profile.parent_id) {
-                        $scope.profile.parent_id = $scope.profile.parent_id.id;
-                    } else {
-                        $scope.profile.parent_id = 0;
-                    }
+                if ($scope.profile.parent_id) {
+                    $scope.profile.parent_id = $scope.profile.parent_id.id;
+                } else {
+                    $scope.profile.parent_id = 0;
+                }
 
-                    if (!$scope.profile.id) {
-                        result = ProfilesService.create($scope.profile);
-                    }
-                    else {
-                        result = ProfilesService.update($scope.profile);
-                    }
+                if (!$scope.profile.id) {
+                    result = ProfilesService.create($scope.profile);
+                }
+                else {
+                    result = ProfilesService.update($scope.profile);
+                }
 
-                    result.then(function () {
-                        $scope.profileSubmit = false;
-                        $state.go('app.setup.profiles');
-                        ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
+                result.then(function () {
+                    $scope.profileSubmit = false;
+                    $scope.profileFormModal.hide();
+                    ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
 
-                        ProfilesService.getAllBasic()
-                            .then(function (profilesBasic) {
-                                $rootScope.profiles = profilesBasic.data;
-                            });
-                    }).catch(function () {
-                        $scope.profileSubmit = false;
-                    });
+                    ProfilesService.getAllBasic()
+                        .then(function (profilesBasic) {
+                            $rootScope.profiles = profilesBasic.data;
+                        });
+                }).catch(function () {
+                    $scope.profileSubmit = false;
+                });
                 // }
             };
 
@@ -206,43 +176,48 @@ angular.module('primeapps')
 
             getProfiles();
 
-            $scope.showDeleteForm = function (profile) {
-                $scope.selectedProfile = profile;
-                var transferProfiles = angular.copy($scope.profiles);
-                var deleteProfile = angular.copy(profile);
-                var index = helper.arrayObjectIndexOf(transferProfiles, deleteProfile);
-                transferProfiles.splice(index, 1);
-                $scope.transferProfiles = transferProfiles;
+            var editProfile = function (profile) {
+                ProfilesService.getAll().then(function (response) {
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profilesCopy = angular.copy($scope.profiles);
+                });
+                if (profile.id) {
+                    $scope.profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
 
-                $scope['deletePopover' + profile.id] = $scope['deletePopover' + profile.id] || $popover(angular.element(document.getElementById('deleteButton' + profile.id)), {
-                        templateUrl: 'view/setup/profiles/profileDelete.html',
-                        placement: 'left',
-                        scope: $scope,
-                        autoClose: true,
-                        show: true
-                    });
+                    //Update
+                    var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
+                    $scope.profile.PageStart = setPageStart;
+
+                    if ($scope.profile.parent_id != 0) {
+                        $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: $scope.profile.parent_id }, true)[0];
+                    }
+                }
             };
 
-            $scope.delete = function (transferProfileId) {
-                if (!transferProfileId)
-                    transferProfileId = $scope.transferProfiles[0].id;
-
-                $scope.profileDeleting = true;
-
-                ProfilesService.remove($scope.selectedProfile.id, transferProfileId, $rootScope.workgroup.tenant_id)
-                    .then(function () {
-                        $scope.profileDeleting = false;
-                        ngToast.create({ content: $filter('translate')('Setup.Profiles.DeleteSuccess'), className: 'success' });
-                        $scope['deletePopover' + $scope.selectedProfile.id].hide();
-
-                        getProfiles();
-                    })
-                    .catch(function () {
-                        $scope.profileDeleting = false;
-                    });
+            var cloneProfile = function (profile) {
+                ProfilesService.getAll().then(function (response) {
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profilesCopy = angular.copy($scope.profiles);
+                });
+                var profile = $filter('filter')($scope.profiles, { id: profile.id }, true)[0];
+                $scope.profile = profile;
+                delete  $scope.profile.name;
+                delete  $scope.profile.user_ids;
+                delete  $scope.profile.description;
+                delete  $scope.profile.is_persistent;
+                delete  $scope.profile.CreatedBy;
+                delete  $scope.profile.id;
+                var setPageStart = $filter('filter')($scope.startPageList, { valueLower: $scope.profile.start_page }, true)[0];
+                $scope.profile.PageStart = setPageStart;
+                $scope.profile.parent_id = $filter('filter')($scope.profiles, { id: profile.parent_id }, true)[0];
             };
 
-            $scope.showFormModal = function (template) {
+            $scope.showFormModal = function (profile, isCopy) {
+                if (isCopy == true)
+                    cloneProfile(profile);
+                if (isCopy == false)
+                    editProfile(profile);
+
                 $scope.profileFormModal = $scope.profileFormModal || $modal({
                         scope: $scope,
                         templateUrl: 'view/app/authorization/profiles/profileForm.html',
@@ -255,5 +230,13 @@ angular.module('primeapps')
                 });
             };
 
+            $scope.delete = function (profile) {
+                ProfilesService.delete(profile.id)
+                    .then(function () {
+                        var profileToDeleteIndex = helper.arrayObjectIndexOf($scope.profiles, profile);
+                        $scope.profiles.splice(profileToDeleteIndex, 1);
+                        ngToast.create({ content: $filter('translate')('Profil başarılı bir şekilde silinmiştir.'), className: 'success' });
+                    });
+            };
         }
     ]);

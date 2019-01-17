@@ -2,8 +2,8 @@
 
 angular.module('primeapps')
 
-    .factory('ProfilesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper',   '$cache', 'dataTypes', 'systemFields',
-        function ($rootScope, $http, config, $filter, $q, helper,  $cache, dataTypes, systemFields) {
+    .factory('ProfilesService', ['$rootScope', '$http', 'config', '$filter', '$q', 'helper', '$cache', 'dataTypes', 'systemFields',
+        function ($rootScope, $http, config, $filter, $q, helper, $cache, dataTypes, systemFields) {
             return {
                 getAll: function () {
                     return $http.post(config.apiUrl + 'Profile/GetAll', {});
@@ -12,7 +12,9 @@ angular.module('primeapps')
                 getAllBasic: function () {
                     return $http.get(config.apiUrl + 'Profile/GetAllBasic');
                 },
-
+                delete: function (id) {
+                    return $http.delete(config.apiUrl + 'Profile/delete/' + id);
+                },
                 getProfiles: function (allProfiles, modules, clearPermissions) {
                     var profiles = allProfiles;
 
@@ -92,14 +94,6 @@ angular.module('primeapps')
 
                 update: function (profile) {
                     return $http.post(config.apiUrl + 'Profile/Update', profile);
-                },
-
-                remove: function (removedProfileId, transferProfileId, tenantId) {
-                    return $http.post(config.apiUrl + 'Profile/Remove',
-                        {
-                            removed_profile: { id: removedProfileId, InstanceID: tenantId },
-                            transfer_profile: { id: transferProfileId, InstanceID: tenantId }
-                        });
                 }
             };
         }]);

@@ -50,7 +50,7 @@ namespace PrimeApps.Model.Repositories
         {
             var rules = await DbContext.Workflows
                 .Skip(paginationModel.Offset * paginationModel.Limit)
-                .Take(paginationModel.Limit).ToListAsync();
+                .Take(paginationModel.Limit).OrderByDescending(x => x.Id).ToListAsync();
 
             if (paginationModel.OrderColumn != null && paginationModel.OrderType != null)
             {
