@@ -405,7 +405,7 @@ namespace PrimeApps.Model.Repositories
         }
         public async Task<int> Count()
         {
-            var count = DbContext.Templates
+            var count = DbContext.Profiles
                .Where(x => !x.Deleted).Count();
             return count;
         }

@@ -44,43 +44,97 @@ angular.module('primeapps')
                 });
             }
 
+            $scope.requestModel = {
+                limit: '10',
+                offset: 0
+            };
+
+            ProfilesService.count(2).then(function (response) {
+                $scope.pageTotal = response.data;
+            });
+
+
             function getProfile() {
-                ProfilesService.getAll()
-                    .then(function (response) {
-                        $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
-                        $scope.profilesCopy = angular.copy($scope.profiles);
-                        $scope.profile = {};
+                $scope.profiles = null; //Geçici çözüm detaylı bakılacak.
+                $scope.loading = true;
+                ProfilesService.find($scope.requestModel, 2).then(function (response)  {
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profilesCopy = angular.copy($scope.profiles);
+                    $scope.profile = {};
 
-                        $scope.profile.has_admin_rights = false;
-                        $scope.profile.is_persistent = false;
-                        $scope.profile.business_intelligence = false;
-                        $scope.profile.send_email = false;
-                        $scope.profile.send_sms = false;
-                        $scope.profile.export_data = false;
-                        $scope.profile.import_data = false;
-                        $scope.profile.word_pdf_download = false;
-                        $scope.profile.lead_convert = false;
-                        $scope.profile.document_search = false;
-                        $scope.profile.tasks = false;
-                        $scope.profile.calendar = false;
-                        $scope.profile.newsfeed = false;
-                        $scope.profile.report = false;
-                        $scope.profile.dashboard = true;
-                        $scope.profile.home = false;
-                        $scope.profile.collective_annual_leave = false;
-                        $scope.profile.permissions = $filter('filter')($scope.profiles, { is_persistent: true, has_admin_rights: true })[0].permissions;
-                        //Create
-                        var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
-                        $scope.profile.PageStart = dashboard;
+                    $scope.profile.has_admin_rights = false;
+                    $scope.profile.is_persistent = false;
+                    $scope.profile.business_intelligence = false;
+                    $scope.profile.send_email = false;
+                    $scope.profile.send_sms = false;
+                    $scope.profile.export_data = false;
+                    $scope.profile.import_data = false;
+                    $scope.profile.word_pdf_download = false;
+                    $scope.profile.lead_convert = false;
+                    $scope.profile.document_search = false;
+                    $scope.profile.tasks = false;
+                    $scope.profile.calendar = false;
+                    $scope.profile.newsfeed = false;
+                    $scope.profile.report = false;
+                    $scope.profile.dashboard = true;
+                    $scope.profile.home = false;
+                    $scope.profile.collective_annual_leave = false;
+                    $scope.profile.permissions = $filter('filter')($scope.profiles, { is_persistent: true, has_admin_rights: true })[0].permissions;
+                    //Create
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
+                    $scope.profile.PageStart = dashboard;
 
-                        $scope.loading = false;
-                    })
+                    $scope.loading = false;
+                })
                     .catch(function () {
                         $scope.loading = false;
                     });
             }
 
             getProfile();
+
+            $scope.changePage = function (page) {
+                $scope.loading = true;
+                var requestModel = angular.copy($scope.requestModel);
+                requestModel.offset = page - 1;
+
+                ProfilesService.find(requestModel, 2).then(function (response) {
+                    $scope.profiles = ProfilesService.getProfiles(response.data, $scope.$parent.modules, false);
+                    $scope.profilesCopy = angular.copy($scope.profiles);
+                    $scope.profile = {};
+
+                    $scope.profile.has_admin_rights = false;
+                    $scope.profile.is_persistent = false;
+                    $scope.profile.business_intelligence = false;
+                    $scope.profile.send_email = false;
+                    $scope.profile.send_sms = false;
+                    $scope.profile.export_data = false;
+                    $scope.profile.import_data = false;
+                    $scope.profile.word_pdf_download = false;
+                    $scope.profile.lead_convert = false;
+                    $scope.profile.document_search = false;
+                    $scope.profile.tasks = false;
+                    $scope.profile.calendar = false;
+                    $scope.profile.newsfeed = false;
+                    $scope.profile.report = false;
+                    $scope.profile.dashboard = true;
+                    $scope.profile.home = false;
+                    $scope.profile.collective_annual_leave = false;
+                    $scope.profile.permissions = $filter('filter')($scope.profiles, { is_persistent: true, has_admin_rights: true })[0].permissions;
+                    //Create
+                    var dashboard = $filter('filter')($scope.startPageList, { value: "Dashboard" }, true)[0];
+                    $scope.profile.PageStart = dashboard;
+
+                    $scope.loading = false;
+
+                }).finally(function () {
+                    $scope.loading = false;
+                });
+            };
+
+            $scope.changeOffset = function () {
+                $scope.changePage(1);
+            };
 
             $scope.SetStartPage = function () {
 
@@ -151,6 +205,7 @@ angular.module('primeapps')
                 result.then(function () {
                     $scope.profileSubmit = false;
                     $scope.profileFormModal.hide();
+                    getProfile();
                     ngToast.create({ content: $filter('translate')('Setup.Profiles.SubmitSuccess'), className: 'success' });
 
                     ProfilesService.getAllBasic()
@@ -162,19 +217,6 @@ angular.module('primeapps')
                 });
                 // }
             };
-
-            function getProfiles() {
-                ProfilesService.getAll()
-                    .then(function (response) {
-                        $scope.profiles = response.data;
-                        $scope.loading = false;
-                    })
-                    .catch(function () {
-                        $scope.loading = false;
-                    });
-            }
-
-            getProfiles();
 
             var editProfile = function (profile) {
                 ProfilesService.getAll().then(function (response) {
