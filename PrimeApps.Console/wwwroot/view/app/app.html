@@ -1,6 +1,10 @@
 <div class="setup-layout" ng-class="subtoggleClass">
     <div class="row clearfix">
         <div class="menu app-menu2">
+            <div class="sidemenu setup-title">
+                <h2><span>{{ menuTopTitle }}</span></h2>
+                <button class="btn add-button"><i class="fas fa-eye"></i> <span>Preview</span></button>
+            </div>
             <ng-include ng-show="activeMenu==='app'"   src="'view/app/common/appMenu.html'"></ng-include>
             <ng-include ng-show="activeMenu==='model'" src="'view/app/common/modelMenu.html'"></ng-include>
             <ng-include ng-show="activeMenu==='automation'" src="'view/app/common/automationMenu.html'"></ng-include>

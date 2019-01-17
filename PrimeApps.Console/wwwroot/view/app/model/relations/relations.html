@@ -1,86 +1,82 @@
-<div class="col-sm-12" style="border: none ;">
-    <div class="setup-liste-header row">
-        <div class="col-sm-6"><h2 class="setup-title">{{'Setup.Modules.TitleRelations' | translate}}</h2></div>
-        <div class="col-sm-6 list-right-menu">
-            <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewRelation' | translate}}</button>
-        </div>
-    </div>
-    <div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
-    <div ng-show="!loading" class="tab-content">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>{{'Setup.Modules.RelationName' | translate}}</th>
-                    <th>{{'Setup.Modules.Name' | translate}}</th>
-                    <th>{{'Setup.Modules.RelatedModule' | translate}}</th>
-                    <th>{{'Setup.Modules.RelationType' | translate}}</th>
-                    <th style="min-width: 110px;"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="relation in relations | filter:{deleted:'!true'} | orderBy:'order'">
-                    <td>{{relation['label_' + language + '_plural']}}</td>
-                    <td>{{relation.parent_module['label_' + language + '_plural']}}</td>
-                    <td>{{relation.relation_module['label_' + language + '_plural']}}</td>
-                    <td>{{relation.relation_type === 'one_to_many' ? ('Setup.Modules.OneToMany' | translate) : ('Setup.Modules.ManyToMany' | translate)}}</td>
-                    <td class="text-center">
-                        <div class="action-buttons-block">
-                            <button type="button" data-toggle="dropdown"
-                                    class="btn btn-xs btn-default list-action-button"
-                                    placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true" aria-expanded="false" >
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li>
-                                    <a href="#" ng-click="showFormModal(relation)">
-                                        {{'Common.Edit' | translate}}
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" confirm-click action="delete(relation)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
-                                        {{'Common.Remove' | translate}}
-                                    </a>
-                                </li>
-    
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="table-pagination">
-            <div>
-                <nav aria-label="Page navigation">
-                    <div paging
-                         text-first="&laquo;"
-                         ul-class="pagination"
-                         active-class="active"
-                         page="requestModel.offset"
-                         page-size="requestModel.limit"
-                         total="pageTotal"
-                         scroll-top="true"
-                         hide-if-empty="true"
-                         show-prev-next="true"
-                         show-first-last="true"
-                         text-next-class="fas fa-chevron-right"
-                         text-prev-class="fas fa-chevron-left"
-                         text-first-class="fas fa-step-backward"
-                         text-last-class="fas fa-step-forward"
-                         paging-action="changePage(page)">
+<div class="setup-title">
+    <h2>{{'Setup.Modules.TitleRelations' | translate}}</h2>
+    <button class="btn add-button" ng-click="showFormModal()"><i class="fas fa-plus"></i> {{'Setup.Modules.NewRelation' | translate}}</button>
+</div>
+<div ng-show="loading" class="page-loading"><i class="fa fa-sm fa-spinner fa-pulse"></i></div>
+<div ng-show="!loading" class="tab-content">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{'Setup.Modules.RelationName' | translate}}</th>
+                <th>{{'Setup.Modules.Name' | translate}}</th>
+                <th>{{'Setup.Modules.RelatedModule' | translate}}</th>
+                <th>{{'Setup.Modules.RelationType' | translate}}</th>
+                <th style="min-width: 110px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="relation in relations | filter:{deleted:'!true'} | orderBy:'order'">
+                <td>{{relation['label_' + language + '_plural']}}</td>
+                <td>{{relation.parent_module['label_' + language + '_plural']}}</td>
+                <td>{{relation.relation_module['label_' + language + '_plural']}}</td>
+                <td>{{relation.relation_type === 'one_to_many' ? ('Setup.Modules.OneToMany' | translate) : ('Setup.Modules.ManyToMany' | translate)}}</td>
+                <td class="text-center">
+                    <div class="action-buttons-block">
+                        <button type="button" data-toggle="dropdown"
+                                class="btn btn-xs btn-default list-action-button"
+                                placement="bottom-right" data-animation="am-flip-x" bs-dropdown aria-haspopup="true" aria-expanded="false" >
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li>
+                                <a href="#" ng-click="showFormModal(relation)">
+                                    {{'Common.Edit' | translate}}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" confirm-click action="delete(relation)" placement="left" confirm-message="{{'Common.AreYouSure' | translate}}" confirm-yes="{{'Common.Yes' | translate}}" confirm-no="{{'Common.No' | translate}}">
+                                    {{'Common.Remove' | translate}}
+                                </a>
+                            </li>
+
+                        </ul>
                     </div>
-                </nav>
-            </div>
-            <div>
-                <span class="pagination-span">Items per page  </span>
-                <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
-                    <option ng-selected="true" value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                    <option value="150">150</option>
-                    <option value="200">200</option>
-                </select>
-            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-pagination">
+        <div>
+            <nav aria-label="Page navigation">
+                <div paging
+                     text-first="&laquo;"
+                     ul-class="pagination"
+                     active-class="active"
+                     page="requestModel.offset"
+                     page-size="requestModel.limit"
+                     total="pageTotal"
+                     scroll-top="true"
+                     hide-if-empty="true"
+                     show-prev-next="true"
+                     show-first-last="true"
+                     text-next-class="fas fa-chevron-right"
+                     text-prev-class="fas fa-chevron-left"
+                     text-first-class="fas fa-step-backward"
+                     text-last-class="fas fa-step-forward"
+                     paging-action="changePage(page)">
+                </div>
+            </nav>
+        </div>
+        <div>
+            <span class="pagination-span">Items per page  </span>
+            <select ng-model="requestModel.limit" class="items-per-page-select" ng-change="changeOffset()">
+                <option ng-selected="true" value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="150">150</option>
+                <option value="200">200</option>
+            </select>
         </div>
     </div>
 </div>
