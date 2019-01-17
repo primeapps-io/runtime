@@ -17,6 +17,12 @@ using PrimeApps.App.Storage.Unified;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
+using PrimeApps.Model;
+using System.Text.RegularExpressions;
+using Document = PrimeApps.Model.Entities.Tenant.Document;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System.Collections.Generic;
+using static PrimeApps.App.Storage.UnifiedStorage;
 
 namespace PrimeApps.App.Controllers
 {
@@ -32,6 +38,7 @@ namespace PrimeApps.App.Controllers
         private IUnifiedStorage _storage;
         private IConfiguration _configuration;
 
+
         public StorageController(IDocumentRepository documentRepository, IRecordRepository recordRepository, IModuleRepository moduleRepository, ITemplateRepository templateRepository, INoteRepository noteRepository, IPicklistRepository picklistRepository, ISettingRepository settingRepository, IUnifiedStorage storage, IConfiguration configuration)
         {
             _documentRepository = documentRepository;
@@ -44,6 +51,19 @@ namespace PrimeApps.App.Controllers
             _configuration = configuration;
         }
 
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            SetContext(context);
+            SetCurrentUser(_documentRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_recordRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_moduleRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_templateRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_noteRepository, PreviewMode, TenantId, AppId);
+            SetCurrentUser(_settingRepository, PreviewMode, TenantId, AppId);
+
+            base.OnActionExecuting(context);
+        }
+
         /// <summary>
         /// Uploads files by the chucks as a stream.
         /// </summary>
@@ -53,18 +73,22 @@ namespace PrimeApps.App.Controllers
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload(IFormCollection form)
         {
-
             IFormFile file = form.Files.First();
             StringValues bucketName = $"tenant{AppUser.TenantId}",
-                chunksStr, uploadId, chunkStr, fileName, responseList;
-
+                chunksStr, uploadId, chunkStr, fileName, responseList, type;
             form.TryGetValue("chunks", out chunksStr);
             form.TryGetValue("chunk", out chunkStr);
             form.TryGetValue("name", out fileName);
-            form.TryGetValue("uploadId", out uploadId);
-            form.TryGetValue("responseList", out responseList);
+            form.TryGetValue("upload_id", out uploadId);
+            form.TryGetValue("response_list", out responseList);
+            form.TryGetValue("type", out type);
+            ObjectType objectType = UnifiedStorage.GetType(type);
 
-            int chunk = 1,
+
+            bucketName = GetPath(type, AppUser.TenantId);
+
+
+            int chunk = 0,
                 chunks = 1;
 
             int.TryParse(chunksStr, out chunks);
@@ -89,10 +113,15 @@ namespace PrimeApps.App.Controllers
                 if (chunk == chunks)
                 {
                     uploadResult = await _storage.CompleteMultipartUpload(bucketName, fileName, responseList, response.ETag, uploadId);
+
                     response.Status = MultipartStatusEnum.Completed;
+                    if (objectType == ObjectType.ATTACHMENT)
+                    {
+                        response.PublicURL = _storage.GetShareLink(bucketName, fileName, DateTime.UtcNow.AddMonths(3), Amazon.S3.Protocol.HTTP);
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _storage.AbortMultipartUpload(bucketName, fileName, uploadId);
                 response.Status = MultipartStatusEnum.Aborted;
@@ -100,186 +129,34 @@ namespace PrimeApps.App.Controllers
 
             return Json(response);
         }
-        /// <summary>
-        /// Using at email attachments and on module 
-        /// </summary>
-        /// <returns></returns>
-        [Route("upload_attachment"), HttpPost]
-        public async Task<IActionResult> UploadAttachment()
+
+        [HttpPost("upload_whole")]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadWhole()
         {
-            //Parse stream and get file properties.
-            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
+            var parser = new HttpMultipartParser(Request.Body, "file");
+            StringValues bucketName = $"tenant{AppUser.TenantId}";
+
             //if it is successfully parsed continue.
             if (parser.Success)
             {
-
                 if (parser.FileContents.Length <= 0)
                 {
                     //check the file size if it is 0 bytes then return client with that error code.
-                    return BadRequest();
-                }
-
-                //declare chunk variables
-                int chunk = 0; //current chunk
-                int chunks = 1; //total chunk count
-
-                string uniqueName = string.Empty;
-                string container = string.Empty;
-
-                //if parser has more then 1 parameters, it means that request is chunked.
-                if (parser.Parameters.Count > 1)
-                {
-                    //calculate chunk variables.
-                    chunk = int.Parse(parser.Parameters["chunk"]);
-                    chunks = int.Parse(parser.Parameters["chunks"]);
-
-                    //get the file name from parser
-                    if (parser.Parameters.ContainsKey("name"))
-                        uniqueName = parser.Parameters["name"];
-
-                    if (parser.Parameters.ContainsKey("container"))
-                        container = parser.Parameters["container"];
-                }
-
-                if (string.IsNullOrEmpty(uniqueName))
-                {
-                    var ext = Path.GetExtension(parser.Filename);
-                    uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
-                }
-
-                //send stream and parameters to storage upload helper method for temporary upload.
-                AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", uniqueName, parser.ContentType, _configuration);
-
-                var result = new DocumentUploadResult();
-                result.ContentType = parser.ContentType;
-                result.UniqueName = uniqueName;
-
-                if (chunk == chunks - 1)
-                {
-                    CloudBlockBlob blob = await AzureStorage.CommitFile(uniqueName, $"{container}/{uniqueName}", parser.ContentType, "pub", chunks, _configuration);
-                    result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
-                }
-
-                //return content type of the file to the client
-                return Ok(result);
-            }
-
-            //this request invalid because there is no file, return fail code to the client.
-            return NotFound();
-        }
-        /// <summary>
-        /// Using at record document type upload for single file
-        /// </summary>
-        /// <returns></returns>
-        [Route("upload_document_file"), HttpPost]
-        public async Task<IActionResult> UploadDocumentFile()
-        {
-            //Parse stream and get file properties.
-            HttpMultipartParser parser = new HttpMultipartParser(Request.Body, "file");
-            String blobUrl = _configuration.GetSection("AppSettings")["BlobUrl"];
-            //if it is successfully parsed continue.
-            if (parser.Success)
-            {
-
-                if (parser.FileContents.Length <= 0)
-                {
-                    //check the file size if it is 0 bytes then return client with that error code.
-                    return BadRequest();
-                }
-
-                if (Utils.BytesToMegabytes(parser.FileContents.Length) > 5) // 5 MB maximum
-                {
-                    return BadRequest();
-                }
-
-
-                string uniqueName = string.Empty;
-                string fileName = string.Empty;
-                string container = string.Empty;
-                string moduleName = string.Empty;
-                string fullFileName = string.Empty;
-                string recordId = string.Empty;
-                string documentSearch = string.Empty;
-                bool documentSearchFlag = false;
-                int uniqueRecordId = 0;
-
-                //if parser has more then 1 parameters, it means that request is full filled by request maker object - uploader.
-                if (parser.Parameters.Count > 1)
-                {
-
-                    //get the file name from parser
-                    if (parser.Parameters.ContainsKey("name"))
-                        uniqueName = parser.Parameters["name"];
-
-                    if (parser.Parameters.ContainsKey("name"))
-                        uniqueName = parser.Parameters["name"];
-
-                    if (parser.Parameters.ContainsKey("filename"))
-                        fileName = parser.Parameters["filename"];
-
-                    if (parser.Parameters.ContainsKey("container"))
-                        container = parser.Parameters["container"];
-
-                    if (parser.Parameters.ContainsKey("modulename"))
-                    {
-                        moduleName = parser.Parameters["modulename"];
-                        moduleName = moduleName.Replace("_", "-");
-                    }
-
-
-
-
-                    if (parser.Parameters.ContainsKey("documentsearch"))
-                    {
-                        documentSearch = parser.Parameters["documentsearch"];
-                        bool.TryParse(documentSearch, out documentSearchFlag);
-                    }
-                    if (parser.Parameters.ContainsKey("recordid"))
-                    {
-                        recordId = parser.Parameters["recordid"];
-                        int.TryParse(recordId, out uniqueRecordId);
-                    }
-
-
-                }
-
-                if (string.IsNullOrEmpty(uniqueName) || string.IsNullOrEmpty(container) || string.IsNullOrEmpty(moduleName) || string.IsNullOrEmpty(fileName) || uniqueRecordId == 0)
-                {
                     return BadRequest();
                 }
 
                 var ext = Path.GetExtension(parser.Filename);
-                fullFileName = uniqueRecordId + "_" + uniqueName + ext;
+                var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
 
-                if (ext != ".pdf" && ext != ".txt" && ext != ".doc" && ext != ".docx")
+                await _storage.Upload(bucketName, uniqueName, Request.Body);
+
+                var result = new DocumentUploadResult
                 {
-                    return BadRequest();
-                }
-
-
-                var chunk = 0;
-                var chunks = 1; //one part chunk
-
-				//send stream and parameters to storage upload helper method for temporary upload.
-				await AzureStorage.UploadFile(chunk, new MemoryStream(parser.FileContents), "temp", fullFileName, parser.ContentType, _configuration);
-
-                var result = new DocumentUploadResult();
-                result.ContentType = parser.ContentType;
-                result.UniqueName = fullFileName;
-
-
-                CloudBlockBlob blob = await AzureStorage.CommitFile(fullFileName, $"{container}/{moduleName}/{fullFileName}", parser.ContentType, "module-documents", chunks, _configuration, BlobContainerPublicAccessType.Blob, "temp", uniqueRecordId.ToString(), moduleName, fileName, fullFileName);
-                result.PublicURL = $"{blobUrl}{blob.Uri.AbsolutePath}";
-
-
-                if (documentSearchFlag == true)
-                {
-                    var documentSearchHelper = new DocumentSearch();
-
-                    documentSearchHelper.CreateOrUpdateIndexOnDocumentBlobStorage(AppUser.TenantGuid.ToString(), moduleName, _configuration, false);//False because! 5 min auto index incremental change detection policy check which azure provided
-
-                }
+                    ContentType = parser.ContentType,
+                    UniqueName = uniqueName,
+                    Chunks = 0
+                };
 
                 //return content type of the file to the client
                 return Ok(result);
@@ -288,213 +165,157 @@ namespace PrimeApps.App.Controllers
             //this request invalid because there is no file, return fail code to the client.
             return NotFound();
         }
-        [Route("remove_document"), HttpPost]
-        public async Task<IActionResult> RemoveModuleDocument([FromBody]JObject data)
+
+
+        [Route("upload_hex"), HttpPost]
+        [DisableRequestSizeLimit]
+        public async Task<IActionResult> UploadHex([FromBody]JObject data)
         {
-            string tenantId,
-                module,
-                recordId,
-                fieldName,
-                fileNameExt;
-            module = data["module"]?.ToString();
-            recordId = data["recordId"]?.ToString();
-            fieldName = data["fieldName"]?.ToString();
-            fileNameExt = data["fileNameExt"]?.ToString();
-            tenantId = data["tenantId"]?.ToString();
+            string instanceId,
+              file,
+              description,
+              moduleName,
+              moduleId,
+              recordId,
+              fileName;
+            moduleName = data["module_name"]?.ToString();
+            file = data["file"]?.ToString();
+            description = data["description"]?.ToString();
+            moduleId = data["module_id"]?.ToString();
+            recordId = data["record_id"]?.ToString();
+            fileName = data["file_name"]?.ToString();
+            instanceId = data["instance_id"]?.ToString();
 
-            if (int.Parse(tenantId) != AppUser.TenantId)
+            int parsedModuleId;
+            Guid parsedInstanceId = Guid.NewGuid();
+            int parsedRecordId;
+            byte[] fileBytes;
+
+            if (string.IsNullOrEmpty(file))
+                return BadRequest("Please send file hex string.");
+
+            if (string.IsNullOrEmpty(recordId))
+                return BadRequest("Please send record_id.");
+
+            if (!int.TryParse(recordId, out parsedRecordId))
+                return BadRequest("Please send valid record_id.");
+
+            if (string.IsNullOrEmpty(fileName))
+                return BadRequest("Please send file hex string.");
+
+            if (fileName.Split('.').Length != 2)
+                return BadRequest("file_name not include special characters and multiple dot. Also dont forget to send file type like test.pdf");
+
+            if (string.IsNullOrEmpty(instanceId))
+                return BadRequest("Please send instance_id.");
+
+            if (!string.IsNullOrEmpty(instanceId))
+                if (!Guid.TryParse(instanceId, out parsedInstanceId))
+                    return BadRequest("Please send valid instance_id.");
+
+            if (!string.IsNullOrEmpty(moduleId))
             {
-                //if instance id does not belong to current session, stop the request and send the forbidden status code.
-                return Forbid();
+                var isNumeric = int.TryParse(moduleId, out parsedModuleId);
+                if (!isNumeric)
+                    return BadRequest("Please send integer for module_id parameter.");
+
+                var module = await _moduleRepository.GetById(parsedModuleId);
+
+                if (module == null)
+                    return BadRequest("Module not found.");
             }
-
-            string moduleDashesName = module.Replace("_", "-");
-
-            var containerName = "module-documents";
-            //var ext = Path.GetExtension(fileName);
-
-            string uniqueFileName = $"{AppUser.TenantGuid}/{moduleDashesName}/{recordId}_{fieldName}.{fileNameExt}";
-
-            //remove document
-            AzureStorage.RemoveFile(containerName, uniqueFileName, _configuration);
-
-
-
-            var moduleData = await _moduleRepository.GetByNameBasic(module);
-            var field = moduleData.Fields.FirstOrDefault(x => x.Name == fieldName);
-            if (field.DocumentSearch)
+            else if (!string.IsNullOrEmpty(moduleName))
             {
-                DocumentSearch documentSearch = new DocumentSearch();
-                documentSearch.CreateOrUpdateIndexOnDocumentBlobStorage(tenantId, module, _configuration, false);
-            }
+                var module = await _moduleRepository.GetByNameBasic(moduleName);
 
-            return Ok();
-        }
-        /// <summary>
-        /// Downloads the file from cloud to client as a stream.
-        /// </summary>
-        /// <param name="fileID"></param>
-        /// <returns></returns>
-        [Route("download"), HttpGet]
-        public async Task<IActionResult> Download([FromQuery(Name = "fileID")] int fileID)
-        {
-            //get the document record from database
-            var doc = await _documentRepository.GetById(fileID);
-            string publicName = "";
+                if (module == null)
+                    return BadRequest("Module not found.");
 
-            if (doc != null)
-            {
-                //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), doc.UniqueName, _configuration);
-                try
-                {
-                    //try to get the attributes of blob.
-                    await blob.FetchAttributesAsync();
-                }
-                catch (Exception)
-                {
-                    //if there is an exception, it means there is no such file.
-                    return NotFound();
-                }
-
-                //Is bandwidth enough to download this file?
-                //Bandwidth is enough, send the AzureStorage.
-                publicName = doc.Name;
-
-
-                //return new FileDownloadResult()
-                //{
-                //    Blob = blob,
-                //    PublicName = doc.Name
-                //};
-
-                //try
-                //{
-                //await Blob.DownloadToStreamAsync(outputStream, AccessCondition.GenerateEmptyCondition(), new BlobRequestOptions()
-                //{
-                //    ServerTimeout = TimeSpan.FromDays(1),
-                //    RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(10), 3)
-                //}, null);
-                //}
-                //finally
-                //{
-                //    outputStream.Close();
-                //}
-
-
-                //return await AzureStorage.DownloadToFileStreamResultAsync(blob, publicName);
-
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + publicName); // force download
-                await blob.DownloadToStreamAsync(Response.Body);
-                return new EmptyResult();
+                parsedModuleId = module.Id;
             }
             else
-            {
-                //there is no such file, return
-                return NotFound();
-            }
-        }
+                return BadRequest("Please send module_id or module_name paratemer.");
 
+            try
+            {
+                fileBytes = Enumerable.Range(0, file.Length)
+                     .Where(x => x % 2 == 0)
+                     .Select(x => Convert.ToByte(file.Substring(x, 2), 16))
+                     .ToArray();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Hex string is not valid. Exception is :" + ex.Message);
+            }
+
+            var ext = Path.GetExtension(fileName);
+            var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
+
+            string uniqueStandardizedName = fileName.Replace(" ", "-");
+
+            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
+
+            MemoryStream bytesToStream = new MemoryStream(fileBytes);
+            string bucketPath = UnifiedStorage.GetPath("", AppUser.TenantId);
+            await _storage.Upload(bucketPath, uniqueName, bytesToStream);
+
+            Document currentDoc = new Document()
+            {
+                FileSize = fileBytes.Length,
+                Description = description,
+                ModuleId = parsedModuleId,
+                Name = fileName,
+                CreatedAt = DateTime.UtcNow,
+                Type = UnifiedStorage.GetMimeType(ext),
+                UniqueName = uniqueName,
+                RecordId = parsedRecordId,
+                Deleted = false
+            };
+            if (await _documentRepository.CreateAsync(currentDoc) != null)
+            {
+                return Ok(currentDoc.Id.ToString());
+            }
+
+            return BadRequest("Couldn't Create Document!");
+
+            //this request invalid because there is no file, return fail code to the client.
+            //return NotFound();
+        }
+        [Route("create"), HttpPost]
         /// <summary>
-        /// Downloads the file from cloud to client as a stream.
+        /// Validates and creates document record permanently after temporary upload process completed.
         /// </summary>
-        /// <param name="fileID"></param>
-        /// <returns></returns>
-        [Route("download_module_document"), HttpGet]
-        public async Task<IActionResult> DownloadModuleDocument([FromQuery(Name = "module")] string module, [FromQuery(Name = "fileName")] string fileName, [FromQuery(Name = "fileNameExt")] string fileNameExt, [FromQuery(Name = "fieldName")] string fieldName, [FromQuery(Name = "recordId")] string recordId)
+        /// <param name="document">The document.</param>
+        public async Task<IActionResult> Create([FromBody]DocumentDTO document)
         {
-            if (!string.IsNullOrEmpty(module) && !string.IsNullOrEmpty(fileNameExt) && !string.IsNullOrEmpty(fieldName))
+            //get entity name if this document is uploading to a specific entity.
+            string uniqueStandardizedName = document.FileName.Replace(" ", "-");
+
+            uniqueStandardizedName = Regex.Replace(uniqueStandardizedName, @"[^\u0000-\u007F]", string.Empty);
+
+            Document currentDoc = new Document()
             {
-
-                var containerName = "module-documents";
-                //var ext = Path.GetExtension(fileName);
-
-                module = module.Replace("_", "-");
-
-                string uniqueFileName = $"{AppUser.TenantGuid}/{module}/{recordId}_{fieldName}.{fileNameExt}";
-                var docName = fileName + "." + fileNameExt;
-
-                //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(containerName, uniqueFileName, _configuration);
-                try
-                {
-                    //try to get the attributes of blob.
-                    await blob.FetchAttributesAsync();
-                }
-                catch (Exception)
-                {
-                    //if there is an exception, it means there is no such file.
-                    return NotFound();
-                }
-
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + docName); // force download
-                await blob.DownloadToStreamAsync(Response.Body);
-                return new EmptyResult();
-            }
-            else
+                FileSize = document.FileSize,
+                Description = document.Description,
+                ModuleId = document.ModuleId,
+                Name = document.FileName,
+                CreatedAt = DateTime.UtcNow,
+                Type = document.MimeType,
+                UniqueName = document.UniqueFileName,
+                RecordId = document.RecordId,
+                Deleted = false
+            };
+            if (await _documentRepository.CreateAsync(currentDoc) != null)
             {
-                //there is no such file, return
-                return BadRequest();
+                //transfer file to the permanent storage by committing it.
+                return Ok(currentDoc.Id.ToString());
             }
+
+            return BadRequest("Couldn't Create Document!");
+
         }
 
-        /// <summary>
-        /// Removes the document from database and blob AzureStorage.
-        /// </summary>
-        /// <param name="DocID">The document identifier.</param>
-        [Route("Remove"), HttpPost]
-        public async Task<IActionResult> Remove([FromBody]DocumentDTO doc)
-        {
-            //if the document is not null open a new session and transaction
-            var result = await _documentRepository.RemoveAsync(doc.ID);
-            if (result != null)
-            {
-                //Update storage license for instance.
-                return Ok();
-            }
 
 
-            return NotFound();
-        }
-
-        [Route("download_template"), HttpGet]
-        public async Task<IActionResult> DownloadTemplate([FromQuery(Name = "templateId")]int templateId)
-        {
-            //get the document record from database
-            var template = await _templateRepository.GetById(templateId);
-            string publicName = "";
-
-            if (template != null)
-            {
-                //if there is a document with this id, try to get it from blob AzureStorage.
-                var blob = AzureStorage.GetBlob(string.Format("inst-{0}", AppUser.TenantGuid), $"templates/{template.Content}", _configuration);
-                try
-                {
-                    //try to get the attributes of blob.
-                    await blob.FetchAttributesAsync();
-                }
-                catch (Exception)
-                {
-                    //if there is an exception, it means there is no such file.
-                    return NotFound();
-                }
-
-                //Bandwidth is enough, send the AzureStorage.
-                publicName = template.Name;
-
-                string[] splittedFileName = template.Content.Split('.');
-                string extension = splittedFileName.Length > 1 ? splittedFileName[1] : "docx";
-
-                //return await AzureStorage.DownloadToFileStreamResultAsync(blob, $"{template.Name}.{extension}");
-                Response.Headers.Add("Content-Disposition", "attachment; filename=" + $"{template.Name}.{extension}"); // force download
-                await blob.DownloadToStreamAsync(Response.Body);
-                return new EmptyResult();
-            }
-            else
-            {
-                //there is no such file, return
-                return NotFound();
-            }
-        }
     }
 }

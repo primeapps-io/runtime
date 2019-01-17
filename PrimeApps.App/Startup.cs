@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using PrimeApps.App.Storage;
 using System.Globalization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Amazon;
 
 namespace PrimeApps.App
 {
@@ -101,6 +102,7 @@ namespace PrimeApps.App
                 .AddDataAnnotationsLocalization();
 
             var awsOptions = Configuration.GetAWSOptions();
+            awsOptions.DefaultClientConfig.RegionEndpoint = RegionEndpoint.EUWest1;
             awsOptions.DefaultClientConfig.ServiceURL = Configuration.GetConnectionString("StorageConnection");
             awsOptions.Credentials = new BasicAWSCredentials(
                 Configuration.GetSection("AppSettings")["StorageAccessKey"],

@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.S3.Util;
@@ -20,6 +21,26 @@ namespace PrimeApps.App.Storage
     {
         private IAmazonS3 _client;
         public IAmazonS3 Client { get { return _client; } }
+
+        public enum ObjectType
+        {
+            ATTACHMENT,
+            RECORD,
+            TEMPLATE,
+            ANALYTIC,
+            IMPORT,
+            NONE
+        }
+
+        static readonly Dictionary<ObjectType, string> pathMap = new Dictionary<ObjectType, string>{
+            {ObjectType.ATTACHMENT,"/attachments/"},
+            {ObjectType.RECORD,"/records/"},
+            {ObjectType.TEMPLATE,"/templates/"},
+            {ObjectType.ANALYTIC,"/analytics/"},
+            {ObjectType.IMPORT,"/imports/"},
+            {ObjectType.NONE,""}
+
+        };
 
         public UnifiedStorage(IAmazonS3 client)
         {
@@ -52,12 +73,7 @@ namespace PrimeApps.App.Storage
         /// <returns>Upload id required to upload parts.</returns>
         public async Task<string> InitiateMultipartUpload(string bucket, string key)
         {
-
-            bool exists = await AmazonS3Util.DoesS3BucketExistAsync(_client, bucket);
-            if (!exists)
-            {
-                await _client.PutBucketAsync(bucket);
-            }
+            await CreateBucketIfNotExists(bucket);
 
             // initiate if it is first chunk.
             var initialResult = await _client.InitiateMultipartUploadAsync(bucket, key);
@@ -85,7 +101,7 @@ namespace PrimeApps.App.Storage
                 Key = key,
                 UploadId = uploadId,
                 PartNumber = chunk,
-                InputStream = stream
+                InputStream = stream,
             };
 
             // Upload a part
@@ -132,6 +148,24 @@ namespace PrimeApps.App.Storage
         }
 
         /// <summary>
+        /// Creates ACL for the object.
+        /// </summary>
+        /// <param name="bucket"></param>
+        /// <param name="key"></param>
+        /// <param name="cannedACL"></param>
+        /// <returns>PutACLResponse</returns>
+        public async Task<PutACLResponse> CreateACL(string bucket, string key, S3CannedACL cannedACL)
+        {
+            PutACLRequest request = new PutACLRequest()
+            {
+                CannedACL = cannedACL,
+                BucketName = bucket,
+                Key = key
+            };
+
+            return await _client.PutACLAsync(request);
+        }
+        /// <summary>
         /// Downloads files from S3 as FileStreamResult(Chunked)
         /// </summary>
         /// <param name="bucket"></param>
@@ -141,7 +175,6 @@ namespace PrimeApps.App.Storage
         public async Task<FileStreamResult> Download(string bucket, string key, string fileName)
         {
             GetObjectResponse file = await _client.GetObjectAsync(bucket, key);
-
             FileStreamResult result = new FileStreamResult(file.ResponseStream, file.Headers.ContentType)
             {
                 FileDownloadName = fileName,
@@ -181,7 +214,7 @@ namespace PrimeApps.App.Storage
         /// <param name="key"></param>
         /// <param name="expires"></param>
         /// <returns></returns>
-        public async Task<string> GetShareLink(string bucket, string key, DateTime expires)
+        public string GetShareLink(string bucket, string key, DateTime expires, Protocol protocol = Protocol.HTTP)
         {
 
             GetPreSignedUrlRequest request =
@@ -189,7 +222,8 @@ namespace PrimeApps.App.Storage
                {
                    BucketName = bucket,
                    Key = key,
-                   Expires = expires
+                   Expires = expires,
+                   Protocol = Protocol.HTTP
                };
 
             return _client.GetPreSignedURL(request);
@@ -229,6 +263,104 @@ namespace PrimeApps.App.Storage
                 Key = key
             };
             return await _client.DeleteObjectAsync(request);
+        }
+
+        public async Task<PutLifecycleConfigurationResponse> SetLifeCycle(string bucket, int days)
+        {
+            LifecycleConfiguration config = new LifecycleConfiguration();
+            config.Rules.Add(new LifecycleRule()
+            {
+                Expiration = new LifecycleRuleExpiration()
+                {
+                    Days = days
+                }
+            });
+
+            PutLifecycleConfigurationRequest request = new PutLifecycleConfigurationRequest
+            {
+                BucketName = bucket,
+                Configuration = config
+            };
+
+            return await _client.PutLifecycleConfigurationAsync(request);
+        }
+
+        public static string GetMimeType(string name)
+        {
+            var type = name.Split('.')[1];
+            switch (type)
+            {
+                case "gif":
+                    return "image/bmp";
+                case "bmp":
+                    return "image/bmp";
+                case "jpeg":
+                case "jpg":
+                    return "image/jpeg";
+                case "png":
+                    return "image/png";
+                case "tif":
+                case "tiff":
+                    return "image/tiff";
+                case "doc":
+                    return "application/msword";
+                case "docx":
+                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "pdf":
+                    return "application/pdf";
+                case "ppt":
+                    return "application/vnd.ms-powerpoint";
+                case "pptx":
+                    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                case "xlsx":
+                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case "xls":
+                    return "application/vnd.ms-excel";
+                case "csv":
+                    return "text/csv";
+                case "xml":
+                    return "text/xml";
+                case "txt":
+                    return "text/plain";
+                case "zip":
+                    return "application/zip";
+                case "ogg":
+                    return "application/ogg";
+                case "mp3":
+                    return "audio/mpeg";
+                case "wma":
+                    return "audio/x-ms-wma";
+                case "wav":
+                    return "audio/x-wav";
+                case "wmv":
+                    return "audio/x-ms-wmv";
+                case "swf":
+                    return "application/x-shockwave-flash";
+                case "avi":
+                    return "video/avi";
+                case "mp4":
+                    return "video/mp4";
+                case "mpeg":
+                    return "video/mpeg";
+                case "mpg":
+                    return "video/mpeg";
+                case "qt":
+                    return "video/quicktime";
+                default:
+                    return "image/jpeg";
+            }
+        }
+
+
+        public static string GetPath(string type, int tenant)
+        {
+            ObjectType objectType = (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
+            return $"tenant{tenant}{pathMap[objectType]}";
+        }
+
+        public static ObjectType GetType(string type)
+        {
+            return (ObjectType)System.Enum.Parse(typeof(ObjectType), type, true);
         }
     }
 }

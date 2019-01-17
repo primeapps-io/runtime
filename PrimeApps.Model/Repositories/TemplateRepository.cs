@@ -30,7 +30,7 @@ namespace PrimeApps.Model.Repositories
 			return template;
 		}
 
-		public async Task<ICollection<Template>> GetAll(TemplateType templateType)//, string moduleName = "")
+		public async Task<ICollection<Template>> GetAll(TemplateType templateType, string moduleName = "")
 		{
 
 			//var templates = DbContext.Templates

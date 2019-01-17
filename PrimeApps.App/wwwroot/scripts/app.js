@@ -113,7 +113,7 @@ angular.module('primeapps',
 				// General settings
 				runtimes: 'html5',
 				url: config.apiUrl + 'Document/Upload',
-				chunk_size: '256kb',
+				chunk_size: '5mb',
 				multipart: true,
 				unique_names: true
 			});

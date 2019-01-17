@@ -100,7 +100,10 @@ angular.module('primeapps')
                         note.text = noteModel.text.trim();
 
                         if (note.text.length > 3800) {
-                            ngToast.create({ content: $filter('translate')('Note.LimitWarn'), className: 'warning' });
+                            ngToast.create({
+                                content: $filter('translate')('Note.LimitWarn'),
+                                className: 'warning'
+                            });
                             $scope.noteCreating = false;
                         } else {
                             NoteService.create(note)
@@ -123,9 +126,13 @@ angular.module('primeapps')
                                             newNote.text = newNote.text.replace(content[i], '<a href="" ng-click="addActivity(' + dateTime + ', \'date\')" data-placement="right" bs-tooltip data-title="Etkinlik eklemek için tıklayınız"/>' + content[i] + '</a>');
                                         }
                                         var lowerCaseContent = content[i].toLowerCase();
-                                        if ($filter('filter')(arr, { code: lowerCaseContent }, true).length > 0) {
+                                        if ($filter('filter')(arr, {
+                                                code: lowerCaseContent
+                                            }, true).length > 0) {
                                             var difference;
-                                            var arrEl = $filter('filter')(arr, { code: lowerCaseContent }, true)[0];
+                                            var arrEl = $filter('filter')(arr, {
+                                                code: lowerCaseContent
+                                            }, true)[0];
 
                                             if (arrEl.type === 'day') {
                                                 var dayDiff;
@@ -149,8 +156,7 @@ angular.module('primeapps')
 
                                                     newNote.text = newNote.text.replace(content[i], '<a href="" ng-click="addActivity(' + difference + ', \'null\')" data-placement="right" bs-tooltip data-title="Etkinlik eklemek için tıklayınız"/>' + content[i] + '</a>');
                                                 }
-                                            }
-                                            else if (arrEl.type === 'dayTime') {
+                                            } else if (arrEl.type === 'dayTime') {
                                                 difference = arrEl.value;
                                                 newNote.text = newNote.text.replace(content[i], '<a href="" ng-click="addActivity(' + difference + ', \'null\')" data-placement="right" bs-tooltip data-title="Etkinlik eklemek için tıklayınız"/>' + content[i] + '</a>');
                                             } else if (arrEl.type === 'month') {
@@ -191,10 +197,13 @@ angular.module('primeapps')
                         subNote.text = noteModel.subNote.text.trim();
                         subNote.record_id = $scope.recordId;
                         subNote.note_id = noteModel.id;
-                        subNote.module_id = $scope.$parent.module.id;//if chatter, please beware of this.
+                        subNote.module_id = $scope.$parent.module.id; //if chatter, please beware of this.
 
                         if (subNote.text.length > 3800) {
-                            ngToast.create({ content: $filter('translate')('Note.LimitWarn'), className: 'warning' });
+                            ngToast.create({
+                                content: $filter('translate')('Note.LimitWarn'),
+                                className: 'warning'
+                            });
                             noteModel.noteCreating = false;
                         } else {
                             NoteService.create(subNote)
@@ -233,8 +242,7 @@ angular.module('primeapps')
                             .then(function () {
                                 if (parentNote) {
                                     parentNote.notes.splice(parentNote.notes.indexOf(note), 1)
-                                }
-                                else {
+                                } else {
                                     $scope.$parent.notes.splice($scope.$parent.notes.indexOf(note), 1)
                                 }
 
@@ -257,14 +265,18 @@ angular.module('primeapps')
                                         var currentNote = noteResponse.data;
                                         $scope.likeButton = false;
                                         if (type === 'sub') {
-                                            var note = $filter('filter')($scope.$parent.notes, { id: currentNote.note_id }, true)[0];
+                                            var note = $filter('filter')($scope.$parent.notes, {
+                                                id: currentNote.note_id
+                                            }, true)[0];
                                             for (var i = 0; i < note.notes.length; i++) {
                                                 var subNote = note.notes[i];
                                                 if (subNote.id === id)
                                                     subNote.likes = currentNote.likes;
                                             }
                                         } else
-                                            $filter('filter')($scope.$parent.notes, { id: currentNote.id }, true)[0].likes = currentNote.likes;
+                                            $filter('filter')($scope.$parent.notes, {
+                                                id: currentNote.id
+                                            }, true)[0].likes = currentNote.likes;
                                     });
                             });
                     };
@@ -322,12 +334,15 @@ angular.module('primeapps')
                                 container: dialog_uid
                             },
                             filters: {
-                                mime_types: [
-                                    { title: "Image files", extensions: "jpg,gif,png" },
-                                ],
+                                mime_types: [{
+                                    title: "Image files",
+                                    extensions: "jpg,gif,png"
+                                }, ],
                                 max_file_size: "2mb"
                             },
-                            resize: { quality: 90 }
+                            resize: {
+                                quality: 90
+                            }
                         },
                         events: {
                             filesAdded: function (uploader, files) {
@@ -336,23 +351,22 @@ angular.module('primeapps')
                                     title: $filter('translate')('Common.PleaseWait'),
                                     width: 50,
                                     height: 50,
-                                    body: [
-                                        {
-                                            type: 'container',
-                                            name: 'container',
-                                            label: '',
-                                            html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                        },
-                                    ],
+                                    body: [{
+                                        type: 'container',
+                                        name: 'container',
+                                        label: '',
+                                        html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                    }, ],
                                     buttons: []
                                 });
                             },
-                            uploadProgress: function (uploader, file) {
-                            },
+                            uploadProgress: function (uploader, file) {},
                             fileUploaded: function (uploader, file, response) {
                                 tinymce.activeEditor.windowManager.close();
                                 var resp = JSON.parse(response.response);
-                                uploadSuccessCallback(resp.public_url, { alt: file.name });
+                                uploadSuccessCallback(resp.public_url, {
+                                    alt: file.name
+                                });
                                 uploadSuccessCallback = null;
                             },
                             error: function (file, error) {
@@ -384,9 +398,10 @@ angular.module('primeapps')
                                 container: dialog_uid
                             },
                             filters: {
-                                mime_types: [
-                                    { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
-                                ],
+                                mime_types: [{
+                                    title: "Email Attachments",
+                                    extensions: "pdf,doc,docx,xls,xlsx,csv"
+                                }, ],
                                 max_file_size: "50mb"
                             }
                         },
@@ -397,22 +412,21 @@ angular.module('primeapps')
                                     title: $filter('translate')('Common.PleaseWait'),
                                     width: 50,
                                     height: 50,
-                                    body: [
-                                        {
-                                            type: 'container',
-                                            name: 'container',
-                                            label: '',
-                                            html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                        },
-                                    ],
+                                    body: [{
+                                        type: 'container',
+                                        name: 'container',
+                                        label: '',
+                                        html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                    }, ],
                                     buttons: []
                                 });
                             },
-                            uploadProgress: function (uploader, file) {
-                            },
+                            uploadProgress: function (uploader, file) {},
                             fileUploaded: function (uploader, file, response) {
                                 var resp = JSON.parse(response.response);
-                                uploadSuccessCallback(resp.public_url, { alt: file.name });
+                                uploadSuccessCallback(resp.public_url, {
+                                    alt: file.name
+                                });
                                 uploadSuccessCallback = null;
                                 tinymce.activeEditor.windowManager.close();
                             },
@@ -453,7 +467,18 @@ angular.module('primeapps')
                         imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
                         toolbar: " link image imagetools ",
                         menubar: 'false',
-                        placeholder_attrs: { style: { position: 'absolute', top: '5px', left: 0, color: 'lightgrey', padding: '1%', width: '98%', overflow: 'hidden', 'white-space': 'pre-wrap' } },
+                        placeholder_attrs: {
+                            style: {
+                                position: 'absolute',
+                                top: '5px',
+                                left: 0,
+                                color: 'lightgrey',
+                                padding: '1%',
+                                width: '98%',
+                                overflow: 'hidden',
+                                'white-space': 'pre-wrap'
+                            }
+                        },
                         skin: 'custom',
                         theme: 'modern',
 
@@ -490,8 +515,7 @@ angular.module('primeapps')
                         statusbar: false
                     };
 
-                    var arr = [
-                        {
+                    var arr = [{
                             code: 'pazartesi',
                             type: 'day',
                             value: 1
@@ -596,11 +620,12 @@ angular.module('primeapps')
                             type: 'month',
                             value: 12
                         }
-                    ]
+                    ];
 
                 }]
             };
-        }])
+        }
+    ])
 
     .directive('noteForm', ['$filter', '$localStorage', 'FileUploader', 'config', 'convert', 'entityTypes', 'NoteService', 'ngToast', '$cookies',
         function ($filter, $localStorage, FileUploader, config, convert, entityTypes, NoteService, ngToast, $cookies) {
@@ -631,7 +656,10 @@ angular.module('primeapps')
                             note.module_id = $scope.$parent.module.id;
 
                             if (note.text.length > 3800) {
-                                ngToast.create({ content: $filter('translate')('Note.LimitWarn'), className: 'warning' });
+                                ngToast.create({
+                                    content: $filter('translate')('Note.LimitWarn'),
+                                    className: 'warning'
+                                });
                                 $scope.noteCreating = false;
                             } else {
                                 NoteService.create(note)
@@ -657,22 +685,28 @@ angular.module('primeapps')
                         $scope.imgUploadForm = {
                             settings: {
                                 multi_selection: false,
-                                url: config.apiUrl + 'Document/upload_attachment',
+                                url: config.apiUrl + 'storage/upload',
                                 headers: {
                                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                                     'Accept': 'application/json',
                                     'X-Tenant-Id': $cookies.get('tenant_id')
                                 },
                                 multipart_params: {
-                                    container: dialog_uid
+                                    container: dialog_uid,
+                                    type: "attachment",
+                                    upload_id: 0,
+                                    response_list: ""
                                 },
                                 filters: {
-                                    mime_types: [
-                                        { title: "Image files", extensions: "jpg,gif,png" },
-                                    ],
+                                    mime_types: [{
+                                        title: "Image files",
+                                        extensions: "jpg,gif,png"
+                                    }, ],
                                     max_file_size: "2mb"
                                 },
-                                resize: { quality: 90 }
+                                resize: {
+                                    quality: 90
+                                }
                             },
                             events: {
                                 filesAdded: function (uploader, files) {
@@ -681,26 +715,42 @@ angular.module('primeapps')
                                         title: $filter('translate')('Common.PleaseWait'),
                                         width: 50,
                                         height: 50,
-                                        body: [
-                                            {
-                                                type: 'container',
-                                                name: 'container',
-                                                label: '',
-                                                html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                            },
-                                        ],
+                                        body: [{
+                                            type: 'container',
+                                            name: 'container',
+                                            label: '',
+                                            html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                        }, ],
                                         buttons: []
                                     });
                                 },
-                                uploadProgress: function (uploader, file) {
-                                },
+                                uploadProgress: function (uploader, file) {},
                                 fileUploaded: function (uploader, file, response) {
+                                    uploader.settings.multipart_params.response_list="";
+                                    uploader.settings.multipart_params.upload_id = 0;
+
                                     tinymce.activeEditor.windowManager.close();
                                     var resp = JSON.parse(response.response);
-                                    uploadSuccessCallback(resp.public_url, { alt: file.name });
+                                    uploadSuccessCallback(resp.public_url, {
+                                        alt: file.name
+                                    });
                                     uploadSuccessCallback = null;
                                 },
+                                chunkUploaded: function (up, file, response) {
+                                    var resp = JSON.parse(response.response);
+                                    if (resp.upload_id)
+                                        up.settings.multipart_params.upload_id = resp.upload_id;
+
+                                    if (up.settings.multipart_params.response_list == "") {
+                                        up.settings.multipart_params.response_list += resp.e_tag;
+                                    } else {
+                                        up.settings.multipart_params.response_list += "|" + resp.e_tag;
+                                    }
+                                },
                                 error: function (file, error) {
+                                    this.settings.multipart_params.response_list="";
+                                    this.settings.multipart_params.upload_id = 0;
+
                                     switch (error.code) {
                                         case -600:
                                             tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxImageSizeExceeded'));
@@ -720,19 +770,23 @@ angular.module('primeapps')
                             settings: {
                                 multi_selection: false,
                                 unique_names: false,
-                                url: config.apiUrl + 'Document/upload_attachment',
+                                url: config.apiUrl + 'storage/upload',
                                 headers: {
                                     'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                                     'Accept': 'application/json',
                                     'X-Tenant-Id': $cookies.get('tenant_id')
                                 },
                                 multipart_params: {
-                                    container: dialog_uid
+                                    container: dialog_uid,
+                                    type: "attachment",
+                                    upload_id: 0,
+                                    response_list: ""
                                 },
                                 filters: {
-                                    mime_types: [
-                                        { title: "Email Attachments", extensions: "pdf,doc,docx,xls,xlsx,csv" },
-                                    ],
+                                    mime_types: [{
+                                        title: "Email Attachments",
+                                        extensions: "pdf,doc,docx,xls,xlsx,csv"
+                                    }, ],
                                     max_file_size: "50mb"
                                 }
                             },
@@ -743,26 +797,42 @@ angular.module('primeapps')
                                         title: $filter('translate')('Common.PleaseWait'),
                                         width: 50,
                                         height: 50,
-                                        body: [
-                                            {
-                                                type: 'container',
-                                                name: 'container',
-                                                label: '',
-                                                html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
-                                            },
-                                        ],
+                                        body: [{
+                                            type: 'container',
+                                            name: 'container',
+                                            label: '',
+                                            html: '<span>' + $filter('translate')('EMail.UploadingAttachment') + '</span>'
+                                        }, ],
                                         buttons: []
                                     });
                                 },
-                                uploadProgress: function (uploader, file) {
-                                },
+                                uploadProgress: function (uploader, file) {},
                                 fileUploaded: function (uploader, file, response) {
+                                    this.settings.multipart_params.response_list="";
+                                    this.settings.multipart_params.upload_id = 0;
+
                                     var resp = JSON.parse(response.response);
-                                    uploadSuccessCallback(resp.public_url, { alt: file.name });
+                                    uploadSuccessCallback(resp.public_url, {
+                                        alt: file.name
+                                    });
                                     uploadSuccessCallback = null;
                                     tinymce.activeEditor.windowManager.close();
                                 },
+                                chunkUploaded: function (up, file, response) {
+                                    var resp = JSON.parse(response.response);
+                                    if (resp.upload_id)
+                                        up.settings.multipart_params.upload_id = resp.upload_id;
+
+                                    if (up.settings.multipart_params.response_list == "") {
+                                        up.settings.multipart_params.response_list += resp.e_tag;
+                                    } else {
+                                        up.settings.multipart_params.response_list += "|" + resp.e_tag;
+                                    }
+                                },
                                 error: function (file, error) {
+                                    this.settings.multipart_params.response_list="";
+                                    this.settings.multipart_params.upload_id = 0;
+                                    
                                     switch (error.code) {
                                         case -600:
                                             tinymce.activeEditor.windowManager.alert($filter('translate')('EMail.MaxFileSizeExceeded'));
@@ -780,7 +850,6 @@ angular.module('primeapps')
 
                         $scope.tinymceTemplate = {
                             onChange: function (e) {
-                                debugger;
                                 // put logic here for keypress and cut/paste changes
                             },
                             inline: false,
@@ -791,10 +860,21 @@ angular.module('primeapps')
                                 "searchreplace visualblocks code fullscreen",
                                 "insertdatetime table contextmenu paste imagetools wordcount textcolor colorpicker"
                             ],
-                            imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net'],
+                            imagetools_cors_hosts: ['crm.ofisim.com', 'test.ofisim.com', 'ofisimcomdev.blob.core.windows.net', 'localhost'],
                             toolbar: " link image imagetools ",
                             menubar: 'false',
-                            placeholder_attrs: { style: { position: 'absolute', top: '5px', left: 0, color: 'lightgrey', padding: '1%', width: '98%', overflow: 'hidden', 'white-space': 'pre-wrap' } },
+                            placeholder_attrs: {
+                                style: {
+                                    position: 'absolute',
+                                    top: '5px',
+                                    left: 0,
+                                    color: 'lightgrey',
+                                    padding: '1%',
+                                    width: '98%',
+                                    overflow: 'hidden',
+                                    'white-space': 'pre-wrap'
+                                }
+                            },
                             skin: 'custom',
                             theme: 'modern',
 
@@ -822,17 +902,19 @@ angular.module('primeapps')
                                 var blob = blobInfo.blob();
                                 uploadSuccessCallback = success;
                                 uploadFailedCallback = failure;
-                                $scope.imgUpload.uploader.addFile(blob);
-                                ///TODO: in future will be implemented to upload pasted data images into server.
+                                $scope.imgUploadForm.uploader.addFile(blob);
+                                //TODO: in future will be implemented to upload pasted data images into server.
                             },
                             resize: false,
                             width: '99,9%',
                             toolbar_items_size: 'small',
                             statusbar: false
                         };
-                    }]
+                    }
+                ]
             };
-        }])
+        }
+    ])
 
     .directive('compile', ['$compile', function ($compile) {
         return function (scope, element, attrs) {
@@ -861,7 +943,9 @@ angular.module('primeapps')
             element.bind("keydown keypress", function (event) {
                 if (event.which === 13) {
                     scope.$apply(function () {
-                        scope.$eval(attrs.onEnter, { 'event': event });
+                        scope.$eval(attrs.onEnter, {
+                            'event': event
+                        });
                     });
 
                     event.preventDefault();

@@ -38,7 +38,7 @@ angular.module('primeapps')
                 },
 
                 create: function (tenant_id, uniqueName, fileName, mimeType, fileSize, description, recordId, moduleId, chunkSize) {
-                    return $http.post(config.apiUrl + 'Document/Create', {
+                    return $http.post(config.apiUrl + 'storage/create', {
                         unique_file_name: uniqueName,
                         file_name: fileName,
                         mime_type: mimeType,

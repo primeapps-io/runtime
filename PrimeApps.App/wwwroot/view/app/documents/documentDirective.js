@@ -219,7 +219,7 @@ angular.module('primeapps')
                         var moduleId = $scope.module.id;
 
                         var uploader = $scope.uploader = $scope.customUploader || new FileUploader({
-                            url: config.apiUrl + 'Document/upload_large',
+                            url: config.apiUrl + 'storage/upload_whole',
                             headers: {
                                 'Authorization': 'Bearer ' + $localStorage.read('access_token'),
                                 "Content-Type": "application/json", "Accept": "application/json",
@@ -237,7 +237,7 @@ angular.module('primeapps')
                                 var description = '';
 
                                 if (!$scope.customUploader) {
-                                    DocumentService.create(tenant_id, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize)
+                                    DocumentService.create(tenant_id, uniqueName, fileName, mimeType, fileSize, description, entityId, moduleId, chunkSize);
                                 }
                                 else {
                                     entityId = $scope.entityIdFunc();

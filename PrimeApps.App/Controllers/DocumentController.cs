@@ -474,45 +474,6 @@ namespace PrimeApps.App.Controllers
             return Ok();
         }
 
-        [Route("upload_large"), HttpPost]
-        public async Task<IActionResult> UploadLarge()
-        {
-            var parser = new HttpMultipartParser(Request.Body, "file");
-
-            //if it is successfully parsed continue.
-            if (parser.Success)
-            {
-                if (parser.FileContents.Length <= 0)
-                {
-                    //check the file size if it is 0 bytes then return client with that error code.
-                    return BadRequest();
-                }
-
-                var chunks = parser.FileContents.Split(2048 * 1024).ToList(); //split to 2 mb.
-                var ext = Path.GetExtension(parser.Filename);
-                var uniqueName = Guid.NewGuid().ToString().Replace("-", "") + ext;
-
-                for (var i = 0; i < chunks.Count; i++)
-                {
-                    //send stream and parameters to storage upload helper method for temporary upload.
-                    await AzureStorage.UploadFile(i, new MemoryStream(chunks[i]), "temp", uniqueName, parser.ContentType, _configuration);
-                }
-
-                var result = new DocumentUploadResult
-                {
-                    ContentType = parser.ContentType,
-                    UniqueName = uniqueName,
-                    Chunks = chunks.Count
-                };
-
-                //return content type of the file to the client
-                return Ok(result);
-            }
-
-            //this request invalid because there is no file, return fail code to the client.
-            return NotFound();
-        }
-
         [Route("Create"), HttpPost]
         /// <summary>
         /// Validates and creates document record permanently after temporary upload process completed.
